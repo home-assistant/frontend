@@ -19,12 +19,10 @@ const computeTileCard = (entity: string): LovelaceCardConfig => ({
 
 const computeHeadingCard = (
   heading: string,
-  icon: string,
-  style: "title" | "subtitle" = "title"
+  icon: string
 ): LovelaceCardConfig => ({
   type: "heading",
   heading: heading,
-  heading_style: style,
   icon: icon,
 });
 
@@ -79,15 +77,8 @@ export class AreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          {
-            type: "heading",
-            heading: "Lights",
-            icon: "mdi:lamps",
-          },
-          ...lights.map((entity) => ({
-            type: "tile",
-            entity: entity,
-          })),
+          computeHeadingCard("Lights", "mdi:lightbulb"),
+          ...lights.map(computeTileCard),
         ],
       });
     }
@@ -135,51 +126,21 @@ export class AreaViewStrategy extends ReactiveElement {
       })
     );
 
-    const climateSectionCards: LovelaceCardConfig[] = [];
-
     if (
       thermostats.length ||
       humidifiers.length ||
       shutters.length ||
       climateSensor.length
     ) {
-      climateSectionCards.push(
-        computeHeadingCard("Climate", "mdi:home-thermometer")
-      );
-    }
-
-    if (thermostats.length > 0 || humidifiers.length > 0) {
-      const title =
-        thermostats.length > 0 && humidifiers.length
-          ? "Thermostats and humidifiers"
-          : thermostats.length
-            ? "Thermostats"
-            : "Humidifiers";
-      climateSectionCards.push(
-        computeHeadingCard(title, "mdi:thermostat", "subtitle"),
-        ...thermostats.map(computeTileCard),
-        ...humidifiers.map(computeTileCard)
-      );
-    }
-
-    if (shutters.length > 0) {
-      climateSectionCards.push(
-        computeHeadingCard("Shutters", "mdi:window-shutter", "subtitle"),
-        ...shutters.map(computeTileCard)
-      );
-    }
-
-    if (climateSensor.length > 0) {
-      climateSectionCards.push(
-        computeHeadingCard("Sensors", "mdi:window-open", "subtitle"),
-        ...climateSensor.map(computeTileCard)
-      );
-    }
-
-    if (climateSectionCards.length > 0) {
       sections.push({
         type: "grid",
-        cards: climateSectionCards,
+        cards: [
+          computeHeadingCard("Climate", "mdi:home-thermometer"),
+          ...thermostats.map(computeTileCard),
+          ...humidifiers.map(computeTileCard),
+          ...shutters.map(computeTileCard),
+          ...climateSensor.map(computeTileCard),
+        ],
       });
     }
 
@@ -234,40 +195,21 @@ export class AreaViewStrategy extends ReactiveElement {
       })
     );
 
-    const securitySectionCards: LovelaceCardConfig[] = [];
-
-    if (alarms.length > 0 || locks.length > 0) {
-      const title =
-        alarms.length > 0 && locks.length
-          ? "Alarms and locks"
-          : alarms.length
-            ? "Alarms"
-            : "Locks";
-      securitySectionCards.push(
-        computeHeadingCard(title, "mdi:shield", "subtitle"),
-        ...alarms.map(computeTileCard),
-        ...locks.map(computeTileCard)
-      );
-    }
-
-    if (doors.length > 0) {
-      securitySectionCards.push(
-        computeHeadingCard("Doors", "mdi:door", "subtitle"),
-        ...doors.map(computeTileCard)
-      );
-    }
-
-    if (securitySensors.length > 0) {
-      securitySectionCards.push(
-        computeHeadingCard("Sensors", "mdi:wifi", "subtitle"),
-        ...securitySensors.map(computeTileCard)
-      );
-    }
-
-    if (securitySectionCards.length > 0) {
+    if (
+      alarms.length > 0 ||
+      locks.length > 0 ||
+      doors.length > 0 ||
+      securitySensors.length > 0
+    ) {
       sections.push({
         type: "grid",
-        cards: securitySectionCards,
+        cards: [
+          computeHeadingCard("Security", "mdi:security"),
+          ...alarms.map(computeTileCard),
+          ...locks.map(computeTileCard),
+          ...doors.map(computeTileCard),
+          ...securitySensors.map(computeTileCard),
+        ],
       });
     }
 
