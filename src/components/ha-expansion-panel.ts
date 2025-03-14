@@ -13,8 +13,8 @@ export class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) leftChevron =
-    false;
+  @property({ attribute: "left-chevron", type: Boolean, reflect: true })
+  leftChevron = false;
 
   @property({ attribute: false, type: Boolean, reflect: true }) noCollapse =
     false;
@@ -172,14 +172,7 @@ export class HaExpansionPanel extends LitElement {
       margin-inline-end: initial;
     }
 
-    :host([leftchevron]) .summary-icon {
-      margin-left: 0;
-      margin-right: 8px;
-      margin-inline-start: 0;
-      margin-inline-end: 8px;
-    }
-
-    ::slotted(ha-svg-icon[slot="leading-icon"]) {
+    :host([left-chevron]) .summary-icon {
       margin-left: 0;
       margin-right: 8px;
       margin-inline-start: 0;
