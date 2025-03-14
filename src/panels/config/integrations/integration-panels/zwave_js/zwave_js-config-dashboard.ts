@@ -680,6 +680,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         this._handleBackupMessage
       );
     } catch (err: any) {
+      this._backupProgress = undefined;
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.zwave_js.dashboard.nvm_backup.backup_failed"
@@ -687,7 +688,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         text: err.message,
         warning: true,
       });
-      this._backupProgress = undefined;
     }
   }
 
@@ -783,17 +783,26 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       this._backupProgress = undefined;
       this._unsubscribeBackup?.();
       this._unsubscribeBackup = undefined;
-      // Create a blob and download it
-      const blob = new Blob(
-        [Uint8Array.from(atob(message.data), (c) => c.charCodeAt(0))],
-        { type: "application/octet-stream" }
-      );
-      const url = URL.createObjectURL(blob);
-      fileDownload(
-        url,
-        `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
-      );
-      URL.revokeObjectURL(url);
+      try {
+        const blob = new Blob(
+          [Uint8Array.from(atob(message.data), (c) => c.charCodeAt(0))],
+          { type: "application/octet-stream" }
+        );
+        const url = URL.createObjectURL(blob);
+        fileDownload(
+          url,
+          `zwave_js_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.bin`
+        );
+        URL.revokeObjectURL(url);
+      } catch (err: any) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.zwave_js.dashboard.nvm_backup.backup_failed"
+          ),
+          text: err.message,
+          warning: true,
+        });
+      }
     } else if (message.event === "nvm backup progress") {
       this._backupProgress = Math.round(
         (message.bytesRead / message.total) * 100
