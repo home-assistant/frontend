@@ -132,6 +132,11 @@ export const hs2rgb = (hs: [number, number]): [number, number, number] =>
 
 export function theme2hex(themeColor: string): string {
   if (themeColor.startsWith("#")) {
+    if (themeColor.length === 4) {
+      const c = themeColor;
+      // Convert short-form hex (#abc) to 6 digit (#aabbcc)
+      return `#${c[1]}${c[1]}${c[2]}${c[2]}${c[3]}${c[3]}`;
+    }
     return themeColor;
   }
 
