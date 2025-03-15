@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
@@ -119,7 +120,7 @@ class HuiSelectOptionsCardFeature
 
     const stateObj = this.stateObj;
 
-    const options = filterModes(
+    const options = this._getOptions(
       this.stateObj.attributes.options,
       this._config.options
     );
@@ -147,6 +148,11 @@ class HuiSelectOptionsCardFeature
       </ha-control-select-menu>
     `;
   }
+
+  private _getOptions = memoizeOne(
+    (attributeOptions: string[], configOptions: string[] | undefined) =>
+      filterModes(attributeOptions, configOptions)
+  );
 
   static get styles() {
     return cardFeatureStyles;
