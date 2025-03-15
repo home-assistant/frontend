@@ -6,6 +6,7 @@ describe("ha-pref-storage", () => {
   const mockHass = {
     dockedSidebar: "auto",
     selectedTheme: { theme: "default" },
+    vibrate: "false",
     unknownKey: "unknownValue",
   };
 
@@ -24,14 +25,10 @@ describe("ha-pref-storage", () => {
     window.localStorage.setItem = vi.fn();
 
     storeState(mockHass as unknown as HomeAssistant);
-    expect(window.localStorage.setItem).toHaveBeenCalledTimes(8);
+    expect(window.localStorage.setItem).toHaveBeenCalledTimes(7);
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "dockedSidebar",
       JSON.stringify("auto")
-    );
-    expect(window.localStorage.setItem).toHaveBeenCalledWith(
-      "selectedTheme",
-      JSON.stringify({ theme: "default" })
     );
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
       "selectedLanguage",
@@ -41,13 +38,19 @@ describe("ha-pref-storage", () => {
       "unknownKey",
       JSON.stringify("unknownValue")
     );
+
+    // browserThemeEnabled is not set in mockHass, so selectedTheme should not be stored
+    expect(window.localStorage.setItem).not.toHaveBeenCalledWith(
+      "selectedTheme",
+      JSON.stringify({ theme: "default" })
+    );
   });
 
   test("storeState fails", async () => {
     const { storeState } = await import("../../src/util/ha-pref-storage");
 
     window.localStorage.setItem = vi.fn((key) => {
-      if (key === "selectedTheme") {
+      if (key === "selectedLanguage") {
         throw new Error("Test error");
       }
     });
@@ -65,12 +68,12 @@ describe("ha-pref-storage", () => {
       JSON.stringify("auto")
     );
     expect(window.localStorage.setItem).toHaveBeenCalledWith(
-      "selectedTheme",
-      JSON.stringify({ theme: "default" })
-    );
-    expect(window.localStorage.setItem).not.toHaveBeenCalledWith(
       "selectedLanguage",
       JSON.stringify(null)
+    );
+    expect(window.localStorage.setItem).not.toHaveBeenCalledWith(
+      "vibrate",
+      JSON.stringify("false")
     );
     // eslint-disable-next-line no-console
     expect(console.warn).toHaveBeenCalledOnce();
@@ -87,7 +90,7 @@ describe("ha-pref-storage", () => {
 
     window.localStorage.setItem("selectedTheme", JSON.stringify("test"));
     window.localStorage.setItem("dockedSidebar", JSON.stringify(true));
-    window.localStorage.setItem("selectedLanguage", JSON.stringify("german"));
+    window.localStorage.setItem("selectedLanguage", JSON.stringify("de"));
 
     // should not be in state
     window.localStorage.setItem("testEntry", JSON.stringify("this is a test"));
@@ -96,7 +99,21 @@ describe("ha-pref-storage", () => {
     expect(state).toEqual({
       dockedSidebar: "docked",
       selectedTheme: { theme: "test" },
-      selectedLanguage: "german",
+      browserThemeEnabled: true,
+      selectedLanguage: "de",
+    });
+  });
+
+  test("getState without theme", async () => {
+    const { getState } = await import("../../src/util/ha-pref-storage");
+
+    window.localStorage.setItem("dockedSidebar", JSON.stringify(true));
+    window.localStorage.setItem("selectedLanguage", JSON.stringify("de"));
+
+    const state = getState();
+    expect(state).toEqual({
+      dockedSidebar: "docked",
+      selectedLanguage: "de",
     });
   });
 

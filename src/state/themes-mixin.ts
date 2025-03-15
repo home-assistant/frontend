@@ -3,18 +3,37 @@ import {
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import { subscribeThemes } from "../data/ws-themes";
-import type { Constructor, HomeAssistant } from "../types";
-import { storeState } from "../util/ha-pref-storage";
+import {
+  fetchSelectedTheme,
+  saveSelectedTheme,
+  SELECTED_THEME_KEY,
+  subscribeSelectedTheme,
+  subscribeThemes,
+} from "../data/ws-themes";
+import type { Constructor, HomeAssistant, ThemeSettings } from "../types";
+import { clearStateKey, storeState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
+
+export type StorageLocation = "user" | "browser";
+
+interface SetThemeSettings {
+  settings: ThemeSettings;
+  storageLocation: StorageLocation;
+  saveHass: boolean;
+}
 
 declare global {
   // for add event listener
   interface HTMLElementEventMap {
-    settheme: HASSDomEvent<Partial<HomeAssistant["selectedTheme"]>>;
+    settheme: HASSDomEvent<SetThemeSettings>;
   }
   interface HASSDomEvents {
-    settheme: Partial<HomeAssistant["selectedTheme"]>;
+    settheme: SetThemeSettings;
+    resetBrowserTheme: undefined;
+  }
+
+  interface FrontendUserData {
+    selectedTheme?: ThemeSettings;
   }
 }
 
@@ -27,16 +46,38 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
-        this._updateHass({
-          selectedTheme: {
-            ...this.hass!.selectedTheme!,
-            ...ev.detail,
-          },
-        });
-        this._applyTheme(mql.matches);
-        storeState(this.hass!);
+        if (ev.detail.saveHass) {
+          this._updateHass({
+            selectedTheme: ev.detail.settings,
+            browserThemeEnabled: ev.detail.storageLocation === "browser",
+          });
+          this._animateApplyTheme(mql.matches);
+        }
+
+        if (ev.detail.storageLocation === "browser") {
+          storeState(this.hass!);
+        } else {
+          if (ev.detail.saveHass) {
+            clearStateKey(SELECTED_THEME_KEY);
+          }
+          saveSelectedTheme(this.hass!, ev.detail.settings);
+        }
       });
-      mql.addListener((ev) => this._applyTheme(ev.matches));
+
+      this.addEventListener("resetBrowserTheme", async () => {
+        clearStateKey(SELECTED_THEME_KEY);
+        const selectedTheme = await fetchSelectedTheme(this.hass!);
+        this._updateHass({
+          selectedTheme,
+          browserThemeEnabled: false,
+        });
+        this._animateApplyTheme(mql.matches);
+      });
+
+      mql.addEventListener("change", (ev) =>
+        this._animateApplyTheme(ev.matches)
+      );
+
       if (!this._themeApplied && mql.matches) {
         applyThemesOnElement(
           document.documentElement,
@@ -63,6 +104,62 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         invalidateThemeCache();
         this._applyTheme(mql.matches);
       });
+
+      subscribeSelectedTheme(
+        this.hass!,
+        (selectedTheme?: ThemeSettings | null) => {
+          if (
+            !window.localStorage.getItem(SELECTED_THEME_KEY) &&
+            selectedTheme
+          ) {
+            this._themeApplied = true;
+            this._updateHass({
+              selectedTheme,
+              browserThemeEnabled: false,
+            });
+            this._applyTheme(mql.matches);
+          }
+        }
+      );
+    }
+
+    private async _animateApplyTheme(darkPreferred: boolean) {
+      if (!this.hass) {
+        return;
+      }
+
+      if (!document.startViewTransition || !document.documentElement.animate) {
+        this._applyTheme(darkPreferred);
+      } else {
+        await document.startViewTransition(() => {
+          this._applyTheme(darkPreferred);
+        }).ready;
+
+        const { top, left, width, height } =
+          document.documentElement.getBoundingClientRect();
+        const x = left + width / 2;
+        const y = top + height / 2;
+        const right = window.innerWidth - left;
+        const bottom = window.innerHeight - top;
+        const maxRadius = Math.hypot(
+          Math.max(left, right),
+          Math.max(top, bottom)
+        );
+
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${maxRadius}px at ${x}px ${y}px)`,
+            ],
+          },
+          {
+            duration: 500,
+            easing: "linear(0, 0.1, 1)",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      }
     }
 
     private _applyTheme(darkPreferred: boolean) {
