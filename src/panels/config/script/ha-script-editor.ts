@@ -42,12 +42,12 @@ import {
 } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
+  normalizeScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
-  migrateAutomationAction,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -504,7 +504,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
@@ -543,25 +543,12 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
-    // Normalize data: ensure sequence is a list
-    // Happens when people copy paste their scripts into the config
-    const value = config.sequence;
-    if (value && !Array.isArray(value)) {
-      config.sequence = [value];
-    }
-    if (config.sequence) {
-      config.sequence = migrateAutomationAction(config.sequence);
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     fetchScriptFileConfig(this.hass, this.scriptId!).then(
       (config) => {
         this._dirty = false;
         this._readOnly = false;
-        this._config = this._normalizeConfig(config);
+        this._config = normalizeScriptConfig(config);
         const entity = this.entityRegistry.find(
           (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
         );
@@ -770,7 +757,7 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       const newConfig = {
-        ...this._normalizeConfig(result.substituted_config),
+        ...normalizeScriptConfig(result.substituted_config),
         alias: config.alias,
         description: config.description,
       };
