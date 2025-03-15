@@ -1,6 +1,6 @@
 import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import type { List } from "@material/mwc-list/mwc-list";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiClock,
   mdiDelete,
@@ -19,8 +19,8 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
@@ -39,12 +39,12 @@ import type { TodoItem } from "../../../data/todo";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
+  TodoSortMode,
   createItem,
   deleteItems,
   moveItem,
   subscribeItems,
   updateItem,
-  TodoSortMode,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -176,6 +176,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         : []
   );
 
+  private _getItemsWithoutStatus = memoizeOne(
+    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+      items
+        ? this._sortItems(
+            items.filter((item) => !item.status),
+            sort
+          )
+        : []
+  );
+
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
@@ -235,6 +245,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._config.display_order
     );
 
+    const itemsWithoutStatus = this._getItemsWithoutStatus(
+      this._items,
+      this._config.display_order
+    );
+
     return html`
       <ha-card
         .header=${this._config.title}
@@ -274,6 +289,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           @item-moved=${this._itemMoved}
         >
           <mwc-list wrapFocus multi>
+            ${!uncheckedItems.length && !itemsWithoutStatus.length
+              ? html`<p class="empty">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
+                  )}
+                </p>`
+              : nothing}
             ${uncheckedItems.length
               ? html`
                   <div class="header" role="seperator">
@@ -282,47 +304,33 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         "ui.panel.lovelace.cards.todo-list.unchecked_items"
                       )}
                     </h2>
-                    ${(!this._config.display_order ||
-                      this._config.display_order === TodoSortMode.NONE) &&
-                    this._todoListSupportsFeature(
-                      TodoListEntityFeature.MOVE_TODO_ITEM
-                    )
-                      ? html`<ha-button-menu
-                          @closed=${stopPropagation}
-                          fixed
-                          @action=${this._handlePrimaryMenuAction}
-                        >
-                          <ha-icon-button
-                            slot="trigger"
-                            .path=${mdiDotsVertical}
-                          ></ha-icon-button>
-                          <ha-list-item graphic="icon">
-                            ${this.hass!.localize(
-                              this._reordering
-                                ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
-                                : "ui.panel.lovelace.cards.todo-list.reorder_items"
-                            )}
-                            <ha-svg-icon
-                              slot="graphic"
-                              .path=${mdiSort}
-                              .disabled=${unavailable}
-                            >
-                            </ha-svg-icon>
-                          </ha-list-item>
-                        </ha-button-menu>`
-                      : nothing}
+                    ${this._renderMenu(this._config, unavailable)}
                   </div>
                   ${this._renderItems(uncheckedItems, unavailable)}
                 `
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
-                  )}
-                </p>`}
+              : nothing}
+            ${itemsWithoutStatus.length
+              ? html`
+                  <div>
+                    <div class="divider" role="seperator"></div>
+                    <div class="header" role="seperator">
+                      <h2>
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.cards.todo-list.no_status_items"
+                        )}
+                      </h2>
+                      ${!uncheckedItems.length
+                        ? this._renderMenu(this._config, unavailable)
+                        : nothing}
+                    </div>
+                  </div>
+                  ${this._renderItems(itemsWithoutStatus, unavailable)}
+                `
+              : nothing}
             ${!this._config.hide_completed && checkedItems.length
               ? html`
-                  <div role="separator">
-                    <div class="divider"></div>
+                  <div>
+                    <div class="divider" role="separator"></div>
                     <div class="header">
                       <h2>
                         ${this.hass!.localize(
@@ -359,11 +367,41 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   </div>
                   ${this._renderItems(checkedItems, unavailable)}
                 `
-              : ""}
+              : nothing}
           </mwc-list>
         </ha-sortable>
       </ha-card>
     `;
+  }
+
+  private _renderMenu(config: TodoListCardConfig, unavailable: boolean) {
+    return (!config.display_order ||
+      config.display_order === TodoSortMode.NONE) &&
+      this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
+      ? html`<ha-button-menu
+          @closed=${stopPropagation}
+          fixed
+          @action=${this._handlePrimaryMenuAction}
+        >
+          <ha-icon-button
+            slot="trigger"
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
+          <ha-list-item graphic="icon">
+            ${this.hass!.localize(
+              this._reordering
+                ? "ui.panel.lovelace.cards.todo-list.exit_reorder_items"
+                : "ui.panel.lovelace.cards.todo-list.reorder_items"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiSort}
+              .disabled=${unavailable}
+            >
+            </ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>`
+      : nothing;
   }
 
   private _getDueDate(item: TodoItem): Date | undefined {
@@ -402,11 +440,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                 multiline: Boolean(item.description || item.due),
               })}"
               .selected=${item.status === TodoItemStatus.Completed}
-              .disabled=${unavailable ||
-              !this._todoListSupportsFeature(
+              .disabled=${unavailable}
+              .checkboxDisabled=${!this._todoListSupportsFeature(
                 TodoListEntityFeature.UPDATE_TODO_ITEM
               )}
-              item-id=${item.uid}
+              .indeterminate=${!item.status}
+              .noninteractive=${!this._todoListSupportsFeature(
+                TodoListEntityFeature.UPDATE_TODO_ITEM
+              )}
               .itemId=${item.uid}
               @change=${this._completeItem}
               @click=${this._openItem}
