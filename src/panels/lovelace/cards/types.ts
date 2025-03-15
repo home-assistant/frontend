@@ -345,6 +345,12 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   show_empty?: boolean;
 }
 
+export interface ClockCardConfig extends LovelaceCardConfig {
+  type: "clock";
+  time_format: string;
+  clock_size?: string;
+}
+
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
