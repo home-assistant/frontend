@@ -23,7 +23,7 @@ export type Selector =
   | ActionSelector
   | AddonSelector
   | AreaSelector
-  | AreaFilterSelector
+  | AreasDisplaySelector
   | AttributeSelector
   | BooleanSelector
   | ButtonToggleSelector
@@ -92,8 +92,8 @@ export interface AreaSelector {
   } | null;
 }
 
-export interface AreaFilterSelector {
-  area_filter: {} | null;
+export interface AreasDisplaySelector {
+  areas_display: {} | null;
 }
 
 export interface AttributeSelector {
