@@ -132,6 +132,15 @@ export const hs2rgb = (hs: [number, number]): [number, number, number] =>
 
 export function theme2hex(themeColor: string): string {
   if (themeColor.startsWith("#")) {
+    if (themeColor.length === 4 || themeColor.length === 5) {
+      const c = themeColor;
+      // Convert short-form hex (#abc) to 6 digit (#aabbcc). Ignore alpha channel.
+      return `#${c[1]}${c[1]}${c[2]}${c[2]}${c[3]}${c[3]}`;
+    }
+    if (themeColor.length === 9) {
+      // Ignore alpha channel.
+      return themeColor.substring(0, 7);
+    }
     return themeColor;
   }
 
