@@ -191,8 +191,8 @@ export class HuiHeadingEntityEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiEye}></ha-svg-icon>
         <h3 slot="header">
-          <ha-svg-icon .path=${mdiEye}></ha-svg-icon>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.heading.entity_config.visibility"
           )}

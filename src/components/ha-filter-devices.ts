@@ -46,7 +46,7 @@ export class HaFilterDevices extends LitElement {
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}

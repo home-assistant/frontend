@@ -101,8 +101,8 @@ export class HuiThermostatCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiListBox}></ha-svg-icon>
         <h3 slot="header">
-          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.features"
           )}
