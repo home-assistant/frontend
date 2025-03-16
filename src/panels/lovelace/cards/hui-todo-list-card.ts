@@ -10,7 +10,7 @@ import {
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
-import { endOfDay, isSameDay } from "date-fns";
+import { addDays, endOfDay, isSameDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValueMap, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -160,10 +160,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
-            this._filterItemsByDueDate(
-              items.filter((item) => item.status === TodoItemStatus.Completed),
-              this._config?.days_to_show
-            ),
+            this._filterItems(items, this._config?.days_to_show),
             sort
           )
         : []
@@ -173,31 +170,24 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
-            this._filterItemsByDueDate(
-              items.filter(
-                (item) => item.status === TodoItemStatus.NeedsAction
-              ),
-              this._config?.days_to_show
-            ),
+            this._filterItems(items, this._config?.days_to_show),
             sort
           )
         : []
   );
 
-  private _filterItemsByDueDate(
+  private _filterItems(
     items: TodoItem[],
     daysToShow?: number | undefined
   ): TodoItem[] {
+    const filteredItems = items.filter((item) => item.status === TodoItemStatus.NeedsAction)
+
     const ignoreEndDate = daysToShow === undefined;
-    if (ignoreEndDate) return items;
+    if (ignoreEndDate) return filteredItems;
 
-    const daysToShowNum = daysToShow ?? Infinity;
-    const now = new Date();
-    const endDate = new Date(now);
+    const endDate = addDays(new Date(), daysToShow);
 
-    endDate.setDate(now.getDate() + daysToShowNum);
-
-    return items.filter((item) => {
+    return filteredItems.filter((item) => {
       const dueDate = this._getDueDate(item);
       return dueDate && dueDate <= endDate;
     });
