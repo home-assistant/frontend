@@ -27,6 +27,8 @@ import type {
   StatisticsUnitConfiguration,
 } from "./recorder";
 import { fetchStatistics, getStatisticMetadata } from "./recorder";
+import { calcDateRange } from "../common/datetime/calc_date_range";
+import type { DateRange } from "../common/datetime/calc_date_range";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -665,21 +667,17 @@ export const getEnergyDataCollection = (
 
   collection._active = 0;
   collection.prefs = options.prefs;
+
   const now = new Date();
   const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
   // Set start to start of today if we have data for today, otherwise yesterday
-  collection.start = calcDate(
-    hour === "0" ? addDays(now, -1) : now,
-    startOfDay,
-    hass.locale,
-    hass.config
-  );
-  collection.end = calcDate(
-    hour === "0" ? addDays(now, -1) : now,
-    endOfDay,
-    hass.locale,
-    hass.config
-  );
+  const preferredPeriod =
+    (localStorage.getItem(`energy-default-period-${key}`) as DateRange) ||
+    "today";
+  const period =
+    preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
+
+  [collection.start, collection.end] = calcDateRange(hass, period);
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
