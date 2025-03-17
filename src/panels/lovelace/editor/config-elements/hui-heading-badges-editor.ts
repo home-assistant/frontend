@@ -6,6 +6,7 @@ import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
@@ -55,7 +56,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
       const entityId = "entity" in badge ? (badge.entity as string) : undefined;
       const stateObj = entityId ? this.hass.states[entityId] : undefined;
       return (
-        (stateObj && stateObj.attributes.friendly_name) ||
+        (stateObj && computeStateName(stateObj)) ||
         entityId ||
         type ||
         "Unknown badge"
