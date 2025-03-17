@@ -9533,7 +9533,7 @@ __metadata:
     tsparticles-preset-links: "npm:2.12.0"
     typescript: "npm:5.8.2"
     typescript-eslint: "npm:8.26.1"
-    ua-parser-js: "npm:2.0.2"
+    ua-parser-js: "npm:2.0.3"
     vis-data: "npm:7.1.9"
     vis-network: "npm:9.1.9"
     vite-tsconfig-paths: "npm:5.1.4"
@@ -14796,9 +14796,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ua-parser-js@npm:2.0.2":
-  version: 2.0.2
-  resolution: "ua-parser-js@npm:2.0.2"
+"ua-parser-js@npm:2.0.3":
+  version: 2.0.3
+  resolution: "ua-parser-js@npm:2.0.3"
   dependencies:
     "@types/node-fetch": "npm:^2.6.12"
     detect-europe-js: "npm:^0.1.2"
@@ -14807,7 +14807,7 @@ __metadata:
     ua-is-frozen: "npm:^0.1.2"
   bin:
     ua-parser-js: script/cli.js
-  checksum: 10/92c172d9fb8036d32ff9df20283d3c323831d92a9b99ccca73c50d3d778903129581f0f918391f139ba444b11bce10f254cf922a4fb35fa1a28c4a9671225f1e
+  checksum: 10/f181f1c976d67a2a8cdd396f8c5cecc8bfe4ada7183e7ef06a81a09aa9dc98480048380240f6374189cf2ab7e6275b711f9732e26b7ed2a14f3e4fe3576b8842
   languageName: node
   linkType: hard
 
