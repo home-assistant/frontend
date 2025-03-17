@@ -1127,6 +1127,10 @@
       },
       "multi-textfield": {
         "add_item": "Add {item}"
+      },
+      "items-display-editor": {
+        "show": "Show {label}",
+        "hide": "Hide {label}"
       }
     },
     "dialogs": {
@@ -3121,6 +3125,10 @@
                 "iframe": {
                   "title": "Webpage",
                   "description": "Integrate a webpage as a dashboard"
+                },
+                "areas": {
+                  "title": "Areas (experimental)",
+                  "description": "Display your devices with a view for each area"
                 }
               }
             },
@@ -7456,12 +7464,15 @@
           },
           "strategy": {
             "original-states": {
-              "areas": "Areas",
+              "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
             },
             "iframe": {
               "url": "URL"
+            },
+            "areas": {
+              "areas_display": "Areas to display"
             }
           },
           "view": {
