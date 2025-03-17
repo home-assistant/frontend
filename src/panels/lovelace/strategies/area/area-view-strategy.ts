@@ -7,6 +7,12 @@ import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
+import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
+import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import type { LovelaceCardFeatureConfig } from "../../card-features/types";
 
 type Group = "lights" | "climate" | "media_players" | "security";
 
@@ -16,7 +22,8 @@ type AreaFilteredByGroup = Record<Group, EntityFilterFunc[]>;
 
 export const getAreaGroupedEntities = (
   area: string,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  controlOnly = false
 ): AreaEntitiesByGroup => {
   const allEntities = Object.keys(hass.states);
 
@@ -53,12 +60,16 @@ export const getAreaGroupedEntities = (
         ],
         entity_category: "none",
       }),
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        area: area,
-        device_class: "window",
-        entity_category: "none",
-      }),
+      ...(controlOnly
+        ? []
+        : [
+            generateEntityFilter(hass, {
+              domain: "binary_sensor",
+              area: area,
+              device_class: "window",
+              entity_category: "none",
+            }),
+          ]),
     ],
     media_players: [
       generateEntityFilter(hass, {
@@ -84,12 +95,16 @@ export const getAreaGroupedEntities = (
         area: area,
         entity_category: "none",
       }),
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        device_class: ["door", "garage_door"],
-        area: area,
-        entity_category: "none",
-      }),
+      ...(controlOnly
+        ? []
+        : [
+            generateEntityFilter(hass, {
+              domain: "binary_sensor",
+              device_class: ["door", "garage_door"],
+              area: area,
+              entity_category: "none",
+            }),
+          ]),
     ],
   };
 
@@ -112,10 +127,40 @@ export interface AreaViewStrategyConfig {
   area?: string;
 }
 
-const computeTileCard = (entity: string): LovelaceCardConfig => ({
-  type: "tile",
-  entity: entity,
-});
+const computeTileCardConfig =
+  (hass: HomeAssistant) =>
+  (entity: string): LovelaceCardConfig => {
+    const stateObj = hass.states[entity];
+
+    let feature: LovelaceCardFeatureConfig | undefined;
+    if (supportsLightBrightnessCardFeature(stateObj)) {
+      feature = {
+        type: "light-brightness",
+      };
+    } else if (supportsCoverOpenCloseCardFeature(stateObj)) {
+      feature = {
+        type: "cover-open-close",
+      };
+    } else if (supportsTargetTemperatureCardFeature(stateObj)) {
+      feature = {
+        type: "target-temperature",
+      };
+    } else if (supportsAlarmModesCardFeature(stateObj)) {
+      feature = {
+        type: "alarm-modes",
+      };
+    } else if (supportsLockCommandsCardFeature(stateObj)) {
+      feature = {
+        type: "lock-commands",
+      };
+    }
+
+    return {
+      type: "tile",
+      entity: entity,
+      features: feature ? [feature] : undefined,
+    };
+  };
 
 const computeHeadingCard = (
   heading: string,
@@ -163,6 +208,8 @@ export class AreaViewStrategy extends ReactiveElement {
     }
 
     const groupedEntities = getAreaGroupedEntities(config.area, hass);
+
+    const computeTileCard = computeTileCardConfig(hass);
 
     const {
       lights,
@@ -212,6 +259,15 @@ export class AreaViewStrategy extends ReactiveElement {
 
     return {
       type: "sections",
+      header: {
+        badges_position: "bottom",
+        layout: "responsive",
+        card: {
+          type: "markdown",
+          text_only: true,
+          content: `## ${area.name}`,
+        },
+      },
       max_columns: 2,
       sections: sections,
       badges: badges,

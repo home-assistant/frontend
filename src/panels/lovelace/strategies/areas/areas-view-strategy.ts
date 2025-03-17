@@ -30,7 +30,7 @@ export class AreasViewStrategy extends ReactiveElement {
       .map<LovelaceSectionConfig | undefined>((area) => {
         const path = computeAreaPath(area.area_id);
 
-        const groups = getAreaGroupedEntities(area.area_id, hass);
+        const groups = getAreaGroupedEntities(area.area_id, hass, true);
 
         const entities = [
           ...groups.lights,
@@ -38,10 +38,6 @@ export class AreasViewStrategy extends ReactiveElement {
           ...groups.media_players,
           ...groups.security,
         ];
-
-        if (entities.length === 0) {
-          return undefined;
-        }
 
         return {
           type: "grid",
@@ -63,10 +59,17 @@ export class AreasViewStrategy extends ReactiveElement {
                 navigation_path: path,
               },
             },
-            ...entities.map((entity) => ({
-              type: "tile",
-              entity: entity,
-            })),
+            ...(entities.length
+              ? entities.map((entity) => ({
+                  type: "tile",
+                  entity: entity,
+                }))
+              : [
+                  {
+                    type: "markdown",
+                    content: "No controllable devices in this area.",
+                  },
+                ]),
           ],
         };
       })
