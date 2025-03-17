@@ -1289,9 +1289,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/language@npm:6.10.8, @codemirror/language@npm:^6.0.0":
-  version: 6.10.8
-  resolution: "@codemirror/language@npm:6.10.8"
+"@codemirror/language@npm:6.11.0, @codemirror/language@npm:^6.0.0":
+  version: 6.11.0
+  resolution: "@codemirror/language@npm:6.11.0"
   dependencies:
     "@codemirror/state": "npm:^6.0.0"
     "@codemirror/view": "npm:^6.23.0"
@@ -1299,16 +1299,16 @@ __metadata:
     "@lezer/highlight": "npm:^1.0.0"
     "@lezer/lr": "npm:^1.0.0"
     style-mod: "npm:^4.0.0"
-  checksum: 10/63b83b41d9f8475f757144cc204df08834bb14411c484aa265ffa3e93b7d8f696a21110df72101159a8675eda29018c6d08f864965bd4651b607a39f10ad32ed
+  checksum: 10/571d8d18c51173c25dc3a1c1327fa2265e3d666acd2f2e3dbab828f49bc7f350159bbe8d46ee4baf88cb3eb0fbcfb3351028df6e2981455a55fd2951254c950f
   languageName: node
   linkType: hard
 
-"@codemirror/legacy-modes@npm:6.4.3":
-  version: 6.4.3
-  resolution: "@codemirror/legacy-modes@npm:6.4.3"
+"@codemirror/legacy-modes@npm:6.5.0":
+  version: 6.5.0
+  resolution: "@codemirror/legacy-modes@npm:6.5.0"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
-  checksum: 10/c268818454a151befff00d234c0f9f20371bca192500dac7654368740d3db7e30547f3b0bcc714af36fc109018e538d8d7b6e9a41cef02d3c31b886fb6f32fc4
+  checksum: 10/ef639afde8da0799d08049ced00bd06d3ecc9406887e9dc84f0ef82792ade2ffb6b62e2e254d51d2da4507ef4740c0d35f6613df574827e4cbf85ef25c2fa126
   languageName: node
   linkType: hard
 
@@ -9359,8 +9359,8 @@ __metadata:
     "@bundle-stats/plugin-webpack-filter": "npm:4.19.0"
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/commands": "npm:6.8.0"
-    "@codemirror/language": "npm:6.10.8"
-    "@codemirror/legacy-modes": "npm:6.4.3"
+    "@codemirror/language": "npm:6.11.0"
+    "@codemirror/legacy-modes": "npm:6.5.0"
     "@codemirror/search": "npm:6.5.10"
     "@codemirror/state": "npm:6.5.2"
     "@codemirror/view": "npm:6.36.4"
