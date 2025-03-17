@@ -765,16 +765,13 @@ export const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
-): string | undefined => {
+): string => {
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
-  if (unitClass === undefined) {
-    return undefined;
+  if (unitClass === "energy") {
+    return "kWh";
   }
-  return unitClass === "energy"
-    ? "kWh"
-    : hass.config.unit_system.length === "km"
-      ? "m³"
-      : "ft³";
+
+  return hass.config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
