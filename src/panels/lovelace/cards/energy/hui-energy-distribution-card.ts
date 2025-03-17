@@ -353,7 +353,7 @@ class HuiEnergyDistrubutionCard
                           this.hass,
                           prefs,
                           this._data.statsMetadata
-                        ) || "m³"}
+                        )}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />
@@ -386,7 +386,7 @@ class HuiEnergyDistrubutionCard
                           ${formatNumber(waterUsage || 0, this.hass.locale, {
                             maximumFractionDigits: 1,
                           })}
-                          ${getEnergyWaterUnit(this.hass) || "m³"}
+                          ${getEnergyWaterUnit(this.hass)}
                         </div>
                         <svg width="80" height="30">
                           <path d="M40 0 v30" id="water" />
@@ -606,7 +606,7 @@ class HuiEnergyDistrubutionCard
                         ${formatNumber(waterUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
-                        ${getEnergyWaterUnit(this.hass) || "m³"}
+                        ${getEnergyWaterUnit(this.hass)}
                       </div>
                       <span class="label"
                         >${this.hass.localize(
