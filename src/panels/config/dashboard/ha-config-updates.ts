@@ -125,13 +125,14 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               </span>
               ${!this.narrow
                 ? entity.attributes.in_progress
-                  ? html`<ha-spinner
-                      size="small"
-                      slot="meta"
-                      .ariaLabel=${this.hass.localize(
-                        "ui.panel.config.updates.update_in_progress"
-                      )}
-                    ></ha-spinner>`
+                  ? html`<div slot="meta">
+                      <ha-spinner
+                        size="small"
+                        .ariaLabel=${this.hass.localize(
+                          "ui.panel.config.updates.update_in_progress"
+                        )}
+                      ></ha-spinner>
+                    </div>`
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
             </ha-list-item>
