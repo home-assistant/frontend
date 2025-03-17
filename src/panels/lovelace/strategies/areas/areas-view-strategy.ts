@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { getAreaGroupedEntities } from "../area/area-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 export interface AreasViewStrategyConfig {
@@ -25,38 +26,53 @@ export class AreasViewStrategy extends ReactiveElement {
       config.areas_display?.order
     );
 
-    const areaSections = areas.map<LovelaceSectionConfig>((area) => {
-      const path = computeAreaPath(area.area_id);
-      return {
-        type: "grid",
-        cards: [
-          {
-            type: "heading",
-            heading: area.name,
-            icon: area.icon || undefined,
-            badges: [
-              ...(area.temperature_entity_id
-                ? [{ entity: area.temperature_entity_id }]
-                : []),
-              ...(area.humidity_entity_id
-                ? [{ entity: area.humidity_entity_id }]
-                : []),
-            ],
-            tap_action: {
-              action: "navigate",
-              navigation_path: path,
+    const areaSections = areas
+      .map<LovelaceSectionConfig | undefined>((area) => {
+        const path = computeAreaPath(area.area_id);
+
+        const groups = getAreaGroupedEntities(area.area_id, hass);
+
+        const entities = [
+          ...groups.lights,
+          ...groups.climate,
+          ...groups.media_players,
+          ...groups.security,
+        ];
+
+        if (entities.length === 0) {
+          return undefined;
+        }
+
+        return {
+          type: "grid",
+          cards: [
+            {
+              type: "heading",
+              heading: area.name,
+              icon: area.icon || undefined,
+              badges: [
+                ...(area.temperature_entity_id
+                  ? [{ entity: area.temperature_entity_id }]
+                  : []),
+                ...(area.humidity_entity_id
+                  ? [{ entity: area.humidity_entity_id }]
+                  : []),
+              ],
+              tap_action: {
+                action: "navigate",
+                navigation_path: path,
+              },
             },
-          },
-          {
-            type: "area",
-            area: area.area_id,
-            navigation_path: path,
-            alert_classes: [],
-            sensor_classes: [],
-          },
-        ],
-      };
-    });
+            ...entities.map((entity) => ({
+              type: "tile",
+              entity: entity,
+            })),
+          ],
+        };
+      })
+      .filter(
+        (section): section is LovelaceSectionConfig => section !== undefined
+      );
 
     return {
       type: "sections",
