@@ -8,7 +8,11 @@ import "../../components/ha-password-field";
 import "../../panels/config/backup/components/ha-backup-details-summary";
 import "../../panels/config/backup/components/ha-backup-data-picker";
 import type { LocalizeFunc } from "../../common/translations/localize";
-import type { BackupContentExtended, BackupData } from "../../data/backup";
+import {
+  getPreferredAgentForDownload,
+  type BackupContentExtended,
+  type BackupData,
+} from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -40,7 +44,9 @@ class OnboardingRestoreBackupRestore extends LitElement {
   private _progressButtonElement!: HaProgressButton;
 
   render() {
-    const agentId = Object.keys(this.backup.agents)[0];
+    const agentId = getPreferredAgentForDownload(
+      Object.keys(this.backup.agents)
+    );
     const backupProtected = this.backup.agents[agentId].protected;
 
     return html`
@@ -151,7 +157,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
           </div>`
         : nothing}
 
-      <div class=${`actions${this.mode === "cloud" ? " cloud" : ""}`}>
+      <div class="actions${this.mode === "cloud" ? " cloud" : ""}">
         ${this.mode === "cloud"
           ? html`<ha-button @click=${this._signOut}>
               ${this.localize(
@@ -211,46 +217,48 @@ class OnboardingRestoreBackupRestore extends LitElement {
     const backupProtected = this.backup.agents[agentId].protected;
 
     if (
-      !this._loading &&
-      (!backupProtected || this._encryptionKey !== "") &&
-      this.backup.homeassistant_included &&
-      this._selectedData
+      this._loading ||
+      (backupProtected && this._encryptionKey === "") ||
+      !this.backup.homeassistant_included ||
+      !this._selectedData
     ) {
-      this._loading = true;
-      const button = ev.currentTarget as HaProgressButton;
-      this._error = undefined;
-      this._encryptionKeyWrong = false;
+      return;
+    }
 
-      const backupAgent = Object.keys(this.backup.agents)[0];
+    this._loading = true;
+    const button = ev.currentTarget as HaProgressButton;
+    this._error = undefined;
+    this._encryptionKeyWrong = false;
 
-      try {
-        await restoreOnboardingBackup({
-          agent_id: backupAgent,
-          backup_id: this.backup.backup_id,
-          password: this._encryptionKey || undefined,
-          restore_addons: this._selectedData.addons.map((addon) => addon.slug),
-          restore_database: this._selectedData.database_included,
-          restore_folders: this._selectedData.folders,
-        });
+    const backupAgent = Object.keys(this.backup.agents)[0];
+
+    try {
+      await restoreOnboardingBackup({
+        agent_id: backupAgent,
+        backup_id: this.backup.backup_id,
+        password: this._encryptionKey || undefined,
+        restore_addons: this._selectedData.addons.map((addon) => addon.slug),
+        restore_database: this._selectedData.database_included,
+        restore_folders: this._selectedData.folders,
+      });
+      button.actionSuccess();
+      fireEvent(this, "restore-started");
+    } catch (err: any) {
+      if (err.error === "Request error") {
+        // core can shutdown before we get a response
         button.actionSuccess();
         fireEvent(this, "restore-started");
-      } catch (err: any) {
-        if (err.error === "Request error") {
-          // core can shutdown before we get a response
-          button.actionSuccess();
-          fireEvent(this, "restore-started");
-          return;
-        }
-
-        button.actionError();
-        if (err.body?.code === "incorrect_password") {
-          this._encryptionKeyWrong = true;
-        } else {
-          this._error =
-            err.body?.message || err.message || "Unknown error occurred";
-        }
-        this._loading = false;
+        return;
       }
+
+      button.actionError();
+      if (err.body?.code === "incorrect_password") {
+        this._encryptionKeyWrong = true;
+      } else {
+        this._error =
+          err.body?.message || err.message || "Unknown error occurred";
+      }
+      this._loading = false;
     }
   }
 

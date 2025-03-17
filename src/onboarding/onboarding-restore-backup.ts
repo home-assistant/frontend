@@ -78,10 +78,10 @@ class OnboardingRestoreBackup extends LitElement {
               `
             : this._view === "empty_cloud"
               ? html`
-                  <onboarding-restore-backup-empty-cloud
+                  <onboarding-restore-backup-no-cloud-backup
                     .localize=${this.localize}
                     @sign-out=${this._signOut}
-                  ></onboarding-restore-backup-empty-cloud>
+                  ></onboarding-restore-backup-no-cloud-backup>
                 `
               : this._view === "restore"
                 ? html`<onboarding-restore-backup-restore
@@ -114,7 +114,7 @@ class OnboardingRestoreBackup extends LitElement {
 
     if (this.mode === "cloud") {
       import("./restore-backup/onboarding-restore-backup-cloud-login");
-      import("./restore-backup/onboarding-restore-backup-empty-cloud");
+      import("./restore-backup/onboarding-restore-backup-no-cloud-backup");
     } else {
       import("./restore-backup/onboarding-restore-backup-upload");
     }
@@ -167,26 +167,24 @@ class OnboardingRestoreBackup extends LitElement {
       last_non_idle_event: lastNonIdleEvent,
     };
 
-    try {
-      this._cloudStatus = await fetchHaCloudStatus();
-    } catch (err: any) {
-      this._error = err?.message || "Cannot get Home Assistant Cloud status";
-    }
-
-    if (
-      this._cloudStatus?.logged_in &&
-      !this._backupId &&
-      this.mode === "cloud"
-    ) {
-      this._backup = backups.find(({ agents }) =>
-        Object.keys(agents).includes(CLOUD_AGENT)
-      );
-
-      if (!this._backup) {
-        this._view = "empty_cloud";
-        return;
+    if (this.mode === "cloud") {
+      try {
+        this._cloudStatus = await fetchHaCloudStatus();
+      } catch (err: any) {
+        this._error = err?.message || "Cannot get Home Assistant Cloud status";
       }
-      this._backupId = this._backup?.backup_id;
+
+      if (this._cloudStatus?.logged_in && !this._backupId) {
+        this._backup = backups.find(({ agents }) =>
+          Object.keys(agents).includes(CLOUD_AGENT)
+        );
+
+        if (!this._backup) {
+          this._view = "empty_cloud";
+          return;
+        }
+        this._backupId = this._backup?.backup_id;
+      }
     } else if (this._backupId) {
       this._backup = backups.find(
         ({ backup_id }) => backup_id === this._backupId

@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import "../../panels/config/cloud/login/cloud-login";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-spinner";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupContentExtended } from "../../data/backup";
 import { navigate } from "../../common/navigate";
@@ -50,10 +51,7 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
           ></cloud-login>`
         : this._view === "loading"
           ? html`<div class="loading">
-              <ha-circular-progress
-                indeterminate
-                size="large"
-              ></ha-circular-progress>
+              <ha-spinner size="large"></ha-spinner>
             </div>`
           : html`<cloud-forgot-password-card
               card-less

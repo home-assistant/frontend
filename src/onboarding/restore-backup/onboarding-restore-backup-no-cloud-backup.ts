@@ -8,8 +8,8 @@ import { navigate } from "../../common/navigate";
 import { removeSearchParam } from "../../common/url/search-params";
 import { onBoardingStyles } from "../styles";
 
-@customElement("onboarding-restore-backup-empty-cloud")
-class OnboardingRestoreBackupEmptyCloud extends LitElement {
+@customElement("onboarding-restore-backup-no-cloud-backup")
+class OnboardingRestoreBackupNoCloudBackup extends LitElement {
   @property({ attribute: false }) public localize!: LocalizeFunc;
 
   render() {
@@ -37,7 +37,7 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <ha-button @click=${this._signOut}>
+          <ha-button>
             ${this.localize(
               "ui.panel.page-onboarding.restore.ha-cloud.learn_more"
             )}
@@ -80,7 +80,7 @@ class OnboardingRestoreBackupEmptyCloud extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "onboarding-restore-backup-empty-cloud": OnboardingRestoreBackupEmptyCloud;
+    "onboarding-restore-backup-no-cloud-backup": OnboardingRestoreBackupNoCloudBackup;
   }
   interface HASSDomEvents {
     "sign-out": undefined;

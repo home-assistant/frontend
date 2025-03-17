@@ -46,33 +46,29 @@ class OnboardingRestoreBackupUpload extends LitElement {
           "ui.panel.page-onboarding.restore.upload_backup_subtitle"
         )}
       </p>
-      <div class="card-content">
-        ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-          : nothing}
-        <ha-file-upload
-          .uploading=${this._uploading}
-          .icon=${mdiFolderUpload}
-          accept=${SUPPORTED_UPLOAD_FORMAT}
-          .localize=${this.localize}
-          .label=${this.localize(
-            "ui.panel.page-onboarding.restore.upload_input_label"
-          )}
-          .secondary=${this.localize(
-            "ui.panel.page-onboarding.restore.upload_secondary"
-          )}
-          .supports=${this.localize(
-            "ui.panel.page-onboarding.restore.upload_supports_tar"
-          )}
-          .deleteLabel=${this.localize(
-            "ui.panel.page-onboarding.restore.delete"
-          )}
-          .uploadingLabel=${this.localize(
-            "ui.panel.page-onboarding.restore.uploading"
-          )}
-          @file-picked=${this._filePicked}
-        ></ha-file-upload>
-      </div>
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : nothing}
+      <ha-file-upload
+        .uploading=${this._uploading}
+        .icon=${mdiFolderUpload}
+        accept=${SUPPORTED_UPLOAD_FORMAT}
+        .localize=${this.localize}
+        .label=${this.localize(
+          "ui.panel.page-onboarding.restore.upload_input_label"
+        )}
+        .secondary=${this.localize(
+          "ui.panel.page-onboarding.restore.upload_secondary"
+        )}
+        .supports=${this.localize(
+          "ui.panel.page-onboarding.restore.upload_supports_tar"
+        )}
+        .deleteLabel=${this.localize("ui.panel.page-onboarding.restore.delete")}
+        .uploadingLabel=${this.localize(
+          "ui.panel.page-onboarding.restore.uploading"
+        )}
+        @file-picked=${this._filePicked}
+      ></ha-file-upload>
     `;
   }
 
@@ -120,9 +116,6 @@ class OnboardingRestoreBackupUpload extends LitElement {
         h1,
         p {
           text-align: left;
-        }
-        .card-content {
-          padding: 0;
         }
         .card-actions {
           display: flex;
