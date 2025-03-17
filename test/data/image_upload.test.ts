@@ -128,12 +128,15 @@ describe("image_upload", () => {
   });
 
   describe("getImageData", () => {
+    const hass = {
+      hassUrl: vi.fn((url) => url),
+    } as unknown as HomeAssistant;
     it("should fetch image data", async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         blob: vi.fn().mockResolvedValue(new Blob()),
       });
-      const data = await getImageData("http://example.com/image.png");
+      const data = await getImageData(hass, "http://example.com/image.png");
       expect(global.fetch).toHaveBeenCalledWith("http://example.com/image.png");
       expect(data).toBeInstanceOf(Blob);
     });
@@ -143,7 +146,7 @@ describe("image_upload", () => {
         .fn()
         .mockResolvedValue({ ok: false, statusText: "Not Found" });
       await expect(
-        getImageData("http://example.com/image.png")
+        getImageData(hass, "http://example.com/image.png")
       ).rejects.toThrow("Failed to fetch image: Not Found");
     });
   });

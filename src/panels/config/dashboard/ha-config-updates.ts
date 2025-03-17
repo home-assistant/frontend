@@ -9,7 +9,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -103,14 +103,14 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 )}
               ></state-badge>
               ${this.narrow && entity.attributes.in_progress
-                ? html`<ha-circular-progress
-                    indeterminate
+                ? html`<ha-spinner
                     slot="graphic"
                     class="absolute"
+                    size="small"
                     .ariaLabel=${this.hass.localize(
                       "ui.panel.config.updates.update_in_progress"
                     )}
-                  ></ha-circular-progress>`
+                  ></ha-spinner>`
                 : ""}
               <span
                 >${deviceEntry
@@ -125,14 +125,14 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               </span>
               ${!this.narrow
                 ? entity.attributes.in_progress
-                  ? html`<ha-circular-progress
-                      indeterminate
-                      size="small"
-                      slot="meta"
-                      .ariaLabel=${this.hass.localize(
-                        "ui.panel.config.updates.update_in_progress"
-                      )}
-                    ></ha-circular-progress>`
+                  ? html`<div slot="meta">
+                      <ha-spinner
+                        size="small"
+                        .ariaLabel=${this.hass.localize(
+                          "ui.panel.config.updates.update_in_progress"
+                        )}
+                      ></ha-spinner>
+                    </div>`
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
             </ha-list-item>
@@ -190,10 +190,10 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
           cursor: pointer;
           font-size: 16px;
         }
-        ha-circular-progress.absolute {
+        ha-spinner.absolute {
           position: absolute;
-          width: 40px;
-          height: 40px;
+          width: 28px;
+          height: 28px;
         }
         state-badge.updating {
           opacity: 0.5;

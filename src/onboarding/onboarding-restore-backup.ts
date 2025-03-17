@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import "./restore-backup/onboarding-restore-backup-restore";
 import "./restore-backup/onboarding-restore-backup-status";
 import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-circular-progress";
 import "./onboarding-loading";
 import { removeSearchParam } from "../common/url/search-params";
 import { navigate } from "../common/navigate";

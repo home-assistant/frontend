@@ -10,7 +10,7 @@ import {
 } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../types";
-import "../ha-circular-progress";
+import "../ha-spinner";
 import "../ha-svg-icon";
 
 declare global {
@@ -52,12 +52,11 @@ class MediaUploadButton extends LitElement {
       >
         ${this._uploading > 0
           ? html`
-              <ha-circular-progress
+              <ha-spinner
                 size="small"
-                indeterminate
                 area-label="Uploading"
                 slot="icon"
-              ></ha-circular-progress>
+              ></ha-spinner>
             `
           : html` <ha-svg-icon .path=${mdiUpload} slot="icon"></ha-svg-icon> `}
       </mwc-button>
@@ -116,7 +115,7 @@ class MediaUploadButton extends LitElement {
     }
 
     ha-svg-icon[slot="icon"],
-    ha-circular-progress[slot="icon"] {
+    ha-spinner[slot="icon"] {
       vertical-align: middle;
     }
 

@@ -286,6 +286,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
 export interface IframeCardConfig extends LovelaceCardConfig {
   allow_open_top_navigation?: boolean;
   aspect_ratio?: string;
+  disable_sandbox?: boolean;
   title?: string;
   allow?: string;
   url: string;

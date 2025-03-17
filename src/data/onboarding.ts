@@ -50,7 +50,7 @@ export interface CloudLoginMFA extends CloudLoginBase {
 }
 
 export const fetchOnboardingOverview = () =>
-  fetch("/api/onboarding", { credentials: "same-origin" });
+  fetch(`${__HASS_URL__}/api/onboarding`, { credentials: "same-origin" });
 
 export const onboardUserStep = (params: {
   client_id: string;
@@ -60,7 +60,7 @@ export const onboardUserStep = (params: {
   language: string;
 }) =>
   handleFetchPromise<OnboardingUserStepResponse>(
-    fetch("/api/onboarding/users", {
+    fetch(`${__HASS_URL__}/api/onboarding/users`, {
       method: "POST",
       credentials: "same-origin",
       body: JSON.stringify(params),
@@ -87,9 +87,12 @@ export const onboardIntegrationStep = (
   );
 
 export const fetchInstallationType = async (): Promise<InstallationType> => {
-  const response = await fetch("/api/onboarding/installation_type", {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${__HASS_URL__}/api/onboarding/installation_type`,
+    {
+      method: "GET",
+    }
+  );
 
   if (response.status === 401) {
     throw Error("unauthorized");

@@ -3,7 +3,7 @@ import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../ha-circular-progress";
+import "../ha-spinner";
 import "../ha-svg-icon";
 
 @customElement("ha-progress-button")
@@ -38,12 +38,7 @@ export class HaProgressButton extends LitElement {
                 : this._result === "error"
                   ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
                   : this.progress
-                    ? html`
-                        <ha-circular-progress
-                          size="small"
-                          indeterminate
-                        ></ha-circular-progress>
-                      `
+                    ? html`<ha-spinner size="small"></ha-spinner>`
                     : nothing}
             </div>
           `}

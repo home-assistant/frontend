@@ -1,4 +1,5 @@
 import { dump } from "js-yaml";
+import { consume } from "@lit-labs/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -19,6 +20,8 @@ import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
 import { describeCondition } from "../../data/automation_i18n";
+import type { EntityRegistryEntry } from "../../data/entity_registry";
+import { fullEntitiesContext } from "../../data/context";
 
 const TRACE_PATH_TABS = [
   "step_config",
@@ -44,6 +47,10 @@ export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public trackedNodes!: Record<string, any>;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
 
   protected render(): TemplateResult {
     return html`
@@ -166,7 +173,7 @@ export class HaTracePathDetails extends LitElement {
               ? html`[${describeCondition(
                     currentDetail,
                     this.hass,
-                    currentDetail.alias
+                    this._entityReg
                   )}]<br />`
               : nothing}
             ${this.hass!.localize(
