@@ -130,13 +130,16 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       .expanded=${expanded}
       .noCollapse=${anyRequired}
     >
-      <div slot="header" role="heading" aria-level="3" class="section-header">
-        ${section?.icon
-          ? html`<ha-icon
+      ${section?.icon
+        ? html`
+            <ha-icon
+              slot="leading-icon"
               class="section-header"
               .icon=${section.icon}
-            ></ha-icon>`
-          : nothing}
+            ></ha-icon>
+          `
+        : nothing}
+      <div slot="header" role="heading" aria-level="3" class="section-header">
         <ha-markdown .content=${title}></ha-markdown>
       </div>
       <div class="content">
