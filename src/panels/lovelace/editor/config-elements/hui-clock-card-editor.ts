@@ -13,12 +13,15 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { ClockCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { TimeFormat } from "../../../../data/translation";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     clock_size: optional(string()),
     time_format: optional(string()),
+    show_seconds: optional(string()),
+    show_am_pm: optional(string()),
   })
 );
 
@@ -49,15 +52,41 @@ export class HuiClockCardEditor
           },
         },
         {
+          name: "show_seconds",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["auto", "show", "hide"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.show_seconds_options.${value}`
+                ),
+              })),
+            },
+          },
+        },
+        {
+          name: "show_am_pm",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["auto", "show", "hide"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.show_am_pm_options.${value}`
+                ),
+              })),
+            },
+          },
+        },
+        {
           name: "time_format",
           selector: {
             select: {
               mode: "dropdown",
-              options: ["hh:mm", "hh:mm:ss"].map((value) => ({
+              options: Object.values(TimeFormat).map((value) => ({
                 value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
-                ),
+                label: value,
               })),
             },
           },
@@ -101,6 +130,14 @@ export class HuiClockCardEditor
       case "time_format":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.time_format`
+        );
+      case "show_am_pm":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.show_am_pm`
+        );
+      case "show_seconds":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.show_seconds`
         );
       default:
         return undefined;

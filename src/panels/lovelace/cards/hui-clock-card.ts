@@ -1,6 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { DateTime, type DateTimeMaybeValid } from "luxon";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
@@ -10,6 +9,9 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ClockCardConfig } from "./types";
+import { TimeFormat } from "../../../data/translation";
+import { useAmPm } from "../../../common/datetime/use_am_pm";
+import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 
 const INTERVAL = 1000;
 
@@ -23,8 +25,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): ClockCardConfig {
     return {
       type: "clock",
-      time_format: "hh:mm:ss",
       clock_size: "medium",
+      show_seconds: "show",
+      show_am_pm: "auto",
+      time_format: "12",
     };
   }
 
@@ -32,15 +36,19 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: ClockCardConfig;
 
-  @state() private _time?: DateTime;
+  @state() private _time?: Intl.DateTimeFormat;
+
+  @state() private _timeHour?: string;
+
+  @state() private _timeMinute?: string;
+
+  @state() private _timeSecond?: string;
+
+  @state() private _timeAmPm?: string;
 
   private _tickInterval?: undefined | number;
 
   public setConfig(config: ClockCardConfig): void {
-    if (!config.time_format) {
-      throw new Error("time_format required");
-    }
-
     this._config = config;
   }
 
@@ -102,20 +110,50 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   private _tick() {
-    const locale = this.hass?.locale?.language;
-    const timeZone = this.hass?.config.time_zone;
+    const locale = this.hass?.locale;
 
-    let time: DateTimeMaybeValid = DateTime.now();
+    if (!locale || !this.hass) return;
 
-    if (locale) time = time.setLocale(locale);
-    if (timeZone) time = time.setZone(timeZone);
-    this._time = time;
+    this._time = new Intl.DateTimeFormat(locale.language, {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: useAmPm(locale) ? "h12" : "h23",
+      hour12: true,
+      timeZone: resolveTimeZone(locale.time_zone, this.hass?.config?.time_zone),
+    });
+
+    this._timeHour = this._time
+      .formatToParts()
+      .find((part) => part.type === "hour")?.value;
+    this._timeMinute = this._time
+      .formatToParts()
+      .find((part) => part.type === "minute")?.value;
+    this._timeSecond = this._time
+      .formatToParts()
+      .find((part) => part.type === "second")?.value;
+    this._timeAmPm = this._time
+      .formatToParts()
+      .find((part) => part.type === "dayPeriod")?.value;
+
+    // console.log(
+    //   this._timeHour,
+    //   this._timeMinute,
+    //   this._timeSecond,
+    //   this._timeAmPm
+    // );
+  }
+
+  private _maybeShowAmPm(): boolean {
+    if (this._config?.show_am_pm !== "auto") {
+      return this._config?.show_am_pm === "show";
+    }
+
+    return this.hass?.locale.time_format === TimeFormat.am_pm;
   }
 
   protected render() {
-    if (!this._config) {
-      return nothing;
-    }
+    if (!this._config) return nothing;
 
     return html`
       <ha-card>
@@ -125,17 +163,16 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
             : nothing}"
         >
           <div class="time-parts">
-            <div class="time-part hour">
-              ${this._time?.hour.toString().padStart(2, "0")}
+            <div class="time-part hour">${this._timeHour}</div>
+            <div class="time-part minute">${this._timeMinute}</div>
+            <div class="time-side">
+              ${this._config.show_seconds === "show"
+                ? html`<div class="time-part second">${this._timeSecond}</div>`
+                : nothing}
+              ${this._maybeShowAmPm()
+                ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
+                : nothing}
             </div>
-            <div class="time-part minute">
-              ${this._time?.minute.toString().padStart(2, "0")}
-            </div>
-            ${this._config.time_format === "hh:mm:ss"
-              ? html`<div class="time-part second">
-                  ${this._time?.second.toString().padStart(2, "0")}
-                </div>`
-              : nothing}
           </div>
         </div>
       </ha-card>
@@ -154,7 +191,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     .time-parts {
-      align-items: baseline;
+      align-items: center;
       display: flex;
       font-size: 1.75rem;
       font-weight: 500;
@@ -170,28 +207,38 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       font-size: 4rem;
     }
 
-    .time-wrapper.size-medium .time-parts .time-part.second {
-      font-size: 1.25rem;
+    .time-wrapper.size-medium .time-parts .time-side {
+      font-size: 1.125rem;
     }
 
-    .time-wrapper.size-large .time-parts .time-part.second {
-      font-size: 1.5rem;
+    .time-wrapper.size-large .time-parts .time-side {
+      font-size: 1.25rem;
     }
 
     .time-parts .time-part {
       display: flex;
     }
 
+    .time-parts .time-part.seconds {
+      opacity: 0.4;
+    }
+
+    .time-parts .time-part.am-pm {
+      opacity: 0.6;
+    }
+
+    .time-parts .time-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-left: 0.35rem;
+    }
+
     .time-parts .time-part.hour:after {
       content: ":";
       margin: 0 2px;
-    }
-
-    .time-parts .time-part.second {
-      font-size: 1rem;
-      font-weight: 500;
-      margin-left: 0.25rem;
-      opacity: 0.5;
     }
   `;
 }

@@ -7106,10 +7106,22 @@
                 "medium": "Medium",
                 "large": "Large"
               },
+              "show_seconds": "Display seconds",
+              "show_seconds_options": {
+                "show": "Show seconds",
+                "hide": "Hide seconds"
+              },
+              "show_am_pm": "Show AM/PM",
+              "show_am_pm_options": {
+                "auto": "Auto (use profile defaults)",
+                "show": "Show AM/PM",
+                "hide": "Hide AM/PM"
+              },
               "time_format": "Time format",
               "time_formats": {
-                "hh:mm": "hh:mm",
-                "hh:mm:ss": "hh:mm:ss"
+                "auto": "Use profile defaults",
+                "12": "12-hour",
+                "24": "24-hour"
               }
             },
             "media-control": {
