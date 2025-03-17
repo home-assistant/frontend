@@ -150,12 +150,11 @@ class PanelEnergy extends LitElement {
       return;
     }
 
-    const gasUnit =
-      getEnergyGasUnit(
-        this.hass,
-        energyData.prefs,
-        energyData.state.statsMetadata
-      ) || "";
+    const gasUnit = getEnergyGasUnit(
+      this.hass,
+      energyData.prefs,
+      energyData.state.statsMetadata
+    );
     const waterUnit = getEnergyWaterUnit(this.hass);
     const electricUnit = "kWh";
 
