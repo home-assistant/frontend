@@ -17,7 +17,7 @@ export interface EntityFilter {
   hidden_platform?: string | string[];
 }
 
-type EntityFilterFunc = (entityId: string) => boolean;
+export type EntityFilterFunc = (entityId: string) => boolean;
 
 export const generateEntityFilter = (
   hass: HomeAssistant,
