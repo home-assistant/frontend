@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-heading-badge";
@@ -128,7 +129,7 @@ export class HuiEntityHeadingBadge
       "--icon-color": color,
     };
 
-    const name = config.name || stateObj.attributes.friendly_name;
+    const name = config.name || computeStateName(stateObj);
 
     return html`
       <ha-heading-badge
