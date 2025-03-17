@@ -1,7 +1,5 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import type { EntityFilterFunc } from "../../../../common/entity/entity_filter";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
@@ -13,114 +11,11 @@ import { supportsLightBrightnessCardFeature } from "../../card-features/hui-ligh
 import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import type { LovelaceCardFeatureConfig } from "../../card-features/types";
-
-type Group = "lights" | "climate" | "media_players" | "security";
-
-type AreaEntitiesByGroup = Record<Group, string[]>;
-
-type AreaFilteredByGroup = Record<Group, EntityFilterFunc[]>;
-
-export const getAreaGroupedEntities = (
-  area: string,
-  hass: HomeAssistant,
-  controlOnly = false
-): AreaEntitiesByGroup => {
-  const allEntities = Object.keys(hass.states);
-
-  const groupedFilters: AreaFilteredByGroup = {
-    lights: [
-      generateEntityFilter(hass, {
-        domain: "light",
-        area: area,
-        entity_category: "none",
-      }),
-    ],
-    climate: [
-      generateEntityFilter(hass, {
-        domain: "climate",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "humidifier",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "cover",
-        area: area,
-        device_class: [
-          "shutter",
-          "awning",
-          "blind",
-          "curtain",
-          "shade",
-          "shutter",
-          "window",
-        ],
-        entity_category: "none",
-      }),
-      ...(controlOnly
-        ? []
-        : [
-            generateEntityFilter(hass, {
-              domain: "binary_sensor",
-              area: area,
-              device_class: "window",
-              entity_category: "none",
-            }),
-          ]),
-    ],
-    media_players: [
-      generateEntityFilter(hass, {
-        domain: "media_player",
-        area: area,
-        entity_category: "none",
-      }),
-    ],
-    security: [
-      generateEntityFilter(hass, {
-        domain: "alarm_control_panel",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "lock",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "cover",
-        device_class: ["door", "garage", "gate"],
-        area: area,
-        entity_category: "none",
-      }),
-      ...(controlOnly
-        ? []
-        : [
-            generateEntityFilter(hass, {
-              domain: "binary_sensor",
-              device_class: ["door", "garage_door"],
-              area: area,
-              entity_category: "none",
-            }),
-          ]),
-    ],
-  };
-
-  return Object.fromEntries(
-    Object.entries(groupedFilters).map(([group, filters]) => [
-      group,
-      filters.reduce<string[]>(
-        (acc, filter) => [
-          ...acc,
-          ...allEntities.filter((entity) => filter(entity)),
-        ],
-        []
-      ),
-    ])
-  ) as AreaEntitiesByGroup;
-};
+import {
+  AREA_STRATEGY_GROUP_ICONS,
+  AREA_STRATEGY_GROUP_LABELS,
+  getAreaGroupedEntities,
+} from "./helpers/area-strategy-helper";
 
 export interface AreaViewStrategyConfig {
   type: "area";
@@ -221,7 +116,10 @@ export class AreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard("Lights", "mdi:lightbulb"),
+          computeHeadingCard(
+            AREA_STRATEGY_GROUP_LABELS.lights,
+            AREA_STRATEGY_GROUP_ICONS.lights
+          ),
           ...lights.map(computeTileCard),
         ],
       });
@@ -231,7 +129,10 @@ export class AreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard("Climate", "mdi:home-thermometer"),
+          computeHeadingCard(
+            AREA_STRATEGY_GROUP_LABELS.climate,
+            AREA_STRATEGY_GROUP_ICONS.climate
+          ),
           ...climate.map(computeTileCard),
         ],
       });
@@ -241,7 +142,10 @@ export class AreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard("Entertainment", "mdi:multimedia"),
+          computeHeadingCard(
+            AREA_STRATEGY_GROUP_LABELS.media_players,
+            AREA_STRATEGY_GROUP_ICONS.media_players
+          ),
           ...mediaPlayers.map(computeTileCard),
         ],
       });
@@ -251,7 +155,10 @@ export class AreaViewStrategy extends ReactiveElement {
       sections.push({
         type: "grid",
         cards: [
-          computeHeadingCard("Security", "mdi:security"),
+          computeHeadingCard(
+            AREA_STRATEGY_GROUP_LABELS.security,
+            AREA_STRATEGY_GROUP_ICONS.security
+          ),
           ...security.map(computeTileCard),
         ],
       });

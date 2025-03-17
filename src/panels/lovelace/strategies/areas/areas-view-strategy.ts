@@ -3,8 +3,8 @@ import { customElement } from "lit/decorators";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreaGroupedEntities } from "../area/area-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
+import { getAreaGroupedEntities } from "../area/helpers/area-strategy-helper";
 
 export interface AreasViewStrategyConfig {
   type: "areas";

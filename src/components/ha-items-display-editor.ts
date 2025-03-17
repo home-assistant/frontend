@@ -3,20 +3,22 @@ import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-icon-button-next";
+import "./ha-icon-next";
 import "./ha-md-list";
 import "./ha-md-list-item";
 import "./ha-sortable";
 import "./ha-svg-icon";
 
 export interface DisplayItem {
-  icon?: string;
+  icon?: string | Promise<string | undefined>;
   iconPath?: string;
   value: string;
   label: string;
@@ -128,11 +130,18 @@ export class HaItemDisplayEditor extends LitElement {
           ${repeat(
             allItems,
             (item) => item.value,
-            (item, _idx) => {
+            (item: DisplayItem, _idx) => {
               const isVisible = !this.value.hidden.includes(item.value);
               const { label, value, description, icon, iconPath } = item;
               return html`
                 <ha-md-list-item
+                  type=${ifDefined(
+                    this.showNavigationButton ? "button" : undefined
+                  )}
+                  @click=${this.showNavigationButton
+                    ? this._navigate
+                    : undefined}
+                  .value=${value}
                   class=${classMap({
                     hidden: !isVisible,
                     draggable: isVisible,
@@ -157,7 +166,7 @@ export class HaItemDisplayEditor extends LitElement {
                       ? html`
                           <ha-icon
                             class="icon"
-                            .icon=${icon}
+                            .icon=${until(icon, "")}
                             slot="start"
                           ></ha-icon>
                         `
@@ -183,13 +192,7 @@ export class HaItemDisplayEditor extends LitElement {
                     @click=${this._toggle}
                   ></ha-icon-button>
                   ${this.showNavigationButton
-                    ? html`
-                        <ha-icon-button-next
-                          slot="end"
-                          .value=${value}
-                          @click=${this._navigate}
-                        ></ha-icon-button-next>
-                      `
+                    ? html` <ha-icon-next slot="end"></ha-icon-next> `
                     : nothing}
                 </ha-md-list-item>
               `;
