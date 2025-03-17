@@ -159,6 +159,22 @@ export interface PlannedProvisioningEntry {
   securityClasses: SecurityClass[];
 }
 
+export interface DeviceConfig {
+  filename: string;
+  manufacturer: string;
+  manufacturerId: number;
+  label: string;
+  description: string;
+  devices: {
+      productType: number;
+      productId: number;
+  }[];
+  firmwareVersion: {
+    min: string;
+    max: string;
+  };
+}
+
 export const MINIMUM_QR_STRING_LENGTH = 52;
 
 export interface ZWaveJSNetwork {
@@ -583,6 +599,23 @@ export const zwaveParseQrCode = (
     type: "zwave_js/parse_qr_code_string",
     entry_id,
     qr_code_string,
+  });
+
+export const lookupZwaveDevice = (
+  hass: HomeAssistant,
+  entry_id: string,
+  manufacturerId: number,
+  productType: number,
+  productId: number,
+  applicationVersion?: string
+): Promise<DeviceConfig> =>
+  hass.callWS({
+    type: "zwave_js/lookup_device",
+    entry_id,
+    manufacturerId,
+    productType,
+    productId,
+    applicationVersion,
   });
 
 export const provisionZwaveSmartStartNode = (

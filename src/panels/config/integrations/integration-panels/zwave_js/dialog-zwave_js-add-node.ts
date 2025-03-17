@@ -9,6 +9,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   cancelSecureBootstrapS2,
   InclusionStrategy,
+  lookupZwaveDevice,
   MINIMUM_QR_STRING_LENGTH,
   provisionZwaveSmartStartNode,
   stopZwaveInclusion,
@@ -534,6 +535,15 @@ class DialogZWaveJSAddNode extends LitElement {
         this._entryId!,
         qrCodeString
       );
+      const device = await lookupZwaveDevice(
+        this.hass,
+        this._entryId!,
+        provisioningInfo.manufacturerId,
+        provisioningInfo.productType,
+        provisioningInfo.productId,
+        provisioningInfo.applicationVersion
+      );
+      // @TODO: use device.description to set the device name
     } catch (err: any) {
       this._qrProcessing = false;
       this._error = err.message;
