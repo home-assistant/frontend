@@ -5,20 +5,13 @@ import {
   differenceInDays,
   differenceInMonths,
   endOfDay,
-  endOfMonth,
-  endOfQuarter,
   endOfToday,
   endOfWeek,
-  endOfYear,
   isFirstDayOfMonth,
   isLastDayOfMonth,
   startOfDay,
-  startOfMonth,
-  startOfQuarter,
   startOfWeek,
-  startOfYear,
   subDays,
-  subMonths,
 } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -50,6 +43,20 @@ import type { EnergyData } from "../../../data/energy";
 import { getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../types";
+import { calcDateRange } from "../../../common/datetime/calc_date_range";
+import type { DateRange } from "../../../common/datetime/calc_date_range";
+
+const RANGE_KEYS: DateRange[] = [
+  "today",
+  "yesterday",
+  "this_week",
+  "this_month",
+  "this_quarter",
+  "this_year",
+  "now-7d",
+  "now-30d",
+  "now-12m",
+];
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -117,94 +124,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       (changedProps.has("hass") &&
         this.hass?.localize !== changedProps.get("hass")?.localize)
     ) {
-      const today = new Date();
-      const weekStartsOn = firstWeekdayIndex(this.hass.locale);
-
       // pre defined date ranges
-      this._ranges = {
-        [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
-          calcDate(today, startOfDay, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-          calcDate(today, endOfDay, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.yesterday"
-        )]: [
-          calcDate(
-            calcDate(today, subDays, this.hass.locale, this.hass.config, 1),
-            startOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-          calcDate(
-            calcDate(today, subDays, this.hass.locale, this.hass.config, 1),
-            endOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_week"
-        )]: [
-          calcDate(today, startOfWeek, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-          calcDate(today, endOfWeek, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_month"
-        )]: [
-          calcDate(today, startOfMonth, this.hass.locale, this.hass.config),
-          calcDate(today, endOfMonth, this.hass.locale, this.hass.config),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_quarter"
-        )]: [
-          calcDate(today, startOfQuarter, this.hass.locale, this.hass.config),
-          calcDate(today, endOfQuarter, this.hass.locale, this.hass.config),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_year"
-        )]: [
-          calcDate(today, startOfYear, this.hass.locale, this.hass.config),
-          calcDate(today, endOfYear, this.hass.locale, this.hass.config),
-        ],
-        [this.hass.localize("ui.components.date-range-picker.ranges.now-7d")]: [
-          calcDate(today, subDays, this.hass.locale, this.hass.config, 7),
-          calcDate(today, subDays, this.hass.locale, this.hass.config, 1),
-        ],
-        [this.hass.localize("ui.components.date-range-picker.ranges.now-30d")]:
-          [
-            calcDate(today, subDays, this.hass.locale, this.hass.config, 30),
-            calcDate(today, subDays, this.hass.locale, this.hass.config, 1),
-          ],
-        [this.hass.localize("ui.components.date-range-picker.ranges.now-12m")]:
-          [
-            calcDate(
-              subMonths(today, 12),
-              startOfMonth,
-              this.hass.locale,
-              this.hass.config
-            ),
-            calcDate(
-              subMonths(today, 1),
-              endOfMonth,
-              this.hass.locale,
-              this.hass.config
-            ),
-          ],
-      };
+      this._ranges = {};
+      RANGE_KEYS.forEach((key) => {
+        this._ranges[
+          this.hass.localize(`ui.components.date-range-picker.ranges.${key}`)
+        ] = calcDateRange(this.hass, key);
+      });
     }
   }
 
@@ -272,6 +198,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             .endDate=${this._endDate || new Date()}
             .ranges=${this._ranges}
             @value-changed=${this._dateRangeChanged}
+            @preset-selected=${this._presetSelected}
             minimal
             header-position
           ></ha-date-range-picker>
@@ -393,6 +320,13 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     this._updateCollectionPeriod();
   }
 
+  private _presetSelected(ev) {
+    localStorage.setItem(
+      `energy-default-period-_${this.collectionKey || "energy"}`,
+      RANGE_KEYS[ev.detail.index]
+    );
+  }
+
   private _pickNow() {
     if (!this._startDate) return;
 
@@ -404,44 +338,14 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     );
     const today = new Date();
     if (range === "month") {
-      this._startDate = calcDate(
-        today,
-        startOfMonth,
-        this.hass.locale,
-        this.hass.config
-      );
-      this._endDate = calcDate(
-        today,
-        endOfMonth,
-        this.hass.locale,
-        this.hass.config
-      );
+      [this._startDate, this._endDate] = calcDateRange(this.hass, "this_month");
     } else if (range === "quarter") {
-      this._startDate = calcDate(
-        today,
-        startOfQuarter,
-        this.hass.locale,
-        this.hass.config
-      );
-      this._endDate = calcDate(
-        today,
-        endOfQuarter,
-        this.hass.locale,
-        this.hass.config
+      [this._startDate, this._endDate] = calcDateRange(
+        this.hass,
+        "this_quarter"
       );
     } else if (range === "year") {
-      this._startDate = calcDate(
-        today,
-        startOfYear,
-        this.hass.locale,
-        this.hass.config
-      );
-      this._endDate = calcDate(
-        today,
-        endOfYear,
-        this.hass.locale,
-        this.hass.config
-      );
+      [this._startDate, this._endDate] = calcDateRange(this.hass, "this_year");
     } else {
       const weekStartsOn = firstWeekdayIndex(this.hass.locale);
       const weekStart = calcDate(
@@ -469,23 +373,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         this._endDate!.getTime() === weekEnd.getTime()
       ) {
         // Pick current week
-        this._startDate = calcDate(
-          today,
-          startOfWeek,
-          this.hass.locale,
-          this.hass.config,
-          {
-            weekStartsOn,
-          }
-        );
-        this._endDate = calcDate(
-          today,
-          endOfWeek,
-          this.hass.locale,
-          this.hass.config,
-          {
-            weekStartsOn,
-          }
+        [this._startDate, this._endDate] = calcDateRange(
+          this.hass,
+          "this_week"
         );
       } else {
         // Custom date range
