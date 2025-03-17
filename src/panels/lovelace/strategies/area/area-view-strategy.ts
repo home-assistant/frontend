@@ -1,30 +1,173 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import type { EntityFilterFunc } from "../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
+import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
+import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import type { LovelaceCardFeatureConfig } from "../../card-features/types";
+
+type Group = "lights" | "climate" | "media_players" | "security";
+
+type AreaEntitiesByGroup = Record<Group, string[]>;
+
+type AreaFilteredByGroup = Record<Group, EntityFilterFunc[]>;
+
+export const getAreaGroupedEntities = (
+  area: string,
+  hass: HomeAssistant,
+  controlOnly = false
+): AreaEntitiesByGroup => {
+  const allEntities = Object.keys(hass.states);
+
+  const groupedFilters: AreaFilteredByGroup = {
+    lights: [
+      generateEntityFilter(hass, {
+        domain: "light",
+        area: area,
+        entity_category: "none",
+      }),
+    ],
+    climate: [
+      generateEntityFilter(hass, {
+        domain: "climate",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "humidifier",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "cover",
+        area: area,
+        device_class: [
+          "shutter",
+          "awning",
+          "blind",
+          "curtain",
+          "shade",
+          "shutter",
+          "window",
+        ],
+        entity_category: "none",
+      }),
+      ...(controlOnly
+        ? []
+        : [
+            generateEntityFilter(hass, {
+              domain: "binary_sensor",
+              area: area,
+              device_class: "window",
+              entity_category: "none",
+            }),
+          ]),
+    ],
+    media_players: [
+      generateEntityFilter(hass, {
+        domain: "media_player",
+        area: area,
+        entity_category: "none",
+      }),
+    ],
+    security: [
+      generateEntityFilter(hass, {
+        domain: "alarm_control_panel",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "lock",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "cover",
+        device_class: ["door", "garage", "gate"],
+        area: area,
+        entity_category: "none",
+      }),
+      ...(controlOnly
+        ? []
+        : [
+            generateEntityFilter(hass, {
+              domain: "binary_sensor",
+              device_class: ["door", "garage_door"],
+              area: area,
+              entity_category: "none",
+            }),
+          ]),
+    ],
+  };
+
+  return Object.fromEntries(
+    Object.entries(groupedFilters).map(([group, filters]) => [
+      group,
+      filters.reduce<string[]>(
+        (acc, filter) => [
+          ...acc,
+          ...allEntities.filter((entity) => filter(entity)),
+        ],
+        []
+      ),
+    ])
+  ) as AreaEntitiesByGroup;
+};
 
 export interface AreaViewStrategyConfig {
   type: "area";
   area?: string;
 }
 
-const computeTileCard = (entity: string): LovelaceCardConfig => ({
-  type: "tile",
-  entity: entity,
-});
+const computeTileCardConfig =
+  (hass: HomeAssistant) =>
+  (entity: string): LovelaceCardConfig => {
+    const stateObj = hass.states[entity];
+
+    let feature: LovelaceCardFeatureConfig | undefined;
+    if (supportsLightBrightnessCardFeature(stateObj)) {
+      feature = {
+        type: "light-brightness",
+      };
+    } else if (supportsCoverOpenCloseCardFeature(stateObj)) {
+      feature = {
+        type: "cover-open-close",
+      };
+    } else if (supportsTargetTemperatureCardFeature(stateObj)) {
+      feature = {
+        type: "target-temperature",
+      };
+    } else if (supportsAlarmModesCardFeature(stateObj)) {
+      feature = {
+        type: "alarm-modes",
+      };
+    } else if (supportsLockCommandsCardFeature(stateObj)) {
+      feature = {
+        type: "lock-commands",
+      };
+    }
+
+    return {
+      type: "tile",
+      entity: entity,
+      features: feature ? [feature] : undefined,
+    };
+  };
 
 const computeHeadingCard = (
   heading: string,
-  icon: string,
-  style: "title" | "subtitle" = "title"
+  icon: string
 ): LovelaceCardConfig => ({
   type: "heading",
   heading: heading,
-  heading_style: style,
   icon: icon,
 });
 
@@ -64,133 +207,35 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
-    const allEntities = Object.keys(hass.states);
+    const groupedEntities = getAreaGroupedEntities(config.area, hass);
 
-    // Lights
-    const lights = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "light",
-        area: config.area,
-        entity_category: "none",
-      })
-    );
+    const computeTileCard = computeTileCardConfig(hass);
 
-    if (lights.length) {
+    const {
+      lights,
+      climate,
+      media_players: mediaPlayers,
+      security,
+    } = groupedEntities;
+    if (lights.length > 0) {
       sections.push({
         type: "grid",
         cards: [
-          {
-            type: "heading",
-            heading: "Lights",
-            icon: "mdi:lamps",
-          },
-          ...lights.map((entity) => ({
-            type: "tile",
-            entity: entity,
-          })),
+          computeHeadingCard("Lights", "mdi:lightbulb"),
+          ...lights.map(computeTileCard),
         ],
       });
     }
 
-    // Climate
-    const thermostats = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "climate",
-        area: config.area,
-        entity_category: "none",
-      })
-    );
-
-    const humidifiers = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "humidifier",
-        area: config.area,
-        entity_category: "none",
-      })
-    );
-
-    const shutters = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "cover",
-        area: config.area,
-        device_class: [
-          "shutter",
-          "awning",
-          "blind",
-          "curtain",
-          "shade",
-          "shutter",
-          "window",
-        ],
-        entity_category: "none",
-      })
-    );
-
-    const climateSensor = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        area: config.area,
-        device_class: "window",
-        entity_category: "none",
-      })
-    );
-
-    const climateSectionCards: LovelaceCardConfig[] = [];
-
-    if (
-      thermostats.length ||
-      humidifiers.length ||
-      shutters.length ||
-      climateSensor.length
-    ) {
-      climateSectionCards.push(
-        computeHeadingCard("Climate", "mdi:home-thermometer")
-      );
-    }
-
-    if (thermostats.length > 0 || humidifiers.length > 0) {
-      const title =
-        thermostats.length > 0 && humidifiers.length
-          ? "Thermostats and humidifiers"
-          : thermostats.length
-            ? "Thermostats"
-            : "Humidifiers";
-      climateSectionCards.push(
-        computeHeadingCard(title, "mdi:thermostat", "subtitle"),
-        ...thermostats.map(computeTileCard),
-        ...humidifiers.map(computeTileCard)
-      );
-    }
-
-    if (shutters.length > 0) {
-      climateSectionCards.push(
-        computeHeadingCard("Shutters", "mdi:window-shutter", "subtitle"),
-        ...shutters.map(computeTileCard)
-      );
-    }
-
-    if (climateSensor.length > 0) {
-      climateSectionCards.push(
-        computeHeadingCard("Sensors", "mdi:window-open", "subtitle"),
-        ...climateSensor.map(computeTileCard)
-      );
-    }
-
-    if (climateSectionCards.length > 0) {
+    if (climate.length > 0) {
       sections.push({
         type: "grid",
-        cards: climateSectionCards,
+        cards: [
+          computeHeadingCard("Climate", "mdi:home-thermometer"),
+          ...climate.map(computeTileCard),
+        ],
       });
     }
-
-    // Media players
-    const mediaPlayers = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "media_player",
-        area: config.area,
-        entity_category: "none",
-      })
-    );
 
     if (mediaPlayers.length > 0) {
       sections.push({
@@ -202,77 +247,27 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
-    // Security
-    const alarms = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "alarm_control_panel",
-        area: config.area,
-        entity_category: "none",
-      })
-    );
-    const locks = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "lock",
-        area: config.area,
-        entity_category: "none",
-      })
-    );
-    const doors = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "cover",
-        device_class: ["door", "garage", "gate"],
-        area: config.area,
-        entity_category: "none",
-      })
-    );
-    const securitySensors = allEntities.filter(
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        device_class: ["door", "garage_door"],
-        area: config.area,
-        entity_category: "none",
-      })
-    );
-
-    const securitySectionCards: LovelaceCardConfig[] = [];
-
-    if (alarms.length > 0 || locks.length > 0) {
-      const title =
-        alarms.length > 0 && locks.length
-          ? "Alarms and locks"
-          : alarms.length
-            ? "Alarms"
-            : "Locks";
-      securitySectionCards.push(
-        computeHeadingCard(title, "mdi:shield", "subtitle"),
-        ...alarms.map(computeTileCard),
-        ...locks.map(computeTileCard)
-      );
-    }
-
-    if (doors.length > 0) {
-      securitySectionCards.push(
-        computeHeadingCard("Doors", "mdi:door", "subtitle"),
-        ...doors.map(computeTileCard)
-      );
-    }
-
-    if (securitySensors.length > 0) {
-      securitySectionCards.push(
-        computeHeadingCard("Sensors", "mdi:wifi", "subtitle"),
-        ...securitySensors.map(computeTileCard)
-      );
-    }
-
-    if (securitySectionCards.length > 0) {
+    if (security.length > 0) {
       sections.push({
         type: "grid",
-        cards: securitySectionCards,
+        cards: [
+          computeHeadingCard("Security", "mdi:security"),
+          ...security.map(computeTileCard),
+        ],
       });
     }
 
     return {
       type: "sections",
+      header: {
+        badges_position: "bottom",
+        layout: "responsive",
+        card: {
+          type: "markdown",
+          text_only: true,
+          content: `## ${area.name}`,
+        },
+      },
       max_columns: 2,
       sections: sections,
       badges: badges,
