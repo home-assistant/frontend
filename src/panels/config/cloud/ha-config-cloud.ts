@@ -90,7 +90,7 @@ class HaConfigCloud extends HassRouterPage {
 
   protected createElement(tag: string) {
     const el = super.createElement(tag);
-    el.addEventListener("email-changed", (ev) => {
+    el.addEventListener("cloud-email-changed", (ev) => {
       this._loginEmail = (ev as ValueChangedEvent<string>).detail.value;
     });
     el.addEventListener("flash-message-changed", (ev) => {

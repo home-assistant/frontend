@@ -1,15 +1,14 @@
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import "../../panels/config/cloud/login/cloud-login";
 import "../../components/ha-icon-button-arrow-prev";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupContentExtended } from "../../data/backup";
-import { fireEvent } from "../../common/dom/fire_event";
-import { forgotPasswordHaCloud, loginHaCloud } from "../../data/onboarding";
-import { handleCloudLoginError } from "../../data/cloud";
 import { navigate } from "../../common/navigate";
 import { removeSearchParam } from "../../common/url/search-params";
 import { onBoardingStyles } from "../styles";
+import type { CloudLogin } from "../../panels/config/cloud/login/cloud-login";
+import type { CloudForgotPasswordCard } from "../../panels/config/cloud/forgot-password/cloud-forgot-password-card";
 
 @customElement("onboarding-restore-backup-cloud-login")
 class OnboardingRestoreBackupCloudLogin extends LitElement {
@@ -17,17 +16,16 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
 
   @property({ attribute: false }) public backup!: BackupContentExtended;
 
-  @state() private _requestInProgress = false;
-
   @state() private _email?: string;
-
-  @state() private _password?: string;
-
-  @state() private _error?: string;
 
   @state() private _view: "login" | "forgot-password" | "loading" = "login";
 
   @state() private _showResetPasswordDone = false;
+
+  @query("cloud-login") private _cloudLoginElement?: CloudLogin;
+
+  @query("cloud-forgot-password-card")
+  private _forgotPasswordElement?: CloudForgotPasswordCard;
 
   render() {
     return html`
@@ -46,12 +44,8 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
         ? html`<cloud-login
             card-less
             .email=${this._email}
-            .password=${this._password}
-            .inProgress=${this._requestInProgress}
-            .error=${this._error}
             .localize=${this.localize}
             translation-key-panel="page-onboarding.restore.ha-cloud"
-            @cloud-login=${this._handleLogin}
             @cloud-forgot-password=${this._showForgotPassword}
           ></cloud-login>`
         : this._view === "loading"
@@ -63,11 +57,11 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
             </div>`
           : html`<cloud-forgot-password-card
               card-less
+              .email=${this._email}
               .localize=${this.localize}
-              .inProgress=${this._requestInProgress}
-              .error=${this._error}
               translation-key-panel="page-onboarding.restore.ha-cloud.forgot_password"
-              @cloud-forgot-password=${this._handleForgotPassword}
+              @cloud-email-changed=${this._emailChanged}
+              @cloud-done=${this._showPasswordResetDone}
             ></cloud-forgot-password-card>`}
     `;
   }
@@ -79,62 +73,6 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
     }
 
     navigate(`${location.pathname}?${removeSearchParam("page")}`);
-  }
-
-  private _doLogin = async (
-    email: string,
-    password: string,
-    checkConnection: boolean,
-    code?: string
-  ) => {
-    if (!password && !code) {
-      throw new Error("Password or code required");
-    }
-
-    try {
-      await loginHaCloud({
-        email,
-        ...(code ? { code } : { password: password! }),
-      });
-      fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
-      const error = await handleCloudLoginError(
-        err,
-        this,
-        email,
-        password,
-        checkConnection,
-        this.localize,
-        this._doLogin,
-        "page-onboarding.restore.ha-cloud"
-      );
-
-      if (error === "cancel") {
-        this._requestInProgress = false;
-        this._email = "";
-        this._password = "";
-      }
-      if (error === "password-change") {
-        this._showForgotPassword();
-        return;
-      }
-      if (error === "re-login") {
-        return;
-      }
-
-      this._password = "";
-      this._requestInProgress = false;
-      this._error = error;
-    }
-  };
-
-  private async _handleLogin(ev: CustomEvent) {
-    const email: string = ev.detail.email;
-    const password: string = ev.detail.password;
-
-    this._requestInProgress = true;
-
-    await this._doLogin(email, password, false);
   }
 
   private _renderResetPasswordDone() {
@@ -150,38 +88,25 @@ class OnboardingRestoreBackupCloudLogin extends LitElement {
 
   private async _showForgotPassword() {
     this._view = "loading";
+    if (this._cloudLoginElement) {
+      this._email = this._cloudLoginElement.emailField.value;
+    }
+
     await import(
       "../../panels/config/cloud/forgot-password/cloud-forgot-password-card"
     );
     this._view = "forgot-password";
   }
 
-  private async _resetPassword(email: string) {
-    try {
-      await forgotPasswordHaCloud(email);
-      this._view = "login";
-      this._showResetPasswordDone = true;
-      this._requestInProgress = false;
-    } catch (err: any) {
-      const errCode = err && err.body && err.body.code;
-      if (errCode === "usernotfound" && email !== email.toLowerCase()) {
-        await this._resetPassword(email.toLowerCase());
-      } else {
-        this._requestInProgress = false;
-        this._error =
-          err && err.body && err.body.message
-            ? err.body.message
-            : "Unknown error";
-      }
+  private _emailChanged() {
+    if (this._forgotPasswordElement) {
+      this._email = this._forgotPasswordElement?.emailField.value;
     }
   }
 
-  private async _handleForgotPassword(ev: CustomEvent) {
-    const email = ev.detail.email;
-
-    this._requestInProgress = true;
-
-    await this._resetPassword(email);
+  private _showPasswordResetDone() {
+    this._view = "login";
+    this._showResetPasswordDone = true;
   }
 
   private _dismissResetPasswordDoneInfo() {

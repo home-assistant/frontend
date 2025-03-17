@@ -2,7 +2,7 @@ import "@material/mwc-list/mwc-list";
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-alert";
@@ -10,11 +10,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-button-menu";
-import {
-  cloudLogin,
-  handleCloudLoginError,
-  removeCloudData,
-} from "../../../../data/cloud";
+import { removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -26,7 +22,6 @@ import "../../ha-config-section";
 import "./cloud-login";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
 import type { CloudLogin } from "./cloud-login";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 
 @customElement("cloud-login-panel")
 export class CloudLoginPanel extends LitElement {
@@ -39,12 +34,6 @@ export class CloudLoginPanel extends LitElement {
   @property() public email?: string;
 
   @property({ attribute: false }) public flashMessage?: string;
-
-  @state() private _requestInProgress = false;
-
-  @state() private _password?: string;
-
-  @state() private _error?: string;
 
   @query("cloud-login") private _cloudLoginElement!: CloudLogin;
 
@@ -126,13 +115,11 @@ export class CloudLoginPanel extends LitElement {
               : ""}
 
             <cloud-login
+              .hass=${this.hass}
               .email=${this.email}
-              .password=${this._password}
-              .inProgress=${this._requestInProgress}
-              .error=${this._error}
               .localize=${this.hass.localize}
-              @cloud-login=${this._handleLogin}
               @cloud-forgot-password=${this._handleForgotPassword}
+              check-connection
             ></cloud-login>
 
             <ha-card outlined>
@@ -156,88 +143,10 @@ export class CloudLoginPanel extends LitElement {
     `;
   }
 
-  private _doLogin = async (
-    email: string,
-    password: string,
-    checkConnection: boolean,
-    code?: string
-  ) => {
-    if (!password && !code) {
-      throw new Error("Password or code required");
-    }
-
-    try {
-      const result = await cloudLogin({
-        hass: this.hass,
-        email,
-        ...(code ? { code } : { password }),
-        check_connection: checkConnection,
-      });
-      this.email = "";
-      this._password = "";
-      if (result.cloud_pipeline) {
-        if (
-          await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.cloud.login.cloud_pipeline_title"
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.cloud.login.cloud_pipeline_text"
-            ),
-          })
-        ) {
-          setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
-        }
-      }
-      fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err: any) {
-      const error = await handleCloudLoginError(
-        err,
-        this,
-        email,
-        password,
-        checkConnection,
-        this.hass.localize,
-        this._doLogin
-      );
-
-      if (error === "cancel") {
-        this._requestInProgress = false;
-        this.email = "";
-        this._password = "";
-        return;
-      }
-      if (error === "password-change") {
-        navigate("/config/cloud/forgot-password");
-        return;
-      }
-      if (error === "re-login") {
-        return;
-      }
-
-      this._password = "";
-      this._requestInProgress = false;
-      this._error = error;
-      this._cloudLoginElement._emailField.focus();
-    }
-  };
-
-  private async _handleLogin(ev: CustomEvent) {
-    const email = ev.detail.email;
-    const password = ev.detail.password;
-
-    this._requestInProgress = true;
-
-    await this._doLogin(email, password, true);
-
-    this._requestInProgress = false;
-  }
-
   private _handleForgotPassword() {
     this._dismissFlash();
-    // @ts-ignore
-    fireEvent(this, "email-changed", {
-      value: this._cloudLoginElement._emailField.value,
+    fireEvent(this, "cloud-email-changed", {
+      value: this._cloudLoginElement.emailField.value,
     });
     navigate("/config/cloud/forgot-password");
   }
@@ -245,15 +154,13 @@ export class CloudLoginPanel extends LitElement {
   private _handleRegister() {
     this._dismissFlash();
 
-    // @ts-ignore
-    fireEvent(this, "email-changed", {
-      value: this._cloudLoginElement._emailField.value,
+    fireEvent(this, "cloud-email-changed", {
+      value: this._cloudLoginElement.emailField.value,
     });
     navigate("/config/cloud/register");
   }
 
   private _dismissFlash() {
-    // @ts-ignore
     fireEvent(this, "flash-message-changed", { value: "" });
   }
 
@@ -330,5 +237,10 @@ export class CloudLoginPanel extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "cloud-login-panel": CloudLoginPanel;
+  }
+
+  interface HASSDomEvents {
+    "cloud-email-changed": { value: string };
+    "flash-message-changed": { value: string };
   }
 }

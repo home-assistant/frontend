@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
@@ -12,19 +12,34 @@ import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import { haStyle } from "../../../../resources/styles";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { cloudLogin } from "../../../../data/cloud";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../lovelace/custom-card-helpers";
+import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
+import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
+import type { HomeAssistant } from "../../../../types";
+import { loginHaCloud } from "../../../../data/onboarding";
+
+type LoginFunction = (
+  email: string,
+  password: string,
+  checkConnection: boolean,
+  code?: string
+) => Promise<undefined>;
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean, attribute: "check-connection" })
+  public checkConnection = false;
+
   @property() public email?: string;
 
-  @property() public password?: string;
-
   @property({ attribute: false }) public localize!: LocalizeFunc;
-
-  @property({ type: Boolean, attribute: "in-progress" }) public inProgress =
-    false;
-
-  @property() public error?: string;
 
   @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
     | "page-onboarding.restore.ha-cloud"
@@ -32,9 +47,13 @@ export class CloudLogin extends LitElement {
 
   @property({ type: Boolean, attribute: "card-less" }) public cardLess = false;
 
-  @query("#email", true) public _emailField!: HaTextField;
+  @query("#email", true) public emailField!: HaTextField;
 
   @query("#password", true) private _passwordField!: HaPasswordField;
+
+  @state() private _error?: string;
+
+  @state() private _inProgress = false;
 
   protected render(): TemplateResult {
     if (this.cardLess) {
@@ -56,8 +75,8 @@ export class CloudLogin extends LitElement {
   private _renderLoginForm() {
     return html`
       <div class="card-content login-form">
-        ${this.error
-          ? html`<ha-alert alert-type="error">${this.error}</ha-alert>`
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
           : nothing}
         <ha-textfield
           .label=${this.localize(
@@ -70,7 +89,7 @@ export class CloudLogin extends LitElement {
           required
           .value=${this.email ?? ""}
           @keydown=${this._keyDown}
-          .disabled=${this.inProgress}
+          .disabled=${this._inProgress}
           .validationMessage=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.email_error_msg`
           )}
@@ -81,12 +100,11 @@ export class CloudLogin extends LitElement {
           .label=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.password`
           )}
-          .value=${this.password || ""}
           autocomplete="current-password"
           required
           minlength="8"
           @keydown=${this._keyDown}
-          .disabled=${this.inProgress}
+          .disabled=${this._inProgress}
           .validationMessage=${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.password_error_msg`
           )}
@@ -94,7 +112,7 @@ export class CloudLogin extends LitElement {
       </div>
       <div class="card-actions">
         <ha-button
-          .disabled=${this.inProgress}
+          .disabled=${this._inProgress}
           @click=${this._handleForgotPassword}
         >
           ${this.localize(
@@ -104,7 +122,7 @@ export class CloudLogin extends LitElement {
         <ha-progress-button
           unelevated
           @click=${this._handleLogin}
-          .progress=${this.inProgress}
+          .progress=${this._inProgress}
           >${this.localize(
             `ui.panel.${this.translationKeyPanel}.login.sign_in`
           )}</ha-progress-button
@@ -119,28 +137,164 @@ export class CloudLogin extends LitElement {
     }
   }
 
+  private _handleCloudLoginError = async (
+    err: any,
+    email: string,
+    password: string,
+    checkConnection: boolean,
+    loginFunction: LoginFunction
+  ): Promise<
+    "cancel" | "password-change" | "re-login" | string | undefined
+  > => {
+    const errCode = err && err.body && err.body.code;
+    if (errCode === "mfarequired") {
+      const totpCode = await showPromptDialog(this, {
+        title: this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.totp_code_prompt_title`
+        ),
+        inputLabel: this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.totp_code`
+        ),
+        inputType: "text",
+        defaultValue: "",
+        confirmText: this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.submit`
+        ),
+        dismissText: this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.cancel`
+        ),
+      });
+      if (totpCode !== null && totpCode !== "") {
+        return loginFunction(email, password, checkConnection, totpCode);
+      }
+    }
+    if (errCode === "alreadyconnectederror") {
+      const logInHere = await showCloudAlreadyConnectedDialog(this, {
+        details: JSON.parse(err.body.message),
+      });
+      return logInHere ? loginFunction(email, password, false) : "cancel";
+    }
+    if (errCode === "PasswordChangeRequired") {
+      showAlertDialog(this, {
+        title: this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.alert_password_change_required`
+        ),
+      });
+      return "password-change";
+    }
+    if (errCode === "usernotfound" && email !== email.toLowerCase()) {
+      return loginFunction(email.toLowerCase(), password, checkConnection);
+    }
+
+    switch (errCode) {
+      case "UserNotConfirmed":
+        return this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.alert_email_confirm_necessary`
+        );
+      case "mfarequired":
+        return this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.alert_mfa_code_required`
+        );
+      case "mfaexpiredornotstarted":
+        return this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.alert_mfa_expired_or_not_started`
+        );
+      case "invalidtotpcode":
+        return this.localize(
+          `ui.panel.${this.translationKeyPanel}.login.alert_totp_code_invalid`
+        );
+      default:
+        return err && err.body && err.body.message
+          ? err.body.message
+          : "Unknown error";
+    }
+  };
+
+  private _login = async (
+    email: string,
+    password: string,
+    checkConnection: boolean,
+    code?: string
+  ): Promise<undefined> => {
+    if (!password && !code) {
+      throw new Error("Password or code required");
+    }
+
+    try {
+      if (this.hass) {
+        const result = await cloudLogin({
+          hass: this.hass,
+          email,
+          ...(code ? { code } : { password }),
+          check_connection: checkConnection,
+        });
+        if (result.cloud_pipeline) {
+          if (
+            await showConfirmationDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.cloud.login.cloud_pipeline_title"
+              ),
+              text: this.hass.localize(
+                "ui.panel.config.cloud.login.cloud_pipeline_text"
+              ),
+            })
+          ) {
+            setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
+          }
+        }
+      } else {
+        // for onboarding
+        await loginHaCloud({
+          email,
+          ...(code ? { code } : { password: password! }),
+        });
+      }
+      this.email = "";
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err: any) {
+      const error = await this._handleCloudLoginError(
+        err,
+        email,
+        password,
+        checkConnection,
+        this._login
+      );
+
+      if (error === "cancel") {
+        this._inProgress = false;
+        this.email = "";
+        this._passwordField.value = "";
+        return;
+      }
+      if (error === "password-change") {
+        this._handleForgotPassword();
+        return;
+      }
+
+      this._inProgress = false;
+      this._error = error;
+    }
+  };
+
   private async _handleLogin() {
-    if (!this.inProgress) {
-      const emailField = this._emailField;
-      const passwordField = this._passwordField;
-
-      const email = emailField.value;
-      const password = passwordField.value;
-
-      if (!emailField.reportValidity()) {
-        passwordField.reportValidity();
-        emailField.focus();
+    if (!this._inProgress) {
+      if (!this.emailField.reportValidity()) {
+        this.emailField.focus();
         return;
       }
 
-      if (!passwordField.reportValidity()) {
-        passwordField.focus();
+      if (!this._passwordField.reportValidity()) {
+        this._passwordField.focus();
         return;
       }
 
-      this.inProgress = true;
+      this._inProgress = true;
 
-      fireEvent(this, "cloud-login", { email, password });
+      this._login(
+        this.emailField.value,
+        this._passwordField.value,
+        this.checkConnection
+      );
     }
   }
 
@@ -181,6 +335,9 @@ declare global {
     "cloud-login": {
       email: string;
       password: string;
+    };
+    "cloud-forgot-password": {
+      email: string;
     };
   }
 }
