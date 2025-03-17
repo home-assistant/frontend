@@ -5785,7 +5785,6 @@
           "add_node": {
             "title": "Add a Z-Wave device",
             "searching_devices": "Searching for devices",
-            "searching_specific_device": "Searching for device",
             "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometime called \"inclusion mode\")",
             "security_options": "Advanced security options",
             "choose_inclusion_strategy": "How do you want to add your device",
@@ -5828,6 +5827,13 @@
               },
               "scan_code": "Scan QR code",
               "other_add_options": "Other add options"
+            },
+            "specific_device": {
+              "title": "Searching for device",
+              "turn_on_device": "Turn on the device",
+              "turn_on_device_description": "If your device is already turned on, you might need to turn it off and on again. Consult your device manual if you are unsure.",
+              "add_another_z_wave_device": "Add another Z-Wave device",
+              "close_description": "Feel free to close this screen, as this process will continue in the background."
             }
           },
           "provisioned": {

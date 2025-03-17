@@ -39,6 +39,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-qr-scanner";
 import "./add-node/zwave-js-add-node-select-method";
+import "./add-node/zwave-js-add-node-searching-devices";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
@@ -71,9 +72,9 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _lowSecurity = false;
 
   @state() private _lowSecurityReason?: number;
-  
+
   @state() private _device?: ZWaveJSAddNodeDevice;
-  
+
   @state() private _requestedGrant?: RequestedGrant;
 
   @state() private _securityClasses: SecurityClass[] = [];
@@ -167,7 +168,7 @@ class DialogZWaveJSAddNode extends LitElement {
       }
     } else {
       this._open = true;
-      this._step = "started";
+      this._step = "search_devices";
       this._startInclusion();
     }
   }
@@ -175,7 +176,7 @@ class DialogZWaveJSAddNode extends LitElement {
   private _shouldPreventClose = memoizeOne((step: ZWaveJSAddNodeStage) =>
     [
       "loading",
-      "started_specific",
+      "search_specific_device",
       "validate_dsk_enter_pin",
       "grant_security_classes",
       "waiting_for_device",
@@ -183,13 +184,15 @@ class DialogZWaveJSAddNode extends LitElement {
   );
 
   private _handleBack() {
-    if ((this._step && closeButtonStages.includes(this._step!)) ||
-    (this._step === "started" && !this._supportsSmartStart)) {
+    if (
+      (this._step && closeButtonStages.includes(this._step!)) ||
+      (this._step === "search_devices" && !this._supportsSmartStart)
+    ) {
       this.closeDialog();
       return;
     }
 
-    switch(this._step) {
+    switch (this._step) {
       case "select_other_method":
         this._step = "qr_scan";
         break;
@@ -203,9 +206,12 @@ class DialogZWaveJSAddNode extends LitElement {
         }
         this._step = "select_method";
         break;
-      case "started":
+      case "search_devices":
         this._unsubscribe();
-        if (this._supportsSmartStart && this.hass.auth.external?.config.hasBarCodeScanner) {
+        if (
+          this._supportsSmartStart &&
+          this.hass.auth.external?.config.hasBarCodeScanner
+        ) {
           this._step = "select_other_method";
           break;
         } else if (this._supportsSmartStart) {
@@ -217,11 +223,15 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _renderHeader() {
     let icon: string | undefined;
-    if (this._step && closeButtonStages.includes(this._step) ||
-    this._step === "started" && !this._supportsSmartStart) {
+    if (
+      (this._step && closeButtonStages.includes(this._step)) ||
+      (this._step === "search_devices" && !this._supportsSmartStart)
+    ) {
       icon = mdiClose;
-    } else if ((this._step && backButtonStages.includes(this._step)) ||
-    this._step === "started" && this._supportsSmartStart) {
+    } else if (
+      (this._step && backButtonStages.includes(this._step)) ||
+      (this._step === "search_devices" && this._supportsSmartStart)
+    ) {
       icon = mdiChevronLeft;
     }
 
@@ -237,12 +247,24 @@ class DialogZWaveJSAddNode extends LitElement {
       case "select_other_method":
         titleTranslationKey = "qr.other_add_options";
         break;
-      case "started":
+      case "search_devices":
         titleTranslationKey = "searching_devices";
         break;
-      case "started_specific":
-        titleTranslationKey = "searching_specific_device";
+      case "search_specific_device":
+        titleTranslationKey = "specific_device.title";
         break;
+    }
+
+    if (this._step === "loading") {
+      return html`
+        <ha-fade-in slot="title" .delay=${1000}>
+            <span id="dialog-light-color-favorite-title"
+            >${this.hass.localize(
+              `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
+            )}</span
+          >
+        </ha-fade-in>
+      `;
     }
 
     return html`
@@ -264,13 +286,14 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _renderStep() {
     if (["select_method", "select_other_method"].includes(this._step!)) {
-      return html`<zwave-js-add-node-select-method slot="content"
+      return html`<zwave-js-add-node-select-method
+        slot="content"
         .hass=${this.hass}
         .hideQrWebcam=${this._step === "select_other_method"}
         @z-wave-method-selected=${this._methodSelected}
       ></zwave-js-add-node-select-method>`;
     }
-    
+
     if (this._step === "qr_scan") {
       return html`
         <div slot="content">
@@ -293,35 +316,44 @@ class DialogZWaveJSAddNode extends LitElement {
               "ui.panel.config.zwave_js.add_node.qr.manual.text"
             )}
           </p>
-          <ha-textfield .placeholder=${this.hass.localize("ui.panel.config.zwave_js.add_node.qr.manual.placeholder")} .value=${this._manualQrCodeInput} @input=${this._manualQrCodeInputChange}></ha-textfield>
+          <ha-textfield
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.zwave_js.add_node.qr.manual.placeholder"
+            )}
+            .value=${this._manualQrCodeInput}
+            @input=${this._manualQrCodeInputChange}
+          ></ha-textfield>
         </div>
         <div slot="actions">
-          <ha-button .disabled=${!this._manualQrCodeInput} @click=${this._handleQrCodeScanned}>
+          <ha-button
+            .disabled=${!this._manualQrCodeInput}
+            @click=${this._handleQrCodeScanned}
+          >
             ${this.hass.localize("ui.common.next")}
           </ha-button>
         </div>
-      `
+      `;
     }
 
-    if (this._step === "started") {
+    if (this._step === "search_devices" || this._step === "search_specific_device") {
       return html`
-        <div slot="content" class="searching-devices">
-          <div class="searching-spinner">
-            <div class="spinner">
-              <ha-spinner></ha-spinner>
-            </div>
-            <sl-animation name="pulse" easing="linear" .duration=${2000} play>
-              <div class="circle"></div>
-            </sl-animation>
-          </div>
-          <p>
-            ${this.hass.localize("ui.panel.config.zwave_js.add_node.follow_device_instructions")}
-          </p>
-          <ha-button>
-            ${this.hass.localize("ui.panel.config.zwave_js.add_node.security_options")}
-          </ha-button>
-        </div>
-      `
+        <zwave-js-add-node-searching-devices
+          .hass=${this.hass}
+          slot="content"
+          .specificDevice=${this._step === "search_specific_device"}
+          @show-z-wave-security-options=${this._showSecurityOptions}
+          @add-another-z-wave-device=${this._addAnotherDevice}
+        ></zwave-js-add-node-searching-devices>
+        ${this._step === "search_specific_device"
+          ? html`
+              <div slot="actions">
+                <ha-button @click=${this.closeDialog}>
+                  ${this.hass.localize("ui.common.close")}
+                </ha-button>
+              </div>
+            `
+          : nothing}
+      `;
     }
 
     return html`<div class="loading" slot="content">
@@ -348,6 +380,14 @@ class DialogZWaveJSAddNode extends LitElement {
     this._step = "select_other_method";
   }
 
+  private _showSecurityOptions() {
+    // TODO
+  }
+
+  private _addAnotherDevice() {
+    // TODO
+  }
+
   private _startInclusion(
     qrProvisioningInformation?: QRProvisioningInformation,
     dsk?: string
@@ -363,7 +403,7 @@ class DialogZWaveJSAddNode extends LitElement {
       (message) => {
         switch (message.event) {
           case "inclusion started":
-            this._step = specificDevice ? "started_specific" : "started";
+            this._step = specificDevice ? "search_specific_device" : "search_devices";
             break;
           case "inclusion failed":
             this._unsubscribe();
@@ -435,13 +475,16 @@ class DialogZWaveJSAddNode extends LitElement {
       this._step = "timed_out";
     }, INCLUSION_TIMEOUT);
   }
-  
+
   private async _handleQrCodeScanned(ev: CustomEvent): Promise<void> {
     let qrCodeString: string;
     this._error = undefined;
     this._open = true;
 
-    if ((this._step !== "qr_scan" && this._step !== "qr_code_input") || this._qrProcessing) {
+    if (
+      (this._step !== "qr_scan" && this._step !== "qr_code_input") ||
+      this._qrProcessing
+    ) {
       return;
     }
 
@@ -454,7 +497,6 @@ class DialogZWaveJSAddNode extends LitElement {
     } else {
       qrCodeString = ev.detail.value;
     }
-
 
     this._qrProcessing = true;
     const dsk = await zwaveTryParseDskFromQrCode(
@@ -588,39 +630,14 @@ class DialogZWaveJSAddNode extends LitElement {
           --md-dialog-min-height: 320px;
           --md-dialog-min-width: 560px;
         }
+        ha-fade-in {
+          display: block;
+        }
         .loading {
           display: flex;
           align-items: center;
           justify-content: center;
           height: 100%;
-        }
-        .searching-devices {
-          text-align: center;
-        }
-        .searching-spinner {
-          margin-left: auto;
-          margin-right: auto;
-          position: relative;
-          width: 128px;
-          height: 128px;
-        }
-        .searching-spinner .circle {
-          border-radius: 50%;
-          background-color: var(--light-primary-color);
-          position: absolute;
-          width: calc(100% - 32px);
-          height: calc(100% - 32px);
-          margin: 16px;
-        }
-        .searching-spinner .spinner {
-          z-index: 1;
-          position: absolute;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;
-          height: 100%;
-          --ha-spinner-divider-color: var(--light-primary-color);
         }
 
         .qr-code-input ha-textfield {
