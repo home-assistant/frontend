@@ -229,7 +229,7 @@ export class HaChartBase extends LitElement {
     return html`<div
       class=${classMap({
         "chart-legend": true,
-        "multiple-items": items.length > 1
+        "multiple-items": items.length > 1,
       })}
     >
       <ul>
@@ -267,7 +267,9 @@ export class HaChartBase extends LitElement {
                   ? this.hass.localize(
                       "ui.components.history_charts.collapse_legend"
                     )
-                  : `${this.hass.localize("ui.components.history_charts.expand_legend")} (${items.length - overflowLimit})`}
+                  : `${this.hass.localize(
+                      "ui.components.history_charts.expand_legend"
+                    )} (${items.length - overflowLimit})`}
               >
                 <ha-svg-icon
                   slot="trailing-icon"
