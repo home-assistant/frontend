@@ -312,7 +312,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             ${itemsWithoutStatus.length
               ? html`
                   <div>
-                    <div class="divider" role="seperator"></div>
+                    ${uncheckedItems.length
+                      ? html`<div class="divider" role="seperator"></div>`
+                      : nothing}
                     <div class="header" role="seperator">
                       <h2>
                         ${this.hass!.localize(
