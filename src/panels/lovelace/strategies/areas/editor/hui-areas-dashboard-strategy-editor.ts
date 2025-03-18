@@ -6,7 +6,7 @@ import type { AreasDisplayValue } from "../../../../../components/ha-areas-displ
 import "../../../../../components/ha-entities-display-editor";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
-import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-icon";
 import type { HomeAssistant } from "../../../../../types";
 import type { AreaStrategyGroup } from "../helpers/area-strategy-helper";
 import {
@@ -60,10 +60,10 @@ export class HuiAreasDashboardStrategyEditor
               expanded
               outlined
             >
-              <ha-svg-icon
+              <ha-icon
                 slot="leading-icon"
-                .path=${AREA_STRATEGY_GROUP_ICONS[group]}
-              ></ha-svg-icon>
+                .icon=${AREA_STRATEGY_GROUP_ICONS[group]}
+              ></ha-icon>
               ${entities.length
                 ? html`
                     <ha-entities-display-editor

@@ -1,13 +1,7 @@
-import {
-  mdiHomeThermometer,
-  mdiLightbulb,
-  mdiMultimedia,
-  mdiSecurity,
-} from "@mdi/js";
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
-import type { HomeAssistant } from "../../../../../types";
 import { orderCompare } from "../../../../../common/string/compare";
+import type { HomeAssistant } from "../../../../../types";
 
 export const AREA_STRATEGY_GROUPS = [
   "lights",
@@ -17,10 +11,10 @@ export const AREA_STRATEGY_GROUPS = [
 ] as const;
 
 export const AREA_STRATEGY_GROUP_ICONS = {
-  lights: mdiLightbulb,
-  climate: mdiHomeThermometer,
-  media_players: mdiMultimedia,
-  security: mdiSecurity,
+  lights: "mdi:lightbulb",
+  climate: "mdi:home-thermometer",
+  media_players: "mdi:multimedia",
+  security: "mdi:security",
 };
 
 // Todo be replace by translation when validated
