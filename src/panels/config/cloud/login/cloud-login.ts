@@ -23,13 +23,6 @@ import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connect
 import type { HomeAssistant } from "../../../../types";
 import { loginHaCloud } from "../../../../data/onboarding";
 
-type LoginFunction = (
-  email: string,
-  password: string,
-  checkConnection: boolean,
-  code?: string
-) => Promise<undefined>;
-
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -142,9 +135,8 @@ export class CloudLogin extends LitElement {
     email: string,
     password: string,
     checkConnection: boolean,
-    loginFunction: LoginFunction
   ): Promise<
-    "cancel" | "password-change" | "re-login" | string | undefined
+    "cancel" | "password-change" | string | undefined
   > => {
     const errCode = err && err.body && err.body.code;
     if (errCode === "mfarequired") {
@@ -165,14 +157,19 @@ export class CloudLogin extends LitElement {
         ),
       });
       if (totpCode !== null && totpCode !== "") {
-        return loginFunction(email, password, checkConnection, totpCode);
+        this._login(email, password, checkConnection, totpCode);
+        return undefined;
       }
     }
     if (errCode === "alreadyconnectederror") {
       const logInHere = await showCloudAlreadyConnectedDialog(this, {
         details: JSON.parse(err.body.message),
       });
-      return logInHere ? loginFunction(email, password, false) : "cancel";
+      if (logInHere) {
+        this._login(email, password, false);
+      }
+
+      return logInHere ? undefined : "cancel";
     }
     if (errCode === "PasswordChangeRequired") {
       showAlertDialog(this, {
@@ -183,7 +180,8 @@ export class CloudLogin extends LitElement {
       return "password-change";
     }
     if (errCode === "usernotfound" && email !== email.toLowerCase()) {
-      return loginFunction(email.toLowerCase(), password, checkConnection);
+      this._login(email.toLowerCase(), password, checkConnection);
+      return undefined;
     }
 
     switch (errCode) {
@@ -257,7 +255,6 @@ export class CloudLogin extends LitElement {
         email,
         password,
         checkConnection,
-        this._login
       );
 
       if (error === "cancel") {

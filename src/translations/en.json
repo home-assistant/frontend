@@ -8352,7 +8352,7 @@
           "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
           "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
-          "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
+          "confirm_restore_full_backup_text": "Depending on the size of the backup, this can take up to 45 minutes. Home Assistant will restart and you will see the login screen when it’s restored.",
           "restore": "[%key:supervisor::backup::restore%]",
           "close": "[%key:ui::common::close%]",
           "cancel": "[%key:ui::common::cancel%]",

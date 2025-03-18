@@ -2,10 +2,11 @@ import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import "../../components/ha-button";
 import "../../components/ha-alert";
+import "../../components/ha-md-list";
+import "../../components/ha-md-list-item";
 import "../../components/buttons/ha-progress-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-password-field";
-import "../../panels/config/backup/components/ha-backup-details-summary";
 import "../../panels/config/backup/components/ha-backup-data-picker";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import {
@@ -17,6 +18,7 @@ import { restoreOnboardingBackup } from "../../data/backup_onboarding";
 import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";
 import { onBoardingStyles } from "../styles";
+import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
 
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {
@@ -48,6 +50,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
       Object.keys(this.backup.agents)
     );
     const backupProtected = this.backup.agents[agentId].protected;
+
+    const formattedDate = formatDateTimeWithBrowserDefaults(new Date(this.backup.date));
 
     return html`
       <ha-icon-button-arrow-prev
@@ -82,13 +86,16 @@ class OnboardingRestoreBackupRestore extends LitElement {
           </ha-alert>`
         : nothing}
 
-      <ha-backup-details-summary
-        card-less
-        translation-key-panel="page-onboarding.restore"
-        .backup=${this.backup}
-        .localize=${this.localize}
-        .isHassio=${this.supervisor}
-      ></ha-backup-details-summary>
+        <ha-md-list>
+          <ha-md-list-item>
+            <span slot="headline">
+              ${this.localize(
+                "ui.panel.page-onboarding.restore.details.summary.created"
+              )}
+            </span>
+            <span slot="supporting-text">${formattedDate}</span>
+          </ha-md-list-item>
+        </ha-md-list>
 
       <h2>${this.localize("ui.panel.page-onboarding.restore.select_type")}</h2>
 
@@ -283,6 +290,27 @@ class OnboardingRestoreBackupRestore extends LitElement {
         ha-alert {
           display: block;
           margin-top: 16px;
+        }
+        ha-md-list {
+          background: none;
+          padding: 0;
+        }
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-list-item-two-line-container-height: 64px;
+          --md-list-item-supporting-text-size: 1rem;
+          --md-list-item-label-text-size: 0.875rem;
+
+          --md-list-item-label-text-color: var(--secondary-text-color);
+          --md-list-item-supporting-text-color: var(--primary-text-color);
+        }
+        ha-md-list-item [slot="supporting-text"] {
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          gap: 8px;
+          line-height: normal;
         }
         h2 {
           font-size: 22px;
