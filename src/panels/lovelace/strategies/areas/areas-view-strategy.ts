@@ -79,7 +79,7 @@ export class AreasViewStrategy extends ReactiveElement {
               : [
                   {
                     type: "markdown",
-                    content: "No controllable devices in this area.",
+                    content: "No entities in this area.",
                   },
                 ]),
           ],
