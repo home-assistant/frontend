@@ -7107,16 +7107,6 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
-              "show_seconds_options": {
-                "show": "Show seconds",
-                "hide": "Hide seconds"
-              },
-              "show_am_pm": "Show AM/PM",
-              "show_am_pm_options": {
-                "auto": "Auto (use profile defaults)",
-                "show": "Show AM/PM",
-                "hide": "Hide AM/PM"
-              },
               "time_format": "Time format",
               "time_formats": {
                 "auto": "Use profile defaults",

@@ -1,7 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -20,8 +20,7 @@ const cardConfigStruct = assign(
   object({
     clock_size: optional(string()),
     time_format: optional(string()),
-    show_seconds: optional(string()),
-    show_am_pm: optional(string()),
+    show_seconds: optional(boolean()),
   })
 );
 
@@ -54,29 +53,7 @@ export class HuiClockCardEditor
         {
           name: "show_seconds",
           selector: {
-            select: {
-              mode: "dropdown",
-              options: ["auto", "show", "hide"].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.show_seconds_options.${value}`
-                ),
-              })),
-            },
-          },
-        },
-        {
-          name: "show_am_pm",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: ["auto", "show", "hide"].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.clock.show_am_pm_options.${value}`
-                ),
-              })),
-            },
+            boolean: {},
           },
         },
         {
@@ -130,10 +107,6 @@ export class HuiClockCardEditor
       case "time_format":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.time_format`
-        );
-      case "show_am_pm":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.show_am_pm`
         );
       case "show_seconds":
         return this.hass!.localize(

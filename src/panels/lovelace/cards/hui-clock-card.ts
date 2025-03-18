@@ -26,9 +26,8 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     return {
       type: "clock",
       clock_size: "medium",
-      show_seconds: "show",
-      show_am_pm: "auto",
-      time_format: "12",
+      show_seconds: true,
+      time_format: TimeFormat.am_pm,
     };
   }
 
@@ -98,8 +97,8 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   private _startTick() {
-    this._tick();
     this._tickInterval = window.setInterval(() => this._tick(), INTERVAL);
+    this._tick();
   }
 
   private _stopTick() {
@@ -112,29 +111,28 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   private _tick() {
     const locale = this.hass?.locale;
 
-    if (!locale || !this.hass) return;
+    if (!locale || !this.hass || !this._config) return;
+
+    if (this._config?.time_format) {
+      locale.time_format = this._config?.time_format;
+    }
 
     this._time = new Intl.DateTimeFormat(locale.language, {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      hour12: true,
       timeZone: resolveTimeZone(locale.time_zone, this.hass?.config?.time_zone),
     });
 
-    this._timeHour = this._time
-      .formatToParts()
-      .find((part) => part.type === "hour")?.value;
-    this._timeMinute = this._time
-      .formatToParts()
-      .find((part) => part.type === "minute")?.value;
-    this._timeSecond = this._time
-      .formatToParts()
-      .find((part) => part.type === "second")?.value;
-    this._timeAmPm = this._time
-      .formatToParts()
-      .find((part) => part.type === "dayPeriod")?.value;
+    const parts = this._time.formatToParts();
+
+    this._timeHour = parts.find((part) => part.type === "hour")?.value;
+    this._timeMinute = parts.find((part) => part.type === "minute")?.value;
+    this._timeSecond = this._config.show_seconds
+      ? parts.find((part) => part.type === "second")?.value
+      : undefined;
+    this._timeAmPm = parts.find((part) => part.type === "dayPeriod")?.value;
 
     // console.log(
     //   this._timeHour,
@@ -142,14 +140,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     //   this._timeSecond,
     //   this._timeAmPm
     // );
-  }
-
-  private _maybeShowAmPm(): boolean {
-    if (this._config?.show_am_pm !== "auto") {
-      return this._config?.show_am_pm === "show";
-    }
-
-    return this.hass?.locale.time_format === TimeFormat.am_pm;
   }
 
   protected render() {
@@ -166,10 +156,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
             <div class="time-part hour">${this._timeHour}</div>
             <div class="time-part minute">${this._timeMinute}</div>
             <div class="time-side">
-              ${this._config.show_seconds === "show"
+              ${this._timeSecond !== undefined
                 ? html`<div class="time-part second">${this._timeSecond}</div>`
                 : nothing}
-              ${this._maybeShowAmPm()
+              ${this._config.time_format === TimeFormat.am_pm
                 ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
                 : nothing}
             </div>

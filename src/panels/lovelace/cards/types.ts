@@ -22,6 +22,7 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import { TimeFormat } from "../../../data/translation";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -347,9 +348,8 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   clock_size?: "small" | "medium" | "large";
-  show_seconds?: "auto" | "show" | "hide";
-  show_am_pm?: "auto" | "show" | "hide";
-  time_format?: "auto" | "12" | "24";
+  show_seconds?: boolean | undefined;
+  time_format?: TimeFormat;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
