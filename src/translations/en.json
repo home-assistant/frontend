@@ -8304,9 +8304,8 @@
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
             "addons_unsupported": "Your installation method doesn’t support add-ons. If you wan’t to restore these, you have to install Home Assistant Operating System",
             "summary": {
-              "title": "[%key:ui::panel::config::backup::details::summary::title%]",
-              "size": "[%key:ui::panel::config::backup::details::summary::size%]",
-              "created": "[%key:ui::panel::config::backup::details::summary::created%]"
+              "created": "[%key:ui::panel::config::backup::details::summary::created%]",
+              "content": "Content"
             },
             "restore": {
               "title": "[%key:ui::panel::config::backup::dialogs::restore::title%]",

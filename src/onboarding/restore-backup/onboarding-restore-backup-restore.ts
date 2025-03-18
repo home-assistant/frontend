@@ -8,6 +8,7 @@ import "../../components/buttons/ha-progress-button";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-password-field";
 import "../../panels/config/backup/components/ha-backup-data-picker";
+import "../../panels/config/backup/components/ha-backup-formfield-label";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import {
   getPreferredAgentForDownload,
@@ -55,6 +56,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
       new Date(this.backup.date)
     );
 
+    const onlyHomeAssistantBackup = this.backup.addons.length === 0 && this.backup.folders.length === 0;
+
     return html`
       <ha-icon-button-arrow-prev
         .label=${this.localize("ui.panel.page-onboarding.restore.back")}
@@ -97,13 +100,31 @@ class OnboardingRestoreBackupRestore extends LitElement {
           </span>
           <span slot="supporting-text">${formattedDate}</span>
         </ha-md-list-item>
+        ${onlyHomeAssistantBackup
+          ? html`<ha-md-list-item>
+              <span slot="headline">
+                ${this.localize(
+                  "ui.panel.page-onboarding.restore.details.summary.content"
+                )}
+              </span>
+              <ha-backup-formfield-label
+                slot="supporting-text"
+                .version=${this.backup.homeassistant_version}
+                .label=${this.localize(
+                  `ui.panel.page-onboarding.restore.data_picker.${this.backup.database_included ? "settings_and_history" : "settings"}`
+                )}
+              ></ha-backup-formfield-label>
+            </ha-md-list-item>`
+          : nothing}
       </ha-md-list>
 
-      <h2>${this.localize("ui.panel.page-onboarding.restore.select_type")}</h2>
+
+      ${!onlyHomeAssistantBackup ?
+      html`<h2>${this.localize("ui.panel.page-onboarding.restore.select_type")}</h2>` : nothing}
 
       ${this.backup.homeassistant_included &&
       !this.supervisor &&
-      (this.backup.addons.length > 0 || this.backup.folders.length > 0)
+      this.backup.addons.length > 0
         ? html`<ha-alert class="supervisor-warning">
             ${this.localize(
               "ui.panel.page-onboarding.restore.details.addons_unsupported"
@@ -122,17 +143,17 @@ class OnboardingRestoreBackupRestore extends LitElement {
             </a>
           </ha-alert>`
         : nothing}
-
-      <ha-backup-data-picker
-        translation-key-panel="page-onboarding.restore"
-        .localize=${this.localize}
-        .data=${this.backup}
-        .value=${this._selectedData}
-        @value-changed=${this._selectedBackupChanged}
-        .requiredItems=${["config"]}
-        .addonsDisabled=${!this.supervisor}
-      ></ha-backup-data-picker>
-
+      ${!onlyHomeAssistantBackup
+        ? html`<ha-backup-data-picker
+            translation-key-panel="page-onboarding.restore"
+            .localize=${this.localize}
+            .data=${this.backup}
+            .value=${this._selectedData}
+            @value-changed=${this._selectedBackupChanged}
+            .requiredItems=${["config"]}
+            .addonsDisabled=${!this.supervisor}
+          ></ha-backup-data-picker>`
+        : nothing}
       ${this._error
         ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
         : nothing}
