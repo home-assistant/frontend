@@ -3,7 +3,7 @@ import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../ha-circular-progress";
+import "../ha-spinner";
 import "../ha-svg-icon";
 
 @customElement("ha-progress-button")
@@ -14,6 +14,8 @@ export class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public raised = false;
 
+  @property({ type: Boolean }) public unelevated = false;
+
   @state() private _result?: "success" | "error";
 
   public render(): TemplateResult {
@@ -21,6 +23,7 @@ export class HaProgressButton extends LitElement {
     return html`
       <mwc-button
         ?raised=${this.raised}
+        .unelevated=${this.unelevated}
         .disabled=${this.disabled || this.progress}
         class=${this._result || ""}
       >
@@ -35,12 +38,7 @@ export class HaProgressButton extends LitElement {
                 : this._result === "error"
                   ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
                   : this.progress
-                    ? html`
-                        <ha-circular-progress
-                          size="small"
-                          indeterminate
-                        ></ha-circular-progress>
-                      `
+                    ? html`<ha-spinner size="small"></ha-spinner>`
                     : nothing}
             </div>
           `}
@@ -83,6 +81,7 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
+    mwc-button[unelevated].success,
     mwc-button[raised].success {
       --mdc-theme-primary: var(--success-color);
       --mdc-theme-on-primary: white;
@@ -96,6 +95,7 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
+    mwc-button[unelevated].error,
     mwc-button[raised].error {
       --mdc-theme-primary: var(--error-color);
       --mdc-theme-on-primary: white;

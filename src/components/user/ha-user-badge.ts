@@ -50,7 +50,9 @@ class UserBadge extends LitElement {
 
     if (picture) {
       return html`<div
-        style=${styleMap({ backgroundImage: `url(${picture})` })}
+        style=${styleMap({
+          backgroundImage: `url(${this.hass.hassUrl(picture)})`,
+        })}
         class="picture"
       ></div>`;
     }

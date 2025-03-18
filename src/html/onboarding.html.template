@@ -29,8 +29,9 @@
       .header {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         margin-bottom: 32px;
+        margin-left: 32px;
       }
 
       .header img {
@@ -51,7 +52,7 @@
     <%= renderTemplate("_script_loader.html.template") %>
     <script crossorigin="use-credentials">
       if (window.latestJS) {
-        window.stepsPromise = fetch("/api/onboarding", {
+        window.stepsPromise = fetch("<%= hassUrl %>/api/onboarding", {
           credentials: "same-origin",
         });
       }

@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-alert";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-card";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
@@ -168,11 +168,10 @@ class HaPanelDevTemplate extends LitElement {
         >
           <div class="card-content">
             ${this._rendering
-              ? html`<ha-circular-progress
+              ? html`<ha-spinner
                   class="render-spinner"
-                  indeterminate
                   size="small"
-                ></ha-circular-progress>`
+                ></ha-spinner>`
               : ""}
             ${this._error
               ? html`<ha-alert
@@ -321,6 +320,7 @@ ${type === "object"
         ha-alert {
           margin-bottom: 8px;
           display: block;
+          user-select: text;
         }
 
         .rendered {

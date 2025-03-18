@@ -5,7 +5,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { pingMatterNode } from "../../../../../data/matter";
@@ -92,7 +92,7 @@ class DialogMatterPingNode extends LitElement {
             : this._status === "started"
               ? html`
                   <div class="flex-container">
-                    <ha-circular-progress indeterminate></ha-circular-progress>
+                    <ha-spinner></ha-spinner>
                     <div class="status">
                       <p>
                         <b>
@@ -185,7 +185,7 @@ class DialogMatterPingNode extends LitElement {
           --mdc-list-side-padding: 0;
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
         }

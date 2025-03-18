@@ -27,6 +27,10 @@ class BluetoothConfigDashboardRouter extends HassRouterPage {
         tag: "bluetooth-advertisement-monitor",
         load: () => import("./bluetooth-advertisement-monitor"),
       },
+      "connection-monitor": {
+        tag: "bluetooth-connection-monitor",
+        load: () => import("./bluetooth-connection-monitor"),
+      },
     },
   };
 

@@ -47,6 +47,8 @@ class HuiEnergyDistrubutionCard
 
   @state() private _data?: EnergyData;
 
+  @state() private _animate = true;
+
   protected hassSubscribeRequiredHostProps = ["_config"];
 
   public setConfig(config: EnergyDistributionCardConfig): void {
@@ -76,6 +78,12 @@ class HuiEnergyDistrubutionCard
         this.hass.states[this._data.co2SignalEntity] !==
           changedProps.get("hass").states[this._data.co2SignalEntity])
     );
+  }
+
+  protected willUpdate() {
+    if (!this.hasUpdated && matchMedia("(prefers-reduced-motion)").matches) {
+      this._animate = false;
+    }
   }
 
   protected render() {
@@ -345,11 +353,11 @@ class HuiEnergyDistrubutionCard
                           this.hass,
                           prefs,
                           this._data.statsMetadata
-                        ) || "m³"}
+                        )}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />
-                        ${gasUsage
+                        ${gasUsage && this._animate
                           ? svg`<circle
                     r="1"
                     class="gas"
@@ -378,11 +386,11 @@ class HuiEnergyDistrubutionCard
                           ${formatNumber(waterUsage || 0, this.hass.locale, {
                             maximumFractionDigits: 1,
                           })}
-                          ${getEnergyWaterUnit(this.hass) || "m³"}
+                          ${getEnergyWaterUnit(this.hass)}
                         </div>
                         <svg width="80" height="30">
                           <path d="M40 0 v30" id="water" />
-                          ${waterUsage
+                          ${waterUsage && this._animate
                             ? svg`<circle
                 r="1"
                 class="water"
@@ -577,7 +585,7 @@ class HuiEnergyDistrubutionCard
                   ? html`<div class="circle-container water bottom">
                       <svg width="80" height="30">
                         <path d="M40 30 v-30" id="water" />
-                        ${waterUsage
+                        ${waterUsage && this._animate
                           ? svg`<circle
                     r="1"
                     class="water"
@@ -598,7 +606,7 @@ class HuiEnergyDistrubutionCard
                         ${formatNumber(waterUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
-                        ${getEnergyWaterUnit(this.hass) || "m³"}
+                        ${getEnergyWaterUnit(this.hass)}
                       </div>
                       <span class="label"
                         >${this.hass.localize(
@@ -671,7 +679,7 @@ class HuiEnergyDistrubutionCard
                 d="M0,${hasBattery ? 50 : hasSolarProduction ? 56 : 53} H100"
                 vector-effect="non-scaling-stroke"
               ></path>
-              ${returnedToGrid && hasSolarProduction
+              ${returnedToGrid && hasSolarProduction && this._animate
                 ? svg`<circle
                     r="1"
                     class="return"
@@ -690,7 +698,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${solarConsumption
+              ${solarConsumption && this._animate
                 ? svg`<circle
                     r="1"
                     class="solar"
@@ -705,7 +713,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${gridConsumption
+              ${gridConsumption && this._animate
                 ? svg`<circle
                     r="1"
                     class="grid"
@@ -720,7 +728,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${solarToBattery
+              ${solarToBattery && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-solar"
@@ -735,7 +743,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${batteryConsumption
+              ${batteryConsumption && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-house"
@@ -750,7 +758,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${batteryFromGrid
+              ${batteryFromGrid && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-from-grid"
@@ -766,7 +774,7 @@ class HuiEnergyDistrubutionCard
                     </animateMotion>
                   </circle>`
                 : ""}
-              ${batteryToGrid
+              ${batteryToGrid && this._animate
                 ? svg`<circle
                     r="1"
                     class="battery-to-grid"
@@ -1036,16 +1044,20 @@ class HuiEnergyDistrubutionCard
       border-width: 2px;
     }
     .circle svg circle {
-      animation: rotate-in 0.6s ease-in;
-      transition:
-        stroke-dashoffset 0.4s,
-        stroke-dasharray 0.4s;
       fill: none;
     }
-    @keyframes rotate-in {
-      from {
-        stroke-dashoffset: 238.76104;
-        stroke-dasharray: 238.76104;
+    @media not (prefers-reduced-motion) {
+      .circle svg circle {
+        animation: rotate-in 0.6s ease-in;
+        transition:
+          stroke-dashoffset 0.4s,
+          stroke-dasharray 0.4s;
+      }
+      @keyframes rotate-in {
+        from {
+          stroke-dashoffset: 238.76104;
+          stroke-dasharray: 238.76104;
+        }
       }
     }
     .card-actions a {

@@ -117,6 +117,7 @@ class IntegrationsStartupTime extends LitElement {
       display: block;
       max-height: 40px;
       max-width: 40px;
+      border-radius: 0;
     }
     div[slot="meta"] {
       display: flex;

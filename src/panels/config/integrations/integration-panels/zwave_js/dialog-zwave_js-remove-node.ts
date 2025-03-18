@@ -5,7 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -82,7 +82,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
                 <div class="status">
                   <p>
                     <b
@@ -249,7 +249,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
           height: 48px;
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
           margin-inline-end: 20px;
