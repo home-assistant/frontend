@@ -437,7 +437,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               left
               .hasMeta=${showReorder || showDelete}
               class="editRow ${classMap({
-                draggable: item.status === TodoItemStatus.NeedsAction,
+                draggable: item.status !== TodoItemStatus.Completed,
                 completed: item.status === TodoItemStatus.Completed,
                 multiline: Boolean(item.description || item.due),
               })}"
