@@ -63,7 +63,9 @@ export class HuiClockCardEditor
               mode: "dropdown",
               options: Object.values(TimeFormat).map((value) => ({
                 value,
-                label: value,
+                label: localize(
+                  `ui.panel.profile.time_format.formats.${value}`
+                ),
               })),
             },
           },
