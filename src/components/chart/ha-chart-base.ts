@@ -226,7 +226,12 @@ export class HaChartBase extends LitElement {
     const overflowLimit = isMobile
       ? LEGEND_OVERFLOW_LIMIT_MOBILE
       : LEGEND_OVERFLOW_LIMIT;
-    return html`<div class="chart-legend">
+    return html`<div
+      class=${classMap({
+        "chart-legend": true,
+        "multiple-items": items.length > 1
+      })}
+    >
       <ul>
         ${items.map((item: string, index: number) => {
           if (!this.expandLegend && index >= overflowLimit) {
@@ -727,10 +732,10 @@ export class HaChartBase extends LitElement {
       align-items: center;
       padding: 0 2px;
       box-sizing: border-box;
-      max-width: 220px;
-      text-overflow: ellipsis;
       overflow: hidden;
-      white-space: nowrap;
+    }
+    .chart-legend.multiple-items li {
+      max-width: 220px;
     }
     .chart-legend .hidden {
       color: var(--secondary-text-color);
