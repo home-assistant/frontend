@@ -1,10 +1,9 @@
 import { mdiFolderUpload } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-card";
 import "../../components/ha-file-upload";
 import "../../components/ha-alert";
-import { haStyle } from "../../resources/styles";
+import "../../components/ha-icon-button-arrow-prev";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import {
@@ -14,6 +13,9 @@ import {
 } from "../../data/backup";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { uploadOnboardingBackup } from "../../data/backup_onboarding";
+import { onBoardingStyles } from "../styles";
+import { navigate } from "../../common/navigate";
+import { removeSearchParam } from "../../common/url/search-params";
 
 declare global {
   interface HASSDomEvents {
@@ -32,39 +34,41 @@ class OnboardingRestoreBackupUpload extends LitElement {
 
   render() {
     return html`
-      <ha-card
-        .header=${this.localize(
-          "ui.panel.page-onboarding.restore.upload_backup"
+      <ha-icon-button-arrow-prev
+        .label=${this.localize("ui.panel.page-onboarding.restore.back")}
+        @click=${this._back}
+      ></ha-icon-button-arrow-prev>
+      <h1>
+        ${this.localize("ui.panel.page-onboarding.restore.upload_backup")}
+      </h1>
+      <p>
+        ${this.localize(
+          "ui.panel.page-onboarding.restore.upload_backup_subtitle"
         )}
-      >
-        <div class="card-content">
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing}
-          <ha-file-upload
-            .uploading=${this._uploading}
-            .icon=${mdiFolderUpload}
-            accept=${SUPPORTED_UPLOAD_FORMAT}
-            .localize=${this.localize}
-            .label=${this.localize(
-              "ui.panel.page-onboarding.restore.upload_input_label"
-            )}
-            .secondary=${this.localize(
-              "ui.panel.page-onboarding.restore.upload_secondary"
-            )}
-            .supports=${this.localize(
-              "ui.panel.page-onboarding.restore.upload_supports_tar"
-            )}
-            .deleteLabel=${this.localize(
-              "ui.panel.page-onboarding.restore.delete"
-            )}
-            .uploadingLabel=${this.localize(
-              "ui.panel.page-onboarding.restore.uploading"
-            )}
-            @file-picked=${this._filePicked}
-          ></ha-file-upload>
-        </div>
-      </ha-card>
+      </p>
+      ${this._error
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : nothing}
+      <ha-file-upload
+        .uploading=${this._uploading}
+        .icon=${mdiFolderUpload}
+        accept=${SUPPORTED_UPLOAD_FORMAT}
+        .localize=${this.localize}
+        .label=${this.localize(
+          "ui.panel.page-onboarding.restore.upload_input_label"
+        )}
+        .secondary=${this.localize(
+          "ui.panel.page-onboarding.restore.upload_secondary"
+        )}
+        .supports=${this.localize(
+          "ui.panel.page-onboarding.restore.upload_supports_tar"
+        )}
+        .deleteLabel=${this.localize("ui.panel.page-onboarding.restore.delete")}
+        .uploadingLabel=${this.localize(
+          "ui.panel.page-onboarding.restore.uploading"
+        )}
+        @file-picked=${this._filePicked}
+      ></ha-file-upload>
     `;
   }
 
@@ -98,17 +102,20 @@ class OnboardingRestoreBackupUpload extends LitElement {
         typeof err.body === "string"
           ? err.body
           : err.body?.message || err.message || "Unknown error occurred";
-    } finally {
-      this._uploading = false;
     }
+  }
+
+  private _back() {
+    navigate(`${location.pathname}?${removeSearchParam("page")}`);
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      onBoardingStyles,
       css`
-        :host {
-          width: 100%;
+        h1,
+        p {
+          text-align: left;
         }
         .card-actions {
           display: flex;
