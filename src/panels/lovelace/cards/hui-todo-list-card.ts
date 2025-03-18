@@ -673,34 +673,33 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private async _moveItem(oldIndex: number, newIndex: number) {
-    // correct index for header
-    oldIndex -= 1;
-    newIndex -= 1;
-    const uncheckedItems = this._getUncheckedItems(this._items);
-    const item = uncheckedItems[oldIndex];
-    let prevItem: TodoItem | undefined;
+    await this.updateComplete;
+
+    const list = this.renderRoot.querySelector("mwc-list")!;
+
+    const itemId = (list.children[oldIndex] as any).itemId as string;
+
+    let prevItemId: string | undefined;
     if (newIndex > 0) {
       if (newIndex < oldIndex) {
-        prevItem = uncheckedItems[newIndex - 1];
+        prevItemId = (list.children[newIndex - 1] as any).itemId;
       } else {
-        prevItem = uncheckedItems[newIndex];
+        prevItemId = (list.children[newIndex] as any).itemId;
       }
     }
 
     // Optimistic change
-    const itemIndex = this._items!.findIndex((itm) => itm.uid === item.uid);
-    this._items!.splice(itemIndex, 1);
+    const itemIndex = this._items!.findIndex((itm) => itm.uid === itemId);
+    const item = this._items!.splice(itemIndex, 1)[0];
     if (newIndex === 0) {
       this._items!.unshift(item);
-    } else {
-      const prevIndex = this._items!.findIndex(
-        (itm) => itm.uid === prevItem!.uid
-      );
+    } else if (prevItemId !== undefined) {
+      const prevIndex = this._items!.findIndex((itm) => itm.uid === prevItemId);
       this._items!.splice(prevIndex + 1, 0, item);
     }
     this._items = [...this._items!];
 
-    await moveItem(this.hass!, this._entityId!, item.uid, prevItem?.uid);
+    await moveItem(this.hass!, this._entityId!, itemId, prevItemId);
   }
 
   static styles = css`
