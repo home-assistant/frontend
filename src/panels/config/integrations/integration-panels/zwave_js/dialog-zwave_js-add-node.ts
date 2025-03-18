@@ -9,8 +9,6 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   cancelSecureBootstrapS2,
   InclusionStrategy,
-  lookupZwaveDevice,
-  MINIMUM_QR_STRING_LENGTH,
   provisionZwaveSmartStartNode,
   stopZwaveInclusion,
   subscribeAddZwaveNode,
@@ -28,9 +26,11 @@ import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node
 import {
   backButtonStages,
   closeButtonStages,
+  validateQrCode,
   type ZWaveJSAddNodeStage,
 } from "./add-node/data";
 import type { HaMdDialog } from "../../../../../components/ha-md-dialog";
+import type { HaTextField } from "../../../../../components/ha-textfield";
 
 import "../../../../../components/ha-md-dialog";
 import "../../../../../components/ha-spinner";
@@ -39,10 +39,11 @@ import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-qr-scanner";
+
 import "./add-node/zwave-js-add-node-select-method";
 import "./add-node/zwave-js-add-node-searching-devices";
 import "./add-node/zwave-js-add-node-select-security-strategy";
-import type { HaTextField } from "../../../../../components/ha-textfield";
+import "./add-node/zwave-js-add-node-failed";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
 
@@ -135,6 +136,21 @@ class DialogZWaveJSAddNode extends LitElement {
     }
   };
 
+  private _showFirstStep() {
+    if (this._supportsSmartStart) {
+      if (this.hass.auth.external?.config.hasBarCodeScanner) {
+        this._step = "qr_scan";
+      } else {
+        this._step = "select_method";
+        this._open = true;
+      }
+    } else {
+      this._open = true;
+      this._step = "search_devices";
+      this._startInclusion();
+    }
+  }
+
   public async showDialog(params: ZWaveJSAddNodeDialogParams): Promise<void> {
     if (this._step) {
       // already started
@@ -161,18 +177,7 @@ class DialogZWaveJSAddNode extends LitElement {
       )
     ).supported;
 
-    if (this._supportsSmartStart) {
-      if (this.hass.auth.external?.config.hasBarCodeScanner) {
-        this._step = "qr_scan";
-      } else {
-        this._step = "select_method";
-        this._open = true;
-      }
-    } else {
-      this._open = true;
-      this._step = "search_devices";
-      this._startInclusion();
-    }
+    this._showFirstStep();
   }
 
   private _shouldPreventClose = memoizeOne((step: ZWaveJSAddNodeStage) =>
@@ -261,6 +266,9 @@ class DialogZWaveJSAddNode extends LitElement {
         break;
       case "choose_security_strategy":
         titleTranslationKey = "security_options";
+        break;
+      case "failed":
+        titleTranslationKey = "add_device_failed";
         break;
     }
 
@@ -354,7 +362,7 @@ class DialogZWaveJSAddNode extends LitElement {
           slot="content"
           .specificDevice=${this._step === "search_specific_device"}
           @show-z-wave-security-options=${this._showSecurityOptions}
-          @add-another-z-wave-device=${this._addAnotherDevice}
+          @add-another-z-wave-device=${this._showFirstStep}
         ></zwave-js-add-node-searching-devices>
         ${this._step === "search_specific_device"
           ? html`
@@ -369,7 +377,7 @@ class DialogZWaveJSAddNode extends LitElement {
     }
 
     if (this._step === "choose_security_strategy") {
-      return html` <zwave-js-add-node-select-security-strategy
+      return html`<zwave-js-add-node-select-security-strategy
           slot="content"
           .hass=${this.hass}
           .inclusionStrategy=${this._inclusionStrategy ||
@@ -382,6 +390,16 @@ class DialogZWaveJSAddNode extends LitElement {
             ${this.hass.localize("ui.common.back")}
           </ha-button>
         </div>`;
+    }
+
+    if (this._step === "failed") {
+      return html`
+        <zwave-js-add-node-failed
+          slot="content"
+          .error=${this._error}
+          .hass=${this.hass}
+        ></zwave-js-add-node-failed>
+      `;
     }
 
     return html`<div class="loading" slot="content">
@@ -414,10 +432,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _setStrategy(ev: CustomEvent): void {
     this._inclusionStrategy = ev.detail.strategy;
-  }
-
-  private _addAnotherDevice() {
-    // TODO
   }
 
   private _startInclusion(
@@ -550,10 +564,7 @@ class DialogZWaveJSAddNode extends LitElement {
       return;
     }
 
-    if (
-      qrCodeString.length < MINIMUM_QR_STRING_LENGTH ||
-      !qrCodeString.startsWith("90")
-    ) {
+    if (!validateQrCode(qrCodeString)) {
       this._qrProcessing = false;
       this._error = `Invalid QR code (${qrCodeString})`;
       this._step = "failed";
@@ -568,14 +579,14 @@ class DialogZWaveJSAddNode extends LitElement {
         this._entryId!,
         qrCodeString
       );
-      const device = await lookupZwaveDevice(
-        this.hass,
-        this._entryId!,
-        provisioningInfo.manufacturerId,
-        provisioningInfo.productType,
-        provisioningInfo.productId,
-        provisioningInfo.applicationVersion
-      );
+      // const device = await lookupZwaveDevice(
+      //   this.hass,
+      //   this._entryId!,
+      //   provisioningInfo.manufacturerId,
+      //   provisioningInfo.productType,
+      //   provisioningInfo.productId,
+      //   provisioningInfo.applicationVersion
+      // );
       // @TODO: use device.description to set the device name
     } catch (err: any) {
       this._qrProcessing = false;

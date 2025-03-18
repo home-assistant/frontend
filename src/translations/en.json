@@ -5788,6 +5788,7 @@
             "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometime called \"inclusion mode\")",
             "security_options": "Advanced security options",
             "choose_inclusion_strategy": "How do you want to add your device",
+            "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
             "check_logs": "Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",
