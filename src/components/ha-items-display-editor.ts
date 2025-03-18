@@ -1,5 +1,6 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -54,6 +55,10 @@ export class HaItemDisplayEditor extends LitElement {
     order: [],
     hidden: [],
   };
+
+  @property({ attribute: false }) public actionsRenderer?: (
+    item: DisplayItem
+  ) => TemplateResult<1> | typeof nothing;
 
   private _showIcon = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 450,
@@ -202,6 +207,11 @@ export class HaItemDisplayEditor extends LitElement {
                             ></ha-svg-icon>
                           `
                         : nothing}
+                  ${this.actionsRenderer
+                    ? html`
+                        <span slot="end"> ${this.actionsRenderer(item)} </span>
+                      `
+                    : nothing}
                   <ha-icon-button
                     .path=${isVisible ? mdiEye : mdiEyeOff}
                     slot="end"

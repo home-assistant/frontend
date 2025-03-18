@@ -12,7 +12,12 @@ import type { AreasViewStrategyConfig } from "./areas-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 interface AreaConfig {
-  groups?: Record<string, EntitiesDisplay>;
+  groups?: Record<
+    string,
+    EntitiesDisplay & {
+      overview_hidden?: string[];
+    }
+  >;
 }
 
 export interface AreasDashboardStrategyConfig {
@@ -22,6 +27,29 @@ export interface AreasDashboardStrategyConfig {
     order?: string[];
   };
   areas?: Record<string, AreaConfig>;
+}
+
+function computeOverviewAreasConfig(
+  areas: Record<string, AreaConfig>
+): Record<string, AreaConfig> {
+  const output: Record<string, AreaConfig> = {};
+
+  for (const [areaId, areaConfig] of Object.entries(areas)) {
+    output[areaId] = { groups: {} };
+
+    if (!areaConfig.groups) continue;
+
+    for (const [group, groupData] of Object.entries(areaConfig.groups)) {
+      const { overview_hidden = [], hidden = [], order = [] } = groupData;
+
+      output[areaId].groups![group] = {
+        hidden: [...overview_hidden, ...hidden],
+        order: order,
+      };
+    }
+  }
+
+  return output;
 }
 
 @customElement("areas-dashboard-strategy")
@@ -52,6 +80,10 @@ export class AreasDashboardStrategy extends ReactiveElement {
       };
     });
 
+    const overviewAreas = config.areas
+      ? computeOverviewAreasConfig(config.areas)
+      : undefined;
+
     return {
       views: [
         {
@@ -61,7 +93,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "areas",
             areas_display: config.areas_display,
-            areas: config.areas,
+            areas: overviewAreas,
           } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,
