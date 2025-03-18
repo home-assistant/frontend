@@ -29,7 +29,7 @@ export class HaTooltip extends SlTooltip {
         --sl-tooltip-padding: 8px;
         --sl-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
         --sl-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);
-        --sl-z-index-tooltip: 1000;
+        --sl-z-index-tooltip: var(--ha-tooltip-z-index, 1000);
       }
     `,
   ];
