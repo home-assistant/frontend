@@ -56,7 +56,8 @@ class OnboardingRestoreBackupRestore extends LitElement {
       new Date(this.backup.date)
     );
 
-    const onlyHomeAssistantBackup = this.backup.addons.length === 0 && this.backup.folders.length === 0;
+    const onlyHomeAssistantBackup =
+      this.backup.addons.length === 0 && this.backup.folders.length === 0;
 
     return html`
       <ha-icon-button-arrow-prev
@@ -118,10 +119,11 @@ class OnboardingRestoreBackupRestore extends LitElement {
           : nothing}
       </ha-md-list>
 
-
-      ${!onlyHomeAssistantBackup ?
-      html`<h2>${this.localize("ui.panel.page-onboarding.restore.select_type")}</h2>` : nothing}
-
+      ${!onlyHomeAssistantBackup
+        ? html`<h2>
+            ${this.localize("ui.panel.page-onboarding.restore.select_type")}
+          </h2>`
+        : nothing}
       ${this.backup.homeassistant_included &&
       !this.supervisor &&
       this.backup.addons.length > 0
