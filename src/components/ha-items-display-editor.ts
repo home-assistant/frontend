@@ -8,6 +8,7 @@ import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { orderCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -72,7 +73,11 @@ export class HaItemDisplayEditor extends LitElement {
       newHidden.push(value);
     }
 
-    const newVisibleItems = this._visibleItems(this.items, newHidden);
+    const newVisibleItems = this._visibleItems(
+      this.items,
+      newHidden,
+      this.value.order
+    );
     const newOrder = newVisibleItems.map((a) => a.value);
 
     this.value = {
@@ -86,7 +91,11 @@ export class HaItemDisplayEditor extends LitElement {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
-    const visibleItems = this._visibleItems(this.items, this.value.hidden);
+    const visibleItems = this._visibleItems(
+      this.items,
+      this.value.hidden,
+      this.value.order
+    );
     const newOrder = visibleItems.map((item) => item.value);
 
     const movedItem = newOrder.splice(oldIndex, 1)[0];
@@ -105,8 +114,21 @@ export class HaItemDisplayEditor extends LitElement {
     ev.stopPropagation();
   }
 
-  private _visibleItems = memoizeOne((items: DisplayItem[], hidden: string[]) =>
-    items.filter((item) => !hidden.includes(item.value))
+  private _visibleItems = memoizeOne(
+    (items: DisplayItem[], hidden: string[], order: string[]) => {
+      const compare = orderCompare(order);
+      return items
+        .filter((item) => !hidden.includes(item.value))
+        .sort((a, b) => compare(a.value, b.value));
+    }
+  );
+
+  private _allItems = memoizeOne(
+    (items: DisplayItem[], hidden: string[], order: string[]) => {
+      const visibleItems = this._visibleItems(items, hidden, order);
+      const hiddenItems = this._hiddenItems(items, hidden);
+      return [...visibleItems, ...hiddenItems];
+    }
   );
 
   private _hiddenItems = memoizeOne((items: DisplayItem[], hidden: string[]) =>
@@ -114,10 +136,11 @@ export class HaItemDisplayEditor extends LitElement {
   );
 
   protected render() {
-    const allItems = [
-      ...this._visibleItems(this.items, this.value.hidden),
-      ...this._hiddenItems(this.items, this.value.hidden),
-    ];
+    const allItems = this._allItems(
+      this.items,
+      this.value.hidden,
+      this.value.order
+    );
 
     const showIcon = this._showIcon.value;
     return html`

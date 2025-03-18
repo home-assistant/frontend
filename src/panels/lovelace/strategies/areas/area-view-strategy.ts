@@ -17,9 +17,15 @@ import {
   getAreaGroupedEntities,
 } from "./helpers/area-strategy-helper";
 
+export interface EntitiesDisplay {
+  hidden?: string[];
+  order?: string[];
+}
+
 export interface AreaViewStrategyConfig {
   type: "area";
   area?: string;
+  groups?: Record<string, EntitiesDisplay>;
 }
 
 const computeTileCardConfig =
@@ -102,16 +108,16 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
-    const groupedEntities = getAreaGroupedEntities(config.area, hass);
+    const groupedEntities = getAreaGroupedEntities(
+      config.area,
+      hass,
+      config.groups
+    );
 
     const computeTileCard = computeTileCardConfig(hass);
 
-    const {
-      lights,
-      climate,
-      media_players: mediaPlayers,
-      security,
-    } = groupedEntities;
+    const { lights, climate, media_players, security } = groupedEntities;
+
     if (lights.length > 0) {
       sections.push({
         type: "grid",
@@ -138,7 +144,7 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
-    if (mediaPlayers.length > 0) {
+    if (media_players.length > 0) {
       sections.push({
         type: "grid",
         cards: [
@@ -146,7 +152,7 @@ export class AreaViewStrategy extends ReactiveElement {
             AREA_STRATEGY_GROUP_LABELS.media_players,
             AREA_STRATEGY_GROUP_ICONS.media_players
           ),
-          ...mediaPlayers.map(computeTileCard),
+          ...media_players.map(computeTileCard),
         ],
       });
     }

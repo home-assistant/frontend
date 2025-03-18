@@ -3,10 +3,17 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { AreaViewStrategyConfig } from "../area/area-view-strategy";
+import type {
+  AreaViewStrategyConfig,
+  EntitiesDisplay,
+} from "./area-view-strategy";
 import type { LovelaceStrategyEditor } from "../types";
 import type { AreasViewStrategyConfig } from "./areas-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
+
+interface AreaConfig {
+  groups?: Record<string, EntitiesDisplay>;
+}
 
 export interface AreasDashboardStrategyConfig {
   type: "areas";
@@ -14,18 +21,7 @@ export interface AreasDashboardStrategyConfig {
     hidden?: string[];
     order?: string[];
   };
-  areas?: Record<
-    string,
-    {
-      groups?: Record<
-        string,
-        {
-          hidden?: string[];
-          order?: string[];
-        }
-      >;
-    }
-  >;
+  areas?: Record<string, AreaConfig>;
 }
 
 @customElement("areas-dashboard-strategy")
@@ -42,6 +38,8 @@ export class AreasDashboardStrategy extends ReactiveElement {
 
     const areaViews = areas.map<LovelaceViewRawConfig>((area) => {
       const path = computeAreaPath(area.area_id);
+      const areaConfig = config.areas?.[area.area_id];
+
       return {
         title: area.name,
         icon: area.icon || undefined,
@@ -49,6 +47,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
         strategy: {
           type: "area",
           area: area.area_id,
+          groups: areaConfig?.groups,
         } satisfies AreaViewStrategyConfig,
       };
     });
@@ -62,6 +61,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
           strategy: {
             type: "areas",
             areas_display: config.areas_display,
+            areas: config.areas,
           } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,

@@ -37,7 +37,7 @@ export class HaAreasDisplayEditor extends LitElement {
   public showNavigationButton = false;
 
   protected render(): TemplateResult {
-    const compare = areaCompare(this.hass.areas, this.value?.order);
+    const compare = areaCompare(this.hass.areas);
 
     const areas = Object.values(this.hass.areas).sort((areaA, areaB) =>
       compare(areaA.area_id, areaB.area_id)
