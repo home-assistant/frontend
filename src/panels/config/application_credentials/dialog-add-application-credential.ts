@@ -7,7 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
@@ -231,7 +231,7 @@ export class DialogAddApplicationCredential extends LitElement {
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>
             `
           : html`

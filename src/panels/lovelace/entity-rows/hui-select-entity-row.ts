@@ -7,7 +7,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
-import type { InputSelectEntity } from "../../../data/input_select";
 import type { SelectEntity } from "../../../data/select";
 import { setSelectOption } from "../../../data/select";
 import type { HomeAssistant } from "../../../types";
@@ -61,6 +60,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
         <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
+          .options=${stateObj.attributes.options}
           .disabled=${stateObj.state === UNAVAILABLE}
           naturalMenuWidth
           @action=${this._handleAction}
@@ -93,9 +93,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
   `;
 
   private _handleAction(ev): void {
-    const stateObj = this.hass!.states[
-      this._config!.entity
-    ] as InputSelectEntity;
+    const stateObj = this.hass!.states[this._config!.entity] as SelectEntity;
 
     const option = ev.target.value;
 

@@ -26,7 +26,7 @@ class DialogCloudAlreadyConnected extends LitElement {
   }
 
   public closeDialog() {
-    this._params?.closeDialog();
+    this._params?.closeDialog?.();
     this._params = undefined;
     this._obfuscateIp = true;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -148,7 +148,7 @@ class DialogCloudAlreadyConnected extends LitElement {
   }
 
   private _logInHere() {
-    this._params?.logInHereAction();
+    this._params?.logInHereAction?.();
     this.closeDialog();
   }
 

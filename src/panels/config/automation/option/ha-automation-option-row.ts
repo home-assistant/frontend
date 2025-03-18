@@ -92,7 +92,7 @@ export default class HaAutomationOptionRow extends LitElement {
     return html`
       <ha-card outlined>
         <ha-expansion-panel
-          leftChevron
+          left-chevron
           @expanded-changed=${this._expandedChanged}
           id="option"
         >

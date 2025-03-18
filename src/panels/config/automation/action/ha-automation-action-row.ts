@@ -203,20 +203,24 @@ export default class HaAutomationActionRow extends LitElement {
               </div>
             `
           : nothing}
-        <ha-expansion-panel leftChevron>
-          <h3 slot="header">
-            ${type === "service" &&
-            "action" in this.action &&
-            this.action.action
-              ? html`<ha-service-icon
+        <ha-expansion-panel left-chevron>
+          ${type === "service" && "action" in this.action && this.action.action
+            ? html`
+                <ha-service-icon
+                  slot="leading-icon"
                   class="action-icon"
                   .hass=${this.hass}
                   .service=${this.action.action}
-                ></ha-service-icon>`
-              : html`<ha-svg-icon
+                ></ha-service-icon>
+              `
+            : html`
+                <ha-svg-icon
+                  slot="leading-icon"
                   class="action-icon"
                   .path=${ACTION_ICONS[type!]}
-                ></ha-svg-icon>`}
+                ></ha-svg-icon>
+              `}
+          <h3 slot="header">
             ${capitalizeFirstLetter(
               describeAction(
                 this.hass,
@@ -640,9 +644,6 @@ export default class HaAutomationActionRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {

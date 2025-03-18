@@ -1127,6 +1127,10 @@
       },
       "multi-textfield": {
         "add_item": "Add {item}"
+      },
+      "items-display-editor": {
+        "show": "Show {label}",
+        "hide": "Hide {label}"
       }
     },
     "dialogs": {
@@ -2623,7 +2627,7 @@
                 "thu": "Th",
                 "fri": "Fr",
                 "sat": "Sa",
-                "sun": "So"
+                "sun": "Su"
               }
             }
           },
@@ -3121,6 +3125,10 @@
                 "iframe": {
                   "title": "Webpage",
                   "description": "Integrate a webpage as a dashboard"
+                },
+                "areas": {
+                  "title": "Areas (experimental)",
+                  "description": "Display your devices with a view for each area"
                 }
               }
             },
@@ -4551,6 +4559,7 @@
             "password_error_msg": "Passwords are at least 8 characters",
             "totp_code_prompt_title": "Two-factor authentication",
             "totp_code": "TOTP code",
+            "cancel": "Cancel",
             "submit": "Submit",
             "forgot_password": "Forgot password?",
             "start_trial": "Start your free 1 month trial",
@@ -5566,6 +5575,17 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
+            "nvm_backup": {
+              "title": "Backup and Restore",
+              "description": "Back up or restore your Z-Wave controller's Non-Volatile Memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "download_backup": "Download backup",
+              "restore_backup": "Restore from backup",
+              "backup_failed": "Failed to download backup",
+              "restore_complete": "Backup restored",
+              "restore_failed": "Failed to restore backup",
+              "downloading": "Downloading backup",
+              "restoring": "Restoring backup"
+            },
             "statistics": {
               "title": "Controller statistics",
               "messages_tx": {
@@ -7169,6 +7189,7 @@
               "description": "The To-do list card allows you to add, edit, check-off, and remove items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
+              "hide_create": "Hide 'Add item' field",
               "display_order": "Display Order",
               "sort_modes": {
                 "none": "Default",
@@ -7461,12 +7482,15 @@
           },
           "strategy": {
             "original-states": {
-              "areas": "Areas",
+              "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
             },
             "iframe": {
               "url": "URL"
+            },
+            "areas": {
+              "areas_display": "Areas to display"
             }
           },
           "view": {
@@ -8213,7 +8237,7 @@
         "welcome": {
           "header": "Welcome!",
           "start": "Create my smart home",
-          "restore_backup": "Restore from backup",
+          "or_restore": "Or restore",
           "vision": "Read our vision",
           "community": "Join our community",
           "download_app": "Download our app",
@@ -8246,7 +8270,7 @@
         },
         "core-config": {
           "location_header": "Home location",
-          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations.",
+          "intro_location": "This data is stored on your Home Assistant system, though some cloud-based integrations may use this data to function.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
@@ -8294,6 +8318,7 @@
         "restore": {
           "header": "Restore a backup",
           "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
+          "upload_backup_subtitle": "Upload a backup file from your device",
           "unsupported": {
             "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
             "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
@@ -8306,19 +8331,18 @@
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
+            "addons_unsupported": "Your installation method doesn’t support add-ons. If you wan’t to restore these, you have to install Home Assistant Operating System",
             "summary": {
-              "title": "[%key:ui::panel::config::backup::details::summary::title%]",
-              "size": "[%key:ui::panel::config::backup::details::summary::size%]",
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
-              "upload_another": "Upload another",
-              "home": "Home"
+              "content": "Content"
             },
             "restore": {
-              "title": "[%key:ui::panel::config::backup::details::restore::title%]",
-              "action": "[%key:ui::panel::config::backup::details::restore::action%]",
+              "title": "[%key:ui::panel::config::backup::dialogs::restore::title%]",
+              "action": "Restore backup",
               "encryption": {
-                "title": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "label": "Encryption",
+                "description": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "description_cloud": "Home Assistant Cloud is the privacy-focused cloud. We don’t store your encryption key. Enter the encryption key you saved or use the emergency kit you have downloaded.",
                 "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
                 "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
               }
@@ -8356,7 +8380,7 @@
           "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
           "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
-          "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
+          "confirm_restore_full_backup_text": "Depending on the size of the backup, this can take up to 45 minutes. Home Assistant will restart and you will see the login screen when it’s restored.",
           "restore": "[%key:supervisor::backup::restore%]",
           "close": "[%key:ui::common::close%]",
           "cancel": "[%key:ui::common::cancel%]",
@@ -8370,6 +8394,50 @@
             "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
             "yes": "[%key:ui::common::yes%]",
             "no": "[%key:ui::common::no%]"
+          },
+          "ha-cloud": {
+            "description": "Restore from your Home Assistant Cloud backup.",
+            "no_cloud_backup": "No backup available",
+            "no_cloud_backup_description": "This Home Assistant Cloud account doesn’t have a backup stored. You can learn more how Cloud backups work at the Nabu Casa website.",
+            "sign_out": "[%key:ui::panel::config::cloud::account::sign_out%]",
+            "sign_out_progress": "Home Assistant cloud signing out...",
+            "sign_out_success": "Home Assistant cloud signed out",
+            "sign_out_error": "Failed to sign out from Home Assistant cloud",
+            "learn_more": "Learn more",
+            "sign_in_description": "Sign in to your Nabu Casa account and restore your Home Assistant Cloud backup.",
+            "login": {
+              "title": "[%key:ui::panel::config::cloud::login::title%]",
+              "sign_in": "[%key:ui::panel::config::cloud::login::sign_in%]",
+              "email": "[%key:ui::panel::config::cloud::login::email%]",
+              "email_error_msg": "[%key:ui::panel::config::cloud::login::email_error_msg%]",
+              "password": "[%key:ui::panel::config::cloud::login::password%]",
+              "password_error_msg": "[%key:ui::panel::config::cloud::login::password_error_msg%]",
+              "totp_code_prompt_title": "[%key:ui::panel::config::cloud::login::totp_code_prompt_title%]",
+              "totp_code": "[%key:ui::panel::config::cloud::login::totp_code%]",
+              "cancel": "[%key:ui::panel::config::cloud::login::cancel%]",
+              "submit": "[%key:ui::panel::config::cloud::login::submit%]",
+              "forgot_password": "[%key:ui::panel::config::cloud::login::forgot_password%]",
+              "start_trial": "[%key:ui::panel::config::cloud::login::start_trial%]",
+              "trial_info": "[%key:ui::panel::config::cloud::login::trial_info%]",
+              "alert_password_change_required": "[%key:ui::panel::config::cloud::login::alert_password_change_required%]",
+              "alert_email_confirm_necessary": "[%key:ui::panel::config::cloud::login::alert_email_confirm_necessary%]",
+              "alert_mfa_code_required": "[%key:ui::panel::config::cloud::login::alert_mfa_code_required%]",
+              "alert_mfa_expired_or_not_started": "[%key:ui::panel::config::cloud::login::alert_mfa_expired_or_not_started%]",
+              "alert_totp_code_invalid": "[%key:ui::panel::config::cloud::login::alert_totp_code_invalid%]"
+            },
+            "forgot_password": {
+              "title": "[%key:ui::panel::config::cloud::forgot_password::title%]",
+              "subtitle": "[%key:ui::panel::config::cloud::forgot_password::subtitle%]",
+              "instructions": "[%key:ui::panel::config::cloud::forgot_password::instructions%]",
+              "email": "[%key:ui::panel::config::cloud::forgot_password::email%]",
+              "email_error_msg": "[%key:ui::panel::config::cloud::forgot_password::email_error_msg%]",
+              "send_reset_email": "[%key:ui::panel::config::cloud::forgot_password::send_reset_email%]",
+              "check_your_email": "[%key:ui::panel::config::cloud::forgot_password::check_your_email%]"
+            }
+          },
+          "options": {
+            "title": "How to restore?",
+            "upload_description": "Upload and restore a Home Assistant backup to this system"
           }
         }
       },
