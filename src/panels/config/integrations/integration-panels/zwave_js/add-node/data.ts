@@ -2,6 +2,7 @@ export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "qr_scan",
   "select_other_method",
   "qr_code_input",
+  "choose_security_strategy",
 ];
 
 export const closeButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
@@ -18,7 +19,7 @@ export type ZWaveJSAddNodeStage =
   | "qr_code_input"
   | "search_devices"
   | "search_specific_device"
-  | "choose_strategy"
+  | "choose_security_strategy"
   | "interviewing"
   | "failed"
   | "timed_out"

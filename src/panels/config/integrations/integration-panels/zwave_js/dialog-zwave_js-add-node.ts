@@ -41,6 +41,7 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-qr-scanner";
 import "./add-node/zwave-js-add-node-select-method";
 import "./add-node/zwave-js-add-node-searching-devices";
+import "./add-node/zwave-js-add-node-select-security-strategy";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
@@ -219,6 +220,10 @@ class DialogZWaveJSAddNode extends LitElement {
           this._step = "select_method";
           break;
         }
+        break;
+      case "choose_security_strategy":
+        this._step = "search_devices";
+        break;
     }
   }
 
@@ -254,12 +259,15 @@ class DialogZWaveJSAddNode extends LitElement {
       case "search_specific_device":
         titleTranslationKey = "specific_device.title";
         break;
+      case "choose_security_strategy":
+        titleTranslationKey = "security_options";
+        break;
     }
 
     if (this._step === "loading") {
       return html`
         <ha-fade-in slot="title" .delay=${1000}>
-            <span id="dialog-light-color-favorite-title"
+          <span id="dialog-light-color-favorite-title"
             >${this.hass.localize(
               `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
             )}</span
@@ -336,7 +344,10 @@ class DialogZWaveJSAddNode extends LitElement {
       `;
     }
 
-    if (this._step === "search_devices" || this._step === "search_specific_device") {
+    if (
+      this._step === "search_devices" ||
+      this._step === "search_specific_device"
+    ) {
       return html`
         <zwave-js-add-node-searching-devices
           .hass=${this.hass}
@@ -355,6 +366,22 @@ class DialogZWaveJSAddNode extends LitElement {
             `
           : nothing}
       `;
+    }
+
+    if (this._step === "choose_security_strategy") {
+      return html` <zwave-js-add-node-select-security-strategy
+          slot="content"
+          .hass=${this.hass}
+          .inclusionStrategy=${this._inclusionStrategy ||
+          InclusionStrategy.Default}
+          @z-wave-strategy-selected=${this._setStrategy}
+        ></zwave-js-add-node-select-security-strategy>
+
+        <div slot="actions">
+          <ha-button @click=${this._handleBack}>
+            ${this.hass.localize("ui.common.back")}
+          </ha-button>
+        </div>`;
     }
 
     return html`<div class="loading" slot="content">
@@ -382,7 +409,11 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private _showSecurityOptions() {
-    // TODO
+    this._step = "choose_security_strategy";
+  }
+
+  private _setStrategy(ev: CustomEvent): void {
+    this._inclusionStrategy = ev.detail.strategy;
   }
 
   private _addAnotherDevice() {
@@ -404,7 +435,9 @@ class DialogZWaveJSAddNode extends LitElement {
       (message) => {
         switch (message.event) {
           case "inclusion started":
-            this._step = specificDevice ? "search_specific_device" : "search_devices";
+            this._step = specificDevice
+              ? "search_specific_device"
+              : "search_devices";
             break;
           case "inclusion failed":
             this._unsubscribe();

@@ -5834,6 +5834,15 @@
               "turn_on_device_description": "If your device is already turned on, you might need to turn it off and on again. Consult your device manual if you are unsure.",
               "add_another_z_wave_device": "Add another Z-Wave device",
               "close_description": "Feel free to close this screen, as this process will continue in the background."
+            },
+            "select_strategy": {
+              "title": "Choose security strategy",
+              "default_label": "Secure if possible",
+              "default_description": "Requires user interaction during inclusion. Fast and secure with S2 when supported. Allows manually selecting which security keys to grant. Fallback to legacy S0 or no encryption when necessary.",
+              "s0_label": "Legacy Secure",
+              "s0_description": "Uses the older S0 security that is secure, but slow due to a lot of overhead. Allows securely including S2 capable devices which fail to be included with S2.",
+              "insecure_label": "Legacy Insecure",
+              "insecure_description": "Do not use encryption."
             }
           },
           "provisioned": {
