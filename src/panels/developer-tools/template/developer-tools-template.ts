@@ -320,6 +320,7 @@ ${type === "object"
         ha-alert {
           margin-bottom: 8px;
           display: block;
+          user-select: text;
         }
 
         .rendered {
