@@ -94,10 +94,6 @@ export class ZWaveJsAddNodeSelectMethod extends LitElement {
   }
 
   static styles = css`
-    :host {
-      display: block;
-      padding: 16px;
-    }
     ha-md-list {
       padding: 0;
     }

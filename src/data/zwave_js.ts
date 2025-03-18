@@ -80,7 +80,7 @@ enum QRCodeVersion {
   SmartStart = 1,
 }
 
-enum Protocols {
+export enum Protocols {
   ZWave = 0,
   ZWaveLongRange = 1,
 }
@@ -211,6 +211,7 @@ export interface ZWaveJSController {
   is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
   nodes: ZWaveJSNodeStatus[];
+  supports_long_range: boolean;
 }
 
 export interface ZWaveJSNodeStatus {

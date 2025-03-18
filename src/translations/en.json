@@ -5844,6 +5844,17 @@
               "s0_description": "Uses the older S0 security that is secure, but slow due to a lot of overhead. Allows securely including S2 capable devices which fail to be included with S2.",
               "insecure_label": "Legacy Insecure",
               "insecure_description": "Do not use encryption."
+            },
+            "configure_device": {
+              "title": "Add device",
+              "device_name": "Name",
+              "device_area": "Area",
+              "choose_network_type": "Choose network type",
+              "long_range_label": "Direct long range",
+              "long_range_description": "Direct connection to Home Assistant for extended coverage, without a mesh network.",
+              "mesh_label": "Mesh network",
+              "mesh_description": "Devices relay signals to each other, enhancing coverage and reliability.",
+              "add_device": "Add device"
             }
           },
           "provisioned": {

@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSAddNodeDialogParams {
   entry_id: string;
+  longRangeSupported: boolean;
   dsk?: string;
   onStop?: () => void;
 }

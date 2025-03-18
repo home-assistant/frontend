@@ -2,12 +2,13 @@ import { customElement, property } from "lit/decorators";
 import { css, html, LitElement } from "lit";
 import memoizeOne from "memoize-one";
 
-import "../../../../../../components/ha-form/ha-form";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../../../types";
 import { InclusionStrategy } from "../../../../../../data/zwave_js";
 import type { LocalizeFunc } from "../../../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../../../components/ha-form/types";
+
+import "../../../../../../components/ha-form/ha-form";
 
 @customElement("zwave-js-add-node-select-security-strategy")
 export class ZWaveJsAddNodeSelectMethod extends LitElement {
@@ -69,10 +70,15 @@ export class ZWaveJsAddNodeSelectMethod extends LitElement {
     `;
   }
 
-  private _computeLabel = () => this.hass.localize("ui.panel.config.zwave_js.add_node.select_strategy.title")
+  private _computeLabel = () =>
+    this.hass.localize(
+      "ui.panel.config.zwave_js.add_node.select_strategy.title"
+    );
 
   private _selectStrategy(event: any) {
-    const selectedStrategy = Number(event.detail.value.strategy) as InclusionStrategy;
+    const selectedStrategy = Number(
+      event.detail.value.strategy
+    ) as InclusionStrategy;
     fireEvent(this, "z-wave-strategy-selected", {
       strategy: selectedStrategy,
     });

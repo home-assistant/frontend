@@ -755,6 +755,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         entry_id: this.configEntryId!,
         dsk,
         onStop: this._handleInclusionDialogClosed,
+        longRangeSupported: !!this._network?.controller?.supports_long_range,
       });
       this._dialogOpen = true;
     }
