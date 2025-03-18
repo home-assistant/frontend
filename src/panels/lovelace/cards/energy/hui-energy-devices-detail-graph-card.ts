@@ -148,24 +148,6 @@ export class HuiEnergyDevicesDetailGraphCard
       { num: formatNumber(total, this.hass.locale), unit: UNIT }
     );
 
-  private _nameToStatId(name: string): string | undefined {
-    return this._data?.prefs.device_consumption.find(
-      (d) =>
-        (d.name ??
-          getStatisticLabel(
-            this.hass,
-            d.stat_consumption,
-            this._data?.statsMetadata[d.stat_consumption]
-          )) === name
-    )?.stat_consumption;
-  }
-
-  private get _hiddenStatIds(): string[] {
-    return this._hiddenStats
-      .map((s) => this._nameToStatId(s))
-      .filter((s) => s) as string[];
-  }
-
   private _datasetHidden(ev) {
     this._hiddenStats = [...this._hiddenStats, ev.detail.name];
   }
@@ -309,7 +291,6 @@ export class HuiEnergyDevicesDetailGraphCard
           computedStyle,
           processedCompareData,
           consumptionCompareData,
-          energyData.prefs.device_consumption,
           true
         );
         datasets.push(untrackedCompareData);
@@ -341,7 +322,6 @@ export class HuiEnergyDevicesDetailGraphCard
         computedStyle,
         processedData,
         consumptionData,
-        energyData.prefs.device_consumption,
         false
       );
       datasets.push(untrackedData);
@@ -355,28 +335,16 @@ export class HuiEnergyDevicesDetailGraphCard
     computedStyle: CSSStyleDeclaration,
     processedData,
     consumptionData,
-    deviceConsumptionPrefs,
     compare: boolean
   ): BarSeriesOption {
     const totalDeviceConsumption: Record<number, number> = {};
 
-    processedData.forEach((device, idx) => {
-      const stat = deviceConsumptionPrefs.find(
-        (pref) =>
-          pref.stat_consumption === this._getStatIdFromId(processedData[idx].id)
-      );
-
-      // If a child is hidden, don't count it in the total, because the parent device will grow to encompass that consumption.
-      const hiddenChild =
-        stat.included_in_stat &&
-        this._hiddenStatIds.includes(stat.stat_consumption);
-      if (!hiddenChild) {
-        device.data.forEach((datapoint) => {
-          totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
-            (totalDeviceConsumption[datapoint[compare ? 2 : 0]] || 0) +
-            datapoint[1];
-        });
-      }
+    processedData.forEach((device) => {
+      device.data.forEach((datapoint) => {
+        totalDeviceConsumption[datapoint[compare ? 2 : 0]] =
+          (totalDeviceConsumption[datapoint[compare ? 2 : 0]] || 0) +
+          datapoint[1];
+      });
     });
     const compareTransform = getCompareTransform(
       this._start,
@@ -475,20 +443,12 @@ export class HuiEnergyDevicesDetailGraphCard
             continue;
           }
           let sumChildren = 0;
-          const sumVisibleChildren = (parent) => {
-            const children = childMap[parent] || [];
-            children.forEach((c) => {
-              if (this._hiddenStatIds.includes(c)) {
-                sumVisibleChildren(c);
-              } else {
-                const cStats = statistics[c];
-                sumChildren +=
-                  cStats?.find((cStat) => cStat.start === point.start)
-                    ?.change || 0;
-              }
-            });
-          };
-          sumVisibleChildren(source.stat_consumption);
+          const children = childMap[source.stat_consumption] || [];
+          children.forEach((c) => {
+            const cStats = statistics[c];
+            sumChildren +=
+              cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
+          });
 
           const dataPoint = [point.start, point.change - sumChildren];
           if (compare) {
@@ -500,6 +460,17 @@ export class HuiEnergyDevicesDetailGraphCard
         }
       }
 
+      const name =
+        (source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_consumption,
+            statisticsMetaData[source.stat_consumption]
+          )) +
+        (source.stat_consumption in childMap
+          ? ` (${this.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
+          : "");
+
       data.push({
         type: "bar",
         cursor: "default",
@@ -507,13 +478,7 @@ export class HuiEnergyDevicesDetailGraphCard
         id: compare
           ? `compare-${source.stat_consumption}-${order}`
           : `${source.stat_consumption}-${order}`,
-        name:
-          source.name ||
-          getStatisticLabel(
-            this.hass,
-            source.stat_consumption,
-            statisticsMetaData[source.stat_consumption]
-          ),
+        name,
         itemStyle: {
           borderColor: compare ? color + "7F" : color,
         },
