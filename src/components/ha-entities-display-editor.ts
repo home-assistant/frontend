@@ -54,12 +54,12 @@ export class HaEntitiesDisplayEditor extends LitElement {
         .hass=${this.hass}
         .items=${items}
         .value=${value}
-        @value-changed=${this._areaDisplayChanged}
+        @value-changed=${this._itemDisplayChanged}
       ></ha-items-display-editor>
     `;
   }
 
-  private async _areaDisplayChanged(ev) {
+  private async _itemDisplayChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail.value as DisplayValue;
     const newValue: EntitiesDisplayValue = {

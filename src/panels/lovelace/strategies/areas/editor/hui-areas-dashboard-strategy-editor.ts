@@ -8,6 +8,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
 import "../../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../../types";
+import type { AreaStrategyGroup } from "../../area/helpers/area-strategy-helper";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUPS,
@@ -39,8 +40,6 @@ export class HuiAreasDashboardStrategyEditor
       return nothing;
     }
 
-    const value = this._config.areas_display;
-
     if (this._area) {
       const groups = getAreaGroupedEntities(this._area, this.hass);
 
@@ -53,6 +52,8 @@ export class HuiAreasDashboardStrategyEditor
         </div>
         ${AREA_STRATEGY_GROUPS.map((group) => {
           const entities = groups[group] || [];
+          const value = this._config!.areas?.[this._area!]?.groups?.[group];
+
           return html`
             <ha-expansion-panel
               header=${AREA_STRATEGY_GROUP_LABELS[group]}
@@ -69,7 +70,9 @@ export class HuiAreasDashboardStrategyEditor
                       .hass=${this.hass}
                       .value=${value}
                       .label=${group}
-                      @value-changed=${this._areaDisplayChanged}
+                      @value-changed=${this._entitiesDisplayChanged}
+                      .group=${group}
+                      .area=${this._area}
                       .entitiesIds=${entities}
                     ></ha-entities-display-editor>
                   `
@@ -84,6 +87,8 @@ export class HuiAreasDashboardStrategyEditor
       `;
     }
 
+    const value = this._config.areas_display;
+
     return html`
       <ha-areas-display-editor
         .hass=${this.hass}
@@ -91,7 +96,7 @@ export class HuiAreasDashboardStrategyEditor
         .label=${this.hass.localize(
           "ui.panel.lovelace.editor.strategy.areas.areas_display"
         )}
-        @value-changed=${this._areaDisplayChanged}
+        @value-changed=${this._areasDisplayChanged}
         expanded
         show-navigation-button
         @item-display-navigate-clicked=${this._handleAreaNavigate}
@@ -109,11 +114,36 @@ export class HuiAreasDashboardStrategyEditor
     this._area = ev.detail.value;
   }
 
-  private _areaDisplayChanged(ev: CustomEvent): void {
+  private _areasDisplayChanged(ev: CustomEvent): void {
     const value = ev.detail.value as AreasDisplayValue;
     const newConfig: AreasDashboardStrategyConfig = {
       ...this._config!,
       areas_display: value,
+    };
+
+    fireEvent(this, "config-changed", { config: newConfig });
+  }
+
+  private _entitiesDisplayChanged(ev: CustomEvent): void {
+    const value = ev.detail.value as AreasDisplayValue;
+
+    const { group, area } = ev.currentTarget as unknown as {
+      group: AreaStrategyGroup;
+      area: string;
+    };
+
+    const newConfig: AreasDashboardStrategyConfig = {
+      ...this._config!,
+      areas: {
+        ...this._config!.areas,
+        [area]: {
+          ...this._config!.areas?.[area],
+          groups: {
+            ...this._config!.areas?.[area]?.groups,
+            [group]: value,
+          },
+        },
+      },
     };
 
     fireEvent(this, "config-changed", { config: newConfig });

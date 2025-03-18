@@ -14,6 +14,18 @@ export interface AreasDashboardStrategyConfig {
     hidden?: string[];
     order?: string[];
   };
+  areas?: Record<
+    string,
+    {
+      groups?: Record<
+        string,
+        {
+          hidden?: string[];
+          order?: string[];
+        }
+      >;
+    }
+  >;
 }
 
 @customElement("areas-dashboard-strategy")
