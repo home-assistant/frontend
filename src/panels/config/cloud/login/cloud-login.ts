@@ -134,10 +134,8 @@ export class CloudLogin extends LitElement {
     err: any,
     email: string,
     password: string,
-    checkConnection: boolean,
-  ): Promise<
-    "cancel" | "password-change" | string | undefined
-  > => {
+    checkConnection: boolean
+  ): Promise<"cancel" | "password-change" | string | undefined> => {
     const errCode = err && err.body && err.body.code;
     if (errCode === "mfarequired") {
       const totpCode = await showPromptDialog(this, {
@@ -254,7 +252,7 @@ export class CloudLogin extends LitElement {
         err,
         email,
         password,
-        checkConnection,
+        checkConnection
       );
 
       if (error === "cancel") {

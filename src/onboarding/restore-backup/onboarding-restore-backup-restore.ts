@@ -51,7 +51,9 @@ class OnboardingRestoreBackupRestore extends LitElement {
     );
     const backupProtected = this.backup.agents[agentId].protected;
 
-    const formattedDate = formatDateTimeWithBrowserDefaults(new Date(this.backup.date));
+    const formattedDate = formatDateTimeWithBrowserDefaults(
+      new Date(this.backup.date)
+    );
 
     return html`
       <ha-icon-button-arrow-prev
@@ -86,16 +88,16 @@ class OnboardingRestoreBackupRestore extends LitElement {
           </ha-alert>`
         : nothing}
 
-        <ha-md-list>
-          <ha-md-list-item>
-            <span slot="headline">
-              ${this.localize(
-                "ui.panel.page-onboarding.restore.details.summary.created"
-              )}
-            </span>
-            <span slot="supporting-text">${formattedDate}</span>
-          </ha-md-list-item>
-        </ha-md-list>
+      <ha-md-list>
+        <ha-md-list-item>
+          <span slot="headline">
+            ${this.localize(
+              "ui.panel.page-onboarding.restore.details.summary.created"
+            )}
+          </span>
+          <span slot="supporting-text">${formattedDate}</span>
+        </ha-md-list-item>
+      </ha-md-list>
 
       <h2>${this.localize("ui.panel.page-onboarding.restore.select_type")}</h2>
 

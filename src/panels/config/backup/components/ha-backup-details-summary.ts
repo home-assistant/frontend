@@ -4,9 +4,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import type { HomeAssistant } from "../../../../types";
-import {
-  formatDateTime,
-} from "../../../../common/datetime/format_date_time";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import {
   computeBackupSize,
   computeBackupType,
@@ -24,14 +22,16 @@ class HaBackupDetailsSummary extends LitElement {
 
   render() {
     const backupDate = new Date(this.backup.date);
-    const formattedDate = formatDateTime(backupDate, this.hass.locale, this.hass.config);
+    const formattedDate = formatDateTime(
+      backupDate,
+      this.hass.locale,
+      this.hass.config
+    );
 
     return html`
       <ha-card>
         <div class="card-header">
-          ${this.hass.localize(
-            "ui.panel.config.backup.details.summary.title"
-          )}
+          ${this.hass.localize("ui.panel.config.backup.details.summary.title")}
         </div>
         <div class="card-content">
           <ha-md-list class="summary">
