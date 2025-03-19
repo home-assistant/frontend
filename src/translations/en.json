@@ -7129,9 +7129,10 @@
               "show_seconds": "Display seconds",
               "time_format": "Time format",
               "time_formats": {
-                "auto": "Use profile defaults",
-                "12": "12-hour",
-                "24": "24-hour"
+                "language": "[%key:ui::panel::profile::time_format::formats::language%]",
+                "system": "[%key:ui::panel::profile::time_format::formats::system%]",
+                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
+                "12": "[%key:ui::panel::profile::time_format::formats::12%]"
               }
             },
             "media-control": {

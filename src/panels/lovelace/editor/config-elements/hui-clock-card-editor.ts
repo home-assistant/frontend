@@ -64,7 +64,7 @@ export class HuiClockCardEditor
               options: Object.values(TimeFormat).map((value) => ({
                 value,
                 label: localize(
-                  `ui.panel.profile.time_format.formats.${value}`
+                  `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
                 ),
               })),
             },
