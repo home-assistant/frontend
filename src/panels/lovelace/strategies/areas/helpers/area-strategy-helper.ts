@@ -89,6 +89,7 @@ export const getAreaGroupedEntities = (
           "shade",
           "shutter",
           "window",
+          "none",
         ],
         entity_category: "none",
       }),

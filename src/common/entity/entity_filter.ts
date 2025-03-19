@@ -54,7 +54,7 @@ export const generateEntityFilter = (
       }
     }
     if (deviceClasses) {
-      const dc = stateObj.attributes.device_class;
+      const dc = stateObj.attributes.device_class || "none";
       if (!dc) {
         return false;
       }
