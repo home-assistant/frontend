@@ -46,9 +46,7 @@ export class DialogEnergyDeviceSettings
   ): Promise<void> {
     this._params = params;
     this._device = this._params.device;
-    if (this._device) {
-      this._computePossibleParents();
-    }
+    this._computePossibleParents();
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
