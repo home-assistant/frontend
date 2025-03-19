@@ -72,6 +72,6 @@ loadLinksPreset(tsParticles).then(() => {
         },
       },
       pauseOnBlur: true,
-    }
-  })
+    },
+  });
 });
