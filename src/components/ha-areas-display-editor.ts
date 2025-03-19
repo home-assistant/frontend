@@ -33,8 +33,11 @@ export class HaAreasDisplayEditor extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ type: Boolean, attribute: "show-navigation-button" })
+  public showNavigationButton = false;
+
   protected render(): TemplateResult {
-    const compare = areaCompare(this.hass.areas, this.value?.order);
+    const compare = areaCompare(this.hass.areas);
 
     const areas = Object.values(this.hass.areas).sort((areaA, areaB) =>
       compare(areaA.area_id, areaB.area_id)
@@ -68,6 +71,7 @@ export class HaAreasDisplayEditor extends LitElement {
           .items=${items}
           .value=${value}
           @value-changed=${this._areaDisplayChanged}
+          .showNavigationButton=${this.showNavigationButton}
         ></ha-items-display-editor>
       </ha-expansion-panel>
     `;
