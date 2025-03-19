@@ -55,9 +55,6 @@ export const generateEntityFilter = (
     }
     if (deviceClasses) {
       const dc = stateObj.attributes.device_class || "none";
-      if (!dc) {
-        return false;
-      }
       if (!deviceClasses.has(dc)) {
         return false;
       }
