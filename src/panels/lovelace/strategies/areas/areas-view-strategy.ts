@@ -3,9 +3,12 @@ import { customElement } from "lit/decorators";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreaGroupedEntities } from "./helpers/area-strategy-helper";
-import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 import type { EntitiesDisplay } from "./area-view-strategy";
+import {
+  computeAreaTileCardConfig,
+  getAreaGroupedEntities,
+} from "./helpers/area-strategy-helper";
+import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
@@ -49,7 +52,10 @@ export class AreasViewStrategy extends ReactiveElement {
           ...groups.climate,
           ...groups.media_players,
           ...groups.security,
+          ...groups.others,
         ];
+
+        const computeTileCard = computeAreaTileCardConfig(hass, area.name);
 
         return {
           type: "grid",
@@ -72,10 +78,7 @@ export class AreasViewStrategy extends ReactiveElement {
               },
             },
             ...(entities.length
-              ? entities.map((entity) => ({
-                  type: "tile",
-                  entity: entity,
-                }))
+              ? entities.map(computeTileCard)
               : [
                   {
                     type: "markdown",
