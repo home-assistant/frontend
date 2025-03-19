@@ -136,7 +136,7 @@ export interface BackupInfo {
   agent_errors: Record<string, string>;
   last_attempted_automatic_backup: string | null;
   last_completed_automatic_backup: string | null;
-  last_non_idle_event: ManagerStateEvent | null;
+  last_action_event: ManagerStateEvent | null;
   next_automatic_backup: string | null;
   next_automatic_backup_additional: boolean;
   state: BackupManagerState;
