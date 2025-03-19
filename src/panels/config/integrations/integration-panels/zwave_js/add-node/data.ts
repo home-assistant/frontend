@@ -29,7 +29,6 @@ export type ZWaveJSAddNodeStage =
   | "failed"
   | "timed_out"
   | "finished"
-  | "provisioned"
   | "validate_dsk_enter_pin"
   | "grant_security_classes"
   | "waiting_for_device";

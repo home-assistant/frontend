@@ -76,8 +76,6 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _inclusionStrategy?: InclusionStrategy;
 
-  @state() private _stages?: string[];
-
   @state() private _lowSecurity = false;
 
   @state() private _lowSecurityReason?: number;
@@ -87,7 +85,7 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _smartStartDevice?: {
     name: string;
     provisioningInfo: QRProvisioningInformation;
-  }
+  };
 
   @state() private _smartStartDeviceOptions?: ZWaveJSAddNodeSmartStartOptions;
 
@@ -356,6 +354,7 @@ class DialogZWaveJSAddNode extends LitElement {
             )}
             .value=${this._manualQrCodeInput}
             @input=${this._manualQrCodeInputChange}
+            @keyup=${this._manualQrCodeKeyup}
           ></ha-textfield>
         </div>
         <ha-button
@@ -400,15 +399,22 @@ class DialogZWaveJSAddNode extends LitElement {
 
     if (this._step === "configure_device") {
       return html`<zwave-js-add-node-configure-device
-        .hass=${this.hass}
-        .deviceName=${this._smartStartDevice?.name ?? ""}
-        .longRangeSupported=${!!this._smartStartDevice?.provisioningInfo?.supportedProtocols?.includes(Protocols.ZWaveLongRange) && this._controllerLongRandeSupported}
-        @value-changed=${this._setSmartStartDeviceOptions}
-      ></zwave-js-add-node-configure-device>
-      <ha-button slot="primaryAction" .disabled=${!this._smartStartDeviceOptions?.device_name} @click=${this._addSmartStartDevice}>
-        ${this.hass.localize("ui.panel.config.zwave_js.add_node.configure_device.add_device")}
-      </ha-button>
-      `;
+          .hass=${this.hass}
+          .deviceName=${this._smartStartDevice?.name ?? ""}
+          .longRangeSupported=${!!this._smartStartDevice?.provisioningInfo?.supportedProtocols?.includes(
+            Protocols.ZWaveLongRange
+          ) && this._controllerLongRandeSupported}
+          @value-changed=${this._setSmartStartDeviceOptions}
+        ></zwave-js-add-node-configure-device>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._smartStartDeviceOptions?.device_name}
+          @click=${this._addSmartStartDevice}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.configure_device.add_device"
+          )}
+        </ha-button> `;
     }
 
     if (this._step === "failed") {
@@ -517,13 +523,6 @@ class DialogZWaveJSAddNode extends LitElement {
             this._unsubscribe();
             this._step = "finished";
             break;
-          case "interview stage completed":
-            if (this._stages === undefined) {
-              this._stages = [message.stage];
-            } else {
-              this._stages = [...this._stages, message.stage];
-            }
-            break;
         }
       },
       qrProvisioningInformation,
@@ -542,14 +541,15 @@ class DialogZWaveJSAddNode extends LitElement {
     }, INCLUSION_TIMEOUT);
   }
 
-  private async _handleQrCodeScanned(ev: CustomEvent): Promise<void> {
+  private async _handleQrCodeScanned(ev?: CustomEvent): Promise<void> {
     let qrCodeString: string;
     this._error = undefined;
     this._open = true;
 
     if (
       (this._step !== "qr_scan" && this._step !== "qr_code_input") ||
-      this._qrProcessing
+      this._qrProcessing ||
+      (this._step === "qr_scan" && !ev?.detail.value)
     ) {
       return;
     }
@@ -561,7 +561,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
       qrCodeString = this._manualQrCodeInput;
     } else {
-      qrCodeString = ev.detail.value;
+      qrCodeString = ev!.detail.value;
     }
 
     this._qrProcessing = true;
@@ -625,9 +625,8 @@ class DialogZWaveJSAddNode extends LitElement {
     this._smartStartDevice = {
       name: deviceName,
       provisioningInfo,
-    }
+    };
 
-    this._step = "loading";
     // wait for QR scanner to be removed before resetting qr processing
     this.updateComplete.then(() => {
       this._qrProcessing = false;
@@ -636,6 +635,7 @@ class DialogZWaveJSAddNode extends LitElement {
     if (provisioningInfo.version === 1) {
       this._step = "configure_device";
     } else if (provisioningInfo.version === 0) {
+      this._step = "loading";
       this._inclusionStrategy = InclusionStrategy.Security_S2;
       this._startInclusion(provisioningInfo);
     } else {
@@ -649,7 +649,11 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private async _addSmartStartDevice() {
-    if (!this._smartStartDeviceOptions || !this._smartStartDeviceOptions.device_name || !this._smartStartDevice?.provisioningInfo) {
+    if (
+      !this._smartStartDeviceOptions ||
+      !this._smartStartDeviceOptions.device_name ||
+      !this._smartStartDevice?.provisioningInfo
+    ) {
       return;
     }
 
@@ -658,10 +662,10 @@ class DialogZWaveJSAddNode extends LitElement {
       await provisionZwaveSmartStartNode(
         this.hass,
         this._entryId!,
-        this._smartStartDevice.provisioningInfo,
+        this._smartStartDevice.provisioningInfo
         // TODO add device info
       );
-      this._step = "provisioned";
+      this._step = "search_specific_device";
     } catch (err: any) {
       this._error = err.message;
       this._step = "failed";
@@ -705,9 +709,14 @@ class DialogZWaveJSAddNode extends LitElement {
     this._entryId = undefined;
     this._step = undefined;
     this._device = undefined;
-    this._stages = undefined;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _manualQrCodeKeyup(ev: KeyboardEvent): void {
+    if (ev.key === "Enter" && this._manualQrCodeInput) {
+      this._handleQrCodeScanned();
+    }
   }
 
   private _manualQrCodeInputChange(ev: InputEvent): void {
