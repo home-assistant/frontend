@@ -52,7 +52,8 @@ export class HuiAreasDashboardStrategyEditor
         </div>
         ${AREA_STRATEGY_GROUPS.map((group) => {
           const entities = groups[group] || [];
-          const value = this._config!.areas?.[this._area!]?.groups?.[group];
+          const value =
+            this._config!.areas_options?.[this._area!]?.groups_options?.[group];
 
           return html`
             <ha-expansion-panel
@@ -134,12 +135,12 @@ export class HuiAreasDashboardStrategyEditor
 
     const newConfig: AreasDashboardStrategyConfig = {
       ...this._config!,
-      areas: {
-        ...this._config!.areas,
+      areas_options: {
+        ...this._config!.areas_options,
         [area]: {
-          ...this._config!.areas?.[area],
-          groups: {
-            ...this._config!.areas?.[area]?.groups,
+          ...this._config!.areas_options?.[area],
+          groups_options: {
+            ...this._config!.areas_options?.[area]?.groups_options,
             [group]: value,
           },
         },

@@ -7,8 +7,8 @@ import { getAreaGroupedEntities } from "./helpers/area-strategy-helper";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
 import type { EntitiesDisplay } from "./area-view-strategy";
 
-interface AreaConfig {
-  groups?: Record<string, EntitiesDisplay>;
+interface AreaOptions {
+  groups_options?: Record<string, EntitiesDisplay>;
 }
 
 export interface AreasViewStrategyConfig {
@@ -17,7 +17,7 @@ export interface AreasViewStrategyConfig {
     hidden?: string[];
     order?: string[];
   };
-  areas?: Record<string, AreaConfig>;
+  areas_options?: Record<string, AreaOptions>;
 }
 
 @customElement("areas-view-strategy")
@@ -36,12 +36,12 @@ export class AreasViewStrategy extends ReactiveElement {
       .map<LovelaceSectionConfig | undefined>((area) => {
         const path = computeAreaPath(area.area_id);
 
-        const areaConfig = config.areas?.[area.area_id];
+        const areaConfig = config.areas_options?.[area.area_id];
 
         const groups = getAreaGroupedEntities(
           area.area_id,
           hass,
-          areaConfig?.groups
+          areaConfig?.groups_options
         );
 
         const entities = [

@@ -25,7 +25,7 @@ export interface EntitiesDisplay {
 export interface AreaViewStrategyConfig {
   type: "area";
   area?: string;
-  groups?: Record<string, EntitiesDisplay>;
+  groups_options?: Record<string, EntitiesDisplay>;
 }
 
 const computeTileCardConfig =
@@ -111,7 +111,7 @@ export class AreaViewStrategy extends ReactiveElement {
     const groupedEntities = getAreaGroupedEntities(
       config.area,
       hass,
-      config.groups
+      config.groups_options
     );
 
     const computeTileCard = computeTileCardConfig(hass);
