@@ -40,11 +40,17 @@ class HaQrScanner extends LitElement {
   @property({ attribute: "alternative_option_label" })
   public alternativeOptionLabel?: string;
 
+  @property({ attribute: false }) public validate?: (
+    value: string
+  ) => string | undefined;
+
   @state() private _cameras?: QrScanner.Camera[];
 
   @state() private _loading = true;
 
   @state() private _error?: string;
+
+  @state() private _warning?: string;
 
   private _qrScanner?: QrScanner;
 
@@ -90,12 +96,14 @@ class HaQrScanner extends LitElement {
       return nothing;
     }
 
-    return html`${this._error
+    return html`${this._error || this._warning
       ? html`<ha-alert alert-type="error">
-          ${this._error}
-          <ha-button @click=${this._retry} slot="action">
-            ${this.hass.localize("ui.components.qr-scanner.retry")}
-          </ha-button>
+          ${this._error || this._warning}
+          ${this._error
+            ? html` <ha-button @click=${this._retry} slot="action">
+                ${this.hass.localize("ui.components.qr-scanner.retry")}
+              </ha-button>`
+            : nothing}
         </ha-alert>`
       : nothing}
     ${navigator.mediaDevices
@@ -168,7 +176,9 @@ class HaQrScanner extends LitElement {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     const QrScanner = (await import("qr-scanner")).default;
     if (!(await QrScanner.hasCamera())) {
-      this._reportError("No camera found");
+      this._reportError(
+        this.hass.localize("ui.components.qr-scanner.no_camera_found")
+      );
       return;
     }
     QrScanner.WORKER_PATH = "/static/js/qr-scanner-worker.min.js";
@@ -208,7 +218,17 @@ class HaQrScanner extends LitElement {
   };
 
   private _qrCodeScanned = (qrCodeString: string): void => {
+    this._warning = undefined;
     this._qrNotFoundCount = 0;
+    if (this.validate) {
+      const validationMessage = this.validate(qrCodeString);
+
+      if (validationMessage) {
+        this._reportWarning(validationMessage);
+        return;
+      }
+    }
+
     fireEvent(this, "qr-code-scanned", { value: qrCodeString });
   };
 
@@ -238,7 +258,10 @@ class HaQrScanner extends LitElement {
       if (msg.command === "bar_code/scan_result") {
         if (msg.payload.format !== "qr_code") {
           this._notifyExternalScanner(
-            `Wrong barcode scanned! ${msg.payload.format}: ${msg.payload.rawValue}, we need a QR code.`
+            this.hass.localize("ui.components.qr-scanner.wrong_code", {
+              format: msg.payload.format,
+              rawValue: msg.payload.rawValue,
+            })
           );
         } else {
           this._qrCodeScanned(msg.payload.rawValue);
@@ -256,10 +279,17 @@ class HaQrScanner extends LitElement {
     this.hass.auth.external!.fireMessage({
       type: "bar_code/scan",
       payload: {
-        title: this.title || this.hass.localize("ui.components.qr-scanner.app.title"),
-        description: this.description || this.hass.localize("ui.components.qr-scanner.app.description"),
+        title:
+          this.title ||
+          this.hass.localize("ui.components.qr-scanner.app.title"),
+        description:
+          this.description ||
+          this.hass.localize("ui.components.qr-scanner.app.description"),
         alternative_option_label:
-          this.alternativeOptionLabel || this.hass.localize("ui.components.qr-scanner.app.alternativeOptionLabel"),
+          this.alternativeOptionLabel ||
+          this.hass.localize(
+            "ui.components.qr-scanner.app.alternativeOptionLabel"
+          ),
       },
     });
   }
@@ -293,10 +323,16 @@ class HaQrScanner extends LitElement {
     this._error = message;
   }
 
+  private _reportWarning(message: string) {
+    this._warning = message;
+    this._notifyExternalScanner(message);
+  }
+
   private async _retry() {
     if (this._qrScanner) {
       this._loading = true;
       this._error = undefined;
+      this._warning = undefined;
       const canvas = this._qrScanner.$canvas;
       canvas.style.display = "block";
       this._qrNotFoundCount = 0;

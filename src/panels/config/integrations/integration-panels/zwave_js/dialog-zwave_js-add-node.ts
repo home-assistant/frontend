@@ -10,6 +10,7 @@ import {
   cancelSecureBootstrapS2,
   InclusionStrategy,
   lookupZwaveDevice,
+  MINIMUM_QR_STRING_LENGTH,
   Protocols,
   provisionZwaveSmartStartNode,
   stopZwaveInclusion,
@@ -28,7 +29,6 @@ import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node
 import {
   backButtonStages,
   closeButtonStages,
-  validateQrCode,
   type ZWaveJSAddNodeSmartStartOptions,
   type ZWaveJSAddNodeStage,
 } from "./add-node/data";
@@ -335,6 +335,7 @@ class DialogZWaveJSAddNode extends LitElement {
             @qr-code-scanned=${this._handleQrCodeScanned}
             @qr-code-closed=${this.closeDialog}
             @qr-code-more-options=${this._showMoreOptions}
+            .validate=${this._validateQrCode}
           ></ha-qr-scanner>
         </div>
       `;
@@ -541,6 +542,11 @@ class DialogZWaveJSAddNode extends LitElement {
     }, INCLUSION_TIMEOUT);
   }
 
+  private _validateQrCode = (qrCode: string): string | undefined =>
+    qrCode.length >= MINIMUM_QR_STRING_LENGTH && qrCode.startsWith("90")
+      ? undefined
+      : this.hass.localize("ui.panel.config.zwave_js.add_node.qr.invalid_code", { code: qrCode });
+
   private async _handleQrCodeScanned(ev?: CustomEvent): Promise<void> {
     let qrCodeString: string;
     this._error = undefined;
@@ -579,13 +585,6 @@ class DialogZWaveJSAddNode extends LitElement {
       });
       this._inclusionStrategy = InclusionStrategy.Security_S2;
       this._startInclusion(undefined, dsk);
-      return;
-    }
-
-    if (!validateQrCode(qrCodeString)) {
-      this._qrProcessing = false;
-      this._error = `Invalid QR code (${qrCodeString})`;
-      this._step = "failed";
       return;
     }
 

@@ -1,5 +1,3 @@
-import { MINIMUM_QR_STRING_LENGTH } from "../../../../../../data/zwave_js";
-
 export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "qr_scan",
   "select_other_method",
@@ -37,6 +35,3 @@ export interface ZWaveJSAddNodeSmartStartOptions {
   device_name: string;
   network_type?: "long-range" | "mesh";
 }
-
-export const validateQrCode = (qrCode: string): boolean =>
-  qrCode.length >= MINIMUM_QR_STRING_LENGTH && qrCode.startsWith("90");

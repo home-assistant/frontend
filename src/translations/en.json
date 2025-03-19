@@ -1108,6 +1108,8 @@
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
         "enter_qr_code": "Enter QR code value",
         "retry": "Retry",
+        "wrong_code": "Wrong barcode scanned! {format}: {rawValue}, we need a QR code.",
+        "no_camera_found": "No camera found",
         "app": {
           "title": "Scan QR-code",
           "description": "Find the code on your device",
@@ -5827,7 +5829,8 @@
                 "placeholder": "Code"
               },
               "scan_code": "Scan QR code",
-              "other_add_options": "Other add options"
+              "other_add_options": "Other add options",
+              "invalid_code": "Invalid QR code ({code})"
             },
             "specific_device": {
               "title": "Searching for device",
