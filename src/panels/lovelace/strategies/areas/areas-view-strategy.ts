@@ -3,8 +3,13 @@ import { customElement } from "lit/decorators";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { getAreaGroupedEntities } from "../area/area-view-strategy";
+import { getAreaGroupedEntities } from "./helpers/area-strategy-helper";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
+import type { EntitiesDisplay } from "./area-view-strategy";
+
+interface AreaOptions {
+  groups_options?: Record<string, EntitiesDisplay>;
+}
 
 export interface AreasViewStrategyConfig {
   type: "areas";
@@ -12,6 +17,7 @@ export interface AreasViewStrategyConfig {
     hidden?: string[];
     order?: string[];
   };
+  areas_options?: Record<string, AreaOptions>;
 }
 
 @customElement("areas-view-strategy")
@@ -30,7 +36,13 @@ export class AreasViewStrategy extends ReactiveElement {
       .map<LovelaceSectionConfig | undefined>((area) => {
         const path = computeAreaPath(area.area_id);
 
-        const groups = getAreaGroupedEntities(area.area_id, hass, true);
+        const areaConfig = config.areas_options?.[area.area_id];
+
+        const groups = getAreaGroupedEntities(
+          area.area_id,
+          hass,
+          areaConfig?.groups_options
+        );
 
         const entities = [
           ...groups.lights,
@@ -67,7 +79,7 @@ export class AreasViewStrategy extends ReactiveElement {
               : [
                   {
                     type: "markdown",
-                    content: "No controllable devices in this area.",
+                    content: "No entities in this area.",
                   },
                 ]),
           ],
