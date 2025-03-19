@@ -37,13 +37,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _date?: Intl.DateTimeFormat;
 
-  @state() private _timeHour?: string;
+  @state() private _timeHour?: string = "00";
 
-  @state() private _timeMinute?: string;
+  @state() private _timeMinute?: string = "00";
 
-  @state() private _timeSecond?: string;
+  @state() private _timeSecond?: string = "00";
 
-  @state() private _timeAmPm?: string;
+  @state() private _timeAmPm?: string = "--";
 
   private _tickInterval?: undefined | number;
 
@@ -182,7 +182,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-parts {
       align-items: center;
       display: flex;
-      font-size: 1.75rem;
+      font-size: 2rem;
       font-weight: 500;
       line-height: 1;
       padding: 0.5rem 0;
@@ -197,11 +197,15 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     .time-wrapper.size-medium .time-parts .time-side {
-      font-size: 1.125rem;
+      font-size: 1.25rem;
+      margin-left: 0.5rem;
+      margin-bottom: 0;
     }
 
     .time-wrapper.size-large .time-parts .time-side {
-      font-size: 1.25rem;
+      font-size: 1.7rem;
+      margin-left: 0.6rem;
+      margin-bottom: 0;
     }
 
     .time-parts .time-part {
@@ -220,9 +224,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      font-size: 1rem;
+      font-size: 12px;
       font-weight: 500;
       margin-left: 0.35rem;
+      margin-bottom: -1px;
     }
 
     .time-parts .time-part.hour:after {
