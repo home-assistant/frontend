@@ -5,15 +5,10 @@ import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
-import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
-import { supportsLightBrightnessCardFeature } from "../../card-features/hui-light-brightness-card-feature";
-import { supportsLockCommandsCardFeature } from "../../card-features/hui-lock-commands-card-feature";
-import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../card-features/types";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUP_LABELS,
+  computeAreaTileCardConfig,
   getAreaGroupedEntities,
 } from "./helpers/area-strategy-helper";
 
@@ -27,41 +22,6 @@ export interface AreaViewStrategyConfig {
   area?: string;
   groups_options?: Record<string, EntitiesDisplay>;
 }
-
-const computeTileCardConfig =
-  (hass: HomeAssistant) =>
-  (entity: string): LovelaceCardConfig => {
-    const stateObj = hass.states[entity];
-
-    let feature: LovelaceCardFeatureConfig | undefined;
-    if (supportsLightBrightnessCardFeature(stateObj)) {
-      feature = {
-        type: "light-brightness",
-      };
-    } else if (supportsCoverOpenCloseCardFeature(stateObj)) {
-      feature = {
-        type: "cover-open-close",
-      };
-    } else if (supportsTargetTemperatureCardFeature(stateObj)) {
-      feature = {
-        type: "target-temperature",
-      };
-    } else if (supportsAlarmModesCardFeature(stateObj)) {
-      feature = {
-        type: "alarm-modes",
-      };
-    } else if (supportsLockCommandsCardFeature(stateObj)) {
-      feature = {
-        type: "lock-commands",
-      };
-    }
-
-    return {
-      type: "tile",
-      entity: entity,
-      features: feature ? [feature] : undefined,
-    };
-  };
 
 const computeHeadingCard = (
   heading: string,
@@ -114,9 +74,10 @@ export class AreaViewStrategy extends ReactiveElement {
       config.groups_options
     );
 
-    const computeTileCard = computeTileCardConfig(hass);
+    const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
-    const { lights, climate, media_players, security } = groupedEntities;
+    const { lights, climate, media_players, security, others } =
+      groupedEntities;
 
     if (lights.length > 0) {
       sections.push({
@@ -166,6 +127,19 @@ export class AreaViewStrategy extends ReactiveElement {
             AREA_STRATEGY_GROUP_ICONS.security
           ),
           ...security.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (others.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            AREA_STRATEGY_GROUP_LABELS.others,
+            AREA_STRATEGY_GROUP_ICONS.others
+          ),
+          ...others.map(computeTileCard),
         ],
       });
     }

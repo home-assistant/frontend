@@ -1,13 +1,25 @@
+import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
+import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
+import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
+import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
+import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-cover-open-close-card-feature";
+import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
+import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
+import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
+import type { LovelaceCardFeatureConfig } from "../../../card-features/types";
+import type { TileCardConfig } from "../../../cards/types";
 
 export const AREA_STRATEGY_GROUPS = [
   "lights",
   "climate",
   "media_players",
   "security",
+  "others",
 ] as const;
 
 export const AREA_STRATEGY_GROUP_ICONS = {
@@ -15,6 +27,7 @@ export const AREA_STRATEGY_GROUP_ICONS = {
   climate: "mdi:home-thermometer",
   media_players: "mdi:multimedia",
   security: "mdi:security",
+  others: "mdi:shape",
 };
 
 // Todo be replace by translation when validated
@@ -23,6 +36,7 @@ export const AREA_STRATEGY_GROUP_LABELS = {
   climate: "Climate",
   media_players: "Entertainment",
   security: "Security",
+  others: "Others",
 };
 
 export type AreaStrategyGroup = (typeof AREA_STRATEGY_GROUPS)[number];
@@ -75,7 +89,13 @@ export const getAreaGroupedEntities = (
           "shade",
           "shutter",
           "window",
+          "none",
         ],
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "fan",
+        area: area,
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
@@ -110,8 +130,35 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
+        domain: "camera",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
         domain: "binary_sensor",
         device_class: ["door", "garage_door"],
+        area: area,
+        entity_category: "none",
+      }),
+    ],
+    others: [
+      generateEntityFilter(hass, {
+        domain: "vacuum",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "lawn_mower",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "valve",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "switch",
         area: area,
         entity_category: "none",
       }),
@@ -147,3 +194,55 @@ export const getAreaGroupedEntities = (
     })
   ) as AreaEntitiesByGroup;
 };
+
+export const computeAreaTileCardConfig =
+  (hass: HomeAssistant, prefix: string, includeFeature?: boolean) =>
+  (entity: string): LovelaceCardConfig => {
+    const stateObj = hass.states[entity];
+
+    const additionalCardConfig: Partial<TileCardConfig> = {};
+
+    const domain = computeDomain(entity);
+    if (domain === "camera") {
+      additionalCardConfig.show_entity_picture = true;
+    }
+
+    let feature: LovelaceCardFeatureConfig | undefined;
+    if (includeFeature) {
+      if (supportsLightBrightnessCardFeature(stateObj)) {
+        feature = {
+          type: "light-brightness",
+        };
+      } else if (supportsCoverOpenCloseCardFeature(stateObj)) {
+        feature = {
+          type: "cover-open-close",
+        };
+      } else if (supportsTargetTemperatureCardFeature(stateObj)) {
+        feature = {
+          type: "target-temperature",
+        };
+      } else if (supportsAlarmModesCardFeature(stateObj)) {
+        feature = {
+          type: "alarm-modes",
+        };
+      } else if (supportsLockCommandsCardFeature(stateObj)) {
+        feature = {
+          type: "lock-commands",
+        };
+      }
+    }
+
+    if (feature) {
+      additionalCardConfig.features = [feature];
+    }
+
+    const name = computeStateName(stateObj);
+    const stripedName = stripPrefixFromEntityName(name, prefix.toLowerCase());
+
+    return {
+      type: "tile",
+      entity: entity,
+      name: stripedName,
+      ...additionalCardConfig,
+    };
+  };
