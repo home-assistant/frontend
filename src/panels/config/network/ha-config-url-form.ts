@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
@@ -48,6 +49,23 @@ class ConfigUrlForm extends LitElement {
   @state() private _unmaskedInternalUrl = false;
 
   @state() private _cloudChecked = false;
+
+  @state() private _unsubs: UnsubscribeFunc[] = [];
+
+  public async connectedCallback() {
+    super.connectedCallback();
+    this._unsubs.push(
+      await this.hass.connection.subscribeEvents(() => {
+        // update the data when the urls are updated in core
+        this._fetchUrls();
+      }, "core_config_updated")
+    );
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubs.forEach((unsub) => unsub());
+  }
 
   protected render() {
     const canEdit = ["storage", "default"].includes(
@@ -361,7 +379,6 @@ class ConfigUrlForm extends LitElement {
           ? this._internal_url || null
           : null,
       });
-      await this._fetchUrls();
     } catch (err: any) {
       this._error = err.message || err;
     } finally {
