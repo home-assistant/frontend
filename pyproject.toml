@@ -18,8 +18,6 @@ requires-python = ">=3.13.0"
 "Homepage" = "https://github.com/home-assistant/frontend"
 
 [tool.setuptools]
-platforms = ["any"]
-zip-safe  = false
 include-package-data = true
 
 [tool.setuptools.packages.find]
