@@ -43,13 +43,13 @@ export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
 interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "name";
+  label_mode?: "state" | "attribute" | "name";
   focus?: boolean;
 }
 
 interface GeoEntity {
   entity_id: string;
-  label_mode?: "state" | "name" | "icon";
+  label_mode?: "state" | "attribute" | "name" | "icon";
   focus: boolean;
 }
 
