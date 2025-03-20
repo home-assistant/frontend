@@ -532,7 +532,9 @@ export class HaMap extends ReactiveElement {
       const entityName =
         typeof entity !== "string" && entity.label_mode === "state"
           ? this.hass.formatEntityState(stateObj)
-          : typeof entity !== "string" && entity.label_mode === "attribute" && entity.attribute !== undefined
+          : typeof entity !== "string" &&
+              entity.label_mode === "attribute" &&
+              entity.attribute !== undefined
             ? this.hass.formatEntityAttributeValue(stateObj, entity.attribute)
             : (customTitle ??
               title
