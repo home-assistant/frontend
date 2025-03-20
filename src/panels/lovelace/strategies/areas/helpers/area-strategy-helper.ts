@@ -23,7 +23,7 @@ export const AREA_STRATEGY_GROUPS = [
 ] as const;
 
 export const AREA_STRATEGY_GROUP_ICONS = {
-  lights: "mdi:lightbulb",
+  lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   media_players: "mdi:multimedia",
   security: "mdi:security",
@@ -69,16 +69,6 @@ export const getAreaGroupedEntities = (
     ],
     climate: [
       generateEntityFilter(hass, {
-        domain: "climate",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "humidifier",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
         domain: "cover",
         area: area,
         device_class: [
@@ -91,6 +81,21 @@ export const getAreaGroupedEntities = (
           "window",
           "none",
         ],
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "climate",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "humidifier",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "water_heater",
+        area: area,
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
