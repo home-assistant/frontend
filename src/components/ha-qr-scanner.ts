@@ -312,6 +312,7 @@ class HaQrScanner extends LitElement {
         message,
       },
     });
+    this._warning = undefined;
     this._error = undefined;
   }
 
