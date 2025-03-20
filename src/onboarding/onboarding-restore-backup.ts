@@ -91,7 +91,7 @@ class OnboardingRestoreBackup extends LitElement {
                     .supervisor=${this.supervisor}
                     .error=${this._failed
                       ? this.localize(
-                          `ui.panel.page-onboarding.restore.${this._backupInfo?.last_non_idle_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
+                          `ui.panel.page-onboarding.restore.${this._backupInfo?.last_action_event?.reason === "password_incorrect" ? "failed_wrong_password_description" : "failed_description"}`
                         )
                       : this._error}
                     @restore-started=${this._restoreStarted}
@@ -157,14 +157,14 @@ class OnboardingRestoreBackup extends LitElement {
     }
 
     const {
-      last_non_idle_event: lastNonIdleEvent,
+      last_action_event: lastActionEvent,
       state: currentState,
       backups,
     } = onboardingInfo;
 
     this._backupInfo = {
       state: currentState,
-      last_non_idle_event: lastNonIdleEvent,
+      last_action_event: lastActionEvent,
     };
 
     if (this.mode === "cloud") {
@@ -192,8 +192,8 @@ class OnboardingRestoreBackup extends LitElement {
     }
 
     const failedRestore =
-      lastNonIdleEvent?.manager_state === "restore_backup" &&
-      lastNonIdleEvent?.state === "failed";
+      lastActionEvent?.manager_state === "restore_backup" &&
+      lastActionEvent?.state === "failed";
 
     if (failedRestore) {
       this._failed = true;

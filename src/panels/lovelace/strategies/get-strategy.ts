@@ -32,7 +32,7 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     energy: () => import("../../energy/strategies/energy-view-strategy"),
     map: () => import("./map/map-view-strategy"),
     iframe: () => import("./iframe/iframe-view-strategy"),
-    area: () => import("./area/area-view-strategy"),
+    area: () => import("./areas/area-view-strategy"),
     areas: () => import("./areas/areas-view-strategy"),
   },
   section: {},
