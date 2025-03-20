@@ -37,7 +37,7 @@
     {
       "description": "Group tsparticles engine and presets",
       "groupName": "tsparticles",
-      "matchPackageNames": ["tsparticles-engine", "tsparticles-preset-{/,}**"]
+      "matchPackageNames": ["@tsparticles/engine", "@tsparticles/preset-{/,}**"]
     },
     {
       "description": "Group date-fns with dependent timezone package",
