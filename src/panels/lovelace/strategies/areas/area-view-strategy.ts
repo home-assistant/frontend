@@ -144,6 +144,11 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
+    // Take the full width if there is only one section to avoid misalignment between cards and header
+    if (sections.length === 1) {
+      sections[0].column_span = 2;
+    }
+
     return {
       type: "sections",
       header: {
