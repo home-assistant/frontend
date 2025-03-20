@@ -1,5 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { computeDeviceName } from "./compute_device_name";
 import { computeStateName } from "./compute_state_name";
@@ -14,12 +17,24 @@ export const computeEntityName = (
     | undefined;
 
   if (!entry) {
+    // Fall back to state name if not in the entity registry (friendly name)
     return computeStateName(stateObj);
   }
-  const name = entry.name;
+  return computeEntityEntryName(entry, hass);
+};
+
+export const computeEntityEntryName = (
+  entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
+  hass: HomeAssistant
+): string | undefined => {
+  const name = entry.name || undefined;
 
   const device = entry?.device_id ? hass.devices[entry.device_id] : undefined;
   const deviceName = device ? computeDeviceName(device) : undefined;
+
+  if (deviceName === name) {
+    return undefined;
+  }
 
   if (deviceName && name) {
     return stripPrefixFromEntityName(name, deviceName) || name;
