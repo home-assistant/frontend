@@ -13,15 +13,17 @@ export const computeEntityName = (
     | EntityRegistryDisplayEntry
     | undefined;
 
+  if (!entry) {
+    return computeStateName(stateObj);
+  }
+  const name = entry.name;
+
   const device = entry?.device_id ? hass.devices[entry.device_id] : undefined;
-
-  const name = entry ? entry.name : computeStateName(stateObj);
-
   const deviceName = device ? computeDeviceName(device) : undefined;
 
-  if (!name || !deviceName || name === deviceName) {
-    return name || deviceName;
+  if (deviceName && name) {
+    return stripPrefixFromEntityName(name, deviceName) || name;
   }
 
-  return stripPrefixFromEntityName(name, deviceName) || name;
+  return name;
 };

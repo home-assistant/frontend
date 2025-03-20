@@ -10,7 +10,7 @@ import {
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -295,17 +295,35 @@ export class MoreInfoDialog extends LitElement {
 
     const context = stateObj ? getEntityContext(stateObj, this.hass) : null;
 
-    const entityName = stateObj ? computeEntityName(stateObj, this.hass) : "";
-    const deviceName = context?.device ? computeDeviceName(context.device) : "";
-    const areaName = context?.area ? computeAreaName(context.area) : "";
+    const entityName = stateObj
+      ? computeEntityName(stateObj, this.hass)
+      : undefined;
+    const deviceName = context?.device
+      ? computeDeviceName(context.device)
+      : undefined;
+    const areaName = context?.area ? computeAreaName(context.area) : undefined;
 
-    const title = this._childView?.viewTitle || entityName || entityId;
+    const title = this._childView?.viewTitle || entityName || deviceName;
 
-    const subtitle = this._childView?.viewTitle
-      ? undefined
-      : [entityName !== deviceName ? deviceName : undefined, areaName] // Do not include device name if it's the same as entity name
-          .filter(Boolean)
-          .join(" ⸱ ");
+    let subtitle: TemplateResult<1> | undefined;
+
+    if (!this._childView?.viewTitle) {
+      const breadcrumb: string[] = [];
+      if (areaName) breadcrumb.push(areaName);
+      if (entityName && deviceName) {
+        breadcrumb.push(deviceName);
+      }
+      if (breadcrumb.length > 0) {
+        subtitle = html`
+          ${breadcrumb.map(
+            (value, index, array) =>
+              html` ${value}${index < array.length - 1
+                ? html`<ha-icon-next></ha-icon-next>`
+                : nothing}`
+          )}
+        `;
+      }
+    }
 
     return html`
       <ha-dialog
@@ -653,6 +671,10 @@ export class MoreInfoDialog extends LitElement {
         .title .secondary {
           color: var(--secondary-text-color);
           font-size: 14px;
+        }
+
+        .title .secondary ha-icon-next {
+          --mdc-icon-size: 16px;
         }
 
         .title.two-line .primary {
