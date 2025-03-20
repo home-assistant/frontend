@@ -4,6 +4,7 @@ import { DEFAULT_PRIMARY_COLOR } from "./styles-data";
 
 loadLinksPreset(tsParticles).then(() => {
   tsParticles.load({
+    id: "particles",
     options: {
       preset: "links",
       background: {
