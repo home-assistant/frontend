@@ -424,8 +424,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         geoEntities.push({
           entity_id: stateObj.entity_id,
           label_mode: sourceObj?.label_mode ?? allSource?.label_mode,
-          //***************************
-          //attribute: ??????????????
+          attribute: sourceObj?.attribute ?? allSource?.attribute,
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
