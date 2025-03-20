@@ -10,7 +10,7 @@ import {
   AREA_STRATEGY_GROUP_LABELS,
   computeAreaTileCardConfig,
   getAreaGroupedEntities,
-} from "./helpers/area-strategy-helper";
+} from "./helpers/areas-strategy-helper";
 
 export interface EntitiesDisplay {
   hidden?: string[];
@@ -142,6 +142,11 @@ export class AreaViewStrategy extends ReactiveElement {
           ...others.map(computeTileCard),
         ],
       });
+    }
+
+    // Take the full width if there is only one section to avoid misalignment between cards and header
+    if (sections.length === 1) {
+      sections[0].column_span = 2;
     }
 
     return {

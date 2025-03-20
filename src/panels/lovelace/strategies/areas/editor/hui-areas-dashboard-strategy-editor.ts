@@ -8,13 +8,13 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
 import "../../../../../components/ha-icon";
 import type { HomeAssistant } from "../../../../../types";
-import type { AreaStrategyGroup } from "../helpers/area-strategy-helper";
+import type { AreaStrategyGroup } from "../helpers/areas-strategy-helper";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUPS,
   AREA_STRATEGY_GROUP_LABELS,
   getAreaGroupedEntities,
-} from "../helpers/area-strategy-helper";
+} from "../helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../../types";
 import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
 
