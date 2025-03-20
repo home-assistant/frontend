@@ -30,12 +30,19 @@ export const computeEntityEntryName = (
   const name = entry.name || undefined;
 
   const device = entry?.device_id ? hass.devices[entry.device_id] : undefined;
-  const deviceName = device ? computeDeviceName(device) : undefined;
 
+  if (!device) {
+    return name;
+  }
+
+  const deviceName = computeDeviceName(device);
+
+  // If the device name is the same as the entity name, consider empty entity name
   if (deviceName === name) {
     return undefined;
   }
 
+  // Remove the device name from the entity name if it starts with it
   if (deviceName && name) {
     return stripPrefixFromEntityName(name, deviceName) || name;
   }
