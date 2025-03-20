@@ -316,7 +316,7 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 
 interface GeoLocationSourceConfig {
   source: string;
-  label_mode?: "name" | "state" | "icon";
+  label_mode?: "name" | "state" | "attribute" | "icon";
   focus?: boolean;
 }
 
