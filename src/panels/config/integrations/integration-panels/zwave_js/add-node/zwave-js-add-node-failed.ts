@@ -1,14 +1,18 @@
 import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
 import type { HomeAssistant } from "../../../../../../types";
+import type { ZWaveJSAddNodeDevice } from "./data";
 
 import "../../../../../../components/ha-alert";
+import "../../../../../../components/ha-button";
 
 @customElement("zwave-js-add-node-failed")
 export class ZWaveJsAddNodeFailed extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public error?: string;
+
+  @property({ attribute: false }) public device?: ZWaveJSAddNodeDevice;
 
   render() {
     return html`
@@ -22,11 +26,20 @@ export class ZWaveJsAddNodeFailed extends LitElement {
         this.hass.localize("ui.panel.config.zwave_js.add_node.check_logs")}
       </ha-alert>
       ${this.error
-        ? html` <div class="note">
+        ? html`<div class="note">
             ${this.hass.localize(
               "ui.panel.config.zwave_js.add_node.check_logs"
             )}
           </div>`
+        : nothing}
+      ${this.device?.id
+        ? html`<a href=${`/config/devices/device/${this.device.id}`}>
+            <ha-button>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.add_node.view_device"
+              )}
+            </ha-button>
+          </a>`
         : nothing}
     `;
   }
@@ -41,6 +54,9 @@ export class ZWaveJsAddNodeFailed extends LitElement {
       margin-top: 16px;
       font-size: 12px;
       color: var(--secondary-text-color);
+    }
+    ha-button {
+      margin-top: 32px;
     }
   `;
 }

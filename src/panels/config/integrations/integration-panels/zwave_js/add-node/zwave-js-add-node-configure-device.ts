@@ -26,7 +26,7 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
 
     if (!this.hasUpdated) {
       this._options = {
-        device_name: this.deviceName,
+        name: this.deviceName,
       };
 
       if (this.longRangeSupported) {
@@ -54,14 +54,14 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
     (localize: LocalizeFunc, longRangeSupported: boolean): HaFormSchema[] => {
       const schema: HaFormSchema[] = [
         {
-          name: "device_name",
+          name: "name",
           required: true,
           default: this.deviceName,
           type: "string",
           autofocus: true,
         },
         {
-          name: "device_area",
+          name: "area",
           selector: {
             area: {},
           },

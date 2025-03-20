@@ -101,7 +101,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         const inclusion_state = this._network?.controller.inclusion_state;
         // show dialog if inclusion/exclusion is already in progress
         if (inclusion_state === InclusionState.Including) {
-          this._addNodeClicked();
+          this._openInclusionDialog(undefined, true);
         } else if (inclusion_state === InclusionState.Excluding) {
           this._removeNodeClicked();
         }
@@ -743,7 +743,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     input.value = "";
   }
 
-  private _openInclusionDialog(dsk?: string) {
+  private _openInclusionDialog(dsk?: string, inclusionOngoing = false) {
     if (!this._dialogOpen) {
       // Unsubscribe from S2 inclusion before opening dialog
       if (this._s2InclusionUnsubscribe) {
@@ -756,6 +756,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         dsk,
         onStop: this._handleInclusionDialogClosed,
         longRangeSupported: !!this._network?.controller?.supports_long_range,
+        inclusionOngoing,
       });
       this._dialogOpen = true;
     }

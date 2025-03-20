@@ -166,8 +166,8 @@ export interface DeviceConfig {
   label: string;
   description: string;
   devices: {
-      productType: number;
-      productId: number;
+    productType: number;
+    productId: number;
   }[];
   firmwareVersion: {
     min: string;
@@ -572,7 +572,7 @@ export const zwaveTryParseDskFromQrCode = (
 export const zwaveValidateDskAndEnterPin = (
   hass: HomeAssistant,
   entry_id: string,
-  pin: string
+  pin: string | false
 ) =>
   hass.callWS({
     type: "zwave_js/validate_dsk_and_enter_pin",

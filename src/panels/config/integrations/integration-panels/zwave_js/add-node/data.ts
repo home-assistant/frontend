@@ -1,3 +1,5 @@
+import type { QRProvisioningInformation } from "../../../../../../data/zwave_js";
+
 export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "qr_scan",
   "select_other_method",
@@ -9,8 +11,11 @@ export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
 export const closeButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "select_method",
   "search_devices",
-  "search_specific_device",
+  "search_smart_start_device",
+  "search_s2_device",
   "failed",
+  "interviewing",
+  "validate_dsk_enter_pin",
 ];
 
 export type ZWaveJSAddNodeStage =
@@ -20,7 +25,8 @@ export type ZWaveJSAddNodeStage =
   | "select_other_method"
   | "qr_code_input"
   | "search_devices"
-  | "search_specific_device"
+  | "search_smart_start_device"
+  | "search_s2_device"
   | "choose_security_strategy"
   | "configure_device"
   | "interviewing"
@@ -32,6 +38,13 @@ export type ZWaveJSAddNodeStage =
   | "waiting_for_device";
 
 export interface ZWaveJSAddNodeSmartStartOptions {
-  device_name: string;
+  name: string;
+  area?: string;
   network_type?: "long-range" | "mesh";
+}
+
+export interface ZWaveJSAddNodeDevice {
+  id?: string;
+  name: string;
+  provisioningInfo?: QRProvisioningInformation;
 }

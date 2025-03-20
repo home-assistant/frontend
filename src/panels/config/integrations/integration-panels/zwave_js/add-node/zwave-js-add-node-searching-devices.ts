@@ -2,7 +2,7 @@ import "@shoelace-style/shoelace/dist/components/animation/animation";
 import { mdiRestart } from "@mdi/js";
 
 import { customElement, property } from "lit/decorators";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 
 import "../../../../../../components/ha-spinner";
 import "../../../../../../components/ha-button";
@@ -14,8 +14,14 @@ import { fireEvent } from "../../../../../../common/dom/fire_event";
 export class ZWaveJsAddNodeSearchingDevices extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, attribute: "specific-device" })
-  public specificDevice = false;
+  @property({ type: Boolean, attribute: "smart-start" })
+  public smartStart = false;
+
+  @property({ type: Boolean, attribute: "show-security-options" })
+  public showSecurityOptions = false;
+
+  @property({ type: Boolean, attribute: "show-add-another-device" })
+  public showAddAnotherDevice = false;
 
   render() {
     return html`
@@ -28,7 +34,7 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
             <div class="circle"></div>
           </sl-animation>
         </div>
-        ${this.specificDevice
+        ${this.smartStart
           ? html`<ha-alert
                 .title=${this.hass.localize(
                   "ui.panel.config.zwave_js.add_node.specific_device.turn_on_device"
@@ -51,21 +57,30 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
                 )}
               </p>
             `}
-        <ha-button @click=${this._handleButton}>
-          ${this.hass.localize(
-            `ui.panel.config.zwave_js.add_node.${this.specificDevice ? "specific_device.add_another_z_wave_device" : "security_options"}`
-          )}
-        </ha-button>
+        ${this.showSecurityOptions
+          ? html`<ha-button @click=${this._handleSecurityOptions}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.add_node.security_options"
+              )}
+            </ha-button>`
+          : nothing}
+        ${this.showAddAnotherDevice
+          ? html`<ha-button @click=${this._handleAddAnotherDevice}>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.add_node.specific_device.add_another_z_wave_device"
+              )}
+            </ha-button>`
+          : nothing}
       </div>
     `;
   }
 
-  private _handleButton() {
-    if (this.specificDevice) {
-      fireEvent(this, "add-another-z-wave-device");
-    } else {
-      fireEvent(this, "show-z-wave-security-options");
-    }
+  private _handleSecurityOptions() {
+    fireEvent(this, "show-z-wave-security-options");
+  }
+
+  private _handleAddAnotherDevice() {
+    fireEvent(this, "add-another-z-wave-device");
   }
 
   static styles = css`

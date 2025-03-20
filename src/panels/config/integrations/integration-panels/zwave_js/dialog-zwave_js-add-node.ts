@@ -20,20 +20,20 @@ import {
   zwaveParseQrCode,
   zwaveSupportsFeature,
   zwaveTryParseDskFromQrCode,
+  zwaveValidateDskAndEnterPin,
   type QRProvisioningInformation,
-  type RequestedGrant,
-  type SecurityClass,
 } from "../../../../../data/zwave_js";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 import {
   backButtonStages,
   closeButtonStages,
+  type ZWaveJSAddNodeDevice,
   type ZWaveJSAddNodeSmartStartOptions,
   type ZWaveJSAddNodeStage,
 } from "./add-node/data";
+import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { HaMdDialog } from "../../../../../components/ha-md-dialog";
-import type { HaTextField } from "../../../../../components/ha-textfield";
 
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
@@ -48,13 +48,10 @@ import "./add-node/zwave-js-add-node-searching-devices";
 import "./add-node/zwave-js-add-node-select-security-strategy";
 import "./add-node/zwave-js-add-node-failed";
 import "./add-node/zwave-js-add-node-configure-device";
+import "./add-node/zwave-js-add-node-code-input";
+import "./add-node/zwave-js-add-node-loading";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
-
-export interface ZWaveJSAddNodeDevice {
-  id: string;
-  name: string;
-}
 
 @customElement("dialog-zwave_js-add-node")
 class DialogZWaveJSAddNode extends LitElement {
@@ -76,24 +73,21 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _inclusionStrategy?: InclusionStrategy;
 
-  @state() private _lowSecurity = false;
+  // @state() private _lowSecurity = false;
 
-  @state() private _lowSecurityReason?: number;
+  // @state() private _lowSecurityReason?: number;
 
   @state() private _device?: ZWaveJSAddNodeDevice;
 
-  @state() private _smartStartDevice?: {
-    name: string;
-    provisioningInfo: QRProvisioningInformation;
-  };
+  @state() private _deviceOptions?: ZWaveJSAddNodeSmartStartOptions;
 
-  @state() private _smartStartDeviceOptions?: ZWaveJSAddNodeSmartStartOptions;
+  // @state() private _requestedGrant?: RequestedGrant;
 
-  @state() private _requestedGrant?: RequestedGrant;
-
-  @state() private _securityClasses: SecurityClass[] = [];
+  // @state() private _securityClasses: SecurityClass[] = [];
 
   @state() private _manualQrCodeInput = "";
+
+  @state() private _dskPin = "";
 
   private _qrProcessing = false;
 
@@ -191,13 +185,19 @@ class DialogZWaveJSAddNode extends LitElement {
       )
     ).supported;
 
+    if (params?.inclusionOngoing) {
+      this._open = true;
+      this._startInclusion();
+      return;
+    }
+
     this._showFirstStep();
   }
 
   private _shouldPreventClose = memoizeOne((step: ZWaveJSAddNodeStage) =>
     [
       "loading",
-      "search_specific_device",
+      "search_smart_start_device",
       "validate_dsk_enter_pin",
       "grant_security_classes",
       "waiting_for_device",
@@ -253,7 +253,8 @@ class DialogZWaveJSAddNode extends LitElement {
     let icon: string | undefined;
     if (
       (this._step && closeButtonStages.includes(this._step)) ||
-      (this._step === "search_devices" && !this._supportsSmartStart)
+      (this._step === "search_devices" && !this._supportsSmartStart) ||
+      (this._step === "configure_device" && this._device?.id)
     ) {
       icon = mdiClose;
     } else if (
@@ -278,11 +279,17 @@ class DialogZWaveJSAddNode extends LitElement {
       case "search_devices":
         titleTranslationKey = "searching_devices";
         break;
-      case "search_specific_device":
+      case "search_smart_start_device":
         titleTranslationKey = "specific_device.title";
         break;
       case "choose_security_strategy":
         titleTranslationKey = "security_options";
+        break;
+      case "validate_dsk_enter_pin":
+        titleTranslationKey = "validate_dsk_pin.title";
+        break;
+      case "configure_device":
+        titleTranslationKey = "configure_device.title";
         break;
       case "failed":
         titleTranslationKey = "add_device_failed";
@@ -335,7 +342,7 @@ class DialogZWaveJSAddNode extends LitElement {
             @qr-code-scanned=${this._handleQrCodeScanned}
             @qr-code-closed=${this.closeDialog}
             @qr-code-more-options=${this._showMoreOptions}
-            .validate=${this._validateQrCode}
+            .validate=${this._validateAndError}
           ></ha-qr-scanner>
         </div>
       `;
@@ -343,21 +350,17 @@ class DialogZWaveJSAddNode extends LitElement {
 
     if (this._step === "qr_code_input") {
       return html`
-        <div class="qr-code-input">
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.qr.manual.text"
-            )}
-          </p>
-          <ha-textfield
-            .placeholder=${this.hass.localize(
-              "ui.panel.config.zwave_js.add_node.qr.manual.placeholder"
-            )}
-            .value=${this._manualQrCodeInput}
-            @input=${this._manualQrCodeInputChange}
-            @keyup=${this._manualQrCodeKeyup}
-          ></ha-textfield>
-        </div>
+        <zwave-js-add-node-code-input
+          .value=${this._manualQrCodeInput}
+          .description=${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.qr.manual.text"
+          )}
+          .placeholder=${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.qr.manual.placeholder"
+          )}
+          @value-changed=${this._manualQrCodeInputChange}
+          @zwave-submit=${this._handleQrCodeScanned}
+        ></zwave-js-add-node-code-input>
         <ha-button
           slot="primaryAction"
           .disabled=${!this._manualQrCodeInput}
@@ -370,16 +373,19 @@ class DialogZWaveJSAddNode extends LitElement {
 
     if (
       this._step === "search_devices" ||
-      this._step === "search_specific_device"
+      this._step === "search_smart_start_device" ||
+      this._step === "search_s2_device"
     ) {
       return html`
         <zwave-js-add-node-searching-devices
           .hass=${this.hass}
-          .specificDevice=${this._step === "search_specific_device"}
+          .smartStart=${this._step === "search_smart_start_device"}
+          .showAddAnotherDevice=${this._step === "search_smart_start_device"}
+          .showSecurityOptions=${this._step === "search_devices"}
           @show-z-wave-security-options=${this._showSecurityOptions}
           @add-another-z-wave-device=${this._showFirstStep}
         ></zwave-js-add-node-searching-devices>
-        ${this._step === "search_specific_device"
+        ${this._step === "search_smart_start_device"
           ? html`
               <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
@@ -401,21 +407,61 @@ class DialogZWaveJSAddNode extends LitElement {
     if (this._step === "configure_device") {
       return html`<zwave-js-add-node-configure-device
           .hass=${this.hass}
-          .deviceName=${this._smartStartDevice?.name ?? ""}
-          .longRangeSupported=${!!this._smartStartDevice?.provisioningInfo?.supportedProtocols?.includes(
+          .deviceName=${this._device?.name ?? ""}
+          .longRangeSupported=${!!this._device?.provisioningInfo?.supportedProtocols?.includes(
             Protocols.ZWaveLongRange
           ) && this._controllerLongRandeSupported}
-          @value-changed=${this._setSmartStartDeviceOptions}
+          @value-changed=${this._setDeviceOptions}
         ></zwave-js-add-node-configure-device>
         <ha-button
           slot="primaryAction"
-          .disabled=${!this._smartStartDeviceOptions?.device_name}
-          @click=${this._addSmartStartDevice}
+          .disabled=${!this._deviceOptions?.name}
+          @click=${this._saveDevice}
+        >
+          ${this.hass.localize(
+            this._device?.id
+              ? "ui.common.save"
+              : "ui.panel.config.zwave_js.add_node.configure_device.add_device"
+          )}
+        </ha-button> `;
+    }
+
+    if (this._step === "validate_dsk_enter_pin") {
+      return html`
+        <zwave-js-add-node-code-input
+          .value=${this._manualQrCodeInput}
+          .description=${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.validate_dsk_pin.text"
+          )}
+          .placeholder=${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.validate_dsk_pin.placeholder"
+          )}
+          .referenceKey=${this._dsk!}
+          @value-changed=${this._dskPinChanged}
+          @zwave-submit=${this._validateDskAndEnterPin}
+          numeric
+          .error=${this._error}
+        ></zwave-js-add-node-code-input>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._dskPin || this._dskPin.length < 5}
+          @click=${this._validateDskAndEnterPin}
         >
           ${this.hass.localize(
             "ui.panel.config.zwave_js.add_node.configure_device.add_device"
           )}
-        </ha-button> `;
+        </ha-button>
+      `;
+    }
+
+    if (this._step === "interviewing" || this._step === "waiting_for_device") {
+      return html`
+        <zwave-js-add-node-loading
+          .description=${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.getting_device_information"
+          )}
+        ></zwave-js-add-node-loading>
+      `;
     }
 
     if (this._step === "failed") {
@@ -423,15 +469,14 @@ class DialogZWaveJSAddNode extends LitElement {
         <zwave-js-add-node-failed
           .error=${this._error}
           .hass=${this.hass}
+          .device=${this._device}
         ></zwave-js-add-node-failed>
       `;
     }
 
-    return html`<div class="loading">
-      <ha-fade-in .delay=${1000}>
-        <ha-spinner size="large"></ha-spinner>
-      </ha-fade-in>
-    </div>`;
+    return html`<zwave-js-add-node-loading
+      .delay=${1000}
+    ></zwave-js-add-node-loading>`;
   }
 
   private _methodSelected(ev: CustomEvent): void {
@@ -463,20 +508,15 @@ class DialogZWaveJSAddNode extends LitElement {
     qrProvisioningInformation?: QRProvisioningInformation,
     dsk?: string
   ): void {
-    if (!this.hass) {
-      return;
-    }
     this._lowSecurity = false;
-    const specificDevice = qrProvisioningInformation || dsk;
+    const s2Device = qrProvisioningInformation || dsk;
     this._subscribed = subscribeAddZwaveNode(
       this.hass,
       this._entryId!,
       (message) => {
         switch (message.event) {
           case "inclusion started":
-            this._step = specificDevice
-              ? "search_specific_device"
-              : "search_devices";
+            this._step = s2Device ? "search_s2_device" : "search_devices";
             break;
           case "inclusion failed":
             this._unsubscribe();
@@ -514,6 +554,7 @@ class DialogZWaveJSAddNode extends LitElement {
             break;
           case "device registered":
             this._device = message.device;
+            this._step = "configure_device";
             break;
           case "node added":
             this._step = "interviewing";
@@ -522,7 +563,6 @@ class DialogZWaveJSAddNode extends LitElement {
             break;
           case "interview completed":
             this._unsubscribe();
-            this._step = "finished";
             break;
         }
       },
@@ -542,10 +582,16 @@ class DialogZWaveJSAddNode extends LitElement {
     }, INCLUSION_TIMEOUT);
   }
 
-  private _validateQrCode = (qrCode: string): string | undefined =>
-    qrCode.length >= MINIMUM_QR_STRING_LENGTH && qrCode.startsWith("90")
+  private _validateQrCode = (qrCode: string): boolean =>
+    qrCode.length >= MINIMUM_QR_STRING_LENGTH && qrCode.startsWith("90");
+
+  private _validateAndError = (qrCode: string): string | undefined =>
+    this._validateQrCode(qrCode)
       ? undefined
-      : this.hass.localize("ui.panel.config.zwave_js.add_node.qr.invalid_code", { code: qrCode });
+      : this.hass.localize(
+          "ui.panel.config.zwave_js.add_node.qr.invalid_code",
+          { code: qrCode }
+        );
 
   private async _handleQrCodeScanned(ev?: CustomEvent): Promise<void> {
     let qrCodeString: string;
@@ -565,6 +611,15 @@ class DialogZWaveJSAddNode extends LitElement {
         return;
       }
 
+      if (!this._validateQrCode(this._manualQrCodeInput)) {
+        this._step = "failed";
+        this._error = this.hass.localize(
+          "ui.panel.config.zwave_js.add_node.qr.invalid_code",
+          { code: this._manualQrCodeInput }
+        );
+        return;
+      }
+
       qrCodeString = this._manualQrCodeInput;
     } else {
       qrCodeString = ev!.detail.value;
@@ -578,6 +633,7 @@ class DialogZWaveJSAddNode extends LitElement {
     );
 
     if (dsk) {
+      // own screen add device inclusion
       this._step = "loading";
       // wait for QR scanner to be removed before resetting qr processing
       this.updateComplete.then(() => {
@@ -621,7 +677,7 @@ class DialogZWaveJSAddNode extends LitElement {
       console.error(err);
     }
 
-    this._smartStartDevice = {
+    this._device = {
       name: deviceName,
       provisioningInfo,
     };
@@ -643,31 +699,92 @@ class DialogZWaveJSAddNode extends LitElement {
     }
   }
 
-  private _setSmartStartDeviceOptions(ev: CustomEvent) {
-    this._smartStartDeviceOptions = ev.detail.value;
+  private _setDeviceOptions(ev: CustomEvent) {
+    this._deviceOptions = ev.detail.value;
   }
 
-  private async _addSmartStartDevice() {
-    if (
-      !this._smartStartDeviceOptions ||
-      !this._smartStartDeviceOptions.device_name ||
-      !this._smartStartDevice?.provisioningInfo
-    ) {
-      return;
-    }
+  private async _saveDevice() {
+    // smart start device
+    if (!this._device?.id) {
+      if (!this._deviceOptions?.name || !this._device?.provisioningInfo) {
+        return;
+      }
 
-    this._step = "loading";
-    try {
-      await provisionZwaveSmartStartNode(
-        this.hass,
-        this._entryId!,
-        this._smartStartDevice.provisioningInfo
-        // TODO add device info
-      );
-      this._step = "search_specific_device";
-    } catch (err: any) {
-      this._error = err.message;
-      this._step = "failed";
+      this._step = "loading";
+      try {
+        await provisionZwaveSmartStartNode(
+          this.hass,
+          this._entryId!,
+          this._device.provisioningInfo
+          // TODO add device info
+          // this._deviceOptions.name,
+          // this._deviceOptions.area,
+          // this._deviceOptions.network_type,
+        );
+        this._step = "search_smart_start_device";
+      } catch (err: any) {
+        this._error = err.message;
+        this._step = "failed";
+      }
+    } else {
+      // included device
+      if (this._device.name !== this._deviceOptions?.name) {
+        try {
+          await updateDeviceRegistryEntry(this.hass, this._device.id, {
+            name_by_user: this._deviceOptions!.name,
+            area_id: this._deviceOptions!.area,
+          });
+        } catch (_err: any) {
+          this._error = this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.configure_device.save_device_failed"
+          );
+          this._step = "failed";
+        }
+
+        // TODO
+        // try {
+        //   const entities = await fetchEntityRegistry(this.hass.connection);
+
+        //   const deviceEntities = entities
+        //     .filter((entity) => entity.device_id === this._device!.id)
+        //     .map((entity) => ({
+        //       ...entity,
+        //       stateName: computeEntityName(this.hass, entity),
+        //     }));
+
+        //   const updateProms = deviceEntities.map((entity) => {
+        //     const name = entity.name || entity.stateName;
+        //     let newEntityId: string | null = null;
+        //     let newName: string | null = null;
+
+        //     if (name && name.includes(oldDeviceName)) {
+        //       newName = name.replace(` ${ieeeTail}`, "");
+        //       newName = newName.replace(oldDeviceName, newDeviceName);
+        //       newEntityId = entity.entity_id.replace(`_${ieeeTail}`, "");
+        //       newEntityId = newEntityId.replace(
+        //         oldDeviceEntityId,
+        //         newDeviceEntityId
+        //       );
+        //     }
+
+        //     if (!newName && !newEntityId) {
+        //       return undefined;
+        //     }
+
+        //     return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+        //       name: newName || name,
+        //       disabled_by: entity.disabled_by,
+        //       new_entity_id: newEntityId || entity.entity_id,
+        //     });
+        //   });
+        //   await Promise.all(updateProms);
+        // } catch (_err: any) {
+        //   // TODO
+        // }
+      }
+
+      // if not finished yet show interviewing loading screen
+      this._step = !this._subscribed ? "finished" : "interviewing";
     }
   }
 
@@ -701,7 +818,30 @@ class DialogZWaveJSAddNode extends LitElement {
     window.removeEventListener("beforeunload", this._onBeforeUnload);
   }
 
-  private _dialogClosed(): void {
+  private _manualQrCodeInputChange(ev: CustomEvent): void {
+    this._manualQrCodeInput = ev.detail.value;
+  }
+
+  private _dskPinChanged(ev: CustomEvent): void {
+    this._dskPin = ev.detail.value;
+  }
+
+  private async _validateDskAndEnterPin(): Promise<void> {
+    this._step = "waiting_for_device";
+    this._error = undefined;
+    try {
+      await zwaveValidateDskAndEnterPin(
+        this.hass,
+        this._entryId!,
+        this._dskPin
+      );
+    } catch (err: any) {
+      this._error = err.message;
+      this._step = "validate_dsk_enter_pin";
+    }
+  }
+
+  private _dialogClosed() {
     this._unsubscribe();
     this._open = false;
     this._inclusionStrategy = undefined;
@@ -709,20 +849,28 @@ class DialogZWaveJSAddNode extends LitElement {
     this._step = undefined;
     this._device = undefined;
     this._error = undefined;
+    this._manualQrCodeInput = "";
+    this._dskPin = "";
+    this._dsk = undefined;
+    this._deviceOptions = undefined;
+    this._requestedGrant = undefined;
+    this._securityClasses = [];
+    this._lowSecurity = false;
+    this._lowSecurityReason = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _manualQrCodeKeyup(ev: KeyboardEvent): void {
-    if (ev.key === "Enter" && this._manualQrCodeInput) {
-      this._handleQrCodeScanned();
+  public async closeDialog() {
+    // special case for validate dsk and enter pin to stop 4 minute waiting process
+    if (this._step === "validate_dsk_enter_pin") {
+      this._step = "loading";
+      try {
+        await zwaveValidateDskAndEnterPin(this.hass, this._entryId!, false);
+      } catch (_err: any) {
+        // ignore
+      }
     }
-  }
 
-  private _manualQrCodeInputChange(ev: InputEvent): void {
-    this._manualQrCodeInput = (ev.target as HaTextField).value;
-  }
-
-  public closeDialog(): void {
     if (this._open) {
       this._dialog?.close();
     } else {
@@ -741,13 +889,6 @@ class DialogZWaveJSAddNode extends LitElement {
           align-items: center;
           justify-content: center;
           height: 100%;
-        }
-
-        .qr-code-input ha-textfield {
-          width: 100%;
-        }
-        .qr-code-input p {
-          color: var(--secondary-text-color);
         }
       `,
     ];

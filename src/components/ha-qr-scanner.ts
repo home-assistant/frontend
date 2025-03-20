@@ -97,7 +97,7 @@ class HaQrScanner extends LitElement {
     }
 
     return html`${this._error || this._warning
-      ? html`<ha-alert alert-type="error">
+      ? html`<ha-alert .alertType=${this._error ? "error" : "warning"}>
           ${this._error || this._warning}
           ${this._error
             ? html` <ha-button @click=${this._retry} slot="action">
@@ -377,6 +377,10 @@ class HaQrScanner extends LitElement {
       justify-content: center;
       height: 100%;
       width: 100%;
+    }
+    ha-alert {
+      display: block;
+      margin-bottom: 8px;
     }
   `;
 }

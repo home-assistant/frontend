@@ -5792,6 +5792,7 @@
             "choose_inclusion_strategy": "How do you want to add your device",
             "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
+            "getting_device_information": "Getting device information",
             "check_logs": "Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",
             "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
@@ -5857,7 +5858,13 @@
               "long_range_description": "Direct connection to Home Assistant for extended coverage, without a mesh network.",
               "mesh_label": "Mesh network",
               "mesh_description": "Devices relay signals to each other, enhancing coverage and reliability.",
-              "add_device": "Add device"
+              "add_device": "Add device",
+              "save_device_failed": "Saving new device info failed"
+            },
+            "validate_dsk_pin": {
+              "title": "Verify key",
+              "text": "Find the key on your device or manual and enter the 5-digit PIN.",
+              "placeholder": "Pin"
             }
           },
           "provisioned": {
