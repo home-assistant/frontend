@@ -10,11 +10,11 @@ import {
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
-import { classMap } from "lit/directives/class-map";
+import { join } from "lit/directives/join";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -305,23 +305,11 @@ export class MoreInfoDialog extends LitElement {
 
     const title = this._childView?.viewTitle || entityName || deviceName;
 
-    let subtitle: TemplateResult<1> | undefined;
-
+    const breadcrumb: string[] = [];
     if (!this._childView?.viewTitle) {
-      const breadcrumb: string[] = [];
       if (areaName) breadcrumb.push(areaName);
       if (entityName && deviceName) {
         breadcrumb.push(deviceName);
-      }
-      if (breadcrumb.length > 0) {
-        subtitle = html`
-          ${breadcrumb.map(
-            (value, index, array) =>
-              html` ${value}${index < array.length - 1
-                ? html`<ha-icon-next></ha-icon-next>`
-                : nothing}`
-          )}
-        `;
       }
     }
 
@@ -358,9 +346,15 @@ export class MoreInfoDialog extends LitElement {
             slot="title"
             .title=${title}
             @click=${this._enlarge}
-            class="title ${classMap({ "two-line": !!subtitle })}"
+            class="title"
           >
-            ${subtitle ? html`<p class="breadcrumb">${subtitle}</p>` : nothing}
+            ${breadcrumb.length > 0
+              ? html`
+                  <p class="breadcrumb">
+                    ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                  </p>
+                `
+              : nothing}
             <p class="main">${title}</p>
           </span>
           ${isDefaultView
@@ -674,13 +668,10 @@ export class MoreInfoDialog extends LitElement {
           color: var(--primary-text-color);
           font-size: 14px;
           line-height: 16px;
-        }
-
-        .title.two-line {
           margin-top: -6px;
         }
 
-        .title .breadcrumb ha-icon-next {
+        .title .breadcrumb {
           --mdc-icon-size: 16px;
         }
       `,
