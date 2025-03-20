@@ -174,6 +174,12 @@ class HaInputTextForm extends LitElement {
     if (this[`_${configValue}`] === value) {
       return;
     }
+    if (configValue === "min" && Number(value) > 255) {
+      value = 0;
+    }
+    if (configValue === "max" && Number(value) > 255) {
+      value = 100;
+    }
     const newValue = { ...this._item };
     if (!value) {
       delete newValue[configValue];
