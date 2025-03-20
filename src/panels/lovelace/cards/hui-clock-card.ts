@@ -35,7 +35,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: ClockCardConfig;
 
-  @state() private _date?: Intl.DateTimeFormat;
+  @state() private _dateTimeFormat?: Intl.DateTimeFormat;
 
   @state() private _timeHour?: string = "00";
 
@@ -53,21 +53,25 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   private _initDate() {
-    let locale = this.hass?.locale;
+    if (!this._config || !this.hass) {
+      return;
+    }
 
-    if (!locale || !this.hass) return;
+    let locale = this.hass?.locale;
 
     if (this._config?.time_format) {
       locale = { ...locale, time_format: this._config.time_format };
     }
 
-    this._date = new Intl.DateTimeFormat(this.hass?.locale?.language, {
+    this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone: resolveTimeZone(locale.time_zone, this.hass?.config?.time_zone),
+      timeZone: resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
     });
+
+    this._tick();
   }
 
   public getCardSize(): number {
@@ -105,9 +109,17 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     };
   }
 
+  protected updated(changedProps) {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass");
+      if (!oldHass || oldHass.locale !== this.hass?.locale) {
+        this._initDate();
+      }
+    }
+  }
+
   public connectedCallback() {
     super.connectedCallback();
-    this._initDate();
     this._startTick();
   }
 
@@ -129,9 +141,9 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   private _tick() {
-    if (!this._date) return;
+    if (!this._dateTimeFormat) return;
 
-    const parts = this._date.formatToParts();
+    const parts = this._dateTimeFormat.formatToParts();
 
     this._timeHour = parts.find((part) => part.type === "hour")?.value;
     this._timeMinute = parts.find((part) => part.type === "minute")?.value;
@@ -158,7 +170,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
               ${this._timeSecond !== undefined
                 ? html`<div class="time-part second">${this._timeSecond}</div>`
                 : nothing}
-              ${this._config.time_format === TimeFormat.am_pm
+              ${this._timeAmPm !== undefined
                 ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
                 : nothing}
             </div>

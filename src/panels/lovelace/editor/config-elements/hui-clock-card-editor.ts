@@ -1,7 +1,16 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  enums,
+  literal,
+  object,
+  optional,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -18,8 +27,10 @@ import { TimeFormat } from "../../../../data/translation";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
-    clock_size: optional(string()),
-    time_format: optional(string()),
+    clock_size: optional(
+      union([literal("small"), literal("medium"), literal("large")])
+    ),
+    time_format: optional(enums(Object.values(TimeFormat))),
     show_seconds: optional(boolean()),
   })
 );
