@@ -10,7 +10,7 @@ import {
   AREA_STRATEGY_GROUP_LABELS,
   computeAreaTileCardConfig,
   getAreaGroupedEntities,
-} from "./helpers/area-strategy-helper";
+} from "./helpers/areas-strategy-helper";
 
 export interface EntitiesDisplay {
   hidden?: string[];
