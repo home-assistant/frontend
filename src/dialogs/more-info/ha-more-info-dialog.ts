@@ -360,8 +360,8 @@ export class MoreInfoDialog extends LitElement {
             @click=${this._enlarge}
             class="title ${classMap({ "two-line": !!subtitle })}"
           >
-            <p class="primary">${title}</p>
-            ${subtitle ? html`<p class="secondary">${subtitle}</p>` : nothing}
+            ${subtitle ? html`<p class="breadcrumb">${subtitle}</p>` : nothing}
+            <p class="main">${title}</p>
           </span>
           ${isDefaultView
             ? html`
@@ -664,22 +664,24 @@ export class MoreInfoDialog extends LitElement {
           overflow: hidden;
         }
 
-        .title .primary {
+        .title .main {
           color: var(--primary-text-color);
+          font-size: 20px;
+          line-height: 24px;
         }
 
-        .title .secondary {
-          color: var(--secondary-text-color);
+        .title .breadcrumb {
+          color: var(--primary-text-color);
           font-size: 14px;
+          line-height: 16px;
         }
 
-        .title .secondary ha-icon-next {
+        .title.two-line {
+          margin-top: -6px;
+        }
+
+        .title .breadcrumb ha-icon-next {
           --mdc-icon-size: 16px;
-        }
-
-        .title.two-line .primary {
-          margin-top: -4px;
-          margin-bottom: -6px;
         }
       `,
     ];
