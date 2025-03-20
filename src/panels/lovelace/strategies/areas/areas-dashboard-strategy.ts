@@ -8,8 +8,8 @@ import type {
   EntitiesDisplay,
 } from "./area-view-strategy";
 import type { LovelaceStrategyEditor } from "../types";
-import type { AreasViewStrategyConfig } from "./areas-view-strategy";
-import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
+import type { AreasViewStrategyConfig } from "./areas-overview-view-strategy";
+import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
@@ -58,7 +58,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
           icon: "mdi:home",
           path: "home",
           strategy: {
-            type: "areas",
+            type: "areas-overview",
             areas_display: config.areas_display,
             areas_options: config.areas_options,
           } satisfies AreasViewStrategyConfig,

@@ -5,17 +5,18 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesDisplay } from "./area-view-strategy";
 import {
+  computeAreaPath,
   computeAreaTileCardConfig,
   getAreaGroupedEntities,
-} from "./helpers/area-strategy-helper";
-import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helpers";
+  getAreas,
+} from "./helpers/areas-strategy-helper";
 
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
 }
 
 export interface AreasViewStrategyConfig {
-  type: "areas";
+  type: "areas-overview";
   areas_display?: {
     hidden?: string[];
     order?: string[];
@@ -23,8 +24,8 @@ export interface AreasViewStrategyConfig {
   areas_options?: Record<string, AreaOptions>;
 }
 
-@customElement("areas-view-strategy")
-export class AreasViewStrategy extends ReactiveElement {
+@customElement("areas-overview-view-strategy")
+export class AreasOverviewViewStrategy extends ReactiveElement {
   static async generate(
     config: AreasViewStrategyConfig,
     hass: HomeAssistant
@@ -94,7 +95,7 @@ export class AreasViewStrategy extends ReactiveElement {
 
     return {
       type: "sections",
-      max_columns: 3,
+      max_columns: 2,
       sections: areaSections,
     };
   }
@@ -102,6 +103,6 @@ export class AreasViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "areas-view-strategy": AreasViewStrategy;
+    "areas-overview-view-strategy": AreasOverviewViewStrategy;
   }
 }
