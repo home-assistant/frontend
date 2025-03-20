@@ -3,7 +3,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
@@ -23,9 +22,10 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { showToast } from "../../../util/toast";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { obfuscateUrl } from "../../../util/url";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("ha-config-url-form")
-class ConfigUrlForm extends LitElement {
+class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -50,21 +50,13 @@ class ConfigUrlForm extends LitElement {
 
   @state() private _cloudChecked = false;
 
-  @state() private _unsubs: UnsubscribeFunc[] = [];
-
-  public async connectedCallback() {
-    super.connectedCallback();
-    this._unsubs.push(
-      await this.hass.connection.subscribeEvents(() => {
+  protected hassSubscribe() {
+    return [
+      this.hass.connection.subscribeEvents(() => {
         // update the data when the urls are updated in core
         this._fetchUrls();
-      }, "core_config_updated")
-    );
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubs.forEach((unsub) => unsub());
+      }, "core_config_updated"),
+    ];
   }
 
   protected render() {
