@@ -43,7 +43,7 @@ loadLinksPreset(tsParticles).then(() => {
         },
         number: {
           limit: undefined,
-          value: 100,
+          value: 50,
         },
         opacity: {
           value: {
