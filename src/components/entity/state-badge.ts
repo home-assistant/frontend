@@ -79,6 +79,10 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
+    //TODO: remove old classes
+    const cls = this.getClass();
+    if (cls) this.classList.add(cls);
+
     if (!this.icon) {
       return nothing;
     }
@@ -181,7 +185,7 @@ export class StateBadge extends LitElement {
     this.style.backgroundImage = backgroundImage;
   }
 
-  private _getClass() {
+  protected getClass() {
     let cls;
     if (this.stateObj) {
       const domain = computeDomain(this.stateObj.entity_id);
@@ -209,22 +213,28 @@ export class StateBadge extends LitElement {
           display: inline-block;
           width: 40px;
           color: var(--paper-item-icon-color, #44739e);
+          border-radius: var(--state-badge-border-radius, 50%);
           height: 40px;
           text-align: center;
           background-size: cover;
           line-height: 40px;
           vertical-align: middle;
           box-sizing: border-box;
-          border-radius: var(--state-badge-border-radius, 50%);
           --state-inactive-color: initial;
         }
-        .has-image {
-          border-radius: var(--state-badge-with-image-border-radius, 50%) !important;
+        :host(.has-image) {
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            50%
+          ) !important;
         }
-        .has-media-image {
-          border-radius: var(--state-badge-with-media-image-border-radius, 8%) !important;
+        :host(.has-media-image) {
+          border-radius: var(
+            --state-badge-with-media-image-border-radius,
+            8%
+          ) !important;
         }
-        .has-no-radius {
+        :host(.has-no-radius) {
           border-radius: 0 !important;
         }
         :host(:focus) {
