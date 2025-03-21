@@ -6615,6 +6615,11 @@
               "badges_position_options": {
                 "top": "Top",
                 "bottom": "Bottom"
+              },
+              "badges_wrap": "Badges wrap",
+              "badges_wrap_options": {
+                "wrap": "Wrap",
+                "scroll": "Scroll"
               }
             }
           },
