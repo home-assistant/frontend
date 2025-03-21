@@ -8132,7 +8132,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:1.15.0, eslint-plugin-lit@npm:^1.10.1":
+"eslint-plugin-lit@npm:2.0.0":
+  version: 2.0.0
+  resolution: "eslint-plugin-lit@npm:2.0.0"
+  dependencies:
+    parse5: "npm:^6.0.1"
+    parse5-htmlparser2-tree-adapter: "npm:^6.0.1"
+  peerDependencies:
+    eslint: ">= 8"
+  checksum: 10/5419125752966e7063240f0ce09b8d3bf6ca88b5e38da389c01469b9d8310f5e06dbac3f5bad0270c85ec463eeac2d78bffb15612b9a66ddd515dd597d32baaa
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-lit@npm:^1.10.1":
   version: 1.15.0
   resolution: "eslint-plugin-lit@npm:1.15.0"
   dependencies:
@@ -9524,7 +9536,7 @@ __metadata:
     eslint-config-prettier: "npm:10.1.1"
     eslint-import-resolver-webpack: "npm:0.13.10"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-lit: "npm:1.15.0"
+    eslint-plugin-lit: "npm:2.0.0"
     eslint-plugin-lit-a11y: "npm:4.1.4"
     eslint-plugin-unused-imports: "npm:4.1.4"
     eslint-plugin-wc: "npm:2.2.1"
