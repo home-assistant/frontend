@@ -14,7 +14,11 @@ export const computeInitialHaFormData = (
     } else if ("default" in field) {
       data[field.name] = field.default;
     } else if (field.type === "expandable") {
-      data[field.name] = computeInitialHaFormData(field.schema);
+      const expandableData = computeInitialHaFormData(field.schema);
+      if (field.required || Object.keys(expandableData).length) {
+        // Only add expandable data if it's required or any of its children have initial values.
+        data[field.name] = expandableData;
+      }
     } else if (!field.required) {
       // Do nothing.
     } else if (field.type === "boolean") {
