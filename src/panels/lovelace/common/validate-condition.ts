@@ -8,6 +8,7 @@ import type { HomeAssistant } from "../../../types";
 export type Condition =
   | NumericStateCondition
   | StateCondition
+  | AttributeCondition
   | ScreenCondition
   | UserCondition
   | OrCondition
@@ -38,6 +39,14 @@ export interface StateCondition extends BaseCondition {
   state_not?: string | string[];
 }
 
+export interface AttributeCondition extends BaseCondition {
+  condition: "attribute";
+  entity?: string;
+  attribute?: string;
+  attribute_value?: string | string[];
+  attribute_value_not?: string | string[];
+}
+
 export interface ScreenCondition extends BaseCondition {
   condition: "screen";
   media_query?: string;
@@ -64,6 +73,20 @@ function getValueFromEntityId(
 ): string | undefined {
   if (isValidEntityId(value) && hass.states[value]) {
     return hass.states[value]?.state;
+  }
+  return undefined;
+}
+
+function getAttributeValueFromEntityId(
+  hass: HomeAssistant,
+  entityId: string,
+  attribute: string
+): string | undefined {
+  if (
+    isValidEntityId(entityId) &&
+    hass.states[entityId]?.attributes?.[attribute] != null
+  ) {
+    return `${hass.states[entityId].attributes[attribute]}`;
   }
   return undefined;
 }
@@ -132,6 +155,47 @@ function checkStateNumericCondition(
   );
 }
 
+function checkAttributeCondition(
+  condition: AttributeCondition,
+  hass: HomeAssistant
+) {
+  const attribute = condition.attribute;
+
+  if (attribute == null || condition.entity == null) {
+    return true;
+  }
+
+  const attributeValue = getAttributeValueFromEntityId(
+    hass,
+    condition.entity,
+    attribute
+  );
+  let value = condition.attribute_value ?? condition.attribute_value_not;
+
+  // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
+  if (Array.isArray(value)) {
+    const entityValues = value
+      .map((v) => getValueFromEntityId(hass, v))
+      .filter((v): v is string => v !== undefined)
+      .map((v) => `${v}`);
+    value = [...value, ...entityValues];
+  } else if (typeof value === "string") {
+    const entityValue = getValueFromEntityId(hass, value);
+    value = [value];
+    if (entityValue) {
+      value.push(`${entityValue}`);
+    }
+  }
+
+  if (attributeValue == null) {
+    return false;
+  }
+
+  return condition.attribute_value != null
+    ? ensureArray(value).includes(attributeValue)
+    : !ensureArray(value).includes(attributeValue);
+}
+
 function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
   return condition.media_query
     ? matchMedia(condition.media_query).matches
@@ -177,6 +241,8 @@ export function checkConditionsMet(
           return checkAndCondition(c, hass);
         case "or":
           return checkOrCondition(c, hass);
+        case "attribute":
+          return checkAttributeCondition(c, hass);
         default:
           return checkStateCondition(c, hass);
       }
@@ -218,6 +284,18 @@ export function extractConditionEntityIds(
           entityIds.add(state);
         }
       });
+    } else if (condition.condition === "attribute") {
+      if (condition.entity) {
+        entityIds.add(condition.entity);
+      }
+      [
+        ...(ensureArray(condition.attribute_value) ?? []),
+        ...(ensureArray(condition.attribute_value_not) ?? []),
+      ].forEach((state) => {
+        if (!!state && isValidEntityId(state)) {
+          entityIds.add(state);
+        }
+      });
     } else if ("conditions" in condition && condition.conditions) {
       return new Set([
         ...entityIds,
@@ -232,6 +310,14 @@ function validateStateCondition(condition: StateCondition | LegacyCondition) {
   return (
     condition.entity != null &&
     (condition.state != null || condition.state_not != null)
+  );
+}
+
+function validateAttributeCondition(condition: AttributeCondition) {
+  return (
+    condition.entity != null &&
+    condition.attribute != null &&
+    (condition.attribute_value != null || condition.attribute_value_not != null)
   );
 }
 
@@ -278,6 +364,8 @@ export function validateConditionalConfig(
           return validateAndCondition(c);
         case "or":
           return validateOrCondition(c);
+        case "attribute":
+          return validateAttributeCondition(c);
         default:
           return validateStateCondition(c);
       }
@@ -307,7 +395,7 @@ export function addEntityToCondition(
 
   if (
     condition.condition === "state" ||
-    condition.condition === "numeric_state"
+    condition.condition === "numeric_state" // attribute?
   ) {
     return {
       entity: entityId,

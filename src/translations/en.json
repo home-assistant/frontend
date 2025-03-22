@@ -6812,6 +6812,11 @@
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
+              "attribute": {
+                "label": "Entity attribute",
+                "attribute_equal": "Attribute is equal to",
+                "attribute_not_equal": "Attribute is not equal to"
+              },
               "user": {
                 "label": "User"
               },
