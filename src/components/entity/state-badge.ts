@@ -79,7 +79,6 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
-    //TODO: remove old classes
     const cls = this.getClass();
     if (cls) this.classList.add(cls);
 
