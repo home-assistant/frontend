@@ -34,7 +34,7 @@ export const computeAttributeValueDisplay = (
     value !== undefined ? value : stateObj.attributes[attribute];
 
   // Null value, the state is unknown
-  if (attributeValue === null) {
+  if (attributeValue === null || attributeValue === undefined) {
     return localize("state.default.unknown");
   }
 
