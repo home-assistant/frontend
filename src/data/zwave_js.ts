@@ -80,7 +80,7 @@ enum QRCodeVersion {
   SmartStart = 1,
 }
 
-enum Protocols {
+export enum Protocols {
   ZWave = 0,
   ZWaveLongRange = 1,
 }
@@ -159,6 +159,22 @@ export interface PlannedProvisioningEntry {
   securityClasses: SecurityClass[];
 }
 
+export interface DeviceConfig {
+  filename: string;
+  manufacturer: string;
+  manufacturerId: number;
+  label: string;
+  description: string;
+  devices: {
+    productType: number;
+    productId: number;
+  }[];
+  firmwareVersion: {
+    min: string;
+    max: string;
+  };
+}
+
 export const MINIMUM_QR_STRING_LENGTH = 52;
 
 export interface ZWaveJSNetwork {
@@ -195,6 +211,7 @@ export interface ZWaveJSController {
   is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
   nodes: ZWaveJSNodeStatus[];
+  supports_long_range: boolean;
 }
 
 export interface ZWaveJSNodeStatus {
@@ -555,7 +572,7 @@ export const zwaveTryParseDskFromQrCode = (
 export const zwaveValidateDskAndEnterPin = (
   hass: HomeAssistant,
   entry_id: string,
-  pin: string
+  pin: string | false
 ) =>
   hass.callWS({
     type: "zwave_js/validate_dsk_and_enter_pin",
@@ -583,6 +600,23 @@ export const zwaveParseQrCode = (
     type: "zwave_js/parse_qr_code_string",
     entry_id,
     qr_code_string,
+  });
+
+export const lookupZwaveDevice = (
+  hass: HomeAssistant,
+  entry_id: string,
+  manufacturerId: number,
+  productType: number,
+  productId: number,
+  applicationVersion?: string
+): Promise<DeviceConfig> =>
+  hass.callWS({
+    type: "zwave_js/lookup_device",
+    entry_id,
+    manufacturerId,
+    productType,
+    productId,
+    applicationVersion,
   });
 
 export const provisionZwaveSmartStartNode = (
