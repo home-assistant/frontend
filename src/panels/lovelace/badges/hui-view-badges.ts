@@ -206,6 +206,10 @@ export class HuiViewBadges extends LitElement {
       margin: 0;
     }
 
+    .badges > * {
+      min-width: fit-content;
+    }
+
     hui-badge-edit-mode {
       display: block;
       position: relative;
