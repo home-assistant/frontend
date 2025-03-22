@@ -80,7 +80,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const cardsConfig = this._config?.cards ?? [];
 
-    const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
+    const editMode = Boolean(this.lovelace?.editMode);
 
     const sortableOptions = this.importOnly
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
@@ -88,7 +88,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     return html`
       <ha-sortable
-        .disabled=${!editMode}
+        .disabled=${!(editMode && !this.isStrategy)}
         @drag-start=${this._dragStart}
         @drag-end=${this._dragEnd}
         draggable-selector=".card"
@@ -103,6 +103,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           class="container ${classMap({
             "edit-mode": editMode,
             "import-only": this.importOnly,
+            "is-strategy": this.isStrategy,
           })}"
         >
           ${repeat(
@@ -133,7 +134,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
                   })}"
                   .sortableData=${cardPath}
                 >
-                  ${editMode
+                  ${editMode && !this.isStrategy
                     ? html`
                         <hui-card-edit-mode
                           .hass=${this.hass}
@@ -151,7 +152,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
               `;
             }
           )}
-          ${editMode && !this.importOnly
+          ${editMode && !this.importOnly && !this.isStrategy
             ? html`
                 <button
                   class="add"
@@ -244,6 +245,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           border-start-end-radius: 0;
           border: 2px dashed var(--divider-color);
           min-height: var(--row-height);
+        }
+
+        .container.edit-mode.is-strategy {
+          border-style: solid;
         }
 
         .container.import-only {
