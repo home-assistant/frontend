@@ -5,6 +5,7 @@ import {
   mdiMenuDown,
   mdiPlus,
   mdiTextureBox,
+  mdiCancel,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -612,13 +613,31 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : "—",
       },
       disabled_by: {
-        title: "",
-        label: localize("ui.panel.config.devices.data_table.disabled_by"),
-        hidden: true,
+        title: localize("ui.panel.config.devices.picker.state"),
+        type: "icon",
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "80px",
+        maxWidth: "80px",
         template: (device) =>
           device.disabled_by
-            ? this.hass.localize("ui.panel.config.devices.disabled")
-            : "",
+            ? html`
+                <div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-tooltip
+                    placement="left"
+                    .content=${this.hass.localize(
+                      "ui.panel.config.entities.picker.status.disabled"
+                    )}
+                  >
+                    <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
+                  </ha-tooltip>
+                </div>
+              `
+            : "—",
       },
       labels: {
         title: "",
