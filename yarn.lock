@@ -8158,15 +8158,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-wc@npm:2.2.1":
-  version: 2.2.1
-  resolution: "eslint-plugin-wc@npm:2.2.1"
+"eslint-plugin-wc@npm:3.0.0":
+  version: 3.0.0
+  resolution: "eslint-plugin-wc@npm:3.0.0"
   dependencies:
     is-valid-element-name: "npm:^1.0.0"
-    js-levenshtein-esm: "npm:^1.2.0"
+    js-levenshtein-esm: "npm:^2.0.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10/7861074dbf057be818dddfeaa3442e538696bdaeb3971038c9216337be071a67f775400d394d06b1166180b77171756c6037f92eb4d6ea5ae749f128f8d9654d
+  checksum: 10/fd875c58ec6de0d5c7f2fbec19ccca1eb03710bd5186b2fd99727834287ac71e4b594cc9f1072e4b42065fbb2191d17e760535571539ead6e31df01ef32c5eb8
   languageName: node
   linkType: hard
 
@@ -9527,7 +9527,7 @@ __metadata:
     eslint-plugin-lit: "npm:1.15.0"
     eslint-plugin-lit-a11y: "npm:4.1.4"
     eslint-plugin-unused-imports: "npm:4.1.4"
-    eslint-plugin-wc: "npm:2.2.1"
+    eslint-plugin-wc: "npm:3.0.0"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.0"
     fuse.js: "npm:7.1.0"
@@ -10617,10 +10617,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-levenshtein-esm@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "js-levenshtein-esm@npm:1.2.0"
-  checksum: 10/577c3e609d3f3b6ab46071638fee14f96a0a8a9148548d4da12d40cb1a12fd197a93d2ff1047a01562c892bad243e35431e015ab020535c9dead96da64a2c3dd
+"js-levenshtein-esm@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "js-levenshtein-esm@npm:2.0.0"
+  checksum: 10/9c6b1ace700743fc0010532a2736c78cf011c179b51c9d0218720488aebd3f1cefa943ab69b1ca087c1dbbfd407e56ee8f0fb308db2e5f689da4768b290776a8
   languageName: node
   linkType: hard
 
