@@ -54,7 +54,8 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state" | "icon";
+  label_mode?: "name" | "state" | "attribute" | "icon";
+  attribute?: string;
   name?: string;
   focus?: boolean;
 }
@@ -531,12 +532,16 @@ export class HaMap extends ReactiveElement {
       const entityName =
         typeof entity !== "string" && entity.label_mode === "state"
           ? this.hass.formatEntityState(stateObj)
-          : (customTitle ??
-            title
-              .split(" ")
-              .map((part) => part[0])
-              .join("")
-              .substr(0, 3));
+          : typeof entity !== "string" &&
+              entity.label_mode === "attribute" &&
+              entity.attribute !== undefined
+            ? this.hass.formatEntityAttributeValue(stateObj, entity.attribute)
+            : (customTitle ??
+              title
+                .split(" ")
+                .map((part) => part[0])
+                .join("")
+                .substr(0, 3));
 
       const entityMarker = document.createElement("ha-entity-marker");
       entityMarker.hass = this.hass;
