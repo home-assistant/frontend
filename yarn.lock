@@ -157,22 +157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/helper-define-polyfill-provider@npm:0.6.3":
-  version: 0.6.3
-  resolution: "@babel/helper-define-polyfill-provider@npm:0.6.3"
-  dependencies:
-    "@babel/helper-compilation-targets": "npm:^7.22.6"
-    "@babel/helper-plugin-utils": "npm:^7.22.5"
-    debug: "npm:^4.1.1"
-    lodash.debounce: "npm:^4.0.8"
-    resolve: "npm:^1.14.2"
-  peerDependencies:
-    "@babel/core": ^7.4.0 || ^8.0.0-0 <8.0.0
-  checksum: 10/b79a77ac8fbf1aaf6c7f99191871760508e87d75a374ff3c39c6599a17d9bb82284797cd451769305764e504546caf22ae63367b22d6e45e32d0a8f4a34aab53
-  languageName: node
-  linkType: hard
-
-"@babel/helper-define-polyfill-provider@npm:^0.6.3, @babel/helper-define-polyfill-provider@npm:^0.6.4":
+"@babel/helper-define-polyfill-provider@npm:0.6.4, @babel/helper-define-polyfill-provider@npm:^0.6.3, @babel/helper-define-polyfill-provider@npm:^0.6.4":
   version: 0.6.4
   resolution: "@babel/helper-define-polyfill-provider@npm:0.6.4"
   dependencies:
@@ -3458,15 +3443,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-oauth-device@npm:7.1.3":
-  version: 7.1.3
-  resolution: "@octokit/auth-oauth-device@npm:7.1.3"
+"@octokit/auth-oauth-device@npm:7.1.4":
+  version: 7.1.4
+  resolution: "@octokit/auth-oauth-device@npm:7.1.4"
   dependencies:
     "@octokit/oauth-methods": "npm:^5.1.4"
     "@octokit/request": "npm:^9.2.1"
     "@octokit/types": "npm:^13.6.2"
     universal-user-agent: "npm:^7.0.0"
-  checksum: 10/28a47dcf9a08724b88e86ccd294e897dba6303e2bde0ca539dcfdc31aaaf616585ebe7fd87819e3fb0633844274ed294f60a9011353880ce3980310689704374
+  checksum: 10/2bc25afb164dee7476ab5000f6f8ffc35501c0395b58a1fb5d02993d4683bd50da07e392e01e037b18084032a8bfb9a4d0713bb7492c377a31ec7a5642e1ed00
   languageName: node
   linkType: hard
 
@@ -3570,16 +3555,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-retry@npm:7.1.4":
-  version: 7.1.4
-  resolution: "@octokit/plugin-retry@npm:7.1.4"
+"@octokit/plugin-retry@npm:7.2.0":
+  version: 7.2.0
+  resolution: "@octokit/plugin-retry@npm:7.2.0"
   dependencies:
     "@octokit/request-error": "npm:^6.1.7"
     "@octokit/types": "npm:^13.6.2"
     bottleneck: "npm:^2.15.3"
   peerDependencies:
     "@octokit/core": ">=6"
-  checksum: 10/5b1f2681c33c3ba5e99da77b077fbb7b766780fdd48321d2b8e48b78acd6b83598b3e9915e3d49f8dfbc945f802bdeb26d94ae0fc9722c2e979debd049a0eeff
+  checksum: 10/522d66c507f4b1d5eddafaaba0b696e828d30e20b33cfee70b3aaae9f37cada4e8d260e2aad52914640f1e303973386cd4fbdcea77518628c51ae10f49d8cf7d
   languageName: node
   linkType: hard
 
@@ -4466,7 +4451,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sinonjs/fake-timers@npm:^13.0.1, @sinonjs/fake-timers@npm:^13.0.2":
+"@sinonjs/fake-timers@npm:^13.0.1, @sinonjs/fake-timers@npm:^13.0.5":
   version: 13.0.5
   resolution: "@sinonjs/fake-timers@npm:13.0.5"
   dependencies:
@@ -8132,7 +8117,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-lit@npm:1.15.0, eslint-plugin-lit@npm:^1.10.1":
+"eslint-plugin-lit@npm:2.0.0":
+  version: 2.0.0
+  resolution: "eslint-plugin-lit@npm:2.0.0"
+  dependencies:
+    parse5: "npm:^6.0.1"
+    parse5-htmlparser2-tree-adapter: "npm:^6.0.1"
+  peerDependencies:
+    eslint: ">= 8"
+  checksum: 10/5419125752966e7063240f0ce09b8d3bf6ca88b5e38da389c01469b9d8310f5e06dbac3f5bad0270c85ec463eeac2d78bffb15612b9a66ddd515dd597d32baaa
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-lit@npm:^1.10.1":
   version: 1.15.0
   resolution: "eslint-plugin-lit@npm:1.15.0"
   dependencies:
@@ -8158,15 +8155,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-wc@npm:2.2.1":
-  version: 2.2.1
-  resolution: "eslint-plugin-wc@npm:2.2.1"
+"eslint-plugin-wc@npm:3.0.0":
+  version: 3.0.0
+  resolution: "eslint-plugin-wc@npm:3.0.0"
   dependencies:
     is-valid-element-name: "npm:^1.0.0"
-    js-levenshtein-esm: "npm:^1.2.0"
+    js-levenshtein-esm: "npm:^2.0.0"
   peerDependencies:
     eslint: ">=8.40.0"
-  checksum: 10/7861074dbf057be818dddfeaa3442e538696bdaeb3971038c9216337be071a67f775400d394d06b1166180b77171756c6037f92eb4d6ea5ae749f128f8d9654d
+  checksum: 10/fd875c58ec6de0d5c7f2fbec19ccca1eb03710bd5186b2fd99727834287ac71e4b594cc9f1072e4b42065fbb2191d17e760535571539ead6e31df01ef32c5eb8
   languageName: node
   linkType: hard
 
@@ -9399,7 +9396,7 @@ __metadata:
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
     "@babel/core": "npm:7.26.10"
-    "@babel/helper-define-polyfill-provider": "npm:0.6.3"
+    "@babel/helper-define-polyfill-provider": "npm:0.6.4"
     "@babel/plugin-proposal-decorators": "npm:7.25.9"
     "@babel/plugin-transform-runtime": "npm:7.26.10"
     "@babel/preset-env": "npm:7.26.9"
@@ -9464,8 +9461,8 @@ __metadata:
     "@material/web": "npm:2.2.0"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
-    "@octokit/auth-oauth-device": "npm:7.1.3"
-    "@octokit/plugin-retry": "npm:7.1.4"
+    "@octokit/auth-oauth-device": "npm:7.1.4"
+    "@octokit/plugin-retry": "npm:7.2.0"
     "@octokit/rest": "npm:21.1.1"
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
@@ -9524,10 +9521,10 @@ __metadata:
     eslint-config-prettier: "npm:10.1.1"
     eslint-import-resolver-webpack: "npm:0.13.10"
     eslint-plugin-import: "npm:2.31.0"
-    eslint-plugin-lit: "npm:1.15.0"
+    eslint-plugin-lit: "npm:2.0.0"
     eslint-plugin-lit-a11y: "npm:4.1.4"
     eslint-plugin-unused-imports: "npm:4.1.4"
-    eslint-plugin-wc: "npm:2.2.1"
+    eslint-plugin-wc: "npm:3.0.0"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.0"
     fuse.js: "npm:7.1.0"
@@ -9571,7 +9568,7 @@ __metadata:
     rrule: "npm:2.8.1"
     rspack-manifest-plugin: "npm:5.0.3"
     serve: "npm:14.2.4"
-    sinon: "npm:19.0.2"
+    sinon: "npm:19.0.4"
     sortablejs: "patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
@@ -10617,10 +10614,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-levenshtein-esm@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "js-levenshtein-esm@npm:1.2.0"
-  checksum: 10/577c3e609d3f3b6ab46071638fee14f96a0a8a9148548d4da12d40cb1a12fd197a93d2ff1047a01562c892bad243e35431e015ab020535c9dead96da64a2c3dd
+"js-levenshtein-esm@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "js-levenshtein-esm@npm:2.0.0"
+  checksum: 10/9c6b1ace700743fc0010532a2736c78cf011c179b51c9d0218720488aebd3f1cefa943ab69b1ca087c1dbbfd407e56ee8f0fb308db2e5f689da4768b290776a8
   languageName: node
   linkType: hard
 
@@ -13587,17 +13584,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sinon@npm:19.0.2":
-  version: 19.0.2
-  resolution: "sinon@npm:19.0.2"
+"sinon@npm:19.0.4":
+  version: 19.0.4
+  resolution: "sinon@npm:19.0.4"
   dependencies:
     "@sinonjs/commons": "npm:^3.0.1"
-    "@sinonjs/fake-timers": "npm:^13.0.2"
+    "@sinonjs/fake-timers": "npm:^13.0.5"
     "@sinonjs/samsam": "npm:^8.0.1"
     diff: "npm:^7.0.0"
     nise: "npm:^6.1.1"
     supports-color: "npm:^7.2.0"
-  checksum: 10/0be47968e9352269d0bdd26cdae7ae4e67d94fa007e8417d1e66ac95ba8537214edc770aff01b0f5a6f07588a1f7d3c947fff9366d799db85d3a4c405b875460
+  checksum: 10/c38e4de00b1829f629f331abb4fc77c4f4fdc905126e7500a49a3c46bc85ba7b93a365aa8d7e7f7b8dc8e0f78554a31c6c3c6258130184c9ff88d5a3062e1cee
   languageName: node
   linkType: hard
 
