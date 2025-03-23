@@ -8,6 +8,7 @@ import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
 import "../../../components/ha-textfield";
+import "../../../components/ha-dialog";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
