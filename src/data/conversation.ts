@@ -124,3 +124,18 @@ export const debugAgent = (
     language,
     device_id,
   });
+
+export interface LanguageScore {
+  cloud: number;
+  focused_local: number;
+  full_local: number;
+}
+
+export type LanguageScores = Record<string, LanguageScore>;
+
+export const getLanguageScores = (
+  hass: HomeAssistant
+): Promise<LanguageScores> =>
+  hass.callWS({
+    type: "conversation/agent/homeassistant/language_scores",
+  });

@@ -3388,16 +3388,38 @@
               "no_selection": "Please select an area"
             },
             "pipeline": {
-              "title": "What hardware do you want to use?",
-              "secondary": "How quickly your assistant responds depends on the power of the hardware.",
-              "seconds": "seconds",
-              "cloud": {
-                "description": "Ideal if you don't have a powerful system at home."
+              "title": "How do you want your voice to be processed?",
+              "performance": {
+                "header": "Performance on low-powered system",
+                "low": "Low",
+                "high": "High"
               },
-              "local": {
-                "title": "Do-it-yourself",
-                "description": "Install add-ons or containers to run it on your own system. Powerful hardware is needed for fast responses.",
-                "setup": "Set up"
+              "commands": {
+                "header": "Supported commands",
+                "low": "Needs work",
+                "ready": "Ready to be used",
+                "high": "Fully supported"
+              },
+              "options": {
+                "cloud": {
+                  "label": "Home Assistant Cloud",
+                  "description": "Offloads speech processing to a fast, private cloud. Offering the highest accuracy and widest language support. Home Assistant Cloud is a subscription service that includes voice processing."
+                },
+                "focused_local": {
+                  "label": "Focused local processing",
+                  "description": "Limited to a set list of common home control phrases, this allows any system to process speech locally and offline."
+                },
+                "full_local": {
+                  "label": "Full local processing",
+                  "description": "Full speech processing is done locally, requiring high processing power for adequate speed and accuracy."
+                }
+              },
+              "unsupported": "Unsupported",
+              "unsupported_language": {
+                "header": "Your language is not supported",
+                "secondary": "Your language {language} is not supported yet. You can select a different language to continue.",
+                "language_picker": "Language",
+                "contribute": "Contribute to the voice initiative for {language}"
               }
             },
             "cloud": {
@@ -3418,9 +3440,12 @@
                 "installing_piper": "Installing Piper add-on",
                 "starting_piper": "Starting Piper add-on",
                 "setup_piper": "Setting up Piper",
-                "installing_whisper": "Installing Whisper add-on",
-                "starting_whisper": "Starting Whisper add-on",
-                "setup_whisper": "Setting up Whisper",
+                "installing_faster-whisper": "Installing Whisper add-on",
+                "starting_faster-whisper": "Starting Whisper add-on",
+                "setup_faster-whisper": "Setting up Whisper",
+                "installing_speech-to-phrase": "Installing Speech-to-Phrase add-on",
+                "starting_speech-to-phrase": "Starting Speech-to-Phrase add-on",
+                "setup_speech-to-phrase": "Setting up Speech-to-Phrase",
                 "creating_pipeline": "Creating assistant"
               },
               "errors": {
