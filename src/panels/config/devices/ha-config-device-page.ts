@@ -958,9 +958,7 @@ export class HaConfigDevicePage extends LitElement {
                   integration: domainToName(this.hass.localize, link.domain),
                 }
               )
-            : this.hass.localize(
-                `ui.panel.config.devices.download_diagnostics`
-              ),
+            : this.hass.localize(`ui.panel.config.devices.download_diagnostics`),
       }));
     }
   }
