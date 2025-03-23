@@ -235,27 +235,22 @@ export class HuiEnergyDevicesDetailGraphCard
 
       growthValues[device.stat_consumption] = value;
     });
+    const growthValuesExChildren = {};
+    energyData.prefs.device_consumption.forEach((device) => {
+      growthValuesExChildren[device.stat_consumption] = (
+        childMap[device.stat_consumption] || []
+      ).reduce(
+        (acc, child) => acc - growthValues[child],
+        growthValues[device.stat_consumption]
+      );
+    });
 
     const sorted_devices = energyData.prefs.device_consumption.map(
       (device) => device.stat_consumption
     );
-    sorted_devices.sort((a, b) => growthValues[b] - growthValues[a]);
-
-    const ordered_devices: string[] = [];
-
-    // Recursively build an ordered list of devices, where each device has all its children immediately following it.
-    function orderDevices(parent?: string) {
-      sorted_devices.forEach((device) => {
-        const included_in_stat = energyData.prefs.device_consumption.find(
-          (prf) => prf.stat_consumption === device
-        )?.included_in_stat;
-        if ((!parent && !included_in_stat) || parent === included_in_stat) {
-          ordered_devices.push(device);
-          orderDevices(device);
-        }
-      });
-    }
-    orderDevices();
+    sorted_devices.sort(
+      (a, b) => growthValuesExChildren[b] - growthValuesExChildren[a]
+    );
 
     const datasets: BarSeriesOption[] = [];
 
@@ -279,7 +274,7 @@ export class HuiEnergyDevicesDetailGraphCard
         compareData,
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
-        ordered_devices,
+        sorted_devices,
         childMap,
         true
       );
@@ -311,7 +306,7 @@ export class HuiEnergyDevicesDetailGraphCard
       data,
       energyData.statsMetadata,
       energyData.prefs.device_consumption,
-      ordered_devices,
+      sorted_devices,
       childMap
     );
 
