@@ -637,7 +637,7 @@ export class HaConfigDevicePage extends LitElement {
                     ${this._toEntities(this._related.script).map((script) => {
                       const entityState = script;
                       const entry = this._entityReg.find(
-                        (e) => e.entity_id === script as any
+                        (e) => e.entity_id === (script as any)
                       );
                       let url = `/config/script/show/${entityState.entity_id}`;
                       if (entry) {
