@@ -216,7 +216,10 @@
         "repeat_set": "Repeat mode",
         "shuffle_set": "Shuffle",
         "text_to_speak": "Text to speak",
-        "nothing_playing": "Nothing playing"
+        "nothing_playing": "Nothing playing",
+        "group": "Group",
+        "group_media_players": "Group media players",
+        "group_member": "Group member"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"

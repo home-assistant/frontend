@@ -510,3 +510,9 @@ export const mediaPlayerPlayMedia = (
     ...extra,
   });
 };
+
+export const mediaPlayerJoin = (
+  hass: HomeAssistant,
+  entity_id: string,
+  group_members: string[]
+) => hass.callService("media_player", "join", { group_members }, { entity_id });
