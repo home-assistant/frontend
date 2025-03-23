@@ -959,8 +959,8 @@ export class HaConfigDevicePage extends LitElement {
                 }
               )
             : this.hass.localize(
-              `ui.panel.config.devices.download_diagnostics`
-            ),
+                `ui.panel.config.devices.download_diagnostics`
+              ),
       }));
     }
   }
@@ -1431,7 +1431,7 @@ export class HaConfigDevicePage extends LitElement {
                     "ui.panel.config.devices.confirm_rename_entity_wont_rename",
                     {
                       deviceSlug: oldDeviceSlug,
-                      count: dialogNoRenames.length
+                      count: dialogNoRenames.length,
                     }
                   )}</span
                 >
