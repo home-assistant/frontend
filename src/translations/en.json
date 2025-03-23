@@ -7119,7 +7119,7 @@
             },
             "clock": {
               "name": "Clock",
-              "description": "A card to display the current time.",
+              "description": "The Clock card displays the current time using your desired size and format.",
               "clock_size": "Clock size",
               "clock_sizes": {
                 "small": "Small",
