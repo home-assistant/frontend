@@ -478,19 +478,16 @@ export class HaConfigDevicePage extends LitElement {
                 `
               : html`
                   <div class="card-content">
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.add_prompt",
-                      {
-                        name: this.hass.localize(
-                          "ui.panel.config.devices.automation.automations"
-                        ),
-                        type: this.hass.localize(
-                          `ui.panel.config.devices.type.${
-                            device.entry_type || "device"
-                          }`
-                        ),
-                      }
-                    )}
+                    ${this.hass.localize("ui.panel.config.devices.add_prompt", {
+                      name: this.hass.localize(
+                        "ui.panel.config.devices.automation.automations"
+                      ),
+                      type: this.hass.localize(
+                        `ui.panel.config.devices.type.${
+                          device.entry_type || "device"
+                        }`
+                      ),
+                    })}
                     ${add_prompt}
                   </div>
                 `}
