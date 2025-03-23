@@ -216,7 +216,11 @@
         "repeat_set": "Repeat mode",
         "shuffle_set": "Shuffle",
         "text_to_speak": "Text to speak",
-        "nothing_playing": "Nothing playing"
+        "nothing_playing": "Nothing playing",
+        "join": "Join",
+        "media_players": "Media players",
+        "select_all": "Select all",
+        "idle": "Idle"
       },
       "persistent_notification": {
         "dismiss": "Dismiss"
@@ -347,6 +351,7 @@
       "undo": "Undo",
       "move": "Move",
       "save": "Save",
+      "apply": "Apply",
       "add": "Add",
       "create": "Create",
       "edit": "Edit",
