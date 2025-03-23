@@ -180,6 +180,18 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
+  private _toEntities = (entityIds: string[]) =>
+    entityIds
+      .map((entityId) => this.hass.states[entityId])
+      .filter((entity) => entity)
+      .sort((a, b) =>
+        stringCompare(
+          a.attributes.friendly_name ?? a.entity_id,
+          b.attributes.friendly_name ?? b.entity_id,
+          this.hass.language
+        )
+      );
+
   private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
 
   private _entityIds = memoizeOne(
@@ -441,8 +453,8 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.automation?.length
               ? html`
                   <div class="items">
-                    ${this._related.automation.map((automation) => {
-                      const entityState = this.hass.states[automation];
+                    ${this._toEntities(this._related.automation).map((automation) => {
+                      const entityState = automation;
                       return entityState
                         ? html`<ha-tooltip
                             placement="left"
@@ -529,8 +541,8 @@ export class HaConfigDevicePage extends LitElement {
               ${this._related?.scene?.length
                 ? html`
                     <div class="items">
-                      ${this._related.scene.map((scene) => {
-                        const entityState = this.hass.states[scene];
+                      ${this._toEntities(this._related.scene).map((scene) => {
+                        const entityState = scene;
                         return entityState
                           ? html`
                               <ha-tooltip
@@ -620,8 +632,8 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.script?.length
               ? html`
                   <div class="items">
-                    ${this._related.script.map((script) => {
-                      const entityState = this.hass.states[script];
+                    ${this._toEntities(this._related.script).map((script) => {
+                      const entityState = script;
                       const entry = this._entityReg.find(
                         (e) => e.entity_id === script
                       );
