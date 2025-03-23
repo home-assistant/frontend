@@ -1,6 +1,10 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiPlayBoxMultiple,
+  mdiSpeakerMultiple,
+} from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -38,6 +42,7 @@ import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MediaControlCardConfig } from "./types";
+import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -186,6 +191,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const mediaDescription = computeMediaDescription(stateObj);
     const mediaTitleClean = cleanupMediaTitle(stateObj.attributes.media_title);
 
+    const groupMembers = stateObj.attributes.group_members?.length;
+
     return html`
       <ha-card>
         <div
@@ -272,34 +279,62 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                       ? ""
                       : html`
                           <div class="controls">
-                            ${controls!.map(
-                              (control) => html`
-                                <ha-icon-button
-                                  .label=${this.hass.localize(
-                                    `ui.card.media_player.${control.action}`
-                                  )}
-                                  .path=${control.icon}
-                                  action=${control.action}
-                                  @click=${this._handleClick}
-                                >
-                                </ha-icon-button>
-                              `
-                            )}
-                            ${supportsFeature(
-                              stateObj,
-                              MediaPlayerEntityFeature.BROWSE_MEDIA
-                            )
-                              ? html`
+                            <div class="start">
+                              ${controls!.map(
+                                (control) => html`
                                   <ha-icon-button
-                                    class="browse-media"
                                     .label=${this.hass.localize(
-                                      "ui.card.media_player.browse_media"
+                                      `ui.card.media_player.${control.action}`
                                     )}
-                                    .path=${mdiPlayBoxMultiple}
-                                    @click=${this._handleBrowseMedia}
-                                  ></ha-icon-button>
+                                    .path=${control.icon}
+                                    action=${control.action}
+                                    @click=${this._handleClick}
+                                  >
+                                  </ha-icon-button>
                                 `
-                              : ""}
+                              )}
+                            </div>
+                            <div class="end">
+                              ${supportsFeature(
+                                stateObj,
+                                MediaPlayerEntityFeature.BROWSE_MEDIA
+                              )
+                                ? html`
+                                    <ha-icon-button
+                                      class="browse-media"
+                                      .label=${this.hass.localize(
+                                        "ui.card.media_player.browse_media"
+                                      )}
+                                      .path=${mdiPlayBoxMultiple}
+                                      @click=${this._handleBrowseMedia}
+                                    ></ha-icon-button>
+                                  `
+                                : ""}
+                              ${supportsFeature(
+                                stateObj,
+                                MediaPlayerEntityFeature.GROUPING
+                              )
+                                ? html`
+                                    <ha-icon-button
+                                      class="join-media"
+                                      .label=${this.hass.localize(
+                                        "ui.card.media_player.join"
+                                      )}
+                                      @click=${this._handleJoinMediaPlayers}
+                                    >
+                                      <ha-svg-icon
+                                        .path=${mdiSpeakerMultiple}
+                                      ></ha-svg-icon>
+                                      ${groupMembers && groupMembers > 1
+                                        ? html` <span class="badge">
+                                            ${stateObj.attributes.group_members
+                                              ?.length}
+                                          </span>`
+                                        : nothing}
+                                    </ha-icon-button>
+                                  `
+                                : ""}
+                            </div>
                           </div>
                         `}
                   </div>
@@ -509,6 +544,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private _handleJoinMediaPlayers(): void {
+    showJoinMediaPlayersDialog(this, {
+      entityId: this._config!.entity,
+    });
+  }
+
   private _handleClick(e: MouseEvent): void {
     handleMediaControlClick(
       this.hass!,
@@ -700,6 +741,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       align-items: center;
     }
 
+    .controls > .start {
+      flex-grow: 1;
+    }
+
     .controls ha-icon-button {
       --mdc-icon-button-size: 44px;
       --mdc-icon-size: 30px;
@@ -716,8 +761,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     ha-icon-button.browse-media {
-      position: absolute;
-      right: 4px;
+      --mdc-icon-size: 24px;
+      inset-inline-end: 4px;
+      inset-inline-start: initial;
+    }
+
+    ha-icon-button.join-media {
       --mdc-icon-size: 24px;
       inset-inline-end: 4px;
       inset-inline-start: initial;
@@ -803,6 +852,29 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     .no-progress.player:not(.no-controls) {
       padding-bottom: 0px;
+    }
+
+    .badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      /* Inherits parent's size otherwise */
+      width: auto;
+      height: auto;
+      display: inline-block;
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: 0;
+      min-width: 16px;
+      box-sizing: border-box;
+      border-radius: 50%;
+      font-weight: 400;
+      font-size: 11px;
+      background-color: var(--accent-color);
+      line-height: 16px;
+      text-align: center;
+      padding: 0px 2px;
+      color: var(--text-accent-color, var(--text-primary-color));
     }
   `;
 }
