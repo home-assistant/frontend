@@ -4,6 +4,7 @@ import {
   mdiLoginVariant,
   mdiMusicNote,
   mdiPlayBoxMultiple,
+  mdiSpeakerMultiple,
   mdiVolumeHigh,
   mdiVolumeMinus,
   mdiVolumeOff,
@@ -19,6 +20,7 @@ import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { showMediaPlayerGroupDialog } from "../../../components/media-player/show-media-player-group-dialog";
 import { isUnavailableState } from "../../../data/entity";
 import type {
   MediaPickedEvent,
@@ -79,6 +81,20 @@ class MoreInfoMediaPlayer extends LitElement {
                   slot="icon"
                 ></ha-svg-icon>
               </mwc-button>
+            `
+          : ""}
+        ${!isUnavailableState(stateObj.state) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
+          ? html`
+              <ha-button
+                .label=${this.hass.localize("ui.card.media_player.group")}
+                @click=${this._showGroupMediaPlayers}
+              >
+                <ha-svg-icon
+                  .path=${mdiSpeakerMultiple}
+                  slot="icon"
+                ></ha-svg-icon>
+              </ha-button>
             `
           : ""}
       </div>
@@ -325,6 +341,12 @@ class MoreInfoMediaPlayer extends LitElement {
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
         ),
+    });
+  }
+
+  private _showGroupMediaPlayers(): void {
+    showMediaPlayerGroupDialog(this, {
+      entityId: this.stateObj!.entity_id,
     });
   }
 }
