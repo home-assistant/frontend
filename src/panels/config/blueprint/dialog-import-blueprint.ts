@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-spinner";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
