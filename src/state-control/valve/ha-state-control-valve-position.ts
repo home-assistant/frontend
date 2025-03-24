@@ -37,6 +37,7 @@ export class HaStateControlValvePosition extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const openColor = stateColorCss(this.stateObj, "open");
     const color = stateColorCss(this.stateObj);
 
     return html`
@@ -47,6 +48,7 @@ export class HaStateControlValvePosition extends LitElement {
         min="0"
         max="100"
         show-handle
+        mode="end"
         @value-changed=${this._valueChanged}
         .ariaLabel=${computeAttributeNameDisplay(
           this.hass.localize,
@@ -55,6 +57,7 @@ export class HaStateControlValvePosition extends LitElement {
           "current_position"
         )}
         style=${styleMap({
+          "--state-valve-inactive-color": openColor,
           "--control-slider-color": color,
           "--control-slider-background": color,
         })}
