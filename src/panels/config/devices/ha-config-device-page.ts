@@ -404,6 +404,10 @@ export class HaConfigDevicePage extends LitElement {
 
     this._renderIntegrationInfo(device, integrations, deviceInfo);
 
+    const add_prompt = device.disabled_by
+      ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
+      : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
+
     const automationCard = isComponentLoaded(this.hass, "automation")
       ? html`
           <ha-card outlined>
@@ -484,6 +488,7 @@ export class HaConfigDevicePage extends LitElement {
                         }`
                       ),
                     })}
+                    ${add_prompt}
                   </div>
                 `}
           </ha-card>
@@ -577,6 +582,7 @@ export class HaConfigDevicePage extends LitElement {
                           ),
                         }
                       )}
+                      ${add_prompt}
                     </div>
                   `}
             </ha-card>
@@ -654,6 +660,7 @@ export class HaConfigDevicePage extends LitElement {
                         }`
                       ),
                     })}
+                    ${add_prompt}
                   </div>
                 `}
           </ha-card>
@@ -1422,7 +1429,10 @@ export class HaConfigDevicePage extends LitElement {
                 <span slot="header"
                   >${this.hass.localize(
                     "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                    { deviceSlug: oldDeviceSlug, count: dialogNoRenames.length }
+                    {
+                      deviceSlug: oldDeviceSlug,
+                      count: dialogNoRenames.length,
+                    }
                   )}</span
                 >
                 ${dialogNoRenames}

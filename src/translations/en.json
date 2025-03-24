@@ -4767,7 +4767,9 @@
           }
         },
         "devices": {
-          "add_prompt": "No {name} have been added using this {type} yet. You can add one by pressing the + button above.",
+          "add_prompt": "No {name} have been added using this {type} yet.",
+          "add_prompt_enabled": "You can add one by pressing the + button above.",
+          "add_prompt_disabled": "You can re-enable the device then add one by pressing the + button above.",
           "add_device": "Add device",
           "caption": "Devices",
           "description": "Manage configured devices",
