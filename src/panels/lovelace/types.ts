@@ -65,7 +65,7 @@ export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   preview?: boolean;
   layout?: string;
-  disconnectOnHide?: boolean;
+  connectedWhileHidden?: boolean;
   getCardSize(): number | Promise<number>;
   /** @deprecated Use `getGridOptions` instead */
   getLayoutOptions?(): LovelaceLayoutOptions;

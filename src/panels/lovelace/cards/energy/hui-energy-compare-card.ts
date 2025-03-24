@@ -37,7 +37,7 @@ export class HuiEnergyCompareCard
   // Energy compare card cannot tolerate being removed from the DOM by hui-card,
   // as it calculates its own visibility and needs an active collection
   // subscription to do so.
-  disconnectOnHide = false;
+  connectedWhileHidden = true;
 
   public getCardSize(): Promise<number> | number {
     return 1;

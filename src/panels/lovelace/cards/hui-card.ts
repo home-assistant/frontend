@@ -270,7 +270,7 @@ export class HuiCard extends ReactiveElement {
       fireEvent(this, "card-visibility-changed", { value: visible });
     }
 
-    if (this._element.disconnectOnHide === false) {
+    if (this._element.connectedWhileHidden === true) {
       if (!this._element.parentElement) {
         this.appendChild(this._element);
       }
