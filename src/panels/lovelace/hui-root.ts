@@ -763,6 +763,12 @@ class HUIRoot extends LitElement {
         });
         return;
       }
+
+      const urlPath = this.route?.prefix.slice(1);
+      await this.hass.loadFragmentTranslation("config");
+      const dashboards = await fetchDashboards(this.hass);
+      const dashboard = dashboards.find((d) => d.url_path === urlPath);
+
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
         saveConfig: this.lovelace!.saveConfig,
@@ -773,8 +779,27 @@ class HUIRoot extends LitElement {
             narrow: this.narrow!,
           });
         },
-        showRawConfigEditor: () => {
-          this.lovelace!.enableFullEditMode();
+        deleteDashboard: async () => {
+          const confirm = await showConfirmationDialog(this, {
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+              { dashboard_title: dashboard!.title }
+            ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+            ),
+            confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
+          });
+          if (!confirm) {
+            return false;
+          }
+          try {
+            await deleteDashboard(this.hass!, dashboard!.id);
+            return true;
+          } catch (_err: any) {
+            return false;
+          }
         },
       });
       return;
