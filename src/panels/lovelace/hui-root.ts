@@ -773,9 +773,6 @@ class HUIRoot extends LitElement {
             narrow: this.narrow!,
           });
         },
-        showRawConfigEditor: () => {
-          this.lovelace!.enableFullEditMode();
-        },
       });
       return;
     }
