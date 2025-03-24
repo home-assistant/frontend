@@ -42,11 +42,11 @@ class OnboardingRestoreBackupStatus extends LitElement {
                   "ui.panel.page-onboarding.restore.failed_status_description"
                 )}
               </ha-alert>
-              ${this.backupInfo.last_non_idle_event?.reason
+              ${this.backupInfo.last_action_event?.reason
                 ? html`
                     <div class="failed">
                       <h4>Error:</h4>
-                      ${this.backupInfo.last_non_idle_event?.reason}
+                      ${this.backupInfo.last_action_event?.reason}
                     </div>
                   `
                 : nothing}
