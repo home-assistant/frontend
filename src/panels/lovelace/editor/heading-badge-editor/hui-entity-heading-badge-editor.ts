@@ -156,22 +156,6 @@ export class HuiHeadingEntityEditor
                 },
               },
             },
-            {
-              name: "hold_action",
-              selector: {
-                ui_action: {
-                  default_action: "none",
-                },
-              },
-            },
-            {
-              name: "double_tap_action",
-              selector: {
-                ui_action: {
-                  default_action: "none",
-                },
-              },
-            },
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
