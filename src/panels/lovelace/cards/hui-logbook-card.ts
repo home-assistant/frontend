@@ -55,6 +55,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: LogbookCardConfig;
+
   @state() private _time?: HaLogbook["time"];
 
   @state() private _targetPickerValue: HassServiceTarget = {};
