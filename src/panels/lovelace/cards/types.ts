@@ -22,7 +22,7 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
-import { TimeFormat } from "../../../data/translation";
+import type { TimeFormat } from "../../../data/translation";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
