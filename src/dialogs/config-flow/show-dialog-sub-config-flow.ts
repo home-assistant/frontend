@@ -12,6 +12,7 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
+import { getTranslationFieldMergedPlaceholders, getTranslationFieldKey } from "../../data/data_entry_flow";
 
 export const loadSubConfigFlowDialog = loadDataEntryFlowDialog;
 
@@ -85,33 +86,46 @@ export const showSubConfigFlowDialog = (
     },
 
     renderShowFormStepFieldLabel(hass, step, field, options) {
+      const fieldKey = getTranslationFieldKey(field.name, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        field.name,
+        step);
+    
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.name`
-        );
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${fieldKey}.name`,
+          merged_placeholders
+        ) || field.name;
       }
 
-      const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+      const prefix = options?.path?.[0] ? `sections.${getTranslationFieldKey(options.path[0], step)}.` : "";
 
       return (
         hass.localize(
-          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data.${field.name}`
+          `component.${configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data.${fieldKey}`,
+          merged_placeholders
         ) || field.name
       );
     },
 
     renderShowFormStepFieldHelper(hass, step, field, options) {
+      const fieldKey = getTranslationFieldKey(field.name, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        field.name,
+        step);
+
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${field.name}.description`
+          `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.sections.${fieldKey}.description`,
+          merged_placeholders
         );
       }
 
-      const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+      const prefix = options?.path?.[0] ? `sections.${getTranslationFieldKey(options.path[0], step)}.` : "";
 
       const description = hass.localize(
-        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data_description.${field.name}`,
-        step.description_placeholders
+        `component.${step.translation_domain || configEntry.domain}.config_subentries.${flowType}.step.${step.step_id}.${prefix}data_description.${fieldKey}`,
+        merged_placeholders
       );
 
       return description
@@ -120,16 +134,26 @@ export const showSubConfigFlowDialog = (
     },
 
     renderShowFormStepFieldError(hass, step, error) {
+      const errorKey = getTranslationFieldKey(error, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        error,
+        step);
+
       return (
         hass.localize(
-          `component.${step.translation_domain || step.translation_domain || configEntry.domain}.config_subentries.${flowType}.error.${error}`,
-          step.description_placeholders
+          `component.${step.translation_domain || step.translation_domain || configEntry.domain}.config_subentries.${flowType}.error.${errorKey}`,
+          merged_placeholders
         ) || error
       );
     },
 
-    renderShowFormStepFieldLocalizeValue(hass, _step, key) {
-      return hass.localize(`component.${configEntry.domain}.selector.${key}`);
+    renderShowFormStepFieldLocalizeValue(hass, step, key) {
+      const valueKey = getTranslationFieldKey(key, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        key,
+        step);
+        
+      return hass.localize(`component.${configEntry.domain}.selector.${valueKey}`, merged_placeholders);
     },
 
     renderShowFormStepSubmitButton(hass, step) {

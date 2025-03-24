@@ -11,6 +11,7 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
+import { getTranslationFieldMergedPlaceholders, getTranslationFieldKey } from "../../data/data_entry_flow";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 
@@ -79,33 +80,46 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldLabel(hass, step, field, options) {
+      const fieldKey = getTranslationFieldKey(field.name, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        field.name,
+        step);
+
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`
-        );
+          `component.${step.handler}.config.step.${step.step_id}.sections.${fieldKey}.name`,
+          merged_placeholders
+        ) || field.name;
       }
 
-      const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+      const prefix = options?.path?.[0] ? `sections.${getTranslationFieldKey(options.path[0], step)}.` : "";
 
       return (
         hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}`
+          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${fieldKey}`,
+          merged_placeholders
         ) || field.name
       );
     },
 
     renderShowFormStepFieldHelper(hass, step, field, options) {
+      const fieldKey = getTranslationFieldKey(field.name, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        field.name,
+        step);
+
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${field.name}.description`
+          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${fieldKey}.description`,
+          merged_placeholders
         );
       }
 
-      const prefix = options?.path?.[0] ? `sections.${options.path[0]}.` : "";
+      const prefix = options?.path?.[0] ? `sections.${getTranslationFieldKey(options.path[0], step)}.` : "";
 
       const description = hass.localize(
-        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.${prefix}data_description.${field.name}`,
-        step.description_placeholders
+        `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.${prefix}data_description.${fieldKey}`,
+        merged_placeholders
       );
 
       return description
@@ -114,16 +128,26 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepFieldError(hass, step, error) {
+      const errorKey = getTranslationFieldKey(error, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        error,
+        step);
+
       return (
         hass.localize(
-          `component.${step.translation_domain || step.translation_domain || step.handler}.config.error.${error}`,
-          step.description_placeholders
+          `component.${step.translation_domain || step.translation_domain || step.handler}.config.error.${errorKey}`,
+          merged_placeholders
         ) || error
       );
     },
 
     renderShowFormStepFieldLocalizeValue(hass, step, key) {
-      return hass.localize(`component.${step.handler}.selector.${key}`);
+      const valueKey = getTranslationFieldKey(key, step);
+      const merged_placeholders = getTranslationFieldMergedPlaceholders(
+        key,
+        step);
+
+      return hass.localize(`component.${step.handler}.selector.${valueKey}`, merged_placeholders);
     },
 
     renderShowFormStepSubmitButton(hass, step) {
@@ -132,8 +156,7 @@ export const showConfigFlowDialog = (
           `component.${step.handler}.config.step.${step.step_id}.submit`
         ) ||
         hass.localize(
-          `ui.panel.config.integrations.config_flow.${
-            step.last_step === false ? "next" : "submit"
+          `ui.panel.config.integrations.config_flow.${step.last_step === false ? "next" : "submit"
           }`
         )
       );
@@ -159,8 +182,8 @@ export const showConfigFlowDialog = (
       return html`
         <p>
           ${hass.localize(
-            "ui.panel.config.integrations.config_flow.external_step.description"
-          )}
+        "ui.panel.config.integrations.config_flow.external_step.description"
+      )}
         </p>
         ${description
           ? html`
@@ -176,8 +199,7 @@ export const showConfigFlowDialog = (
 
     renderCreateEntryDescription(hass, step) {
       const description = hass.localize(
-        `component.${step.translation_domain || step.handler}.config.create_entry.${
-          step.description || "default"
+        `component.${step.translation_domain || step.handler}.config.create_entry.${step.description || "default"
         }`,
         step.description_placeholders
       );
@@ -259,9 +281,9 @@ export const showConfigFlowDialog = (
           integration: domain
             ? domainToName(hass.localize, domain)
             : // when we are continuing a config flow, we only know the ID and not the domain
-              hass.localize(
-                "ui.panel.config.integrations.config_flow.loading.fallback_title"
-              ),
+            hass.localize(
+              "ui.panel.config.integrations.config_flow.loading.fallback_title"
+            ),
         }
       );
     },
