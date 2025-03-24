@@ -79,6 +79,9 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
+    for (const _cls of ["has-image", "has-media-image", "has-no-radius"]) {
+      if (this.classList.contains(_cls)) this.classList.remove(_cls);
+    }
     const cls = this.getClass();
     if (cls) this.classList.add(cls);
 
