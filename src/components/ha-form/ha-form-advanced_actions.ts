@@ -7,9 +7,9 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
 import type {
+  HaFormAdvancedActionsSchema,
   HaFormDataContainer,
   HaFormElement,
-  HaFormGridSchema,
   HaFormSchema,
 } from "./types";
 
@@ -23,7 +23,7 @@ export class HaFormAdvancedActions extends LitElement implements HaFormElement {
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property({ attribute: false }) public schema!: HaFormGridSchema;
+  @property({ attribute: false }) public schema!: HaFormAdvancedActionsSchema;
 
   @property({ type: Boolean }) public disabled = false;
 

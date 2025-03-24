@@ -193,6 +193,7 @@ export class HuiTileCardEditor
             {
               name: "",
               type: "advanced_actions",
+              flatten: true,
               schema: ADVANCED_ACTIONS.map((action) => ({
                 name: action,
                 selector: {

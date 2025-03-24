@@ -50,6 +50,7 @@ export interface HaFormExpandableSchema extends HaFormBaseSchema {
 
 export interface HaFormAdvancedActionsSchema extends HaFormBaseSchema {
   type: "advanced_actions";
+  flatten?: boolean;
   schema: readonly HaFormSchema[];
 }
 
