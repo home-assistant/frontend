@@ -120,7 +120,8 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.errors"
                             )}
                           >
-                            <pre class="validate-log">${this._validateResult.errors}</pre>
+                            <pre class="validate-log">${this._validateResult.errors}<
+                            /pre>
                           </ha-alert>`
                         : ""
                     }
@@ -132,7 +133,8 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.warnings"
                             )}
                           >
-                            <pre class="validate-log">${this._validateResult.warnings}</pre>
+                            <pre class="validate-log">${this._validateResult.warnings}<
+                            /pre>
                           </ha-alert>`
                         : ""
                     }
