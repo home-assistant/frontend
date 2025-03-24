@@ -60,7 +60,7 @@ export class DialogStatisticsFix extends LitElement {
                 this._params.issue.data.statistic_id,
                 undefined
               ),
-              statistic_id: this._params.issue.data.statistic_id,
+              ...this._params.issue.data,
             }
           )}<br /><br />
           ${this.hass.localize(
