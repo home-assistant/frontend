@@ -1131,6 +1131,9 @@
       "items-display-editor": {
         "show": "Show {label}",
         "hide": "Hide {label}"
+      },
+      "form-advanced-actions": {
+        "add": "Add advanced interaction"
       }
     },
     "dialogs": {
