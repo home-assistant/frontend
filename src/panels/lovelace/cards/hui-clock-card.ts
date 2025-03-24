@@ -207,14 +207,14 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-wrapper.size-medium .time-parts .time-side {
       font-size: 1.25rem;
-      margin-left: 0.5rem;
       margin-bottom: 0;
+      margin-left: 0.5rem;
     }
 
     .time-wrapper.size-large .time-parts .time-side {
       font-size: 1.7rem;
-      margin-left: 0.6rem;
       margin-bottom: 0;
+      margin-left: 0.6rem;
     }
 
     .time-parts .time-part {
@@ -232,11 +232,11 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-parts .time-side {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       font-size: 12px;
       font-weight: 500;
-      margin-left: 0.35rem;
+      justify-content: space-between;
       margin-bottom: -1px;
+      margin-left: 0.35rem;
     }
 
     .time-parts .time-part.hour:after {
