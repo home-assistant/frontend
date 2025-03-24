@@ -436,7 +436,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       let redirectUrl = authParams.redirect_uri!;
       redirectUrl +=
         (redirectUrl.includes("?") ? "&" : "?") +
-        `code=${encodeURIComponent(result.auth_code)}`;
+        `code=${encodeURIComponent(result.auth_code)}&storeToken=true`;
 
       if (authParams.state) {
         redirectUrl += `&state=${encodeURIComponent(authParams.state)}`;
