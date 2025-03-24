@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
@@ -9,7 +10,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ClockCardConfig } from "./types";
-import { TimeFormat } from "../../../data/translation";
 import { useAmPm } from "../../../common/datetime/use_am_pm";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 
@@ -25,9 +25,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): ClockCardConfig {
     return {
       type: "clock",
-      clock_size: "medium",
-      show_seconds: true,
-      time_format: TimeFormat.am_pm,
     };
   }
 
@@ -37,13 +34,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _dateTimeFormat?: Intl.DateTimeFormat;
 
-  @state() private _timeHour?: string = "00";
+  @state() private _timeHour?: string;
 
-  @state() private _timeMinute?: string = "00";
+  @state() private _timeMinute?: string;
 
-  @state() private _timeSecond?: string = "00";
+  @state() private _timeSecond?: string;
 
-  @state() private _timeAmPm?: string = "--";
+  @state() private _timeAmPm?: string;
 
   private _tickInterval?: undefined | number;
 
@@ -109,7 +106,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     };
   }
 
-  protected updated(changedProps) {
+  protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass");
       if (!oldHass || oldHass.locale !== this.hass?.locale) {
