@@ -44,6 +44,8 @@ const entityConfigStruct = object({
   show_icon: optional(boolean()),
   color: optional(string()),
   tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
   visibility: optional(array(any())),
 });
 
