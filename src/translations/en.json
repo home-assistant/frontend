@@ -2897,7 +2897,9 @@
               "header": "Add a device",
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
-              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
+              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking."
             }
           }
         },
@@ -6422,7 +6424,8 @@
               "previous_energy_usage": "Previous energy usage"
             },
             "energy_devices_detail_graph": {
-              "untracked_consumption": "Untracked consumption"
+              "untracked_consumption": "Untracked consumption",
+              "untracked": "untracked"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
