@@ -80,8 +80,11 @@ class DialogDashboardStrategyEditor extends LitElement {
     this.closeDialog();
   }
 
-  private async _delete(ev): Promise<void> {
+  private async _delete(ev) {
     ev.stopPropagation();
+    if (await this._params!.deleteDashboard()) {
+      this.closeDialog();
+    }
   }
 
   private _cancel(ev): void {
