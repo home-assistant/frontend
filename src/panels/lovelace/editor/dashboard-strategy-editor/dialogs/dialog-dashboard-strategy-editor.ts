@@ -52,6 +52,8 @@ class DialogDashboardStrategyEditor extends LitElement {
   public closeDialog(): void {
     this._params = undefined;
     this._strategyConfig = undefined;
+    this._guiModeAvailable = true;
+    this._GUImode = true;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
