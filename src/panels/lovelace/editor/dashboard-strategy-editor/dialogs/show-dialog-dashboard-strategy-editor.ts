@@ -5,7 +5,7 @@ export interface DashboardStrategyEditorDialogParams {
   config: LovelaceDashboardStrategyConfig;
   saveConfig: (config: LovelaceDashboardStrategyConfig) => void;
   takeControl: () => void;
-  showRawConfigEditor: () => void;
+  deleteDashboard: () => Promise<boolean>;
 }
 
 export const loadDashboardStrategyEditorDialog = () =>
