@@ -210,8 +210,18 @@ export const computeAreaTileCardConfig =
     const additionalCardConfig: Partial<TileCardConfig> = {};
 
     const domain = computeDomain(entity);
+
     if (domain === "camera") {
-      additionalCardConfig.show_entity_picture = true;
+      return {
+        type: "picture-entity",
+        entity: entity,
+        show_state: false,
+        show_name: false,
+        grid_options: {
+          columns: 6,
+          rows: 2,
+        },
+      };
     }
 
     let feature: LovelaceCardFeatureConfig | undefined;
