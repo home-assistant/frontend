@@ -120,6 +120,8 @@ type AutomationItem = AutomationEntity & {
   formatted_state: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  created_at?: number;
+  modified_at?: number;
 };
 
 @customElement("ha-automation-picker")
@@ -244,6 +246,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           selectable: entityRegEntry !== undefined,
+          created_at: entityRegEntry?.created_at,
+          modified_at: entityRegEntry?.modified_at,
         };
       });
     }
@@ -345,6 +349,34 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
             ></ha-entity-toggle>
           `,
+        },
+        created_at: {
+          title: localize("ui.panel.config.generic.headers.created_at"),
+          defaultHidden: true,
+          sortable: true,
+          minWidth: "128px",
+          template: (automation) =>
+            automation.created_at
+              ? formatShortDateTimeWithConditionalYear(
+                  new Date(automation.created_at * 1000),
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : "—",
+        },
+        modified_at: {
+          title: localize("ui.panel.config.generic.headers.modified_at"),
+          defaultHidden: true,
+          sortable: true,
+          minWidth: "128px",
+          template: (automation) =>
+            automation.modified_at
+              ? formatShortDateTimeWithConditionalYear(
+                  new Date(automation.modified_at * 1000),
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : "—",
         },
         actions: {
           title: "",
