@@ -8084,6 +8084,10 @@
               "title": "Delete selected statistics",
               "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
             },
+            "mean_type": {
+              "1": "Arimethic",
+              "2": "Circular"
+            },
             "fix_issue": {
               "fix": "Fix issue",
               "clearing_failed": "Clearing the statistics failed",
@@ -8135,7 +8139,8 @@
               "mean_type_changed": {
                 "title": "The mean type has changed",
                 "info_text_1": "The mean type of ''{name}'' ({statistic_id}) changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
-                "info_text_2": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
+                "info_text_2": "Statistics cannot be generated until the old statistics are deleted, or the mean type matches the old statistics data again.",
+                "info_text_3": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "adjust_sum": {
                 "title": "Adjust a statistic",
