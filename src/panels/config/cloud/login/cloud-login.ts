@@ -156,7 +156,7 @@ export class CloudLogin extends LitElement {
       });
       if (totpCode !== null && totpCode !== "") {
         this._login(email, password, checkConnection, totpCode);
-        return undefined;
+        return "continue";
       }
     }
     if (errCode === "alreadyconnectederror") {
@@ -167,7 +167,7 @@ export class CloudLogin extends LitElement {
         this._login(email, password, false);
       }
 
-      return logInHere ? undefined : "cancel";
+      return logInHere ? "continue" : "cancel";
     }
     if (errCode === "PasswordChangeRequired") {
       showAlertDialog(this, {
@@ -266,8 +266,10 @@ export class CloudLogin extends LitElement {
         return;
       }
 
-      this._inProgress = false;
-      this._error = error;
+      if (error !== "continue") {
+        this._inProgress = false;
+        this._error = error;
+      }
     }
   };
 
