@@ -120,9 +120,9 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.errors"
                             )}
                           >
-                            <span class="validate-log"
-                              >${this._validateResult.errors}</span
-                            >
+                            <!-- prettier-ignore -->
+                            <pre class="validate-log">${this._validateResult
+                              .errors}</pre>
                           </ha-alert>`
                         : ""
                     }
@@ -134,9 +134,9 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.warnings"
                             )}
                           >
-                            <span class="validate-log"
-                              >${this._validateResult.warnings}</span
-                            >
+                            <!-- prettier-ignore -->
+                            <pre class="validate-log">${this._validateResult
+                              .warnings}</pre>
                           </ha-alert>`
                         : ""
                     }
@@ -246,6 +246,7 @@ export class DeveloperYamlConfig extends LitElement {
         .validate-log {
           white-space: pre-wrap;
           direction: ltr;
+          margin: 0;
         }
 
         .content {
