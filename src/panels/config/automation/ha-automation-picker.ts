@@ -114,6 +114,7 @@ import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 import { showNewAutomationDialog } from "./show-dialog-new-automation";
 
 type AutomationItem = AutomationEntity & {
+  entity_id: string;
   name: string;
   area: string | undefined;
   last_triggered?: string | undefined;
@@ -231,6 +232,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         const labels = labelReg && entityRegEntry?.labels;
         return {
           ...automation,
+          entity_id: automation.entity_id,
           name: computeStateName(automation),
           area: entityRegEntry?.area_id
             ? areas[entityRegEntry?.area_id]?.name
@@ -273,6 +275,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
                     : "unset",
               })}
             ></ha-state-icon>`,
+        },
+        entity_id: {
+          title: "",
+          hidden: true,
+          filterable: true,
         },
         name: {
           title: localize("ui.panel.config.automation.picker.headers.name"),
