@@ -20,6 +20,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { debounce } from "../../../common/util/debounce";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -122,6 +123,8 @@ interface HelperItem {
   category: string | undefined;
   label_entries: LabelRegistryEntry[];
   disabled?: boolean;
+  created_at?: number;
+  modified_at?: number;
 }
 
 // This groups items by a key but only returns last entry per key.
@@ -372,6 +375,36 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             : ""}
         `,
       },
+      created_at: {
+        title: localize("ui.panel.config.generic.headers.created_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (helper) =>
+          helper.created_at
+            ? formatShortDateTimeWithConditionalYear(
+                new Date(helper.created_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
+      },
+      modified_at: {
+        title: localize("ui.panel.config.generic.headers.modified_at"),
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "128px",
+        template: (helper) =>
+          helper.modified_at
+            ? formatShortDateTimeWithConditionalYear(
+                new Date(helper.modified_at * 1000),
+                this.hass.locale,
+                this.hass.config
+              )
+            : "—",
+      },
       actions: {
         title: "",
         label: this.hass.localize("ui.panel.config.generic.headers.actions"),
@@ -538,6 +571,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             category: category
               ? categoryReg?.find((cat) => cat.category_id === category)?.name
               : undefined,
+            created_at: entityRegEntry?.created_at,
+            modified_at: entityRegEntry?.modified_at,
           };
         });
     }
