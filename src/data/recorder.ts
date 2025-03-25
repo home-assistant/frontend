@@ -152,7 +152,6 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
