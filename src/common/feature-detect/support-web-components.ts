@@ -1,2 +1,1 @@
-export const webComponentsSupported =
-  "customElements" in window && "content" in document.createElement("template");
+export const webComponentsSupported = "attachShadow" in Element.prototype;

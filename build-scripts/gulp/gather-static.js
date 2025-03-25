@@ -14,8 +14,8 @@ const copyFileDir = (fromFile, toDir) =>
 
 const genStaticPath =
   (staticDir) =>
-  (...parts) =>
-    path.resolve(staticDir, ...parts);
+    (...parts) =>
+      path.resolve(staticDir, ...parts);
 
 function copyTranslations(staticDir) {
   const staticPath = genStaticPath(staticDir);
@@ -59,6 +59,8 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
+  // Lit polyfill support
+  fs.copySync(npmPath("lit/polyfill-support.js"), path.join(staticPath("polyfills/"), "lit-polyfill-support.js"));
 
   // dialog-polyfill css
   copyFileDir(
