@@ -49,6 +49,12 @@ export class HuiEntityHeadingBadge
       tap_action: {
         action: "none",
       },
+      hold_action: {
+        action: "none",
+      },
+      double_tap_action: {
+        action: "none",
+      },
       ...config,
     };
   }
@@ -56,6 +62,12 @@ export class HuiEntityHeadingBadge
   private _handleAction(ev: ActionHandlerEvent) {
     const config: EntityHeadingBadgeConfig = {
       tap_action: {
+        action: "none",
+      },
+      hold_action: {
+        action: "none",
+      },
+      double_tap_action: {
         action: "none",
       },
       ...this._config!,
@@ -135,7 +147,10 @@ export class HuiEntityHeadingBadge
       <ha-heading-badge
         .type=${hasAction(config.tap_action) ? "button" : "text"}
         @action=${this._handleAction}
-        .actionHandler=${actionHandler()}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
         style=${styleMap(style)}
         .title=${name}
       >

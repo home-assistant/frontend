@@ -4,6 +4,8 @@ import type { EntityFilterFunc } from "../../../../../common/entity/entity_filte
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
+import type { AreaRegistryEntry } from "../../../../../data/area_registry";
+import { areaCompare } from "../../../../../data/area_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
@@ -23,7 +25,7 @@ export const AREA_STRATEGY_GROUPS = [
 ] as const;
 
 export const AREA_STRATEGY_GROUP_ICONS = {
-  lights: "mdi:lightbulb",
+  lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   media_players: "mdi:multimedia",
   security: "mdi:security",
@@ -69,16 +71,6 @@ export const getAreaGroupedEntities = (
     ],
     climate: [
       generateEntityFilter(hass, {
-        domain: "climate",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "humidifier",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
         domain: "cover",
         area: area,
         device_class: [
@@ -91,6 +83,21 @@ export const getAreaGroupedEntities = (
           "window",
           "none",
         ],
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "climate",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "humidifier",
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: "water_heater",
+        area: area,
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
@@ -203,8 +210,18 @@ export const computeAreaTileCardConfig =
     const additionalCardConfig: Partial<TileCardConfig> = {};
 
     const domain = computeDomain(entity);
+
     if (domain === "camera") {
-      additionalCardConfig.show_entity_picture = true;
+      return {
+        type: "picture-entity",
+        entity: entity,
+        show_state: false,
+        show_name: false,
+        grid_options: {
+          columns: 6,
+          rows: 2,
+        },
+      };
     }
 
     let feature: LovelaceCardFeatureConfig | undefined;
@@ -246,3 +263,25 @@ export const computeAreaTileCardConfig =
       ...additionalCardConfig,
     };
   };
+
+export const getAreas = (
+  entries: HomeAssistant["areas"],
+  hiddenAreas?: string[],
+  areasOrder?: string[]
+): AreaRegistryEntry[] => {
+  const areas = Object.values(entries);
+
+  const filteredAreas = hiddenAreas
+    ? areas.filter((area) => !hiddenAreas!.includes(area.area_id))
+    : areas.concat();
+
+  const compare = areaCompare(entries, areasOrder);
+
+  const sortedAreas = filteredAreas.sort((areaA, areaB) =>
+    compare(areaA.area_id, areaB.area_id)
+  );
+
+  return sortedAreas;
+};
+
+export const computeAreaPath = (areaId: string): string => `areas-${areaId}`;
