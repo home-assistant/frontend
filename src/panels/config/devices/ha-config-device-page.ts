@@ -444,30 +444,18 @@ export class HaConfigDevicePage extends LitElement {
                     ${this._related.automation.map((automation) => {
                       const entityState = this.hass.states[automation];
                       return entityState
-                        ? html`<ha-tooltip
-                            placement="left"
-                            .disabled=${!!entityState.attributes.id}
-                            .content=${this.hass.localize(
-                              "ui.panel.config.devices.cant_edit"
+                        ? html`<a
+                            href=${ifDefined(
+                              entityState.attributes.id
+                                ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
+                                : `/config/automation/show/${entityState.entity_id}`
                             )}
                           >
-                            <a
-                              href=${ifDefined(
-                                entityState.attributes.id
-                                  ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-                                  : undefined
-                              )}
-                            >
-                              <ha-list-item
-                                hasMeta
-                                .automation=${entityState}
-                                .disabled=${!entityState.attributes.id}
-                              >
-                                ${computeStateName(entityState)}
-                                <ha-icon-next slot="meta"></ha-icon-next>
-                              </ha-list-item>
-                            </a>
-                          </ha-tooltip>`
+                            <ha-list-item hasMeta .automation=${entityState}>
+                              ${computeStateName(entityState)}
+                              <ha-icon-next slot="meta"></ha-icon-next>
+                            </ha-list-item>
+                          </a>`
                         : nothing;
                     })}
                   </div>
@@ -531,26 +519,14 @@ export class HaConfigDevicePage extends LitElement {
                     <div class="items">
                       ${this._related.scene.map((scene) => {
                         const entityState = this.hass.states[scene];
-                        return entityState
+                        return entityState && entityState.attributes.id
                           ? html`
-                              <ha-tooltip
-                                placement="left"
-                                .disabled=${!!entityState.attributes.id}
-                                .content=${this.hass.localize(
-                                  "ui.panel.config.devices.cant_edit"
-                                )}
-                              >
                                 <a
-                                  href=${ifDefined(
-                                    entityState.attributes.id
-                                      ? `/config/scene/edit/${entityState.attributes.id}`
-                                      : undefined
-                                  )}
+                                  href=${`/config/scene/edit/${entityState.attributes.id}`}
                                 >
                                   <ha-list-item
                                     hasMeta
                                     .scene=${entityState}
-                                    .disabled=${!entityState.attributes.id}
                                   >
                                     ${computeStateName(entityState)}
                                     <ha-icon-next slot="meta"></ha-icon-next>
@@ -558,7 +534,23 @@ export class HaConfigDevicePage extends LitElement {
                                 </a>
                               </ha-tooltip>
                             `
-                          : nothing;
+                          : html`
+                              <ha-tooltip
+                                placement="left"
+                                .content=${this.hass.localize(
+                                  "ui.panel.config.devices.cant_edit"
+                                )}
+                              >
+                                <ha-list-item
+                                  hasMeta
+                                  .scene=${entityState}
+                                  disabled
+                                >
+                                  ${computeStateName(entityState)}
+                                  <ha-icon-next slot="meta"></ha-icon-next>
+                                </ha-list-item>
+                              </ha-tooltip>
+                            `;
                       })}
                     </div>
                   `
