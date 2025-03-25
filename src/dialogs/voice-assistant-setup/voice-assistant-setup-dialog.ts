@@ -292,22 +292,18 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   private async _getLanguageOptions() {
     const scores = await getLanguageScores(this.hass);
 
-    this._languages = Object.entries(scores)
+    this._languages = Object.entries(scores.languages)
       .filter(
         ([_lang, score]) =>
           score.cloud > 0 || score.full_local > 0 || score.focused_local > 0
       )
-      .map(([lang, _score]) => lang.replace("_", "-"));
+      .map(([lang, _score]) => lang);
 
-    this._language = this._languages.includes(this.hass.config.language)
-      ? this.hass.config.language
-      : this._languages.includes(
-            `${this.hass.config.language}-${this.hass.config.country}`
-          )
-        ? `${this.hass.config.language}-${this.hass.config.country}`
-        : this._languages.find(
-            (lng) => lng.split("-")[0] === this.hass.config.language
-          );
+    this._language =
+      scores.preferred_language &&
+      this._languages.includes(scores.preferred_language)
+        ? scores.preferred_language
+        : undefined;
   }
 
   private async _fetchAssistConfiguration() {

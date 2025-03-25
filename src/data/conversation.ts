@@ -135,7 +135,7 @@ export type LanguageScores = Record<string, LanguageScore>;
 
 export const getLanguageScores = (
   hass: HomeAssistant
-): Promise<LanguageScores> =>
+): Promise<{ languages: LanguageScores; preferred_language: string | null }> =>
   hass.callWS({
     type: "conversation/agent/homeassistant/language_scores",
   });

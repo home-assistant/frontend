@@ -59,7 +59,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       this.language &&
       this._languageScores
     ) {
-      const lang = this.language.replace("-", "_");
+      const lang = this.language;
       if (this._value && this._languageScores[lang][this._value] === 0) {
         this._value = undefined;
       }
@@ -241,7 +241,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       (await this._hasCloud()) && (await this._createCloudPipeline());
     if (!cloud) {
       this._cloudChecked = true;
-      this._languageScores = await getLanguageScores(this.hass);
+      this._languageScores = (await getLanguageScores(this.hass)).languages;
     }
   }
 
