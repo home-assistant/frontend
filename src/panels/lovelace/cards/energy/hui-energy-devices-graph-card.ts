@@ -19,6 +19,7 @@ import {
   getStatisticLabel,
   isExternalStatistic,
 } from "../../../../data/recorder";
+import type { Statistics } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -41,6 +42,8 @@ export class HuiEnergyDevicesGraphCard
   @state() private _chartData: BarSeriesOption[] = [];
 
   @state() private _data?: EnergyData;
+
+  private _categories: string[] = [];
 
   protected hassSubscribeRequiredHostProps = ["_config"];
 
@@ -89,8 +92,8 @@ export class HuiEnergyDevicesGraphCard
           <ha-chart-base
             .hass=${this.hass}
             .data=${this._chartData}
-            .options=${this._createOptions(this._chartData)}
-            .height=${`${(this._chartData[0]?.data?.length || 0) * 28 + 50}px`}
+            .options=${this._createOptions(this._chartData, this._categories)}
+            .height=${`${(this._categories.length || 0) * 28 + 50}px`}
             @chart-click=${this._handleChartClick}
           ></ha-chart-base>
         </div>
@@ -99,61 +102,83 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _renderTooltip(params: any) {
-    const title = `<h4 style="text-align: center; margin: 0;">${this._getDeviceName(
-      params.value[1]
+    let tooltip;
+    tooltip = `<h4 style="text-align: center; margin: 0;">${this._getDeviceName(
+      this._getDeviceName(params[0].axisValue)
     )}</h4>`;
-    const value = `${formatNumber(
-      params.value[0] as number,
-      this.hass.locale,
-      getNumberFormatOptions(undefined, this.hass.entities[params.value[1]])
-    )} kWh`;
-    return `${title}${params.marker} ${params.seriesName}: ${value}`;
+    let sum = 0;
+    params.forEach((param, idx) => {
+      const value = `${formatNumber(
+        param.value[0] as number,
+        this.hass.locale,
+        getNumberFormatOptions(undefined, this.hass.entities[param.value[1]])
+      )} kWh`;
+      sum += param.value[0];
+      if (idx > 0) {
+        tooltip += "<br>";
+      }
+      tooltip += param.marker;
+      tooltip +=
+        params.length > 1 && idx === params.length - 1
+          ? "Untracked"
+          : param.seriesName;
+      tooltip += ": ";
+      tooltip += value;
+    });
+    if (params.length > 1) {
+      const sumFormat = `${formatNumber(sum, this.hass.locale)} kWh`;
+      tooltip += `<hr><b>Total: ${sumFormat}</b>`;
+    }
+    return tooltip;
   }
 
-  private _createOptions = memoizeOne((data: BarSeriesOption[]): ECOption => {
-    const isMobile = window.matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
-    ).matches;
-    return {
-      xAxis: {
-        type: "value",
-        name: "kWh",
-      },
-      yAxis: {
-        type: "category",
-        inverse: true,
-        triggerEvent: true,
-        // take order from data
-        data: data[0]?.data?.map((d: any) => d.value[1]),
-        axisLabel: {
-          formatter: this._getDeviceName.bind(this),
-          overflow: "truncate",
-          fontSize: 12,
-          margin: 5,
-          width: Math.min(
-            isMobile ? 100 : 200,
-            Math.max(
-              ...(data[0]?.data?.map(
-                (d: any) =>
-                  measureTextWidth(this._getDeviceName(d.value[1]), 12) + 5
-              ) || [])
-            )
-          ),
+  private _createOptions = memoizeOne(
+    (_data: BarSeriesOption[], categories: string[]): ECOption => {
+      const isMobile = window.matchMedia(
+        "all and (max-width: 450px), all and (max-height: 500px)"
+      ).matches;
+
+      return {
+        xAxis: {
+          type: "value",
+          name: "kWh",
         },
-      },
-      grid: {
-        top: 5,
-        left: 5,
-        right: 40,
-        bottom: 0,
-        containLabel: true,
-      },
-      tooltip: {
-        show: true,
-        formatter: this._renderTooltip.bind(this),
-      },
-    };
-  });
+        yAxis: {
+          type: "category",
+          inverse: true,
+          triggerEvent: true,
+          // take order from data
+          data: categories,
+          axisLabel: {
+            formatter: this._getDeviceName.bind(this),
+            overflow: "truncate",
+            fontSize: 12,
+            margin: 5,
+            width: Math.min(
+              isMobile ? 100 : 200,
+              Math.max(
+                ...(categories.map(
+                  (d: any) => measureTextWidth(this._getDeviceName(d), 12) + 5
+                ) || [])
+              )
+            ),
+          },
+        },
+        grid: {
+          top: 5,
+          left: 5,
+          right: 40,
+          bottom: 0,
+          containLabel: true,
+        },
+        tooltip: {
+          show: true,
+          trigger: "axis",
+          formatter: this._renderTooltip.bind(this),
+        },
+      };
+    }
+  );
 
   private _getDeviceName(statisticId: string): string {
     return (
@@ -172,79 +197,100 @@ export class HuiEnergyDevicesGraphCard
     const data = energyData.stats;
     const compareData = energyData.statsCompare;
 
-    const chartData: NonNullable<BarSeriesOption["data"]> = [];
-    const chartDataCompare: NonNullable<BarSeriesOption["data"]> = [];
-
-    const datasets: BarSeriesOption[] = [
-      {
-        type: "bar",
-        name: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_devices_graph.energy_usage"
-        ),
-        itemStyle: {
-          borderRadius: [0, 4, 4, 0],
-        },
-        data: chartData,
-        barWidth: compareData ? 10 : 20,
-        cursor: "default",
-      },
-    ];
-
-    if (compareData) {
-      datasets.push({
-        type: "bar",
-        name: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_devices_graph.previous_energy_usage"
-        ),
-        itemStyle: {
-          borderRadius: [0, 4, 4, 0],
-        },
-        data: chartDataCompare,
-        barWidth: 10,
-        cursor: "default",
-      });
-    }
-
+    const datasets: BarSeriesOption[] = [];
     const computedStyle = getComputedStyle(this);
+    const childMap: Record<string, string[]> = {};
+    const colors: Record<string, string> = {};
+    let sortedConsumption: string[] = [];
 
-    energyData.prefs.device_consumption.forEach((device, id) => {
-      const value =
-        device.stat_consumption in data
-          ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
-          : 0;
-      const color = getGraphColorByIndex(id, computedStyle);
-
-      chartData.push({
-        id,
-        value: [value, device.stat_consumption],
-        itemStyle: {
-          color: color + "7F",
-          borderColor: color,
-        },
-      });
-
-      if (compareData) {
-        const compareValue =
-          device.stat_consumption in compareData
-            ? calculateStatisticSumGrowth(
-                compareData[device.stat_consumption]
-              ) || 0
-            : 0;
-
-        chartDataCompare.push({
-          id,
-          value: [compareValue, device.stat_consumption],
-          itemStyle: {
-            color: color + "32",
-            borderColor: color + "7F",
-          },
-        });
+    energyData.prefs.device_consumption.forEach((d, idx) => {
+      if (d.included_in_stat) {
+        childMap[d.included_in_stat] = childMap[d.included_in_stat] || [];
+        childMap[d.included_in_stat].push(d.stat_consumption);
       }
+      colors[d.stat_consumption] = getGraphColorByIndex(idx, computedStyle);
     });
 
-    chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
+    let id = 0;
+    const processDataset = (stats: Statistics, compare: boolean) => {
+      const consumptions: Record<string, number> = {};
+      energyData.prefs.device_consumption.forEach((device) => {
+        consumptions[device.stat_consumption] =
+          device.stat_consumption in stats
+            ? calculateStatisticSumGrowth(stats[device.stat_consumption]) || 0
+            : 0;
+      });
 
-    chartData.length = this._config?.max_devices || chartData.length;
+      if (!compare) {
+        sortedConsumption = Object.keys(consumptions).sort(
+          (a, b) => consumptions[b] - consumptions[a]
+        );
+      }
+
+      sortedConsumption.forEach((category) => {
+        if (childMap[category]) {
+          const children = childMap[category].sort(
+            (a, b) => consumptions[b] - consumptions[a]
+          );
+          children.forEach((child) => {
+            datasets.push({
+              type: "bar",
+              name: this._getDeviceName(child),
+              data: [
+                {
+                  id: id++, // FIXME - I don't think this does anything?
+                  value: [consumptions[child], category],
+                  itemStyle: {
+                    color: colors[child] + (compare ? "32" : "7F"),
+                    borderColor: colors[child] + (compare ? "7F" : "FF"),
+                  },
+                },
+              ],
+              barWidth: compareData ? 10 : 20,
+              cursor: "default",
+              stack: "total" + (compare ? "compare" : ""),
+            });
+          });
+        }
+        datasets.push({
+          type: "bar",
+          name: this._getDeviceName(category),
+          itemStyle: {
+            borderRadius: [0, 4, 4, 0],
+          },
+          data: [
+            {
+              value: [
+                (childMap[category] ?? []).reduce(
+                  (acc, dev) => acc - consumptions[dev],
+                  consumptions[category]
+                ),
+                category,
+              ],
+              itemStyle: {
+                color: colors[category] + (compare ? "32" : "7F"),
+                borderColor: colors[category] + (compare ? "7F" : "FF"),
+              },
+            },
+          ],
+          barWidth: compareData ? 10 : 20,
+          cursor: "default",
+          stack: "total" + (compare ? "compare" : ""),
+        });
+      });
+    };
+
+    processDataset(data, false);
+    if (compareData) {
+      processDataset(compareData, true);
+    }
+
+    this._categories = [
+      ...new Set(datasets.map((d: any) => d.data![0]!.value![1])),
+    ];
+
+    // FIXME - fix this
+    // chartData.length = this._config?.max_devices || chartData.length;
 
     this._chartData = datasets;
     await this.updateComplete;
