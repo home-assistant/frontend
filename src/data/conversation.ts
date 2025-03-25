@@ -134,8 +134,12 @@ export interface LanguageScore {
 export type LanguageScores = Record<string, LanguageScore>;
 
 export const getLanguageScores = (
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  language?: string,
+  country?: string
 ): Promise<{ languages: LanguageScores; preferred_language: string | null }> =>
   hass.callWS({
     type: "conversation/agent/homeassistant/language_scores",
+    language,
+    country,
   });
