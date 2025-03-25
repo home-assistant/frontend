@@ -112,6 +112,8 @@ type ScriptItem = ScriptEntity & {
   area: string | undefined;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  created_at?: number;
+  modified_at?: number;
 };
 
 @customElement("ha-script-picker")
@@ -235,6 +237,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           selectable: entityRegEntry !== undefined,
+          created_at: entityRegEntry?.created_at,
+          modified_at: entityRegEntry?.modified_at,
         };
       });
     }
@@ -313,6 +317,34 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
                 : this.hass.localize("ui.components.relative_time.never")}
             `;
           },
+        },
+        created_at: {
+          title: localize("ui.panel.config.generic.headers.created_at"),
+          defaultHidden: true,
+          sortable: true,
+          minWidth: "128px",
+          template: (script) =>
+            script.created_at
+              ? formatShortDateTimeWithConditionalYear(
+                  new Date(script.created_at * 1000),
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : "—",
+        },
+        modified_at: {
+          title: localize("ui.panel.config.generic.headers.modified_at"),
+          defaultHidden: true,
+          sortable: true,
+          minWidth: "128px",
+          template: (script) =>
+            script.modified_at
+              ? formatShortDateTimeWithConditionalYear(
+                  new Date(script.modified_at * 1000),
+                  this.hass.locale,
+                  this.hass.config
+                )
+              : "—",
         },
         actions: {
           title: "",
