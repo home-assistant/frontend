@@ -665,7 +665,7 @@ export class MoreInfoDialog extends LitElement {
         }
 
         .title .breadcrumb {
-          color: var(--primary-text-color);
+          color: var(--secondary-text-color);
           font-size: 14px;
           line-height: 16px;
           margin-top: -6px;
