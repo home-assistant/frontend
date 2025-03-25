@@ -548,7 +548,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.devices.data_table.battery"),
         showNarrow: true,
         sortable: true,
-        filterable: true,
         type: "numeric",
         maxWidth: "101px",
         minWidth: "101px",
@@ -586,7 +585,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.created_at
@@ -601,7 +599,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.modified_at
