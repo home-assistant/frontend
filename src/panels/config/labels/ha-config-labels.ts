@@ -138,7 +138,6 @@ export class HaConfigLabels extends LitElement {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (label) =>
           label.created_at
@@ -153,7 +152,6 @@ export class HaConfigLabels extends LitElement {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (label) =>
           label.modified_at
