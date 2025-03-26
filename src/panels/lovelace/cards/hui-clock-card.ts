@@ -220,10 +220,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       margin-left: 8px;
     }
 
-    .time-parts .time-part {
-      display: flex;
-    }
-
     .time-parts .time-part.hour {
       grid-area: hour;
     }
@@ -248,7 +244,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-parts .time-part.am-pm {
       font-size: 12px;
       font-weight: 500;
-      justify-content: space-between;
       margin-left: 4px;
     }
 
