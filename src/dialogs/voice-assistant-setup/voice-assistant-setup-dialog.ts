@@ -290,6 +290,10 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
   }
 
   private async _getLanguageOptions() {
+    if (this._languages.length) {
+      return;
+    }
+
     const scores = await getLanguageScores(this.hass);
 
     this._languages = Object.entries(scores.languages)
