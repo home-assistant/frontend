@@ -314,11 +314,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   </div>
                   ${this._renderItems(uncheckedItems, unavailable)}
                 `
-              : html`<p class="empty">
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
-                  )}
-                </p>`}
+              : this._config.hide_empty_list
+                ? nothing
+                : html`<p class="empty">
+                    ${this._config.empty_list_text ||
+                    this.hass.localize(
+                      "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
+                    )}
+                  </p>`}
             ${!this._config.hide_completed && checkedItems.length
               ? html`
                   <div role="separator">
@@ -514,6 +517,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         .composedPath()
         .find((el) => ["input", "a", "button"].includes(el.localName))
     ) {
+      return;
+    }
+
+    // Skip opening the editor if disable_edit_on_click is enabled
+    if (this._config?.disable_edit_on_click) {
       return;
     }
 

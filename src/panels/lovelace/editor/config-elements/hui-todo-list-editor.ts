@@ -25,6 +25,9 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     hide_completed: optional(boolean()),
     hide_create: optional(boolean()),
+    empty_list_text: optional(string()),
+    hide_empty_list: optional(boolean()),
+    disable_edit_on_click: optional(boolean()),
     display_order: optional(string()),
   })
 );
@@ -50,6 +53,9 @@ export class HuiTodoListEditor
         },
         { name: "theme", selector: { theme: {} } },
         { name: "hide_completed", selector: { boolean: {} } },
+        { name: "empty_list_text", selector: { text: {} } },
+        { name: "hide_empty_list", selector: { boolean: {} } },
+        { name: "disable_edit_on_click", selector: { boolean: {} } },
         {
           name: "display_order",
           selector: {
@@ -131,6 +137,12 @@ export class HuiTodoListEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`
         );
+      case "empty_list_text":
+        return "Empty List Text (Optional)";
+      case "hide_empty_list":
+        return "Hide Empty List";
+      case "disable_edit_on_click":
+        return "Disable Edit on Click";
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
