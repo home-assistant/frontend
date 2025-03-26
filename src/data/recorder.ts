@@ -38,7 +38,7 @@ export interface Statistic {
 
 export enum StatisticMeanType {
   NONE = 0,
-  ARIMETHIC = 1,
+  ARITHMETIC = 1,
   CIRCULAR = 2,
 }
 
