@@ -303,13 +303,9 @@ export class MoreInfoDialog extends LitElement {
       : undefined;
     const areaName = context?.area ? computeAreaName(context.area) : undefined;
 
-    const breadcrumb: string[] = [];
-    if (!this._childView?.viewTitle) {
-      if (areaName) breadcrumb.push(areaName);
-      if (deviceName) breadcrumb.push(deviceName);
-      if (entityName) breadcrumb.push(entityName);
-    }
-
+    const breadcrumb = [areaName, deviceName, entityName].filter(
+      (v): v is string => Boolean(v)
+    );
     const title = this._childView?.viewTitle || breadcrumb.pop();
 
     return html`
