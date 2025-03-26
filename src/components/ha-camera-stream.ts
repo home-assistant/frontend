@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -31,6 +32,10 @@ export class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
+
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -101,6 +106,10 @@ export class HaCameraStream extends LitElement {
           : this._connected
             ? computeMJPEGStreamUrl(this.stateObj)
             : this._posterUrl || ""}
+        style=${styleMap({
+          aspectRatio: this.aspectRatio,
+          objectFit: this.fitMode,
+        })}
         alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }
