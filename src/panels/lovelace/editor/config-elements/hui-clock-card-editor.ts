@@ -84,6 +84,13 @@ export class HuiClockCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _data = memoizeOne((config) => ({
+    clock_size: "small",
+    time_format: TimeFormat.language,
+    show_seconds: false,
+    ...config,
+  }));
+
   public setConfig(config: ClockCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
@@ -97,7 +104,7 @@ export class HuiClockCardEditor
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${this._data(this._config)}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
