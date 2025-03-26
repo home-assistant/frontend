@@ -8129,7 +8129,7 @@
             },
             "mean_type": {
               "0": "None",
-              "1": "Arimethic",
+              "1": "Arithmetic",
               "2": "Circular"
             },
             "fix_issue": {
