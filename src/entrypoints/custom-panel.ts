@@ -1,6 +1,3 @@
-// Compat needs to be first import
-import "../resources/compatibility";
-
 import type { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
@@ -67,9 +64,10 @@ function initialize(
   let start: Promise<unknown> = Promise.resolve();
 
   if (!webComponentsSupported) {
-    start = start.then(() =>
-      loadJS(`${__STATIC_PATH__}polyfills/webcomponents-bundle.js`)
-    );
+    start = start.then(() => {
+      loadJS(`${__STATIC_PATH__}polyfills/webcomponents-bundle.js`);
+      loadJS(`${__STATIC_PATH__}polyfills/lit-polyfill-support.js`);
+    });
   }
 
   if (__BUILD__ === "legacy") {
