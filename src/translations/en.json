@@ -7150,6 +7150,24 @@
               },
               "description": "The Markdown card is used to render Markdown."
             },
+            "clock": {
+              "name": "Clock",
+              "description": "The Clock card displays the current time using your desired size and format.",
+              "clock_size": "Clock size",
+              "clock_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "show_seconds": "Display seconds",
+              "time_format": "Time format",
+              "time_formats": {
+                "language": "[%key:ui::panel::profile::time_format::formats::language%]",
+                "system": "[%key:ui::panel::profile::time_format::formats::system%]",
+                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
+                "12": "[%key:ui::panel::profile::time_format::formats::12%]"
+              }
+            },
             "media-control": {
               "name": "Media control",
               "description": "The Media control card is used to display media player entities on an interface with easy to use controls."
