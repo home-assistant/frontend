@@ -24,10 +24,11 @@ export const computeEntityName = (
 };
 
 export const computeEntityEntryName = (
-  entry: EntityRegistryDisplayEntry,
+  entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
   hass: HomeAssistant
 ): string | undefined => {
-  const name = entry.name || undefined;
+  const name =
+    entry.name || ("original_name" in entry ? entry.original_name : undefined);
 
   const device = entry.device_id ? hass.devices[entry.device_id] : undefined;
 
