@@ -287,7 +287,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       (ent) =>
         computeDomain(ent.entity_id) === "tts" &&
         ent.config_entry_id &&
-        wyomingInfo.info[ent.config_entry_id].tts.some(
+        wyomingInfo.info[ent.config_entry_id]?.tts.some(
           (provider) => provider.name === this._ttsProviderName
         )
     );
@@ -295,7 +295,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       (ent) =>
         computeDomain(ent.entity_id) === "stt" &&
         ent.config_entry_id &&
-        wyomingInfo.info[ent.config_entry_id].asr.some(
+        wyomingInfo.info[ent.config_entry_id]?.asr.some(
           (provider) => provider.name === this._sttProviderName
         )
     );

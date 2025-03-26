@@ -22,6 +22,7 @@ import { listTTSEngines, listTTSVoices } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
+import { documentationUrl } from "../../util/documentation-url";
 
 const OPTIONS = ["cloud", "focused_local", "full_local"] as const;
 
@@ -133,7 +134,11 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           @value-changed=${this._languageChanged}
         ></ha-language-picker>
 
-        <a href="#"
+        <a
+          href=${documentationUrl(
+            this.hass,
+            "/voice_control/contribute-voice/"
+          )}
           >${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.pipeline.unsupported_language.contribute",
             { language }
@@ -274,114 +279,121 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         }
       }
     }
-    const pipelines = await listAssistPipelines(this.hass);
-    const preferredPipeline = pipelines.pipelines.find(
-      (pipeline) => pipeline.id === pipelines.preferred_pipeline
-    );
-
-    if (preferredPipeline) {
-      if (
-        preferredPipeline.conversation_engine ===
-          "conversation.home_assistant" &&
-        preferredPipeline.tts_engine === cloudTtsEntityId &&
-        preferredPipeline.stt_engine === cloudSttEntityId
-      ) {
-        await this.hass.callService(
-          "select",
-          "select_option",
-          { option: "preferred" },
-          { entity_id: this.assistConfiguration?.pipeline_entity_id }
-        );
-        fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
-        return true;
-      }
-    }
-
-    let cloudPipeline = pipelines.pipelines.find(
-      (pipeline) =>
-        pipeline.conversation_engine === "conversation.home_assistant" &&
-        pipeline.tts_engine === cloudTtsEntityId &&
-        pipeline.stt_engine === cloudSttEntityId
-    );
-
-    if (!cloudPipeline) {
-      const agent = (
-        await listAgents(
-          this.hass,
-          this.language || this.hass.config.language,
-          this.hass.config.country || undefined
-        )
-      ).agents.find((agnt) => agnt.id === "conversation.home_assistant");
-
-      if (!agent?.supported_languages.length) {
-        return false;
-      }
-
-      const ttsEngine = (
-        await listTTSEngines(
-          this.hass,
-          this.language || this.hass.config.language,
-          this.hass.config.country || undefined
-        )
-      ).providers.find((provider) => provider.engine_id === cloudTtsEntityId);
-
-      if (!ttsEngine?.supported_languages?.length) {
-        return false;
-      }
-
-      const ttsVoices = await listTTSVoices(
-        this.hass,
-        cloudTtsEntityId,
-        ttsEngine.supported_languages[0]
+    try {
+      const pipelines = await listAssistPipelines(this.hass);
+      const preferredPipeline = pipelines.pipelines.find(
+        (pipeline) => pipeline.id === pipelines.preferred_pipeline
       );
 
-      const sttEngine = (
-        await listSTTEngines(
+      if (preferredPipeline) {
+        if (
+          preferredPipeline.conversation_engine ===
+            "conversation.home_assistant" &&
+          preferredPipeline.tts_engine === cloudTtsEntityId &&
+          preferredPipeline.stt_engine === cloudSttEntityId
+        ) {
+          await this.hass.callService(
+            "select",
+            "select_option",
+            { option: "preferred" },
+            { entity_id: this.assistConfiguration?.pipeline_entity_id }
+          );
+          fireEvent(this, "next-step", {
+            step: STEP.SUCCESS,
+            noPrevious: true,
+          });
+          return true;
+        }
+      }
+
+      let cloudPipeline = pipelines.pipelines.find(
+        (pipeline) =>
+          pipeline.conversation_engine === "conversation.home_assistant" &&
+          pipeline.tts_engine === cloudTtsEntityId &&
+          pipeline.stt_engine === cloudSttEntityId
+      );
+
+      if (!cloudPipeline) {
+        const agent = (
+          await listAgents(
+            this.hass,
+            this.language || this.hass.config.language,
+            this.hass.config.country || undefined
+          )
+        ).agents.find((agnt) => agnt.id === "conversation.home_assistant");
+
+        if (!agent?.supported_languages.length) {
+          return false;
+        }
+
+        const ttsEngine = (
+          await listTTSEngines(
+            this.hass,
+            this.language || this.hass.config.language,
+            this.hass.config.country || undefined
+          )
+        ).providers.find((provider) => provider.engine_id === cloudTtsEntityId);
+
+        if (!ttsEngine?.supported_languages?.length) {
+          return false;
+        }
+
+        const ttsVoices = await listTTSVoices(
           this.hass,
-          this.language || this.hass.config.language,
-          this.hass.config.country || undefined
-        )
-      ).providers.find((provider) => provider.engine_id === cloudSttEntityId);
+          cloudTtsEntityId,
+          ttsEngine.supported_languages[0]
+        );
 
-      if (!sttEngine?.supported_languages?.length) {
-        return false;
+        const sttEngine = (
+          await listSTTEngines(
+            this.hass,
+            this.language || this.hass.config.language,
+            this.hass.config.country || undefined
+          )
+        ).providers.find((provider) => provider.engine_id === cloudSttEntityId);
+
+        if (!sttEngine?.supported_languages?.length) {
+          return false;
+        }
+
+        let pipelineName = "Home Assistant Cloud";
+        let i = 1;
+        while (
+          pipelines.pipelines.find(
+            // eslint-disable-next-line no-loop-func
+            (pipeline) => pipeline.name === pipelineName
+          )
+        ) {
+          pipelineName = `Home Assistant Cloud ${i}`;
+          i++;
+        }
+
+        cloudPipeline = await createAssistPipeline(this.hass, {
+          name: pipelineName,
+          language: (this.language || this.hass.config.language).split("-")[0],
+          conversation_engine: "conversation.home_assistant",
+          conversation_language: agent.supported_languages[0],
+          stt_engine: cloudSttEntityId,
+          stt_language: sttEngine.supported_languages[0],
+          tts_engine: cloudTtsEntityId,
+          tts_language: ttsEngine.supported_languages[0],
+          tts_voice: ttsVoices.voices![0].voice_id,
+          wake_word_entity: null,
+          wake_word_id: null,
+        });
       }
 
-      let pipelineName = "Home Assistant Cloud";
-      let i = 1;
-      while (
-        pipelines.pipelines.find(
-          // eslint-disable-next-line no-loop-func
-          (pipeline) => pipeline.name === pipelineName
-        )
-      ) {
-        pipelineName = `Home Assistant Cloud ${i}`;
-        i++;
-      }
-
-      cloudPipeline = await createAssistPipeline(this.hass, {
-        name: pipelineName,
-        language: (this.language || this.hass.config.language).split("-")[0],
-        conversation_engine: "conversation.home_assistant",
-        conversation_language: agent.supported_languages[0],
-        stt_engine: cloudSttEntityId,
-        stt_language: sttEngine.supported_languages[0],
-        tts_engine: cloudTtsEntityId,
-        tts_language: ttsEngine.supported_languages[0],
-        tts_voice: ttsVoices.voices![0].voice_id,
-        wake_word_entity: null,
-        wake_word_id: null,
-      });
+      await this.hass.callService(
+        "select",
+        "select_option",
+        { option: cloudPipeline.name },
+        { entity_id: this.assistConfiguration?.pipeline_entity_id }
+      );
+      fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
+      return true;
+    } catch (_e) {
+      return false;
     }
-
-    await this.hass.callService(
-      "select",
-      "select_option",
-      { option: cloudPipeline.name },
-      { entity_id: this.assistConfiguration?.pipeline_entity_id }
-    );
-    fireEvent(this, "next-step", { step: STEP.SUCCESS, noPrevious: true });
-    return true;
   }
 
   private _valueChanged(ev: CustomEvent) {

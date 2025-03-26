@@ -80,7 +80,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
 
   protected willUpdate(changedProps) {
     if (changedProps.has("_step") && this._step === STEP.PIPELINE) {
-      this._getLanguageOptions();
+      this._getLanguages();
     }
   }
 
@@ -289,7 +289,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
     `;
   }
 
-  private async _getLanguageOptions() {
+  private async _getLanguages() {
     if (this._languages.length) {
       return;
     }
