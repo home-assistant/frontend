@@ -142,7 +142,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       </div>`;
     }
 
-    const score = this._languageScores[this.language.replace("-", "_")];
+    const score = this._languageScores[this.language];
 
     const options = this._getOptions(
       score || { cloud: 3, focused_local: 0, full_local: 0 },
