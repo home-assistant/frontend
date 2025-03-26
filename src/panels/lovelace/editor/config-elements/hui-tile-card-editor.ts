@@ -61,13 +61,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const ADVANCED_ACTIONS = [
-  "hold_action",
-  "icon_hold_action",
-  "double_tap_action",
-  "icon_double_tap_action",
-] as const;
-
 @customElement("hui-tile-card-editor")
 export class HuiTileCardEditor
   extends LitElement
@@ -194,7 +187,14 @@ export class HuiTileCardEditor
               name: "",
               type: "advanced_actions",
               flatten: true,
-              schema: ADVANCED_ACTIONS.map((action) => ({
+              schema: (
+                [
+                  "hold_action",
+                  "icon_hold_action",
+                  "double_tap_action",
+                  "icon_double_tap_action",
+                ] as const
+              ).map((action) => ({
                 name: action,
                 selector: {
                   ui_action: {
