@@ -136,7 +136,7 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
   private _handleAddAction(ev: CustomEvent) {
     const hiddenActions = this._hiddenActions(
       this.schema.schema,
-      this._displayActions ?? []
+      this._displayActions ?? NO_ACTIONS
     );
     const index = ev.detail.index;
     const action = hiddenActions[index];
