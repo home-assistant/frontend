@@ -37,6 +37,7 @@ export interface Statistic {
 }
 
 export enum StatisticMeanType {
+  NONE = 0,
   ARIMETHIC = 1,
   CIRCULAR = 2,
 }
@@ -47,7 +48,7 @@ export interface StatisticsMetaData {
   source: string;
   name?: string | null;
   has_sum: boolean;
-  mean_type: StatisticMeanType | null;
+  mean_type: StatisticMeanType;
   unit_class: string | null;
 }
 
@@ -294,7 +295,10 @@ export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,
   type: StatisticType
 ) => {
-  if (mean_stat_types.includes(type) && metadata.mean_type) {
+  if (
+    mean_stat_types.includes(type) &&
+    metadata.mean_type !== StatisticMeanType.NONE
+  ) {
     return true;
   }
   if (sum_stat_types.includes(type) && metadata.has_sum) {

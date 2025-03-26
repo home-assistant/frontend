@@ -41,6 +41,7 @@ import type {
 import {
   clearStatistics,
   getStatisticIds,
+  StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
@@ -643,7 +644,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
-          mean_type: null,
+          mean_type: StatisticMeanType.NONE,
           has_sum: false,
           unit_class: null,
         });
