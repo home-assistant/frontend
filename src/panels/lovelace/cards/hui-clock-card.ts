@@ -163,14 +163,12 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
           <div class="time-parts">
             <div class="time-part hour">${this._timeHour}</div>
             <div class="time-part minute">${this._timeMinute}</div>
-            <div class="time-side">
-              ${this._timeSecond !== undefined
-                ? html`<div class="time-part second">${this._timeSecond}</div>`
-                : nothing}
-              ${this._timeAmPm !== undefined
-                ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
-                : nothing}
-            </div>
+            ${this._timeSecond !== undefined
+              ? html`<div class="time-part second">${this._timeSecond}</div>`
+              : nothing}
+            ${this._timeAmPm !== undefined
+              ? html`<div class="time-part am-pm">${this._timeAmPm}</div>`
+              : nothing}
           </div>
         </div>
       </ha-card>
@@ -183,17 +181,22 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     .time-wrapper {
-      display: grid;
+      display: flex;
       height: 100%;
-      place-items: center;
+      align-items: center;
+      justify-content: center;
     }
 
     .time-parts {
       align-items: center;
-      display: flex;
+      display: grid;
+      grid-template-areas:
+        "hour minute second"
+        "hour minute am-pm";
+
       font-size: 2rem;
       font-weight: 500;
-      line-height: 1;
+      line-height: 0.8;
       padding: 0.5rem 0;
     }
 
@@ -205,38 +208,48 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       font-size: 4rem;
     }
 
-    .time-wrapper.size-medium .time-parts .time-side {
-      font-size: 1.25rem;
-      margin-bottom: 0;
-      margin-left: 0.5rem;
+    .time-wrapper.size-medium .time-parts .time-part.second,
+    .time-wrapper.size-medium .time-parts .time-part.am-pm {
+      font-size: 16px;
+      margin-left: 6px;
     }
 
-    .time-wrapper.size-large .time-parts .time-side {
-      font-size: 1.7rem;
-      margin-bottom: 0;
-      margin-left: 0.6rem;
+    .time-wrapper.size-large .time-parts .time-part.second,
+    .time-wrapper.size-large .time-parts .time-part.am-pm {
+      font-size: 24px;
+      margin-left: 8px;
     }
 
     .time-parts .time-part {
       display: flex;
     }
 
-    .time-parts .time-part.seconds {
+    .time-parts .time-part.hour {
+      grid-area: hour;
+    }
+
+    .time-parts .time-part.minute {
+      grid-area: minute;
+    }
+
+    .time-parts .time-part.second {
+      grid-area: second;
+      line-height: 0.9;
       opacity: 0.4;
     }
 
     .time-parts .time-part.am-pm {
+      grid-area: am-pm;
+      line-height: 0.9;
       opacity: 0.6;
     }
 
-    .time-parts .time-side {
-      display: flex;
-      flex-direction: column;
+    .time-parts .time-part.second,
+    .time-parts .time-part.am-pm {
       font-size: 12px;
       font-weight: 500;
       justify-content: space-between;
-      margin-bottom: -1px;
-      margin-left: 0.35rem;
+      margin-left: 4px;
     }
 
     .time-parts .time-part.hour:after {
