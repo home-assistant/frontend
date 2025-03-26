@@ -7,7 +7,7 @@ import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
 import type {
-  HaFormAdvancedActionsSchema,
+  HaFormOptionalActionsSchema,
   HaFormDataContainer,
   HaFormElement,
   HaFormSchema,
@@ -15,15 +15,15 @@ import type {
 
 const NO_ACTIONS = [];
 
-@customElement("ha-form-advanced_actions")
-export class HaFormAdvancedActions extends LitElement implements HaFormElement {
+@customElement("ha-form-optional_actions")
+export class HaFormOptionalActions extends LitElement implements HaFormElement {
   @property({ attribute: false }) public localize?: LocalizeFunc;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
-  @property({ attribute: false }) public schema!: HaFormAdvancedActionsSchema;
+  @property({ attribute: false }) public schema!: HaFormOptionalActionsSchema;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -111,8 +111,8 @@ export class HaFormAdvancedActions extends LitElement implements HaFormElement {
             @closed=${stopPropagation}
           >
             <ha-button slot="trigger">
-              ${this.localize?.("ui.components.form-advanced-actions.add") ||
-              "Add advanced interaction"}
+              ${this.localize?.("ui.components.form-optional-actions.add") ||
+              "Add interaction"}
             </ha-button>
             ${hiddenActions.map((action) => {
               const actionSchema = this.schema.schema.find(
@@ -159,6 +159,6 @@ export class HaFormAdvancedActions extends LitElement implements HaFormElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-form-advanced_actions": HaFormAdvancedActions;
+    "ha-form-optional_actions": HaFormOptionalActions;
   }
 }

@@ -1132,7 +1132,7 @@
         "show": "Show {label}",
         "hide": "Hide {label}"
       },
-      "form-advanced-actions": {
+      "form-optional-actions": {
         "add": "Add interaction"
       }
     },

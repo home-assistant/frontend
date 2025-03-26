@@ -14,7 +14,7 @@ export type HaFormSchema =
   | HaFormSelector
   | HaFormGridSchema
   | HaFormExpandableSchema
-  | HaFormAdvancedActionsSchema;
+  | HaFormOptionalActionsSchema;
 
 export interface HaFormBaseSchema {
   name: string;
@@ -48,8 +48,8 @@ export interface HaFormExpandableSchema extends HaFormBaseSchema {
   schema: readonly HaFormSchema[];
 }
 
-export interface HaFormAdvancedActionsSchema extends HaFormBaseSchema {
-  type: "advanced_actions";
+export interface HaFormOptionalActionsSchema extends HaFormBaseSchema {
+  type: "optional_actions";
   flatten?: boolean;
   schema: readonly HaFormSchema[];
 }
@@ -110,7 +110,7 @@ export type SchemaUnion<
 > = Schema extends
   | HaFormGridSchema
   | HaFormExpandableSchema
-  | HaFormAdvancedActionsSchema
+  | HaFormOptionalActionsSchema
   ? SchemaUnion<Schema["schema"]> | Schema
   : Schema;
 

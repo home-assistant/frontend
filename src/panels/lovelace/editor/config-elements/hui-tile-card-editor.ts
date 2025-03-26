@@ -185,7 +185,7 @@ export class HuiTileCardEditor
             },
             {
               name: "",
-              type: "advanced_actions",
+              type: "optional_actions",
               flatten: true,
               schema: (
                 [
