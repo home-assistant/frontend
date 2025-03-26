@@ -90,45 +90,47 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
       displayActions
     );
 
-    return html` ${schema.map(
-      (item) => html`
-        <ha-form
-          .hass=${this.hass}
-          .data=${this.data}
-          .schema=${[item]}
-          .disabled=${this.disabled}
-          .computeLabel=${this.computeLabel}
-          .computeHelper=${this.computeHelper}
-          .localizeValue=${this.localizeValue}
-        ></ha-form>
-      `
-    )}
-    ${hiddenActions.length > 0
-      ? html`
-          <ha-button-menu
-            @action=${this._handleAddAction}
-            fixed
-            @closed=${stopPropagation}
-          >
-            <ha-button slot="trigger">
-              ${this.localize?.("ui.components.form-optional-actions.add") ||
-              "Add interaction"}
-            </ha-button>
-            ${hiddenActions.map((action) => {
-              const actionSchema = this.schema.schema.find(
-                (item) => item.name === action
-              )!;
-              return html`
-                <ha-list-item>
-                  ${this.computeLabel
-                    ? this.computeLabel(actionSchema)
-                    : action}
-                </ha-list-item>
-              `;
-            })}
-          </ha-button-menu>
-        `
-      : nothing}`;
+    return html`
+      ${schema.length > 0
+        ? html`
+            <ha-form
+              .hass=${this.hass}
+              .data=${this.data}
+              .schema=${schema}
+              .disabled=${this.disabled}
+              .computeLabel=${this.computeLabel}
+              .computeHelper=${this.computeHelper}
+              .localizeValue=${this.localizeValue}
+            ></ha-form>
+          `
+        : nothing}
+      ${hiddenActions.length > 0
+        ? html`
+            <ha-button-menu
+              @action=${this._handleAddAction}
+              fixed
+              @closed=${stopPropagation}
+            >
+              <ha-button slot="trigger">
+                ${this.localize?.("ui.components.form-optional-actions.add") ||
+                "Add interaction"}
+              </ha-button>
+              ${hiddenActions.map((action) => {
+                const actionSchema = this.schema.schema.find(
+                  (item) => item.name === action
+                )!;
+                return html`
+                  <ha-list-item>
+                    ${this.computeLabel
+                      ? this.computeLabel(actionSchema)
+                      : action}
+                  </ha-list-item>
+                `;
+              })}
+            </ha-button-menu>
+          `
+        : nothing}
+    `;
   }
 
   private _handleAddAction(ev: CustomEvent) {
@@ -143,15 +145,11 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
 
   static styles = css`
     :host {
-      display: grid !important;
-      grid-template-columns: repeat(
-        var(--form-grid-column-count, auto-fit),
-        minmax(var(--form-grid-min-width, 200px), 1fr)
-      );
-      grid-column-gap: 8px;
-      grid-row-gap: 24px;
+      display: flex !important;
+      flex-direction: column;
+      gap: 24px;
     }
-    :host > ha-form {
+    :host ha-form {
       display: block;
     }
   `;
