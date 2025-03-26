@@ -16,7 +16,9 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
@@ -25,11 +27,12 @@ import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-expansion-panel";
 import "../../../components/ha-tooltip";
+import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
 import { getSignedPath } from "../../../data/auth";
 import type {
   ConfigEntry,
@@ -42,7 +45,6 @@ import {
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
-  computeDeviceName,
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
@@ -68,6 +70,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -83,8 +86,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
-import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -310,7 +311,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceName(device, this.hass);
+    const deviceName = computeDeviceNameDisplay(device, this.hass);
     const integrations = this._integrations(
       device,
       this.entries,
@@ -1155,11 +1156,11 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _computeEntityName(entity: EntityRegistryEntry) {
-    if (entity.name) {
-      return entity.name;
-    }
-    const entityState = this.hass.states[entity.entity_id];
-    return entityState ? computeStateName(entityState) : null;
+    const device = this.hass.devices[this.deviceId];
+    return (
+      computeEntityEntryName(entity, this.hass) ||
+      computeDeviceNameDisplay(device, this.hass)
+    );
   }
 
   private _onImageLoad(ev) {
