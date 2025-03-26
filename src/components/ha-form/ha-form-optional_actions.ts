@@ -90,6 +90,12 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
       displayActions
     );
 
+    const schemaMap = new Map<string, HaFormSchema>(
+      this.computeLabel
+        ? this.schema.schema.map((item) => [item.name, item])
+        : []
+    );
+
     return html`
       ${schema.length > 0
         ? html`
@@ -116,12 +122,10 @@ export class HaFormOptionalActions extends LitElement implements HaFormElement {
                 "Add interaction"}
               </ha-button>
               ${hiddenActions.map((action) => {
-                const actionSchema = this.schema.schema.find(
-                  (item) => item.name === action
-                )!;
+                const actionSchema = schemaMap.get(action);
                 return html`
                   <ha-list-item>
-                    ${this.computeLabel
+                    ${this.computeLabel && actionSchema
                       ? this.computeLabel(actionSchema)
                       : action}
                   </ha-list-item>
