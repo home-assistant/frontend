@@ -41,6 +41,7 @@ import type {
 import {
   clearStatistics,
   getStatisticIds,
+  StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
@@ -57,6 +58,7 @@ const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   entity_not_recorded: 1,
   state_class_removed: 2,
   units_changed: 3,
+  mean_type_changed: 4,
 };
 
 const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
@@ -64,6 +66,7 @@ const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
   "entity_no_longer_recorded",
   "state_class_removed",
   "units_changed",
+  "mean_type_changed",
 ];
 
 type StatisticData = StatisticsMetaData & {
@@ -641,7 +644,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
-          has_mean: false,
+          mean_type: StatisticMeanType.NONE,
           has_sum: false,
           unit_class: null,
         });

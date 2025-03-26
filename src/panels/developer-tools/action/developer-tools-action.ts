@@ -9,7 +9,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { hasTemplate } from "../../../common/string/has-template";
+import { hasTemplate, isTemplate } from "../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -349,8 +349,11 @@ class HaPanelDevAction extends LitElement {
         `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.invalid_action`
       );
     }
+    const dataIsTemplate =
+      typeof serviceData.data === "string" && isTemplate(serviceData.data);
     if (
       target &&
+      !dataIsTemplate &&
       !serviceData.target &&
       !serviceData.data?.entity_id &&
       !serviceData.data?.device_id &&
@@ -363,6 +366,7 @@ class HaPanelDevAction extends LitElement {
     for (const field of fields) {
       if (
         field.required &&
+        !dataIsTemplate &&
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
         return localize(
