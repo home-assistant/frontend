@@ -303,15 +303,14 @@ export class MoreInfoDialog extends LitElement {
       : undefined;
     const areaName = context?.area ? computeAreaName(context.area) : undefined;
 
-    const title = this._childView?.viewTitle || entityName || deviceName;
-
     const breadcrumb: string[] = [];
     if (!this._childView?.viewTitle) {
       if (areaName) breadcrumb.push(areaName);
-      if (entityName && deviceName) {
-        breadcrumb.push(deviceName);
-      }
+      if (deviceName) breadcrumb.push(deviceName);
+      if (entityName) breadcrumb.push(entityName);
     }
+
+    const title = this._childView?.viewTitle || breadcrumb.pop();
 
     return html`
       <ha-dialog
