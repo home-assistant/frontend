@@ -26,12 +26,12 @@ import { computeCssColor } from "../common/color/compute-color";
 import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { AreaRegistryEntry } from "../data/area_registry";
 import type { DeviceRegistryEntry } from "../data/device_registry";
-import { computeDeviceName } from "../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
@@ -150,7 +150,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               return this._renderChip(
                 "device_id",
                 device_id,
-                device ? computeDeviceName(device, this.hass) : device_id,
+                device
+                  ? computeDeviceNameDisplay(device, this.hass)
+                  : device_id,
                 undefined,
                 undefined,
                 mdiDevices

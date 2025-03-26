@@ -39,6 +39,7 @@ export const mapEntitiesConfigStruct = union([
   object({
     entity: string(),
     label_mode: optional(string()),
+    attribute: optional(string()),
     focus: optional(boolean()),
     name: optional(string()),
   }),
@@ -49,6 +50,7 @@ const geoSourcesConfigStruct = union([
   object({
     source: string(),
     label_mode: optional(string()),
+    attribute: optional(string()),
     focus: optional(boolean()),
   }),
   string(),

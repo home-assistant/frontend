@@ -5,8 +5,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
-import { computeDeviceName } from "../data/device_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
@@ -46,7 +46,7 @@ export class HaFilterDevices extends LitElement {
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -95,7 +95,7 @@ export class HaFilterDevices extends LitElement {
           .value=${device.id}
           .selected=${this.value?.includes(device.id) ?? false}
         >
-          ${computeDeviceName(device, this.hass)}
+          ${computeDeviceNameDisplay(device, this.hass)}
         </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
@@ -142,12 +142,14 @@ export class HaFilterDevices extends LitElement {
         .filter(
           (device) =>
             !filter ||
-            computeDeviceName(device, this.hass).toLowerCase().includes(filter)
+            computeDeviceNameDisplay(device, this.hass)
+              .toLowerCase()
+              .includes(filter)
         )
         .sort((a, b) =>
           stringCompare(
-            computeDeviceName(a, this.hass),
-            computeDeviceName(b, this.hass),
+            computeDeviceNameDisplay(a, this.hass),
+            computeDeviceNameDisplay(b, this.hass),
             this.hass.locale.language
           )
         );

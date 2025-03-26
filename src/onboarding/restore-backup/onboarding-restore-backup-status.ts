@@ -1,15 +1,12 @@
+import "@material/mwc-linear-progress/mwc-linear-progress";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../components/ha-card";
-import "../../components/ha-spinner";
 import "../../components/ha-alert";
 import "../../components/ha-button";
-import { haStyle } from "../../resources/styles";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupOnboardingInfo } from "../../data/backup_onboarding";
+import { onBoardingStyles } from "../styles";
 import { fireEvent } from "../../common/dom/fire_event";
-import { navigate } from "../../common/navigate";
-import { removeSearchParam } from "../../common/url/search-params";
 
 @customElement("onboarding-restore-backup-status")
 class OnboardingRestoreBackupStatus extends LitElement {
@@ -20,73 +17,64 @@ class OnboardingRestoreBackupStatus extends LitElement {
 
   render() {
     return html`
-      <ha-card
-        .header=${this.localize(
+      <h1>
+        ${this.localize(
           `ui.panel.page-onboarding.restore.${this.backupInfo.state === "restore_backup" ? "in_progress" : "failed"}`
         )}
-      >
-        <div class="card-content">
-          ${this.backupInfo.state === "restore_backup"
-            ? html`
-                <div class="loading">
-                  <ha-spinner></ha-spinner>
-                </div>
-                <p>
-                  ${this.localize(
-                    "ui.panel.page-onboarding.restore.in_progress_description"
-                  )}
-                </p>
-              `
-            : html`
-                <ha-alert alert-type="error">
-                  ${this.localize(
-                    "ui.panel.page-onboarding.restore.failed_status_description"
-                  )}
-                </ha-alert>
-                ${this.backupInfo.last_non_idle_event?.reason
-                  ? html`
-                      <div class="failed">
-                        <h4>Error:</h4>
-                        ${this.backupInfo.last_non_idle_event?.reason}
-                      </div>
-                    `
-                  : nothing}
-              `}
-        </div>
-        ${this.backupInfo.state !== "restore_backup"
-          ? html`<div class="card-actions">
-              <ha-button @click=${this._uploadAnother} destructive>
+      </h1>
+      ${this.backupInfo.state === "restore_backup"
+        ? html` <p>
+            ${this.localize(
+              `ui.panel.page-onboarding.restore.in_progress_description`
+            )}
+          </p>`
+        : nothing}
+      <div class="card-content">
+        ${this.backupInfo.state === "restore_backup"
+          ? html`
+              <div class="loading">
+                <mwc-linear-progress indeterminate></mwc-linear-progress>
+              </div>
+            `
+          : html`
+              <ha-alert alert-type="error">
                 ${this.localize(
-                  `ui.panel.page-onboarding.restore.details.summary.upload_another`
+                  "ui.panel.page-onboarding.restore.failed_status_description"
                 )}
-              </ha-button>
-              <ha-button @click=${this._home} destructive>
-                ${this.localize(
-                  `ui.panel.page-onboarding.restore.details.summary.home`
-                )}
-              </ha-button>
-            </div>`
-          : nothing}
-      </ha-card>
+              </ha-alert>
+              ${this.backupInfo.last_action_event?.reason
+                ? html`
+                    <div class="failed">
+                      <h4>Error:</h4>
+                      ${this.backupInfo.last_action_event?.reason}
+                    </div>
+                  `
+                : nothing}
+            `}
+      </div>
+      ${this.backupInfo.state !== "restore_backup"
+        ? html`<div class="actions">
+            <ha-button @click=${this._back}>
+              ${this.localize("ui.panel.page-onboarding.restore.back")}
+            </ha-button>
+          </div>`
+        : nothing}
     `;
   }
 
-  private _uploadAnother() {
-    fireEvent(this, "show-backup-upload");
-  }
-
-  private _home() {
-    navigate(`${location.pathname}?${removeSearchParam("page")}`);
+  private _back() {
+    fireEvent(this, "restore-backup-back");
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      onBoardingStyles,
       css`
-        :host {
-          padding: 28px 20px 0;
+        h1,
+        p {
+          text-align: left;
         }
-        .card-actions {
+        .actions {
           display: flex;
           justify-content: flex-end;
         }
@@ -103,6 +91,9 @@ class OnboardingRestoreBackupStatus extends LitElement {
         .failed {
           padding: 16px 0;
           font-size: 16px;
+        }
+        mwc-linear-progress {
+          width: 100%;
         }
       `,
     ];

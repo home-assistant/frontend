@@ -17,7 +17,6 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
@@ -26,6 +25,7 @@ import {
   getEnergyDataCollection,
   getEnergyGasUnit,
   getEnergyWaterUnit,
+  formatConsumptionShort,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -308,10 +308,11 @@ class HuiEnergyDistrubutionCard
                         rel="noopener no referrer"
                       >
                         <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
-                        ${formatNumber(lowCarbonEnergy || 0, this.hass.locale, {
-                          maximumFractionDigits: 1,
-                        })}
-                        kWh
+                        ${formatConsumptionShort(
+                          this.hass,
+                          lowCarbonEnergy,
+                          "kWh"
+                        )}
                       </a>
                       <svg width="80" height="30">
                         <line x1="40" y1="0" x2="40" y2="30"></line>
@@ -326,12 +327,11 @@ class HuiEnergyDistrubutionCard
                       >
                       <div class="circle">
                         <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-                        ${formatNumber(
-                          totalSolarProduction || 0,
-                          this.hass.locale,
-                          { maximumFractionDigits: 1 }
+                        ${formatConsumptionShort(
+                          this.hass,
+                          totalSolarProduction,
+                          "kWh"
                         )}
-                        kWh
                       </div>
                     </div>`
                   : hasGas || hasWater
@@ -346,14 +346,15 @@ class HuiEnergyDistrubutionCard
                       >
                       <div class="circle">
                         <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
-                        ${formatNumber(gasUsage || 0, this.hass.locale, {
-                          maximumFractionDigits: 1,
-                        })}
-                        ${getEnergyGasUnit(
+                        ${formatConsumptionShort(
                           this.hass,
-                          prefs,
-                          this._data.statsMetadata
-                        ) || "m³"}
+                          gasUsage,
+                          getEnergyGasUnit(
+                            this.hass,
+                            prefs,
+                            this._data.statsMetadata
+                          )
+                        )}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />
@@ -383,10 +384,11 @@ class HuiEnergyDistrubutionCard
                         >
                         <div class="circle">
                           <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
-                          ${formatNumber(waterUsage || 0, this.hass.locale, {
-                            maximumFractionDigits: 1,
-                          })}
-                          ${getEnergyWaterUnit(this.hass) || "m³"}
+                          ${formatConsumptionShort(
+                            this.hass,
+                            waterUsage,
+                            getEnergyWaterUnit(this.hass)
+                          )}
                         </div>
                         <svg width="80" height="30">
                           <path d="M40 0 v30" id="water" />
@@ -420,10 +422,11 @@ class HuiEnergyDistrubutionCard
                         class="small"
                         .path=${mdiArrowLeft}
                       ></ha-svg-icon
-                      >${formatNumber(returnedToGrid, this.hass.locale, {
-                        maximumFractionDigits: 1,
-                      })}
-                      kWh
+                      >${formatConsumptionShort(
+                        this.hass,
+                        returnedToGrid,
+                        "kWh"
+                      )}
                     </span>`
                   : ""}
                 <span class="consumption">
@@ -432,10 +435,11 @@ class HuiEnergyDistrubutionCard
                         class="small"
                         .path=${mdiArrowRight}
                       ></ha-svg-icon>`
-                    : ""}${formatNumber(totalFromGrid, this.hass.locale, {
-                    maximumFractionDigits: 1,
-                  })}
-                  kWh
+                    : ""}${formatConsumptionShort(
+                    this.hass,
+                    totalFromGrid,
+                    "kWh"
+                  )}
                 </span>
               </div>
               <span class="label"
@@ -453,10 +457,11 @@ class HuiEnergyDistrubutionCard
                 })}"
               >
                 <ha-svg-icon .path=${mdiHome}></ha-svg-icon>
-                ${formatNumber(totalHomeConsumption, this.hass.locale, {
-                  maximumFractionDigits: 1,
-                })}
-                kWh
+                ${formatConsumptionShort(
+                  this.hass,
+                  totalHomeConsumption,
+                  "kWh"
+                )}
                 ${homeSolarCircumference !== undefined ||
                 homeLowCarbonCircumference !== undefined
                   ? html`<svg>
@@ -550,29 +555,23 @@ class HuiEnergyDistrubutionCard
                             class="small"
                             .path=${mdiArrowDown}
                           ></ha-svg-icon
-                          >${formatNumber(
-                            totalBatteryIn || 0,
-                            this.hass.locale,
-                            {
-                              maximumFractionDigits: 1,
-                            }
+                          >${formatConsumptionShort(
+                            this.hass,
+                            totalBatteryIn,
+                            "kWh"
                           )}
-                          kWh</span
-                        >
+                        </span>
                         <span class="battery-out">
                           <ha-svg-icon
                             class="small"
                             .path=${mdiArrowUp}
                           ></ha-svg-icon
-                          >${formatNumber(
-                            totalBatteryOut || 0,
-                            this.hass.locale,
-                            {
-                              maximumFractionDigits: 1,
-                            }
+                          >${formatConsumptionShort(
+                            this.hass,
+                            totalBatteryOut,
+                            "kWh"
                           )}
-                          kWh</span
-                        >
+                        </span>
                       </div>
                       <span class="label"
                         >${this.hass.localize(
@@ -603,10 +602,11 @@ class HuiEnergyDistrubutionCard
                       </svg>
                       <div class="circle">
                         <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
-                        ${formatNumber(waterUsage || 0, this.hass.locale, {
-                          maximumFractionDigits: 1,
-                        })}
-                        ${getEnergyWaterUnit(this.hass) || "m³"}
+                        ${formatConsumptionShort(
+                          this.hass,
+                          waterUsage,
+                          getEnergyWaterUnit(this.hass)
+                        )}
                       </div>
                       <span class="label"
                         >${this.hass.localize(

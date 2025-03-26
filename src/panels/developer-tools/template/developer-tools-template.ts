@@ -331,12 +331,15 @@ ${type === "object"
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
-          user-select: text;
         }
 
         p,
         ul {
           margin-block-end: 0;
+        }
+
+        .render-pane .card-content {
+          user-select: text;
         }
 
         .content.horizontal .render-pane .card-content {

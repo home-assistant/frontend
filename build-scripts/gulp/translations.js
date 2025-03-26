@@ -40,20 +40,17 @@ class CustomJSON extends Transform {
     this._reviver = reviver;
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   async _transform(file, _, callback) {
-    try {
-      let obj = JSON.parse(file.contents.toString(), this._reviver);
-      if (this._func) obj = this._func(obj, file.path);
-      for (const [outObj, dir] of Array.isArray(obj) ? obj : [[obj, ""]]) {
-        const outFile = file.clone({ contents: false });
-        outFile.contents = Buffer.from(JSON.stringify(outObj));
-        outFile.dirname += `/${dir}`;
-        this.push(outFile);
-      }
-      callback(null);
-    } catch (err) {
-      callback(err);
+    let obj = JSON.parse(file.contents.toString(), this._reviver);
+    if (this._func) obj = this._func(obj, file.path);
+    for (const [outObj, dir] of Array.isArray(obj) ? obj : [[obj, ""]]) {
+      const outFile = file.clone({ contents: false });
+      outFile.contents = Buffer.from(JSON.stringify(outObj));
+      outFile.dirname += `/${dir}`;
+      this.push(outFile);
     }
+    callback(null);
   }
 }
 
@@ -68,25 +65,19 @@ class MergeJSON extends Transform {
     this._reviver = reviver;
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   async _transform(file, _, callback) {
-    try {
-      this._objects.push(JSON.parse(file.contents.toString(), this._reviver));
-      if (!this._outFile) this._outFile = file.clone({ contents: false });
-      callback(null);
-    } catch (err) {
-      callback(err);
-    }
+    this._objects.push(JSON.parse(file.contents.toString(), this._reviver));
+    if (!this._outFile) this._outFile = file.clone({ contents: false });
+    callback(null);
   }
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   async _flush(callback) {
-    try {
-      const mergedObj = merge(this._startObj, ...this._objects);
-      this._outFile.contents = Buffer.from(JSON.stringify(mergedObj));
-      this._outFile.stem = this._stem;
-      callback(null, this._outFile);
-    } catch (err) {
-      callback(err);
-    }
+    const mergedObj = merge(this._startObj, ...this._objects);
+    this._outFile.contents = Buffer.from(JSON.stringify(mergedObj));
+    this._outFile.stem = this._stem;
+    callback(null, this._outFile);
   }
 }
 

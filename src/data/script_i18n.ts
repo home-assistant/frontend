@@ -1,6 +1,7 @@
 import { ensureArray } from "../common/array/ensure-array";
 import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
@@ -8,7 +9,6 @@ import type { HomeAssistant } from "../types";
 import type { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
-import { computeDeviceName } from "./device_registry";
 import type { EntityRegistryEntry } from "./entity_registry";
 import {
   computeEntityRegistryName,
@@ -147,7 +147,7 @@ const tryDescribeAction = <T extends ActionType>(
           } else if (key === "device_id") {
             const device = hass.devices[targetThing];
             if (device) {
-              targets.push(computeDeviceName(device, hass));
+              targets.push(computeDeviceNameDisplay(device, hass));
             } else {
               targets.push(
                 hass.localize(

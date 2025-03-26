@@ -399,7 +399,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                ${this._manifest?.quality_scale &&
+                ${this._manifest?.is_built_in &&
+                this._manifest.quality_scale &&
                 Object.keys(QUALITY_SCALE_MAP).includes(
                   this._manifest.quality_scale
                 )

@@ -76,9 +76,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
-import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
+import "./views/hui-view-container";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -99,6 +99,8 @@ class HUIRoot extends LitElement {
 
   private _viewCache?: Record<string, HUIView>;
 
+  private _viewScrollPositions: Record<string, number> = {};
+
   private _debouncedConfigChanged: () => void;
 
   private _conversation = memoizeOne((_components) =>
@@ -110,7 +112,7 @@ class HUIRoot extends LitElement {
     // The view can trigger a re-render when it knows that certain
     // web components have been loaded.
     this._debouncedConfigChanged = debounce(
-      () => this._selectView(this._curView, true),
+      () => this._selectView(this._curView, true, false),
       100,
       false
     );
@@ -525,12 +527,21 @@ class HUIRoot extends LitElement {
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
+    window.addEventListener("popstate", this._handlePopState);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("scroll", this._handleWindowScroll);
+    window.removeEventListener("popstate", this._handlePopState);
   }
+
+  private _restoreScroll = false;
+
+  private _handlePopState = () => {
+    // If we navigated back, we want to restore the scroll position.
+    this._restoreScroll = true;
+  };
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -572,9 +583,6 @@ class HUIRoot extends LitElement {
         }
         newSelectView = index;
       }
-
-      // Will allow to override history scroll restoration when using back button
-      setTimeout(() => scrollTo({ behavior: "auto", top: 0 }), 1);
     }
 
     if (changedProperties.has("lovelace")) {
@@ -613,7 +621,10 @@ class HUIRoot extends LitElement {
         newSelectView = this._curView;
       }
       // Will allow for ripples to start rendering
-      afterNextRender(() => this._selectView(newSelectView, force));
+      afterNextRender(() => {
+        this._selectView(newSelectView, force, this._restoreScroll);
+        this._restoreScroll = false;
+      });
     }
   }
 
@@ -763,6 +774,12 @@ class HUIRoot extends LitElement {
         });
         return;
       }
+
+      const urlPath = this.route?.prefix.slice(1);
+      await this.hass.loadFragmentTranslation("config");
+      const dashboards = await fetchDashboards(this.hass);
+      const dashboard = dashboards.find((d) => d.url_path === urlPath);
+
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
         saveConfig: this.lovelace!.saveConfig,
@@ -773,8 +790,27 @@ class HUIRoot extends LitElement {
             narrow: this.narrow!,
           });
         },
-        showRawConfigEditor: () => {
-          this.lovelace!.enableFullEditMode();
+        deleteDashboard: async () => {
+          const confirm = await showConfirmationDialog(this, {
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+              { dashboard_title: dashboard!.title }
+            ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+            ),
+            confirmText: this.hass!.localize("ui.common.delete"),
+            destructive: true,
+          });
+          if (!confirm) {
+            return false;
+          }
+          try {
+            await deleteDashboard(this.hass!, dashboard!.id);
+            return true;
+          } catch (_err: any) {
+            return false;
+          }
         },
       });
       return;
@@ -896,9 +932,17 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private _selectView(viewIndex: HUIRoot["_curView"], force: boolean): void {
+  private _selectView(
+    viewIndex: HUIRoot["_curView"],
+    force: boolean,
+    restoreScroll: boolean
+  ): void {
     if (!force && this._curView === viewIndex) {
       return;
+    }
+
+    if (this._curView != null) {
+      this._viewScrollPositions[this._curView] = window.scrollY;
     }
 
     viewIndex = viewIndex === undefined ? 0 : viewIndex;
@@ -907,6 +951,7 @@ class HUIRoot extends LitElement {
 
     if (force) {
       this._viewCache = {};
+      this._viewScrollPositions = {};
     }
 
     // Recreate a new element to clear the applied themes.
@@ -938,10 +983,15 @@ class HUIRoot extends LitElement {
 
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];
+      const position = restoreScroll
+        ? this._viewScrollPositions[viewIndex] || 0
+        : 0;
+      setTimeout(() => scrollTo({ behavior: "auto", top: position }), 0);
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
       this._viewCache![viewIndex] = view;
+      setTimeout(() => scrollTo({ behavior: "auto", top: 0 }), 0);
     }
 
     view.lovelace = this.lovelace;

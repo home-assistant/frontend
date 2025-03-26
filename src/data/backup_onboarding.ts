@@ -8,7 +8,7 @@ import type {
 
 export interface BackupOnboardingInfo {
   state: BackupManagerState;
-  last_non_idle_event?: {
+  last_action_event?: {
     manager_state: BackupManagerState;
     stage: RestoreBackupStage | null;
     state: RestoreBackupState;

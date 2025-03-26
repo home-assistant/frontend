@@ -53,6 +53,7 @@ export class HuiTodoListEditor
         },
         { name: "theme", selector: { theme: {} } },
         { name: "hide_completed", selector: { boolean: {} } },
+        { name: "hide_create", selector: { boolean: {} } },
         { name: "empty_list_text", selector: { text: {} } },
         { name: "hide_empty_list", selector: { boolean: {} } },
         { name: "disable_edit_on_click", selector: { boolean: {} } },
@@ -133,6 +134,7 @@ export class HuiTodoListEditor
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
       case "hide_completed":
+      case "hide_create":
       case "display_order":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`

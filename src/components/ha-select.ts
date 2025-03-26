@@ -17,6 +17,8 @@ export class HaSelect extends SelectBase {
   @property({ attribute: "inline-arrow", type: Boolean })
   public inlineArrow = false;
 
+  @property() public options;
+
   protected override render() {
     return html`
       ${super.render()}
@@ -67,6 +69,10 @@ export class HaSelect extends SelectBase {
       } else {
         textContainerElement?.classList.remove("inline-arrow");
       }
+    }
+    if (changedProperties.get("options")) {
+      this.layoutOptions();
+      this.selectByValue(this.value);
     }
   }
 

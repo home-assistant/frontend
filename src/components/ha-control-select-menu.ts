@@ -1,5 +1,6 @@
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { mdiMenuDown } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -23,6 +24,16 @@ export class HaControlSelectMenu extends SelectBase {
 
   @property({ type: Boolean, attribute: "hide-label" })
   public hideLabel = false;
+
+  @property() public options;
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.get("options")) {
+      this.layoutOptions();
+      this.selectByValue(this.value);
+    }
+  }
 
   public override render() {
     const classes = {

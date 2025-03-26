@@ -7,16 +7,14 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import {
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
@@ -114,7 +112,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                 : ""}
               <span
                 >${deviceEntry
-                  ? computeDeviceName(deviceEntry, this.hass)
+                  ? computeDeviceNameDisplay(deviceEntry, this.hass)
                   : entity.attributes.friendly_name}</span
               >
               <span slot="secondary">
@@ -125,13 +123,14 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               </span>
               ${!this.narrow
                 ? entity.attributes.in_progress
-                  ? html`<ha-spinner
-                      size="small"
-                      slot="meta"
-                      .ariaLabel=${this.hass.localize(
-                        "ui.panel.config.updates.update_in_progress"
-                      )}
-                    ></ha-spinner>`
+                  ? html`<div slot="meta">
+                      <ha-spinner
+                        size="small"
+                        .ariaLabel=${this.hass.localize(
+                          "ui.panel.config.updates.update_in_progress"
+                        )}
+                      ></ha-spinner>
+                    </div>`
                   : html`<ha-icon-next slot="meta"></ha-icon-next>`
                 : ""}
             </ha-list-item>
