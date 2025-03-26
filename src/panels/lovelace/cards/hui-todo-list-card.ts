@@ -520,8 +520,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    // Skip opening the editor if disable_edit_on_click is enabled
+    // If disable_edit_on_click is enabled, toggle the item's checked state instead
     if (this._config?.disable_edit_on_click) {
+      this._completeItem(ev);
       return;
     }
 
