@@ -33,7 +33,7 @@ import {
   type ZWaveJSAddNodeStage,
 } from "./add-node/data";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
-import type { HaMdDialog } from "../../../../../components/ha-md-dialog";
+import type { HaDialog } from "../../../../../components/ha-dialog";
 
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
@@ -93,7 +93,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _addNodeTimeoutHandle?: number;
 
-  @query("ha-dialog") private _dialog?: HaMdDialog;
+  @query("ha-dialog") private _dialog?: HaDialog;
 
   private _onStop?: () => void;
 
@@ -508,7 +508,7 @@ class DialogZWaveJSAddNode extends LitElement {
     qrProvisioningInformation?: QRProvisioningInformation,
     dsk?: string
   ): void {
-    this._lowSecurity = false;
+    // this._lowSecurity = false;
     const s2Device = qrProvisioningInformation || dsk;
     this._subscribed = subscribeAddZwaveNode(
       this.hass,
@@ -548,8 +548,8 @@ class DialogZWaveJSAddNode extends LitElement {
               );
               break;
             }
-            this._requestedGrant = message.requested_grant;
-            this._securityClasses = message.requested_grant.securityClasses;
+            // this._requestedGrant = message.requested_grant;
+            // this._securityClasses = message.requested_grant.securityClasses;
             this._step = "grant_security_classes";
             break;
           case "device registered":
@@ -558,8 +558,8 @@ class DialogZWaveJSAddNode extends LitElement {
             break;
           case "node added":
             this._step = "interviewing";
-            this._lowSecurity = message.node.low_security;
-            this._lowSecurityReason = message.node.low_security_reason;
+            // this._lowSecurity = message.node.low_security;
+            // this._lowSecurityReason = message.node.low_security_reason;
             break;
           case "interview completed":
             this._unsubscribe();
@@ -711,16 +711,19 @@ class DialogZWaveJSAddNode extends LitElement {
       }
 
       this._step = "loading";
+
       try {
         await provisionZwaveSmartStartNode(
           this.hass,
           this._entryId!,
-          this._device.provisioningInfo
-          // TODO add device info
-          // this._deviceOptions.name,
-          // this._deviceOptions.area,
-          // this._deviceOptions.network_type,
+          this._device.provisioningInfo,
+          this._deviceOptions.network_type
+            ? Number(this._deviceOptions.network_type)
+            : undefined,
+          this._deviceOptions.name,
+          this._deviceOptions.area
         );
+        // TODO subscribe search smart start device
         this._step = "search_smart_start_device";
       } catch (err: any) {
         this._error = err.message;
@@ -807,9 +810,9 @@ class DialogZWaveJSAddNode extends LitElement {
       }
       this._onStop?.();
     }
-    this._requestedGrant = undefined;
+    // this._requestedGrant = undefined;
     this._dsk = undefined;
-    this._securityClasses = [];
+    // this._securityClasses = [];
     this._step = undefined;
     if (this._addNodeTimeoutHandle) {
       clearTimeout(this._addNodeTimeoutHandle);
@@ -853,10 +856,10 @@ class DialogZWaveJSAddNode extends LitElement {
     this._dskPin = "";
     this._dsk = undefined;
     this._deviceOptions = undefined;
-    this._requestedGrant = undefined;
-    this._securityClasses = [];
-    this._lowSecurity = false;
-    this._lowSecurityReason = undefined;
+    // this._requestedGrant = undefined;
+    // this._securityClasses = [];
+    // this._lowSecurity = false;
+    // this._lowSecurityReason = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -881,6 +884,23 @@ class DialogZWaveJSAddNode extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-dialog {
+          --mdc-dialog-min-width: 512px;
+        }
+        @media all and (max-width: 500px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: calc(
+              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            );
+            --mdc-dialog-max-width: calc(
+              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            );
+            --mdc-dialog-min-height: 100%;
+            --mdc-dialog-max-height: 100%;
+            --vertical-align-dialog: flex-end;
+            --ha-dialog-border-radius: 0;
+          }
+        }
         ha-fade-in {
           display: block;
         }

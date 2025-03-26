@@ -1,4 +1,7 @@
-import type { QRProvisioningInformation } from "../../../../../../data/zwave_js";
+import type {
+  Protocols,
+  QRProvisioningInformation,
+} from "../../../../../../data/zwave_js";
 
 export const backButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "qr_scan",
@@ -40,7 +43,7 @@ export type ZWaveJSAddNodeStage =
 export interface ZWaveJSAddNodeSmartStartOptions {
   name: string;
   area?: string;
-  network_type?: "long-range" | "mesh";
+  network_type?: Protocols;
 }
 
 export interface ZWaveJSAddNodeDevice {

@@ -623,15 +623,17 @@ export const provisionZwaveSmartStartNode = (
   hass: HomeAssistant,
   entry_id: string,
   qr_provisioning_information?: QRProvisioningInformation,
-  qr_code_string?: string,
-  planned_provisioning_entry?: PlannedProvisioningEntry
+  protocol?: Protocols,
+  device_name?: string,
+  area_id?: string
 ): Promise<QRProvisioningInformation> =>
   hass.callWS({
     type: "zwave_js/provision_smart_start_node",
     entry_id,
-    qr_code_string,
     qr_provisioning_information,
-    planned_provisioning_entry,
+    protocol,
+    device_name,
+    area_id,
   });
 
 export const unprovisionZwaveSmartStartNode = (

@@ -9,6 +9,7 @@ import type { HaFormSchema } from "../../../../../../components/ha-form/types";
 import "../../../../../../components/ha-form/ha-form";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import type { ZWaveJSAddNodeSmartStartOptions } from "./data";
+import { Protocols } from "../../../../../../data/zwave_js";
 
 @customElement("zwave-js-add-node-configure-device")
 export class ZWaveJsAddNodeConfigureDevice extends LitElement {
@@ -30,7 +31,7 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
       };
 
       if (this.longRangeSupported) {
-        this._options.network_type = "long-range";
+        this._options.network_type = Protocols.ZWaveLongRange;
       }
 
       fireEvent(this, "value-changed", { value: this._options });
@@ -78,7 +79,7 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
               mode: "box",
               options: [
                 {
-                  value: "long-range",
+                  value: Protocols.ZWaveLongRange.toString(),
                   label: localize(
                     "ui.panel.config.zwave_js.add_node.configure_device.long_range_label"
                   ),
@@ -93,7 +94,7 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
                   },
                 },
                 {
-                  value: "mesh",
+                  value: Protocols.ZWave.toString(),
                   label: localize(
                     "ui.panel.config.zwave_js.add_node.configure_device.mesh_label"
                   ),
@@ -135,7 +136,10 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
   };
 
   private _setOptions(event: any) {
-    this._options = { ...this._options!, ...event.detail.value };
+    this._options = {
+      ...this._options!,
+      ...event.detail.value,
+    };
 
     fireEvent(this, "value-changed", { value: this._options });
   }

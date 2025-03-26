@@ -35,7 +35,11 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
         required
         autofocus
       ></ha-textfield>
-      ${this.referenceKey ? html` <div>${this.referenceKey}</div> ` : nothing}
+      ${this.referenceKey
+        ? html`<div>
+            <span>${this.value.padEnd(5, "*")}</span>${this.referenceKey}
+          </div> `
+        : nothing}
     `;
   }
 
@@ -47,7 +51,10 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
 
   private _handleChange(ev: InputEvent): void {
     const inputElement = ev.target as HaTextField;
-    if (this.numeric && isNaN(Number(inputElement.value))) {
+    if (
+      this.numeric &&
+      (isNaN(Number(inputElement.value)) || inputElement.value.length > 5)
+    ) {
       inputElement.value = this.value;
       return;
     }
@@ -73,7 +80,11 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
       margin-bottom: 16px;
     }
     div {
+      font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
       margin-top: 16px;
+    }
+    div span {
+      text-decoration: underline;
     }
   `;
 }
