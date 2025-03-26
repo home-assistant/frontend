@@ -8085,6 +8085,7 @@
               "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
             },
             "mean_type": {
+              "0": "None",
               "1": "Arimethic",
               "2": "Circular"
             },
