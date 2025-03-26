@@ -24,7 +24,7 @@ export const computeEntityName = (
 };
 
 export const computeEntityEntryName = (
-  entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
+  entry: EntityRegistryDisplayEntry,
   hass: HomeAssistant
 ): string | undefined => {
   const name = entry.name || undefined;

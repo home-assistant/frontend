@@ -16,6 +16,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -44,7 +45,6 @@ import {
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
-  computeDeviceName,
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
@@ -311,7 +311,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceName(device, this.hass);
+    const deviceName = computeDeviceNameDisplay(device, this.hass);
     const integrations = this._integrations(
       device,
       this.entries,
@@ -1168,7 +1168,7 @@ export class HaConfigDevicePage extends LitElement {
     const device = this.hass.devices[this.deviceId];
     return (
       computeEntityEntryName(entity, this.hass) ||
-      computeDeviceName(device, this.hass)
+      computeDeviceNameDisplay(device, this.hass)
     );
   }
 
