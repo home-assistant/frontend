@@ -521,17 +521,14 @@ export class HaConfigDevicePage extends LitElement {
                         const entityState = this.hass.states[scene];
                         return entityState && entityState.attributes.id
                           ? html`
-                                <a
-                                  href=${`/config/scene/edit/${entityState.attributes.id}`}
-                                >
-                                  <ha-list-item
-                                    hasMeta
-                                    .scene=${entityState}
-                                  >
-                                    ${computeStateName(entityState)}
-                                    <ha-icon-next slot="meta"></ha-icon-next>
-                                  </ha-list-item>
-                                </a>
+                              <a
+                                href=${`/config/scene/edit/${entityState.attributes.id}`}
+                              >
+                                <ha-list-item hasMeta .scene=${entityState}>
+                                  ${computeStateName(entityState)}
+                                  <ha-icon-next slot="meta"></ha-icon-next>
+                                </ha-list-item>
+                              </a>
                             `
                           : html`
                               <ha-tooltip
@@ -540,11 +537,7 @@ export class HaConfigDevicePage extends LitElement {
                                   "ui.panel.config.devices.cant_edit"
                                 )}
                               >
-                                <ha-list-item
-                                  hasMeta
-                                  .scene=${entityState}
-                                  disabled
-                                >
+                                <ha-list-item hasMeta .scene=${entityState}>
                                   ${computeStateName(entityState)}
                                   <ha-icon-next slot="meta"></ha-icon-next>
                                 </ha-list-item>
