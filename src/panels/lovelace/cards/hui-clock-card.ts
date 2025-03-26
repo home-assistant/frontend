@@ -77,10 +77,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
-    if (this._config?.clock_size === "small") {
+    if (this._config?.clock_size === "medium") {
       return {
         min_rows: 1,
-        rows: 1,
+        rows: 2,
         max_rows: 4,
         min_columns: 4,
         columns: 6,
@@ -99,7 +99,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     return {
       min_rows: 1,
-      rows: 2,
+      rows: 1,
       max_rows: 4,
       min_columns: 4,
       columns: 6,
