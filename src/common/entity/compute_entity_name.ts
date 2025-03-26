@@ -29,7 +29,7 @@ export const computeEntityEntryName = (
 ): string | undefined => {
   const name = entry.name || undefined;
 
-  const device = entry?.device_id ? hass.devices[entry.device_id] : undefined;
+  const device = entry.device_id ? hass.devices[entry.device_id] : undefined;
 
   if (!device) {
     return name;
