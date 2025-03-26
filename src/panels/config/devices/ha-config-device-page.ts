@@ -532,7 +532,6 @@ export class HaConfigDevicePage extends LitElement {
                                     <ha-icon-next slot="meta"></ha-icon-next>
                                   </ha-list-item>
                                 </a>
-                              </ha-tooltip>
                             `
                           : html`
                               <ha-tooltip
