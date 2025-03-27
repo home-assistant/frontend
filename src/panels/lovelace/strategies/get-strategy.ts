@@ -145,7 +145,7 @@ export const generateLovelaceDashboardStrategy = async (
   hass: HomeAssistant
 ): Promise<LovelaceConfig> => {
   const { strategy, ...base } = config;
-  const generated = generateStrategy(
+  const generated = await generateStrategy(
     "dashboard",
     (err) => ({
       views: [
