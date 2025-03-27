@@ -43,7 +43,7 @@ jobs:
           npm install netlify-cli -g
           netlify deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
-            --site ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
+            --site ${{ secrets.NETLIFY_GALLERY_SITE_ID }} \
             --json > deploy_output.json
 
       - name: Generate summary
