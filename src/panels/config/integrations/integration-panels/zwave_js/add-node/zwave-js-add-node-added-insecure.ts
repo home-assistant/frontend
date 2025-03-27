@@ -1,7 +1,7 @@
 import { mdiCheckCircleOutline } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
 import "@shoelace-style/shoelace/dist/components/animation/animation";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import type { HomeAssistant } from "../../../../../../types";
 
 import "../../../../../../components/ha-svg-icon";
@@ -20,32 +20,23 @@ export class ZWaveJsAddNodeFinished extends LitElement {
       <sl-animation name="zoomIn" .iterations=${1} play>
         <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
       </sl-animation>
-      <div>
+      <ha-alert alert-type="warning">
+        ${this.reason
+          ? this.hass.localize(
+              `ui.panel.config.zwave_js.add_node.added_insecure.low_security_reason.${this.reason}`
+            )
+          : ""}
         ${this.hass.localize(
-          "ui.panel.config.zwave_js.add_node.added_insecure.text",
+          "ui.panel.config.zwave_js.add_node.added_insecure.added_insecurely_text",
           {
-            name: html`<b>${this.deviceName}</b>`,
+            deviceName: html`<b>${this.deviceName}</b>`,
           }
         )}
-      </div>
-      <ha-alert
-        .title=${this.hass.localize(
-          "ui.panel.config.zwave_js.add_node.added_insecure.added_insecurely"
-        )}
-        alert-type="warning"
-      >
-        ${this.hass.localize(
-          "ui.panel.config.zwave_js.add_node.added_insecure.added_insecurely_text"
-        )}
-        ${this.reason
-          ? html`
-              <p>
-                ${this.hass.localize(
-                  `ui.panel.config.zwave_js.add_node.added_insecure.low_security_reason.${this.reason}`
-                )}
-              </p>
-            `
-          : nothing}
+        <p>
+          ${this.hass.localize(
+            `ui.panel.config.zwave_js.add_node.added_insecure.try_again_text`
+          )}
+        </p>
       </ha-alert>
     `;
   }
@@ -61,7 +52,6 @@ export class ZWaveJsAddNodeFinished extends LitElement {
       --mdc-icon-size: 96px;
       color: var(--warning-color);
     }
-    div,
     ha-alert {
       margin-top: 16px;
     }

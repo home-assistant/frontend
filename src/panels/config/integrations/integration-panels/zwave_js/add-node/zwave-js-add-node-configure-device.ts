@@ -1,15 +1,15 @@
 import { customElement, property, state } from "lit/decorators";
-import { css, html, LitElement, type PropertyValues } from "lit";
+import { html, LitElement, type PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 
 import type { HomeAssistant } from "../../../../../../types";
 import type { LocalizeFunc } from "../../../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../../../components/ha-form/types";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import { Protocols } from "../../../../../../data/zwave_js";
+import type { ZWaveJSAddNodeSmartStartOptions } from "./data";
 
 import "../../../../../../components/ha-form/ha-form";
-import { fireEvent } from "../../../../../../common/dom/fire_event";
-import type { ZWaveJSAddNodeSmartStartOptions } from "./data";
-import { Protocols } from "../../../../../../data/zwave_js";
 
 @customElement("zwave-js-add-node-configure-device")
 export class ZWaveJsAddNodeConfigureDevice extends LitElement {
@@ -143,13 +143,6 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
 
     fireEvent(this, "value-changed", { value: this._options });
   }
-
-  static styles = css`
-    ha-form {
-      display: block;
-      z-index: 10000;
-    }
-  `;
 }
 
 declare global {

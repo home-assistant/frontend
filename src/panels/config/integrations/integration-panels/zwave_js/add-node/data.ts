@@ -17,6 +17,7 @@ export const closeButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "interviewing",
   "validate_dsk_enter_pin",
   "added_insecure",
+  "grant_security_classes",
 ];
 
 export type ZWaveJSAddNodeStage =

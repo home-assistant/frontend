@@ -37,7 +37,7 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
       ></ha-textfield>
       ${this.referenceKey
         ? html`<div>
-            <span>${this.value.padEnd(5, "*")}</span>${this.referenceKey}
+            <span>${this.value.padEnd(5, "·")}</span>${this.referenceKey}
           </div> `
         : nothing}
     `;
@@ -84,7 +84,7 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
       margin-top: 16px;
     }
     div span {
-      text-decoration: underline;
+      color: var(--primary-color);
     }
   `;
 }

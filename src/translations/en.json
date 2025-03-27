@@ -5794,12 +5794,7 @@
             "inclusion_failed": "The device could not be added.",
             "getting_device_information": "Getting device information",
             "check_logs": "Please check the logs for more information.",
-            "inclusion_finished": "The device has been added.",
-            "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
-            "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
-            "waiting_for_device": "Communicating with the device. Please wait.",
-            "adding_insecurely": "The device is being added insecurely",
+            "timeout_error": "No device found after {minutes} minutes. Please check the device and try again.",
             "select_method": {
               "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
               "qr_code_webcam": "Scan QR code using webcam",
@@ -5817,7 +5812,8 @@
               },
               "scan_code": "Scan QR code",
               "other_add_options": "Other add options",
-              "invalid_code": "Invalid QR code ({code})"
+              "invalid_code": "Invalid QR code ({code})",
+              "unsupported_code": "This QR code is not supported \"{code}\""
             },
             "specific_device": {
               "title": "Searching for device",
@@ -5833,7 +5829,8 @@
               "s0_label": "Legacy Secure",
               "s0_description": "Uses the older S0 security that is secure, but slow due to a lot of overhead. Allows securely including S2 capable devices which fail to be included with S2.",
               "insecure_label": "Legacy Insecure",
-              "insecure_description": "Do not use encryption."
+              "insecure_description": "Do not use encryption.",
+              "inclusion_strategy": "Inclusion strategy: {strategy}"
             },
             "configure_device": {
               "title": "Add device",
@@ -5853,11 +5850,10 @@
               "placeholder": "Pin"
             },
             "added_insecure": {
-              "title": "Device added",
+              "title": "Device added insecurely",
               "text": "The device {name} has been added to your Z-Wave network.",
-              "added_insecurely": "The device was added insecurely",
-              "added_insecurely_text": "There was an error during secure inclusion. You can try again by excluding the device and adding it again.",
-              "error_message": "Error message",
+              "added_insecurely_text": "{deviceName} has been added without secure inclusion. You can still use your device.",
+              "try_again_text": "You can try again by removing the device and adding it again.",
               "view_device": "View device",
               "low_security_reason": {
                 "0": "Security bootstrapping was canceled by the user.",
@@ -5870,6 +5866,10 @@
                 "7": "There was a mismatch in security keys between the controller and the node.",
                 "8": "Unknown error occurred."
               }
+            },
+            "grant_security_classes": {
+              "title": "Security classes",
+              "description": "The device has requested the following security classes"
             }
           },
           "provisioned": {

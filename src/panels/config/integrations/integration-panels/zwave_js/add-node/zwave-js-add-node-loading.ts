@@ -43,9 +43,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "zwave-js-add-node-loading": ZWaveJsAddNodeLoading;
   }
-
-  interface HASSDomEvents {
-    "show-z-wave-security-options": undefined;
-    "add-another-z-wave-device": undefined;
-  }
 }

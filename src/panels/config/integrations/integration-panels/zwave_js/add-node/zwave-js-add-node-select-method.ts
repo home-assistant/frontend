@@ -1,12 +1,12 @@
 import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../../../types";
 
 import "../../../../../../components/ha-md-list";
 import "../../../../../../components/ha-md-list-item";
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-icon-next";
-import { fireEvent } from "../../../../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../../../../types";
 
 @customElement("zwave-js-add-node-select-method")
 export class ZWaveJsAddNodeSelectMethod extends LitElement {

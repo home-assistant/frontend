@@ -3,12 +3,13 @@ import { mdiRestart } from "@mdi/js";
 
 import { customElement, property } from "lit/decorators";
 import { css, html, LitElement, nothing } from "lit";
+import type { HomeAssistant } from "../../../../../../types";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import { InclusionStrategy } from "../../../../../../data/zwave_js";
 
 import "../../../../../../components/ha-spinner";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-alert";
-import type { HomeAssistant } from "../../../../../../types";
-import { fireEvent } from "../../../../../../common/dom/fire_event";
 
 @customElement("zwave-js-add-node-searching-devices")
 export class ZWaveJsAddNodeSearchingDevices extends LitElement {
@@ -23,7 +24,23 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
   @property({ type: Boolean, attribute: "show-add-another-device" })
   public showAddAnotherDevice = false;
 
+  @property({ attribute: false }) public inclusionStrategy?: InclusionStrategy;
+
   render() {
+    let inclusionStrategyTranslationKey = "";
+    if (this.inclusionStrategy !== undefined) {
+      switch (this.inclusionStrategy) {
+        case InclusionStrategy.Security_S0:
+          inclusionStrategyTranslationKey = "s0";
+          break;
+        case InclusionStrategy.Insecure:
+          inclusionStrategyTranslationKey = "insecure";
+          break;
+        default:
+          inclusionStrategyTranslationKey = "default";
+      }
+    }
+
     return html`
       <div class="searching-devices">
         <div class="searching-spinner">
@@ -57,13 +74,24 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
                 )}
               </p>
             `}
-        ${this.showSecurityOptions
+        ${this.showSecurityOptions && !inclusionStrategyTranslationKey
           ? html`<ha-button @click=${this._handleSecurityOptions}>
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.add_node.security_options"
               )}
             </ha-button>`
-          : nothing}
+          : inclusionStrategyTranslationKey
+            ? html`<span class="note">
+                ${this.hass.localize(
+                  "ui.panel.config.zwave_js.add_node.select_strategy.inclusion_strategy",
+                  {
+                    strategy: this.hass.localize(
+                      `ui.panel.config.zwave_js.add_node.select_strategy.${inclusionStrategyTranslationKey}_label`
+                    ),
+                  }
+                )}
+              </span>`
+            : nothing}
         ${this.showAddAnotherDevice
           ? html`<ha-button @click=${this._handleAddAnotherDevice}>
               ${this.hass.localize(
