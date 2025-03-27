@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../../common/string/compare";
 import { slugify } from "../../../../../common/string/slugify";
 import "../../../../../components/entity/state-badge";
@@ -23,7 +24,6 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
 import { getIeeeTail } from "./functions";
-import { computeEntityName } from "../../../../../common/entity/compute_entity_name";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -44,7 +44,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: computeEntityName(this.hass, entity),
+          stateName: this._computeEntityName(entity),
         }))
         .sort((ent1, ent2) =>
           stringCompare(
@@ -168,6 +168,13 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-more-info", {
       entityId: (ev.currentTarget as any).stateObj.entity_id,
     });
+  }
+
+  private _computeEntityName(entity: EntityRegistryEntry): string | null {
+    if (this.hass.states[entity.entity_id]) {
+      return computeStateName(this.hass.states[entity.entity_id]);
+    }
+    return entity.name;
   }
 
   private async _areaPicked(ev: CustomEvent) {

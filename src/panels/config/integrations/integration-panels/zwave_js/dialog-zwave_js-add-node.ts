@@ -831,45 +831,6 @@ class DialogZWaveJSAddNode extends LitElement {
         }
 
         // TODO rename entities like in ZHA
-        // try {
-        //   const entities = await fetchEntityRegistry(this.hass.connection);
-
-        //   const deviceEntities = entities
-        //     .filter((entity) => entity.device_id === this._device!.id)
-        //     .map((entity) => ({
-        //       ...entity,
-        //       stateName: computeEntityName(this.hass, entity),
-        //     }));
-
-        //   const updateProms = deviceEntities.map((entity) => {
-        //     const name = entity.name || entity.stateName;
-        //     let newEntityId: string | null = null;
-        //     let newName: string | null = null;
-
-        //     if (name && name.includes(oldDeviceName)) {
-        //       newName = name.replace(` ${ieeeTail}`, "");
-        //       newName = newName.replace(oldDeviceName, newDeviceName);
-        //       newEntityId = entity.entity_id.replace(`_${ieeeTail}`, "");
-        //       newEntityId = newEntityId.replace(
-        //         oldDeviceEntityId,
-        //         newDeviceEntityId
-        //       );
-        //     }
-
-        //     if (!newName && !newEntityId) {
-        //       return undefined;
-        //     }
-
-        //     return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-        //       name: newName || name,
-        //       disabled_by: entity.disabled_by,
-        //       new_entity_id: newEntityId || entity.entity_id,
-        //     });
-        //   });
-        //   await Promise.all(updateProms);
-        // } catch (_err: any) {
-        //   // TODO
-        // }
       }
 
       // if not finished yet show interviewing loading screen
