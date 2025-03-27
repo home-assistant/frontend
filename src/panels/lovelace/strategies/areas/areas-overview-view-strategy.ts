@@ -95,7 +95,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
 
     return {
       type: "sections",
-      max_columns: 2,
+      max_columns: 3,
       sections: areaSections,
     };
   }
