@@ -152,12 +152,14 @@ export class EnergyDeviceSettings extends LitElement {
       device_consumptions: this.preferences
         .device_consumption as DeviceConsumptionEnergyPreference[],
       saveCallback: async (newDevice) => {
-        await this._savePreferences({
+        const newPrefs = {
           ...this.preferences,
           device_consumption: this.preferences.device_consumption.map((d) =>
             d === origDevice ? newDevice : d
           ),
-        });
+        };
+        this._sanitizeParents(newPrefs);
+        await this._savePreferences(newPrefs);
       },
     });
   }
@@ -174,6 +176,15 @@ export class EnergyDeviceSettings extends LitElement {
             this.preferences.device_consumption.concat(device),
         });
       },
+    });
+  }
+
+  private _sanitizeParents(prefs: EnergyPreferences) {
+    const statIds = prefs.device_consumption.map((d) => d.stat_consumption);
+    prefs.device_consumption.forEach((d) => {
+      if (d.included_in_stat && !statIds.includes(d.included_in_stat)) {
+        delete d.included_in_stat;
+      }
     });
   }
 
@@ -196,14 +207,7 @@ export class EnergyDeviceSettings extends LitElement {
           (device) => device !== deviceToDelete
         ),
       };
-      newPrefs.device_consumption.forEach((d, idx) => {
-        if (d.included_in_stat === deviceToDelete.stat_consumption) {
-          newPrefs.device_consumption[idx] = {
-            ...newPrefs.device_consumption[idx],
-          };
-          delete newPrefs.device_consumption[idx].included_in_stat;
-        }
-      });
+      this._sanitizeParents(newPrefs);
       await this._savePreferences(newPrefs);
     } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
