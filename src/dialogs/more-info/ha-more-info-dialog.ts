@@ -21,8 +21,10 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { getEntityContext } from "../../common/entity/get_entity_context";
+import {
+  computeEntityEntryName,
+  computeEntityName,
+} from "../../common/entity/compute_entity_name";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -56,6 +58,10 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
+import {
+  getEntityContext,
+  getEntityEntryContext,
+} from "../../common/entity/get_entity_context";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -293,11 +299,18 @@ export class MoreInfoDialog extends LitElement {
       this._initialView !== DEFAULT_VIEW && !this._childView;
     const showCloseIcon = isDefaultView || isSpecificInitialView;
 
-    const context = stateObj ? getEntityContext(stateObj, this.hass) : null;
+    const context = stateObj
+      ? getEntityContext(stateObj, this.hass)
+      : this._entry
+        ? getEntityEntryContext(this._entry, this.hass)
+        : undefined;
 
     const entityName = stateObj
       ? computeEntityName(stateObj, this.hass)
-      : undefined;
+      : this._entry
+        ? computeEntityEntryName(this._entry, this.hass)
+        : entityId;
+
     const deviceName = context?.device
       ? computeDeviceName(context.device)
       : undefined;
