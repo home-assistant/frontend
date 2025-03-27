@@ -15,6 +15,7 @@ import {
   provisionZwaveSmartStartNode,
   stopZwaveInclusion,
   subscribeAddZwaveNode,
+  subscribeNewDevices,
   ZWaveFeature,
   zwaveGrantSecurityClasses,
   zwaveParseQrCode,
@@ -50,6 +51,7 @@ import "./add-node/zwave-js-add-node-failed";
 import "./add-node/zwave-js-add-node-configure-device";
 import "./add-node/zwave-js-add-node-code-input";
 import "./add-node/zwave-js-add-node-loading";
+import { navigate } from "../../../../../common/navigate";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
 
@@ -99,6 +101,8 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc | undefined>;
 
+  private _newDeviceSubscription?: Promise<UnsubscribeFunc | undefined>;
+
   protected render() {
     if (!this._entryId) {
       return nothing;
@@ -126,13 +130,6 @@ class DialogZWaveJSAddNode extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     window.addEventListener("beforeunload", this._onBeforeUnload);
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("beforeunload", this._onBeforeUnload);
-
-    this._unsubscribe();
   }
 
   private _onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -383,7 +380,7 @@ class DialogZWaveJSAddNode extends LitElement {
           .showAddAnotherDevice=${this._step === "search_smart_start_device"}
           .showSecurityOptions=${this._step === "search_devices"}
           @show-z-wave-security-options=${this._showSecurityOptions}
-          @add-another-z-wave-device=${this._showFirstStep}
+          @add-another-z-wave-device=${this._addAnotherDevice}
         ></zwave-js-add-node-searching-devices>
         ${this._step === "search_smart_start_device"
           ? html`
@@ -713,7 +710,7 @@ class DialogZWaveJSAddNode extends LitElement {
       this._step = "loading";
 
       try {
-        await provisionZwaveSmartStartNode(
+        const id = await provisionZwaveSmartStartNode(
           this.hass,
           this._entryId!,
           this._device.provisioningInfo,
@@ -723,7 +720,8 @@ class DialogZWaveJSAddNode extends LitElement {
           this._deviceOptions.name,
           this._deviceOptions.area
         );
-        // TODO subscribe search smart start device
+        this._device.id = id;
+        this._subscribeNewDeviceSearch();
         this._step = "search_smart_start_device";
       } catch (err: any) {
         this._error = err.message;
@@ -791,34 +789,36 @@ class DialogZWaveJSAddNode extends LitElement {
     }
   }
 
-  private _unsubscribe(): void {
-    if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub && unsub());
-      this._subscribed = undefined;
+  private _subscribeNewDeviceSearch() {
+    if (!this._device?.id) {
+      return;
     }
-    if (this._entryId) {
-      stopZwaveInclusion(this.hass, this._entryId);
-      if (
-        this._step &&
-        [
-          "waiting_for_device",
-          "validate_dsk_enter_pin",
-          "grant_security_classes",
-        ].includes(this._step)
-      ) {
-        cancelSecureBootstrapS2(this.hass, this._entryId);
+    this._newDeviceSubscription = subscribeNewDevices(
+      this.hass,
+      this._entryId!,
+      ({ event, device }) => {
+        if (
+          event === "device registered" &&
+          this._device?.id &&
+          device.id === this._device.id
+        ) {
+          this._unsubscribeNewDeviceSearch();
+          navigate(`/config/devices/device/${this._device.id}`);
+        }
       }
-      this._onStop?.();
+    );
+  }
+
+  private _unsubscribeNewDeviceSearch() {
+    if (this._newDeviceSubscription) {
+      this._newDeviceSubscription.then((unsub) => unsub && unsub());
+      this._newDeviceSubscription = undefined;
     }
-    // this._requestedGrant = undefined;
-    this._dsk = undefined;
-    // this._securityClasses = [];
-    this._step = undefined;
-    if (this._addNodeTimeoutHandle) {
-      clearTimeout(this._addNodeTimeoutHandle);
-    }
-    this._addNodeTimeoutHandle = undefined;
-    window.removeEventListener("beforeunload", this._onBeforeUnload);
+  }
+
+  private _addAnotherDevice() {
+    this._unsubscribeNewDeviceSearch();
+    this._showFirstStep();
   }
 
   private _manualQrCodeInputChange(ev: CustomEvent): void {
@@ -842,6 +842,41 @@ class DialogZWaveJSAddNode extends LitElement {
       this._error = err.message;
       this._step = "validate_dsk_enter_pin";
     }
+  }
+
+  private _unsubscribe(): void {
+    if (this._subscribed) {
+      this._subscribed.then((unsub) => unsub && unsub());
+      this._subscribed = undefined;
+    }
+
+    this._unsubscribeNewDeviceSearch();
+
+    // TODO
+    // entryId will be always there, but we don't always start inclusion, fix this
+    if (this._entryId) {
+      stopZwaveInclusion(this.hass, this._entryId);
+      if (
+        this._step &&
+        [
+          "waiting_for_device",
+          "validate_dsk_enter_pin",
+          "grant_security_classes",
+        ].includes(this._step)
+      ) {
+        cancelSecureBootstrapS2(this.hass, this._entryId);
+      }
+      this._onStop?.();
+    }
+    // this._requestedGrant = undefined;
+    this._dsk = undefined;
+    // this._securityClasses = [];
+    this._step = undefined;
+    if (this._addNodeTimeoutHandle) {
+      clearTimeout(this._addNodeTimeoutHandle);
+    }
+    this._addNodeTimeoutHandle = undefined;
+    window.removeEventListener("beforeunload", this._onBeforeUnload);
   }
 
   private _dialogClosed() {
@@ -879,6 +914,13 @@ class DialogZWaveJSAddNode extends LitElement {
     } else {
       this._dialogClosed();
     }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("beforeunload", this._onBeforeUnload);
+
+    this._unsubscribe();
   }
 
   static get styles(): CSSResultGroup {

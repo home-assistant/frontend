@@ -626,7 +626,7 @@ export const provisionZwaveSmartStartNode = (
   protocol?: Protocols,
   device_name?: string,
   area_id?: string
-): Promise<QRProvisioningInformation> =>
+): Promise<string> =>
   hass.callWS({
     type: "zwave_js/provision_smart_start_node",
     entry_id,
@@ -647,6 +647,16 @@ export const unprovisionZwaveSmartStartNode = (
     entry_id,
     dsk,
     node_id,
+  });
+
+export const subscribeNewDevices = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: any) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage((message) => callbackFunction(message), {
+    type: "zwave_js/subscribe_new_devices",
+    entry_id: entry_id,
   });
 
 export const fetchZwaveNodeStatus = (
