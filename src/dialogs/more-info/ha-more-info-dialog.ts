@@ -319,7 +319,7 @@ export class MoreInfoDialog extends LitElement {
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
     );
-    const title = this._childView?.viewTitle || breadcrumb.pop();
+    const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
     return html`
       <ha-dialog

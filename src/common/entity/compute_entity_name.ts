@@ -33,7 +33,14 @@ export const computeEntityEntryName = (
   const device = entry.device_id ? hass.devices[entry.device_id] : undefined;
 
   if (!device) {
-    return name;
+    if (name) {
+      return name;
+    }
+    const stateObj = hass.states[entry.entity_id] as HassEntity | undefined;
+    if (stateObj) {
+      return computeStateName(stateObj);
+    }
+    return undefined;
   }
 
   const deviceName = computeDeviceName(device);
