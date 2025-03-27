@@ -1,14 +1,15 @@
 import "@material/mwc-button";
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiOpenInNew, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-spinner";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
 import "../../../components/ha-textfield";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-header";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
@@ -18,6 +19,8 @@ import type { HomeAssistant } from "../../../types";
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _params?;
 
@@ -37,6 +40,7 @@ class DialogImportBlueprint extends LitElement {
     this._params = params;
     this._error = undefined;
     this._url = this._params.url;
+    this.large = false;
   }
 
   public closeDialog(): void {
@@ -51,15 +55,18 @@ class DialogImportBlueprint extends LitElement {
     if (!this._params) {
       return nothing;
     }
+    const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.blueprint.add.header")
-        )}
-      >
+      <ha-dialog open .heading=${heading} @closed=${this.closeDialog}>
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title" @click=${this._enlarge}> ${heading} </span>
+        </ha-dialog-header>
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._result
@@ -198,6 +205,10 @@ class DialogImportBlueprint extends LitElement {
     `;
   }
 
+  private _enlarge() {
+    this.large = !this.large;
+  }
+
   private async _import() {
     this._url = undefined;
     this._importing = true;
@@ -258,6 +269,10 @@ class DialogImportBlueprint extends LitElement {
       }
       a ha-svg-icon {
         --mdc-icon-size: 16px;
+      }
+      :host([large]) ha-dialog {
+        --mdc-dialog-min-width: 90vw;
+        --mdc-dialog-max-width: 90vw;
       }
     `,
   ];

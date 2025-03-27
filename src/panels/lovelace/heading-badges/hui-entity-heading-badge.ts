@@ -25,6 +25,14 @@ import type {
 } from "../types";
 import type { EntityHeadingBadgeConfig } from "./types";
 
+const DEFAULT_ACTIONS: Pick<
+  EntityHeadingBadgeConfig,
+  "tap_action" | "hold_action" | "double_tap_action"
+> = {
+  tap_action: { action: "none" },
+  hold_action: { action: "none" },
+  double_tap_action: { action: "none" },
+};
 @customElement("hui-entity-heading-badge")
 export class HuiEntityHeadingBadge
   extends LitElement
@@ -46,21 +54,21 @@ export class HuiEntityHeadingBadge
   public setConfig(config): void {
     this._config = {
       ...DEFAULT_CONFIG,
-      tap_action: {
-        action: "none",
-      },
+      ...DEFAULT_ACTIONS,
       ...config,
     };
   }
 
+  get hasAction() {
+    return (
+      hasAction(this._config?.tap_action) ||
+      hasAction(this._config?.hold_action) ||
+      hasAction(this._config?.double_tap_action)
+    );
+  }
+
   private _handleAction(ev: ActionHandlerEvent) {
-    const config: EntityHeadingBadgeConfig = {
-      tap_action: {
-        action: "none",
-      },
-      ...this._config!,
-    };
-    handleAction(this, this.hass!, config, ev.detail.action!);
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   private _computeStateColor = memoizeOne(
@@ -133,9 +141,12 @@ export class HuiEntityHeadingBadge
 
     return html`
       <ha-heading-badge
-        .type=${hasAction(config.tap_action) ? "button" : "text"}
+        .type=${this.hasAction ? "button" : "badge"}
         @action=${this._handleAction}
-        .actionHandler=${actionHandler()}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
         style=${styleMap(style)}
         .title=${name}
       >

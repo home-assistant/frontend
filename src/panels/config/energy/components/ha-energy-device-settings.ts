@@ -147,22 +147,26 @@ export class EnergyDeviceSettings extends LitElement {
     const origDevice: DeviceConsumptionEnergyPreference =
       ev.currentTarget.closest(".row").device;
     showEnergySettingsDeviceDialog(this, {
+      statsMetadata: this.statsMetadata,
       device: { ...origDevice },
       device_consumptions: this.preferences
         .device_consumption as DeviceConsumptionEnergyPreference[],
       saveCallback: async (newDevice) => {
-        await this._savePreferences({
+        const newPrefs = {
           ...this.preferences,
           device_consumption: this.preferences.device_consumption.map((d) =>
             d === origDevice ? newDevice : d
           ),
-        });
+        };
+        this._sanitizeParents(newPrefs);
+        await this._savePreferences(newPrefs);
       },
     });
   }
 
   private _addDevice() {
     showEnergySettingsDeviceDialog(this, {
+      statsMetadata: this.statsMetadata,
       device_consumptions: this.preferences
         .device_consumption as DeviceConsumptionEnergyPreference[],
       saveCallback: async (device) => {
@@ -172,6 +176,15 @@ export class EnergyDeviceSettings extends LitElement {
             this.preferences.device_consumption.concat(device),
         });
       },
+    });
+  }
+
+  private _sanitizeParents(prefs: EnergyPreferences) {
+    const statIds = prefs.device_consumption.map((d) => d.stat_consumption);
+    prefs.device_consumption.forEach((d) => {
+      if (d.included_in_stat && !statIds.includes(d.included_in_stat)) {
+        delete d.included_in_stat;
+      }
     });
   }
 
@@ -188,12 +201,14 @@ export class EnergyDeviceSettings extends LitElement {
     }
 
     try {
-      await this._savePreferences({
+      const newPrefs = {
         ...this.preferences,
         device_consumption: this.preferences.device_consumption.filter(
           (device) => device !== deviceToDelete
         ),
-      });
+      };
+      this._sanitizeParents(newPrefs);
+      await this._savePreferences(newPrefs);
     } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }

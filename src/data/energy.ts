@@ -29,6 +29,7 @@ import type {
 import { fetchStatistics, getStatisticMetadata } from "./recorder";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
+import { formatNumber } from "../common/number/format_number";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -96,6 +97,7 @@ export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
   name?: string;
+  included_in_stat?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
@@ -765,16 +767,13 @@ export const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
-): string | undefined => {
+): string => {
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
-  if (unitClass === undefined) {
-    return undefined;
+  if (unitClass === "energy") {
+    return "kWh";
   }
-  return unitClass === "energy"
-    ? "kWh"
-    : hass.config.unit_system.length === "km"
-      ? "m³"
-      : "ft³";
+
+  return hass.config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
@@ -925,4 +924,32 @@ const computeConsumptionDataPartial = (
   });
 
   return outData;
+};
+
+export const formatConsumptionShort = (
+  hass: HomeAssistant,
+  consumption: number | null,
+  unit: string
+): string => {
+  if (!consumption) {
+    return `0 ${unit}`;
+  }
+  const units = ["kWh", "MWh", "GWh", "TWh"];
+  let pickedUnit = unit;
+  let val = consumption;
+  let unitIndex = units.findIndex((u) => u === unit);
+  if (unitIndex >= 0) {
+    while (val >= 1000 && unitIndex < units.length - 1) {
+      val /= 1000;
+      unitIndex++;
+    }
+    pickedUnit = units[unitIndex];
+  }
+  return (
+    formatNumber(val, hass.locale, {
+      maximumFractionDigits: val < 10 ? 2 : val < 100 ? 1 : 0,
+    }) +
+    " " +
+    pickedUnit
+  );
 };

@@ -5,6 +5,7 @@ import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { stringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
@@ -13,10 +14,7 @@ import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
 } from "../../data/device_registry";
-import {
-  computeDeviceName,
-  getDeviceEntityDisplayLookup,
-} from "../../data/device_registry";
+import { getDeviceEntityDisplayLookup } from "../../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
@@ -214,7 +212,7 @@ export class HaDevicePicker extends LitElement {
       }
 
       const outputDevices = inputDevices.map((device) => {
-        const name = computeDeviceName(
+        const name = computeDeviceNameDisplay(
           device,
           this.hass,
           deviceEntityLookup[device.id]

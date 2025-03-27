@@ -233,10 +233,7 @@ export class HUIView extends ReactiveElement {
 
     if (isStrategyView(viewConfig)) {
       isStrategy = true;
-      viewConfig = await generateLovelaceViewStrategy(
-        viewConfig.strategy,
-        this.hass!
-      );
+      viewConfig = await generateLovelaceViewStrategy(viewConfig, this.hass!);
     }
 
     viewConfig = {

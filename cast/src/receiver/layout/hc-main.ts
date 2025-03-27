@@ -309,7 +309,7 @@ export class HcMain extends HassElement {
               "../../../../src/panels/lovelace/strategies/get-strategy"
             );
             const config = await generateLovelaceDashboardStrategy(
-              rawConfig.strategy,
+              rawConfig,
               this.hass!
             );
             this._handleNewLovelaceConfig(config);
@@ -351,10 +351,7 @@ export class HcMain extends HassElement {
       "../../../../src/panels/lovelace/strategies/get-strategy"
     );
     this._handleNewLovelaceConfig(
-      await generateLovelaceDashboardStrategy(
-        DEFAULT_CONFIG.strategy,
-        this.hass!
-      )
+      await generateLovelaceDashboardStrategy(DEFAULT_CONFIG, this.hass!)
     );
   }
 

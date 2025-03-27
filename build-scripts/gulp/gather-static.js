@@ -59,6 +59,11 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
+  // Lit polyfill support
+  fs.copySync(
+    npmPath("lit/polyfill-support.js"),
+    path.join(staticPath("polyfills/"), "lit-polyfill-support.js")
+  );
 
   // dialog-polyfill css
   copyFileDir(
