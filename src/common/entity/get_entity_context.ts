@@ -1,7 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { AreaRegistryEntry } from "../../data/area_registry";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+} from "../../data/entity_registry";
 import type { FloorRegistryEntry } from "../../data/floor_registry";
 import type { HomeAssistant } from "../../types";
 
@@ -19,6 +23,23 @@ export const getEntityContext = (
     | EntityRegistryDisplayEntry
     | undefined;
 
+  if (!entry) {
+    return {
+      device: null,
+      area: null,
+      floor: null,
+    };
+  }
+  return getEntityEntryContext(entry, hass);
+};
+
+export const getEntityEntryContext = (
+  entry:
+    | EntityRegistryDisplayEntry
+    | EntityRegistryEntry
+    | ExtEntityRegistryEntry,
+  hass: HomeAssistant
+): EntityContext => {
   const deviceId = entry?.device_id;
   const device = deviceId ? hass.devices[deviceId] : null;
   const areaId = entry?.area_id || device?.area_id;
