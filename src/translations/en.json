@@ -5796,24 +5796,10 @@
             "check_logs": "Please check the logs for more information.",
             "inclusion_finished": "The device has been added.",
             "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
-            "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
             "interview_failed": "The device interview failed. Additional information may be available in the logs.",
             "waiting_for_device": "Communicating with the device. Please wait.",
             "adding_insecurely": "The device is being added insecurely",
-            "added_insecurely": "The device was added insecurely",
-            "added_insecurely_text": "There was an error during secure inclusion. You can try again by excluding the device and adding it again.",
-            "low_security_reason": {
-              "0": "Security bootstrapping was canceled by the user.",
-              "1": "The required security keys were not configured in the driver.",
-              "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
-              "3": "An expected message was not received within the corresponding timeout.",
-              "4": "There was no possible match in encryption parameters between the controller and the node.",
-              "5": "Security bootstrapping was canceled by the included node.",
-              "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
-              "7": "There was a mismatch in security keys between the controller and the node.",
-              "8": "Unknown error occurred."
-            },
             "select_method": {
               "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
               "qr_code_webcam": "Scan QR code using webcam",
@@ -5865,6 +5851,25 @@
               "title": "Verify key",
               "text": "Find the key on your device or manual and enter the 5-digit PIN.",
               "placeholder": "Pin"
+            },
+            "added_insecure": {
+              "title": "Device added",
+              "text": "The device {name} has been added to your Z-Wave network.",
+              "added_insecurely": "The device was added insecurely",
+              "added_insecurely_text": "There was an error during secure inclusion. You can try again by excluding the device and adding it again.",
+              "error_message": "Error message",
+              "view_device": "View device",
+              "low_security_reason": {
+                "0": "Security bootstrapping was canceled by the user.",
+                "1": "The required security keys were not configured in the driver.",
+                "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
+                "3": "An expected message was not received within the corresponding timeout.",
+                "4": "There was no possible match in encryption parameters between the controller and the node.",
+                "5": "Security bootstrapping was canceled by the included node.",
+                "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
+                "7": "There was a mismatch in security keys between the controller and the node.",
+                "8": "Unknown error occurred."
+              }
             }
           },
           "provisioned": {

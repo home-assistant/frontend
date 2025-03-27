@@ -34,6 +34,7 @@ import {
   type ZWaveJSAddNodeStage,
 } from "./add-node/data";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
+import { navigate } from "../../../../../common/navigate";
 import type { HaDialog } from "../../../../../components/ha-dialog";
 
 import "../../../../../components/ha-dialog";
@@ -51,7 +52,7 @@ import "./add-node/zwave-js-add-node-failed";
 import "./add-node/zwave-js-add-node-configure-device";
 import "./add-node/zwave-js-add-node-code-input";
 import "./add-node/zwave-js-add-node-loading";
-import { navigate } from "../../../../../common/navigate";
+import "./add-node/zwave-js-add-node-added-insecure";
 
 const INCLUSION_TIMEOUT = 300000; // 5 minutes
 
@@ -75,9 +76,9 @@ class DialogZWaveJSAddNode extends LitElement {
 
   @state() private _inclusionStrategy?: InclusionStrategy;
 
-  // @state() private _lowSecurity = false;
+  @state() private _lowSecurity = false;
 
-  // @state() private _lowSecurityReason?: number;
+  @state() private _lowSecurityReason?: number;
 
   @state() private _device?: ZWaveJSAddNodeDevice;
 
@@ -288,6 +289,9 @@ class DialogZWaveJSAddNode extends LitElement {
       case "configure_device":
         titleTranslationKey = "configure_device.title";
         break;
+      case "added_insecure":
+        titleTranslationKey = "added_insecure.title";
+        break;
       case "failed":
         titleTranslationKey = "add_device_failed";
         break;
@@ -471,6 +475,24 @@ class DialogZWaveJSAddNode extends LitElement {
       `;
     }
 
+    if (this._step === "added_insecure") {
+      return html`
+        <zwave-js-add-node-added-insecure
+          .hass=${this.hass}
+          .deviceName=${this._device?.name}
+          .reason=${this._lowSecurityReason?.toString()}
+        ></zwave-js-add-node-added-insecure>
+        <ha-button
+          slot="primaryAction"
+          @click=${this._navigateToDevice}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.add_node.added_insecure.view_device"
+          )}
+        </ha-button>
+      `;
+    }
+
     return html`<zwave-js-add-node-loading
       .delay=${1000}
     ></zwave-js-add-node-loading>`;
@@ -505,7 +527,8 @@ class DialogZWaveJSAddNode extends LitElement {
     qrProvisioningInformation?: QRProvisioningInformation,
     dsk?: string
   ): void {
-    // this._lowSecurity = false;
+    this._lowSecurity = false;
+
     const s2Device = qrProvisioningInformation || dsk;
     this._subscribed = subscribeAddZwaveNode(
       this.hass,
@@ -555,11 +578,14 @@ class DialogZWaveJSAddNode extends LitElement {
             break;
           case "node added":
             this._step = "interviewing";
-            // this._lowSecurity = message.node.low_security;
-            // this._lowSecurityReason = message.node.low_security_reason;
+            this._lowSecurity = message.node.low_security;
+            this._lowSecurityReason = message.node.low_security_reason;
             break;
           case "interview completed":
             this._unsubscribe();
+            if (this._lowSecurity) {
+              this._step = "added_insecure";
+            }
             break;
         }
       },
@@ -728,7 +754,6 @@ class DialogZWaveJSAddNode extends LitElement {
         this._step = "failed";
       }
     } else {
-      // included device
       if (this._device.name !== this._deviceOptions?.name) {
         try {
           await updateDeviceRegistryEntry(this.hass, this._device.id, {
@@ -785,7 +810,25 @@ class DialogZWaveJSAddNode extends LitElement {
       }
 
       // if not finished yet show interviewing loading screen
-      this._step = !this._subscribed ? "finished" : "interviewing";
+      if (this._subscribed) {
+        this._step = "interviewing";
+        return;
+      }
+
+      if (this._lowSecurity) {
+        this._step = "added_insecure";
+        return;
+      }
+
+      this._navigateToDevice();
+    }
+  }
+
+  private _navigateToDevice() {
+    if (this._device?.id) {
+      navigate(`/config/devices/device/${this._device.id}`);
+    } else {
+      this.closeDialog();
     }
   }
 
@@ -803,7 +846,7 @@ class DialogZWaveJSAddNode extends LitElement {
           device.id === this._device.id
         ) {
           this._unsubscribeNewDeviceSearch();
-          navigate(`/config/devices/device/${this._device.id}`);
+          this._navigateToDevice();
         }
       }
     );
@@ -848,26 +891,24 @@ class DialogZWaveJSAddNode extends LitElement {
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub && unsub());
       this._subscribed = undefined;
+
+      if (this._entryId) {
+        stopZwaveInclusion(this.hass, this._entryId);
+        if (
+          this._step &&
+          [
+            "waiting_for_device",
+            "validate_dsk_enter_pin",
+            "grant_security_classes",
+          ].includes(this._step)
+        ) {
+          cancelSecureBootstrapS2(this.hass, this._entryId);
+        }
+      }
     }
 
     this._unsubscribeNewDeviceSearch();
 
-    // TODO
-    // entryId will be always there, but we don't always start inclusion, fix this
-    if (this._entryId) {
-      stopZwaveInclusion(this.hass, this._entryId);
-      if (
-        this._step &&
-        [
-          "waiting_for_device",
-          "validate_dsk_enter_pin",
-          "grant_security_classes",
-        ].includes(this._step)
-      ) {
-        cancelSecureBootstrapS2(this.hass, this._entryId);
-      }
-      this._onStop?.();
-    }
     // this._requestedGrant = undefined;
     this._dsk = undefined;
     // this._securityClasses = [];
@@ -893,8 +934,10 @@ class DialogZWaveJSAddNode extends LitElement {
     this._deviceOptions = undefined;
     // this._requestedGrant = undefined;
     // this._securityClasses = [];
-    // this._lowSecurity = false;
-    // this._lowSecurityReason = undefined;
+    this._lowSecurity = false;
+    this._lowSecurityReason = undefined;
+
+    this._onStop?.();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
