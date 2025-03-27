@@ -1,3 +1,4 @@
+import timezones from "google-timezones-json";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -9,6 +10,7 @@ import {
   literal,
   object,
   optional,
+  string,
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -27,10 +29,12 @@ import { TimeFormat } from "../../../../data/translation";
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
+    title: optional(string()),
     clock_size: optional(
       union([literal("small"), literal("medium"), literal("large")])
     ),
     time_format: optional(enums(Object.values(TimeFormat))),
+    time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
   })
 );
@@ -47,6 +51,7 @@ export class HuiClockCardEditor
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
       [
+        { name: "title", selector: { text: {} } },
         {
           name: "clock_size",
           selector: {
@@ -61,12 +66,7 @@ export class HuiClockCardEditor
             },
           },
         },
-        {
-          name: "show_seconds",
-          selector: {
-            boolean: {},
-          },
-        },
+        { name: "show_seconds", selector: { boolean: {} } },
         {
           name: "time_format",
           selector: {
@@ -81,12 +81,27 @@ export class HuiClockCardEditor
             },
           },
         },
+        {
+          name: "time_zone",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: Object.entries(timezones as Record<string, string>).map(
+                ([key, value]) => ({
+                  value: key,
+                  label: value,
+                })
+              ),
+            },
+          },
+        },
       ] as const satisfies readonly HaFormSchema[]
   );
 
   private _data = memoizeOne((config) => ({
     clock_size: "small",
     time_format: TimeFormat.language,
+    time_zone: this.hass?.config?.time_zone,
     show_seconds: false,
     ...config,
   }));
@@ -120,6 +135,10 @@ export class HuiClockCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "title":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.title"
+        );
       case "clock_size":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.clock_size`
@@ -127,6 +146,10 @@ export class HuiClockCardEditor
       case "time_format":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.time_format`
+        );
+      case "time_zone":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.time_zone`
         );
       case "show_seconds":
         return this.hass!.localize(
