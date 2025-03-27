@@ -31,7 +31,7 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
       };
 
       if (this.longRangeSupported) {
-        this._options.network_type = Protocols.ZWaveLongRange;
+        this._options.network_type = Protocols.ZWaveLongRange.toString();
       }
 
       fireEvent(this, "value-changed", { value: this._options });
