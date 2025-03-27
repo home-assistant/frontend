@@ -145,8 +145,8 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
-    // Allow between 2 and 4 columns (the max should be set to define the width of the header)
-    const maxColumns = clamp(sections.length, 2, 4);
+    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
+    const maxColumns = clamp(sections.length, 2, 3);
 
     // Take the full width if there is only one section to avoid narrow header on desktop
     if (sections.length === 1) {
