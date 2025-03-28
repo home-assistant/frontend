@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -16,14 +17,21 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { DEFAULT_MAX, DEFAULT_MIN } from "../../cards/hui-gauge-card";
 import type { GaugeCardConfig } from "../../cards/types";
+import type { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { DEFAULT_MIN, DEFAULT_MAX } from "../../cards/hui-gauge-card";
-import type { UiAction } from "../../components/hui-action-editor";
 
-const TAP_ACTIONS: UiAction[] = ["navigate", "url", "perform-action", "none"];
+const TAP_ACTIONS: UiAction[] = [
+  "more-info",
+  "navigate",
+  "url",
+  "perform-action",
+  "assist",
+  "none",
+];
 
 const gaugeSegmentStruct = object({
   from: number(),
@@ -134,13 +142,37 @@ export class HuiGaugeCardEditor
             ] as const)
           : []),
         {
-          name: "tap_action",
-          selector: {
-            ui_action: {
-              actions: TAP_ACTIONS,
-              default_action: "more-info",
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  actions: TAP_ACTIONS,
+                  default_action: "more-info",
+                },
+              },
             },
-          },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      actions: TAP_ACTIONS,
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
+          ],
         },
       ] as const
   );
@@ -231,7 +263,13 @@ export class HuiGaugeCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.unit"
         );
+      case "interactions":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.interactions"
+        );
       case "tap_action":
+      case "hold_action":
+      case "double_tap_action":
         return `${this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         )} (${this.hass!.localize(
