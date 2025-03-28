@@ -74,6 +74,7 @@ export class DialogEnergyDeviceSettings
     this._possibleParents = this._params.device_consumptions.filter(
       (d) =>
         d.stat_consumption !== this._device!.stat_consumption &&
+        d.stat_consumption !== this._params?.device?.stat_consumption &&
         !children.includes(d.stat_consumption)
     );
   }
@@ -160,18 +161,26 @@ export class DialogEnergyDeviceSettings
           naturalMenuWidth
           clearable
         >
-          ${this._possibleParents.map(
-            (stat) => html`
-              <mwc-list-item .value=${stat.stat_consumption}
-                >${stat.name ||
-                getStatisticLabel(
-                  this.hass,
-                  stat.stat_consumption,
-                  this._params?.statsMetadata?.[stat.stat_consumption]
-                )}</mwc-list-item
-              >
-            `
-          )}
+          ${!this._possibleParents.length
+            ? html`
+                <mwc-list-item disabled value="-"
+                  >${this.hass.localize(
+                    "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
+                  )}</mwc-list-item
+                >
+              `
+            : this._possibleParents.map(
+                (stat) => html`
+                  <mwc-list-item .value=${stat.stat_consumption}
+                    >${stat.name ||
+                    getStatisticLabel(
+                      this.hass,
+                      stat.stat_consumption,
+                      this._params?.statsMetadata?.[stat.stat_consumption]
+                    )}</mwc-list-item
+                  >
+                `
+              )}
         </ha-select>
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
