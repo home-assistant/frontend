@@ -3396,8 +3396,8 @@
                 "high": "High"
               },
               "commands": {
-                "header": "Supported commands",
-                "low": "Needs work",
+                "header": "Language support",
+                "low": "Needs more work",
                 "ready": "Ready to be used",
                 "high": "Fully supported"
               },
@@ -3438,14 +3438,14 @@
               "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
               "local_pipeline": "Local Assistant",
               "state": {
-                "installing_piper": "Installing Piper add-on",
-                "starting_piper": "Starting Piper add-on",
+                "installing_piper": "Installing Piper",
+                "starting_piper": "Starting Piper",
                 "setup_piper": "Setting up Piper",
-                "installing_faster-whisper": "Installing Whisper add-on",
-                "starting_faster-whisper": "Starting Whisper add-on",
+                "installing_faster-whisper": "Installing Whisper",
+                "starting_faster-whisper": "Starting Whisper",
                 "setup_faster-whisper": "Setting up Whisper",
-                "installing_speech-to-phrase": "Installing Speech-to-Phrase add-on",
-                "starting_speech-to-phrase": "Starting Speech-to-Phrase add-on",
+                "installing_speech-to-phrase": "Installing Speech-to-Phrase",
+                "starting_speech-to-phrase": "Starting Speech-to-Phrase",
                 "setup_speech-to-phrase": "Setting up Speech-to-Phrase",
                 "creating_pipeline": "Creating assistant"
               },
