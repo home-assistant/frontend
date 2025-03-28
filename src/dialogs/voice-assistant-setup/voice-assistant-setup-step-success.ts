@@ -246,7 +246,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     if (!this.assistEntityId) {
       return;
     }
-    await assistSatelliteAnnounce(this.hass, this.assistEntityId, message);
+    await assistSatelliteAnnounce(this.hass, this.assistEntityId, {
+      message,
+      preannounce_media_id: null,
+    });
   }
 
   private _testWakeWord() {
