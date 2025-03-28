@@ -688,16 +688,15 @@ export class MoreInfoDialog extends LitElement {
           background: none;
           border: none;
           cursor: pointer;
-          text-align: left;
           outline: none;
           display: inline-flex;
-          border-radius: 4px;
+          border-radius: 6px;
           transition: background-color 180ms ease-in-out;
         }
 
         .title .breadcrumb:focus-visible,
         .title .breadcrumb:hover {
-          background-color: rgba(var(--rgb-secondary-text-color), 0.1);
+          background-color: rgba(var(--rgb-secondary-text-color), 0.08);
         }
       `,
     ];
