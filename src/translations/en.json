@@ -4337,6 +4337,11 @@
               "add_category": "Add category",
               "add_labels": "Add labels",
               "add_area": "Add area"
+            },
+            "paste_confirm": {
+              "title": "Do you want to replace your current automation?",
+              "text": "The current automation will be replaced by the pasted one.",
+              "confirm": "Replace"
             }
           },
           "trace": {
@@ -4570,6 +4575,11 @@
               "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
               "unsaved_confirm_title": "Save changes?",
               "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
+            },
+            "paste_confirm": {
+              "title": "Do you want to replace your current script?",
+              "text": "The current script will be replaced by the pasted one.",
+              "confirm": "Replace"
             }
           },
           "trace": {

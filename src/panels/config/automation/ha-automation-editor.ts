@@ -24,6 +24,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { transform } from "../../../common/decorators/transform";
+import { load } from "js-yaml";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -552,7 +553,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
@@ -579,6 +579,70 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       );
     }
   }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("paste", this._handlePaste);
+  }
+
+  public disconnectedCallback() {
+    window.removeEventListener("paste", this._handlePaste);
+    super.disconnectedCallback();
+  }
+
+  private _handlePaste = async (ev: ClipboardEvent) => {
+    // Ignore events on inputs/textareas
+    const target = ev.composedPath()[0];
+    if (
+      target instanceof HTMLElement &&
+      (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
+    ) {
+      return;
+    }
+
+    const paste = ev.clipboardData?.getData("text");
+    if (!paste) {
+      return;
+    }
+
+    const loaded: any = load(paste);
+    if (loaded) {
+      let normalized: AutomationConfig | undefined;
+
+      try {
+        normalized = normalizeAutomationConfig(loaded);
+      } catch (_err: any) {
+        return;
+      }
+
+      if (normalized) {
+        ev.preventDefault();
+
+        if (this._dirty) {
+          const result = await showConfirmationDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.automation.editor.paste_confirm.title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.automation.editor.paste_confirm.text"
+            ),
+            confirmText: this.hass.localize(
+              "ui.panel.config.automation.editor.paste_confirm.confirm"
+            ),
+            destructive: true,
+          });
+
+          if (!result) {
+            return;
+          }
+        }
+
+        this._config = normalized;
+        this._dirty = true;
+        this._errors = undefined;
+      }
+    }
+  };
 
   private _setEntityId() {
     const automation = this.automations.find(
