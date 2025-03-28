@@ -1,6 +1,8 @@
+import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
@@ -21,7 +23,7 @@ import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { replaceCard } from "../editor/config-util";
+import { addCard, replaceCard } from "../editor/config-util";
 import {
   type DeleteBadgeParams,
   performDeleteBadge,
@@ -45,6 +47,8 @@ declare global {
     "ll-create-card": { suggested?: string[] } | undefined;
     "ll-edit-card": { path: LovelaceCardPath };
     "ll-delete-card": DeleteCardParams;
+    "ll-duplicate-card": { path: LovelaceCardPath };
+    "ll-copy-card": { path: LovelaceCardPath };
     "ll-create-badge": undefined;
     "ll-edit-badge": { path: LovelaceCardPath };
     "ll-delete-badge": DeleteBadgeParams;
@@ -53,6 +57,8 @@ declare global {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
     "ll-edit-card": HASSDomEvent<HASSDomEvents["ll-edit-card"]>;
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
+    "ll-duplicate-card": HASSDomEvent<HASSDomEvents["ll-duplicate-card"]>;
+    "ll-copy-card": HASSDomEvent<HASSDomEvents["ll-copy-card"]>;
     "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
     "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
     "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
@@ -78,6 +84,14 @@ export class HUIView extends ReactiveElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceViewElement;
+
+  @storage({
+    key: "dashboardCardClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
@@ -219,10 +233,7 @@ export class HUIView extends ReactiveElement {
 
     if (isStrategyView(viewConfig)) {
       isStrategy = true;
-      viewConfig = await generateLovelaceViewStrategy(
-        viewConfig.strategy,
-        this.hass!
-      );
+      viewConfig = await generateLovelaceViewStrategy(viewConfig, this.hass!);
     }
 
     viewConfig = {
@@ -312,6 +323,37 @@ export class HUIView extends ReactiveElement {
     this._layoutElement.addEventListener("ll-delete-badge", async (ev) => {
       if (!this.lovelace) return;
       performDeleteBadge(this.hass, this.lovelace, ev.detail);
+    });
+    this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const viewConfig = this.lovelace!.config.views[this.index];
+      if (isStrategyView(viewConfig)) {
+        return;
+      }
+      const cardConfig = viewConfig.cards![cardIndex];
+      showEditCardDialog(this, {
+        lovelaceConfig: this.lovelace!.config,
+        saveCardConfig: async (newCardConfig) => {
+          const newConfig = addCard(
+            this.lovelace!.config,
+            [this.index],
+            newCardConfig
+          );
+          await this.lovelace!.saveConfig(newConfig);
+        },
+        cardConfig,
+        isNew: true,
+      });
+    });
+    this._layoutElement.addEventListener("ll-copy-card", (ev) => {
+      if (!this.lovelace) return;
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const viewConfig = this.lovelace!.config.views[this.index];
+      if (isStrategyView(viewConfig)) {
+        return;
+      }
+      const cardConfig = viewConfig.cards![cardIndex];
+      this._clipboard = deepClone(cardConfig);
     });
   }
 

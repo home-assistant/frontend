@@ -288,7 +288,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             : entry.entity
               ? html`
                   <ha-state-icon
-                    title=${ifDefined(entry.entity?.state)}
+                    title=${ifDefined(
+                      entry.entity
+                        ? this.hass.formatEntityState(entry.entity)
+                        : undefined
+                    )}
                     slot="item-icon"
                     .hass=${this.hass}
                     .stateObj=${entry.entity}
@@ -412,7 +416,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.created_at
@@ -427,7 +430,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.modified_at

@@ -23,6 +23,7 @@ class StateCardSelect extends LitElement {
       <ha-select
         .value=${this.stateObj.state}
         .label=${computeStateName(this.stateObj)}
+        .options=${this.stateObj.attributes.options}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         naturalMenuWidth
         fixedMenuPosition

@@ -1,10 +1,10 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { titleCase } from "../../../../common/string/title-case";
 import "../../../../components/ha-card";
 import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { computeDeviceName } from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
@@ -56,7 +56,9 @@ export class HaDeviceCard extends LitElement {
                   <span class="hub"
                     ><a
                       href="/config/devices/device/${this.device.via_device_id}"
-                      >${this._computeDeviceName(this.device.via_device_id)}</a
+                      >${this._computeDeviceNameDislay(
+                        this.device.via_device_id
+                      )}</a
                     ></span
                   >
                 </div>
@@ -118,10 +120,10 @@ export class HaDeviceCard extends LitElement {
     );
   }
 
-  private _computeDeviceName(deviceId) {
+  private _computeDeviceNameDislay(deviceId) {
     const device = this.hass.devices[deviceId];
     return device
-      ? computeDeviceName(device, this.hass)
+      ? computeDeviceNameDisplay(device, this.hass)
       : `<${this.hass.localize(
           "ui.panel.config.integrations.config_entry.unknown_via_device"
         )}>`;

@@ -41,6 +41,7 @@ import type {
 import {
   clearStatistics,
   getStatisticIds,
+  StatisticMeanType,
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
@@ -57,6 +58,7 @@ const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   entity_not_recorded: 1,
   state_class_removed: 2,
   units_changed: 3,
+  mean_type_changed: 4,
 };
 
 const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
@@ -64,6 +66,7 @@ const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
   "entity_no_longer_recorded",
   "state_class_removed",
   "units_changed",
+  "mean_type_changed",
 ];
 
 type StatisticData = StatisticsMetaData & {
@@ -81,7 +84,7 @@ type DisplayedStatisticData = StatisticData & {
 class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private _data: StatisticData[] = [] as StatisticsMetaData[];
 
@@ -307,7 +310,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     </ha-assist-chip>`;
 
     return html`
-      <div>
+      <div class="table-with-toolbars">
         ${this._selectMode
           ? html`<div class="selection-bar">
               <div class="selection-controls">
@@ -641,7 +644,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
-          has_mean: false,
+          mean_type: StatisticMeanType.NONE,
           has_sum: false,
           unit_class: null,
         });
@@ -700,14 +703,15 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           height: 100%;
         }
 
+        .table-with-toolbars {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
         ha-data-table {
           width: 100%;
-          height: 100%;
+          flex-grow: 1;
           --data-table-border-width: 0;
-        }
-        :host(:not([narrow])) ha-data-table {
-          height: calc(100vh - 1px - var(--header-height) - 48px);
-          display: block;
         }
 
         :host([narrow]) {
@@ -748,7 +752,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         .selection-bar {
           background: rgba(var(--rgb-primary-color), 0.1);
           width: 100%;
-          height: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;

@@ -11,7 +11,7 @@ import "../../../../../../components/ha-list-item";
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-switch";
 import "../../../../../../components/ha-formfield";
-import "../../../../../../components/ha-circular-progress";
+import "../../../../../../components/ha-spinner";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import type { HaProgressButton } from "../../../../../../components/buttons/ha-progress-button";
 import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
@@ -100,7 +100,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
       !this._capabilities ||
       this._currentDoorLockMode === undefined
     ) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     const isValid = this._isValid();

@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
@@ -236,12 +236,7 @@ export class HuiDialogEditCard
                   ></hui-card>
                 `}
             ${this._error
-              ? html`
-                  <ha-circular-progress
-                    indeterminate
-                    aria-label="Can't update card"
-                  ></ha-circular-progress>
-                `
+              ? html` <ha-spinner aria-label="Can't update card"></ha-spinner> `
               : ``}
           </div>
         </div>
@@ -273,11 +268,10 @@ export class HuiDialogEditCard
                 >
                   ${this._saving
                     ? html`
-                        <ha-circular-progress
-                          indeterminate
+                        <ha-spinner
                           aria-label="Saving"
                           size="small"
-                        ></ha-circular-progress>
+                        ></ha-spinner>
                       `
                     : this.hass!.localize("ui.common.save")}
                 </mwc-button>
@@ -499,10 +493,12 @@ export class HuiDialogEditCard
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: 4px;
+          position: sticky;
+          top: 0;
         }
-        .element-preview ha-circular-progress {
-          top: 50%;
-          left: 50%;
+        .element-preview ha-spinner {
+          top: calc(50% - 24px);
+          left: calc(50% - 24px);
           position: absolute;
           z-index: 10;
         }

@@ -76,6 +76,7 @@ const LAZY_LOAD_TYPES = {
   logbook: () => import("../cards/hui-logbook-card"),
   map: () => import("../cards/hui-map-card"),
   markdown: () => import("../cards/hui-markdown-card"),
+  clock: () => import("../cards/hui-clock-card"),
   "media-control": () => import("../cards/hui-media-control-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),
   "picture-entity": () => import("../cards/hui-picture-entity-card"),

@@ -10,6 +10,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-card";
@@ -265,7 +266,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this._config.name || stateObj.attributes.friendly_name;
+    const name = this._config.name || computeStateName(stateObj);
     const active = stateActive(stateObj);
     const color = this._computeStateColor(stateObj, this._config.color);
     const domain = computeDomain(stateObj.entity_id);

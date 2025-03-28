@@ -6,7 +6,8 @@ import "../../../components/ha-button";
 import "../../../components/ha-switch";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
@@ -92,7 +93,9 @@ class HaConfigBackupDetails extends LitElement {
                 </ha-alert>
               `
             : !this.agentId
-              ? html`<ha-circular-progress active></ha-circular-progress>`
+              ? html`<ha-fade-in .delay=${1000}
+                  ><ha-spinner></ha-spinner
+                ></ha-fade-in>`
               : html`
                   ${CLOUD_AGENT === this.agentId
                     ? html`
@@ -357,6 +360,9 @@ class HaConfigBackupDetails extends LitElement {
     }
     .card-header {
       padding-bottom: 8px;
+    }
+    ha-spinner {
+      margin: 24px auto;
     }
   `;
 }

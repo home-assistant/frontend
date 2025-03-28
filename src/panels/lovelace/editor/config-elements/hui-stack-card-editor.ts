@@ -85,7 +85,7 @@ export class HuiStackCardEditor
 
   @state() protected _guiModeAvailable? = true;
 
-  protected _keys = new WeakMap<LovelaceCardConfig, string>();
+  protected _keys = new Map<string, string>();
 
   protected _schema: readonly HaFormSchema[] = SCHEMA;
 
@@ -203,7 +203,7 @@ export class HuiStackCardEditor
                   ></ha-icon-button>
                 </div>
                 ${keyed(
-                  this._getKey(this._config.cards[selected]),
+                  this._getKey(this._config.cards, selected),
                   html`<hui-card-element-editor
                     .hass=${this.hass}
                     .value=${this._config.cards[selected]}
@@ -225,12 +225,13 @@ export class HuiStackCardEditor
     `;
   }
 
-  private _getKey(card: LovelaceCardConfig) {
-    if (!this._keys.has(card)) {
-      this._keys.set(card, Math.random().toString());
+  private _getKey(cards: LovelaceCardConfig[], index: number): string {
+    const key = `${cards[index].type}${index}${cards.length}`;
+    if (!this._keys.has(key)) {
+      this._keys.set(key, Math.random().toString());
     }
 
-    return this._keys.get(card)!;
+    return this._keys.get(key)!;
   }
 
   protected _handleSelectedCard(ev) {
@@ -249,10 +250,8 @@ export class HuiStackCardEditor
       return;
     }
     const cards = [...this._config.cards];
-    const key = this._getKey(cards[this._selectedCard]);
     const newCard = ev.detail.config as LovelaceCardConfig;
     cards[this._selectedCard] = newCard;
-    this._keys.set(newCard, key);
     this._config = { ...this._config, cards };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
@@ -266,6 +265,7 @@ export class HuiStackCardEditor
     const config = ev.detail.config;
     const cards = [...this._config.cards, config];
     this._config = { ...this._config, cards };
+    this._keys.clear();
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -289,6 +289,7 @@ export class HuiStackCardEditor
     cards.splice(this._selectedCard, 1);
     this._config = { ...this._config, cards };
     this._selectedCard = Math.max(0, this._selectedCard - 1);
+    this._keys.clear();
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -307,6 +308,7 @@ export class HuiStackCardEditor
       cards,
     };
     this._selectedCard = target;
+    this._keys.clear();
     fireEvent(this, "config-changed", { config: this._config });
   }
 

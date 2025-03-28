@@ -7,7 +7,7 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { AreaFilterValue } from "../../../components/ha-area-filter";
+import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
 import { areaCompare } from "../../../data/area_registry";
 import type {
   EnergyPreferences,
@@ -50,7 +50,7 @@ const HIDE_DOMAIN = new Set([
   ...ASSIST_ENTITIES,
 ]);
 
-const HIDE_PLATFORM = new Set(["mobile_app"]);
+const HIDE_PLATFORM = new Set(["backup", "mobile_app"]);
 
 interface SplittedByAreaDevice {
   areasWithEntities: Record<string, HassEntity[]>;
@@ -503,7 +503,7 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
-  areasPrefs?: AreaFilterValue,
+  areasPrefs?: AreasDisplayValue,
   hideEntitiesWithoutAreas?: boolean,
   hideEnergy?: boolean
 ): LovelaceViewConfig => {

@@ -23,4 +23,6 @@ export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   show_icon?: boolean;
   color?: string;
   tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }

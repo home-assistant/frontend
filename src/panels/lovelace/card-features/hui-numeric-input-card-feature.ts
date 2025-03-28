@@ -83,13 +83,16 @@ class HuiNumericInputCardFeature
 
     const stateObj = this.stateObj;
 
+    const parsedState = Number(stateObj.state);
+    const value = !isNaN(parsedState) ? parsedState : undefined;
+
     if (this._config.style === "buttons") {
       return html`
         <ha-control-number-buttons
-          value=${stateObj.state}
-          min=${stateObj.attributes.min}
-          max=${stateObj.attributes.max}
-          step=${stateObj.attributes.step}
+          .value=${value}
+          .min=${stateObj.attributes.min}
+          .max=${stateObj.attributes.max}
+          .step=${stateObj.attributes.step}
           @value-changed=${this._setValue}
           .disabled=${isUnavailableState(stateObj.state)}
           .unit=${stateObj.attributes.unit_of_measurement}
@@ -99,10 +102,10 @@ class HuiNumericInputCardFeature
     }
     return html`
       <ha-control-slider
-        value=${stateObj.state}
-        min=${stateObj.attributes.min}
-        max=${stateObj.attributes.max}
-        step=${stateObj.attributes.step}
+        .value=${value}
+        .min=${stateObj.attributes.min}
+        .max=${stateObj.attributes.max}
+        .step=${stateObj.attributes.step}
         @value-changed=${this._setValue}
         .disabled=${isUnavailableState(stateObj.state)}
         .unit=${stateObj.attributes.unit_of_measurement}

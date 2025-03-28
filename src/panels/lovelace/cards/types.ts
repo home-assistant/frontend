@@ -22,6 +22,7 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type { TimeFormat } from "../../../data/translation";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -286,6 +287,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
 export interface IframeCardConfig extends LovelaceCardConfig {
   allow_open_top_navigation?: boolean;
   aspect_ratio?: string;
+  disable_sandbox?: boolean;
   title?: string;
   allow?: string;
   url: string;
@@ -315,7 +317,8 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 
 interface GeoLocationSourceConfig {
   source: string;
-  label_mode?: "name" | "state" | "icon";
+  label_mode?: "name" | "state" | "attribute" | "icon";
+  attribute?: string;
   focus?: boolean;
 }
 
@@ -342,6 +345,15 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   entity_ids?: string | string[];
   theme?: string;
   show_empty?: boolean;
+}
+
+export interface ClockCardConfig extends LovelaceCardConfig {
+  type: "clock";
+  title?: string;
+  clock_size?: "small" | "medium" | "large";
+  show_seconds?: boolean | undefined;
+  time_format?: TimeFormat;
+  time_zone?: string;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {

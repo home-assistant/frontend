@@ -83,7 +83,7 @@ export interface ClimatePresetModesCardFeatureConfig {
   preset_modes?: string[];
 }
 
-export const COUNTER_ACTIONS = ["increment", "reset", "decrement"] as const;
+export const COUNTER_ACTIONS = ["decrement", "reset", "increment"] as const;
 
 export type CounterActions = (typeof COUNTER_ACTIONS)[number];
 

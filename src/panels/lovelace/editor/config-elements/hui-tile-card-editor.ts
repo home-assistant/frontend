@@ -1,4 +1,5 @@
 import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -36,7 +37,7 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-card-features-editor";
+import { getSupportedFeaturesType } from "./hui-card-features-editor";
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 
 const cardConfigStruct = assign(
@@ -62,15 +63,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const ADVANCED_ACTIONS = [
-  "hold_action",
-  "icon_hold_action",
-  "double_tap_action",
-  "icon_double_tap_action",
-] as const;
-
-type AdvancedActions = (typeof ADVANCED_ACTIONS)[number];
-
 @customElement("hui-tile-card-editor")
 export class HuiTileCardEditor
   extends LitElement
@@ -80,44 +72,16 @@ export class HuiTileCardEditor
 
   @state() private _config?: TileCardConfig;
 
-  @state() private _displayActions?: AdvancedActions[];
-
   public setConfig(config: TileCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
-
-    if (this._displayActions) return;
-    this._setDisplayActions(config);
-  }
-
-  private _setDisplayActions(config: TileCardConfig) {
-    this._displayActions = ADVANCED_ACTIONS.filter(
-      (action) => action in config
-    );
-  }
-
-  private _resetConfiguredActions() {
-    this._displayActions = undefined;
-  }
-
-  connectedCallback(): void {
-    super.connectedCallback();
-    if (this._config) {
-      this._setDisplayActions(this._config);
-    }
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._resetConfiguredActions();
   }
 
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean,
-      displayActions: AdvancedActions[] = []
+      hideState: boolean
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -221,14 +185,26 @@ export class HuiTileCardEditor
                 },
               },
             },
-            ...displayActions.map((action) => ({
-              name: action,
-              selector: {
-                ui_action: {
-                  default_action: "none" as const,
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (
+                [
+                  "hold_action",
+                  "icon_hold_action",
+                  "double_tap_action",
+                  "icon_double_tap_action",
+                ] as const
+              ).map((action) => ({
+                name: action,
+                selector: {
+                  ui_action: {
+                    default_action: "none" as const,
+                  },
                 },
-              },
-            })),
+              })),
+            },
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -247,6 +223,9 @@ export class HuiTileCardEditor
                 label: localize(
                   `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
                 ),
+                description: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}_description`
+                ),
                 value,
                 image: {
                   src: `/static/images/form/tile_features_position_${value}.svg`,
@@ -261,6 +240,10 @@ export class HuiTileCardEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _hasCompatibleFeatures = memoizeOne(
+    (stateObj: HassEntity) => getSupportedFeaturesType(stateObj).length > 0
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -272,8 +255,7 @@ export class HuiTileCardEditor
     const schema = this._schema(
       this.hass.localize,
       entityId,
-      this._config.hide_state ?? false,
-      this._displayActions
+      this._config.hide_state ?? false
     );
 
     const featuresSchema = this._featuresSchema(
@@ -291,6 +273,9 @@ export class HuiTileCardEditor
       data.features_position = "bottom";
     }
 
+    const hasCompatibleFeatures =
+      (stateObj && this._hasCompatibleFeatures(stateObj)) || false;
+
     return html`
       <ha-form
         .hass=${this.hass}
@@ -301,22 +286,26 @@ export class HuiTileCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiListBox}></ha-svg-icon>
         <h3 slot="header">
-          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.features"
           )}
         </h3>
         <div class="content">
-          <ha-form
-            class="features-form"
-            .hass=${this.hass}
-            .data=${data}
-            .schema=${featuresSchema}
-            .computeLabel=${this._computeLabelCallback}
-            .computeHelper=${this._computeHelperCallback}
-            @value-changed=${this._valueChanged}
-          ></ha-form>
+          ${hasCompatibleFeatures
+            ? html`
+                <ha-form
+                  class="features-form"
+                  .hass=${this.hass}
+                  .data=${data}
+                  .schema=${featuresSchema}
+                  .computeLabel=${this._computeLabelCallback}
+                  .computeHelper=${this._computeHelperCallback}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `
+            : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
             .stateObj=${stateObj}

@@ -6,7 +6,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
@@ -229,9 +228,7 @@ class DataEntryFlowDialog extends LitElement {
                         `
                       : ""}
                     <ha-icon-button
-                      .label=${this.hass.localize(
-                        "ui.panel.config.integrations.config_flow.dismiss"
-                      )}
+                      .label=${this.hass.localize("ui.common.close")}
                       .path=${mdiClose}
                       dialogAction="close"
                     ></ha-icon-button>

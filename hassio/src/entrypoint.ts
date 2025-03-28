@@ -1,5 +1,3 @@
-// Compat needs to be first import
-import "../../src/resources/compatibility";
 import "./hassio-main";
 
 import("../../src/resources/ha-style");

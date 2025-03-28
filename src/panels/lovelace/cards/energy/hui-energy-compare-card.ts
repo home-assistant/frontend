@@ -12,6 +12,7 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyCardBaseConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 import "../../../../components/ha-alert";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-energy-compare-card")
 export class HuiEnergyCompareCard
@@ -32,6 +33,11 @@ export class HuiEnergyCompareCard
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean, reflect: true }) hidden = true;
+
+  // Energy compare card cannot tolerate being removed from the DOM by hui-card,
+  // as it calculates its own visibility and needs an active collection
+  // subscription to do so.
+  connectedWhileHidden = true;
 
   public getCardSize(): Promise<number> | number {
     return 1;
@@ -106,7 +112,11 @@ export class HuiEnergyCompareCard
     this._end = data.end;
     this._startCompare = data.startCompare;
     this._endCompare = data.endCompare;
+    const oldHidden = this.hidden;
     this.hidden = !this._startCompare;
+    if (oldHidden !== this.hidden) {
+      fireEvent(this, "card-visibility-changed");
+    }
   }
 
   private _stopCompare(): void {

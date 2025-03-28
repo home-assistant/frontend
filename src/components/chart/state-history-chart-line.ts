@@ -124,7 +124,7 @@ export class StateHistoryChartLine extends LitElement {
       const data = dataset.data || [];
       for (let i = data.length - 1; i >= 0; i--) {
         const point = data[i];
-        if (point && point[0] <= time && point[1]) {
+        if (point && point[0] <= time && typeof point[1] === "number") {
           lastData = point;
           break;
         }

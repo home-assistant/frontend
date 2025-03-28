@@ -7,7 +7,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
@@ -308,7 +308,7 @@ class MoreInfoUpdate extends LitElement {
   private _renderLoader() {
     return html`
       <div class="flex center loader">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
       </div>
     `;
   }

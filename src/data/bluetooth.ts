@@ -19,6 +19,11 @@ export interface BluetoothDeviceData extends DataTableRowData {
   tx_power: number;
 }
 
+export interface BluetoothConnectionData extends DataTableRowData {
+  address: string;
+  source: string;
+}
+
 export interface BluetoothScannerDetails {
   source: string;
   connectable: boolean;

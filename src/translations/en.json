@@ -372,8 +372,7 @@
       "default": "Default",
       "dont_save": "Don't save",
       "copy": "Copy",
-      "show": "Show",
-      "hide": "Hide"
+      "show": "Show"
     },
     "components": {
       "selectors": {
@@ -1128,6 +1127,13 @@
       },
       "multi-textfield": {
         "add_item": "Add {item}"
+      },
+      "items-display-editor": {
+        "show": "Show {label}",
+        "hide": "Hide {label}"
+      },
+      "form-optional-actions": {
+        "add": "Add interaction"
       }
     },
     "dialogs": {
@@ -1241,10 +1247,7 @@
         "not_found_error_load_assist": "Cannot find the assist pipeline"
       },
       "generic": {
-        "cancel": "Cancel",
-        "ok": "OK",
-        "default_confirmation_title": "Are you sure?",
-        "close": "Close"
+        "default_confirmation_title": "Are you sure?"
       },
       "image_cropper": {
         "crop": "Crop",
@@ -1256,7 +1259,6 @@
         "clear": "Clear"
       },
       "more_info_control": {
-        "dismiss": "Dismiss dialog",
         "settings": "Settings",
         "edit": "Edit entity",
         "details": "Details",
@@ -1390,7 +1392,6 @@
         "settings": "Settings",
         "control": "Control",
         "related": "Related",
-        "dismiss": "Dismiss",
         "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "editor": {
@@ -2629,7 +2630,7 @@
                 "thu": "Th",
                 "fri": "Fr",
                 "sat": "Sa",
-                "sun": "So"
+                "sun": "Su"
               }
             }
           },
@@ -2899,7 +2900,10 @@
               "header": "Add a device",
               "display_name": "Display name",
               "device_consumption_energy": "Device energy consumption",
-              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}."
+              "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
+              "no_upstream_devices": "No eligible upstream devices"
             }
           }
         },
@@ -3127,6 +3131,10 @@
                 "iframe": {
                   "title": "Webpage",
                   "description": "Integrate a webpage as a dashboard"
+                },
+                "areas": {
+                  "title": "Areas (experimental)",
+                  "description": "Display your devices with a view for each area"
                 }
               }
             },
@@ -3151,7 +3159,6 @@
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
-              "dismiss": "Close",
               "show_sidebar": "Show in sidebar",
               "icon": "Icon",
               "title": "Title",
@@ -3193,7 +3200,6 @@
             "detail": {
               "new_resource": "Add new resource",
               "edit_resource": "Edit resource",
-              "dismiss": "Close",
               "warning_header": "Be cautious!",
               "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
               "url": "URL",
@@ -3383,16 +3389,38 @@
               "no_selection": "Please select an area"
             },
             "pipeline": {
-              "title": "What hardware do you want to use?",
-              "secondary": "How quickly your assistant responds depends on the power of the hardware.",
-              "seconds": "seconds",
-              "cloud": {
-                "description": "Ideal if you don't have a powerful system at home."
+              "title": "How do you want your voice to be processed?",
+              "performance": {
+                "header": "Performance on low-powered system",
+                "low": "Low",
+                "high": "High"
               },
-              "local": {
-                "title": "Do-it-yourself",
-                "description": "Install add-ons or containers to run it on your own system. Powerful hardware is needed for fast responses.",
-                "setup": "Set up"
+              "commands": {
+                "header": "Language support",
+                "low": "Needs more work",
+                "ready": "Ready to be used",
+                "high": "Fully supported"
+              },
+              "options": {
+                "cloud": {
+                  "label": "Home Assistant Cloud",
+                  "description": "Offloads speech processing to a fast, private cloud. Offering the highest accuracy and widest language support. Home Assistant Cloud is a subscription service that includes voice processing."
+                },
+                "focused_local": {
+                  "label": "Focused local processing",
+                  "description": "Limited to a set list of common home control phrases, this allows any system to process speech locally and offline."
+                },
+                "full_local": {
+                  "label": "Full local processing",
+                  "description": "Full speech processing is done locally, requiring high processing power for adequate speed and accuracy."
+                }
+              },
+              "unsupported": "Unsupported",
+              "unsupported_language": {
+                "header": "Your language is not supported",
+                "secondary": "Your language {language} is not supported yet. You can select a different language to continue.",
+                "language_picker": "Language",
+                "contribute": "Contribute to the voice initiative for {language}"
               }
             },
             "cloud": {
@@ -3403,19 +3431,23 @@
             },
             "local": {
               "title": "Installing add-ons",
-              "secondary": "The Whisper and Piper add-ons are being installed and configured based on your hardware.",
+              "secondary": "We are preparing your system for local voice processing.",
               "failed_title": "Failed to install add-ons",
-              "failed_secondary": "We were unable to install the Whisper and Piper add-ons automatically for you. Read the documentation to learn how to install them.",
+              "failed_secondary": "We were unable to install the add-ons for speech-to-text and text-to-speech automatically for you. Read the documentation to learn how to install them.",
               "not_supported_title": "Installation of add-ons is not supported on your system",
               "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
-              "local_pipeline": "Local Assistant",
+              "full_local_pipeline": "Full local Assistant",
+              "focused_local_pipeline": "Focused local Assistant",
               "state": {
-                "installing_piper": "Installing Piper add-on",
-                "starting_piper": "Starting Piper add-on",
+                "installing_piper": "Installing Piper",
+                "starting_piper": "Starting Piper",
                 "setup_piper": "Setting up Piper",
-                "installing_whisper": "Installing Whisper add-on",
-                "starting_whisper": "Starting Whisper add-on",
-                "setup_whisper": "Setting up Whisper",
+                "installing_faster-whisper": "Installing Whisper",
+                "starting_faster-whisper": "Starting Whisper",
+                "setup_faster-whisper": "Setting up Whisper",
+                "installing_speech-to-phrase": "Installing Speech-to-Phrase",
+                "starting_speech-to-phrase": "Starting Speech-to-Phrase",
+                "setup_speech-to-phrase": "Setting up Speech-to-Phrase",
                 "creating_pipeline": "Creating assistant"
               },
               "errors": {
@@ -4552,7 +4584,6 @@
             "introduction2a": ", a company founded by the founders of Home Assistant.",
             "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
             "learn_more_link": "Learn more about Home Assistant Cloud",
-            "dismiss": "Dismiss",
             "sign_in": "Sign in",
             "email": "Email",
             "email_error_msg": "Invalid email",
@@ -4560,6 +4591,7 @@
             "password_error_msg": "Passwords are at least 8 characters",
             "totp_code_prompt_title": "Two-factor authentication",
             "totp_code": "TOTP code",
+            "cancel": "Cancel",
             "submit": "Submit",
             "forgot_password": "Forgot password?",
             "start_trial": "Start your free 1 month trial",
@@ -4737,6 +4769,8 @@
             "heading": "Account linked to other Home Assistant",
             "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
             "other_home_assistant": "Other Home Assistant",
+            "instance_name": "Instance name",
+            "instance_version": "Instance version",
             "ip_address": "IP Address",
             "connected_at": "Connected at",
             "obfuscated_ip": {
@@ -4763,7 +4797,9 @@
           }
         },
         "devices": {
-          "add_prompt": "No {name} have been added using this {type} yet. You can add one by pressing the + button above.",
+          "add_prompt": "No {name} have been added using this {type} yet.",
+          "add_prompt_enabled": "You can add one by pressing the + button above.",
+          "add_prompt_disabled": "You can re-enable the device then add one by pressing the + button above.",
           "add_device": "Add device",
           "caption": "Devices",
           "description": "Manage configured devices",
@@ -5194,7 +5230,6 @@
             "success": "Success",
             "aborted": "Aborted",
             "close": "Close",
-            "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
             "next": "Next",
@@ -5364,7 +5399,9 @@
           "advertisement_monitor_details": "The advertisement monitor listens for Bluetooth advertisements and displays the data in a structured format.",
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
           "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
+          "connection_monitor": "Connection monitor",
           "used_connection_slot_allocations": "Used connection slot allocations",
+          "no_connections": "No active connections",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
           "address": "Address",
@@ -5372,12 +5409,13 @@
           "source": "Source",
           "rssi": "RSSI",
           "source_address": "Source address",
-          "last_seen": "Last seen",
+          "updated": "Updated",
           "device": "Device",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
+          "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
         "thread": {
@@ -5571,6 +5609,17 @@
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
+            "nvm_backup": {
+              "title": "Backup and Restore",
+              "description": "Back up or restore your Z-Wave controller's Non-Volatile Memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "download_backup": "Download backup",
+              "restore_backup": "Restore from backup",
+              "backup_failed": "Failed to download backup",
+              "restore_complete": "Backup restored",
+              "restore_failed": "Failed to restore backup",
+              "downloading": "Downloading backup",
+              "restoring": "Restoring backup"
+            },
             "statistics": {
               "title": "Controller statistics",
               "messages_tx": {
@@ -6133,7 +6182,7 @@
             "signal_strength": "Signal strength",
             "open": "Open",
             "wep": "WEP",
-            "wpa": "wpa-psk",
+            "wpa": "WPA-PSK",
             "wifi": "Wi-Fi",
             "wifi_password": "Wi-Fi password",
             "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",
@@ -6407,7 +6456,8 @@
               "previous_energy_usage": "Previous energy usage"
             },
             "energy_devices_detail_graph": {
-              "untracked_consumption": "Untracked consumption"
+              "untracked_consumption": "Untracked consumption",
+              "untracked": "untracked"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
@@ -7102,6 +7152,29 @@
               },
               "description": "The Markdown card is used to render Markdown."
             },
+            "clock": {
+              "name": "Clock",
+              "description": "The Clock card displays the current time using your desired size and format.",
+              "clock_size": "Clock size",
+              "clock_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "show_seconds": "Display seconds",
+              "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
+              "time_formats": {
+                "auto": "Use user settings",
+                "language": "[%key:ui::panel::profile::time_format::formats::language%]",
+                "system": "[%key:ui::panel::profile::time_format::formats::system%]",
+                "24": "[%key:ui::panel::profile::time_format::formats::24%]",
+                "12": "[%key:ui::panel::profile::time_format::formats::12%]"
+              },
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
+              "time_zones": {
+                "auto": "Use user settings"
+              }
+            },
             "media-control": {
               "name": "Media control",
               "description": "The Media control card is used to display media player entities on an interface with easy to use controls."
@@ -7157,6 +7230,7 @@
               "description": "The To-do list card allows you to add, edit, check-off, and remove items from your to-do list.",
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
+              "hide_create": "Hide 'Add item' field",
               "display_order": "Display Order",
               "sort_modes": {
                 "none": "Default",
@@ -7186,7 +7260,9 @@
               "features_position": "Features position",
               "features_position_options": {
                 "bottom": "Bottom",
-                "inline": "Inline"
+                "bottom_description": "Displays all features stacked",
+                "inline": "Inline",
+                "inline_description": "Displays only the first feature"
               },
               "features_position_helper_vertical": "Always displayed at the bottom if the content layout is vertical",
               "content_layout": "Content layout",
@@ -7447,12 +7523,15 @@
           },
           "strategy": {
             "original-states": {
-              "areas": "Areas",
+              "areas": "Areas to display",
               "hide_entities_without_area": "Hide entities without area",
               "hide_energy": "Hide energy"
             },
             "iframe": {
               "url": "URL"
+            },
+            "areas": {
+              "areas_display": "Areas to display"
             }
           },
           "view": {
@@ -8044,6 +8123,7 @@
             "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+              "mean_type_changed": "The mean type of this entity changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
               "state_class_removed": "This entity no longer has a state class",
               "entity_not_recorded": "This entity is excluded from being recorded.",
               "entity_no_longer_recorded": "This entity is no longer being recorded.",
@@ -8053,6 +8133,11 @@
             "multi_delete": {
               "title": "Delete selected statistics",
               "info_text": "Do you want to permanently delete the long term statistics {statistic_count, plural,\n  one {of this entity}\n  other {of {statistic_count} entities}\n} from your database?"
+            },
+            "mean_type": {
+              "0": "None",
+              "1": "Arithmetic",
+              "2": "Circular"
             },
             "fix_issue": {
               "fix": "Fix issue",
@@ -8101,6 +8186,12 @@
                 "info_text_1": "The unit of ''{name}'' ({statistic_id}) changed to ''{current_unit}'' which can't be converted to the previously stored unit, ''{previous_unit}''.",
                 "info_text_2": "If the historic statistic values have a wrong unit, you can update the units of the old values. The values will not be updated.",
                 "info_text_3": "Otherwise you can choose to delete all historic statistic values, and start over."
+              },
+              "mean_type_changed": {
+                "title": "The mean type has changed",
+                "info_text_1": "The mean type of ''{name}'' ({statistic_id}) changed from ''{metadata_mean_type}'' to ''{state_mean_type}''.",
+                "info_text_2": "Statistics cannot be generated until the old statistics are deleted, or the mean type matches the old statistics data again.",
+                "info_text_3": "Do you want to permanently delete the long term statistics of {statistic_id} from your database?"
               },
               "adjust_sum": {
                 "title": "Adjust a statistic",
@@ -8199,7 +8290,7 @@
         "welcome": {
           "header": "Welcome!",
           "start": "Create my smart home",
-          "restore_backup": "Restore from backup",
+          "or_restore": "Or restore",
           "vision": "Read our vision",
           "community": "Join our community",
           "download_app": "Download our app",
@@ -8232,12 +8323,12 @@
         },
         "core-config": {
           "location_header": "Home location",
-          "intro_location": "Let's set up the location of your home so that you can display information such as the local weather and use sun-based or presence-based automations.",
+          "intro_location": "This data is stored on your Home Assistant system, though some cloud-based integrations may use this data to function.",
           "location_address": "Powered by {openstreetmap} ({osm_privacy_policy}).",
           "osm_privacy_policy": "Privacy policy",
           "title_location_detect": "Do you want us to detect your location?",
           "intro_location_detect": "We can detect your location by making a one-time request to an external service.",
-          "country_intro": "We would like to know the country your home is in, so we can use the correct units for you.",
+          "country_intro": "We would like to know the country your home is in, so we can use the correct units.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
@@ -8280,6 +8371,7 @@
         "restore": {
           "header": "Restore a backup",
           "upload_backup": "[%key:ui::panel::config::backup::dialogs::upload::title%]",
+          "upload_backup_subtitle": "Upload a backup file from your device",
           "unsupported": {
             "title": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::title%]",
             "text": "[%key:ui::panel::config::backup::dialogs::upload::unsupported::text%]"
@@ -8292,19 +8384,18 @@
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "addons_unsupported": "This backup includes add-ons and folders, which are not supported in this installation method of Home Assistant. You can still restore Home Assistant, but the unsupported files will not be restored.",
+            "addons_unsupported": "Your installation method doesn’t support add-ons. If you wan’t to restore these, you have to install Home Assistant Operating System",
             "summary": {
-              "title": "[%key:ui::panel::config::backup::details::summary::title%]",
-              "size": "[%key:ui::panel::config::backup::details::summary::size%]",
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
-              "upload_another": "Upload another",
-              "home": "Home"
+              "content": "Content"
             },
             "restore": {
-              "title": "[%key:ui::panel::config::backup::details::restore::title%]",
-              "action": "[%key:ui::panel::config::backup::details::restore::action%]",
+              "title": "[%key:ui::panel::config::backup::dialogs::restore::title%]",
+              "action": "Restore backup",
               "encryption": {
-                "title": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "label": "Encryption",
+                "description": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
+                "description_cloud": "Home Assistant Cloud is the privacy-focused cloud. We don’t store your encryption key. Enter the encryption key you saved or use the emergency kit you have downloaded.",
                 "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
                 "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
               }
@@ -8342,7 +8433,7 @@
           "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
           "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
-          "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
+          "confirm_restore_full_backup_text": "Depending on the size of the backup, this can take up to 45 minutes. Home Assistant will restart and you will see the login screen when it’s restored.",
           "restore": "[%key:supervisor::backup::restore%]",
           "close": "[%key:ui::common::close%]",
           "cancel": "[%key:ui::common::cancel%]",
@@ -8356,6 +8447,50 @@
             "text": "Are you sure you want to cancel the restore process and return to the onboarding?",
             "yes": "[%key:ui::common::yes%]",
             "no": "[%key:ui::common::no%]"
+          },
+          "ha-cloud": {
+            "description": "Restore from your Home Assistant Cloud backup.",
+            "no_cloud_backup": "No backup available",
+            "no_cloud_backup_description": "This Home Assistant Cloud account doesn’t have a backup stored. You can learn more how Cloud backups work at the Nabu Casa website.",
+            "sign_out": "[%key:ui::panel::config::cloud::account::sign_out%]",
+            "sign_out_progress": "Home Assistant cloud signing out...",
+            "sign_out_success": "Home Assistant cloud signed out",
+            "sign_out_error": "Failed to sign out from Home Assistant cloud",
+            "learn_more": "Learn more",
+            "sign_in_description": "Sign in to your Nabu Casa account and restore your Home Assistant Cloud backup.",
+            "login": {
+              "title": "[%key:ui::panel::config::cloud::login::title%]",
+              "sign_in": "[%key:ui::panel::config::cloud::login::sign_in%]",
+              "email": "[%key:ui::panel::config::cloud::login::email%]",
+              "email_error_msg": "[%key:ui::panel::config::cloud::login::email_error_msg%]",
+              "password": "[%key:ui::panel::config::cloud::login::password%]",
+              "password_error_msg": "[%key:ui::panel::config::cloud::login::password_error_msg%]",
+              "totp_code_prompt_title": "[%key:ui::panel::config::cloud::login::totp_code_prompt_title%]",
+              "totp_code": "[%key:ui::panel::config::cloud::login::totp_code%]",
+              "cancel": "[%key:ui::panel::config::cloud::login::cancel%]",
+              "submit": "[%key:ui::panel::config::cloud::login::submit%]",
+              "forgot_password": "[%key:ui::panel::config::cloud::login::forgot_password%]",
+              "start_trial": "[%key:ui::panel::config::cloud::login::start_trial%]",
+              "trial_info": "[%key:ui::panel::config::cloud::login::trial_info%]",
+              "alert_password_change_required": "[%key:ui::panel::config::cloud::login::alert_password_change_required%]",
+              "alert_email_confirm_necessary": "[%key:ui::panel::config::cloud::login::alert_email_confirm_necessary%]",
+              "alert_mfa_code_required": "[%key:ui::panel::config::cloud::login::alert_mfa_code_required%]",
+              "alert_mfa_expired_or_not_started": "[%key:ui::panel::config::cloud::login::alert_mfa_expired_or_not_started%]",
+              "alert_totp_code_invalid": "[%key:ui::panel::config::cloud::login::alert_totp_code_invalid%]"
+            },
+            "forgot_password": {
+              "title": "[%key:ui::panel::config::cloud::forgot_password::title%]",
+              "subtitle": "[%key:ui::panel::config::cloud::forgot_password::subtitle%]",
+              "instructions": "[%key:ui::panel::config::cloud::forgot_password::instructions%]",
+              "email": "[%key:ui::panel::config::cloud::forgot_password::email%]",
+              "email_error_msg": "[%key:ui::panel::config::cloud::forgot_password::email_error_msg%]",
+              "send_reset_email": "[%key:ui::panel::config::cloud::forgot_password::send_reset_email%]",
+              "check_your_email": "[%key:ui::panel::config::cloud::forgot_password::check_your_email%]"
+            }
+          },
+          "options": {
+            "title": "How to restore?",
+            "upload_description": "Upload and restore a Home Assistant backup to this system"
           }
         }
       },
@@ -8880,7 +9015,7 @@
         "signal_strength": "[%key:ui::panel::config::network::supervisor::signal_strength%]",
         "open": "Open",
         "wep": "WEP",
-        "wpa": "wpa-psk",
+        "wpa": "WPA-PSK",
         "wifi": "[%key:ui::panel::config::network::supervisor::wifi%]",
         "wifi_password": "[%key:ui::panel::config::network::supervisor::wifi_password%]",
         "warning": "If you are changing the Wi-Fi, IP or gateway addresses, you might lose the connection!",

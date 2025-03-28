@@ -21,7 +21,7 @@ export interface NetworkInterface {
   wifi?: Partial<WifiConfiguration> | null;
 }
 
-interface DockerNetwork {
+export interface DockerNetwork {
   address: string;
   dns: string;
   gateway: string;

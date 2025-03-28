@@ -55,7 +55,7 @@
     <%= renderTemplate("_script_loader.html.template") %>
     <script crossorigin="use-credentials">
       if (window.latestJS) {
-        window.providersPromise = fetch("/auth/providers", {
+        window.providersPromise = fetch("<%= hassUrl %>/auth/providers", {
           credentials: "same-origin",
         });
       }

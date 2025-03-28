@@ -1,5 +1,6 @@
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { mdiMenuDown } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -23,6 +24,16 @@ export class HaControlSelectMenu extends SelectBase {
 
   @property({ type: Boolean, attribute: "hide-label" })
   public hideLabel = false;
+
+  @property() public options;
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.get("options")) {
+      this.layoutOptions();
+      this.selectByValue(this.value);
+    }
+  }
 
   public override render() {
     const classes = {
@@ -137,6 +148,7 @@ export class HaControlSelectMenu extends SelectBase {
     css`
       :host {
         display: inline-block;
+        --control-select-menu-focus-color: var(--secondary-text-color);
         --control-select-menu-text-color: var(--primary-text-color);
         --control-select-menu-background-color: var(--disabled-color);
         --control-select-menu-background-opacity: 0.2;
@@ -167,7 +179,9 @@ export class HaControlSelectMenu extends SelectBase {
         background: none;
         /* For safari border-radius overflow */
         z-index: 0;
-        transition: color 180ms ease-in-out;
+        transition:
+          box-shadow 180ms ease-in-out,
+          color 180ms ease-in-out;
         gap: 10px;
         width: 100%;
         user-select: none;
@@ -205,7 +219,7 @@ export class HaControlSelectMenu extends SelectBase {
       }
 
       .select-anchor:focus-visible {
-        --control-select-menu-background-opacity: 0.4;
+        box-shadow: 0 0 0 2px var(--control-select-menu-focus-color);
       }
 
       .select-anchor::before {

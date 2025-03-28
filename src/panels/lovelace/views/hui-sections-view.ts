@@ -564,7 +564,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     hui-view-header {
       display: block;
-      text-align: center;
       padding: 0 var(--column-gap);
       padding-top: var(--row-gap);
       margin: auto;

@@ -216,7 +216,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close")}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                   @click=${this.closeDialog}
                 ></ha-icon-button>
@@ -277,6 +277,8 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
 
   private _useRecommended() {
     if (!this._config?.create_backup.password) {
+      // this should not happen, if there is no password set, restart the wizard
+      this.showDialog(this._params!);
       return;
     }
     this._config = {

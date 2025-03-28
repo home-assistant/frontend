@@ -12,6 +12,7 @@ import "../../../../src/components/ha-md-dialog";
 import "../../../../src/components/ha-dialog-header";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
@@ -138,7 +139,7 @@ class HassioBackupDialog
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : this._restoringBackup
               ? html`<div class="loading">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                 </div>`
               : html`
                   <supervisor-backup-content
@@ -310,10 +311,6 @@ class HassioBackupDialog
       haStyle,
       haStyleDialog,
       css`
-        ha-circular-progress {
-          display: block;
-          text-align: center;
-        }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);

@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-attributes";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-assist-chat";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-alert";
 import type { AssistPipeline } from "../../../data/assist_pipeline";
 import { getAssistPipeline } from "../../../data/assist_pipeline";
@@ -82,10 +82,7 @@ class MoreInfoConversation extends LitElement {
               ></ha-assist-chat>
             `
           : html`<div class="pipelines-loading">
-              <ha-circular-progress
-                indeterminate
-                size="large"
-              ></ha-circular-progress>
+              <ha-spinner size="large"></ha-spinner>
             </div>`}
     `;
   }

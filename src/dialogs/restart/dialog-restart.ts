@@ -11,7 +11,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
 import "../../components/ha-md-list";
@@ -93,7 +93,7 @@ class DialogRestart extends LitElement {
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close") ?? "Close"}
+            .label=${this.hass.localize("ui.common.close") ?? "Close"}
             .path=${mdiClose}
             @click=${this.closeDialog}
           ></ha-icon-button>
@@ -103,7 +103,7 @@ class DialogRestart extends LitElement {
           ${this._loadingHostInfo
             ? html`
                 <div class="loader">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                 </div>
               `
             : html`
