@@ -276,6 +276,11 @@ export class MoreInfoDialog extends LitElement {
     this._setView("related");
   }
 
+  private _breadcrumbClick(ev: Event) {
+    ev.stopPropagation();
+    this._setView("related");
+  }
+
   private async _loadNumericDeviceClasses() {
     const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
@@ -350,17 +355,16 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span
-            slot="title"
-            .title=${title}
-            @click=${this._enlarge}
-            class="title"
-          >
+          <span slot="title" @click=${this._enlarge} class="title">
             ${breadcrumb.length > 0
               ? html`
-                  <p class="breadcrumb">
+                  <button
+                    class="breadcrumb"
+                    @click=${this._breadcrumbClick}
+                    aria-label=${breadcrumb.join(" > ")}
+                  >
                     ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
-                  </p>
+                  </button>
                 `
               : nothing}
             <p class="main">${title}</p>
@@ -656,6 +660,7 @@ export class MoreInfoDialog extends LitElement {
         .title {
           display: flex;
           flex-direction: column;
+          align-items: flex-start;
         }
 
         .title p {
@@ -676,11 +681,22 @@ export class MoreInfoDialog extends LitElement {
           color: var(--secondary-text-color);
           font-size: 14px;
           line-height: 16px;
-          margin-top: -6px;
+          --mdc-icon-size: 16px;
+          padding: 4px;
+          margin: -4px;
+          margin-top: -10px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          outline: none;
+          display: inline-flex;
+          border-radius: 6px;
+          transition: background-color 180ms ease-in-out;
         }
 
-        .title .breadcrumb {
-          --mdc-icon-size: 16px;
+        .title .breadcrumb:focus-visible,
+        .title .breadcrumb:hover {
+          background-color: rgba(var(--rgb-secondary-text-color), 0.08);
         }
       `,
     ];
