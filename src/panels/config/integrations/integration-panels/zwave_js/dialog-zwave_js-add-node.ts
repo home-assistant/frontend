@@ -17,6 +17,7 @@ import {
   lookupZwaveDevice,
   MINIMUM_QR_STRING_LENGTH,
   Protocols,
+  ProvisioningEntryStatus,
   provisionZwaveSmartStartNode,
   stopZwaveInclusion,
   subscribeAddZwaveNode,
@@ -802,7 +803,10 @@ class DialogZWaveJSAddNode extends LitElement {
         const id = await provisionZwaveSmartStartNode(
           this.hass,
           this._entryId!,
-          this._device.provisioningInfo,
+          {
+            ...this._device.provisioningInfo,
+            status: ProvisioningEntryStatus.Active,
+          },
           this._deviceOptions.network_type
             ? Number(this._deviceOptions.network_type)
             : undefined,

@@ -151,12 +151,19 @@ export interface QRProvisioningInformation {
   maxInclusionRequestInterval?: number | undefined;
   uuid?: string | undefined;
   supportedProtocols?: Protocols[] | undefined;
+  status?: ProvisioningEntryStatus;
 }
 
 export interface PlannedProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
   securityClasses: SecurityClass[];
+  status?: ProvisioningEntryStatus;
+}
+
+export enum ProvisioningEntryStatus {
+  Active = 0,
+  Inactive = 1,
 }
 
 export interface DeviceConfig {
