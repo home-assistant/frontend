@@ -3396,8 +3396,8 @@
                 "high": "High"
               },
               "commands": {
-                "header": "Supported commands",
-                "low": "Needs work",
+                "header": "Language support",
+                "low": "Needs more work",
                 "ready": "Ready to be used",
                 "high": "Fully supported"
               },
