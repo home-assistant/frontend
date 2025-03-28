@@ -59,7 +59,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
 
     this._config = {
       state_color: true,
-      hold_action: { action: "more-info" },
+      tap_action: { action: "more-info" },
       ...config,
     };
   }
