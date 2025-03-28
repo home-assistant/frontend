@@ -72,7 +72,7 @@ export class HuiClockCardEditor
           selector: {
             select: {
               mode: "dropdown",
-              options: Object.values(TimeFormat).map((value) => ({
+              options: ["auto", ...Object.values(TimeFormat)].map((value) => ({
                 value,
                 label: localize(
                   `ui.panel.lovelace.editor.card.clock.time_formats.${value}`
@@ -86,7 +86,7 @@ export class HuiClockCardEditor
 
   private _data = memoizeOne((config) => ({
     clock_size: "small",
-    time_format: TimeFormat.language,
+    time_format: "auto",
     show_seconds: false,
     ...config,
   }));
@@ -113,6 +113,10 @@ export class HuiClockCardEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    if (ev.detail.value.time_format === "auto") {
+      delete ev.detail.value.time_format;
+    }
+
     fireEvent(this, "config-changed", { config: ev.detail.value });
   }
 
