@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
@@ -144,7 +145,10 @@ export class AreaViewStrategy extends ReactiveElement {
       });
     }
 
-    // Take the full width if there is only one section to avoid misalignment between cards and header
+    // Allow between 2 and 3 columns (the max should be set to define the width of the header)
+    const maxColumns = clamp(sections.length, 2, 3);
+
+    // Take the full width if there is only one section to avoid narrow header on desktop
     if (sections.length === 1) {
       sections[0].column_span = 2;
     }
@@ -160,7 +164,7 @@ export class AreaViewStrategy extends ReactiveElement {
           content: `## ${area.name}`,
         },
       },
-      max_columns: 2,
+      max_columns: maxColumns,
       sections: sections,
       badges: badges,
     };

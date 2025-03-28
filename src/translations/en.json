@@ -2902,7 +2902,8 @@
               "device_consumption_energy": "Device energy consumption",
               "selected_stat_intro": "Select the energy sensor that measures the device's energy usage in either of {unit}.",
               "included_in_device": "Upstream device",
-              "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking."
+              "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
+              "no_upstream_devices": "No eligible upstream devices"
             }
           }
         },
