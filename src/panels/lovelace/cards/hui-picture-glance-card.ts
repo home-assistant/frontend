@@ -105,7 +105,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     });
 
     this._config = {
-      hold_action: { action: "more-info" },
+      tap_action: { action: "more-info" },
       ...config,
     };
   }

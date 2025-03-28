@@ -78,9 +78,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     return {
       type: "button",
-      tap_action: {
-        action: "toggle",
-      },
       entity: foundEntities[0] || "",
     };
   }
@@ -164,6 +161,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         action: getEntityDefaultButtonAction(config.entity),
       },
       hold_action: { action: "more-info" },
+      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       state_color: true,

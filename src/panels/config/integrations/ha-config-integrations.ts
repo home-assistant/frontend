@@ -120,7 +120,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
           const existingEntries = fullUpdate ? [] : this._configEntries;
           this._configEntries = [...existingEntries!, ...newEntries];
         },
-        { type: ["device", "hub", "service"] }
+        { type: ["device", "hub", "service", "hardware"] }
       ),
       subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
         const integrations = new Set<string>();

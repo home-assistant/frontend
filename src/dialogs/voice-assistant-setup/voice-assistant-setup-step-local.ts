@@ -243,7 +243,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
   private readonly _ttsHostName = "core-piper";
 
-  private readonly _ttsPort = "10200";
+  private readonly _ttsPort = 10200;
 
   private get _sttProviderName() {
     return this.localOption === "focused_local"
@@ -263,7 +263,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       : "core-whisper";
   }
 
-  private readonly _sttPort = "10300";
+  private readonly _sttPort = 10300;
 
   private async _findLocalEntities() {
     const wyomingEntities = Object.values(this.hass.entities).filter(
@@ -325,14 +325,16 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       (flow) =>
         flow.handler === "wyoming" &&
         flow.context.source === "hassio" &&
-        (flow.context.configuration_url.includes(
-          type === "tts" ? this._ttsHostName : this._sttHostName
-        ) ||
-          flow.context.title_placeholders.title
-            .toLowerCase()
-            .includes(
-              type === "tts" ? this._ttsProviderName : this._sttProviderName
-            ))
+        ((flow.context.configuration_url &&
+          flow.context.configuration_url.includes(
+            type === "tts" ? this._ttsAddonName : this._sttAddonName
+          )) ||
+          (flow.context.title_placeholders.name &&
+            flow.context.title_placeholders.name
+              .toLowerCase()
+              .includes(
+                type === "tts" ? this._ttsProviderName : this._sttProviderName
+              )))
     );
   }
 

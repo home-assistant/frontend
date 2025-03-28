@@ -3431,9 +3431,9 @@
             },
             "local": {
               "title": "Installing add-ons",
-              "secondary": "The Whisper and Piper add-ons are being installed and configured based on your hardware.",
+              "secondary": "We are preparing your system for local voice processing.",
               "failed_title": "Failed to install add-ons",
-              "failed_secondary": "We were unable to install the Whisper and Piper add-ons automatically for you. Read the documentation to learn how to install them.",
+              "failed_secondary": "We were unable to install the add-ons for speech-to-text and text-to-speech automatically for you. Read the documentation to learn how to install them.",
               "not_supported_title": "Installation of add-ons is not supported on your system",
               "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
               "local_pipeline": "Local Assistant",
@@ -7163,6 +7163,7 @@
               "show_seconds": "Display seconds",
               "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
+                "auto": "Use user settings",
                 "language": "[%key:ui::panel::profile::time_format::formats::language%]",
                 "system": "[%key:ui::panel::profile::time_format::formats::system%]",
                 "24": "[%key:ui::panel::profile::time_format::formats::24%]",
