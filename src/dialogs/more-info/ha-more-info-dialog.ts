@@ -357,15 +357,21 @@ export class MoreInfoDialog extends LitElement {
               `}
           <span slot="title" @click=${this._enlarge} class="title">
             ${breadcrumb.length > 0
-              ? html`
-                  <button
-                    class="breadcrumb"
-                    @click=${this._breadcrumbClick}
-                    aria-label=${breadcrumb.join(" > ")}
-                  >
-                    ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
-                  </button>
-                `
+              ? !__DEMO__ && isAdmin
+                ? html`
+                    <button
+                      class="breadcrumb"
+                      @click=${this._breadcrumbClick}
+                      aria-label=${breadcrumb.join(" > ")}
+                    >
+                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    </button>
+                  `
+                : html`
+                    <p class="breadcrumb">
+                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    </p>
+                  `
               : nothing}
             <p class="main">${title}</p>
           </span>
@@ -687,15 +693,18 @@ export class MoreInfoDialog extends LitElement {
           margin-top: -10px;
           background: none;
           border: none;
-          cursor: pointer;
           outline: none;
           display: inline-flex;
           border-radius: 6px;
           transition: background-color 180ms ease-in-out;
         }
 
-        .title .breadcrumb:focus-visible,
-        .title .breadcrumb:hover {
+        .title button.breadcrumb {
+          cursor: pointer;
+        }
+
+        .title button.breadcrumb:focus-visible,
+        .title button.breadcrumb:hover {
           background-color: rgba(var(--rgb-secondary-text-color), 0.08);
         }
       `,
