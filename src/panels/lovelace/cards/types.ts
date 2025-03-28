@@ -349,9 +349,11 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
+  title?: string;
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
   time_format?: TimeFormat;
+  time_zone?: string;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
