@@ -80,18 +80,8 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   public getGridOptions(): LovelaceGridOptions {
     if (this._config?.clock_size === "medium") {
-      if (this._config?.title !== undefined) {
-        return {
-          min_rows: 2,
-          rows: 2,
-          max_rows: 4,
-          min_columns: 4,
-          columns: 6,
-        };
-      }
-
       return {
-        min_rows: 1,
+        min_rows: this._config?.title ? 2 : 1,
         rows: 2,
         max_rows: 4,
         min_columns: 4,
