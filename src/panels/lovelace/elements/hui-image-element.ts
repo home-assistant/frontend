@@ -29,7 +29,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       throw Error("Invalid configuration");
     }
 
-    this._config = { hold_action: { action: "more-info" }, ...config };
+    this._config = { tap_action: { action: "more-info" }, ...config };
 
     this.classList.toggle(
       "clickable",
