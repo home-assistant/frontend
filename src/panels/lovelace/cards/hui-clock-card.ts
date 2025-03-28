@@ -197,12 +197,12 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-wrapper {
       display: flex;
-      height: calc(100% - 16px);
+      height: calc(100% - 12px);
       align-items: center;
       flex-direction: column;
       justify-content: center;
-      padding: 8px;
-      row-gap: 8px;
+      padding: 6px 8px;
+      row-gap: 6px;
     }
 
     .time-wrapper.size-medium,
@@ -216,7 +216,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
       font-size: 14px;
       font-weight: 400;
-      line-height: 16px;
+      line-height: 18px;
       overflow: hidden;
       text-align: center;
       text-overflow: ellipsis;
@@ -241,9 +241,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
         "hour minute second"
         "hour minute am-pm";
 
-      font-size: 1.5rem;
+      font-size: 2rem;
       font-weight: 500;
       line-height: 0.8;
+    }
+
+    .time-title + .time-parts {
+      font-size: 1.5rem;
     }
 
     .time-wrapper.size-medium .time-parts {
