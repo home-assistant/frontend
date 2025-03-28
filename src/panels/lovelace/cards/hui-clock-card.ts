@@ -65,7 +65,9 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       minute: "2-digit",
       second: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone: resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+      timeZone:
+        this._config?.time_zone ||
+        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
     });
 
     this._tick();
@@ -79,7 +81,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   public getGridOptions(): LovelaceGridOptions {
     if (this._config?.clock_size === "medium") {
       return {
-        min_rows: 1,
+        min_rows: this._config?.title ? 2 : 1,
         rows: 2,
         max_rows: 4,
         min_columns: 4,
@@ -101,7 +103,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       min_rows: 1,
       rows: 1,
       max_rows: 4,
-      min_columns: 4,
+      min_columns: 3,
       columns: 6,
     };
   }
@@ -160,6 +162,9 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
             ? `size-${this._config.clock_size}`
             : ""}"
         >
+          ${this._config.title !== undefined
+            ? html`<div class="time-title">${this._config.title}</div>`
+            : nothing}
           <div class="time-parts">
             <div class="time-part hour">${this._timeHour}</div>
             <div class="time-part minute">${this._timeMinute}</div>
@@ -182,9 +187,41 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-wrapper {
       display: flex;
-      height: 100%;
+      height: calc(100% - 12px);
       align-items: center;
+      flex-direction: column;
       justify-content: center;
+      padding: 6px 8px;
+      row-gap: 6px;
+    }
+
+    .time-wrapper.size-medium,
+    .time-wrapper.size-large {
+      height: calc(100% - 32px);
+      padding: 16px;
+      row-gap: 12px;
+    }
+
+    .time-title {
+      color: var(--primary-text-color);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    .time-wrapper.size-medium .time-title {
+      font-size: 18px;
+      line-height: 21px;
+    }
+
+    .time-wrapper.size-large .time-title {
+      font-size: 24px;
+      line-height: 28px;
     }
 
     .time-parts {
@@ -197,7 +234,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       font-size: 2rem;
       font-weight: 500;
       line-height: 0.8;
-      padding: 16px 0;
+    }
+
+    .time-title + .time-parts {
+      font-size: 1.5rem;
     }
 
     .time-wrapper.size-medium .time-parts {
@@ -242,8 +282,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-parts .time-part.second,
     .time-parts .time-part.am-pm {
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 10px;
       margin-left: 4px;
     }
 
