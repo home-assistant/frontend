@@ -7161,14 +7161,14 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
-              "time_format": "Time format",
+              "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
                 "language": "[%key:ui::panel::profile::time_format::formats::language%]",
                 "system": "[%key:ui::panel::profile::time_format::formats::system%]",
                 "24": "[%key:ui::panel::profile::time_format::formats::24%]",
                 "12": "[%key:ui::panel::profile::time_format::formats::12%]"
               },
-              "time_zone": "Time zone"
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
             },
             "media-control": {
               "name": "Media control",
