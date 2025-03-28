@@ -7168,7 +7168,10 @@
                 "24": "[%key:ui::panel::profile::time_format::formats::24%]",
                 "12": "[%key:ui::panel::profile::time_format::formats::12%]"
               },
-              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
+              "time_zones": {
+                "auto": "Use user settings"
+              }
             },
             "media-control": {
               "name": "Media control",
