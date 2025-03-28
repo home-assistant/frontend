@@ -465,7 +465,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     let pipelineName = this.hass.localize(
-      "ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline"
+      `ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`
     );
     let i = 1;
     while (
@@ -474,7 +474,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         (pipeline) => pipeline.name === pipelineName
       )
     ) {
-      pipelineName = `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline")} ${i}`;
+      pipelineName = `${this.hass.localize(`ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`)} ${i}`;
       i++;
     }
 
