@@ -19,6 +19,7 @@ const cardConfigStruct = assign(
     image_entity: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     theme: optional(string()),
     alt_text: optional(string()),
   })

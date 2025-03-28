@@ -161,6 +161,7 @@ export class HuiPictureGlanceCardEditor
       case "theme":
       case "tap_action":
       case "hold_action":
+      case "double_tap_action":
         return `${this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         )} (${this.hass!.localize(
