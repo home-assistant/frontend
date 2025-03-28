@@ -15,7 +15,7 @@ import {
 } from "../../data/assist_pipeline";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
-import type { LanguageScores } from "../../data/conversation";
+import type { LanguageScore, LanguageScores } from "../../data/conversation";
 import { getLanguageScores, listAgents } from "../../data/conversation";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
@@ -25,6 +25,12 @@ import { STEP } from "./voice-assistant-setup-dialog";
 import { documentationUrl } from "../../util/documentation-url";
 
 const OPTIONS = ["cloud", "focused_local", "full_local"] as const;
+
+const EMPTY_SCORE: LanguageScore = {
+  cloud: 0,
+  focused_local: 0,
+  full_local: 0,
+};
 
 @customElement("ha-voice-assistant-setup-step-pipeline")
 export class HaVoiceAssistantSetupStepPipeline extends LitElement {
@@ -61,12 +67,12 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       this._languageScores
     ) {
       const lang = this.language;
-      if (this._value && this._languageScores[lang][this._value] === 0) {
+      if (this._value && this._languageScores[lang]?.[this._value] === 0) {
         this._value = undefined;
       }
       if (!this._value) {
         this._value = this._getOptions(
-          this._languageScores[lang],
+          this._languageScores[lang] || EMPTY_SCORE,
           this.hass.localize
         ).supportedOptions[0]?.value as
           | "cloud"
@@ -147,12 +153,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       </div>`;
     }
 
-    const score = this._languageScores[this.language];
+    const score = this._languageScores[this.language] || EMPTY_SCORE;
 
-    const options = this._getOptions(
-      score || { cloud: 3, focused_local: 0, full_local: 0 },
-      this.hass.localize
-    );
+    const options = this._getOptions(score, this.hass.localize);
 
     const performance = !this._value
       ? ""
@@ -162,11 +165,11 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
     const commands = !this._value
       ? ""
-      : score?.[this._value] > 2
+      : score[this._value] > 2
         ? "high"
-        : score?.[this._value] > 1
+        : score[this._value] > 1
           ? "ready"
-          : score?.[this._value] > 0
+          : score[this._value] > 0
             ? "low"
             : "";
 
