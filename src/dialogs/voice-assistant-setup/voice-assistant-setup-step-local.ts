@@ -325,14 +325,16 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       (flow) =>
         flow.handler === "wyoming" &&
         flow.context.source === "hassio" &&
-        (flow.context.configuration_url.includes(
-          type === "tts" ? this._ttsHostName : this._sttHostName
-        ) ||
-          flow.context.title_placeholders.title
-            .toLowerCase()
-            .includes(
-              type === "tts" ? this._ttsProviderName : this._sttProviderName
-            ))
+        ((flow.context.configuration_url &&
+          flow.context.configuration_url.includes(
+            type === "tts" ? this._ttsAddonName : this._sttAddonName
+          )) ||
+          (flow.context.title_placeholders.title &&
+            flow.context.title_placeholders.title
+              .toLowerCase()
+              .includes(
+                type === "tts" ? this._ttsProviderName : this._sttProviderName
+              )))
     );
   }
 
