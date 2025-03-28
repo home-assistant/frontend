@@ -496,8 +496,9 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   hide_completed?: boolean;
   hide_create?: boolean;
   empty_list_text?: string;
-  hide_empty_list?: boolean;
-  disable_edit_on_click?: boolean;
+  show_empty_text?: boolean;
+  disable_item_editing?: boolean;
+  toggle_on_item_label_click?: boolean;
   sort?: string;
 }
 

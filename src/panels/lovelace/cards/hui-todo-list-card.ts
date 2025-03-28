@@ -314,14 +314,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   </div>
                   ${this._renderItems(uncheckedItems, unavailable)}
                 `
-              : this._config.hide_empty_list
-                ? nothing
-                : html`<p class="empty">
+              : this._config.show_empty_text !== false
+                ? html`<p class="empty">
                     ${this._config.empty_list_text ||
                     this.hass.localize(
                       "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
                     )}
-                  </p>`}
+                  </p>`
+                : nothing}
             ${!this._config.hide_completed && checkedItems.length
               ? html`
                   <div role="separator">
@@ -520,12 +520,18 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    // If disable_edit_on_click is enabled, toggle the item's checked state instead
-    if (this._config?.disable_edit_on_click) {
+    // Priority 1: Toggle item functionality takes precedence if enabled
+    if (this._config?.toggle_on_item_label_click) {
       this._completeItem(ev);
       return;
     }
 
+    // Priority 2: If editing is disabled, do nothing
+    if (this._config?.disable_item_editing) {
+      return;
+    }
+
+    // Priority 3: Default behavior - open the editor
     const item = this._getItem(ev.currentTarget.itemId);
     showTodoItemEditDialog(this, {
       entity: this._entityId!,
