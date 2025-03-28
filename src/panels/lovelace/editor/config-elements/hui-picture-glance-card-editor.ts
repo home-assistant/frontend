@@ -67,14 +67,6 @@ const SCHEMA = [
         name: "tap_action",
         selector: {
           ui_action: {
-            default_action: "toggle",
-          },
-        },
-      },
-      {
-        name: "hold_action",
-        selector: {
-          ui_action: {
             default_action: "more-info",
           },
         },
@@ -83,16 +75,16 @@ const SCHEMA = [
         name: "",
         type: "optional_actions",
         flatten: true,
-        schema: [
-          {
-            name: "double_tap_action",
+        schema: (["hold_action", "double_tap_action"] as const).map(
+          (action) => ({
+            name: action,
             selector: {
               ui_action: {
-                default_action: "none",
+                default_action: "none" as const,
               },
             },
-          },
-        ],
+          })
+        ),
       },
     ],
   },

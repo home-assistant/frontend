@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
@@ -32,12 +33,35 @@ const SCHEMA = [
   { name: "alt_text", selector: { text: {} } },
   { name: "theme", selector: { theme: {} } },
   {
-    name: "tap_action",
-    selector: { ui_action: {} },
-  },
-  {
-    name: "hold_action",
-    selector: { ui_action: {} },
+    name: "interactions",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiGestureTap,
+    schema: [
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: (["hold_action", "double_tap_action"] as const).map(
+          (action) => ({
+            name: action,
+            selector: {
+              ui_action: {
+                default_action: "none" as const,
+              },
+            },
+          })
+        ),
+      },
+    ],
   },
 ] as const;
 
