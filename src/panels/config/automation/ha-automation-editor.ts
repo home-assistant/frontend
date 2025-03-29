@@ -117,6 +117,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _config?: AutomationConfig;
 
+  @state() private _pastedConfig?: AutomationConfig;
+
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -463,6 +465,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
+                          .pastedConfig=${this._pastedConfig}
                           .disabled=${Boolean(this._readOnly)}
                           @value-changed=${this._valueChanged}
                         ></manual-automation-editor>
@@ -632,6 +635,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
 
         this._config = normalized;
+        this._pastedConfig = normalized;
         this._dirty = true;
         this._errors = undefined;
       }
