@@ -33,6 +33,8 @@ export class HaManualScriptEditor extends LitElement {
 
   @property({ attribute: false }) public config!: ScriptConfig;
 
+  @property({ attribute: false }) public pastedConfig?: ScriptConfig;
+
   @query("ha-script-fields")
   private _scriptFields?: HaScriptFields;
 
@@ -126,6 +128,7 @@ export class HaManualScriptEditor extends LitElement {
               role="region"
               aria-labelledby="fields-heading"
               .fields=${this.config.fields}
+              .highlightedFields=${this.pastedConfig?.fields}
               @value-changed=${this._fieldsChanged}
               .hass=${this.hass}
               .disabled=${this.disabled}
@@ -154,6 +157,7 @@ export class HaManualScriptEditor extends LitElement {
         role="region"
         aria-labelledby="sequence-heading"
         .actions=${this.config.sequence || []}
+        .highlightedActions=${this.pastedConfig?.sequence || []}
         .path=${["sequence"]}
         @value-changed=${this._sequenceChanged}
         .hass=${this.hass}

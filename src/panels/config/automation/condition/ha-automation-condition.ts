@@ -30,6 +30,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ attribute: false }) public conditions!: Condition[];
 
+  @property({ attribute: false }) public highlightedConditions?: Condition[];
+
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _showReorder = false;
@@ -128,6 +130,9 @@ export default class HaAutomationCondition extends LitElement {
             (condition) => this._getKey(condition),
             (cond, idx) => html`
               <ha-automation-condition-row
+                class=${this.highlightedConditions?.includes(cond)
+                  ? "highlight"
+                  : ""}
                 .sortableData=${cond}
                 .index=${idx}
                 .first=${idx === 0}
@@ -344,6 +349,22 @@ export default class HaAutomationCondition extends LitElement {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+    }
+    .highlight {
+      box-shadow: 0 0 5px 2px var(--primary-color);
+      border-radius: var(--ha-card-border-radius, 12px);
+      animation: pulsate 5s ease-out infinite;
+    }
+    @-webkit-keyframes pulsate {
+      0% {
+        box-shadow: 0 0 5px 0 var(--primary-color);
+      }
+      50% {
+        box-shadow: 0 0 5px 2px var(--primary-color);
+      }
+      100% {
+        box-shadow: 0 0 5px 0 var(--primary-color);
+      }
     }
   `;
 }

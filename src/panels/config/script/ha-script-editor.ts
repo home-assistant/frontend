@@ -94,6 +94,8 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _config?: ScriptConfig;
 
+  @state() private _pasted_config?: ScriptConfig;
+
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -427,6 +429,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .narrow=${this.narrow}
                           .isWide=${this.isWide}
                           .config=${this._config}
+                          .pastedConfig=${this._pasted_config}
                           .disabled=${this._readOnly}
                           @value-changed=${this._valueChanged}
                         ></manual-script-editor>
@@ -577,6 +580,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
 
         this._config = normalized;
+        this._pasted_config = normalized;
         this._dirty = true;
         this._errors = undefined;
       }
