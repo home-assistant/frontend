@@ -32,6 +32,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ attribute: false }) public actions!: Action[];
 
+  @property({ attribute: false }) public highlightedActions?: Action[];
+
   @state() private _showReorder = false;
 
   @storage({
@@ -79,6 +81,9 @@ export default class HaAutomationAction extends LitElement {
             (action) => this._getKey(action),
             (action, idx) => html`
               <ha-automation-action-row
+                class=${this.highlightedActions?.includes(action)
+                  ? "highlight"
+                  : ""}
                 .sortableData=${action}
                 .index=${idx}
                 .first=${idx === 0}
@@ -317,6 +322,22 @@ export default class HaAutomationAction extends LitElement {
       flex-wrap: wrap;
       gap: 8px;
       order: 1;
+    }
+    .highlight {
+      box-shadow: 0 0 5px 2px var(--primary-color);
+      border-radius: var(--ha-card-border-radius, 12px);
+      animation: pulsate 5s ease-out infinite;
+    }
+    @-webkit-keyframes pulsate {
+      0% {
+        box-shadow: 0 0 5px 0 var(--primary-color);
+      }
+      50% {
+        box-shadow: 0 0 5px 2px var(--primary-color);
+      }
+      100% {
+        box-shadow: 0 0 5px 0 var(--primary-color);
+      }
     }
   `;
 }
