@@ -16,6 +16,7 @@ export class HaButton extends Button {
       }
       .mdc-button {
         height: var(--button-height, 36px);
+        text-align: var(--button-text-align, center);
       }
       .trailing-icon {
         display: flex;

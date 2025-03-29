@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../ha-spinner";
 import "../ha-svg-icon";
+import "../ha-button";
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
@@ -21,14 +21,14 @@ export class HaProgressButton extends LitElement {
   public render(): TemplateResult {
     const overlay = this._result || this.progress;
     return html`
-      <mwc-button
+      <ha-button
         ?raised=${this.raised}
         .unelevated=${this.unelevated}
         .disabled=${this.disabled || this.progress}
         class=${this._result || ""}
       >
         <slot></slot>
-      </mwc-button>
+      </ha-button>
       ${!overlay
         ? nothing
         : html`
