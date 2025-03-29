@@ -1719,15 +1719,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/intl-datetimeformat@npm:6.17.4":
-  version: 6.17.4
-  resolution: "@formatjs/intl-datetimeformat@npm:6.17.4"
+"@formatjs/intl-datetimeformat@npm:6.18.0":
+  version: 6.18.0
+  resolution: "@formatjs/intl-datetimeformat@npm:6.18.0"
   dependencies:
     "@formatjs/ecma402-abstract": "npm:2.3.4"
     "@formatjs/intl-localematcher": "npm:0.6.1"
     decimal.js: "npm:^10.4.3"
     tslib: "npm:^2.8.0"
-  checksum: 10/d65452a3487e120f78f2c992c4c822c646eeeab2fc99aa83a47368b50e63eb83c1f9d4341ad1e245b2f92a9588af99118fc10d5ce35d137ad8d979e83873b7e7
+  checksum: 10/b70edaa4cfa150f0a6cbeeb1488e6acdea21349abdefc4e37b923de68592c6f330a966456bf6000f233d0f715cf3b8cfce23d5a4ed574fa8ea35ccb5bea80886
   languageName: node
   linkType: hard
 
@@ -9590,7 +9590,7 @@ __metadata:
     "@codemirror/state": "npm:6.5.2"
     "@codemirror/view": "npm:6.36.4"
     "@egjs/hammerjs": "npm:2.0.17"
-    "@formatjs/intl-datetimeformat": "npm:6.17.4"
+    "@formatjs/intl-datetimeformat": "npm:6.18.0"
     "@formatjs/intl-displaynames": "npm:6.8.11"
     "@formatjs/intl-durationformat": "npm:0.7.4"
     "@formatjs/intl-getcanonicallocales": "npm:2.5.5"
@@ -9733,7 +9733,7 @@ __metadata:
     lit-html: "npm:2.8.0"
     lodash.merge: "npm:4.6.2"
     lodash.template: "npm:4.5.0"
-    luxon: "npm:3.5.0"
+    luxon: "npm:3.6.0"
     map-stream: "npm:0.0.7"
     marked: "npm:15.0.7"
     memoize-one: "npm:6.0.0"
@@ -11363,10 +11363,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:3.5.0":
-  version: 3.5.0
-  resolution: "luxon@npm:3.5.0"
-  checksum: 10/48f86e6c1c96815139f8559456a3354a276ba79bcef0ae0d4f2172f7652f3ba2be2237b0e103b8ea0b79b47715354ac9fac04eb1db3485dcc72d5110491dd47f
+"luxon@npm:3.6.0":
+  version: 3.6.0
+  resolution: "luxon@npm:3.6.0"
+  checksum: 10/1546a51dbb8e3c888311b50dcee2550778a078952dbc1aec015fa64b069b8f47a589232e8ce1324aafe1b6c913eeb612ab91dec5d05a71de7fce03656800facb
   languageName: node
   linkType: hard
 
