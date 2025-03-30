@@ -21,7 +21,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
 @customElement("blueprint-generic-editor")
-export abstract class HaBlueprintGenericEditor extends LitElement {
+export abstract class BlueprintGenericEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -85,16 +85,16 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
             ? html`<p class="warning padding">
                 There is an error in this Blueprint: ${blueprint.error}
               </p>`
-            : html`${blueprint?.metadata.description
+            : html`${blueprint?.blueprint.description
                 ? html`<ha-markdown
                     class="card-content"
                     breaks
-                    .content=${blueprint.metadata.description}
+                    .content=${blueprint.blueprint.description}
                   ></ha-markdown>`
                 : ""}
-              ${blueprint?.metadata?.input &&
-              Object.keys(blueprint.metadata.input).length
-                ? Object.entries(blueprint.metadata.input).map(
+              ${blueprint?.blueprint?.input &&
+              Object.keys(blueprint.blueprint.input).length
+                ? Object.entries(blueprint.blueprint.input).map(
                     ([key, value]) => {
                       if (value && "input" in value) {
                         const section = this._renderSection(key, value);
@@ -298,6 +298,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "blueprint-generic-editor": HaBlueprintGenericEditor;
+    "blueprint-generic-editor": BlueprintGenericEditor;
   }
 }

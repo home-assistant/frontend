@@ -4,10 +4,10 @@ import { customElement, property } from "lit/decorators";
 import "../../../components/ha-markdown";
 import { fetchBlueprints } from "../../../data/blueprint";
 import type { BlueprintScriptConfig } from "../../../data/script";
-import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import { BlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-script-editor")
-export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
+export class BlueprintScriptEditor extends BlueprintGenericEditor {
   @property({ attribute: false }) public config!: BlueprintScriptConfig;
 
   protected get _config(): BlueprintScriptConfig {
@@ -15,6 +15,10 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   }
 
   protected render() {
+    if (!this.config) {
+      return nothing;
+    }
+
     return html`
       ${this.config.description
         ? html`<ha-markdown
@@ -33,6 +37,6 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    "blueprint-script-editor": HaBlueprintScriptEditor;
+    "blueprint-script-editor": BlueprintScriptEditor;
   }
 }

@@ -3,7 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export const loadImportBlueprintDialog = () =>
   import("./dialog-import-blueprint");
 
-export const showAddBlueprintDialog = (
+export const showImportBlueprintDialog = (
   element: HTMLElement,
   dialogParams
 ): void => {

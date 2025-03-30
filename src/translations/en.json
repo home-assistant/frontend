@@ -4200,11 +4200,13 @@
             },
             "types": {
               "automation": "Automation",
-              "script": "Script"
+              "script": "Script",
+              "blueprint": "Blueprint"
             },
             "types_plural": {
               "automation": "automations",
-              "script": "scripts"
+              "script": "scripts",
+              "blueprint": "blueprints"
             },
             "error": "{path} could not be loaded",
             "blueprint_in_use_title": "This blueprint is in use and can not be deleted",
@@ -4212,7 +4214,7 @@
             "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
-            "add_blueprint": "Import blueprint",
+            "add_blueprint": "Add blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
             "create_script": "Create script",
@@ -4231,8 +4233,17 @@
             "re_import_success": "{name} has been successfully re-imported.",
             "discover_more": "Discover more blueprints"
           },
+          "dialog_new": {
+            "header": "Add a blueprint",
+            "create_empty_automation": "Create new automation blueprint",
+            "create_empty_automation_description": "Start with an empty automation blueprint from scratch",
+            "create_empty_script": "Create new script blueprint",
+            "create_empty_script_description": "Start with an empty script blueprint from scratch",
+            "import_external": "Import a blueprint",
+            "import_external_description": "Import an existing blueprint from the internet"
+          },
           "add": {
-            "header": "Import a blueprint",
+            "header": "Add a blueprint",
             "import_header": "Blueprint ''{name}''",
             "import_introduction": "Import blueprints of other users from GitHub and the community forums by pasting the address below.",
             "community_forums": "View blueprints on the community forums",
@@ -4248,6 +4259,47 @@
             "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint Path"
+          },
+          "editor": {
+            "default_name": "New blueprint",
+            "unsaved_confirm_title": "Leave editor?",
+            "unsaved_confirm_text": "Unsaved changes will be lost.",
+            "new_blueprint_setup_failed_title": "New {type} setup failed",
+            "new_blueprint_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
+            "type_blueprint": "blueprint",
+            "type_blueprint_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::blueprint%]",
+            "save": "Save",
+            "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
+            "load_error_unknown": "Error loading blueprint ({err_no}).",
+            "move_up": "Move up",
+            "move_down": "Move down",
+            "edit_ui": "UI Editor",
+            "edit_yaml": "YAML Editor",
+            "actions": {
+              "delete": "Delete",
+              "duplicate": "Duplicate"
+            },
+            "inputs": {
+              "header": "Inputs",
+              "section_description": "Inputs are variables that make blueprints generic. The exact value will be determined when an instance of this blueprint is created",
+              "learn_more": "Learn more about inputs",
+              "add": "Add new input",
+              "paste": "Paste",
+              "test": "Test input",
+              "testing_pass": "Input passes",
+              "testing_error": "Input did not pass",
+              "test_failed": "",
+              "copy": "Copy",
+              "cut": "Cut",
+              "rename": "Rename",
+              "delete_confirm_title": "Delete Input",
+              "delete_confirm_text": "Do you want to delete this input from your blueprint?",
+              "id": "ID",
+              "change_id": "Change Input ID",
+              "name": "Name",
+              "description": "Description",
+              "selector": "Selector"
+            }
           }
         },
         "script": {

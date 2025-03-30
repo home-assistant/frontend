@@ -19,7 +19,7 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
 import type {
-  Blueprint,
+  BlueprintConfig,
   BlueprintDomain,
   BlueprintSourceType,
   Blueprints,
@@ -73,12 +73,14 @@ class DialogNewAutomation extends LitElement implements HassDialog {
       return [];
     }
     const result = Object.entries(blueprints)
-      .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
+      .filter(
+        (entry): entry is [string, BlueprintConfig] => !("error" in entry[1])
+      )
       .map(([path, blueprint]) => {
         const sourceType = getBlueprintSourceType(blueprint);
 
         return {
-          ...blueprint.metadata,
+          ...blueprint.blueprint,
           sourceType,
           path,
         };

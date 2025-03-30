@@ -6,7 +6,11 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { stringCompare } from "../common/string/compare";
-import type { Blueprint, BlueprintDomain, Blueprints } from "../data/blueprint";
+import type {
+  BlueprintConfig,
+  BlueprintDomain,
+  Blueprints,
+} from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
 import type { HomeAssistant } from "../types";
 import "./ha-select";
@@ -38,9 +42,11 @@ class HaBluePrintPicker extends LitElement {
       return [];
     }
     const result = Object.entries(blueprints)
-      .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
+      .filter(
+        (entry): entry is [string, BlueprintConfig] => !("error" in entry[1])
+      )
       .map(([path, blueprint]) => ({
-        ...blueprint.metadata,
+        ...blueprint.blueprint,
         path,
       }));
     return result.sort((a, b) =>

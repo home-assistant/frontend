@@ -74,7 +74,7 @@ export class HaFilterBlueprints extends LitElement {
                         .value=${id}
                         .selected=${(this.value || []).includes(id)}
                       >
-                        ${blueprint.metadata.name || id}
+                        ${blueprint.blueprint.name || id}
                       </ha-check-list-item>`
                 )}
               </mwc-list>

@@ -66,14 +66,14 @@ class DialogImportBlueprint extends LitElement {
             ? html`${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_header",
                   {
-                    name: html`<b>${this._result.blueprint.metadata.name}</b>`,
-                    domain: this._result.blueprint.metadata.domain,
+                    name: html`<b>${this._result.blueprint.blueprint.name}</b>`,
+                    domain: this._result.blueprint.blueprint.domain,
                   }
                 )}
                 <br />
                 <ha-markdown
                   breaks
-                  .content=${this._result.blueprint.metadata.description}
+                  .content=${this._result.blueprint.blueprint.description}
                 ></ha-markdown>
                 ${this._result.validation_errors
                   ? html`
@@ -229,10 +229,10 @@ class DialogImportBlueprint extends LitElement {
       }
       await saveBlueprint(
         this.hass,
-        this._result!.blueprint.metadata.domain,
+        this._result!.blueprint.blueprint.domain,
         filename,
         this._result!.raw_data,
-        this._result!.blueprint.metadata.source_url,
+        this._result!.blueprint.blueprint.source_url,
         this._result!.exists
       );
       this._params.importedCallback();

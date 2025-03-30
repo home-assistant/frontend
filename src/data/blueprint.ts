@@ -1,16 +1,66 @@
+import type {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
+import {
+  mdiAlpha,
+  mdiCalendar,
+  mdiCalendarClock,
+  mdiChat,
+  mdiClock,
+  mdiCodeBraces,
+  mdiCog,
+  mdiCube,
+  mdiDetails,
+  mdiDevices,
+  mdiExclamation,
+  mdiFloorPlan,
+  mdiFormatColorFill,
+  mdiFormDropdown,
+  mdiGestureDoubleTap,
+  mdiGestureTap,
+  mdiGlobeModel,
+  mdiHeadQuestion,
+  mdiLabel,
+  mdiMicrophone,
+  mdiNumeric,
+  mdiPalette,
+  mdiPin,
+  mdiPlayOutline,
+  mdiPuzzle,
+  mdiQrcode,
+  mdiShape,
+  mdiSimpleIcons,
+  mdiSofa,
+  mdiStateMachine,
+  mdiTarget,
+  mdiText,
+  mdiThermostat,
+  mdiTimer,
+  mdiToggleSwitch,
+} from "@mdi/js";
 import type { HomeAssistant } from "../types";
-import type { ManualAutomationConfig } from "./automation";
+import type { AutomationClipboard, ManualAutomationConfig } from "./automation";
 import type { ManualScriptConfig } from "./script";
 import type { Selector } from "./selector";
+import { createSearchParam } from "../common/url/search-params";
+import { navigate } from "../common/navigate";
 
 export type BlueprintDomain = "automation" | "script";
 
 export type Blueprints = Record<string, BlueprintOrError>;
 
-export type BlueprintOrError = Blueprint | { error: string };
-export interface Blueprint {
-  metadata: BlueprintMetaData;
+export type BlueprintOrError = BlueprintConfig | { error: string };
+
+export interface BlueprintBase {
+  blueprint: BlueprintMetaData;
 }
+
+export interface AutomationBlueprint
+  extends ManualAutomationConfig,
+    BlueprintBase {}
+export interface ScriptBlueprint extends ManualScriptConfig, BlueprintBase {}
+export type BlueprintConfig = AutomationBlueprint | ScriptBlueprint;
 
 export interface BlueprintMetaData {
   domain: BlueprintDomain;
@@ -40,13 +90,23 @@ export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
   exists?: boolean;
-  blueprint: Blueprint;
+  blueprint: BlueprintConfig;
   validation_errors: string[] | null;
 }
 
 export interface BlueprintSubstituteResults {
   automation: { substituted_config: ManualAutomationConfig };
   script: { substituted_config: ManualScriptConfig };
+}
+
+export interface BlueprintUrlSearchParams {
+  domain?: BlueprintDomain;
+}
+
+export interface BlueprintEntity extends HassEntityBase {
+  attributes: HassEntityAttributeBase & {
+    id?: string;
+  };
 }
 
 export const fetchBlueprints = (hass: HomeAssistant, domain: BlueprintDomain) =>
@@ -86,9 +146,9 @@ export const deleteBlueprint = (
 export type BlueprintSourceType = "local" | "community" | "homeassistant";
 
 export const getBlueprintSourceType = (
-  blueprint: Blueprint
+  blueprint: BlueprintConfig
 ): BlueprintSourceType => {
-  const sourceUrl = blueprint.metadata.source_url;
+  const sourceUrl = blueprint.blueprint.source_url;
 
   if (!sourceUrl) {
     return "local";
@@ -113,3 +173,91 @@ export const substituteBlueprint = <
     path,
     input,
   });
+
+let initialBlueprintEditorData: Partial<BlueprintConfig> | undefined;
+
+export const showBlueprintEditor = (
+  domain: BlueprintDomain,
+  data?: Partial<BlueprintConfig>,
+  expanded?: boolean
+) => {
+  initialBlueprintEditorData = data;
+
+  const params: Record<string, string> = { domain };
+  if (expanded) {
+    params.expanded = "1";
+  }
+
+  navigate(`/config/blueprint/edit/new?${createSearchParam(params)}`);
+};
+
+export const getBlueprintEditorInitData = () => {
+  const data = initialBlueprintEditorData;
+  initialBlueprintEditorData = undefined;
+  return data;
+};
+
+export const saveBlueprintConfig = (
+  hass: HomeAssistant,
+  id: string,
+  config: BlueprintConfig
+) => hass.callApi<void>("POST", `config/blueprint/config/${id}`, config);
+
+export const getBlueprintStateConfig = (
+  hass: HomeAssistant,
+  entity_id: string
+) =>
+  hass.callWS<{ config: BlueprintConfig }>({
+    type: "blueprint/config",
+    entity_id,
+  });
+
+export const fetchBlueprintFileConfig = (hass: HomeAssistant, id: string) =>
+  hass.callApi<BlueprintConfig>("GET", `config/blueprint/config/${id}`);
+
+type BlueprintClipboardBase = {
+  input?: string;
+};
+type AutomationBlueprintClipboard = BlueprintClipboardBase &
+  AutomationClipboard;
+// type ScriptBlueprintClipboard = BlueprintClipboardBase & ScriptClipboard;
+export type BlueprintClipboard = AutomationBlueprintClipboard;
+
+export const INPUT_ICONS = {
+  action: mdiGestureTap,
+  addOn: mdiPuzzle,
+  area: mdiSofa,
+  attribute: mdiDetails,
+  assistPipeline: mdiChat,
+  backupLocation: mdiPin,
+  boolean: mdiToggleSwitch,
+  colorTemperature: mdiThermostat,
+  condition: mdiHeadQuestion,
+  configEntry: mdiCog,
+  constant: mdiExclamation,
+  conversationAgent: mdiMicrophone,
+  country: mdiGlobeModel,
+  date: mdiCalendar,
+  dateAndTime: mdiCalendarClock,
+  device: mdiDevices,
+  duration: mdiTimer,
+  entity: mdiShape,
+  floor: mdiFloorPlan,
+  icon: mdiSimpleIcons,
+  label: mdiLabel,
+  language: mdiAlpha,
+  location,
+  media: mdiPlayOutline,
+  number: mdiNumeric,
+  object: mdiCube,
+  qrCode: mdiQrcode,
+  rgbColor: mdiFormatColorFill,
+  select: mdiFormDropdown,
+  state: mdiStateMachine,
+  target: mdiTarget,
+  template: mdiCodeBraces,
+  text: mdiText,
+  theme: mdiPalette,
+  time: mdiClock,
+  trigger: mdiGestureDoubleTap,
+} as const;

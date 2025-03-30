@@ -29,6 +29,7 @@ import {
   removeSearchParam,
 } from "../../../common/url/search-params";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import type { AutomationBlueprint } from "../../../data/blueprint";
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -40,7 +41,9 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: false }) public config!: ManualAutomationConfig;
+  @property({ attribute: false }) public config!:
+    | ManualAutomationConfig
+    | AutomationBlueprint;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
