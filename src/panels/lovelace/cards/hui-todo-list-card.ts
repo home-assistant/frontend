@@ -187,7 +187,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     if (!period || !period.calendar || !period.calendar.period)
       return filteredItems;
 
-    let endDate = this._addPeriod(new Date(), period.calendar);
+    const endDate = this._addPeriod(new Date(), period.calendar);
 
     return filteredItems.filter((item) => {
       const dueDate = this._getDueDate(item);
