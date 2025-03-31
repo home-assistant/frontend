@@ -108,7 +108,10 @@ export class HaChartBase extends LitElement {
 
     // Add keyboard event listeners
     const handleKeyDown = (ev: KeyboardEvent) => {
-      if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
+      if (
+        !this._modifierPressed &&
+        ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
+      ) {
         this._modifierPressed = true;
         if (!this.options?.dataZoom) {
           this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
@@ -123,7 +126,10 @@ export class HaChartBase extends LitElement {
     };
 
     const handleKeyUp = (ev: KeyboardEvent) => {
-      if ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control")) {
+      if (
+        this._modifierPressed &&
+        ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
+      ) {
         this._modifierPressed = false;
         if (!this.options?.dataZoom) {
           this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
@@ -220,7 +226,12 @@ export class HaChartBase extends LitElement {
     const overflowLimit = isMobile
       ? LEGEND_OVERFLOW_LIMIT_MOBILE
       : LEGEND_OVERFLOW_LIMIT;
-    return html`<div class="chart-legend">
+    return html`<div
+      class=${classMap({
+        "chart-legend": true,
+        "multiple-items": items.length > 1,
+      })}
+    >
       <ul>
         ${items.map((item: string, index: number) => {
           if (!this.expandLegend && index >= overflowLimit) {
@@ -252,9 +263,13 @@ export class HaChartBase extends LitElement {
               <ha-assist-chip
                 @click=${this._toggleExpandedLegend}
                 filled
-                label=${`${this.hass.localize(
-                  `ui.components.history_charts.${this.expandLegend ? "collapse_legend" : "expand_legend"}`
-                )} (${items.length})`}
+                label=${this.expandLegend
+                  ? this.hass.localize(
+                      "ui.components.history_charts.collapse_legend"
+                    )
+                  : `${this.hass.localize(
+                      "ui.components.history_charts.expand_legend"
+                    )} (${items.length - overflowLimit})`}
               >
                 <ha-svg-icon
                   slot="trailing-icon"
@@ -316,6 +331,16 @@ export class HaChartBase extends LitElement {
           }
         });
       }
+
+      const legend = ensureArray(this.options?.legend || [])[0] as
+        | LegendComponentOption
+        | undefined;
+      Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
+        if (selected === false) {
+          this._hiddenDatasets.add(stat);
+        }
+      });
+
       this.chart.setOption({
         ...this._createOptions(),
         series: this._getSeries(),
@@ -562,8 +587,8 @@ export class HaChartBase extends LitElement {
           fontSize: 12,
         },
         axisPointer: {
-          lineStyle: { color: style.getPropertyValue("--divider-color") },
-          crossStyle: { color: style.getPropertyValue("--divider-color") },
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+          crossStyle: { color: style.getPropertyValue("--info-color") },
         },
       },
       timeline: {},
@@ -689,7 +714,7 @@ export class HaChartBase extends LitElement {
     .chart-legend {
       max-height: 60%;
       overflow-y: auto;
-      margin: 12px 0 0;
+      padding: 12px 0 0;
       font-size: 12px;
       color: var(--primary-text-color);
     }
@@ -709,10 +734,10 @@ export class HaChartBase extends LitElement {
       align-items: center;
       padding: 0 2px;
       box-sizing: border-box;
-      max-width: 220px;
-      text-overflow: ellipsis;
       overflow: hidden;
-      white-space: nowrap;
+    }
+    .chart-legend.multiple-items li {
+      max-width: 220px;
     }
     .chart-legend .hidden {
       color: var(--secondary-text-color);

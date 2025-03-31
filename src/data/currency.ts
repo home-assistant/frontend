@@ -82,7 +82,7 @@ export const countryCurrency = {
   PN: "NZD",
   PL: "PLN",
   PM: "EUR",
-  ZM: "ZMK",
+  ZM: "ZMW",
   EH: "MAD",
   EE: "EUR",
   EG: "EGP",

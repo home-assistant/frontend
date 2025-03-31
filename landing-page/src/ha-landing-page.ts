@@ -10,36 +10,56 @@ import { extractSearchParam } from "../../src/common/url/search-params";
 import { onBoardingStyles } from "../../src/onboarding/styles";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { LandingPageBaseElement } from "./landing-page-base-element";
+import {
+  getSupervisorNetworkInfo,
+  pingSupervisor,
+  type NetworkInfo,
+} from "./data/supervisor";
 
-const SCHEDULE_CORE_CHECK_SECONDS = 5;
+export const ASSUME_CORE_START_SECONDS = 60;
+const SCHEDULE_CORE_CHECK_SECONDS = 1;
+const SCHEDULE_FETCH_NETWORK_INFO_SECONDS = 5;
 
 @customElement("ha-landing-page")
 class HaLandingPage extends LandingPageBaseElement {
   @property({ attribute: false }) public translationFragment = "landing-page";
 
-  @state() private _networkIssue = false;
-
   @state() private _supervisorError = false;
+
+  @state() private _networkInfo?: NetworkInfo;
+
+  @state() private _coreStatusChecked = false;
+
+  @state() private _networkInfoError = false;
+
+  @state() private _coreCheckActive = false;
 
   private _mobileApp =
     extractSearchParam("redirect_uri") === "homeassistant://auth-callback";
 
   render() {
+    const networkIssue = this._networkInfo && !this._networkInfo.host_internet;
+
     return html`
       <ha-card>
         <div class="card-content">
           <h1>${this.localize("header")}</h1>
-          ${!this._networkIssue && !this._supervisorError
+          ${!networkIssue && !this._supervisorError
             ? html`
                 <p>${this.localize("subheader")}</p>
                 <mwc-linear-progress indeterminate></mwc-linear-progress>
               `
             : nothing}
-          <landing-page-network
-            @value-changed=${this._networkInfoChanged}
-            .localize=${this.localize}
-          ></landing-page-network>
-
+          ${networkIssue || this._networkInfoError
+            ? html`
+                <landing-page-network
+                  .localize=${this.localize}
+                  .networkInfo=${this._networkInfo}
+                  .error=${this._networkInfoError}
+                  @dns-set=${this._fetchSupervisorInfo}
+                ></landing-page-network>
+              `
+            : nothing}
           ${this._supervisorError
             ? html`
                 <ha-alert
@@ -88,14 +108,54 @@ class HaLandingPage extends LandingPageBaseElement {
     }
     import("../../src/components/ha-language-picker");
 
-    this._scheduleCoreCheck();
+    this._fetchSupervisorInfo(true);
   }
 
-  private _scheduleCoreCheck() {
+  private _scheduleFetchSupervisorInfo() {
     setTimeout(
-      () => this._checkCoreAvailability(),
-      SCHEDULE_CORE_CHECK_SECONDS * 1000
+      () => this._fetchSupervisorInfo(true),
+      // on assumed core start check every second, otherwise every 5 seconds
+      (this._coreCheckActive
+        ? SCHEDULE_CORE_CHECK_SECONDS
+        : SCHEDULE_FETCH_NETWORK_INFO_SECONDS) * 1000
     );
+  }
+
+  private _scheduleTurnOffCoreCheck() {
+    setTimeout(() => {
+      this._coreCheckActive = false;
+    }, ASSUME_CORE_START_SECONDS * 1000);
+  }
+
+  private async _fetchSupervisorInfo(schedule = false) {
+    try {
+      const response = await pingSupervisor();
+      if (!response.ok) {
+        throw new Error("ping-failed");
+      }
+
+      this._networkInfo = await getSupervisorNetworkInfo();
+      this._networkInfoError = false;
+      this._coreStatusChecked = false;
+    } catch (err: any) {
+      if (!this._coreStatusChecked) {
+        // wait before show errors, because we assume that core is starting
+        this._coreCheckActive = true;
+        this._scheduleTurnOffCoreCheck();
+      }
+      await this._checkCoreAvailability();
+
+      // assume supervisor update if ping fails -> don't show an error
+      if (!this._coreCheckActive && err.message !== "ping-failed") {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        this._networkInfoError = true;
+      }
+    }
+
+    if (schedule) {
+      this._scheduleFetchSupervisorInfo();
+    }
   }
 
   private async _checkCoreAvailability() {
@@ -103,18 +163,16 @@ class HaLandingPage extends LandingPageBaseElement {
       const response = await fetch("/manifest.json");
       if (response.ok) {
         location.reload();
+      } else {
+        throw new Error("Failed to fetch manifest");
       }
-    } finally {
-      this._scheduleCoreCheck();
+    } catch (_err) {
+      this._coreStatusChecked = true;
     }
   }
 
   private _showError() {
     this._supervisorError = true;
-  }
-
-  private _networkInfoChanged(ev: CustomEvent) {
-    this._networkIssue = ev.detail.value;
   }
 
   private _languageChanged(ev: CustomEvent) {

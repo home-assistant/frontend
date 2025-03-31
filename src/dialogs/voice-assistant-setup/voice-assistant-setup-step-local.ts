@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import {
   createAssistPipeline,
   listAssistPipelines,
@@ -16,7 +16,10 @@ import {
   fetchConfigFlowInProgress,
   handleConfigFlowStep,
 } from "../../data/config_flow";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import {
+  type ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntries,
+} from "../../data/entity_registry";
 import {
   fetchHassioAddonsInfo,
   installHassioAddon,
@@ -24,10 +27,12 @@ import {
 } from "../../data/hassio/addon";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
+import { fetchWyomingInfo } from "../../data/wyoming";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
+import { listAgents } from "../../data/conversation";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {
@@ -36,6 +41,12 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   @property({ attribute: false })
   public assistConfiguration?: AssistSatelliteConfiguration;
 
+  @property({ attribute: false }) public localOption!:
+    | "focused_local"
+    | "full_local";
+
+  @property({ attribute: false }) public language!: string;
+
   @state() private _state: "INSTALLING" | "NOT_SUPPORTED" | "ERROR" | "INTRO" =
     "INTRO";
 
@@ -43,9 +54,9 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _localTts?: EntityRegistryDisplayEntry[];
+  @state() private _localTts?: ExtEntityRegistryEntry[];
 
-  @state() private _localStt?: EntityRegistryDisplayEntry[];
+  @state() private _localStt?: ExtEntityRegistryEntry[];
 
   protected override render() {
     return html`<div class="content">
@@ -64,7 +75,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
                 "ui.panel.config.voice_assistants.satellite_wizard.local.secondary"
               )}
             </p>
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
             <p>
               ${this._detailState || "Installation can take several minutes"}
             </p>`
@@ -159,58 +170,62 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   }
 
   private async _checkLocal() {
-    this._findLocalEntities();
+    await this._findLocalEntities();
     if (!this._localTts || !this._localStt) {
       return;
     }
-    if (this._localTts.length && this._localStt.length) {
-      this._pickOrCreatePipelineExists();
-      return;
-    }
-    if (!isComponentLoaded(this.hass, "hassio")) {
-      this._state = "NOT_SUPPORTED";
-      return;
-    }
-    this._state = "INSTALLING";
     try {
+      if (this._localTts.length && this._localStt.length) {
+        await this._pickOrCreatePipelineExists();
+        return;
+      }
+      if (!isComponentLoaded(this.hass, "hassio")) {
+        this._state = "NOT_SUPPORTED";
+        return;
+      }
+      this._state = "INSTALLING";
       const { addons } = await fetchHassioAddonsInfo(this.hass);
-      const whisper = addons.find((addon) => addon.slug === "core_whisper");
-      const piper = addons.find((addon) => addon.slug === "core_piper");
+      const ttsAddon = addons.find(
+        (addon) => addon.slug === this._ttsAddonName
+      );
+      const sttAddon = addons.find(
+        (addon) => addon.slug === this._sttAddonName
+      );
       if (!this._localTts.length) {
-        if (!piper) {
+        if (!ttsAddon) {
           this._detailState = this.hass.localize(
-            "ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_piper"
+            `ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_${this._ttsProviderName}`
           );
-          await installHassioAddon(this.hass, "core_piper");
+          await installHassioAddon(this.hass, this._ttsAddonName);
         }
-        if (!piper || piper.state !== "started") {
+        if (!ttsAddon || ttsAddon.state !== "started") {
           this._detailState = this.hass.localize(
-            "ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_piper"
+            `ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_${this._ttsProviderName}`
           );
-          await startHassioAddon(this.hass, "core_piper");
+          await startHassioAddon(this.hass, this._ttsAddonName);
         }
         this._detailState = this.hass.localize(
-          "ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_piper"
+          `ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_${this._ttsProviderName}`
         );
-        await this._setupConfigEntry("piper");
+        await this._setupConfigEntry("tts");
       }
       if (!this._localStt.length) {
-        if (!whisper) {
+        if (!sttAddon) {
           this._detailState = this.hass.localize(
-            "ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_whisper"
+            `ui.panel.config.voice_assistants.satellite_wizard.local.state.installing_${this._sttProviderName}`
           );
-          await installHassioAddon(this.hass, "core_whisper");
+          await installHassioAddon(this.hass, this._sttAddonName);
         }
-        if (!whisper || whisper.state !== "started") {
+        if (!sttAddon || sttAddon.state !== "started") {
           this._detailState = this.hass.localize(
-            "ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_whisper"
+            `ui.panel.config.voice_assistants.satellite_wizard.local.state.starting_${this._sttProviderName}`
           );
-          await startHassioAddon(this.hass, "core_whisper");
+          await startHassioAddon(this.hass, this._sttAddonName);
         }
         this._detailState = this.hass.localize(
-          "ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_whisper"
+          `ui.panel.config.voice_assistants.satellite_wizard.local.state.setup_${this._sttProviderName}`
         );
-        await this._setupConfigEntry("whisper");
+        await this._setupConfigEntry("stt");
       }
       this._detailState = this.hass.localize(
         "ui.panel.config.voice_assistants.satellite_wizard.local.state.creating_pipeline"
@@ -222,20 +237,72 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
   }
 
-  private _findLocalEntities() {
+  private readonly _ttsProviderName = "piper";
+
+  private readonly _ttsAddonName = "core_piper";
+
+  private readonly _ttsHostName = "core-piper";
+
+  private readonly _ttsPort = 10200;
+
+  private get _sttProviderName() {
+    return this.localOption === "focused_local"
+      ? "speech-to-phrase"
+      : "faster-whisper";
+  }
+
+  private get _sttAddonName() {
+    return this.localOption === "focused_local"
+      ? "core_speech-to-phrase"
+      : "core_whisper";
+  }
+
+  private get _sttHostName() {
+    return this.localOption === "focused_local"
+      ? "core-speech-to-phrase"
+      : "core-whisper";
+  }
+
+  private readonly _sttPort = 10300;
+
+  private async _findLocalEntities() {
     const wyomingEntities = Object.values(this.hass.entities).filter(
       (entity) => entity.platform === "wyoming"
     );
-    this._localTts = wyomingEntities.filter(
-      (ent) => computeDomain(ent.entity_id) === "tts"
+    if (!wyomingEntities.length) {
+      this._localStt = [];
+      this._localTts = [];
+      return;
+    }
+    const wyomingInfo = await fetchWyomingInfo(this.hass);
+
+    const entityRegs = Object.values(
+      await getExtendedEntityRegistryEntries(
+        this.hass,
+        wyomingEntities.map((ent) => ent.entity_id)
+      )
     );
-    this._localStt = wyomingEntities.filter(
-      (ent) => computeDomain(ent.entity_id) === "stt"
+
+    this._localTts = entityRegs.filter(
+      (ent) =>
+        computeDomain(ent.entity_id) === "tts" &&
+        ent.config_entry_id &&
+        wyomingInfo.info[ent.config_entry_id]?.tts.some(
+          (provider) => provider.name === this._ttsProviderName
+        )
+    );
+    this._localStt = entityRegs.filter(
+      (ent) =>
+        computeDomain(ent.entity_id) === "stt" &&
+        ent.config_entry_id &&
+        wyomingInfo.info[ent.config_entry_id]?.asr.some(
+          (provider) => provider.name === this._sttProviderName
+        )
     );
   }
 
-  private async _setupConfigEntry(addon: string) {
-    const configFlow = await this._findConfigFlowInProgress(addon);
+  private async _setupConfigEntry(type: "tts" | "stt") {
+    const configFlow = await this._findConfigFlowInProgress(type);
 
     if (configFlow) {
       const step = await handleConfigFlowStep(
@@ -248,30 +315,38 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       }
     }
 
-    return this._createConfigEntry(addon);
+    return this._createConfigEntry(type);
   }
 
-  private async _findConfigFlowInProgress(addon: string) {
+  private async _findConfigFlowInProgress(type: "tts" | "stt") {
     const configFlows = await fetchConfigFlowInProgress(this.hass.connection);
 
     return configFlows.find(
       (flow) =>
         flow.handler === "wyoming" &&
         flow.context.source === "hassio" &&
-        (flow.context.configuration_url.includes(`core_${addon}`) ||
-          flow.context.title_placeholders.title.toLowerCase().includes(addon))
+        ((flow.context.configuration_url &&
+          flow.context.configuration_url.includes(
+            type === "tts" ? this._ttsAddonName : this._sttAddonName
+          )) ||
+          (flow.context.title_placeholders.name &&
+            flow.context.title_placeholders.name
+              .toLowerCase()
+              .includes(
+                type === "tts" ? this._ttsProviderName : this._sttProviderName
+              )))
     );
   }
 
-  private async _createConfigEntry(addon: string) {
+  private async _createConfigEntry(type: "tts" | "stt") {
     const configFlow = await createConfigFlow(this.hass, "wyoming");
     const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
-      host: `core-${addon}`,
-      port: addon === "piper" ? 10200 : 10300,
+      host: type === "tts" ? this._ttsHostName : this._sttHostName,
+      port: type === "tts" ? this._ttsPort : this._sttPort,
     });
     if (step.type !== "create_entry") {
       throw new Error(
-        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { addon })}${"errors" in step ? `: ${step.errors.base}` : ""}`
+        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { addon: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
       );
     }
   }
@@ -284,32 +359,15 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const pipelines = await listAssistPipelines(this.hass);
-    const preferredPipeline = pipelines.pipelines.find(
-      (pipeline) => pipeline.id === pipelines.preferred_pipeline
-    );
+
+    if (pipelines.preferred_pipeline) {
+      pipelines.pipelines.sort((a) =>
+        a.id === pipelines.preferred_pipeline ? -1 : 0
+      );
+    }
 
     const ttsEntityIds = this._localTts.map((ent) => ent.entity_id);
     const sttEntityIds = this._localStt.map((ent) => ent.entity_id);
-
-    if (preferredPipeline) {
-      if (
-        preferredPipeline.conversation_engine ===
-          "conversation.home_assistant" &&
-        preferredPipeline.tts_engine &&
-        ttsEntityIds.includes(preferredPipeline.tts_engine) &&
-        preferredPipeline.stt_engine &&
-        sttEntityIds.includes(preferredPipeline.stt_engine)
-      ) {
-        await this.hass.callService(
-          "select",
-          "select_option",
-          { option: "preferred" },
-          { entity_id: this.assistConfiguration?.pipeline_entity_id }
-        );
-        this._nextStep();
-        return;
-      }
-    }
 
     let localPipeline = pipelines.pipelines.find(
       (pipeline) =>
@@ -317,7 +375,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         pipeline.tts_engine &&
         ttsEntityIds.includes(pipeline.tts_engine) &&
         pipeline.stt_engine &&
-        sttEntityIds.includes(pipeline.stt_engine)
+        sttEntityIds.includes(pipeline.stt_engine) &&
+        pipeline.language.split("-")[0] === this.language.split("-")[0]
     );
 
     if (!localPipeline) {
@@ -341,29 +400,56 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const pipelines = await listAssistPipelines(this.hass);
 
+    const agent = (
+      await listAgents(
+        this.hass,
+        this.language || this.hass.config.language,
+        this.hass.config.country || undefined
+      )
+    ).agents.find((agnt) => agnt.id === "conversation.home_assistant");
+
+    if (!agent?.supported_languages.length) {
+      throw new Error(
+        "Conversation agent does not support requested language."
+      );
+    }
+
     const ttsEngine = (
       await listTTSEngines(
         this.hass,
-        this.hass.config.language,
+        this.language,
         this.hass.config.country || undefined
       )
     ).providers.find((provider) => provider.engine_id === ttsEntityId);
+
+    if (!ttsEngine?.supported_languages?.length) {
+      throw new Error("TTS engine does not support requested language.");
+    }
+
     const ttsVoices = await listTTSVoices(
       this.hass,
       ttsEntityId,
-      ttsEngine?.supported_languages![0] || this.hass.config.language
+      ttsEngine.supported_languages[0]
     );
+
+    if (!ttsVoices.voices?.length) {
+      throw new Error("No voice available for requested language.");
+    }
 
     const sttEngine = (
       await listSTTEngines(
         this.hass,
-        this.hass.config.language,
+        this.language,
         this.hass.config.country || undefined
       )
     ).providers.find((provider) => provider.engine_id === sttEntityId);
 
+    if (!sttEngine?.supported_languages?.length) {
+      throw new Error("STT engine does not support requested language.");
+    }
+
     let pipelineName = this.hass.localize(
-      "ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline"
+      `ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`
     );
     let i = 1;
     while (
@@ -372,27 +458,27 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         (pipeline) => pipeline.name === pipelineName
       )
     ) {
-      pipelineName = `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline")} ${i}`;
+      pipelineName = `${this.hass.localize(`ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`)} ${i}`;
       i++;
     }
 
     return createAssistPipeline(this.hass, {
       name: pipelineName,
-      language: this.hass.config.language.split("-")[0],
+      language: this.language.split("-")[0],
       conversation_engine: "conversation.home_assistant",
-      conversation_language: this.hass.config.language.split("-")[0],
+      conversation_language: agent.supported_languages[0],
       stt_engine: sttEntityId,
-      stt_language: sttEngine!.supported_languages![0],
+      stt_language: sttEngine.supported_languages[0],
       tts_engine: ttsEntityId,
-      tts_language: ttsEngine!.supported_languages![0],
-      tts_voice: ttsVoices.voices![0].voice_id,
+      tts_language: ttsEngine.supported_languages[0],
+      tts_voice: ttsVoices.voices[0].voice_id,
       wake_word_entity: null,
       wake_word_id: null,
     });
   }
 
   private async _findEntitiesAndCreatePipeline(tryNo = 0) {
-    this._findLocalEntities();
+    await this._findLocalEntities();
     if (!this._localTts?.length || !this._localStt?.length) {
       if (tryNo > 3) {
         throw new Error(
@@ -425,7 +511,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   static styles = [
     AssistantSetupStyles,
     css`
-      ha-circular-progress {
+      ha-spinner {
         margin-top: 24px;
         margin-bottom: 24px;
       }

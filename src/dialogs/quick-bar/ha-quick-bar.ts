@@ -19,16 +19,17 @@ import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list-item";
+import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
@@ -40,7 +41,6 @@ import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
-import { computeDeviceName } from "../../data/device_registry";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -237,10 +237,7 @@ export class QuickBar extends LitElement {
           </ha-textfield>
         </div>
         ${!items
-          ? html`<ha-circular-progress
-              size="small"
-              indeterminate
-            ></ha-circular-progress>`
+          ? html`<ha-spinner size="small"></ha-spinner>`
           : items.length === 0
             ? html`
                 <div class="nothing-found">
@@ -376,7 +373,6 @@ export class QuickBar extends LitElement {
       <ha-list-item
         .item=${item}
         index=${ifDefined(index)}
-        class="command-item"
         hasMeta
         tabindex="0"
       >
@@ -426,10 +422,9 @@ export class QuickBar extends LitElement {
   }
 
   private _addSpinnerToCommandItem(index: number): void {
-    const spinner = document.createElement("ha-circular-progress");
+    const spinner = document.createElement("ha-spinner");
     spinner.size = "small";
     spinner.slot = "meta";
-    spinner.indeterminate = true;
     this._getItemAtIndex(index)?.appendChild(spinner);
   }
 
@@ -534,9 +529,7 @@ export class QuickBar extends LitElement {
           ? this.hass.areas[device.area_id]
           : undefined;
         const deviceItem = {
-          primaryText:
-            computeDeviceName(device, this.hass) ||
-            this.hass.localize("ui.components.device-picker.unnamed_device"),
+          primaryText: computeDeviceNameDisplay(device, this.hass),
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),
@@ -925,10 +918,6 @@ export class QuickBar extends LitElement {
         ha-list-item {
           width: 100%;
           --mdc-list-item-graphic-margin: 20px;
-        }
-
-        ha-list-item.command-item {
-          text-transform: capitalize;
         }
 
         ha-tip {

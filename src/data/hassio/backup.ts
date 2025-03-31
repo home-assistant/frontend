@@ -214,7 +214,7 @@ export const uploadBackup = async (
     );
   } else {
     // When called from onboarding we don't have hass
-    resp = await fetch("/api/hassio/backups/new/upload", {
+    resp = await fetch(`${__HASS_URL__}/api/hassio/backups/new/upload`, {
       method: "POST",
       body: fd,
     });

@@ -1,18 +1,19 @@
+import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { STUB_IMAGE } from "../../cards/hui-picture-entity-card";
 import type { PictureEntityCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { STUB_IMAGE } from "../../cards/hui-picture-entity-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -25,6 +26,7 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     theme: optional(string()),
@@ -64,12 +66,35 @@ const SCHEMA = [
   },
   { name: "theme", selector: { theme: {} } },
   {
-    name: "tap_action",
-    selector: { ui_action: {} },
-  },
-  {
-    name: "hold_action",
-    selector: { ui_action: {} },
+    name: "interactions",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiGestureTap,
+    schema: [
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: (["hold_action", "double_tap_action"] as const).map(
+          (action) => ({
+            name: action,
+            selector: {
+              ui_action: {
+                default_action: "none" as const,
+              },
+            },
+          })
+        ),
+      },
+    ],
   },
 ] as const;
 
@@ -132,6 +157,7 @@ export class HuiPictureEntityCardEditor
       case "theme":
       case "tap_action":
       case "hold_action":
+      case "double_tap_action":
         return `${this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         )} (${this.hass!.localize(

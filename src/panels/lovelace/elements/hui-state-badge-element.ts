@@ -60,7 +60,7 @@ export class HuiStateBadgeElement
       throw Error("Entity required");
     }
 
-    this._config = { hold_action: { action: "more-info" }, ...config };
+    this._config = { tap_action: { action: "more-info" }, ...config };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {

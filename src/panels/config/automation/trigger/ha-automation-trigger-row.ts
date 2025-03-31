@@ -159,12 +159,13 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : nothing}
 
-        <ha-expansion-panel leftChevron>
+        <ha-expansion-panel left-chevron>
+          <ha-svg-icon
+            slot="leading-icon"
+            class="trigger-icon"
+            .path=${TRIGGER_ICONS[type]}
+          ></ha-svg-icon>
           <h3 slot="header">
-            <ha-svg-icon
-              class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
-            ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
 
@@ -672,9 +673,6 @@ export default class HaAutomationTriggerRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {
@@ -683,8 +681,18 @@ export default class HaAutomationTriggerRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
         .triggered {
           cursor: pointer;
@@ -701,8 +709,18 @@ export default class HaAutomationTriggerRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
         .triggered.active {
           max-height: 100px;

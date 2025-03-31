@@ -123,7 +123,7 @@ class HaHLSPlayer extends LitElement {
     try {
       const { url } = await fetchStreamUrl(this.hass!, this.entityid);
 
-      this._url = url;
+      this._url = this.hass.hassUrl(url);
       this._cleanUp();
       this._resetError();
       this._startHls();
@@ -181,15 +181,7 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      // In case we arrive here with a relative URL, we need to provide a valid
-      // base/absolute URL to avoid the URL() constructor throwing an error.
-      let base_url: string;
-      try {
-        base_url = new URL(this._url).href;
-      } catch (_error) {
-        base_url = new URL(this._url, window.location.href).href;
-      }
-      playlist_url = new URL(match[3], base_url).href;
+      playlist_url = new URL(match[3], this._url).href;
     } else {
       playlist_url = this._url;
     }
@@ -219,7 +211,7 @@ class HaHLSPlayer extends LitElement {
     await this.hass!.auth.external!.fireMessage({
       type: "exoplayer/play_hls",
       payload: {
-        url: new URL(url, window.location.href).toString(),
+        url,
         muted: this.muted,
       },
     });

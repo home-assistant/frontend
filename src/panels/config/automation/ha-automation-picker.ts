@@ -274,6 +274,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
               })}
             ></ha-state-icon>`,
         },
+        entity_id: {
+          title: "",
+          hidden: true,
+          filterable: true,
+        },
         name: {
           title: localize("ui.panel.config.automation.picker.headers.name"),
           main: true,

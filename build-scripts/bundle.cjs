@@ -18,7 +18,7 @@ module.exports.sourceMapURL = () => {
 module.exports.ignorePackages = () => [];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
+module.exports.emptyPackages = ({ isHassioBuild }) =>
   [
     // Contains all color definitions for all material color sets.
     // We don't use it
@@ -28,12 +28,6 @@ module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
     require.resolve("@polymer/font-roboto/roboto.js"),
     require.resolve("@vaadin/vaadin-material-styles/typography.js"),
     require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
-    // Compatibility not needed for latest builds
-    latestBuild &&
-      // wrapped in require.resolve so it blows up if file no longer exists
-      require.resolve(
-        path.resolve(paths.polymer_dir, "src/resources/compatibility.ts")
-      ),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
       require.resolve(
@@ -55,7 +49,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __STATIC_PATH__: "/static/",
   __HASS_URL__: `\`${
     "HASS_URL" in process.env
-      ? process.env["HASS_URL"]
+      ? process.env.HASS_URL
       : "${location.protocol}//${location.host}"
   }\``,
   "process.env.NODE_ENV": JSON.stringify(

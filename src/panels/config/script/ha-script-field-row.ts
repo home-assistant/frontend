@@ -82,7 +82,7 @@ export default class HaScriptFieldRow extends LitElement {
 
     return html`
       <ha-card outlined>
-        <ha-expansion-panel leftChevron>
+        <ha-expansion-panel left-chevron>
           <h3 slot="header">${this.key}</h3>
 
           <slot name="icons" slot="icons"></slot>
@@ -327,8 +327,18 @@ export default class HaScriptFieldRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
 
         ha-list-item[disabled] {
