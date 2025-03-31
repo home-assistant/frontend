@@ -296,7 +296,11 @@ export class StatisticsChart extends LitElement {
           align: "left",
         },
         position: computeRTL(this.hass) ? "right" : "left",
-        scale: true,
+        scale:
+          this.chartType !== "bar" ||
+          this.logarithmicScale ||
+          minYAxis !== undefined ||
+          maxYAxis !== undefined,
         min: this._clampYAxis(minYAxis),
         max: this._clampYAxis(maxYAxis),
         splitLine: {
