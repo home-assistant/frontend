@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import "../ha-button";
 import "../ha-spinner";
 import "../ha-svg-icon";
-import "../ha-button";
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
