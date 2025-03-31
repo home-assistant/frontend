@@ -8,7 +8,6 @@ import {
   boolean,
   object,
   optional,
-  number,
   string,
 } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
@@ -34,7 +33,6 @@ const cardConfigStruct = assign(
     hide_completed: optional(boolean()),
     hide_create: optional(boolean()),
     display_order: optional(string()),
-    days_to_show: optional(number()),
   })
 );
 
@@ -58,10 +56,6 @@ export class HuiTodoListEditor
           },
         },
         { name: "theme", selector: { theme: {} } },
-        {
-          name: "days_to_show",
-          selector: { number: { mode: "box" } },
-        },
         { name: "hide_completed", selector: { boolean: {} } },
         {
           name: "display_order",
