@@ -6,6 +6,10 @@ import {
   differenceInMilliseconds,
   differenceInMonths,
   endOfMonth,
+  startOfDay,
+  endOfDay,
+  differenceInDays,
+  addDays,
 } from "date-fns";
 import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -100,6 +104,32 @@ export const shiftDateRange = (
       locale,
       config
     );
+  } else if (
+    calcDateProperty(
+      startDate,
+      (date) => startOfDay(date).getMilliseconds() === date.getMilliseconds(),
+      locale,
+      config
+    ) &&
+    calcDateProperty(
+      endDate,
+      (date) => endOfDay(date).getMilliseconds() === date.getMilliseconds(),
+      locale,
+      config
+    )
+  ) {
+    const difference =
+      ((calcDateDifferenceProperty(
+        endDate,
+        startDate,
+        differenceInDays,
+        locale,
+        config
+      ) as number) +
+        1) *
+      (forward ? 1 : -1);
+    start = calcDate(startDate, addDays, locale, config, difference);
+    end = calcDate(endDate, addDays, locale, config, difference);
   } else {
     const difference =
       ((calcDateDifferenceProperty(
