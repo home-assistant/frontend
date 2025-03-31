@@ -10,7 +10,7 @@ import {
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
-import { addDays, endOfDay, isSameDay } from "date-fns";
+import { addDays, addMonths, addWeeks, addYears, endOfDay, isSameDay } from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValueMap, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -160,7 +160,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
-            this._filterItems(items, this._config?.days_to_show),
+            this._filterItems(items, this._config?.period),
             sort
           )
         : []
@@ -170,7 +170,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
-            this._filterItems(items, this._config?.days_to_show),
+            this._filterItems(items, this._config?.period),
             sort
           )
         : []
@@ -178,19 +178,40 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _filterItems(
     items: TodoItem[],
-    daysToShow?: number | undefined
+    period?: {
+        calendar?: { period: string; offset: number };
+      }
   ): TodoItem[] {
     const filteredItems = items.filter((item) => item.status === TodoItemStatus.NeedsAction)
 
-    const ignoreEndDate = daysToShow === undefined;
-    if (ignoreEndDate) return filteredItems;
+    if (!period || !period.calendar || !period.calendar.period)
+      return filteredItems;
 
-    const endDate = addDays(new Date(), daysToShow);
+    let endDate = this._addPeriod(new Date(), period.calendar);
 
     return filteredItems.filter((item) => {
       const dueDate = this._getDueDate(item);
       return dueDate && dueDate <= endDate;
     });
+  }
+
+  private _addPeriod(
+    date: Date,
+    calendar: {period: string; offset:number},
+  ) : Date
+  {
+    switch(calendar.period)
+    {
+      case ("day"):
+        return addDays(date, calendar.offset);
+      case ("week"):
+        return addWeeks(date, calendar.offset);
+      case ("month"):
+        return addMonths(date, calendar.offset);
+      case ("year"):
+      default:
+        return addYears(date, calendar.offset);
+    }
   }
 
   public willUpdate(
