@@ -359,33 +359,15 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const pipelines = await listAssistPipelines(this.hass);
-    const preferredPipeline = pipelines.pipelines.find(
-      (pipeline) => pipeline.id === pipelines.preferred_pipeline
-    );
+
+    if (pipelines.preferred_pipeline) {
+      pipelines.pipelines.sort((a) =>
+        a.id === pipelines.preferred_pipeline ? -1 : 0
+      );
+    }
 
     const ttsEntityIds = this._localTts.map((ent) => ent.entity_id);
     const sttEntityIds = this._localStt.map((ent) => ent.entity_id);
-
-    if (preferredPipeline) {
-      if (
-        preferredPipeline.conversation_engine ===
-          "conversation.home_assistant" &&
-        preferredPipeline.tts_engine &&
-        ttsEntityIds.includes(preferredPipeline.tts_engine) &&
-        preferredPipeline.stt_engine &&
-        sttEntityIds.includes(preferredPipeline.stt_engine) &&
-        preferredPipeline.language.split("-")[0] === this.language.split("-")[0]
-      ) {
-        await this.hass.callService(
-          "select",
-          "select_option",
-          { option: "preferred" },
-          { entity_id: this.assistConfiguration?.pipeline_entity_id }
-        );
-        this._nextStep();
-        return;
-      }
-    }
 
     let localPipeline = pipelines.pipelines.find(
       (pipeline) =>

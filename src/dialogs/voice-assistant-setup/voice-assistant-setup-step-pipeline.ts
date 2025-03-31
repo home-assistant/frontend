@@ -284,32 +284,11 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }
     try {
       const pipelines = await listAssistPipelines(this.hass);
-      const preferredPipeline = pipelines.pipelines.find(
-        (pipeline) => pipeline.id === pipelines.preferred_pipeline
-      );
 
-      if (preferredPipeline) {
-        if (
-          preferredPipeline.conversation_engine ===
-            "conversation.home_assistant" &&
-          preferredPipeline.tts_engine === cloudTtsEntityId &&
-          preferredPipeline.stt_engine === cloudSttEntityId &&
-          (!useLanguage ||
-            preferredPipeline.language.split("-")[0] ===
-              this.language!.split("-")[0])
-        ) {
-          await this.hass.callService(
-            "select",
-            "select_option",
-            { option: "preferred" },
-            { entity_id: this.assistConfiguration?.pipeline_entity_id }
-          );
-          fireEvent(this, "next-step", {
-            step: STEP.SUCCESS,
-            noPrevious: true,
-          });
-          return true;
-        }
+      if (pipelines.preferred_pipeline) {
+        pipelines.pipelines.sort((a) =>
+          a.id === pipelines.preferred_pipeline ? -1 : 0
+        );
       }
 
       let cloudPipeline = pipelines.pipelines.find(
