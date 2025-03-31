@@ -2,12 +2,15 @@ import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../ha-button";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-button";
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
+  @property() public label?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public progress = false;
@@ -22,11 +25,13 @@ export class HaProgressButton extends LitElement {
     const overlay = this._result || this.progress;
     return html`
       <ha-button
-        ?raised=${this.raised}
+        .raised=${this.raised}
+        .label=${this.label}
         .unelevated=${this.unelevated}
         .disabled=${this.disabled || this.progress}
         class=${this._result || ""}
       >
+        <slot name="icon" slot="icon"></slot>
         <slot></slot>
       </ha-button>
       ${!overlay
@@ -68,12 +73,12 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
-    mwc-button {
+    ha-button {
       transition: all 1s;
       pointer-events: initial;
     }
 
-    mwc-button.success {
+    ha-button.success {
       --mdc-theme-primary: white;
       background-color: var(--success-color);
       transition: none;
@@ -81,13 +86,13 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
-    mwc-button[unelevated].success,
-    mwc-button[raised].success {
+    ha-button[unelevated].success,
+    ha-button[raised].success {
       --mdc-theme-primary: var(--success-color);
       --mdc-theme-on-primary: white;
     }
 
-    mwc-button.error {
+    ha-button.error {
       --mdc-theme-primary: white;
       background-color: var(--error-color);
       transition: none;
@@ -95,8 +100,8 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
-    mwc-button[unelevated].error,
-    mwc-button[raised].error {
+    ha-button[unelevated].error,
+    ha-button[raised].error {
       --mdc-theme-primary: var(--error-color);
       --mdc-theme-on-primary: white;
     }
@@ -113,8 +118,8 @@ export class HaProgressButton extends LitElement {
       color: white;
     }
 
-    mwc-button.success slot,
-    mwc-button.error slot {
+    ha-button.success slot,
+    ha-button.error slot {
       visibility: hidden;
     }
     :host([destructive]) {
