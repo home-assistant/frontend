@@ -59,11 +59,19 @@ import "./add-node/zwave-js-add-node-code-input";
 import "./add-node/zwave-js-add-node-loading";
 import "./add-node/zwave-js-add-node-added-insecure";
 import "./add-node/zwave-js-add-node-grant-security-classes";
+import { slugify } from "../../../../../common/string/slugify";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import {
+  subscribeEntityRegistry,
+  updateEntityRegistryEntry,
+} from "../../../../../data/entity_registry";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
 @customElement("dialog-zwave_js-add-node")
-class DialogZWaveJSAddNode extends LitElement {
+class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
   // #region variables
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -111,7 +119,17 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _newDeviceSubscription?: Promise<UnsubscribeFunc | undefined>;
 
+  @state() private _entities: EntityRegistryEntry[] = [];
+
   // #endregion
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entities) => {
+        this._entities = entities;
+      }),
+    ];
+  }
 
   protected render() {
     if (!this._entryId) {
@@ -821,20 +839,62 @@ class DialogZWaveJSAddNode extends LitElement {
         this._step = "failed";
       }
     } else {
-      if (this._device.name !== this._deviceOptions?.name) {
+      const nameChanged = this._device.name !== this._deviceOptions?.name;
+      if (nameChanged || this._deviceOptions?.area) {
+        const oldDeviceName = this._device.name;
+        const newDeviceName = this._deviceOptions!.name;
         try {
           await updateDeviceRegistryEntry(this.hass, this._device.id, {
             name_by_user: this._deviceOptions!.name,
             area_id: this._deviceOptions!.area,
           });
+
+          if (nameChanged) {
+            // rename entities
+            const oldDeviceEntityId = slugify(oldDeviceName);
+            const newDeviceEntityId = slugify(newDeviceName);
+
+            await Promise.all(
+              Object.values(this._entities)
+                .filter((entity) => entity.device_id === this._device!.id)
+                .map((entity) => {
+                  const entityState = this.hass.states[entity.entity_id];
+                  const name =
+                    entity.name ||
+                    (entityState && computeStateName(entityState));
+                  let newEntityId: string | null = null;
+                  let newName: string | null = null;
+
+                  if (name && name.includes(oldDeviceName)) {
+                    newName = name.replace(oldDeviceName, newDeviceName);
+                    newEntityId = entity.entity_id.replace(
+                      oldDeviceEntityId,
+                      newDeviceEntityId
+                    );
+                  }
+
+                  if (!newName && !newEntityId) {
+                    return undefined;
+                  }
+
+                  return updateEntityRegistryEntry(
+                    this.hass!,
+                    entity.entity_id,
+                    {
+                      name: newName || name,
+                      disabled_by: entity.disabled_by,
+                      new_entity_id: newEntityId || entity.entity_id,
+                    }
+                  );
+                })
+            );
+          }
         } catch (_err: any) {
           this._error = this.hass.localize(
             "ui.panel.config.zwave_js.add_node.configure_device.save_device_failed"
           );
           this._step = "failed";
         }
-
-        // TODO rename entities like in ZHA
       }
 
       // if not finished yet show interviewing loading screen
