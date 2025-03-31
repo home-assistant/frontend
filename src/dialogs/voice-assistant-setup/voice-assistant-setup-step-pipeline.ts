@@ -246,7 +246,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   private async _fetchData() {
     const cloud =
-      (await this._hasCloud()) && (await this._createCloudPipeline());
+      (await this._hasCloud()) && (await this._createCloudPipeline(false));
     if (!cloud) {
       this._cloudChecked = true;
       this._languageScores = (await getLanguageScores(this.hass)).languages;
@@ -264,7 +264,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     return true;
   }
 
-  private async _createCloudPipeline(): Promise<boolean> {
+  private async _createCloudPipeline(useLanguage: boolean): Promise<boolean> {
     let cloudTtsEntityId;
     let cloudSttEntityId;
     for (const entity of Object.values(this.hass.entities)) {
@@ -284,36 +284,20 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     }
     try {
       const pipelines = await listAssistPipelines(this.hass);
-      const preferredPipeline = pipelines.pipelines.find(
-        (pipeline) => pipeline.id === pipelines.preferred_pipeline
-      );
 
-      if (preferredPipeline) {
-        if (
-          preferredPipeline.conversation_engine ===
-            "conversation.home_assistant" &&
-          preferredPipeline.tts_engine === cloudTtsEntityId &&
-          preferredPipeline.stt_engine === cloudSttEntityId
-        ) {
-          await this.hass.callService(
-            "select",
-            "select_option",
-            { option: "preferred" },
-            { entity_id: this.assistConfiguration?.pipeline_entity_id }
-          );
-          fireEvent(this, "next-step", {
-            step: STEP.SUCCESS,
-            noPrevious: true,
-          });
-          return true;
-        }
+      if (pipelines.preferred_pipeline) {
+        pipelines.pipelines.sort((a) =>
+          a.id === pipelines.preferred_pipeline ? -1 : 0
+        );
       }
 
       let cloudPipeline = pipelines.pipelines.find(
         (pipeline) =>
           pipeline.conversation_engine === "conversation.home_assistant" &&
           pipeline.tts_engine === cloudTtsEntityId &&
-          pipeline.stt_engine === cloudSttEntityId
+          pipeline.stt_engine === cloudSttEntityId &&
+          (!useLanguage ||
+            pipeline.language.split("-")[0] === this.language!.split("-")[0])
       );
 
       if (!cloudPipeline) {
@@ -405,7 +389,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   private async _setupCloud() {
     if (await this._hasCloud()) {
-      this._createCloudPipeline();
+      this._createCloudPipeline(true);
       return;
     }
     fireEvent(this, "next-step", { step: STEP.CLOUD });
