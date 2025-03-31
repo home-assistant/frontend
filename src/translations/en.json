@@ -1111,7 +1111,7 @@
         "wrong_code": "Wrong barcode scanned! {format}: {rawValue}, we need a QR code.",
         "no_camera_found": "No camera found",
         "app": {
-          "title": "Scan QR-code",
+          "title": "Scan QR code",
           "description": "Find the code on your device",
           "alternativeOptionLabel": "More options"
         }
@@ -5889,7 +5889,7 @@
             "validate_dsk_pin": {
               "title": "Verify key",
               "text": "Find the key on your device or manual and enter the 5-digit PIN.",
-              "placeholder": "Pin"
+              "placeholder": "PIN"
             },
             "added_insecure": {
               "title": "Device added insecurely",
