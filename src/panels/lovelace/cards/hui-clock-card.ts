@@ -234,6 +234,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       font-size: 2rem;
       font-weight: 500;
       line-height: 0.8;
+      direction: ltr;
     }
 
     .time-title + .time-parts {
