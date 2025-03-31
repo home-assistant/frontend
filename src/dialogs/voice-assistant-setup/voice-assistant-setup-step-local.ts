@@ -373,7 +373,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         preferredPipeline.tts_engine &&
         ttsEntityIds.includes(preferredPipeline.tts_engine) &&
         preferredPipeline.stt_engine &&
-        sttEntityIds.includes(preferredPipeline.stt_engine)
+        sttEntityIds.includes(preferredPipeline.stt_engine) &&
+        preferredPipeline.language.split("-")[0] === this.language.split("-")[0]
       ) {
         await this.hass.callService(
           "select",
@@ -392,7 +393,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         pipeline.tts_engine &&
         ttsEntityIds.includes(pipeline.tts_engine) &&
         pipeline.stt_engine &&
-        sttEntityIds.includes(pipeline.stt_engine)
+        sttEntityIds.includes(pipeline.stt_engine) &&
+        pipeline.language.split("-")[0] === this.language.split("-")[0]
     );
 
     if (!localPipeline) {

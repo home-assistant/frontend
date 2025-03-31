@@ -246,7 +246,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   private async _fetchData() {
     const cloud =
-      (await this._hasCloud()) && (await this._createCloudPipeline());
+      (await this._hasCloud()) && (await this._createCloudPipeline(false));
     if (!cloud) {
       this._cloudChecked = true;
       this._languageScores = (await getLanguageScores(this.hass)).languages;
@@ -264,7 +264,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     return true;
   }
 
-  private async _createCloudPipeline(): Promise<boolean> {
+  private async _createCloudPipeline(useLanguage: boolean): Promise<boolean> {
     let cloudTtsEntityId;
     let cloudSttEntityId;
     for (const entity of Object.values(this.hass.entities)) {
@@ -293,7 +293,10 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           preferredPipeline.conversation_engine ===
             "conversation.home_assistant" &&
           preferredPipeline.tts_engine === cloudTtsEntityId &&
-          preferredPipeline.stt_engine === cloudSttEntityId
+          preferredPipeline.stt_engine === cloudSttEntityId &&
+          (!useLanguage ||
+            preferredPipeline.language.split("-")[0] ===
+              this.language!.split("-")[0])
         ) {
           await this.hass.callService(
             "select",
@@ -313,7 +316,9 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         (pipeline) =>
           pipeline.conversation_engine === "conversation.home_assistant" &&
           pipeline.tts_engine === cloudTtsEntityId &&
-          pipeline.stt_engine === cloudSttEntityId
+          pipeline.stt_engine === cloudSttEntityId &&
+          (!useLanguage ||
+            pipeline.language.split("-")[0] === this.language!.split("-")[0])
       );
 
       if (!cloudPipeline) {
@@ -405,7 +410,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
   private async _setupCloud() {
     if (await this._hasCloud()) {
-      this._createCloudPipeline();
+      this._createCloudPipeline(true);
       return;
     }
     fireEvent(this, "next-step", { step: STEP.CLOUD });
