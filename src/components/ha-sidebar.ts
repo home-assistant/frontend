@@ -889,6 +889,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
           margin: 4px;
           border-radius: 4px;
+          height: 40px;
           --md-list-item-one-line-container-height: 40px;
           width: 48px;
           position: relative;
@@ -975,14 +976,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list-item.user {
-          height: 48px;
           --md-list-item-leading-icon-size: 40px;
-          --md-list-item-bottom-space: 4px;
+          --md-list-item-bottom-space: 12px;
           --md-list-item-leading-space: 4px;
           --md-list-item-trailing-space: 4px;
-        }
-        ha-user-badge {
-          display: block;
         }
 
         .spacer {
