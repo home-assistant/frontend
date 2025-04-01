@@ -186,7 +186,10 @@ export class HatScriptGraph extends LitElement {
           ? ensureArray(config.choose)?.map((branch, i) => {
               const branchPath = `${path}/choose/${i}`;
               const trackThis = tracePath.includes(i);
-              this.renderedNodes[branchPath] = { config, path: branchPath };
+              this.renderedNodes[branchPath] = {
+                config: branch,
+                path: branchPath,
+              };
               if (trackThis) {
                 this.trackedNodes[branchPath] = this.renderedNodes[branchPath];
               }
@@ -196,7 +199,7 @@ export class HatScriptGraph extends LitElement {
                     .iconPath=${!trace || trackThis
                       ? mdiCheckboxMarkedOutline
                       : mdiCheckboxBlankOutline}
-                    @focus=${this._selectNode(config, branchPath)}
+                    @focus=${this._selectNode(branch, branchPath)}
                     ?track=${trackThis}
                     ?active=${this.selected === branchPath}
                     .notEnabled=${disabled || config.enabled === false}
