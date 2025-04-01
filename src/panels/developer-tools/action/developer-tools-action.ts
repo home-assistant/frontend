@@ -511,7 +511,20 @@ class HaPanelDevAction extends LitElement {
       return;
     }
     this._yamlValid = true;
-    this._serviceDataChanged(ev);
+
+    if (typeof ev.detail.value !== "object") {
+      return;
+    }
+
+    if (this._serviceData?.action !== ev.detail.value.action) {
+      this._error = undefined;
+    }
+
+    this._serviceData = migrateAutomationAction(
+      ev.detail.value
+    ) as ServiceAction;
+
+    this._checkUiSupported();
   }
 
   private _checkUiSupported() {
@@ -547,18 +560,18 @@ class HaPanelDevAction extends LitElement {
     if (this._serviceData?.action !== ev.detail.value.action) {
       this._error = undefined;
     }
-    this._serviceData = migrateAutomationAction(
-      ev.detail.value
-    ) as ServiceAction;
+    this._serviceData = ev.detail.value;
     this._checkUiSupported();
   }
 
   private _serviceChanged(ev) {
     ev.stopPropagation();
-    this._serviceData = { action: ev.detail.value || "", data: {} };
+    if (ev.detail.value) {
+      this._serviceData = { action: ev.detail.value, data: {} };
+      this._yamlEditor?.setValue(this._serviceData);
+    }
     this._response = undefined;
     this._error = undefined;
-    this._yamlEditor?.setValue(this._serviceData);
     this._checkUiSupported();
   }
 
