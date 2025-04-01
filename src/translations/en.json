@@ -5829,7 +5829,7 @@
           "add_node": {
             "title": "Add a Z-Wave device",
             "searching_devices": "Searching for devices",
-            "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometime called \"inclusion mode\")",
+            "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometimes called \"inclusion mode\")",
             "security_options": "Advanced security options",
             "choose_inclusion_strategy": "How do you want to add your device",
             "add_device_failed": "Add device failed",
@@ -5870,7 +5870,7 @@
               "default_description": "Requires user interaction during inclusion. Fast and secure with S2 when supported. Allows manually selecting which security keys to grant. Fallback to legacy S0 or no encryption when necessary.",
               "s0_label": "Legacy Secure",
               "s0_description": "Uses the older S0 security that is secure, but slow due to a lot of overhead. Allows securely including S2 capable devices which fail to be included with S2.",
-              "insecure_label": "Legacy Insecure",
+              "insecure_label": "Insecure",
               "insecure_description": "Do not use encryption.",
               "inclusion_strategy": "Inclusion strategy: {strategy}"
             },
