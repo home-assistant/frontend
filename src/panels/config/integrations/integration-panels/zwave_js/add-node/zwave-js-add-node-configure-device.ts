@@ -122,12 +122,12 @@ export class ZWaveJsAddNodeConfigureDevice extends LitElement {
         "ui.panel.config.zwave_js.add_node.configure_device.choose_network_type"
       );
     }
-    if (schema.name === "device_name") {
+    if (schema.name === "name") {
       return this.hass.localize(
         "ui.panel.config.zwave_js.add_node.configure_device.device_name"
       );
     }
-    if (schema.name === "device_area") {
+    if (schema.name === "area") {
       return this.hass.localize(
         "ui.panel.config.zwave_js.add_node.configure_device.device_area"
       );
