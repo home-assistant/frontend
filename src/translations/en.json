@@ -3303,13 +3303,13 @@
             }
           },
           "debug": {
-            "header": "Debug Assistant",
+            "header": "Debug assistant",
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
             "start_debug_run": "Start debug run",
             "pipeline": {
-              "header": "Assist Pipeline",
+              "header": "Assist pipeline",
               "run_text_pipeline": "Run text pipeline",
               "run_audio_pipeline": "Run audio pipeline",
               "run_audio_with_wake": "Run audio pipeline with wake word detection",
@@ -3436,8 +3436,8 @@
               "failed_secondary": "We were unable to install the add-ons for speech-to-text and text-to-speech automatically for you. Read the documentation to learn how to install them.",
               "not_supported_title": "Installation of add-ons is not supported on your system",
               "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
-              "full_local_pipeline": "Full local Assistant",
-              "focused_local_pipeline": "Focused local Assistant",
+              "full_local_pipeline": "Full local assistant",
+              "focused_local_pipeline": "Focused local assistant",
               "state": {
                 "installing_piper": "Installing Piper",
                 "starting_piper": "Starting Piper",
@@ -3457,7 +3457,7 @@
             },
             "success": {
               "title": "Ready to Assist!",
-              "secondary": "Make any final customizations here. You can always change these in the Voice Assistants section of the settings page."
+              "secondary": "Make any final customizations here. You can always change these in the Voice assistants section of the settings page."
             }
           }
         },
