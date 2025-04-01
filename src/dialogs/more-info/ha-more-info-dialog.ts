@@ -694,9 +694,14 @@ export class MoreInfoDialog extends LitElement {
           background: none;
           border: none;
           outline: none;
-          display: inline-flex;
+          display: inline;
           border-radius: 6px;
           transition: background-color 180ms ease-in-out;
+          min-width: 0;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-align: left;
         }
 
         .title button.breadcrumb {
