@@ -64,6 +64,7 @@ import { slugify } from "../../../../../common/string/slugify";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import { updateEntityRegistryEntry } from "../../../../../data/entity_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { fullEntitiesContext } from "../../../../../data/context";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
@@ -842,7 +843,7 @@ class DialogZWaveJSAddNode extends LitElement {
             const newDeviceEntityId = slugify(newDeviceName);
 
             await Promise.all(
-              Object.values(this._entities)
+              this._entities
                 .filter((entity) => entity.device_id === this._device!.id)
                 .map((entity) => {
                   const entityState = this.hass.states[entity.entity_id];
