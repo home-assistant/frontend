@@ -18,7 +18,9 @@ class StepFlowAbort extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepAbort;
 
-  @property({ attribute: false }) public domain!: string;
+  @property({ attribute: false }) public domain?: string;
+
+  @property({ attribute: false }) public entryId!: string;
 
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
@@ -53,12 +55,12 @@ class StepFlowAbort extends LitElement {
   private async _handleMissingCreds() {
     // Prompt to enter credentials and restart integration setup
     showAddApplicationCredentialDialog(this.params.dialogParentElement!, {
-      selectedDomain: this.domain,
+      selectedDomain: this.entryId,
       manifest: this.params.manifest,
       applicationCredentialAddedCallback: () => {
         showConfigFlowDialog(this.params.dialogParentElement!, {
           dialogClosedCallback: this.params.dialogClosedCallback,
-          startFlowHandler: this.domain,
+          startFlowHandler: this.entryId,
           showAdvanced: this.hass.userData?.showAdvanced,
           navigateToResult: this.params.navigateToResult,
         });

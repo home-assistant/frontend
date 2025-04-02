@@ -255,7 +255,8 @@ class DataEntryFlowDialog extends LitElement {
                               .params=${this._params}
                               .step=${this._step}
                               .hass=${this.hass}
-                              .domain=${this._step.handler}
+                              .entryId=${this._step.handler}
+                              .domain=${this._params.domain}
                             ></step-flow-abort>
                           `
                         : this._step.type === "progress"

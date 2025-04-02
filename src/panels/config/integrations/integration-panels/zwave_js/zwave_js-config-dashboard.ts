@@ -419,11 +419,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       "ui.panel.config.zwave_js.common.rebuild_network_routes"
                     )}
                   </ha-button>
-                  <ha-button @click=${this._openOptionFlow}>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.reconfigure_server"
-                    )}
-                  </ha-button>
                 </div>
               </ha-card>
               <ha-card>
@@ -508,7 +503,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               @change=${this._handleRestoreFileSelected}
                               style="display: none"
                             />
-                          </div>`}
+                          </div>
+                          <ha-button
+                            @click=${this._openOptionFlow}
+                            class="warning migrate-button"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
+                            )}
+                          </ha-button>`}
                 </div>
               </ha-card>
             `
@@ -961,6 +964,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .button-content {
           pointer-events: none;
+        }
+
+        .migrate-button {
+          margin-left: auto;
         }
       `,
     ];

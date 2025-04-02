@@ -5618,7 +5618,8 @@
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
               "downloading": "Downloading backup",
-              "restoring": "Restoring backup"
+              "restoring": "Restoring backup",
+              "migrate": "Migrate radio"
             },
             "statistics": {
               "title": "Controller statistics",
