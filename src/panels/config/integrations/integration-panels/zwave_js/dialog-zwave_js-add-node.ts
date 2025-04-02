@@ -647,7 +647,6 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
             break;
           case "device registered":
             this._device = message.device;
-            this._step = "configure_device";
             break;
           case "node added":
             this._step = "interviewing";
@@ -656,9 +655,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
             break;
           case "interview completed":
             this._unsubscribe();
-            if (this._lowSecurity) {
-              this._step = "added_insecure";
-            }
+            this._step = "configure_device";
             break;
         }
       },
@@ -897,12 +894,6 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
         }
       }
 
-      // if not finished yet show interviewing loading screen
-      if (this._subscribed) {
-        this._step = "interviewing";
-        return;
-      }
-
       // if device wasn't added securely show added added-insecure screen
       if (this._lowSecurity) {
         this._step = "added_insecure";
@@ -915,7 +906,12 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
 
   private _navigateToDevice() {
     if (this._device?.id) {
-      navigate(`/config/devices/device/${this._device.id}`);
+      setTimeout(() => {
+        // delay to ensure the node is added after smart start
+        // in this case we don't have a subscription to the node's "node added" event
+        // and it is near simultaneous with "device registered" event
+        navigate(`/config/devices/device/${this._device!.id}`);
+      }, 1000);
     } else {
       this.closeDialog();
     }
