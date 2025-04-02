@@ -77,9 +77,6 @@ export const derivedStyles = {
   "slider-track-color": "var(--scrollbar-thumb-color)",
   "label-badge-background-color": "var(--card-background-color)",
   "label-badge-text-color": "rgba(var(--rgb-primary-text-color), 0.8)",
-  "paper-listbox-background-color": "var(--card-background-color)",
-  "paper-item-icon-color": "var(--state-icon-color)",
-  "paper-item-icon-active-color": "var(--state-icon-active-color)",
   "table-header-background-color": "var(--input-fill-color)",
   "table-row-background-color": "var(--primary-background-color)",
   "table-row-alternative-background-color": "var(--secondary-background-color)",
@@ -154,4 +151,11 @@ export const derivedStyles = {
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
   "material-secondary-text-color": "var(--secondary-text-color)",
+} as const;
+
+export const legacyStyles = {
+  "paper-item-icon-color": "var(--state-icon-color)",
+  "paper-item-icon-active-color": "var(--state-icon-active-color)",
+  "body-two-line-min-height": "var(--paper-item-body-two-line-min-height)",
+  "body-three-line-min-height": "var(--paper-item-body-three-line-min-height)",
 } as const;

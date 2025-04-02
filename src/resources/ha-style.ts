@@ -4,6 +4,7 @@ import {
   DEFAULT_ACCENT_COLOR,
   DEFAULT_PRIMARY_COLOR,
   derivedStyles,
+  legacyStyles,
 } from "./styles-data";
 
 const mainStyles = css`
@@ -438,6 +439,12 @@ const mainStyles = css`
 
     ${unsafeCSS(
       Object.entries(derivedStyles)
+        .map(([key, value]) => `--${key}: ${value};`)
+        .join("")
+    )}
+
+    ${unsafeCSS(
+      Object.entries(legacyStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")
     )}

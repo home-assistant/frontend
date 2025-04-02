@@ -1,5 +1,9 @@
 import type { ThemeVars } from "../../data/ws-themes";
-import { darkStyles, derivedStyles } from "../../resources/styles-data";
+import {
+  darkStyles,
+  derivedStyles,
+  legacyStyles,
+} from "../../resources/styles-data";
 import type { HomeAssistant } from "../../types";
 import {
   hex2rgb,
@@ -159,6 +163,7 @@ const processTheme = (
     return undefined;
   }
   const combinedTheme: Partial<ThemeVars> = {
+    ...legacyStyles,
     ...derivedStyles,
     ...theme,
   };
