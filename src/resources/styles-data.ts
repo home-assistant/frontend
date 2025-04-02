@@ -154,8 +154,8 @@ export const derivedStyles = {
 } as const;
 
 export const legacyStyles = {
-  "paper-item-icon-color": "var(--state-icon-color)",
-  "paper-item-icon-active-color": "var(--state-icon-active-color)",
+  "state-icon-color": "var(--paper-item-icon-color)",
+  "state-icon-active-color": "var(--paper-item-icon-active-color)",
   "body-two-line-min-height": "var(--paper-item-body-two-line-min-height)",
   "body-three-line-min-height": "var(--paper-item-body-three-line-min-height)",
 } as const;
