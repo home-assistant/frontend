@@ -79,6 +79,12 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
+    for (const _cls of ["has-image", "has-media-image", "has-no-radius"]) {
+      if (this.classList.contains(_cls)) this.classList.remove(_cls);
+    }
+    const cls = this.getClass();
+    if (cls) this.classList.add(cls);
+
     if (!this.icon) {
       return nothing;
     }
@@ -175,16 +181,29 @@ export class StateBadge extends LitElement {
         backgroundImage = `url(${imageUrl})`;
         this.icon = false;
       }
-
-      if (domain === "update") {
-        this.style.borderRadius = "0";
-      } else if (domain === "media_player" || domain === "camera") {
-        this.style.borderRadius = "8%";
-      }
     }
 
     this._iconStyle = iconStyle;
     this.style.backgroundImage = backgroundImage;
+  }
+
+  protected getClass() {
+    let cls;
+    if (this.stateObj) {
+      const domain = computeDomain(this.stateObj.entity_id);
+      if (domain === "update") {
+        cls = "has-no-radius";
+      } else if (domain === "media_player" || domain === "camera") {
+        cls = "has-media-image";
+      } else if (this.style.backgroundImage !== "") {
+        cls = "has-image";
+      } else {
+        cls = "";
+      }
+    } else {
+      cls = "";
+    }
+    return cls;
   }
 
   static get styles(): CSSResultGroup {
@@ -196,13 +215,28 @@ export class StateBadge extends LitElement {
           display: inline-flex;
           width: 40px;
           color: var(--paper-item-icon-color, #44739e);
-          border-radius: 50%;
+          border-radius: var(--state-badge-border-radius, 50%);
           height: 40px;
           background-size: cover;
           box-sizing: border-box;
           --state-inactive-color: initial;
           align-items: center;
           justify-content: center;
+        }
+        :host(.has-image) {
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            50%
+          ) !important;
+        }
+        :host(.has-media-image) {
+          border-radius: var(
+            --state-badge-with-media-image-border-radius,
+            8%
+          ) !important;
+        }
+        :host(.has-no-radius) {
+          border-radius: 0 !important;
         }
         :host(:focus) {
           outline: none;
