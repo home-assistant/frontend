@@ -178,6 +178,59 @@ export class LovelacePanel extends LitElement {
     }
   }
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (!changedProperties.has("hass")) {
+      return;
+    }
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    if (
+      oldHass &&
+      this.hass &&
+      (oldHass.entities !== this.hass.entities ||
+        oldHass.devices !== this.hass.devices ||
+        oldHass.areas !== this.hass.areas ||
+        oldHass.floors !== this.hass.floors)
+    ) {
+      this._registriesChanged();
+    }
+  }
+
+  private _registriesChanged = () => {
+    if (this.lovelace && isStrategyDashboard(this.lovelace.rawConfig)) {
+      showToast(this, {
+        message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
+        action: {
+          action: () => this._refreshConfig(),
+          text: this.hass!.localize("ui.common.refresh"),
+        },
+        duration: -1,
+        id: "entity-registry-changed",
+        dismissable: false,
+      });
+    }
+  };
+
+  private async _refreshConfig() {
+    if (!this.hass || !this.lovelace) {
+      return;
+    }
+
+    const rawConf = this.lovelace.rawConfig;
+
+    if (!isStrategyDashboard(rawConf)) {
+      return;
+    }
+
+    try {
+      const conf = await generateLovelaceDashboardStrategy(rawConf, this.hass!);
+      this._setLovelaceConfig(conf, rawConf, "generated");
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    }
+  }
+
   private _handleConnectionStatus = (ev) => {
     // reload lovelace on reconnect so we are sure we have the latest config
     if (ev.detail === "connected") {
