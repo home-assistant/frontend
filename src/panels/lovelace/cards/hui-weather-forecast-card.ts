@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { classMap } from "lit/directives/class-map";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -72,7 +73,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @state() private _subscribed?: Promise<() => void>;
 
-  private _sizeController = new ResizeController(this, {
+  private _heightSizeController = new ResizeController(this, {
     callback: (entries) => {
       const width = entries[0]?.contentRect.width;
       if (width < 245) {
@@ -85,6 +86,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         return "narrow";
       }
       return "regular";
+    },
+  });
+
+  private _widthSizeController = new ResizeController(this, {
+    callback: (entries) => {
+      const height = entries[0]?.contentRect.height;
+      if (height < 235) {
+        return "short";
+      }
+      return "tall";
     },
   });
 
@@ -233,11 +244,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
 
     let itemsToShow = this._config?.forecast_slots ?? 5;
-    if (this._sizeController.value === "very-very-narrow") {
+    if (this._heightSizeController.value === "very-very-narrow") {
       itemsToShow = Math.min(3, itemsToShow);
-    } else if (this._sizeController.value === "very-narrow") {
+    } else if (this._heightSizeController.value === "very-narrow") {
       itemsToShow = Math.min(5, itemsToShow);
-    } else if (this._sizeController.value === "narrow") {
+    } else if (this._heightSizeController.value === "narrow") {
       itemsToShow = Math.min(7, itemsToShow);
     }
 
@@ -255,7 +266,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class=${ifDefined(this._sizeController.value)}
+        class=${classMap({ [this._heightSizeController.value]: true, [this._widthSizeController.value]: true })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -488,7 +499,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         .content + .forecast {
-          padding-top: 8px;
+          padding-top: 16px;
         }
 
         .icon-image {
@@ -532,10 +543,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           top: 1px;
         }
 
+
         .state,
         .temp-attribute .temp {
           font-size: 28px;
-          line-height: 1.2;
+          line-height: 1.3;
         }
 
         .name,
@@ -584,8 +596,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         .forecast-image-icon {
-          padding-top: 4px;
-          padding-bottom: 4px;
+          padding-top: 6px;
+          padding-bottom: 6px;
           display: flex;
           justify-content: center;
         }
@@ -684,9 +696,58 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         [class*="very-very-narrow"] .icon-image {
+          min-width: 48px;
+        }
+
+        [class*="very-very-narrow"] .icon-image > * {
+          flex: 0 0 48px;
+          height: 48px;
+        }
+
+        [class*="very-very-narrow"] .content + .forecast {
+          padding-top: 8px;
+        }
+
+        [class*="very-very-narrow"] .icon-image {
           margin-right: 0;
           margin-inline-end: 0;
           margin-inline-start: initial;
+        }
+
+        /* ============= SHORT ============= */
+
+        .short .state,
+        .short .temp-attribute .temp {
+          font-size: 24px;
+          line-height: 1.25;
+        }
+
+        .short .content + .forecast {
+          padding-top: 12px;
+        }
+
+        .short .icon-image {
+          min-width: 48px;
+        }
+
+        .short .icon-image > * {
+          flex: 0 0 48px;
+          height: 48px;
+        }
+
+        .short .forecast-image-icon {
+          padding-top: 4px;
+          padding-bottom: 4px;
+        }
+
+        .short .forecast-image-icon > * {
+          width: 32px;
+          height: 32px;
+          --mdc-icon-size: 32px;
+        }
+
+        .short .forecast-icon {
+          --mdc-icon-size: 32px;
         }
       `,
     ];
