@@ -35,6 +35,7 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import type { Lovelace } from "./types";
+import { debounce } from "../../common/util/debounce";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -175,6 +176,42 @@ export class LovelacePanel extends LitElement {
     super.firstUpdated(changedProps);
     if (!this._unsubUpdates) {
       this._subscribeUpdates();
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    if (
+      oldHass &&
+      this.hass &&
+      (oldHass?.entities !== this.hass.entities ||
+        oldHass.devices !== this.hass.devices ||
+        oldHass.areas !== this.hass.areas ||
+        this.hass.floors !== oldHass.floors)
+    ) {
+      this.debounceRefreshConfig();
+    }
+  }
+
+  private debounceRefreshConfig = debounce(() => this._refreshConfig(), 500);
+
+  private async _refreshConfig() {
+    if (!this.hass || !this.lovelace) {
+      return;
+    }
+    if (isStrategyDashboard(this.lovelace.rawConfig)) {
+      const rawConf = this.lovelace.rawConfig;
+      try {
+        const conf = await generateLovelaceDashboardStrategy(
+          rawConf,
+          this.hass!
+        );
+        this._setLovelaceConfig(conf, rawConf, "generated");
+      } catch (err: any) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
     }
   }
 
