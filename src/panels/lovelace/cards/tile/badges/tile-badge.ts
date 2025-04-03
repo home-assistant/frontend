@@ -13,12 +13,12 @@ import "../../../../../components/tile/ha-tile-badge";
 import "../../../../../components/ha-svg-icon";
 
 export type RenderBadgeFunction = (
-  stateObj: HassEntity,
+  stateObj: HassEntity | undefined,
   hass: HomeAssistant
 ) => TemplateResult | typeof nothing;
 
 export const renderTileBadge: RenderBadgeFunction = (stateObj, hass) => {
-  if (stateObj.state === UNKNOWN) {
+  if (!stateObj || stateObj.state === UNKNOWN) {
     return nothing;
   }
   if (stateObj.state === UNAVAILABLE) {
@@ -32,7 +32,7 @@ export const renderTileBadge: RenderBadgeFunction = (stateObj, hass) => {
       </ha-tile-badge>
     `;
   }
-  const domain = computeDomain(stateObj.entity_id);
+  const domain = stateObj ? computeDomain(stateObj.entity_id) : undefined;
   switch (domain) {
     case "person":
     case "device_tracker":

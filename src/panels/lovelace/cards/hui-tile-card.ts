@@ -1,4 +1,3 @@
-import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -85,16 +84,14 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
   @state() private _config?: TileCardConfig;
 
   public setConfig(config: TileCardConfig): void {
-    if (!config.entity) {
-      throw new Error("Specify an entity");
-    }
-
     this._config = {
       tap_action: {
         action: "more-info",
       },
       icon_tap_action: {
-        action: getEntityDefaultTileIconAction(config.entity),
+        action: config.entity
+          ? getEntityDefaultTileIconAction(config.entity)
+          : "none",
       },
       ...config,
     };
@@ -247,29 +244,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
-    if (!stateObj) {
-      return html`
-        <ha-card>
-          <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon>
-              <ha-svg-icon slot="icon" .path=${mdiHelp}></ha-svg-icon>
-              <ha-tile-badge class="not-found">
-                <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
-              </ha-tile-badge>
-            </ha-tile-icon>
-            <ha-tile-info
-              .primary=${entityId}
-              secondary=${this.hass.localize("ui.card.tile.not_found")}
-            ></ha-tile-info>
-          </div>
-        </ha-card>
-      `;
-    }
-
-    const name = this._config.name || computeStateName(stateObj);
-    const active = stateActive(stateObj);
-    const color = this._computeStateColor(stateObj, this._config.color);
-    const domain = computeDomain(stateObj.entity_id);
+    const name =
+      this._config.name || (stateObj ? computeStateName(stateObj) : "");
+    const active = stateObj ? stateActive(stateObj) : false;
+    const color = stateObj
+      ? this._computeStateColor(stateObj, this._config.color)
+      : undefined;
+    const domain = stateObj ? computeDomain(stateObj.entity_id) : undefined;
 
     const stateDisplay = this._config.hide_state
       ? nothing
@@ -287,9 +268,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
-    const imageUrl = this._config.show_entity_picture
-      ? this._getImageUrl(stateObj)
-      : undefined;
+    const imageUrl =
+      this._config.show_entity_picture && stateObj
+        ? this._getImageUrl(stateObj)
+        : undefined;
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._displayedFeatures(this._config);
@@ -323,7 +305,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
                 hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
               })}
               .interactive=${this._hasIconAction}
-              .imageStyle=${DOMAIN_IMAGE_SHAPE[domain]}
+              .imageStyle=${domain ? DOMAIN_IMAGE_SHAPE[domain] : undefined}
               .imageUrl=${imageUrl}
               data-domain=${ifDefined(domain)}
               data-state=${ifDefined(stateObj?.state)}
