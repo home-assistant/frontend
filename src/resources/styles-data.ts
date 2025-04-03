@@ -152,10 +152,3 @@ export const derivedStyles = {
   "material-secondary-background-color": "var(--secondary-background-color)",
   "material-secondary-text-color": "var(--secondary-text-color)",
 } as const;
-
-export const legacyStyles = {
-  "state-icon-color": "var(--paper-item-icon-color)",
-  "state-icon-active-color": "var(--paper-item-icon-active-color)",
-  "body-two-line-min-height": "var(--paper-item-body-two-line-min-height)",
-  "body-three-line-min-height": "var(--paper-item-body-three-line-min-height)",
-} as const;
