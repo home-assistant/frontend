@@ -587,7 +587,10 @@ class ErrorLogCard extends LitElement {
         "ui.panel.config.logs.failed_get_logs",
         {
           provider: this.provider,
-          error: extractApiErrorMessage(err),
+          error: extractApiErrorMessage(
+            err,
+            isComponentLoaded(this.hass, "hassio")
+          ),
         }
       );
     }
