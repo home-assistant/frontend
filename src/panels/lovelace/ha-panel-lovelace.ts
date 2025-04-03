@@ -180,14 +180,17 @@ export class LovelacePanel extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+    if (!changedProperties.has("hass")) {
+      return;
+    }
     const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
     if (
       oldHass &&
       this.hass &&
-      (oldHass?.entities !== this.hass.entities ||
+      (oldHass.entities !== this.hass.entities ||
         oldHass.devices !== this.hass.devices ||
         oldHass.areas !== this.hass.areas ||
-        this.hass.floors !== oldHass.floors)
+        oldHass.floors !== this.hass.floors)
     ) {
       this._registriesChanged();
     }
