@@ -6328,6 +6328,15 @@
         "strategy": {
           "original-states": {
             "helpers": "[%key:ui::panel::config::helpers::caption%]"
+          },
+          "areas": {
+            "groups": {
+              "lights": "Lights",
+              "climate": "Climate",
+              "media_players": "Entertainment",
+              "security": "Security",
+              "others": "Others"
+            }
           }
         },
         "cards": {
@@ -7531,7 +7540,8 @@
               "url": "URL"
             },
             "areas": {
-              "areas_display": "Areas to display"
+              "areas_display": "Areas to display",
+              "no_entities": "No entities in this group, the section will not be displayed"
             }
           },
           "view": {
