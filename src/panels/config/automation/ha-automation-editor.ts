@@ -720,6 +720,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
 
+    this._pastedConfig = undefined;
     this._config = ev.detail.value;
     if (this._readOnly) {
       return;

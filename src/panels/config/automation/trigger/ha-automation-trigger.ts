@@ -83,9 +83,6 @@ export default class HaAutomationTrigger extends LitElement {
             (trigger) => this._getKey(trigger),
             (trg, idx) => html`
               <ha-automation-trigger-row
-                class=${this.highlightedTriggers?.includes(trg)
-                  ? "highlight"
-                  : ""}
                 .sortableData=${trg}
                 .index=${idx}
                 .first=${idx === 0}
@@ -97,6 +94,7 @@ export default class HaAutomationTrigger extends LitElement {
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
+                ?highlight=${this.highlightedTriggers?.includes(trg)}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -307,22 +305,6 @@ export default class HaAutomationTrigger extends LitElement {
       flex-wrap: wrap;
       gap: 8px;
       order: 1;
-    }
-    .highlight {
-      box-shadow: 0 0 5px 2px var(--primary-color);
-      border-radius: var(--ha-card-border-radius, 12px);
-      animation: pulsate 5s ease-out infinite;
-    }
-    @-webkit-keyframes pulsate {
-      0% {
-        box-shadow: 0 0 5px 0 var(--primary-color);
-      }
-      50% {
-        box-shadow: 0 0 5px 2px var(--primary-color);
-      }
-      100% {
-        box-shadow: 0 0 5px 0 var(--primary-color);
-      }
     }
   `;
 }
