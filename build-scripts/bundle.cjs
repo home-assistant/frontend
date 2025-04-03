@@ -30,13 +30,13 @@ module.exports.emptyPackages = ({ isHassioBuild }) =>
     require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
-    require.resolve(
-      path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
-    ),
+      require.resolve(
+        path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
+      ),
     isHassioBuild &&
-    require.resolve(
-      path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
-    ),
+      require.resolve(
+        path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
+      ),
   ].filter(Boolean);
 
 module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
@@ -47,10 +47,11 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
-  __HASS_URL__: `\`${"HASS_URL" in process.env
-    ? process.env.HASS_URL
-    : "${location.protocol}//${location.host}"
-    }\``,
+  __HASS_URL__: `\`${
+    "HASS_URL" in process.env
+      ? process.env.HASS_URL
+      : "${location.protocol}//${location.host}"
+  }\``,
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
   ),
@@ -226,9 +227,9 @@ module.exports.config = {
       entry: {
         "service-worker": !latestBuild
           ? {
-            import: "./src/entrypoints/service-worker.ts",
-            layer: "sw",
-          }
+              import: "./src/entrypoints/service-worker.ts",
+              layer: "sw",
+            }
           : "./src/entrypoints/service-worker.ts",
         app: "./src/entrypoints/app.ts",
         authorize: "./src/entrypoints/authorize.ts",
