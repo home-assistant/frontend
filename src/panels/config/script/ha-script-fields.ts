@@ -31,7 +31,6 @@ export default class HaScriptFields extends LitElement {
             ${Object.entries(this.fields).map(
               ([key, field]) => html`
                 <ha-script-field-row
-                  class=${this.highlightedFields?.[key] ? "highlight" : ""}
                   .key=${key}
                   .excludeKeys=${Object.keys(this.fields).filter(
                     (k) => k !== key
@@ -40,6 +39,7 @@ export default class HaScriptFields extends LitElement {
                   .disabled=${this.disabled}
                   @value-changed=${this._fieldChanged}
                   .hass=${this.hass}
+                  ?highlight=${this.highlightedFields?.[key] !== undefined}
                 >
                 </ha-script-field-row>
               `
@@ -145,22 +145,6 @@ export default class HaScriptFields extends LitElement {
     }
     ha-svg-icon {
       height: 20px;
-    }
-    .highlight {
-      box-shadow: 0 0 5px 2px var(--primary-color);
-      border-radius: var(--ha-card-border-radius, 12px);
-      animation: pulsate 5s ease-out infinite;
-    }
-    @-webkit-keyframes pulsate {
-      0% {
-        box-shadow: 0 0 5px 0 var(--primary-color);
-      }
-      50% {
-        box-shadow: 0 0 5px 2px var(--primary-color);
-      }
-      100% {
-        box-shadow: 0 0 5px 0 var(--primary-color);
-      }
     }
   `;
 }
