@@ -80,6 +80,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { fullEntitiesContext } from "../../../data/context";
 import { transform } from "../../../common/decorators/transform";
+import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -118,6 +119,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @state() private _config?: AutomationConfig;
 
   @state() private _pastedConfig?: AutomationConfig;
+
+  private _previousConfig?: AutomationConfig;
 
   @state() private _dirty = false;
 
@@ -616,17 +619,17 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         ev.preventDefault();
 
         if (this._dirty) {
-          const result = await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.automation.editor.paste_confirm.title"
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.automation.editor.paste_confirm.text"
-            ),
-            confirmText: this.hass.localize(
-              "ui.panel.config.automation.editor.paste_confirm.confirm"
-            ),
-            destructive: true,
+          const result = await new Promise<boolean>((resolve) => {
+            showPasteReplaceDialog(this, {
+              domain: "automation",
+              pastedConfig: normalized,
+              onClose: () => resolve(false),
+              onAppend: () => {
+                this._appendToExistingConfig(normalized);
+                resolve(false);
+              },
+              onReplace: () => resolve(true),
+            });
           });
 
           if (!result) {
@@ -634,13 +637,71 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           }
         }
 
-        this._config = normalized;
-        this._pastedConfig = normalized;
-        this._dirty = true;
-        this._errors = undefined;
+        // replace the config completely
+        this._replaceExistingConfig(normalized);
       }
     }
   };
+
+  private _appendToExistingConfig(config: AutomationConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this._config } as AutomationConfig;
+    this._pastedConfig = config;
+
+    if (!this._config) {
+      return;
+    }
+
+    if (Array.isArray(this._config?.triggers)) {
+      this._config.triggers = this._config.triggers.concat(
+        config.triggers || []
+      );
+    }
+
+    if (Array.isArray(this._config?.conditions)) {
+      this._config.conditions = this._config.conditions.concat(
+        config.conditions || []
+      );
+    }
+
+    if (Array.isArray(this._config?.actions)) {
+      this._config.actions = this._config.actions.concat(config.actions || []);
+    }
+
+    this._dirty = true;
+    this._errors = undefined;
+
+    this._showPastedToastWithUndo();
+  }
+
+  private _replaceExistingConfig(config: AutomationConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this._config } as AutomationConfig;
+    this._config = config;
+    this._pastedConfig = config;
+    this._dirty = true;
+    this._errors = undefined;
+
+    this._showPastedToastWithUndo();
+  }
+
+  private _showPastedToastWithUndo() {
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.paste_toast_message"
+      ),
+      duration: -1,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          this._config = this._previousConfig;
+          this._errors = undefined;
+          this._previousConfig = undefined;
+          this._pastedConfig = undefined;
+        },
+      },
+    });
+  }
 
   private _setEntityId() {
     const automation = this.automations.find(
@@ -714,13 +775,25 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
 
-    this._pastedConfig = undefined;
+    // reset the pasted config as soon as the user starts editing
+    this._resetPastedConfig();
+
     this._config = ev.detail.value;
     if (this._readOnly) {
       return;
     }
     this._dirty = true;
     this._errors = undefined;
+  }
+
+  private _resetPastedConfig() {
+    this._pastedConfig = undefined;
+    this._previousConfig = undefined;
+
+    showToast(this, {
+      message: "",
+      duration: 0,
+    });
   }
 
   private _showInfo() {
