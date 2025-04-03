@@ -70,6 +70,7 @@ import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
@@ -95,6 +96,8 @@ export class HaScriptEditor extends SubscribeMixin(
   @state() private _config?: ScriptConfig;
 
   @state() private _pastedConfig?: ScriptConfig;
+
+  private _previousConfig?: ScriptConfig;
 
   @state() private _dirty = false;
 
@@ -561,17 +564,17 @@ export class HaScriptEditor extends SubscribeMixin(
         ev.preventDefault();
 
         if (this._dirty) {
-          const result = await showConfirmationDialog(this, {
-            title: this.hass.localize(
-              "ui.panel.config.script.editor.paste_confirm.title"
-            ),
-            text: this.hass.localize(
-              "ui.panel.config.script.editor.paste_confirm.text"
-            ),
-            confirmText: this.hass.localize(
-              "ui.panel.config.script.editor.paste_confirm.confirm"
-            ),
-            destructive: true,
+          const result = await new Promise<boolean>((resolve) => {
+            showPasteReplaceDialog(this, {
+              domain: "script",
+              pastedConfig: normalized,
+              onClose: () => resolve(false),
+              onAppend: () => {
+                this._appendToExistingConfig(normalized);
+                resolve(false);
+              },
+              onReplace: () => resolve(true),
+            });
           });
 
           if (!result) {
@@ -579,13 +582,66 @@ export class HaScriptEditor extends SubscribeMixin(
           }
         }
 
-        this._config = normalized;
-        this._pastedConfig = normalized;
-        this._dirty = true;
-        this._errors = undefined;
+        // replace the config completely
+        this._replaceExistingConfig(normalized);
       }
     }
   };
+
+  private _appendToExistingConfig(config: ScriptConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this._config } as ScriptConfig;
+    this._pastedConfig = config;
+
+    if (!this._config) {
+      return;
+    }
+
+    this._config.fields = {
+      ...this._config.fields,
+      ...config.fields,
+    };
+
+    if (Array.isArray(this._config?.sequence)) {
+      this._config.sequence = this._config.sequence.concat(
+        config.sequence || []
+      );
+    }
+
+    this._dirty = true;
+    this._errors = undefined;
+
+    this._showPastedToastWithUndo();
+  }
+
+  private _replaceExistingConfig(config: ScriptConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this._config } as ScriptConfig;
+    this._config = config;
+    this._pastedConfig = config;
+    this._dirty = true;
+    this._errors = undefined;
+
+    this._showPastedToastWithUndo();
+  }
+
+  private _showPastedToastWithUndo() {
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.script.editor.paste_toast_message"
+      ),
+      duration: -1,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          this._config = this._previousConfig;
+          this._errors = undefined;
+          this._previousConfig = undefined;
+          this._pastedConfig = undefined;
+        },
+      },
+    });
+  }
 
   private async _checkValidation() {
     this._validationErrors = undefined;
@@ -662,10 +718,22 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _valueChanged(ev) {
-    this._pastedConfig = undefined;
+    // reset the pasted config as soon as the user starts editing
+    this._resetPastedConfig();
+
     this._config = ev.detail.value;
     this._errors = undefined;
     this._dirty = true;
+  }
+
+  private _resetPastedConfig() {
+    this._pastedConfig = undefined;
+    this._previousConfig = undefined;
+
+    showToast(this, {
+      message: "",
+      duration: 0,
+    });
   }
 
   private async _runScript(ev: CustomEvent) {

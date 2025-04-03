@@ -372,7 +372,9 @@
       "default": "Default",
       "dont_save": "Don't save",
       "copy": "Copy",
-      "show": "Show"
+      "show": "Show",
+      "replace": "Replace",
+      "append": "Append"
     },
     "components": {
       "selectors": {
@@ -4339,10 +4341,10 @@
               "add_area": "Add area"
             },
             "paste_confirm": {
-              "title": "Do you want to replace your current automation?",
-              "text": "The current automation will be replaced by the pasted one.",
-              "confirm": "Replace"
-            }
+              "title": "Pasted automation",
+              "text": "How do you want to paste your automation?"
+            },
+            "paste_toast_message": "Pasted automation from clipboard"
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
@@ -4577,10 +4579,10 @@
               "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
             },
             "paste_confirm": {
-              "title": "Do you want to replace your current script?",
-              "text": "The current script will be replaced by the pasted one.",
-              "confirm": "Replace"
-            }
+              "title": "Pasted script",
+              "text": "How do you want to paste your script?"
+            },
+            "paste_toast_message": "Pasted script from clipboard"
           },
           "trace": {
             "edit_script": "Edit script"
