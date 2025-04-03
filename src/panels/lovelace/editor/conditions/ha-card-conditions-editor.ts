@@ -23,10 +23,12 @@ import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-user";
+import "./types/ha-card-condition-attribute";
 
 const UI_CONDITION = [
   "numeric_state",
   "state",
+  "attribute",
   "screen",
   "user",
   "and",
