@@ -1225,7 +1225,7 @@
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
         "title": "Quick search",
-        "key_c_tip": "[%key:ui::tips::key_c_hint%]",
+        "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
