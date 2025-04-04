@@ -3084,7 +3084,8 @@
             "bug": "Bug reports",
             "help": "Help",
             "license": "License"
-          }
+          },
+          "shortcuts": "Shortcuts"
         },
         "logs": {
           "caption": "Logs",
