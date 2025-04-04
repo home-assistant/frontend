@@ -355,7 +355,7 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span slot="title" .title=${title} @click=${this._enlarge} class="title">
+          <span slot="title" title=${title} @click=${this._enlarge} class="title">
             ${breadcrumb.length > 0
               ? !__DEMO__ && isAdmin
                 ? html`
