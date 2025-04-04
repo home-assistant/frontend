@@ -131,7 +131,7 @@ class HaPanelDevState extends LitElement {
             ></ha-entity-picker>
             ${this.hass.enableShortcuts
               ? html`<ha-tip .hass=${this.hass}
-                  >${this.hass.localize("ui.tips.key_e_hint", {
+                  >${this.hass.localize("ui.tips.key_e_tip", {
                     keyboard_shortcut: html`<a
                       href="#"
                       @click=${this._openShortcutDialog}

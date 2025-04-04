@@ -703,7 +703,7 @@ class HUIRoot extends LitElement {
     showQuickBar(this, {
       mode: QuickBarMode.Entity,
       hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.tips.key_e_hint", params)
+        ? this.hass.localize("ui.tips.key_e_tip", params)
         : undefined,
     });
   }
