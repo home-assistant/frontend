@@ -1225,7 +1225,7 @@
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the command dialog",
+        "key_c_hint": "[%key:ui::tips::key_c_hint%]",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -1889,6 +1889,38 @@
           "header": "Enter setup code",
           "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
+        }
+      },
+      "shortcuts": {
+        "title": "Shortcuts",
+        "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
+        "enable_shortcuts_hint_user_profile": "user profile",
+        "searching": {
+          "title": "Searching",
+          "on_any_page": "On any page",
+          "on_pages_with_tables": "On pages with tables",
+          "search_command": "search command",
+          "search_entities": "search entities",
+          "search_devices": "search devices",
+          "search_in_table": "to search in tables"
+        },
+        "assist": {
+          "title": "Assist",
+          "open_assist": "open Assist dialog"
+        },
+        "automations": {
+          "title": "Automations",
+          "paste": "to paste automation YAML from clipboard to automation editor"
+        },
+        "charts": {
+          "title": "Charts",
+          "drag_to_zoom": "to zoom in part of a chart",
+          "scroll_to_zoom": "to zoom in or out",
+          "double_click": "to zoom in on part of the chart"
+        },
+        "other": {
+          "title": "Other",
+          "my_link": "get My Home Assistant link"
         }
       }
     },
@@ -6507,8 +6539,9 @@
         "menu": {
           "configure_ui": "Edit dashboard",
           "help": "Help",
-          "search": "Entity search",
+          "search_entities": "Search entities (E)",
           "assist": "Assist",
+          "assist_tooltip": "Assist (A)",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
@@ -8554,10 +8587,11 @@
       }
     },
     "tips": {
-      "key_c_hint": "Press 'c' on any page to open the command dialog",
-      "key_e_hint": "Press 'e' on any page to open the entity search dialog",
-      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link",
-      "key_a_hint": "Press 'a' on any page to open the Assist dialog"
+      "keyboard_shortcut": "keyboard shortcut",
+      "key_c_hint": "Press {keyboard_shortcut} 'c' on any page to open the command dialog",
+      "key_e_hint": "Press {keyboard_shortcut} 'e' on any page to open the entity search dialog",
+      "key_m_hint": "Press {keyboard_shortcut} 'm' on any page to get the My Home Assistant link",
+      "key_a_hint": "Press {keyboard_shortcut} 'a' on any page to open the Assist dialog"
     }
   },
   "landing-page": {
