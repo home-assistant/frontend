@@ -182,9 +182,9 @@ class HaConfigInfo extends LitElement {
                 >
                   <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
                 </div>
-                <span>${this.hass.localize(
-                    "ui.panel.config.info.shortcuts"
-                )}</span>
+                <span
+                  >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
+                >
               </ha-list-item>
 
               ${PAGES.map(
