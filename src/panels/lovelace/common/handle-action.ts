@@ -7,6 +7,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
+import { showViewPopupDialog } from "../views/view-popup/show-view-popup-dialog";
 import { toggleEntity } from "./entity/toggle-entity";
 
 declare global {
@@ -121,6 +122,19 @@ export const handleAction = async (
           message: hass.localize(
             "ui.panel.lovelace.cards.actions.no_navigation_path"
           ),
+        });
+        forwardHaptic("failure");
+      }
+      break;
+    case "open-dialog":
+      if (actionConfig.view_path) {
+        showViewPopupDialog(node, {
+          dashboard_path: actionConfig.dashboard_path,
+          view_path: actionConfig.view_path,
+        });
+      } else {
+        showToast(node, {
+          message: "No dashboard path and view path provided",
         });
         forwardHaptic("failure");
       }

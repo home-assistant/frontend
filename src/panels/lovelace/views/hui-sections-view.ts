@@ -43,7 +43,7 @@ import {
 } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceDialogSize } from "../types";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
@@ -99,6 +99,21 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
+  }
+
+  public getDialogSize(): LovelaceDialogSize {
+    if (!this._config?.sections) {
+      return {
+        width: 400,
+      };
+    }
+    const size = this._config.sections
+      .map((config) => config.column_span ?? 1)
+      .reduce((acc, val) => acc + val, 0);
+
+    return {
+      width: Math.min(size, 3) * 400,
+    };
   }
 
   private _sectionConfigKeys = new WeakMap<HuiSection, string>();

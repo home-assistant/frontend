@@ -61,6 +61,11 @@ export interface LovelaceGridOptions {
   max_rows?: number;
 }
 
+export interface LovelaceDialogSize {
+  width?: number | "full" | "auto";
+  height?: number | "full" | "auto";
+}
+
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   preview?: boolean;

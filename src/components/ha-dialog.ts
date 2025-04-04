@@ -139,6 +139,7 @@ export class HaDialog extends DialogBase {
       :host([flexContent]) .mdc-dialog .mdc-dialog__content {
         display: flex;
         flex-direction: column;
+        scrollbar-color: var(--scrollbar-thumb-color) transparent;
       }
       .header_title {
         display: flex;

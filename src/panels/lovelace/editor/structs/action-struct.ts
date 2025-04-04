@@ -55,6 +55,12 @@ const actionConfigStructNavigate = object({
   confirmation: optional(actionConfigStructConfirmation),
 });
 
+const actionConfigStructOpenDialog = object({
+  action: literal("open-dialog"),
+  dashboard_path: optional(string()),
+  view_path: optional(string()),
+});
+
 const actionConfigStructAssist = type({
   action: literal("assist"),
   pipeline_id: optional(string()),
@@ -100,6 +106,9 @@ export const actionConfigStruct = dynamic<any>((value) => {
       }
       case "more-info": {
         return actionConfigStructMoreInfo;
+      }
+      case "open-dialog": {
+        return actionConfigStructOpenDialog;
       }
     }
   }

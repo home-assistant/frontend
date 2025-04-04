@@ -16,6 +16,7 @@ import type {
   ActionConfig,
   CallServiceActionConfig,
   NavigateActionConfig,
+  OpenDialogActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace/config/action";
 import type { ServiceAction } from "../../../data/script";
@@ -30,6 +31,7 @@ const DEFAULT_ACTIONS: UiAction[] = [
   "toggle",
   "navigate",
   "url",
+  "open-dialog",
   "perform-action",
   "assist",
   "none",
@@ -91,6 +93,16 @@ export class HuiActionEditor extends LitElement {
   get _url_path(): string {
     const config = this.config as UrlActionConfig | undefined;
     return config?.url_path || "";
+  }
+
+  get _view_path(): string {
+    const config = this.config as OpenDialogActionConfig | undefined;
+    return config?.view_path || "";
+  }
+
+  get _dashboard_path(): string {
+    const config = this.config as OpenDialogActionConfig | undefined;
+    return config?.dashboard_path || "";
   }
 
   get _service(): string {
@@ -187,6 +199,26 @@ export class HuiActionEditor extends LitElement {
               )}
               .value=${this._url_path}
               .configValue=${"url_path"}
+              @input=${this._valueChanged}
+            ></ha-textfield>
+          `
+        : nothing}
+      ${this.config?.action === "url"
+        ? html`
+            <ha-textfield
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.url_path"
+              )}
+              .value=${this._dashboard_path}
+              .configValue=${"dashboard_path"}
+              @input=${this._valueChanged}
+            ></ha-textfield>
+            <ha-textfield
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.action-editor.url_path"
+              )}
+              .value=${this._view_path}
+              .configValue=${"view_path"}
               @input=${this._valueChanged}
             ></ha-textfield>
           `

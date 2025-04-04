@@ -45,6 +45,12 @@ export interface CustomActionConfig extends BaseActionConfig {
   action: "fire-dom-event";
 }
 
+export interface OpenDialogActionConfig extends BaseActionConfig {
+  action: "open-dialog";
+  dashboard_path?: string;
+  view_path: string;
+}
+
 export interface BaseActionConfig {
   action: string;
   confirmation?: ConfirmationRestrictionConfig;
@@ -60,6 +66,7 @@ export interface RestrictionConfig {
 }
 
 export type ActionConfig =
+  | OpenDialogActionConfig
   | ToggleActionConfig
   | CallServiceActionConfig
   | NavigateActionConfig

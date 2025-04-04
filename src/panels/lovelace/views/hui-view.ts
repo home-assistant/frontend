@@ -3,7 +3,7 @@ import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
@@ -38,12 +38,13 @@ import { createErrorSectionConfig } from "../sections/hui-error-section";
 import "../sections/hui-section";
 import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceDialogSize } from "../types";
 import { getViewType } from "./get-view-type";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
+    "view-updated": undefined;
     "ll-create-card": { suggested?: string[] } | undefined;
     "ll-edit-card": { path: LovelaceCardPath };
     "ll-delete-card": DeleteCardParams;
@@ -54,6 +55,7 @@ declare global {
     "ll-delete-badge": DeleteBadgeParams;
   }
   interface HTMLElementEventMap {
+    "view-updated": HASSDomEvent<HASSDomEvents["view-updated"]>;
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
     "ll-edit-card": HASSDomEvent<HASSDomEvents["ll-edit-card"]>;
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
@@ -92,6 +94,16 @@ export class HUIView extends ReactiveElement {
     storage: "sessionStorage",
   })
   protected _clipboard?: LovelaceCardConfig;
+
+  public getDialogSize(): LovelaceDialogSize | undefined {
+    if (!this._layoutElement) {
+      return undefined;
+    }
+    if (this._layoutElement.getDialogSize) {
+      return this._layoutElement.getDialogSize();
+    }
+    return undefined;
+  }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
@@ -271,6 +283,14 @@ export class HUIView extends ReactiveElement {
 
   private _createLayoutElement(config: LovelaceViewConfig): void {
     this._layoutElement = createViewElement(config) as LovelaceViewElement;
+    this._layoutElement.addEventListener(
+      "ll-upgrade",
+      (ev: Event) => {
+        ev.stopPropagation();
+        fireEvent(this, "view-updated");
+      },
+      { once: true }
+    );
     this._layoutElementType = config.type;
     this._layoutElement.addEventListener("ll-create-card", (ev) => {
       showCreateCardDialog(this, {

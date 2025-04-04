@@ -13,7 +13,7 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceDialogSize } from "../types";
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {
@@ -111,6 +111,14 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       mql.addListener(this._mqlListenerRef);
       return mql;
     });
+  }
+
+  public getDialogSize(): LovelaceDialogSize {
+    this._createColumns();
+
+    return {
+      width: "auto",
+    };
   }
 
   private get mqls(): MediaQueryList[] {

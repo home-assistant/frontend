@@ -3,7 +3,7 @@ import { getCollection } from "home-assistant-js-websocket";
 import type { HuiBadge } from "../panels/lovelace/badges/hui-badge";
 import type { HuiCard } from "../panels/lovelace/cards/hui-card";
 import type { HuiSection } from "../panels/lovelace/sections/hui-section";
-import type { Lovelace } from "../panels/lovelace/types";
+import type { Lovelace, LovelaceDialogSize } from "../panels/lovelace/types";
 import type { HomeAssistant } from "../types";
 import type { LovelaceSectionConfig } from "./lovelace/config/section";
 import type { LegacyLovelaceConfig } from "./lovelace/config/types";
@@ -24,6 +24,7 @@ export interface LovelaceViewElement extends HTMLElement {
   sections?: HuiSection[];
   isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;
+  getDialogSize?: () => LovelaceDialogSize;
 }
 
 export interface LovelaceSectionElement extends HTMLElement {

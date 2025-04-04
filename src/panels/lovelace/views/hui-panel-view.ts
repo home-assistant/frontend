@@ -11,7 +11,7 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
 import type { HuiWarning } from "../components/hui-warning";
-import type { Lovelace } from "../types";
+import type { Lovelace, LovelaceDialogSize } from "../types";
 
 let editCodeLoaded = false;
 
@@ -27,6 +27,13 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @state() private _card?: HuiCard | HuiWarning | HuiCardOptions;
+
+  public getDialogSize(): LovelaceDialogSize {
+    return {
+      height: "full",
+      width: "full",
+    };
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
