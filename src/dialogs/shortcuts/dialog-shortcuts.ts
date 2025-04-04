@@ -25,7 +25,7 @@ interface Section {
   items: (Text | Shortcut)[];
 }
 
-const _getShortcutSections = (): Section[] => [
+const _SHORTCUTS: Section[] = [
   {
     key: "ui.dialogs.shortcuts.searching.title",
     items: [
@@ -151,7 +151,7 @@ class DialogShortcuts extends LitElement {
         )}
       >
         <div class="content">
-          ${_getShortcutSections().map(
+          ${_SHORTCUTS.map(
             (section) => html`
               <h3>${this.hass.localize(section.key)}</h3>
               <div class="items">
