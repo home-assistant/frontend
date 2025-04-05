@@ -23,6 +23,7 @@ export class DialogZWaveJSAddNode extends HTMLElement {
     );
     showZWaveJSAddNodeDialog(this, {
       entry_id: this.configEntryId,
+      longRangeSupported: false,
     });
   }
 }
