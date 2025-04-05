@@ -33,6 +33,7 @@ import "../../../components/search-input";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -130,7 +131,13 @@ class HaPanelDevState extends LitElement {
             ></ha-entity-picker>
             ${this.hass.enableShortcuts
               ? html`<ha-tip .hass=${this.hass}
-                  >${this.hass.localize("ui.tips.key_e_hint")}</ha-tip
+                  >${this.hass.localize("ui.tips.key_e_tip", {
+                    keyboard_shortcut: html`<a
+                      href="#"
+                      @click=${this._openShortcutDialog}
+                      >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
+                    >`,
+                  })}</ha-tip
                 >`
               : nothing}
             <ha-textfield
@@ -564,6 +571,11 @@ class HaPanelDevState extends LitElement {
   private _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
     this._validJSON = ev.detail.isValid;
+  }
+
+  private _openShortcutDialog(ev: Event) {
+    ev.preventDefault();
+    showShortcutsDialog(this);
   }
 
   static get styles(): CSSResultGroup {

@@ -4,7 +4,9 @@ import {
   mdiFileDocument,
   mdiHandsPray,
   mdiHelp,
+  mdiKeyboard,
   mdiNewspaperVariant,
+  mdiOpenInNew,
   mdiTshirtCrew,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -23,6 +25,8 @@ import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import "../../../components/ha-icon-next";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -170,12 +174,26 @@ class HaConfigInfo extends LitElement {
 
           <ha-card outlined class="pages">
             <mwc-list>
+              <ha-list-item graphic="avatar" @click=${this._showShortcuts}>
+                <div
+                  slot="graphic"
+                  class="icon-background"
+                  style="background-color: #9e4dd1;"
+                >
+                  <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
+                </div>
+                <span
+                  >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
+                >
+              </ha-list-item>
+
               ${PAGES.map(
                 (page) => html`
                   <ha-clickable-list-item
                     graphic="avatar"
                     open-new-tab
                     href=${documentationUrl(this.hass, page.path)}
+                    hasMeta
                   >
                     <div
                       slot="graphic"
@@ -189,6 +207,10 @@ class HaConfigInfo extends LitElement {
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
+                    <ha-svg-icon
+                      slot="meta"
+                      .path=${mdiOpenInNew}
+                    ></ha-svg-icon>
                   </ha-clickable-list-item>
                 `
               )}
@@ -238,6 +260,11 @@ class HaConfigInfo extends LitElement {
 
     this._hassioInfo = hassioInfo;
     this._osInfo = osInfo;
+  }
+
+  private _showShortcuts(ev): void {
+    ev.stopPropagation();
+    showShortcutsDialog(this);
   }
 
   static get styles(): CSSResultGroup {
@@ -331,11 +358,12 @@ class HaConfigInfo extends LitElement {
           --mdc-list-vertical-padding: 0;
         }
 
-        ha-clickable-list-item {
+        ha-clickable-list-item,
+        ha-list-item {
           height: 64px;
         }
 
-        ha-svg-icon {
+        .icon-background ha-svg-icon {
           height: 24px;
           width: 24px;
           display: block;
