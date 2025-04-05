@@ -9,7 +9,29 @@ export const formatDateWeekdayDay = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateWeekdayDayMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateWeekdayDayMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const weekday = parts.find((part) => part.type === "weekday")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${weekday}, ${day} ${month}`,
+    [DateFormat.MDY]: `${weekday}, ${month} ${day}`,
+    [DateFormat.YMD]: `${weekday}, ${month} ${day}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateWeekdayDayMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -26,7 +48,29 @@ export const formatDate = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const year = parts.find((part) => part.type === "year")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}, ${year}`,
+    [DateFormat.MDY]: `${month} ${day}, ${year}`,
+    [DateFormat.YMD]: `${year}, ${month} ${day}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -43,7 +87,29 @@ export const formatDateShort = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateShortMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateShortMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const year = parts.find((part) => part.type === "year")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}, ${year}`,
+    [DateFormat.MDY]: `${month} ${day}, ${year}`,
+    [DateFormat.YMD]: `${year}, ${month} ${day}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateShortMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -124,7 +190,28 @@ export const formatDateVeryShort = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateVeryShortMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateVeryShortMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}`,
+    [DateFormat.MDY]: `${month} ${day}`,
+    [DateFormat.YMD]: `${month} ${day}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateVeryShortMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -140,7 +227,28 @@ export const formatDateMonthYear = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateMonthYearMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateMonthYearMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const month = parts.find((part) => part.type === "month")?.value;
+  const year = parts.find((part) => part.type === "year")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${month} ${year}`,
+    [DateFormat.MDY]: `${month} ${year}`,
+    [DateFormat.YMD]: `${year} ${month}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateMonthYearMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
