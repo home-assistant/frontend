@@ -155,6 +155,7 @@ class HUIRoot extends LitElement {
       visible: boolean | undefined;
       overflow: boolean;
       overflow_can_promote?: boolean;
+      suffix?: string;
     }[] = [
       {
         icon: mdiFormatListBulletedTriangle,
@@ -191,6 +192,7 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode,
         overflow: this.narrow,
+        suffix: this.hass.enableShortcuts ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
@@ -200,6 +202,7 @@ class HUIRoot extends LitElement {
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
+        suffix: this.hass.enableShortcuts ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,
@@ -251,7 +254,7 @@ class HUIRoot extends LitElement {
         html`<ha-tooltip
           slot="actionItems"
           placement="bottom"
-          .content=${this.hass!.localize(i.key)}
+          .content=${[this.hass!.localize(i.key), i.suffix].join(" ")}
         >
           <ha-icon-button
             .path=${i.icon}
@@ -268,7 +271,7 @@ class HUIRoot extends LitElement {
             graphic="icon"
             @request-selected=${i.overflowAction}
           >
-            ${this.hass!.localize(i.key)}
+            ${[this.hass!.localize(i.key), i.suffix].join(" ")}
             <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
           </mwc-list-item>`
         );

@@ -6536,9 +6536,9 @@
         "menu": {
           "configure_ui": "Edit dashboard",
           "help": "Help",
-          "search_entities": "Search entities (E)",
+          "search_entities": "Search entities",
           "assist": "Assist",
-          "assist_tooltip": "Assist (A)",
+          "assist_tooltip": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
