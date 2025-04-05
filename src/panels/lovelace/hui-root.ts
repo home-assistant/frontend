@@ -15,10 +15,8 @@ import {
   mdiShape,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -34,7 +32,6 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button-menu";
@@ -44,7 +41,7 @@ import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
-import "../../components/ha-tabs";
+import "../../components/sl-tab-group";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
@@ -76,9 +73,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
-import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
+import "./views/hui-view-container";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -294,6 +291,76 @@ class HUIRoot extends LitElement {
 
     const background = curViewConfig?.background || this.config.background;
 
+    const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
+      ${views.map(
+        (view, index) => html`
+          <sl-tab
+            slot="nav"
+            panel=${index}
+            .active=${this._curView === index}
+            aria-label=${ifDefined(view.title)}
+            class=${classMap({
+              "hide-tab": Boolean(
+                !this._editMode &&
+                  view.visible !== undefined &&
+                  ((Array.isArray(view.visible) &&
+                    !view.visible.some(
+                      (e) => e.user === this.hass!.user?.id
+                    )) ||
+                    view.visible === false)
+              ),
+            })}
+          >
+            ${this._editMode
+              ? html`
+                  <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.move_left"
+                    )}
+                    class="edit-icon view"
+                    @click=${this._moveViewLeft}
+                    .disabled=${this._curView === 0}
+                  ></ha-icon-button-arrow-prev>
+                `
+              : nothing}
+            ${view.icon
+              ? html`
+                  <ha-icon
+                    class=${classMap({
+                      "child-view-icon": Boolean(view.subview),
+                    })}
+                    title=${ifDefined(view.title)}
+                    .icon=${view.icon}
+                  ></ha-icon>
+                `
+              : view.title || "Unnamed view"}
+            ${this._editMode
+              ? html`
+                  <ha-icon-button
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.edit"
+                    )}
+                    class="edit-icon view"
+                    .path=${mdiPencil}
+                    @click=${this._editView}
+                  ></ha-icon-button>
+                  <ha-icon-button-arrow-next
+                    .hass=${this.hass}
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.move_right"
+                    )}
+                    class="edit-icon view"
+                    @click=${this._moveViewRight}
+                    .disabled=${(this._curView! as number) + 1 === views.length}
+                  ></ha-icon-button-arrow-next>
+                `
+              : nothing}
+          </sl-tab>
+        `
+      )}
+    </sl-tab-group>`;
+
     return html`
       <div
         class=${classMap({
@@ -337,44 +404,7 @@ class HUIRoot extends LitElement {
                   ${curViewConfig?.subview
                     ? html`<div class="main-title">${curViewConfig.title}</div>`
                     : views.filter((view) => !view.subview).length > 1
-                      ? html`
-                          <ha-tabs
-                            slot="title"
-                            scrollable
-                            .selected=${this._curView}
-                            @iron-activate=${this._handleViewSelected}
-                            dir=${computeRTLDirection(this.hass!)}
-                          >
-                            ${views.map(
-                              (view) => html`
-                                <paper-tab
-                                  aria-label=${ifDefined(view.title)}
-                                  class=${classMap({
-                                    "hide-tab": Boolean(
-                                      view.subview ||
-                                        (view.visible !== undefined &&
-                                          ((Array.isArray(view.visible) &&
-                                            !view.visible.some(
-                                              (e) =>
-                                                e.user === this.hass!.user?.id
-                                            )) ||
-                                            view.visible === false))
-                                    ),
-                                  })}
-                                >
-                                  ${view.icon
-                                    ? html`
-                                        <ha-icon
-                                          title=${ifDefined(view.title)}
-                                          .icon=${view.icon}
-                                        ></ha-icon>
-                                      `
-                                    : view.title || "Unnamed view"}
-                                </paper-tab>
-                              `
-                            )}
-                          </ha-tabs>
-                        `
+                      ? tabs
                       : html`
                           <div class="main-title">
                             ${views[0]?.title ?? dashboardTitle}
@@ -384,93 +414,19 @@ class HUIRoot extends LitElement {
                 `}
           </div>
           ${this._editMode
-            ? html`
-                <paper-tabs
-                  scrollable
-                  .selected=${this._curView}
-                  @iron-activate=${this._handleViewSelected}
-                  dir=${computeRTLDirection(this.hass!)}
-                >
-                  ${views.map(
-                    (view) => html`
-                      <paper-tab
-                        aria-label=${ifDefined(view.title)}
-                        class=${classMap({
-                          "hide-tab": Boolean(
-                            !this._editMode &&
-                              view.visible !== undefined &&
-                              ((Array.isArray(view.visible) &&
-                                !view.visible.some(
-                                  (e) => e.user === this.hass!.user?.id
-                                )) ||
-                                view.visible === false)
-                          ),
-                        })}
-                      >
-                        ${this._editMode
-                          ? html`
-                              <ha-icon-button-arrow-prev
-                                .hass=${this.hass}
-                                .label=${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.edit_view.move_left"
-                                )}
-                                class="edit-icon view"
-                                @click=${this._moveViewLeft}
-                                ?disabled=${this._curView === 0}
-                              ></ha-icon-button-arrow-prev>
-                            `
-                          : ""}
-                        ${view.icon
-                          ? html`
-                              <ha-icon
-                                class=${classMap({
-                                  "child-view-icon": Boolean(view.subview),
-                                })}
-                                title=${ifDefined(view.title)}
-                                .icon=${view.icon}
-                              ></ha-icon>
-                            `
-                          : view.title || "Unnamed view"}
-                        ${this._editMode
-                          ? html`
-                              <ha-svg-icon
-                                title=${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.edit_view.edit"
-                                )}
-                                class="edit-icon view"
-                                .path=${mdiPencil}
-                                @click=${this._editView}
-                              ></ha-svg-icon>
-                              <ha-icon-button-arrow-next
-                                .hass=${this.hass}
-                                .label=${this.hass!.localize(
-                                  "ui.panel.lovelace.editor.edit_view.move_right"
-                                )}
-                                class="edit-icon view"
-                                @click=${this._moveViewRight}
-                                ?disabled=${(this._curView! as number) + 1 ===
-                                views.length}
-                              ></ha-icon-button-arrow-next>
-                            `
-                          : ""}
-                      </paper-tab>
-                    `
+            ? html`<div class="edit-tab-bar">
+                ${tabs}
+                <ha-icon-button
+                  slot="nav"
+                  id="add-view"
+                  @click=${this._addView}
+                  .label=${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.add"
                   )}
-                  ${this._editMode
-                    ? html`
-                        <ha-icon-button
-                          id="add-view"
-                          @click=${this._addView}
-                          .label=${this.hass!.localize(
-                            "ui.panel.lovelace.editor.edit_view.add"
-                          )}
-                          .path=${mdiPlus}
-                        ></ha-icon-button>
-                      `
-                    : ""}
-                </paper-tabs>
-              `
-            : ""}
+                  .path=${mdiPlus}
+                ></ha-icon-button>
+              </div>`
+            : nothing}
         </div>
         <hui-view-container
           .hass=${this.hass}
@@ -935,7 +891,7 @@ class HUIRoot extends LitElement {
 
   private _handleViewSelected(ev) {
     ev.preventDefault();
-    const viewIndex = ev.detail.selected as number;
+    const viewIndex = Number(ev.detail.name);
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
@@ -1063,45 +1019,56 @@ class HUIRoot extends LitElement {
           display: flex;
           align-items: center;
         }
-        ha-tabs {
-          width: 100%;
-          height: 100%;
-          margin-left: 4px;
-          margin-inline-start: 4px;
-          margin-inline-end: initial;
-        }
-        ha-tabs,
-        paper-tabs {
-          --paper-tabs-selection-bar-color: var(
+        sl-tab-group {
+          --ha-tab-indicator-color: var(
             --app-header-selection-bar-color,
-            var(--app-header-text-color, #fff)
+            var(--app-header-text-color, white)
           );
-          text-transform: uppercase;
+          --ha-tab-active-text-color: var(--app-header-text-color, white);
+          --ha-tab-track-color: transparent;
+          align-self: flex-end;
+          flex-grow: 1;
+          min-width: 0;
+        }
+        sl-tab-group::part(nav) {
+          padding: 0;
+        }
+        sl-tab-group::part(scroll-button) {
+          background-color: var(--app-header-background-color);
+          z-index: 1;
+        }
+        .edit-mode sl-tab-group::part(scroll-button) {
+          background-color: var(--app-header-edit-background-color, #455a64);
         }
         .edit-mode div[main-title] {
           pointer-events: auto;
         }
-        .edit-mode paper-tabs {
-          background-color: var(--app-header-edit-background-color, #455a64);
+        .edit-tab-bar {
+          display: flex;
+        }
+        .edit-mode sl-tab-group {
+          flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
         }
-        paper-tab.iron-selected .edit-icon {
+        sl-tab {
+          --mdc-icon-button-size: 20px;
+          --mdc-icon-size: 20px;
+        }
+        sl-tab[aria-selected="true"] .edit-icon {
           display: inline-flex;
         }
         .edit-icon {
           color: var(--accent-color);
-          padding-left: 8px;
-          padding-inline-start: 8px;
+          padding: 0 8px;
           vertical-align: middle;
           --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
           direction: var(--direction);
         }
+        .edit-icon:last-child {
+          padding-left: 0;
+        }
         .edit-icon.view {
           display: none;
-        }
-        #add-view {
-          position: absolute;
-          height: 44px;
         }
         #add-view ha-svg-icon {
           background-color: var(--accent-color);
