@@ -2290,10 +2290,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lokalise/node-api@npm:14.2.0":
-  version: 14.2.0
-  resolution: "@lokalise/node-api@npm:14.2.0"
-  checksum: 10/aae8e76df58b540064a996f00c78f966413d9c8bb998437cdcfe8b8d8583ee87dccd78327822a013bc60b5cc2c00656f6161d6481fc47d5e3892325bb439e387
+"@lokalise/node-api@npm:14.2.1":
+  version: 14.2.1
+  resolution: "@lokalise/node-api@npm:14.2.1"
+  checksum: 10/562e6a3bce08fb963afe9ccea659c08da790dabf746a0be0f2a5fc4773e0e8155e90c6da691631348ec98bdfd23c34240ff08382b4c7b5d2d385173d6d11a58f
   languageName: node
   linkType: hard
 
@@ -9603,7 +9603,7 @@ __metadata:
     "@lit-labs/motion": "npm:1.0.8"
     "@lit-labs/observers": "npm:2.0.5"
     "@lit-labs/virtualizer": "npm:2.1.0"
-    "@lokalise/node-api": "npm:14.2.0"
+    "@lokalise/node-api": "npm:14.2.1"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
