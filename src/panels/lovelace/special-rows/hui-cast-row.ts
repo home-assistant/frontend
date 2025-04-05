@@ -126,7 +126,7 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     }
     ha-icon {
       padding: 8px;
-      color: var(--paper-item-icon-color);
+      color: var(--state-icon-color);
     }
     .flex {
       flex: 1;
