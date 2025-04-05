@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { css, LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
@@ -81,6 +81,12 @@ class HaCallServiceButton extends LitElement {
       this._callService();
     }
   }
+
+  static styles = css`
+    :host {
+      --button-text-align: left;
+    }
+  `;
 }
 
 declare global {
