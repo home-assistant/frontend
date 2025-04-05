@@ -41,12 +41,11 @@ jobs:
 
       - name: Deploy to Netlify
         id: deploy
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=cast/dist --alias dev
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_CAST_SITE_ID }}
+        run: |
+          npm install netlify-cli -g
+          netlify deploy --dir=cast/dist --alias dev \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --site ${{ secrets.NETLIFY_CAST_SITE_ID }}
 
   deploy_master:
     runs-on: ubuntu-latest
@@ -77,9 +76,8 @@ jobs:
 
       - name: Deploy to Netlify
         id: deploy
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=cast/dist --prod
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_CAST_SITE_ID }}
+        run: |
+          npm install netlify-cli -g
+          netlify deploy --dir=cast/dist --prod \
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} \
+            --site ${{ secrets.NETLIFY_CAST_SITE_ID }}
