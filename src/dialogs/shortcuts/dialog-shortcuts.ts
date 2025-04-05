@@ -116,9 +116,7 @@ class DialogShortcuts extends LitElement {
   private _renderShortcut(shortcut: string[], translationKey: LocalizeKeys) {
     return html`
       <div class="shortcut">
-        ${shortcut.map(
-          (key) => html` <ha-assist-chip .label=${key}></ha-assist-chip>`
-        )}
+        ${shortcut.map((key) => html` <span>${key}</span>`)}
         ${this.hass.localize(translationKey)}
       </div>
     `;
@@ -195,11 +193,10 @@ class DialogShortcuts extends LitElement {
         margin: 4px 0;
       }
 
-      ha-assist-chip {
-        height: 32px;
-        --md-assist-chip-leading-space: 8px;
-        --md-assist-chip-trailing-space: 8px;
-        --ha-assist-chip-container-shape: 8px;
+      span {
+        padding: 8px;
+        border: 1px solid var(--divider-color);
+        border-radius: 8px;
       }
 
       .items p {
