@@ -31,6 +31,7 @@ import "../../components/ha-label";
 import "../../components/ha-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
+import "../../components/ha-tip";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
