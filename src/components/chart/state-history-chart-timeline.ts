@@ -138,8 +138,12 @@ export class StateHistoryChartTimeline extends LitElement {
         "ui.components.history_charts.duration"
       )}: ${millisecondsToDuration(durationInMs)}`;
 
+      const markerLocalized = !computeRTL(this.hass)
+        ? marker
+        : '<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:#9e9e9e;"></span>';
+
       const lines = [
-        marker + name,
+        markerLocalized + name,
         formatDateTimeWithSeconds(
           new Date(value![1]),
           this.hass.locale,
