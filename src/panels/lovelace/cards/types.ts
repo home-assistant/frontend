@@ -498,6 +498,9 @@ export interface TodoListCardConfig extends LovelaceCardConfig {
   hide_completed?: boolean;
   hide_create?: boolean;
   sort?: string;
+  period?: {
+    calendar?: { period: string; offset: number };
+  };
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {
