@@ -84,8 +84,6 @@
     "@material/web": "2.3.0",
     "@mdi/js": "7.4.47",
     "@mdi/svg": "7.4.47",
-    "@polymer/paper-item": "3.0.1",
-    "@polymer/paper-listbox": "3.0.1",
     "@polymer/paper-tabs": "3.1.0",
     "@polymer/polymer": "3.5.2",
     "@replit/codemirror-indentation-markers": "6.5.3",

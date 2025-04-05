@@ -3768,30 +3768,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-item@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-item@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-behaviors": "npm:^3.0.0-pre.26"
-    "@polymer/iron-flex-layout": "npm:^3.0.0-pre.26"
-    "@polymer/paper-styles": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/1057bfc0d76df7eae08a51d60ee1733297718a2ee42273788ca49d03dcce39b7b4e98e51e45aae225d4de881c816dfbb1b94c342a4833c62c7600d04dc055477
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-listbox@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-listbox@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-behaviors": "npm:^3.0.0-pre.26"
-    "@polymer/iron-menu-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/paper-styles": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/c9ee9324cdb258b53f302b7f5a8b631a8b334ded5c11963af040c0d5d6182092759be4edb0ca5155cb9b6481105692a12589484add83e2a0ed7782e6fa45534b
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-ripple@npm:^3.0.0-pre.26":
   version: 3.0.2
   resolution: "@polymer/paper-ripple@npm:3.0.2"
@@ -9635,8 +9611,6 @@ __metadata:
     "@octokit/auth-oauth-device": "npm:7.1.4"
     "@octokit/plugin-retry": "npm:7.2.0"
     "@octokit/rest": "npm:21.1.1"
-    "@polymer/paper-item": "npm:3.0.1"
-    "@polymer/paper-listbox": "npm:3.0.1"
     "@polymer/paper-tabs": "npm:3.1.0"
     "@polymer/polymer": "npm:3.5.2"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
