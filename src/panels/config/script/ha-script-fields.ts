@@ -20,6 +20,8 @@ export default class HaScriptFields extends LitElement {
 
   @property({ attribute: false }) public fields!: Fields;
 
+  @property({ attribute: false }) public highlightedFields?: Fields;
+
   private _focusLastActionOnChange = false;
 
   protected render() {
@@ -37,6 +39,7 @@ export default class HaScriptFields extends LitElement {
                   .disabled=${this.disabled}
                   @value-changed=${this._fieldChanged}
                   .hass=${this.hass}
+                  ?highlight=${this.highlightedFields?.[key] !== undefined}
                 >
                 </ha-script-field-row>
               `

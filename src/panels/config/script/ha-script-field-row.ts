@@ -353,6 +353,12 @@ export default class HaScriptFieldRow extends LitElement {
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
         }
+        :host([highlight]) ha-card {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
+          border-color: var(--state-inactive-color);
+          box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
       `,
     ];
   }

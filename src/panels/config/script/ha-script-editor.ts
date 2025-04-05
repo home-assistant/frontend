@@ -21,6 +21,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "@lit-labs/context";
+import { load } from "js-yaml";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -73,6 +74,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { fullEntitiesContext } from "../../../data/context";
 import { transform } from "../../../common/decorators/transform";
+import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -92,6 +94,10 @@ export class HaScriptEditor extends SubscribeMixin(
   @property({ attribute: false }) public route!: Route;
 
   @state() private _config?: ScriptConfig;
+
+  @state() private _pastedConfig?: ScriptConfig;
+
+  private _previousConfig?: ScriptConfig;
 
   @state() private _dirty = false;
 
@@ -426,6 +432,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .narrow=${this.narrow}
                           .isWide=${this.isWide}
                           .config=${this._config}
+                          .pastedConfig=${this._pastedConfig}
                           .disabled=${this._readOnly}
                           @value-changed=${this._valueChanged}
                         ></manual-script-editor>
@@ -499,7 +506,6 @@ export class HaScriptEditor extends SubscribeMixin(
         ...initData,
       } as ScriptConfig;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
@@ -517,6 +523,124 @@ export class HaScriptEditor extends SubscribeMixin(
       this._dirty = false;
       this._readOnly = true;
     }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("paste", this._handlePaste);
+  }
+
+  public disconnectedCallback() {
+    window.removeEventListener("paste", this._handlePaste);
+    super.disconnectedCallback();
+  }
+
+  private _handlePaste = async (ev: ClipboardEvent) => {
+    // Ignore events on inputs/textareas
+    const target = ev.composedPath()[0];
+    if (
+      target instanceof HTMLElement &&
+      (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
+    ) {
+      return;
+    }
+
+    const paste = ev.clipboardData?.getData("text");
+    if (!paste) {
+      return;
+    }
+
+    const loaded: any = load(paste);
+    if (loaded) {
+      let normalized: ScriptConfig | undefined;
+
+      try {
+        normalized = this._normalizeConfig(loaded);
+      } catch (_err: any) {
+        return;
+      }
+
+      if (normalized) {
+        ev.preventDefault();
+
+        if (this._dirty) {
+          const result = await new Promise<boolean>((resolve) => {
+            showPasteReplaceDialog(this, {
+              domain: "script",
+              pastedConfig: normalized,
+              onClose: () => resolve(false),
+              onAppend: () => {
+                this._appendToExistingConfig(normalized);
+                resolve(false);
+              },
+              onReplace: () => resolve(true),
+            });
+          });
+
+          if (!result) {
+            return;
+          }
+        }
+
+        // replace the config completely
+        this._replaceExistingConfig(normalized);
+      }
+    }
+  };
+
+  private _appendToExistingConfig(config: ScriptConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this._config } as ScriptConfig;
+    this._pastedConfig = config;
+
+    if (!this._config) {
+      return;
+    }
+
+    this._config.fields = {
+      ...this._config.fields,
+      ...config.fields,
+    };
+
+    if (Array.isArray(this._config?.sequence)) {
+      this._config.sequence = this._config.sequence.concat(
+        config.sequence || []
+      );
+    }
+
+    this._dirty = true;
+    this._errors = undefined;
+
+    this._showPastedToastWithUndo();
+  }
+
+  private _replaceExistingConfig(config: ScriptConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this._config } as ScriptConfig;
+    this._config = config;
+    this._pastedConfig = config;
+    this._dirty = true;
+    this._errors = undefined;
+
+    this._showPastedToastWithUndo();
+  }
+
+  private _showPastedToastWithUndo() {
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.script.editor.paste_toast_message"
+      ),
+      duration: -1,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          this._config = this._previousConfig;
+          this._errors = undefined;
+          this._previousConfig = undefined;
+          this._pastedConfig = undefined;
+        },
+      },
+    });
   }
 
   private async _checkValidation() {
@@ -594,9 +718,22 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _valueChanged(ev) {
+    // reset the pasted config as soon as the user starts editing
+    this._resetPastedConfig();
+
     this._config = ev.detail.value;
     this._errors = undefined;
     this._dirty = true;
+  }
+
+  private _resetPastedConfig() {
+    this._pastedConfig = undefined;
+    this._previousConfig = undefined;
+
+    showToast(this, {
+      message: "",
+      duration: 0,
+    });
   }
 
   private async _runScript(ev: CustomEvent) {

@@ -42,6 +42,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
+  @property({ attribute: false }) public pastedConfig?: ManualAutomationConfig;
+
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   protected firstUpdated(changedProps: PropertyValues): void {
@@ -123,6 +125,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
+        .highlightedTriggers=${this.pastedConfig?.triggers || []}
         .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
@@ -164,6 +167,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
+        .highlightedConditions=${this.pastedConfig?.conditions || []}
         .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
@@ -203,6 +207,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
+        .highlightedActions=${this.pastedConfig?.actions || []}
         .path=${["actions"]}
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
