@@ -525,3 +525,12 @@ export interface AutomationClipboard {
   condition?: Condition;
   action?: Action;
 }
+
+export interface AutomationDescription {
+  description: string;
+}
+
+export const describeAllAutomations = (hass: HomeAssistant) =>
+  hass.callWS<Record<string, AutomationDescription>[]>({
+    type: "automation/describe_all",
+  });

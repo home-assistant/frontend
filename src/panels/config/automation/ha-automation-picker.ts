@@ -64,7 +64,10 @@ import type { HaMenu } from "../../../components/ha-menu";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { AutomationEntity } from "../../../data/automation";
+import type {
+  AutomationDescription,
+  AutomationEntity,
+} from "../../../data/automation";
 import {
   deleteAutomation,
   duplicateAutomation,
@@ -72,6 +75,7 @@ import {
   getAutomationStateConfig,
   showAutomationEditor,
   triggerAutomationActions,
+  describeAllAutomations,
 } from "../../../data/automation";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -120,6 +124,7 @@ type AutomationItem = AutomationEntity & {
   formatted_state: string;
   category: string | undefined;
   labels: LabelRegistryEntry[];
+  description?: string;
 };
 
 @customElement("ha-automation-picker")
@@ -137,6 +142,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _filteredAutomations?: string[] | null;
+
+  @state() private _automationDescriptions: Record<
+    string,
+    AutomationDescription
+  >[] = [];
 
   @storage({
     storage: "sessionStorage",
@@ -210,6 +220,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       automations: AutomationEntity[],
       entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
+      descriptions: Record<string, AutomationDescription>[],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredAutomations?: string[] | null
@@ -244,6 +255,8 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
             (lbl) => labelReg!.find((label) => label.label_id === lbl)!
           ),
           selectable: entityRegEntry !== undefined,
+          description:
+            descriptions[automation.entity_id]?.description || undefined,
         };
       });
     }
@@ -286,13 +299,26 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           filterable: true,
           direction: "asc",
           flex: 2,
-          extraTemplate: (automation) =>
-            automation.labels.length
+          template: (automation) => {
+            const name = computeStateName(automation);
+            const labels = automation.labels.length
               ? html`<ha-data-table-labels
                   @label-clicked=${this._labelClicked}
                   .labels=${automation.labels}
                 ></ha-data-table-labels>`
-              : nothing,
+              : nothing;
+
+            if (!automation.description) {
+              return html`<span>${name}</span>${labels}`;
+            }
+
+            return html`
+              <ha-tooltip .content=${automation.description}>
+                <span>${name}</span>
+              </ha-tooltip>
+              ${labels}
+            `;
+          },
         },
         area: {
           title: localize("ui.panel.config.automation.picker.headers.area"),
@@ -507,6 +533,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this.automations,
       this._entityReg,
       this.hass.areas,
+      this._automationDescriptions,
       this._categories,
       this._labels,
       this._filteredAutomations
@@ -903,6 +930,14 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         </ha-md-menu-item>
       </ha-menu>
     `;
+  }
+
+  protected async willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (changedProps.has("automations")) {
+      this._automationDescriptions = await describeAllAutomations(this.hass);
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
