@@ -1936,6 +1936,10 @@
           "title": "Assist",
           "open_assist": "open Assist dialog"
         },
+        "automations": {
+          "title": "Automations",
+          "paste": "to paste automation YAML from clipboard to automation editor"
+        },
         "charts": {
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
