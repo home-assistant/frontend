@@ -183,32 +183,46 @@ export class LovelacePanel extends LitElement {
     if (!changedProperties.has("hass")) {
       return;
     }
+
     const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
     if (
       oldHass &&
       this.hass &&
-      (oldHass.entities !== this.hass.entities ||
+      this.lovelace &&
+      isStrategyDashboard(this.lovelace.rawConfig)
+    ) {
+      // If the entity registry changed, ask the user if they want to refresh the config
+      if (
+        oldHass.entities !== this.hass.entities ||
         oldHass.devices !== this.hass.devices ||
         oldHass.areas !== this.hass.areas ||
-        oldHass.floors !== this.hass.floors)
-    ) {
-      this._registriesChanged();
+        oldHass.floors !== this.hass.floors
+      ) {
+        if (this.hass.config.state === "RUNNING") {
+          this._askRefreshConfig();
+        }
+      }
+      // If ha started, refresh the config
+      if (
+        this.hass.config.state === "RUNNING" &&
+        oldHass.config.state !== "RUNNING"
+      ) {
+        this._refreshConfig();
+      }
     }
   }
 
-  private _registriesChanged = () => {
-    if (this.lovelace && isStrategyDashboard(this.lovelace.rawConfig)) {
-      showToast(this, {
-        message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
-        action: {
-          action: () => this._refreshConfig(),
-          text: this.hass!.localize("ui.common.refresh"),
-        },
-        duration: -1,
-        id: "entity-registry-changed",
-        dismissable: false,
-      });
-    }
+  private _askRefreshConfig = () => {
+    showToast(this, {
+      message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
+      action: {
+        action: () => this._refreshConfig(),
+        text: this.hass!.localize("ui.common.refresh"),
+      },
+      duration: -1,
+      id: "entity-registry-changed",
+      dismissable: false,
+    });
   };
 
   private async _refreshConfig() {
