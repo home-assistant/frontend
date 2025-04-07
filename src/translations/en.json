@@ -1895,6 +1895,12 @@
         "title": "Shortcuts",
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
+        "shortcuts": {
+          "double_click": "Double click",
+          "scroll_wheel": "Scroll wheel",
+          "drag": "Drag",
+          "ctrl_cmd": "Ctrl/Cmd"
+        },
         "searching": {
           "title": "Searching",
           "on_any_page": "On any page",

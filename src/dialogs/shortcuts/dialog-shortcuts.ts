@@ -14,9 +14,11 @@ interface Text {
   key: LocalizeKeys;
 }
 
+type ShortcutString = string | { key: LocalizeKeys };
+
 interface Shortcut {
   type: "shortcut";
-  shortcut: string[];
+  shortcut: ShortcutString[];
   key: LocalizeKeys;
 }
 
@@ -51,7 +53,7 @@ const _SHORTCUTS: Section[] = [
       },
       {
         type: "shortcut",
-        shortcut: ["CRTL/CMND", "F"],
+        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "F"],
         key: "ui.dialogs.shortcuts.searching.search_in_table",
       },
     ],
@@ -71,17 +73,23 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         type: "shortcut",
-        shortcut: ["CRTL/CMND", "DRAG"],
+        shortcut: [
+          { key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" },
+          { key: "ui.dialogs.shortcuts.shortcuts.drag" },
+        ],
         key: "ui.dialogs.shortcuts.charts.drag_to_zoom",
       },
       {
         type: "shortcut",
-        shortcut: ["CRTL/CMND", "SCROLL WHEEL"],
+        shortcut: [
+          { key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" },
+          { key: "ui.dialogs.shortcuts.shortcuts.scroll_wheel" },
+        ],
         key: "ui.dialogs.shortcuts.charts.scroll_to_zoom",
       },
       {
         type: "shortcut",
-        shortcut: ["DOUBLE CLICK"],
+        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.double_click" }],
         key: "ui.dialogs.shortcuts.charts.double_click",
       },
     ],
@@ -113,10 +121,17 @@ class DialogShortcuts extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _renderShortcut(shortcut: string[], translationKey: LocalizeKeys) {
+  private _renderShortcut(
+    shortcuts: ShortcutString[],
+    translationKey: LocalizeKeys
+  ) {
+    const keys = shortcuts.map((shortcut) =>
+      typeof shortcut === "string" ? shortcut : this.hass.localize(shortcut.key)
+    );
+
     return html`
       <div class="shortcut">
-        ${shortcut.map((key) => html` <span>${key}</span>`)}
+        ${keys.map((key) => html` <span>${key.toUpperCase()}</span>`)}
         ${this.hass.localize(translationKey)}
       </div>
     `;
