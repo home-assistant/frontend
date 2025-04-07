@@ -52,7 +52,8 @@ export const assistSatelliteAnnounce = (
   args: {
     message?: string;
     media_id?: string;
-    preannounce_media_id?: string | null;
+    preannounce?: boolean;
+    preannounce_media_id?: string;
   }
 ) => hass.callService("assist_satellite", "announce", args, { entity_id });
 
