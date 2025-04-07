@@ -315,7 +315,7 @@ class HaPanelHistory extends LitElement {
       this._startDate,
       this._endDate,
       statisticIds,
-      "hour",
+      "5minute",
       undefined,
       ["mean", "state"]
     );

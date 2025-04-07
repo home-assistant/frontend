@@ -169,7 +169,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       start,
       now,
       this._entityIds,
-      "hour",
+      "5minute",
       undefined,
       ["mean", "state"]
     );
