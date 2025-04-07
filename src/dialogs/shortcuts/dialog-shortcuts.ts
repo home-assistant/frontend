@@ -195,7 +195,7 @@ class DialogShortcuts extends LitElement {
 
       span {
         padding: 8px;
-        border: 1px solid var(--divider-color);
+        border: 1px solid var(--outline-color);
         border-radius: 8px;
       }
 
