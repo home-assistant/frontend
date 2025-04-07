@@ -742,9 +742,7 @@ export class QuickBar extends LitElement {
       {
         path: "",
         primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
-        action: () => {
-          showShortcutsDialog(this);
-        },
+        action: () => showShortcutsDialog(this),
         iconPath: mdiKeyboard,
       },
     ];
