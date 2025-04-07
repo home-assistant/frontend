@@ -1896,8 +1896,8 @@
         "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
         "enable_shortcuts_hint_user_profile": "user profile",
         "shortcuts": {
-          "double_click": "Double click",
-          "scroll_wheel": "Scroll wheel",
+          "double_click": "Double-click",
+          "scroll_wheel": "Scroll",
           "drag": "Drag",
           "ctrl_cmd": "Ctrl/Cmd"
         },
