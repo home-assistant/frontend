@@ -3457,7 +3457,11 @@
             },
             "success": {
               "title": "Ready to Assist!",
-              "secondary": "Make any final customizations here. You can always change these in the Voice Assistants section of the settings page."
+              "secondary": "Make any final customizations here. You can always change these in the Voice assistants section of the settings page.",
+              "test_wakeword": "Test",
+              "edit_pipeline": "Edit",
+              "try_tts": "Try",
+              "done": "Done"
             }
           }
         },
