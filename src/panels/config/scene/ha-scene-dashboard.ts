@@ -266,14 +266,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
-          hidden: true,
+          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
         },
         category: {
           title: localize("ui.panel.config.scene.picker.headers.category"),
-          hidden: true,
+          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,

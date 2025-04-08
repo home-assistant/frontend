@@ -11,12 +11,19 @@ export class DialogZWaveJSAddNode extends HTMLElement {
   public configEntryId!: string;
 
   connectedCallback() {
+    this._openDialog();
+  }
+
+  private async _openDialog() {
+    await navigate(
+      `/config/devices/dashboard?config_entry=${this.configEntryId}`,
+      {
+        replace: true,
+      }
+    );
     showZWaveJSAddNodeDialog(this, {
       entry_id: this.configEntryId,
       longRangeSupported: false,
-    });
-    navigate(`/config/devices/dashboard?config_entry=${this.configEntryId}`, {
-      replace: true,
     });
   }
 }

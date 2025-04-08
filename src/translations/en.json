@@ -1233,7 +1233,7 @@
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the command dialog",
+        "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -1897,6 +1897,40 @@
           "header": "Enter setup code",
           "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
+        }
+      },
+      "shortcuts": {
+        "title": "Shortcuts",
+        "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
+        "enable_shortcuts_hint_user_profile": "user profile",
+        "shortcuts": {
+          "double_click": "Double-click",
+          "scroll_wheel": "Scroll",
+          "drag": "Drag",
+          "ctrl_cmd": "Ctrl/Cmd"
+        },
+        "searching": {
+          "title": "Searching",
+          "on_any_page": "On any page",
+          "on_pages_with_tables": "On pages with tables",
+          "search_command": "search command",
+          "search_entities": "search entities",
+          "search_devices": "search devices",
+          "search_in_table": "to search in tables"
+        },
+        "assist": {
+          "title": "Assist",
+          "open_assist": "open Assist dialog"
+        },
+        "charts": {
+          "title": "Charts",
+          "drag_to_zoom": "to zoom in part of a chart",
+          "scroll_to_zoom": "to zoom in or out",
+          "double_click": "to zoom in on part of the chart"
+        },
+        "other": {
+          "title": "Other",
+          "my_link": "get My Home Assistant link"
         }
       }
     },
@@ -3060,7 +3094,8 @@
             "bug": "Bug reports",
             "help": "Help",
             "license": "License"
-          }
+          },
+          "shortcuts": "Shortcuts"
         },
         "logs": {
           "caption": "Logs",
@@ -3311,13 +3346,13 @@
             }
           },
           "debug": {
-            "header": "Debug Assistant",
+            "header": "Debug assistant",
             "no_runs_found": "No runs found",
             "older_run": "Older run",
             "newer_run": "Newer run",
             "start_debug_run": "Start debug run",
             "pipeline": {
-              "header": "Assist Pipeline",
+              "header": "Assist pipeline",
               "run_text_pipeline": "Run text pipeline",
               "run_audio_pipeline": "Run audio pipeline",
               "run_audio_with_wake": "Run audio pipeline with wake word detection",
@@ -3404,8 +3439,8 @@
                 "high": "High"
               },
               "commands": {
-                "header": "Supported commands",
-                "low": "Needs work",
+                "header": "Language support",
+                "low": "Needs more work",
                 "ready": "Ready to be used",
                 "high": "Fully supported"
               },
@@ -3439,21 +3474,22 @@
             },
             "local": {
               "title": "Installing add-ons",
-              "secondary": "The Whisper and Piper add-ons are being installed and configured based on your hardware.",
+              "secondary": "We are preparing your system for local voice processing.",
               "failed_title": "Failed to install add-ons",
-              "failed_secondary": "We were unable to install the Whisper and Piper add-ons automatically for you. Read the documentation to learn how to install them.",
+              "failed_secondary": "We were unable to install the add-ons for speech-to-text and text-to-speech automatically for you. Read the documentation to learn how to install them.",
               "not_supported_title": "Installation of add-ons is not supported on your system",
               "not_supported_secondary": "Your system is not supported to automatically install a local TTS and STT provider. Learn how to set up local TTS and STT providers in the documentation.",
-              "local_pipeline": "Local Assistant",
+              "full_local_pipeline": "Full local assistant",
+              "focused_local_pipeline": "Focused local assistant",
               "state": {
-                "installing_piper": "Installing Piper add-on",
-                "starting_piper": "Starting Piper add-on",
+                "installing_piper": "Installing Piper",
+                "starting_piper": "Starting Piper",
                 "setup_piper": "Setting up Piper",
-                "installing_faster-whisper": "Installing Whisper add-on",
-                "starting_faster-whisper": "Starting Whisper add-on",
+                "installing_faster-whisper": "Installing Whisper",
+                "starting_faster-whisper": "Starting Whisper",
                 "setup_faster-whisper": "Setting up Whisper",
-                "installing_speech-to-phrase": "Installing Speech-to-Phrase add-on",
-                "starting_speech-to-phrase": "Starting Speech-to-Phrase add-on",
+                "installing_speech-to-phrase": "Installing Speech-to-Phrase",
+                "starting_speech-to-phrase": "Starting Speech-to-Phrase",
                 "setup_speech-to-phrase": "Setting up Speech-to-Phrase",
                 "creating_pipeline": "Creating assistant"
               },
@@ -3464,7 +3500,11 @@
             },
             "success": {
               "title": "Ready to Assist!",
-              "secondary": "Make any final customizations here. You can always change these in the Voice Assistants section of the settings page."
+              "secondary": "Make any final customizations here. You can always change these in the Voice assistants section of the settings page.",
+              "test_wakeword": "Test",
+              "edit_pipeline": "Edit",
+              "try_tts": "Try",
+              "done": "Done"
             }
           }
         },
@@ -6392,6 +6432,15 @@
         "strategy": {
           "original-states": {
             "helpers": "[%key:ui::panel::config::helpers::caption%]"
+          },
+          "areas": {
+            "groups": {
+              "lights": "Lights",
+              "climate": "Climate",
+              "media_players": "Entertainment",
+              "security": "Security",
+              "others": "Others"
+            }
           }
         },
         "cards": {
@@ -6562,8 +6611,9 @@
         "menu": {
           "configure_ui": "Edit dashboard",
           "help": "Help",
-          "search": "Entity search",
+          "search_entities": "Search entities",
           "assist": "Assist",
+          "assist_tooltip": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
@@ -7226,12 +7276,17 @@
                 "large": "Large"
               },
               "show_seconds": "Display seconds",
-              "time_format": "Time format",
+              "time_format": "[%key:ui::panel::profile::time_format::dropdown_label%]",
               "time_formats": {
+                "auto": "Use user settings",
                 "language": "[%key:ui::panel::profile::time_format::formats::language%]",
                 "system": "[%key:ui::panel::profile::time_format::formats::system%]",
                 "24": "[%key:ui::panel::profile::time_format::formats::24%]",
                 "12": "[%key:ui::panel::profile::time_format::formats::12%]"
+              },
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
+              "time_zones": {
+                "auto": "Use user settings"
               }
             },
             "media-control": {
@@ -7590,7 +7645,8 @@
               "url": "URL"
             },
             "areas": {
-              "areas_display": "Areas to display"
+              "areas_display": "Areas to display",
+              "no_entities": "No entities in this group, the section will not be displayed"
             }
           },
           "view": {
@@ -8603,10 +8659,11 @@
       }
     },
     "tips": {
-      "key_c_hint": "Press 'c' on any page to open the command dialog",
-      "key_e_hint": "Press 'e' on any page to open the entity search dialog",
-      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link",
-      "key_a_hint": "Press 'a' on any page to open the Assist dialog"
+      "keyboard_shortcut": "keyboard shortcut",
+      "key_c_tip": "Press {keyboard_shortcut} 'c' on any page to open the command dialog",
+      "key_e_tip": "Press {keyboard_shortcut} 'e' on any page to open the entity search dialog",
+      "key_m_tip": "Press {keyboard_shortcut} 'm' on any page to get the My Home Assistant link",
+      "key_a_tip": "Press {keyboard_shortcut} 'a' on any page to open the Assist dialog"
     }
   },
   "landing-page": {

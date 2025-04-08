@@ -243,7 +243,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
   private readonly _ttsHostName = "core-piper";
 
-  private readonly _ttsPort = "10200";
+  private readonly _ttsPort = 10200;
 
   private get _sttProviderName() {
     return this.localOption === "focused_local"
@@ -263,7 +263,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       : "core-whisper";
   }
 
-  private readonly _sttPort = "10300";
+  private readonly _sttPort = 10300;
 
   private async _findLocalEntities() {
     const wyomingEntities = Object.values(this.hass.entities).filter(
@@ -325,14 +325,16 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       (flow) =>
         flow.handler === "wyoming" &&
         flow.context.source === "hassio" &&
-        (flow.context.configuration_url.includes(
-          type === "tts" ? this._ttsHostName : this._sttHostName
-        ) ||
-          flow.context.title_placeholders.title
-            .toLowerCase()
-            .includes(
-              type === "tts" ? this._ttsProviderName : this._sttProviderName
-            ))
+        ((flow.context.configuration_url &&
+          flow.context.configuration_url.includes(
+            type === "tts" ? this._ttsAddonName : this._sttAddonName
+          )) ||
+          (flow.context.title_placeholders.name &&
+            flow.context.title_placeholders.name
+              .toLowerCase()
+              .includes(
+                type === "tts" ? this._ttsProviderName : this._sttProviderName
+              )))
     );
   }
 
@@ -357,32 +359,15 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const pipelines = await listAssistPipelines(this.hass);
-    const preferredPipeline = pipelines.pipelines.find(
-      (pipeline) => pipeline.id === pipelines.preferred_pipeline
-    );
+
+    if (pipelines.preferred_pipeline) {
+      pipelines.pipelines.sort((a) =>
+        a.id === pipelines.preferred_pipeline ? -1 : 0
+      );
+    }
 
     const ttsEntityIds = this._localTts.map((ent) => ent.entity_id);
     const sttEntityIds = this._localStt.map((ent) => ent.entity_id);
-
-    if (preferredPipeline) {
-      if (
-        preferredPipeline.conversation_engine ===
-          "conversation.home_assistant" &&
-        preferredPipeline.tts_engine &&
-        ttsEntityIds.includes(preferredPipeline.tts_engine) &&
-        preferredPipeline.stt_engine &&
-        sttEntityIds.includes(preferredPipeline.stt_engine)
-      ) {
-        await this.hass.callService(
-          "select",
-          "select_option",
-          { option: "preferred" },
-          { entity_id: this.assistConfiguration?.pipeline_entity_id }
-        );
-        this._nextStep();
-        return;
-      }
-    }
 
     let localPipeline = pipelines.pipelines.find(
       (pipeline) =>
@@ -390,7 +375,8 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         pipeline.tts_engine &&
         ttsEntityIds.includes(pipeline.tts_engine) &&
         pipeline.stt_engine &&
-        sttEntityIds.includes(pipeline.stt_engine)
+        sttEntityIds.includes(pipeline.stt_engine) &&
+        pipeline.language.split("-")[0] === this.language.split("-")[0]
     );
 
     if (!localPipeline) {
@@ -463,7 +449,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     let pipelineName = this.hass.localize(
-      "ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline"
+      `ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`
     );
     let i = 1;
     while (
@@ -472,7 +458,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         (pipeline) => pipeline.name === pipelineName
       )
     ) {
-      pipelineName = `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.local_pipeline")} ${i}`;
+      pipelineName = `${this.hass.localize(`ui.panel.config.voice_assistants.satellite_wizard.local.${this.localOption}_pipeline`)} ${i}`;
       i++;
     }
 

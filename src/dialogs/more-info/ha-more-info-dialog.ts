@@ -276,6 +276,11 @@ export class MoreInfoDialog extends LitElement {
     this._setView("related");
   }
 
+  private _breadcrumbClick(ev: Event) {
+    ev.stopPropagation();
+    this._setView("related");
+  }
+
   private async _loadNumericDeviceClasses() {
     const deviceClasses = await getSensorNumericDeviceClasses(this.hass);
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
@@ -319,7 +324,7 @@ export class MoreInfoDialog extends LitElement {
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
     );
-    const title = this._childView?.viewTitle || breadcrumb.pop();
+    const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
 
     return html`
       <ha-dialog
@@ -350,18 +355,23 @@ export class MoreInfoDialog extends LitElement {
                   )}
                 ></ha-icon-button-prev>
               `}
-          <span
-            slot="title"
-            .title=${title}
-            @click=${this._enlarge}
-            class="title"
-          >
+          <span slot="title" @click=${this._enlarge} class="title">
             ${breadcrumb.length > 0
-              ? html`
-                  <p class="breadcrumb">
-                    ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
-                  </p>
-                `
+              ? !__DEMO__ && isAdmin
+                ? html`
+                    <button
+                      class="breadcrumb"
+                      @click=${this._breadcrumbClick}
+                      aria-label=${breadcrumb.join(" > ")}
+                    >
+                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    </button>
+                  `
+                : html`
+                    <p class="breadcrumb">
+                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                    </p>
+                  `
               : nothing}
             <p class="main">${title}</p>
           </span>
@@ -656,6 +666,7 @@ export class MoreInfoDialog extends LitElement {
         .title {
           display: flex;
           flex-direction: column;
+          align-items: flex-start;
         }
 
         .title p {
@@ -676,11 +687,30 @@ export class MoreInfoDialog extends LitElement {
           color: var(--secondary-text-color);
           font-size: 14px;
           line-height: 16px;
-          margin-top: -6px;
+          --mdc-icon-size: 16px;
+          padding: 4px;
+          margin: -4px;
+          margin-top: -10px;
+          background: none;
+          border: none;
+          outline: none;
+          display: inline;
+          border-radius: 6px;
+          transition: background-color 180ms ease-in-out;
+          min-width: 0;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          text-align: left;
         }
 
-        .title .breadcrumb {
-          --mdc-icon-size: 16px;
+        .title button.breadcrumb {
+          cursor: pointer;
+        }
+
+        .title button.breadcrumb:focus-visible,
+        .title button.breadcrumb:hover {
+          background-color: rgba(var(--rgb-secondary-text-color), 0.08);
         }
       `,
     ];

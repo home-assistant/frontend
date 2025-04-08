@@ -197,6 +197,9 @@ class HaConfigSectionUpdates extends LitElement {
       display: flex;
       margin-bottom: max(24px, env(safe-area-inset-bottom));
     }
+    ha-config-updates {
+      margin-bottom: 8px;
+    }
 
     .card-content {
       display: flex;
