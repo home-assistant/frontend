@@ -75,7 +75,7 @@ import {
   getAutomationStateConfig,
   showAutomationEditor,
   triggerAutomationActions,
-  describeAllAutomations,
+  getAllAutomationDescriptions,
 } from "../../../data/automation";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -932,11 +932,11 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  protected async willUpdate(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
     if (changedProps.has("automations")) {
-      this._automationDescriptions = await describeAllAutomations(this.hass);
+      this._loadAllAutomationDescriptions();
     }
   }
 
@@ -954,6 +954,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     if (this._searchParms.has("label")) {
       this._filterLabel();
     }
+  }
+
+  private async _loadAllAutomationDescriptions() {
+    this._automationDescriptions = await getAllAutomationDescriptions(
+      this.hass
+    );
   }
 
   private _filterExpanded(ev) {

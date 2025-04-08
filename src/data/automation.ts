@@ -530,7 +530,7 @@ export interface AutomationDescription {
   description: string;
 }
 
-export const describeAllAutomations = (hass: HomeAssistant) =>
+export const getAllAutomationDescriptions = (hass: HomeAssistant) =>
   hass.callWS<Record<string, AutomationDescription>[]>({
-    type: "automation/describe_all",
+    type: "automation/description/all",
   });
