@@ -41,11 +41,11 @@ export interface MatterNodeDiagnostics {
 }
 
 export interface MatterNodeBinding {
-  node_id: number;
-  group_id: number;
-  endpoint_id: number;
-  cluster_id: number;
-  fabricIndex: number;
+  node: number;
+  group: number | null;
+  endpoint: number;
+  cluster: number | null;
+  fabricIndex: number | null;
 }
 
 export type MatterPingResult = Record<string, boolean>;
@@ -172,13 +172,11 @@ export const getMatterNodeDiagnostics = (
 
 export const getMatterNodeBinding = (
   hass: HomeAssistant,
-  device_id: string,
-  endpoint: number
-): Promise<MatterNodeBinding[]> =>
+  device_id: string
+): Promise<{}> =>
   hass.callWS({
     type: "matter/get_node_binding",
     device_id,
-    endpoint,
   });
 
 export const setMatterNodeBinding = (

@@ -1237,6 +1237,30 @@ export class HaConfigDevicePage extends LitElement {
           .device=${device}
         ></ha-device-info-matter>
       `);
+
+      if (!this.shadowRoot?.getElementById("matter-binding-" + device.id)) {
+        import(
+          "../integrations/integration-panels/matter/matter-device-binding-card"
+        );
+
+        const device_column = this.shadowRoot?.querySelectorAll(
+          "ha-device-via-devices-card"
+        );
+
+        if (device_column![0].parentNode) {
+          const newElement = document.createElement("div");
+          newElement.id = "matter-binding-" + device.id;
+
+          const matterBindingCard = document.createElement(
+            "matter-device-binding-card"
+          );
+          matterBindingCard.hass = this.hass;
+          matterBindingCard.device = device;
+
+          newElement.appendChild(matterBindingCard);
+          device_column![0].parentNode?.appendChild(newElement);
+        }
+      }
     }
   }
 
