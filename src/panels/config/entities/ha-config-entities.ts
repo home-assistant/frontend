@@ -667,7 +667,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         );
 
         const deviceName = device ? computeDeviceName(device) : undefined;
-        const areaName = area ? area.name : undefined;
 
         result.push({
           ...entry,
