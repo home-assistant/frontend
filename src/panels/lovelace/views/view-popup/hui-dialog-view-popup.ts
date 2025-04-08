@@ -190,8 +190,8 @@ export class DialogViewPopup
             --mdc-dialog-max-width: calc(
               100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
             );
-            --mdc-dialog-min-height: 100%;
-            --mdc-dialog-max-height: 100%;
+            --mdc-dialog-max-height: 90vh;
+            --ha-dialog-border-radius: 28px 28px 0 0;
           }
         }
       `,
