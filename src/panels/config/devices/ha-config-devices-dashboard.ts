@@ -497,7 +497,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : "",
       },
       name: {
-        title: localize("ui.panel.config.devices.data_table.device"),
+        title: localize("ui.panel.config.devices.data_table.name"),
         main: true,
         sortable: true,
         filterable: true,
@@ -515,19 +515,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : nothing}
         `,
       },
-      manufacturer: {
-        title: localize("ui.panel.config.devices.data_table.manufacturer"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        minWidth: "120px",
-      },
-      model: {
-        title: localize("ui.panel.config.devices.data_table.model"),
-        sortable: true,
-        filterable: true,
-        minWidth: "120px",
-      },
       area: {
         title: localize("ui.panel.config.devices.data_table.area"),
         sortable: true,
@@ -540,6 +527,19 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        minWidth: "120px",
+      },
+      manufacturer: {
+        title: localize("ui.panel.config.devices.data_table.manufacturer"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        minWidth: "120px",
+      },
+      model: {
+        title: localize("ui.panel.config.devices.data_table.model"),
+        sortable: true,
+        filterable: true,
         minWidth: "120px",
       },
       battery_entity: {

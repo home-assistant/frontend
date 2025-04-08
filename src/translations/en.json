@@ -4956,7 +4956,7 @@
           "disabled": "Disabled",
           "data_table": {
             "icon": "Icon",
-            "device": "Device",
+            "name": "Name",
             "manufacturer": "Manufacturer",
             "model": "Model",
             "area": "Area",
