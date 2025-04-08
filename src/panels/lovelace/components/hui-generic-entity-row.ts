@@ -145,10 +145,10 @@ export class HuiGenericEntityRow extends LitElement {
                                           100
                                       )}
                                       %`
-                                    : "")}
+                                    : nothing)}
                     </div>
                   `
-                : ""}
+                : nothing}
             </div>`
           : nothing}
         ${(this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain))
