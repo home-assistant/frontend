@@ -674,7 +674,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           entity,
           name: entityName || deviceName || entry.entity_id,
           device: deviceName,
-          area: areaName,
+          area: area?.name,
           unavailable,
           restored,
           localized_platform: domainToName(localize, entry.platform),
