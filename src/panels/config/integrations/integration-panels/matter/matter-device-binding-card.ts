@@ -1,6 +1,6 @@
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, queryAll } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-button";
@@ -10,11 +10,10 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-selector/ha-selector";
 
 import { mdiPlusCircle } from "@mdi/js";
-// import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { showMatterNodeBindingDialog } from "./show-dialog-matter-node-binding";
 
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { HomeAssistant } from "../../../../../types";
-// import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 import type {
@@ -49,17 +48,8 @@ export class MatterDeviceBindingCard extends LitElement {
   @state()
   public showHidden = false;
 
-  @state() private _bindableDevices: DeviceRegistryEntry[] = [];
-
-  @state() private _bindTargetIndex = -1;
-
-  @state() private _deviceToBind?: DeviceRegistryEntry;
-
   @property({ attribute: false })
   public bindings?: Record<string, MatterNodeBinding[]>;
-
-  @queryAll(".bindingTarget")
-  private bindingInputs!: NodeListOf<HTMLInputElement>;
 
   async handleDeleteClickCallback(event: Event) {
     const button = event.target as HTMLElement;
@@ -88,56 +78,9 @@ export class MatterDeviceBindingCard extends LitElement {
   }
 
   async handleAddClickCallback(_ev: Event): Promise<any> {
-    if (this.bindings) {
-      let hasError = false;
-
-      this.bindingInputs.forEach((input) => {
-        input.classList.remove("error");
-        if (input.value === "" || Number(input.value) === 0) {
-          input.classList.add("error");
-          hasError = true;
-        }
-      });
-
-      if (hasError) {
-        return;
-      }
-
-      const source_endpoint = Number(this.bindingInputs[0].value);
-      const target_node = Number(this.bindingInputs[1].value);
-      const target_endpoint = Number(this.bindingInputs[2].value);
-
-      const device_id = this.hass.entities[0].device_id;
-      const bindings = this.bindings![source_endpoint];
-
-      const nodeBinding: MatterNodeBinding = {
-        node: target_node,
-        endpoint: target_endpoint,
-        group: null,
-        cluster: null,
-        fabricIndex: null,
-      };
-
-      const ret = await setMatterNodeBinding(
-        this.hass,
-        device_id!,
-        source_endpoint,
-        bindings
-      );
-
-      if (ret[0].Status === 0) {
-        this.bindings[source_endpoint].push(nodeBinding);
-        this.requestUpdate();
-      }
-    }
-  }
-
-  private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = Number(event.target!.value);
-    this._deviceToBind =
-      this._bindTargetIndex === -1
-        ? undefined
-        : this._bindableDevices[this._bindTargetIndex];
+    showMatterNodeBindingDialog(this, {
+      device_id: this.device.id,
+    });
   }
 
   private async _fetchBindingForMatterDevice(): Promise<void> {
@@ -152,11 +95,6 @@ export class MatterDeviceBindingCard extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("hass")) {
       this._fetchBindingForMatterDevice();
-      this._bindableDevices = Object.values(this.hass.devices).filter(
-        (device) =>
-          device.identifiers.find((identifier) => identifier[0] === "matter") &&
-          device.id !== this.device.id
-      );
     }
   }
 
@@ -169,7 +107,11 @@ export class MatterDeviceBindingCard extends LitElement {
       <ha-card outlined>
         <h1 class="card-header">
           Binding
-          <ha-icon-button .path=${mdiPlusCircle}> </ha-icon-button>
+          <ha-icon-button
+            .path=${mdiPlusCircle}
+            @click=${this.handleAddClickCallback}
+          >
+          </ha-icon-button>
         </h1>
         <main class="card-content">
           <header class="header-row header-title">
@@ -299,20 +241,6 @@ export class MatterDeviceBindingCard extends LitElement {
     .binding-columns span {
       flex: 0.5;
       text-align: center;
-    }
-
-    .binding-controls {
-      gap: 4px;
-    }
-
-    .binding-controls ha-select {
-      padding: 8px;
-      min-width: 0;
-      transition: border-color 0.3s ease;
-    }
-
-    .binding-controls ha-button {
-      align-items: center;
     }
   `;
 }
