@@ -73,7 +73,7 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         type: "shortcut",
-        shortcut: ["CRTL/CMND", "V"],
+        shortcut: [{ key: "ui.dialogs.shortcuts.shortcuts.ctrl_cmd" }, "V"],
         key: "ui.dialogs.shortcuts.automations.paste",
       },
     ],
