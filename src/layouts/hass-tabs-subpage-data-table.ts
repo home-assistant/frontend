@@ -260,10 +260,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             <ha-assist-chip
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.sort_by", {
-                sortColumn: this._sortColumn
-                  ? ` ${this.columns[this._sortColumn]?.title || this.columns[this._sortColumn]?.label}` ||
-                    ""
-                  : "",
+                sortColumn:
+                  this._sortColumn && this.columns[this._sortColumn]
+                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}` ||
+                      ""
+                    : "",
               })}
             >
               <ha-svg-icon
