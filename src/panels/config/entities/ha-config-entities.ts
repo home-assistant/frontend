@@ -25,15 +25,14 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import {
-  isDeletableEntity,
-  deleteEntity,
-} from "../../../common/entity/delete_entity";
-import type { Helper } from "../helpers/const";
-import { isHelperDomain } from "../helpers/const";
-import { HELPERS_CRUD } from "../../../data/helpers_crud";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import {
+  deleteEntity,
+  isDeletableEntity,
+} from "../../../common/entity/delete_entity";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -53,7 +52,6 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -62,6 +60,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
@@ -78,17 +77,15 @@ import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity_registry";
-import {
-  computeEntityRegistryName,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
-import type { IntegrationManifest } from "../../../data/integration";
-import {
-  fetchIntegrationManifests,
-  domainToName,
-} from "../../../data/integration";
+import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
+import type { IntegrationManifest } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
@@ -106,6 +103,8 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import type { Helper } from "../helpers/const";
+import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
@@ -124,6 +123,7 @@ export interface EntityRow extends StateEntity {
   restored: boolean;
   status: string | undefined;
   area?: string;
+  device?: string;
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
@@ -307,8 +307,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.name"),
         sortable: true,
         filterable: true,
-        direction: "asc",
-        flex: 2,
         extraTemplate: (entry) =>
           entry.label_entries.length
             ? html`
@@ -318,10 +316,26 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               `
             : nothing,
       },
+      device: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        direction: "asc",
+        template: (entry) => entry.device ?? "—",
+      },
+      area: {
+        title: localize("ui.panel.config.entities.picker.headers.area"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        template: (entry) => entry.area ?? "—",
+      },
       entity_id: {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
         sortable: true,
         filterable: true,
+        hidden: true,
       },
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
@@ -333,12 +347,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.domain"),
         sortable: false,
         hidden: true,
-        filterable: true,
-        groupable: true,
-      },
-      area: {
-        title: localize("ui.panel.config.entities.picker.headers.area"),
-        sortable: true,
         filterable: true,
         groupable: true,
       },
@@ -624,8 +632,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
         const restored = entity?.attributes.restored === true;
-        const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
+        const deviceId = entry.device_id;
+        const areaId = entry.area_id ?? devices[deviceId!]?.area_id;
         const area = areaId ? areas[areaId] : undefined;
+        const device = deviceId ? devices[deviceId] : undefined;
         const hidden = !!entry.hidden_by;
         const disabled = !!entry.disabled_by;
         const readonly = entry.readonly;
@@ -651,17 +661,23 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
+        const entityName = computeEntityEntryName(
+          entry as EntityRegistryEntry,
+          this.hass
+        );
+
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? area.name : undefined;
+
         result.push({
           ...entry,
           entity,
-          name: computeEntityRegistryName(
-            this.hass!,
-            entry as EntityRegistryEntry
-          ),
+          name: entityName || deviceName || entry.entity_id,
+          device: deviceName,
+          area: areaName,
           unavailable,
           restored,
           localized_platform: domainToName(localize, entry.platform),
-          area: area ? area.name : "—",
           domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.not_provided")

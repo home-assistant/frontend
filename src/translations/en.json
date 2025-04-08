@@ -5005,6 +5005,7 @@
               "state_icon": "State icon",
               "name": "Name",
               "entity_id": "Entity ID",
+              "device": "Device",
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
