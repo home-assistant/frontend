@@ -1029,6 +1029,7 @@ class HUIRoot extends LitElement {
           align-self: flex-end;
           flex-grow: 1;
           min-width: 0;
+          height: 100%;
         }
         sl-tab-group::part(nav) {
           padding: 0;
@@ -1053,9 +1054,14 @@ class HUIRoot extends LitElement {
         sl-tab {
           --mdc-icon-button-size: 20px;
           --mdc-icon-size: 20px;
+          height: calc(var(--header-height, 56px) - 2px);
         }
         sl-tab[aria-selected="true"] .edit-icon {
           display: inline-flex;
+        }
+        sl-tab::part(base) {
+          padding-top: calc((var(--header-height) - 20px) / 2);
+          padding-bottom: calc((var(--header-height) - 20px) / 2 - 2px);
         }
         .edit-icon {
           color: var(--accent-color);

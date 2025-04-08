@@ -227,8 +227,10 @@ export class HuiStackCardEditor
     return this._keys.get(key)!;
   }
 
-  protected _handleAddCard() {
+  protected async _handleAddCard() {
     this._selectedCard = this._config!.cards.length;
+    await this.updateComplete;
+    this.renderRoot.querySelector("sl-tab-group")!.syncIndicator();
   }
 
   protected _handleSelectedCard(ev) {

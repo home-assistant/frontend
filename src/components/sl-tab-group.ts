@@ -59,6 +59,9 @@ export class HaSlTabGroup extends TabGroup {
         --track-color: var(--ha-tab-track-color, var(--divider-color));
         --indicator-color: var(--ha-tab-indicator-color, var(--primary-color));
       }
+      ::slotted(sl-tab:not([active])) {
+        opacity: 0.8;
+      }
     `,
   ];
 }
