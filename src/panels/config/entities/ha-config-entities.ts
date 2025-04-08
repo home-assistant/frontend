@@ -329,7 +329,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
-        template: (entry) => entry.area ?? "—",
+        template: (entry) => entry.area || "—",
       },
       entity_id: {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
