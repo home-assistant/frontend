@@ -322,7 +322,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         groupable: true,
         direction: "asc",
-        template: (entry) => entry.device ?? "—",
+        template: (entry) => entry.device || "—",
       },
       area: {
         title: localize("ui.panel.config.entities.picker.headers.area"),
