@@ -32,15 +32,6 @@ export const AREA_STRATEGY_GROUP_ICONS = {
   others: "mdi:shape",
 };
 
-// Todo be replace by translation when validated
-export const AREA_STRATEGY_GROUP_LABELS = {
-  lights: "Lights",
-  climate: "Climate",
-  media_players: "Entertainment",
-  security: "Security",
-  others: "Others",
-};
-
 export type AreaStrategyGroup = (typeof AREA_STRATEGY_GROUPS)[number];
 
 type AreaEntitiesByGroup = Record<AreaStrategyGroup, string[]>;

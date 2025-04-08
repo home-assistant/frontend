@@ -76,6 +76,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -151,6 +152,7 @@ class HUIRoot extends LitElement {
       visible: boolean | undefined;
       overflow: boolean;
       overflow_can_promote?: boolean;
+      suffix?: string;
     }[] = [
       {
         icon: mdiFormatListBulletedTriangle,
@@ -182,20 +184,22 @@ class HUIRoot extends LitElement {
       },
       {
         icon: mdiMagnify,
-        key: "ui.panel.lovelace.menu.search",
+        key: "ui.panel.lovelace.menu.search_entities",
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode,
         overflow: this.narrow,
+        suffix: this.hass.enableShortcuts ? "(E)" : undefined,
       },
       {
         icon: mdiCommentProcessingOutline,
-        key: "ui.panel.lovelace.menu.assist",
+        key: "ui.panel.lovelace.menu.assist_tooltip",
         buttonAction: this._showVoiceCommandDialog,
         overflowAction: this._handleShowVoiceCommandDialog,
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
         overflow: this.narrow,
+        suffix: this.hass.enableShortcuts ? "(A)" : undefined,
       },
       {
         icon: mdiRefresh,
@@ -244,12 +248,16 @@ class HUIRoot extends LitElement {
 
     buttonItems.forEach((i) => {
       result.push(
-        html`<ha-icon-button
+        html`<ha-tooltip
           slot="actionItems"
-          .label=${this.hass!.localize(i.key)}
-          .path=${i.icon}
-          @click=${i.buttonAction}
-        ></ha-icon-button>`
+          placement="bottom"
+          .content=${[this.hass!.localize(i.key), i.suffix].join(" ")}
+        >
+          <ha-icon-button
+            .path=${i.icon}
+            @click=${i.buttonAction}
+          ></ha-icon-button>
+        </ha-tooltip>`
       );
     });
     if (overflowItems.length && !overflowCanPromote) {
@@ -260,7 +268,7 @@ class HUIRoot extends LitElement {
             graphic="icon"
             @request-selected=${i.overflowAction}
           >
-            ${this.hass!.localize(i.key)}
+            ${[this.hass!.localize(i.key), i.suffix].join(" ")}
             <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
           </mwc-list-item>`
         );
@@ -645,10 +653,16 @@ class HUIRoot extends LitElement {
   }
 
   private _showQuickBar(): void {
+    const params = {
+      keyboard_shortcut: html`<a href="#" @click=${this._openShortcutDialog}
+        >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
+      >`,
+    };
+
     showQuickBar(this, {
       mode: QuickBarMode.Entity,
       hint: this.hass.enableShortcuts
-        ? this.hass.localize("ui.tips.key_e_hint")
+        ? this.hass.localize("ui.tips.key_e_tip", params)
         : undefined,
     });
   }
@@ -959,6 +973,11 @@ class HUIRoot extends LitElement {
     view.narrow = this.narrow;
 
     root.appendChild(view);
+  }
+
+  private _openShortcutDialog(ev: Event) {
+    ev.preventDefault();
+    showShortcutsDialog(this);
   }
 
   static get styles(): CSSResultGroup {
