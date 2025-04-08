@@ -143,7 +143,7 @@ export class MatterDeviceBindingCard extends LitElement {
   private async _fetchBindingForMatterDevice(): Promise<void> {
     if (this.hass) {
       this.bindings = await getMatterNodeBinding(this.hass, this.device.id!);
-      if (this.bindings) {
+      if (Object.values(this.bindings).some((value) => Array.isArray(value))) {
         this.showHidden = true;
       }
     }
