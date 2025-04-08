@@ -84,7 +84,7 @@ class StepFlowForm extends LitElement {
         ${this._loading
           ? html`
               <div class="submit-spinner">
-                <ha-spinner></ha-spinner>
+                <ha-spinner size="small"></ha-spinner>
               </div>
             `
           : html`
@@ -263,6 +263,9 @@ class StepFlowForm extends LitElement {
         }
 
         .submit-spinner {
+          height: 36px;
+          display: flex;
+          align-items: center;
           margin-right: 16px;
           margin-inline-end: 16px;
           margin-inline-start: initial;
