@@ -335,7 +335,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
         sortable: true,
         filterable: true,
-        hidden: true,
+        defaultHidden: true,
       },
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
