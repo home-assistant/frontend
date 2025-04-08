@@ -1,12 +1,21 @@
 import TabGroup from "@shoelace-style/shoelace/dist/components/tab-group/tab-group.component";
 import TabGroupStyles from "@shoelace-style/shoelace/dist/components/tab-group/tab-group.styles";
 import "@shoelace-style/shoelace/dist/components/tab/tab";
+import type { PropertyValues } from "lit";
 import { css } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, query } from "lit/decorators";
 
 @customElement("sl-tab-group")
 // @ts-ignore
 export class HaSlTabGroup extends TabGroup {
+  private _mouseIsDown = false;
+
+  private _scrollStartX = 0;
+
+  private _scrollLeft = 0;
+
+  @query(".tab-group__nav", true) private _scrollContainer?: HTMLElement;
+
   override setAriaLabels() {
     // Override the method to prevent setting aria-labels, as we don't use panels
     // and don't want to set aria-labels for the tabs
@@ -18,6 +27,54 @@ export class HaSlTabGroup extends TabGroup {
     // as we don't use panels
     return [];
   }
+
+  protected override firstUpdated(_changedProperties: PropertyValues): void {
+    super.firstUpdated(_changedProperties);
+
+    const scrollContainer = this._scrollContainer;
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    scrollContainer.addEventListener("mousemove", this._mouseMove);
+    scrollContainer.addEventListener("mousedown", this._mouseDown);
+    scrollContainer.addEventListener("mouseup", this._mouseUp);
+    scrollContainer.addEventListener("mouseleave", this._mouseUp);
+  }
+
+  private _mouseDown = (event: MouseEvent) => {
+    const scrollContainer = this._scrollContainer;
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    this._mouseIsDown = true;
+    this._scrollStartX = event.pageX - scrollContainer.offsetLeft;
+    this._scrollLeft = scrollContainer.scrollLeft;
+  };
+
+  private _mouseUp = () => {
+    this._mouseIsDown = false;
+  };
+
+  private _mouseMove = (event: MouseEvent) => {
+    if (!this._mouseIsDown) {
+      return;
+    }
+    event.preventDefault();
+
+    const scrollContainer = this._scrollContainer;
+
+    if (!scrollContainer) {
+      return;
+    }
+
+    const x = event.pageX - scrollContainer.offsetLeft;
+    const scroll = x - this._scrollStartX;
+    scrollContainer.scrollLeft = this._scrollLeft - scroll;
+  };
 
   static override styles = [
     TabGroupStyles,
