@@ -204,10 +204,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (this.hasUpdated) {
       return;
     }
-    if (this.initialGroupColumn) {
+    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
       this._setGroupColumn(this.initialGroupColumn);
     }
-    if (this.initialSorting) {
+    if (this.initialSorting && this.columns[this.initialSorting.column]) {
       this._sortColumn = this.initialSorting.column;
       this._sortDirection = this.initialSorting.direction;
     }
@@ -307,9 +307,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
           <ha-md-button-menu positioning="popover">
             <ha-assist-chip
               .label=${localize("ui.components.subpage-data-table.group_by", {
-                groupColumn: this._groupColumn
-                  ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
-                  : "",
+                groupColumn:
+                  this._groupColumn && this.columns[this._groupColumn]
+                    ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
+                    : "",
               })}
               slot="trigger"
             >
