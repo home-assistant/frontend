@@ -333,17 +333,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 : nothing
             )}
             <ha-md-menu-item
-              .value=${undefined}
+              .value=${""}
               .clickAction=${this._handleGroupBy}
-              .selected=${this._groupColumn === undefined}
-              class=${classMap({ selected: this._groupColumn === undefined })}
+              .selected=${!this._groupColumn}
+              class=${classMap({ selected: !this._groupColumn })}
             >
               ${localize("ui.components.subpage-data-table.dont_group_by")}
             </ha-md-menu-item>
             <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
             <ha-md-menu-item
               .clickAction=${this._collapseAllGroups}
-              .disabled=${this._groupColumn === undefined}
+              .disabled=${!this._groupColumn}
             >
               <ha-svg-icon
                 slot="start"
@@ -355,7 +355,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
             </ha-md-menu-item>
             <ha-md-menu-item
               .clickAction=${this._expandAllGroups}
-              .disabled=${this._groupColumn === undefined}
+              .disabled=${!this._groupColumn}
             >
               <ha-svg-icon
                 slot="start"
