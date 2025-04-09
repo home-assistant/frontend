@@ -12,7 +12,7 @@ export class HaSlTabGroup extends TabGroup {
 
   private _scrolled = false;
 
-  private _mouseReleasedAt: number;
+  private _mouseReleasedAt?: number;
 
   private _scrollStartX = 0;
 
