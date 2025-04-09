@@ -4,11 +4,11 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiTableCog,
   mdiFilterVariant,
   mdiFilterVariantRemove,
   mdiFormatListChecks,
   mdiMenuDown,
+  mdiTableCog,
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
@@ -27,17 +27,17 @@ import type {
   HaDataTable,
   SortingDirection,
 } from "../components/data-table/ha-data-table";
-import "../components/ha-md-button-menu";
+import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-dialog";
 import "../components/ha-dialog-header";
+import "../components/ha-md-button-menu";
 import "../components/ha-md-divider";
 import "../components/ha-md-menu-item";
 import "../components/search-input-outlined";
+import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
-import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
@@ -256,7 +256,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
-          <ha-md-button-menu positioning="fixed">
+          <ha-md-button-menu positioning="popover">
             <ha-assist-chip
               slot="trigger"
               .label=${localize("ui.components.subpage-data-table.sort_by", {
@@ -303,7 +303,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
       ? html`
-          <ha-md-button-menu positioning="fixed">
+          <ha-md-button-menu positioning="popover">
             <ha-assist-chip
               .label=${localize("ui.components.subpage-data-table.group_by", {
                 groupColumn: this._groupColumn
@@ -399,7 +399,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-md-button-menu positioning="absolute">
+                <ha-md-button-menu>
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
