@@ -68,7 +68,8 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
 
   @state() private _configEntries?: ConfigEntryExtended[];
 
-  @state() private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
+  @state() private _configEntriesInProgress: DataEntryFlowProgressExtended[] =
+    [];
 
   private _loadTranslationsPromise?: Promise<LocalizeFunc>;
 
@@ -122,22 +123,27 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
         },
         { type: ["device", "hub", "service", "hardware"] }
       ),
-      subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
-        const integrations = new Set<string>();
-        flowsInProgress.forEach((flow) => {
-          // To render title placeholders
-          if (flow.context.title_placeholders) {
-            integrations.add(flow.handler);
-          }
-        });
-        const localize = await this.hass.loadBackendTranslation(
-          "config",
-          Array.from(integrations)
-        );
-        this._configEntriesInProgress = flowsInProgress.map((flow) => ({
-          ...flow,
-          localized_title: localizeConfigFlowTitle(localize, flow),
-        }));
+      subscribeConfigFlowInProgress(this.hass, async (update) => {
+        if (update.type === "remove") {
+          this._configEntriesInProgress = this._configEntriesInProgress.filter(
+            (flow) => flow.flow_id !== update.flow_id
+          );
+          return;
+        }
+        if (update.type !== "init") {
+          return;
+        }
+        const flow = update.flow;
+        const localize = flow.context.title_placeholders
+          ? await this.hass.loadBackendTranslation("config", [flow.handler])
+          : this.hass.localize;
+        this._configEntriesInProgress = [
+          ...this._configEntriesInProgress,
+          {
+            ...flow,
+            localized_title: localizeConfigFlowTitle(localize, flow),
+          },
+        ];
       }),
     ];
   }
