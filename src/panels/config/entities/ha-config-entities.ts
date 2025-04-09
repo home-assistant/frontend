@@ -304,9 +304,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       },
       name: {
         main: true,
-        title: localize("ui.panel.config.entities.picker.headers.name"),
+        title: localize("ui.panel.config.entities.picker.headers.entity"),
         sortable: true,
         filterable: true,
+        direction: "asc",
         extraTemplate: (entry) =>
           entry.label_entries.length
             ? html`
@@ -321,7 +322,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
-        direction: "asc",
         template: (entry) => entry.device || "—",
       },
       area: {

@@ -497,7 +497,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : "",
       },
       name: {
-        title: localize("ui.panel.config.devices.data_table.name"),
+        title: localize("ui.panel.config.devices.data_table.device"),
         main: true,
         sortable: true,
         filterable: true,
