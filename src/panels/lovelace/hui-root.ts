@@ -308,6 +308,7 @@ class HUIRoot extends LitElement {
             .active=${this._curView === index}
             aria-label=${ifDefined(view.title)}
             class=${classMap({
+              icon: Boolean(view.icon),
               "hide-tab": Boolean(
                 !this._editMode &&
                   view.visible !== undefined &&
@@ -1070,9 +1071,10 @@ class HUIRoot extends LitElement {
           flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
         }
+        .edit-mode sl-tab {
+          height: 54px;
+        }
         sl-tab {
-          --mdc-icon-button-size: 20px;
-          --mdc-icon-size: 20px;
           height: calc(var(--header-height, 56px) - 2px);
         }
         sl-tab[aria-selected="true"] .edit-icon {
@@ -1081,6 +1083,13 @@ class HUIRoot extends LitElement {
         sl-tab::part(base) {
           padding-top: calc((var(--header-height) - 20px) / 2);
           padding-bottom: calc((var(--header-height) - 20px) / 2 - 2px);
+        }
+        sl-tab.icon::part(base) {
+          padding-top: calc((var(--header-height) - 20px) / 2 - 2px);
+          padding-bottom: calc((var(--header-height) - 20px) / 2 - 4px);
+        }
+        .edit-mode sl-tab[aria-selected="true"]::part(base) {
+          padding: 4px 0 2px 0;
         }
         .edit-icon {
           color: var(--accent-color);

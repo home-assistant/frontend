@@ -128,7 +128,7 @@ export class HaSlTabGroup extends TabGroup {
 
         --sl-color-neutral-600: inherit;
 
-        --sl-font-weight-semibold: 400;
+        --sl-font-weight-semibold: 500;
         --sl-font-size-small: 14px;
 
         --sl-color-primary-600: var(
