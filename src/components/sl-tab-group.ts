@@ -10,6 +10,10 @@ import { customElement, query } from "lit/decorators";
 export class HaSlTabGroup extends TabGroup {
   private _mouseIsDown = false;
 
+  private _scrolled = false;
+
+  private _mouseReleasedAt: number;
+
   private _scrollStartX = 0;
 
   private _scrollLeft = 0;
@@ -37,10 +41,17 @@ export class HaSlTabGroup extends TabGroup {
       return;
     }
 
-    scrollContainer.addEventListener("mousemove", this._mouseMove);
     scrollContainer.addEventListener("mousedown", this._mouseDown);
     scrollContainer.addEventListener("mouseup", this._mouseUp);
-    scrollContainer.addEventListener("mouseleave", this._mouseUp);
+  }
+
+  // @ts-ignore
+  protected override handleClick(event: MouseEvent) {
+    if (new Date().getTime() - this._mouseReleasedAt < 500) {
+      return;
+    }
+    // @ts-ignore
+    super.handleClick(event);
   }
 
   private _mouseDown = (event: MouseEvent) => {
@@ -50,20 +61,26 @@ export class HaSlTabGroup extends TabGroup {
       return;
     }
 
-    this._mouseIsDown = true;
     this._scrollStartX = event.pageX - scrollContainer.offsetLeft;
     this._scrollLeft = scrollContainer.scrollLeft;
+    this._mouseIsDown = true;
+    this._scrolled = false;
+
+    window.addEventListener("mousemove", this._mouseMove);
   };
 
   private _mouseUp = () => {
     this._mouseIsDown = false;
+    if (this._scrolled) {
+      this._mouseReleasedAt = new Date().getTime();
+    }
+    window.removeEventListener("mousemove", this._mouseMove);
   };
 
   private _mouseMove = (event: MouseEvent) => {
     if (!this._mouseIsDown) {
       return;
     }
-    event.preventDefault();
 
     const scrollContainer = this._scrollContainer;
 
@@ -73,6 +90,11 @@ export class HaSlTabGroup extends TabGroup {
 
     const x = event.pageX - scrollContainer.offsetLeft;
     const scroll = x - this._scrollStartX;
+
+    if (!this._scrolled) {
+      this._scrolled = Math.abs(scroll) > 1;
+    }
+
     scrollContainer.scrollLeft = this._scrollLeft - scroll;
   };
 
