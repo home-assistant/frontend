@@ -25,7 +25,11 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeDeviceName } from "../../../common/entity/compute_device_name";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
+import {
+  computeDeviceName,
+  getDuplicatedDeviceNames,
+} from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -108,7 +112,6 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
-import { computeAreaName } from "../../../common/entity/compute_area_name";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -125,6 +128,7 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   device?: string;
+  device_full?: string;
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
@@ -321,9 +325,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       device: {
         title: localize("ui.panel.config.entities.picker.headers.device"),
         sortable: true,
+        template: (entry) => entry.device || "—",
+      },
+      device_full: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
         filterable: true,
         groupable: true,
-        template: (entry) => entry.device || "—",
+        hidden: true,
       },
       area: {
         title: localize("ui.panel.config.entities.picker.headers.area"),
@@ -629,6 +637,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       });
 
+      const duplicatedDevicesNames = getDuplicatedDeviceNames(devices);
+
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
@@ -670,12 +680,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
 
+        const deviceFullName = deviceName
+          ? duplicatedDevicesNames.has(deviceName)
+            ? `${deviceName}${areaName ? ` (${areaName})` : ""}`
+            : deviceName
+          : undefined;
+
         result.push({
           ...entry,
           entity,
           name: entityName || deviceName || entry.entity_id,
           device: deviceName,
           area: areaName,
+          device_full: deviceFullName,
           unavailable,
           restored,
           localized_platform: domainToName(localize, entry.platform),

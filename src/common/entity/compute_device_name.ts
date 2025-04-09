@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import type {
   EntityRegistryDisplayEntry,
@@ -36,3 +37,23 @@ export const fallbackDeviceName = (
   }
   return undefined;
 };
+
+export const getDuplicatedDeviceNames = memoizeOne(
+  (devices: HomeAssistant["devices"]): Set<string> => {
+    const names = new Set<string>();
+    const duplicatedNames = new Set<string>();
+
+    for (const device of Object.values(devices)) {
+      const name = computeDeviceName(device);
+      if (!name) continue;
+
+      if (names.has(name)) {
+        duplicatedNames.add(name);
+      } else {
+        names.add(name);
+      }
+    }
+
+    return duplicatedNames;
+  }
+);
