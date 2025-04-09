@@ -333,10 +333,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                 : nothing
             )}
             <ha-md-menu-item
-              .value=${undefined}
+              .value=${""}
               .clickAction=${this._handleGroupBy}
-              .selected=${this._groupColumn === undefined}
-              class=${classMap({ selected: this._groupColumn === undefined })}
+              .selected=${!this._groupColumn}
+              class=${classMap({ selected: !this._groupColumn })}
             >
               ${localize("ui.components.subpage-data-table.dont_group_by")}
             </ha-md-menu-item>
