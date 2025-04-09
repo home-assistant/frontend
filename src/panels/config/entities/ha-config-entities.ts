@@ -108,6 +108,7 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -667,13 +668,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         );
 
         const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
 
         result.push({
           ...entry,
           entity,
           name: entityName || deviceName || entry.entity_id,
           device: deviceName,
-          area: area?.name,
+          area: areaName,
           unavailable,
           restored,
           localized_platform: domainToName(localize, entry.platform),
