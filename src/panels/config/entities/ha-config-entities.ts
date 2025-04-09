@@ -809,7 +809,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         selectable
         .selected=${this._selected.length}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._activeGrouping ?? "device"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
