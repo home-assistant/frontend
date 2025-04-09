@@ -1,19 +1,27 @@
-import { mdiDelete, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoize from "memoize-one";
-import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import type { LovelaceResource } from "../../../../data/lovelace/resource";
+import type { HomeAssistant, Route } from "../../../../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
 import "../../../../components/ha-card";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-svg-icon";
-import type { LovelaceResource } from "../../../../data/lovelace/resource";
+import "../../../../layouts/hass-loading-screen";
+import "../../../../layouts/hass-subpage";
+import "../../../../layouts/hass-tabs-subpage-data-table";
+
+import { mdiDelete, mdiPlus } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoize from "memoize-one";
+
+import { storage } from "../../../../common/decorators/storage";
+import { stringCompare } from "../../../../common/string/compare";
 import {
   createResource,
   deleteResource,
@@ -24,15 +32,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import "../../../../layouts/hass-loading-screen";
-import "../../../../layouts/hass-subpage";
-import "../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { lovelaceResourcesTabs } from "../ha-config-lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
-import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {

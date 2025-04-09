@@ -1,10 +1,12 @@
+import type { HomeAssistant } from "../types";
 import type { CSSResultGroup } from "lit";
+
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-big-number")
 export class HaBigNumber extends LitElement {

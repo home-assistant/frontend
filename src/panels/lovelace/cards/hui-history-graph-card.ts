@@ -1,12 +1,19 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { HistoryGraphCardConfig } from "./types";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+
 import "../../../components/chart/state-history-charts";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { createSearchParam } from "../../../common/url/search-params";
 import {
   computeHistory,
   subscribeHistoryStatesTimeWindow,
@@ -14,14 +21,10 @@ import {
   convertStatisticsToHistory,
   mergeHistoryResults,
 } from "../../../data/history";
+import { fetchStatistics } from "../../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
-import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { HistoryGraphCardConfig } from "./types";
-import { createSearchParam } from "../../../common/url/search-params";
-import { fetchStatistics } from "../../../data/recorder";
 
 export const DEFAULT_HOURS_TO_SHOW = 24;
 

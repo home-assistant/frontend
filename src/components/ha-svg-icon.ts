@@ -1,4 +1,5 @@
 import type { SVGTemplateResult } from "lit";
+
 import { css, LitElement, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators";
 

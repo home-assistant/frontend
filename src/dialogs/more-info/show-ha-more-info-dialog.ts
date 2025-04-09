@@ -1,5 +1,6 @@
-import { fireEvent } from "../../common/dom/fire_event";
 import type { MoreInfoDialogParams } from "./ha-more-info-dialog";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export const showMoreInfoDialog = (
   element: HTMLElement,

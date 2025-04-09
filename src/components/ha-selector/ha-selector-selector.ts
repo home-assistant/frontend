@@ -1,15 +1,18 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
 import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
+import type { PropertyValues } from "lit";
+
 import "../ha-alert";
 import "../ha-form/ha-form";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 const SELECTOR_DEFAULTS = {
   number: {

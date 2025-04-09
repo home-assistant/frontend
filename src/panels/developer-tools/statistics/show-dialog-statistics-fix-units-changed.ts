@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { StatisticsValidationResultUnitsChanged } from "../../../data/recorder";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export const loadFixUnitsDialog = () =>
   import("./dialog-statistics-fix-units-changed");

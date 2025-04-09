@@ -1,7 +1,8 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import type { SupervisorArch } from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
+
+import { atLeastVersion } from "../../common/config/version";
 import { hassioApiResultExtractor } from "./common";
 
 export interface HassioHomeAssistantInfo {

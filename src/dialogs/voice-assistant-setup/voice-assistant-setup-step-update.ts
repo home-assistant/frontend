@@ -1,9 +1,13 @@
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+
 import "../../components/ha-progress-ring";
 import "../../components/ha-spinner";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { ON, UNAVAILABLE } from "../../data/entity";
 import {
   updateCanInstall,
@@ -11,7 +15,6 @@ import {
   updateIsInstalling,
   updateUsesProgress,
 } from "../../data/update";
-import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 
 @customElement("ha-voice-assistant-setup-step-update")

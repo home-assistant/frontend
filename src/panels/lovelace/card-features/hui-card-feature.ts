@@ -1,11 +1,13 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
-import { createCardFeatureElement } from "../create-element/create-card-feature-element";
 import type { LovelaceCardFeature } from "../types";
 import type { LovelaceCardFeatureConfig } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import { LitElement, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { createCardFeatureElement } from "../create-element/create-card-feature-element";
 
 @customElement("hui-card-feature")
 export class HuiCardFeature extends LitElement {

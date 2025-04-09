@@ -1,5 +1,5 @@
-import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
+import type { Connection } from "home-assistant-js-websocket";
 
 export interface LovelaceResource {
   id: string;

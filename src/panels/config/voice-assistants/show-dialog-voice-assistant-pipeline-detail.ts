@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   AssistPipeline,
   AssistPipelineMutableParams,
 } from "../../../data/assist_pipeline";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface VoiceAssistantPipelineDetailsDialogParams {
   cloudActiveSubscription?: boolean;

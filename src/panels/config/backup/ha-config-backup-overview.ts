@@ -1,41 +1,44 @@
-import { mdiDotsVertical, mdiPlus, mdiUpload } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
-import "../../../components/ha-fab";
-import "../../../components/ha-spinner";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
 import type {
   BackupAgent,
   BackupConfig,
   BackupContent,
   BackupInfo,
 } from "../../../data/backup";
-import {
-  computeBackupAgentName,
-  generateBackup,
-  generateBackupWithAutomaticSettings,
-} from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
+import type { HomeAssistant, Route } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import "./components/overview/ha-backup-overview-backups";
 import "./components/overview/ha-backup-overview-onboarding";
 import "./components/overview/ha-backup-overview-progress";
 import "./components/overview/ha-backup-overview-settings";
 import "./components/overview/ha-backup-overview-summary";
+
+import { mdiDotsVertical, mdiPlus, mdiUpload } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import {
+  computeBackupAgentName,
+  generateBackup,
+  generateBackupWithAutomaticSettings,
+} from "../../../data/backup";
+import { haStyle } from "../../../resources/styles";
 import { showBackupOnboardingDialog } from "./dialogs/show-dialog-backup_onboarding";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";
 import { showNewBackupDialog } from "./dialogs/show-dialog-new-backup";

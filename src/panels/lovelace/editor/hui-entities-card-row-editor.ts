@@ -1,15 +1,18 @@
+import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+
+import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-sortable";
+import "../../../components/ha-svg-icon";
+
 import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-sortable";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
-import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
 declare global {
   interface HASSDomEvents {

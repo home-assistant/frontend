@@ -2,6 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
 import { computeDomain } from "../common/entity/compute_domain";
 
 interface GroupEntityAttributes extends HassEntityAttributeBase {

@@ -1,16 +1,18 @@
+import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-control-switch";
+
 import {
   mdiGarage,
   mdiGarageOpen,
   mdiLightbulb,
   mdiLightbulbOff,
 } from "@mdi/js";
-import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-control-switch";
-import "../../../../src/components/ha-card";
 
 const switches: {
   id: string;

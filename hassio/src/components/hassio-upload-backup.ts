@@ -1,15 +1,18 @@
-import { mdiFolderUpload } from "@mdi/js";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
+import type { HassioBackup } from "../../../src/data/hassio/backup";
+import type { HomeAssistant } from "../../../src/types";
 import type { TemplateResult } from "lit";
+
+import "../../../src/components/ha-file-upload";
+
+import { mdiFolderUpload } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-file-upload";
-import type { HassioBackup } from "../../../src/data/hassio/backup";
 import { uploadBackup } from "../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../src/types";
-import type { LocalizeFunc } from "../../../src/common/translations/localize";
 
 declare global {
   interface HASSDomEvents {

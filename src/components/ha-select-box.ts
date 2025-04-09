@@ -1,13 +1,16 @@
-import { customElement, property } from "lit/decorators";
-import { css, html, LitElement, nothing } from "lit";
+import type { HomeAssistant } from "../types";
+import type { HaRadio } from "./ha-radio";
+
 import "./ha-radio";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import type { HaRadio } from "./ha-radio";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
-import { computeRTL } from "../common/util/compute_rtl";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeRTL } from "../common/util/compute_rtl";
 
 interface SelectBoxOptionImage {
   src: string;

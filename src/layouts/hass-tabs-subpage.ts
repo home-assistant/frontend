@@ -1,17 +1,20 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
-import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant, Route } from "../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import type { HomeAssistant, Route } from "../types";
-import { haStyleScrollbar } from "../resources/styles";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+
 import { canShowPage } from "../common/config/can_show_page";
+import { restoreScroll } from "../common/decorators/restore-scroll";
+import { haStyleScrollbar } from "../resources/styles";
 
 export interface PageNavigation {
   path: string;

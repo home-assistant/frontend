@@ -1,18 +1,21 @@
-import { consume } from "@lit-labs/context";
-import type { HassEntities } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { debounce } from "../../../common/util/debounce";
-import { fullEntitiesContext } from "../../../data/context";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { ScriptEntity } from "../../../data/script";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
+import type { HassEntities } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
 import "./ha-script-editor";
 import "./ha-script-picker";
+
+import { consume } from "@lit-labs/context";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { debounce } from "../../../common/util/debounce";
+import { fullEntitiesContext } from "../../../data/context";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
 
 const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
   if (a.length !== b.length) {

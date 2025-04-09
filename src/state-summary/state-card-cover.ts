@@ -1,13 +1,16 @@
+import type { CoverEntity } from "../data/cover";
+import type { HomeAssistant } from "../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../components/entity/state-info";
 import "../components/ha-cover-controls";
 import "../components/ha-cover-tilt-controls";
-import type { CoverEntity } from "../data/cover";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { isTiltOnly } from "../data/cover";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-cover")
 class StateCardCover extends LitElement {

@@ -1,18 +1,21 @@
+import type { CustomIcon } from "../data/custom_icons";
+import type { Chunks, Icons } from "../data/iconsets";
 import type { PropertyValues } from "lit";
+
+import "./ha-svg-icon";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
-import type { CustomIcon } from "../data/custom_icons";
 import { customIcons } from "../data/custom_icons";
-import type { Chunks, Icons } from "../data/iconsets";
 import {
   MDI_PREFIXES,
   findIconChunk,
   getIcon,
   writeCache,
 } from "../data/iconsets";
-import "./ha-svg-icon";
 
 type DeprecatedIcon = Record<
   string,

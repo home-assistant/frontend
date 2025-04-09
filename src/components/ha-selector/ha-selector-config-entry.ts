@@ -1,8 +1,10 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { ConfigEntrySelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-config-entry-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-config_entry")
 export class HaConfigEntrySelector extends LitElement {

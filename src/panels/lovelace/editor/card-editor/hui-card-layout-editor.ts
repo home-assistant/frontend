@@ -1,13 +1,12 @@
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiCard } from "../../cards/hui-card";
+import type { CardGridSize } from "../../common/compute-card-grid-size";
+import type { LovelaceGridOptions } from "../../types";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
+
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-grid-size-picker";
@@ -18,19 +17,23 @@ import "../../../../components/ha-slider";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+
+import { mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefault } from "../../../../common/dom/prevent_default";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { HuiCard } from "../../cards/hui-card";
-import type { CardGridSize } from "../../common/compute-card-grid-size";
 import {
   computeCardGridSize,
   GRID_COLUMN_MULTIPLIER,
   isPreciseMode,
   migrateLayoutToGridOptions,
 } from "../../common/compute-card-grid-size";
-import type { LovelaceGridOptions } from "../../types";
 
 @customElement("hui-card-layout-editor")
 export class HuiCardLayoutEditor extends LitElement {

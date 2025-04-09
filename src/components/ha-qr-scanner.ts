@@ -1,25 +1,28 @@
-import "@material/mwc-button/mwc-button";
-import { mdiCamera } from "@mdi/js";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
+import type { HaTextField } from "./ha-textfield";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
 // The BarcodeDetector Web API is not yet supported in all browsers,
 // and "qr-scanner" defaults to a suboptimal implementation if it is not available.
 // The following import makes a better implementation available that is based on a
 // WebAssembly port of ZXing:
-import { prepareZXingModule } from "barcode-detector";
 import type QrScanner from "qr-scanner";
-import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
-import type { LocalizeFunc } from "../common/translations/localize";
-import { addExternalBarCodeListener } from "../external_app/external_app_entrypoint";
-import type { HomeAssistant } from "../types";
+
 import "./ha-alert";
 import "./ha-button-menu";
 import "./ha-list-item";
 import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCamera } from "@mdi/js";
+import { prepareZXingModule } from "barcode-detector";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
+import { addExternalBarCodeListener } from "../external_app/external_app_entrypoint";
 
 prepareZXingModule({
   overrides: {

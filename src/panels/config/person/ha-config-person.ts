@@ -1,31 +1,34 @@
-import { mdiPlus } from "@mdi/js";
-import "@material/mwc-list/mwc-list";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { stringCompare } from "../../../common/string/compare";
+import type { Person } from "../../../data/person";
+import type { User } from "../../../data/user";
+import type { HomeAssistant, Route } from "../../../types";
+
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-person-badge";
-import type { Person } from "../../../data/person";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
+import "../ha-config-section";
+import "@material/mwc-list/mwc-list";
+
+import { mdiPlus } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { stringCompare } from "../../../common/string/compare";
 import {
   createPerson,
   deletePerson,
   fetchPersons,
   updatePerson,
 } from "../../../data/person";
-import type { User } from "../../../data/user";
 import { fetchUsers } from "../../../data/user";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
   loadPersonDetailDialog,

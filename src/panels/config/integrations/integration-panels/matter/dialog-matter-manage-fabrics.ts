@@ -1,18 +1,23 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-button/mwc-button";
-import { mdiDelete } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-list-item";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-qr-code";
 import type {
   MatterFabricData,
   MatterNodeDiagnostics,
 } from "../../../../../data/matter";
+import type { HomeAssistant } from "../../../../../types";
+import type { MatterManageFabricsDialogParams } from "./show-dialog-matter-manage-fabrics";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-qr-code";
+import "../../../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+
+import { mdiDelete } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
   getMatterNodeDiagnostics,
   removeMatterFabric,
@@ -22,8 +27,6 @@ import {
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { MatterManageFabricsDialogParams } from "./show-dialog-matter-manage-fabrics";
 
 @customElement("dialog-matter-manage-fabrics")
 class DialogMatterManageFabrics extends LitElement {

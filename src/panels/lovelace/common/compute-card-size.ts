@@ -1,6 +1,7 @@
-import { promiseTimeout } from "../../../common/util/promise-timeout";
 import type { HuiCard } from "../cards/hui-card";
 import type { LovelaceCard, LovelaceHeaderFooter } from "../types";
+
+import { promiseTimeout } from "../../../common/util/promise-timeout";
 
 export const computeCardSize = (
   card: LovelaceCard | LovelaceHeaderFooter | HuiCard

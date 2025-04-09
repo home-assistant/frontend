@@ -1,25 +1,28 @@
+import type { LabelRegistryEntry } from "../data/label_registry";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import type { HaLabelPicker } from "./ha-label-picker";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "./chips/ha-chip-set";
+import "./chips/ha-input-chip";
+import "./ha-label-picker";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import type { LabelRegistryEntry } from "../data/label_registry";
 import {
   subscribeLabelRegistry,
   updateLabelRegistryEntry,
 } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
-import "./chips/ha-chip-set";
-import "./chips/ha-input-chip";
-import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-label-picker";
-import type { HaLabelPicker } from "./ha-label-picker";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {

@@ -1,3 +1,9 @@
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { GridCardConfig } from "../../cards/types";
+
 import { customElement } from "lit/decorators";
 import {
   any,
@@ -10,14 +16,10 @@ import {
   optional,
   string,
 } from "superstruct";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import type { GridCardConfig } from "../../cards/types";
+
+import { DEFAULT_COLUMNS } from "../../cards/hui-grid-card";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { HuiStackCardEditor } from "./hui-stack-card-editor";
-import { DEFAULT_COLUMNS } from "../../cards/hui-grid-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

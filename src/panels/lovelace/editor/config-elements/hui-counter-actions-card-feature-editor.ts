@@ -1,17 +1,20 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCardFeatureEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-form/ha-form";
-import type { HomeAssistant } from "../../../../types";
 import {
   COUNTER_ACTIONS,
   type LovelaceCardFeatureContext,
   type CounterActionsCardFeatureConfig,
 } from "../../card-features/types";
-import type { LovelaceCardFeatureEditor } from "../../types";
 
 @customElement("hui-counter-actions-card-feature-editor")
 export class HuiCounterActionsCardFeatureEditor

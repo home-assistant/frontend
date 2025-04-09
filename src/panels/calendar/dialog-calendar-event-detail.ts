@@ -1,30 +1,33 @@
-import "@material/mwc-button";
-import { mdiCalendarClock } from "@mdi/js";
-import { toDate } from "date-fns-tz";
-import { addDays, isSameDay } from "date-fns";
+import type { CalendarEventMutableParams } from "../../data/calendar";
+import type { HomeAssistant } from "../../types";
+import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import { formatDate } from "../../common/datetime/format_date";
-import { formatDateTime } from "../../common/datetime/format_date_time";
-import { formatTime } from "../../common/datetime/format_time";
-import { fireEvent } from "../../common/dom/fire_event";
-import { isDate } from "../../common/string/is_date";
+
 import "../../components/entity/state-info";
 import "../../components/ha-alert";
 import "../../components/ha-date-input";
-import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
-import type { CalendarEventMutableParams } from "../../data/calendar";
+import "../lovelace/components/hui-generic-entity-row";
+import "@material/mwc-button";
+
+import { mdiCalendarClock } from "@mdi/js";
+import { addDays, isSameDay } from "date-fns";
+import { toDate } from "date-fns-tz";
+import { LitElement, css, html, nothing } from "lit";
+import { property, state } from "lit/decorators";
+
+import { formatDate } from "../../common/datetime/format_date";
+import { formatDateTime } from "../../common/datetime/format_date_time";
+import { formatTime } from "../../common/datetime/format_time";
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
+import { fireEvent } from "../../common/dom/fire_event";
+import { isDate } from "../../common/string/is_date";
+import { createCloseHeading } from "../../components/ha-dialog";
 import { deleteCalendarEvent } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
 import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
-import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
-import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 
 class DialogCalendarEventDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

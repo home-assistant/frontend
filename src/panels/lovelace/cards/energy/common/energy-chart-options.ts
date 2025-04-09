@@ -1,4 +1,12 @@
+import type { FrontendLocaleData } from "../../../../../data/translation";
+import type { ECOption } from "../../../../../resources/echarts";
+import type {
+  BarSeriesOption,
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
 import type { HassConfig } from "home-assistant-js-websocket";
+
 import {
   differenceInMonths,
   subHours,
@@ -11,19 +19,13 @@ import {
   addMonths,
   addHours,
 } from "date-fns";
-import type {
-  BarSeriesOption,
-  CallbackDataParams,
-  TopLevelFormatterParams,
-} from "echarts/types/dist/shared";
-import type { FrontendLocaleData } from "../../../../../data/translation";
-import { formatNumber } from "../../../../../common/number/format_number";
+
 import {
   formatDateMonthYear,
   formatDateVeryShort,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
-import type { ECOption } from "../../../../../resources/echarts";
+import { formatNumber } from "../../../../../common/number/format_number";
 
 export function getSuggestedMax(dayDifference: number, end: Date): number {
   let suggestedMax = new Date(end);

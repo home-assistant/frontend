@@ -1,21 +1,24 @@
-import { mdiAccount, mdiAccountArrowRight, mdiWaterBoiler } from "@mdi/js";
+import type { WaterHeaterEntity } from "../../../data/water_heater";
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-list-item";
+import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
+import "../components/ha-more-info-control-select-container";
+
+import { mdiAccount, mdiAccountArrowRight, mdiWaterBoiler } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { WaterHeaterEntity } from "../../../data/water_heater";
 import {
   WaterHeaterEntityFeature,
   compareWaterHeaterOperationMode,
   computeOperationModeIcon,
 } from "../../../data/water_heater";
-import "../../../state-control/water_heater/ha-state-control-water_heater-temperature";
-import type { HomeAssistant } from "../../../types";
-import "../components/ha-more-info-control-select-container";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-water_heater")

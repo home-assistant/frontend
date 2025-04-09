@@ -1,18 +1,21 @@
-import "@material/mwc-button/mwc-button";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { mdiClose } from "@mdi/js";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-icon-button";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import type { LovelaceResourcesMutableParams } from "../../../../data/lovelace/resource";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
+
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-md-dialog";
+import "@material/mwc-button/mwc-button";
+
+import { mdiClose } from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 const detectResourceType = (url?: string) => {
   if (!url) {

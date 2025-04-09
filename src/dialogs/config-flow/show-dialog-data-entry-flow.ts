@@ -1,5 +1,3 @@
-import type { TemplateResult } from "lit";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import type {
   DataEntryFlowStep,
@@ -13,6 +11,9 @@ import type {
 } from "../../data/data_entry_flow";
 import type { IntegrationManifest } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
+import type { TemplateResult } from "lit";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface FlowConfig {
   flowType: FlowType;

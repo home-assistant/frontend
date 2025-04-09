@@ -1,5 +1,6 @@
-import { TopAppBarBase } from "@material/mwc-top-app-bar/mwc-top-app-bar-base";
 import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
+
+import { TopAppBarBase } from "@material/mwc-top-app-bar/mwc-top-app-bar-base";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

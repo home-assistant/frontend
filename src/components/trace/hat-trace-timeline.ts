@@ -1,25 +1,3 @@
-import { consume } from "@lit-labs/context";
-import {
-  mdiAlertCircle,
-  mdiCircle,
-  mdiCircleOutline,
-  mdiProgressClock,
-  mdiProgressWrench,
-  mdiRecordCircleOutline,
-} from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import { relativeTime } from "../../common/datetime/relative_time";
-import { fireEvent } from "../../common/dom/fire_event";
-import { toggleAttribute } from "../../common/dom/toggle_attribute";
-import {
-  floorsContext,
-  fullEntitiesContext,
-  labelsContext,
-} from "../../data/context";
 import type { EntityRegistryEntry } from "../../data/entity_registry";
 import type { FloorRegistryEntry } from "../../data/floor_registry";
 import type { LabelRegistryEntry } from "../../data/label_registry";
@@ -32,8 +10,6 @@ import type {
   RepeatAction,
   SequenceAction,
 } from "../../data/script";
-import { getActionType } from "../../data/script";
-import { describeAction } from "../../data/script_i18n";
 import type {
   ActionTraceStep,
   AutomationTraceExtended,
@@ -41,10 +17,37 @@ import type {
   IfActionTraceStep,
   TriggerTraceStep,
 } from "../../data/trace";
-import { getDataFromPath, isTriggerPath } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
-import "./ha-timeline";
 import type { HaTimeline } from "./ha-timeline";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "./ha-timeline";
+
+import { consume } from "@lit-labs/context";
+import {
+  mdiAlertCircle,
+  mdiCircle,
+  mdiCircleOutline,
+  mdiProgressClock,
+  mdiProgressWrench,
+  mdiRecordCircleOutline,
+} from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import { relativeTime } from "../../common/datetime/relative_time";
+import { fireEvent } from "../../common/dom/fire_event";
+import { toggleAttribute } from "../../common/dom/toggle_attribute";
+import {
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../data/context";
+import { getActionType } from "../../data/script";
+import { describeAction } from "../../data/script_i18n";
+import { getDataFromPath, isTriggerPath } from "../../data/trace";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 

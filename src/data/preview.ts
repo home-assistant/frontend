@@ -1,5 +1,5 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 const HAS_CUSTOM_PREVIEW = ["generic_camera", "template"];
 

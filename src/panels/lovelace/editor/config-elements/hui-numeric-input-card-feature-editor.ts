@@ -1,8 +1,4 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -10,7 +6,14 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-numeric-input-card-feature-editor")
 export class HuiNumericInputCardFeatureEditor

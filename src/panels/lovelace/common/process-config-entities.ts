@@ -1,6 +1,7 @@
+import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+
 // Parse array of entity objects from config
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
 
 export const processConfigEntities = <
   T extends EntityConfig | LovelaceRowConfig,

@@ -1,3 +1,12 @@
+import type {
+  PipelineRunEvent,
+  AssistRunListing,
+} from "../../../../data/assist_pipeline";
+import type { HomeAssistant, Route } from "../../../../types";
+
+import "../../../../layouts/hass-subpage";
+import "./assist-render-pipeline-events";
+
 import {
   mdiMicrophoneMessage,
   mdiRayEndArrow,
@@ -6,20 +15,14 @@ import {
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
-import type {
-  PipelineRunEvent,
-  AssistRunListing,
-} from "../../../../data/assist_pipeline";
 import {
   getAssistPipelineRun,
   listAssistPipelineRuns,
 } from "../../../../data/assist_pipeline";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../types";
-import "./assist-render-pipeline-events";
 
 @customElement("assist-pipeline-debug")
 export class AssistPipelineDebug extends LitElement {

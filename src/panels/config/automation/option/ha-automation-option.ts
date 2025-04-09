@@ -1,21 +1,24 @@
+import type { AutomationClipboard } from "../../../../data/automation";
+import type { Option } from "../../../../data/script";
+import type { HomeAssistant } from "../../../../types";
+import type HaAutomationOptionRow from "./ha-automation-option-row";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
+import "./ha-automation-option-row";
+
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
-import "../../../../components/ha-button";
-import "../../../../components/ha-sortable";
-import "../../../../components/ha-svg-icon";
-import type { AutomationClipboard } from "../../../../data/automation";
-import type { Option } from "../../../../data/script";
-import type { HomeAssistant } from "../../../../types";
-import "./ha-automation-option-row";
-import type HaAutomationOptionRow from "./ha-automation-option-row";
 
 @customElement("ha-automation-option")
 export default class HaAutomationOption extends LitElement {

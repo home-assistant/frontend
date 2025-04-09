@@ -1,12 +1,15 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
+import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+import type { PropertyValues, TemplateResult } from "lit";
+
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import type { HaFormDataContainer, HaFormElement, HaFormSchema } from "./types";
+
+import { css, html, LitElement, ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../common/dom/fire_event";
 
 const LOAD_ELEMENTS = {
   boolean: () => import("./ha-form-boolean"),

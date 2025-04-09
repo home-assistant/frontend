@@ -1,7 +1,9 @@
-import { SwitchBase } from "@material/mwc-switch/deprecated/mwc-switch-base";
 import { styles } from "@material/mwc-switch/deprecated/mwc-switch.css";
+
+import { SwitchBase } from "@material/mwc-switch/deprecated/mwc-switch-base";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { forwardHaptic } from "../data/haptics";
 
 @customElement("ha-switch")

@@ -1,5 +1,6 @@
-import { isFrontpageEmbed } from "../../util/is_frontpage";
 import type { DemoConfig } from "../types";
+
+import { isFrontpageEmbed } from "../../util/is_frontpage";
 
 export const demoLovelaceSections: DemoConfig["lovelace"] = (localize) => ({
   title: "Home Assistant Demo",

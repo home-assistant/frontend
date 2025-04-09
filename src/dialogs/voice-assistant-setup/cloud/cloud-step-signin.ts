@@ -1,17 +1,20 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import type { HaPasswordField } from "../../../components/ha-password-field";
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-password-field";
-import type { HaPasswordField } from "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { cloudLogin } from "../../../data/cloud";
 import { showCloudAlreadyConnectedDialog } from "../../../panels/config/cloud/dialog-cloud-already-connected/show-dialog-cloud-already-connected";
-import type { HomeAssistant } from "../../../types";
 import {
   showAlertDialog,
   showPromptDialog,

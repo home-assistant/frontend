@@ -1,4 +1,22 @@
+import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
+import type { PersistentNotification } from "../data/persistent_notification";
+import type { UpdateEntity } from "../data/update";
+import type { HomeAssistant, PanelInfo, Route } from "../types";
+import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
+
+import "./ha-icon";
+import "./ha-icon-button";
+import "./ha-menu-button";
+import "./ha-sortable";
+import "./ha-svg-icon";
+import "./user/ha-user-badge";
 import "@material/mwc-button/mwc-button";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+
 import {
   mdiBell,
   mdiCalendar,
@@ -17,38 +35,23 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
+import { preventDefault } from "../common/dom/prevent_default";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { throttle } from "../common/util/throttle";
-import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
-import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
-import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant, PanelInfo, Route } from "../types";
-import "./ha-icon";
-import "./ha-icon-button";
-import "./ha-menu-button";
-import "./ha-sortable";
-import "./ha-svg-icon";
-import "./user/ha-user-badge";
-import { preventDefault } from "../common/dom/prevent_default";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 

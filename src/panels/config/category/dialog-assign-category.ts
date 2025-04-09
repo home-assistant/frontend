@@ -1,18 +1,21 @@
-import "@material/mwc-button";
+import type { HomeAssistant } from "../../../types";
+import type { AssignCategoryDialogParams } from "./show-dialog-assign-category";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+
 import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+import "./ha-category-picker";
+import "@material/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "./ha-category-picker";
-import type { AssignCategoryDialogParams } from "./show-dialog-assign-category";
 
 @customElement("dialog-assign-category")
 class DialogAssignCategory extends LitElement {

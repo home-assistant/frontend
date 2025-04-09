@@ -1,20 +1,23 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import { mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { HomeAssistant } from "../../../../types";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-markdown-element";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-select";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-textarea";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { fetchSupportPackage } from "../../../../data/cloud";
-import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
 
 @customElement("dialog-cloud-support-package")

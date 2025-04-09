@@ -1,11 +1,14 @@
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
+
+import "./ha-entity-picker";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "./ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPickerLight extends LitElement {

@@ -1,8 +1,10 @@
 import type { TemplateResult } from "lit";
+
+import "./ha-ripple";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import "./ha-ripple";
 
 @customElement("ha-control-button")
 export class HaControlButton extends LitElement {

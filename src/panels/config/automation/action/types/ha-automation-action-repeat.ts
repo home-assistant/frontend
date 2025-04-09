@@ -1,22 +1,25 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
-import type { RepeatAction } from "../../../../../data/script";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import "../ha-automation-action";
-import type { ActionElement } from "../ha-automation-action-row";
-
-import { isTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import "../../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../../components/ha-form/types";
+import type { RepeatAction } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-textfield";
+import "../ha-automation-action";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { isTemplate } from "../../../../../common/string/has-template";
+import { haStyle } from "../../../../../resources/styles";
+
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
 

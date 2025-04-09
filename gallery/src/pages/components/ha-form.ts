@@ -1,22 +1,25 @@
 /* eslint-disable lit/no-template-arrow */
-import "@material/mwc-button";
+import type { HaFormSchema } from "../../../../src/components/ha-form/types";
+import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
+import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type { HomeAssistant } from "../../../../src/types";
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-form/ha-form";
+import "../../components/demo-black-white-row";
+import "@material/mwc-button";
+
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
+
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { computeInitialHaFormData } from "../../../../src/components/ha-form/compute-initial-ha-form-data";
-import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/types";
-import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import type { HomeAssistant } from "../../../../src/types";
-import "../../components/demo-black-white-row";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {

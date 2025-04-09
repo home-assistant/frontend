@@ -1,17 +1,20 @@
+import type { HaMdDialog } from "../../components/ha-md-dialog";
+import type { HaTextField } from "../../components/ha-textfield";
+import type { HomeAssistant } from "../../types";
+import type { DialogBoxParams } from "./show-dialog-box";
+
+import "../../components/ha-button";
+import "../../components/ha-dialog-header";
+import "../../components/ha-md-dialog";
+import "../../components/ha-svg-icon";
+import "../../components/ha-textfield";
+
 import { mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../components/ha-md-dialog";
-import "../../components/ha-dialog-header";
-import "../../components/ha-svg-icon";
-import "../../components/ha-button";
-import "../../components/ha-textfield";
-import type { HaTextField } from "../../components/ha-textfield";
-import type { HomeAssistant } from "../../types";
-import type { DialogBoxParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {

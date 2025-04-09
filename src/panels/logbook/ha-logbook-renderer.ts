@@ -1,10 +1,19 @@
+import type { LogbookEntry } from "../../data/logbook";
+import type { TraceContexts } from "../../data/trace";
+import type { HomeAssistant } from "../../types";
 import type { VisibilityChangedEvent } from "@lit-labs/virtualizer";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../components/entity/state-badge";
+import "../../components/ha-icon-next";
+import "../../components/ha-relative-time";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
@@ -13,25 +22,19 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import { computeTimelineColor } from "../../components/chart/timeline-color";
-import "../../components/entity/state-badge";
-import "../../components/ha-icon-next";
-import "../../components/ha-relative-time";
-import type { LogbookEntry } from "../../data/logbook";
+import { domainToName } from "../../data/integration";
 import {
   createHistoricState,
   localizeStateMessage,
   localizeTriggerSource,
 } from "../../data/logbook";
-import type { TraceContexts } from "../../data/trace";
 import {
   buttonLinkStyle,
   haStyle,
   haStyleScrollbar,
 } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
-import { domainToName } from "../../data/integration";
 
 declare global {
   interface HASSDomEvents {

@@ -1,17 +1,20 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { atLeastVersion } from "../../../src/common/config/version";
 import type { Supervisor } from "../../../src/data/supervisor/supervisor";
-import "../../../src/layouts/hass-tabs-subpage";
-import { haStyle } from "../../../src/resources/styles";
 import type { HomeAssistant, Route } from "../../../src/types";
-import { supervisorTabs } from "../hassio-tabs";
-import { hassioStyle } from "../resources/hassio-style";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../src/layouts/hass-tabs-subpage";
 import "./hassio-core-info";
 import "./hassio-host-info";
 import "./hassio-supervisor-info";
 import "./hassio-supervisor-log";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { atLeastVersion } from "../../../src/common/config/version";
+import { haStyle } from "../../../src/resources/styles";
+import { supervisorTabs } from "../hassio-tabs";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-system")
 class HassioSystem extends LitElement {

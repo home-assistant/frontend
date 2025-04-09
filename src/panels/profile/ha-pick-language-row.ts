@@ -1,9 +1,12 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { HomeAssistant } from "../../types";
+
 import "../../components/ha-language-picker";
 import "../../components/ha-settings-row";
-import type { HomeAssistant } from "../../types";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-pick-language-row")
 export class HaPickLanguageRow extends LitElement {

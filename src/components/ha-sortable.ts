@@ -1,10 +1,12 @@
 /* eslint-disable lit/prefer-static-styles */
+import type { SortableInstance } from "../resources/sortable";
 import type { PropertyValues } from "lit";
+import type { SortableEvent } from "sortablejs";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { SortableEvent } from "sortablejs";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { SortableInstance } from "../resources/sortable";
 
 declare global {
   interface HASSDomEvents {

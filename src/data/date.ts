@@ -1,5 +1,5 @@
-import type { HassEntityBase } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import type { HassEntityBase } from "home-assistant-js-websocket";
 
 export const stateToIsoDateString = (entityState: HassEntityBase) =>
   `${entityState}T00:00:00`;

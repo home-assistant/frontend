@@ -1,29 +1,32 @@
-import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import "../../../components/ha-ripple";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-tooltip";
 import type { ConfigEntry } from "../../../data/config_entries";
-import { ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type {
   IntegrationLogInfo,
   IntegrationManifest,
 } from "../../../data/integration";
-import { LogSeverity } from "../../../data/integration";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-ripple";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import "./ha-integration-header";
+
+import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+
 import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { ERROR_STATES } from "../../../data/config_entries";
+import { LogSeverity } from "../../../data/integration";
+import { haStyle } from "../../../resources/styles";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {

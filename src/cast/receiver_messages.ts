@@ -1,10 +1,11 @@
 // Nessages to be processed inside the Cast Receiver app
 
-import type { Auth } from "home-assistant-js-websocket";
 import type { CastManager } from "./cast_manager";
+import type { BaseCastMessage } from "./types";
+import type { Auth } from "home-assistant-js-websocket";
+
 import { CAST_DEV } from "./const";
 import { CAST_DEV_HASS_URL } from "./dev_const";
-import type { BaseCastMessage } from "./types";
 
 export interface GetStatusMessage extends BaseCastMessage {
   type: "get_status";

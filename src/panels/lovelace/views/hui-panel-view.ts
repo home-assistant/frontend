@@ -1,10 +1,3 @@
-import { mdiPlus } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
@@ -12,6 +5,15 @@ import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
 import type { HuiWarning } from "../components/hui-warning";
 import type { Lovelace } from "../types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import { mdiPlus } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 
 let editCodeLoaded = false;
 

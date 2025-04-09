@@ -1,7 +1,8 @@
 import type { HomeAssistant } from "../../../types";
 import type { Lovelace } from "../types";
-import { deleteCard } from "./config-util";
 import type { LovelaceCardPath } from "./lovelace-path";
+
+import { deleteCard } from "./config-util";
 
 export interface DeleteCardParams {
   path: LovelaceCardPath;

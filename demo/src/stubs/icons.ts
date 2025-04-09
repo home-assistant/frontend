@@ -1,6 +1,7 @@
 import type { IconCategory } from "../../../src/data/icons";
-import { ENTITY_COMPONENT_ICONS } from "../../../src/fake_data/entity_component_icons";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+
+import { ENTITY_COMPONENT_ICONS } from "../../../src/fake_data/entity_component_icons";
 
 export const mockIcons = (hass: MockHomeAssistant) => {
   hass.mockWS(

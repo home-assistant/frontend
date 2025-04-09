@@ -1,15 +1,18 @@
+import type { CoverEntity } from "../../../data/cover";
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig, LovelaceRow } from "./types";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
-import type { CoverEntity } from "../../../data/cover";
-import { isTiltOnly } from "../../../data/cover";
-import type { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isTiltOnly } from "../../../data/cover";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-cover-entity-row")
 class HuiCoverEntityRow extends LitElement implements LovelaceRow {

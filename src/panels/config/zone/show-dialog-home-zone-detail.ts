@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { HomeZoneMutableParams } from "../../../data/zone";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface HomeZoneDetailDialogParams {
   updateEntry?: (updates: HomeZoneMutableParams) => Promise<unknown>;

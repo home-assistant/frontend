@@ -1,15 +1,18 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { HaCheckbox } from "../ha-checkbox";
 import type {
   HaFormBooleanData,
   HaFormBooleanSchema,
   HaFormElement,
 } from "./types";
-import type { HaCheckbox } from "../ha-checkbox";
+import type { TemplateResult } from "lit";
+
 import "../ha-checkbox";
 import "../ha-formfield";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {

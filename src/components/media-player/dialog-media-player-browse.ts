@@ -1,4 +1,24 @@
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  MediaPickedEvent,
+  MediaPlayerBrowseAction,
+  MediaPlayerItem,
+  MediaPlayerLayoutType,
+} from "../../data/media-player";
+import type { HomeAssistant } from "../../types";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "./ha-media-player-browse";
+import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 import type { ActionDetail } from "@material/mwc-list";
+import type { CSSResultGroup } from "lit";
+
+import "../ha-dialog";
+import "../ha-dialog-header";
+import "./ha-media-manage-button";
+import "./ha-media-player-browse";
+
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
@@ -7,29 +27,12 @@ import {
   mdiGrid,
   mdiListBoxOutline,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import type {
-  MediaPickedEvent,
-  MediaPlayerBrowseAction,
-  MediaPlayerItem,
-  MediaPlayerLayoutType,
-} from "../../data/media-player";
-import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../ha-dialog";
-import "../ha-dialog-header";
-import "./ha-media-manage-button";
-import "./ha-media-player-browse";
-import type {
-  HaMediaPlayerBrowse,
-  MediaPlayerItemId,
-} from "./ha-media-player-browse";
-import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import { haStyleDialog } from "../../resources/styles";
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {

@@ -1,30 +1,33 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import { mdiSwapHorizontal } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-help-tooltip";
-import "../../../../../components/ha-svg-icon";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { subscribeDeviceRegistry } from "../../../../../data/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSRouteStatistics,
 } from "../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSNodeStatisticsDialogParams } from "./show-dialog-zwave_js-node-statistics";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-help-tooltip";
+import "../../../../../components/ha-svg-icon";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiSwapHorizontal } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { subscribeDeviceRegistry } from "../../../../../data/device_registry";
 import {
   ProtocolDataRate,
   RssiError,
   subscribeZwaveNodeStatistics,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSNodeStatisticsDialogParams } from "./show-dialog-zwave_js-node-statistics";
 
 type WorkingRouteStatistics =
   | (ZWaveJSRouteStatistics & {

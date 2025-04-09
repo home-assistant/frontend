@@ -1,28 +1,31 @@
-import "@material/mwc-button/mwc-button";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { isIPAddress } from "../../../common/string/is_ip_address";
-import "../../../components/ha-alert";
-import "../../../components/ha-card";
-import "../../../components/ha-formfield";
-import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-button";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { CloudStatus } from "../../../data/cloud";
+import type { ValueChangedEvent, HomeAssistant } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-formfield";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
+import "../../../components/ha-textfield";
+import "@material/mwc-button/mwc-button";
+
+import { mdiContentCopy, mdiEyeOff, mdiEye } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { isIPAddress } from "../../../common/string/is_ip_address";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { fetchCloudStatus } from "../../../data/cloud";
 import { saveCoreConfig } from "../../../data/core";
 import { getNetworkUrls, type NetworkUrls } from "../../../data/network";
-import type { ValueChangedEvent, HomeAssistant } from "../../../types";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { showToast } from "../../../util/toast";
-import type { HaSwitch } from "../../../components/ha-switch";
-import { obfuscateUrl } from "../../../util/url";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { showToast } from "../../../util/toast";
+import { obfuscateUrl } from "../../../util/url";
 
 @customElement("ha-config-url-form")
 class ConfigUrlForm extends SubscribeMixin(LitElement) {

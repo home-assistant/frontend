@@ -1,27 +1,30 @@
-import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../../common/entity/compute_domain";
-import { navigate } from "../../../../../common/navigate";
+import type {
+  BackupAgent,
+  BackupAgentsConfig,
+} from "../../../../../data/backup";
+import type { CloudStatus } from "../../../../../data/cloud";
+import type { HomeAssistant } from "../../../../../types";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
-import type {
-  BackupAgent,
-  BackupAgentsConfig,
-} from "../../../../../data/backup";
+
+import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { navigate } from "../../../../../common/navigate";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../../../data/backup";
-import type { CloudStatus } from "../../../../../data/cloud";
-import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 
 const DEFAULT_AGENTS = [];

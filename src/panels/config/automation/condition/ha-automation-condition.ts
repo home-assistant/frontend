@@ -1,28 +1,31 @@
-import { mdiDrag, mdiPlus } from "@mdi/js";
-import deepClone from "deep-clone-simple";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { storage } from "../../../../common/decorators/storage";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { nextRender } from "../../../../common/util/render-status";
-import "../../../../components/ha-button";
-import "../../../../components/ha-button-menu";
-import "../../../../components/ha-sortable";
-import "../../../../components/ha-svg-icon";
 import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
+import type HaAutomationConditionRow from "./ha-automation-condition-row";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-button-menu";
+import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
+import "./ha-automation-condition-row";
+
+import { mdiDrag, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+
+import { storage } from "../../../../common/decorators/storage";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { nextRender } from "../../../../common/util/render-status";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import "./ha-automation-condition-row";
-import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {

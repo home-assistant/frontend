@@ -1,14 +1,17 @@
-import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { assert, assign, object, optional, string } from "superstruct";
-import { mdiGestureTap } from "@mdi/js";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type { LightCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-form/ha-form";
+
+import { mdiGestureTap } from "@mdi/js";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { assert, assign, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";

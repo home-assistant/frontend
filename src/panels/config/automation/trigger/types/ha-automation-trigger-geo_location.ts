@@ -1,12 +1,15 @@
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { GeoLocationTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+
 import "../../../../../components/ha-form/ha-form";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { GeoLocationTrigger } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 @customElement("ha-automation-trigger-geo_location")
 export class HaGeolocationTrigger extends LitElement {

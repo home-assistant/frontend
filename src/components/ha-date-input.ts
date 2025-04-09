@@ -1,14 +1,17 @@
-import { mdiCalendar } from "@mdi/js";
+import type { HomeAssistant } from "../types";
 import type { HassConfig } from "home-assistant-js-websocket";
+
+import "./ha-svg-icon";
+import "./ha-textfield";
+
+import { mdiCalendar } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import { formatDateNumeric } from "../common/datetime/format_date";
 import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
-import type { HomeAssistant } from "../types";
-import "./ha-svg-icon";
-import "./ha-textfield";
 
 const loadDatePickerDialog = () => import("./ha-dialog-date-picker");
 

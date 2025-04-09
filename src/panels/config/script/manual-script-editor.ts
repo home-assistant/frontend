@@ -1,25 +1,28 @@
-import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
+import type { Action, Fields, ScriptConfig } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
+import type HaAutomationAction from "../automation/action/ha-automation-action";
+import type HaScriptFields from "./ha-script-fields";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
+import "../automation/action/ha-automation-action";
+import "./ha-script-fields";
+import "@material/mwc-button/mwc-button";
+
+import { mdiHelpCircle } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-markdown";
-import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../automation/action/ha-automation-action";
-import type HaAutomationAction from "../automation/action/ha-automation-action";
-import "./ha-script-fields";
-import type HaScriptFields from "./ha-script-fields";
 
 @customElement("manual-script-editor")
 export class HaManualScriptEditor extends LitElement {

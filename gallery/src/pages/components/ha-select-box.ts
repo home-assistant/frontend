@@ -1,10 +1,12 @@
+import type { SelectBoxOption } from "../../../../src/components/ha-select-box";
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-select-box";
+
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-select-box";
-import type { SelectBoxOption } from "../../../../src/components/ha-select-box";
 
 const basicOptions: SelectBoxOption[] = [
   {

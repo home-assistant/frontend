@@ -1,15 +1,18 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import "../../components/ha-alert";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
 } from "../../data/entity_registry";
-import { PLATFORMS_WITH_SETTINGS_TAB } from "../../panels/config/entities/const";
-import "../../panels/config/entities/entity-registry-settings";
 import type { HomeAssistant } from "../../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../components/ha-alert";
+import "../../panels/config/entities/entity-registry-settings";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { PLATFORMS_WITH_SETTINGS_TAB } from "../../panels/config/entities/const";
 import { documentationUrl } from "../../util/documentation-url";
 
 @customElement("ha-more-info-settings")

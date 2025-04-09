@@ -1,6 +1,8 @@
-import { mdiInformation } from "@mdi/js";
 import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import type { DeviceAction } from "../../../ha-config-device-page";
+
+import { mdiInformation } from "@mdi/js";
+
 import { showMQTTDeviceDebugInfoDialog } from "./show-dialog-mqtt-device-debug-info";
 
 export const getMQTTDeviceActions = (

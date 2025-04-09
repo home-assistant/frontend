@@ -1,15 +1,18 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../layouts/hass-tabs-subpage";
-import { profileSections } from "./ha-panel-profile";
 import type { RefreshToken } from "../../data/refresh_token";
-import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../layouts/hass-tabs-subpage";
 import "./ha-change-password-card";
 import "./ha-long-lived-access-tokens-card";
 import "./ha-mfa-modules-card";
 import "./ha-refresh-tokens-card";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { haStyle } from "../../resources/styles";
+import { profileSections } from "./ha-panel-profile";
 
 @customElement("ha-profile-section-security")
 class HaProfileSectionSecurity extends LitElement {

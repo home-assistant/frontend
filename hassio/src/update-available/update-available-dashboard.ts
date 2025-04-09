@@ -1,10 +1,12 @@
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant, Route } from "../../../src/types";
 import type { TemplateResult } from "lit";
+
+import "../../../src/layouts/hass-subpage";
+import "./update-available-card";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
-import "../../../src/layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../src/types";
-import "./update-available-card";
 
 @customElement("update-available-dashboard")
 class UpdateAvailableDashboard extends LitElement {

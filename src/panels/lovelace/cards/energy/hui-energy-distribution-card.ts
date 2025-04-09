@@ -1,4 +1,14 @@
+import type { EnergyData } from "../../../../data/energy";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyDistributionCardConfig } from "../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
 import "@material/mwc-button";
+
 import {
   mdiArrowDown,
   mdiArrowLeft,
@@ -12,14 +22,10 @@ import {
   mdiTransmissionTower,
   mdiWater,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../../components/ha-card";
-import "../../../../components/ha-svg-icon";
-import type { EnergyData } from "../../../../data/energy";
+
 import {
   energySourcesByType,
   getEnergyDataCollection,
@@ -29,9 +35,6 @@ import {
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
-import type { EnergyDistributionCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
 
 const CIRCLE_CIRCUMFERENCE = 238.76104;

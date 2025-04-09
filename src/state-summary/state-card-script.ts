@@ -1,16 +1,19 @@
-import "@material/mwc-button";
+import type { ScriptEntity } from "../data/script";
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
+import "@material/mwc-button";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { isUnavailableState } from "../data/entity";
-import type { ScriptEntity } from "../data/script";
 import { canRun, hasScriptFields } from "../data/script";
-import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
+import { haStyle } from "../resources/styles";
 
 @customElement("state-card-script")
 class StateCardScript extends LitElement {

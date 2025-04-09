@@ -1,9 +1,12 @@
+import type { HomeAssistant } from "../types";
+
+import "./ha-icon";
+import "./ha-svg-icon";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
-import type { HomeAssistant } from "../types";
-import "./ha-icon";
-import "./ha-svg-icon";
+
 import { serviceSectionIcon } from "../data/icons";
 
 @customElement("ha-service-section-icon")

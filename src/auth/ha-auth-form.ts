@@ -1,9 +1,12 @@
 /* eslint-disable lit/prefer-static-styles */
+import type { LocalizeFunc } from "../common/translations/localize";
+
+import "./ha-auth-form-string";
+
 import { html } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { HaForm } from "../components/ha-form/ha-form";
-import "./ha-auth-form-string";
-import type { LocalizeFunc } from "../common/translations/localize";
 
 const localizeBaseKey = "ui.panel.page-authorize.form";
 

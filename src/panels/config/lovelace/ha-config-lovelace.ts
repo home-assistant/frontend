@@ -1,8 +1,10 @@
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../types";
+
 import { mdiViewDashboard } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
+
 import { HassRouterPage } from "../../../layouts/hass-router-page";
-import type { HomeAssistant } from "../../../types";
 
 export const lovelaceTabs = [
   {

@@ -1,6 +1,27 @@
-import "@material/mwc-list/mwc-list-item";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
+import type { HaMenu } from "../../../components/ha-menu";
+import type { ConnectionStatus } from "../../../data/connection-status";
+import type { HomeAssistant } from "../../../types";
 import type { ActionDetail } from "@material/mwc-list";
 
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-alert";
+import "../../../components/ha-ansi-to-html";
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu-item";
+import "../../../components/ha-menu";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
+import "@material/mwc-list/mwc-list-item";
+
+// eslint-disable-next-line import/extensions
+import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import {
   mdiArrowCollapseDown,
   mdiDotsVertical,
@@ -22,28 +43,14 @@ import {
   type TemplateResult,
   nothing,
 } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
-// eslint-disable-next-line import/extensions
-import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
-import { customElement, property, state, query } from "lit/decorators";
-import "../../../components/ha-alert";
-import "../../../components/ha-ansi-to-html";
-import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
-import "../../../components/ha-card";
-import "../../../components/ha-button";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-spinner";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-menu";
-import "../../../components/ha-md-menu-item";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-list-item";
-
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { atLeastVersion } from "../../../common/config/version";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
 import { getSignedPath } from "../../../data/auth";
-
 import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -55,19 +62,11 @@ import {
   getHassioLogDownloadLinesUrl,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
-import type { HomeAssistant } from "../../../types";
 import {
   downloadFileSupported,
   fileDownload,
 } from "../../../util/file_download";
-import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
-import type { ConnectionStatus } from "../../../data/connection-status";
-import { atLeastVersion } from "../../../common/config/version";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { debounce } from "../../../common/util/debounce";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
-import type { HaMenu } from "../../../components/ha-menu";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 
 const NUMBER_OF_LINES = 100;
 

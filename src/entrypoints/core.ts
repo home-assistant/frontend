@@ -1,4 +1,7 @@
+import type { WindowWithPreloads } from "../data/preloads";
+import type { ExternalAuth } from "../external_app/external_auth";
 import type { Auth, Connection } from "home-assistant-js-websocket";
+
 import {
   createConnection,
   ERR_INVALID_AUTH,
@@ -7,6 +10,7 @@ import {
   subscribeEntities,
   subscribeServices,
 } from "home-assistant-js-websocket";
+
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
 import { hassUrl } from "../data/auth";
 import { isExternal } from "../data/external";
@@ -14,7 +18,6 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { fetchConfig } from "../data/lovelace/config/types";
 import { fetchResources } from "../data/lovelace/resource";
 import { MAIN_WINDOW_NAME } from "../data/main_window";
-import type { WindowWithPreloads } from "../data/preloads";
 import { getRecorderInfo } from "../data/recorder";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import { subscribeAreaRegistry } from "../data/ws-area_registry";
@@ -24,7 +27,6 @@ import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
-import type { ExternalAuth } from "../external_app/external_auth";
 
 window.name = MAIN_WINDOW_NAME;
 (window as any).frontendVersion = __VERSION__;

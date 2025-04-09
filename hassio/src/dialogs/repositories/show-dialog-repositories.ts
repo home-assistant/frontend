@@ -1,6 +1,8 @@
-import { fireEvent } from "../../../../src/common/dom/fire_event";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+
 import "./dialog-hassio-repositories";
+
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 
 export interface HassioRepositoryDialogParams {
   supervisor: Supervisor;

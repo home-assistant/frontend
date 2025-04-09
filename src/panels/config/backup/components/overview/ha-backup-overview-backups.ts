@@ -1,22 +1,25 @@
-import { mdiCalendarSync, mdiGestureTap, mdiPuzzle } from "@mdi/js";
+import type { BackupContent, BackupType } from "../../../../../data/backup";
+import type { HomeAssistant } from "../../../../../types";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import type { BackupContent, BackupType } from "../../../../../data/backup";
+
+import { mdiCalendarSync, mdiGestureTap, mdiPuzzle } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import {
   computeBackupSize,
   computeBackupType,
   getBackupTypes,
 } from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 
 interface BackupStats {

@@ -1,6 +1,7 @@
+import "./ha-markdown-element";
+
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-markdown-element";
 
 @customElement("ha-markdown")
 export class HaMarkdown extends LitElement {

@@ -1,25 +1,28 @@
+import type { AutomationClipboard } from "../../../../data/automation";
+import type { Action } from "../../../../data/script";
+import type { HomeAssistant } from "../../../../types";
+import type HaAutomationActionRow from "./ha-automation-action-row";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-sortable";
+import "../../../../components/ha-svg-icon";
+
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
-import "../../../../components/ha-button";
-import "../../../../components/ha-sortable";
-import "../../../../components/ha-svg-icon";
 import { getService, isService } from "../../../../data/action";
-import type { AutomationClipboard } from "../../../../data/automation";
-import type { Action } from "../../../../data/script";
-import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action")

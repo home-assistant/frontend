@@ -1,4 +1,7 @@
+import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
+import type { HassBaseEl } from "./hass-base-mixin";
 import type { Auth, Connection, HassConfig } from "home-assistant-js-websocket";
+
 import {
   callService,
   ERR_CONNECTION_LOST,
@@ -7,7 +10,9 @@ import {
   subscribeEntities,
   subscribeServices,
 } from "home-assistant-js-websocket";
+
 import { fireEvent } from "../common/dom/fire_event";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { subscribeAreaRegistry } from "../data/area_registry";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeDeviceRegistry } from "../data/device_registry";
@@ -22,17 +27,14 @@ import {
   TimeFormat,
   TimeZone,
 } from "../data/translation";
+import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
+import { subscribeFloorRegistry } from "../data/ws-floor_registry";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { Constructor, HomeAssistant, ServiceCallResponse } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi, { hassCallApiRaw } from "../util/hass-call-api";
-import type { HassBaseEl } from "./hass-base-mixin";
-import { promiseTimeout } from "../common/util/promise-timeout";
-import { subscribeFloorRegistry } from "../data/ws-floor_registry";
-import { subscribeEntityRegistryDisplay } from "../data/ws-entity_registry_display";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T

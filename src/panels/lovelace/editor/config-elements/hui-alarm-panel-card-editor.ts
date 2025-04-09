@@ -1,11 +1,4 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { array, assert, assign, object, optional, string } from "superstruct";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -13,14 +6,24 @@ import type {
   AlarmPanelCardConfigState,
 } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { array, assert, assign, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { ALARM_MODES } from "../../../../data/alarm_control_panel";
 import {
   DEFAULT_STATES,
   ALARM_MODE_STATE_MAP,
   filterSupportedAlarmStates,
 } from "../../cards/hui-alarm-panel-card";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { ALARM_MODES } from "../../../../data/alarm_control_panel";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

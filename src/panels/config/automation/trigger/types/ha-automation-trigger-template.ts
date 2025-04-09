@@ -1,14 +1,17 @@
-import "../../../../../components/ha-textarea";
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TemplateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import type { PropertyValues } from "lit";
+
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-textarea";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const SCHEMA = [
   { name: "value_template", required: true, selector: { template: {} } },

@@ -1,3 +1,16 @@
+import type { FanEntity } from "../../../data/fan";
+import type { HomeAssistant } from "../../../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-attribute-icon";
+import "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
+import "../../../components/ha-outlined-icon-button";
+import "../../../state-control/fan/ha-state-control-fan-speed";
+import "../../../state-control/ha-state-control-toggle";
+import "../components/ha-more-info-control-select-container";
+import "../components/ha-more-info-state-header";
+
 import {
   mdiArrowOscillating,
   mdiArrowOscillatingOff,
@@ -6,18 +19,13 @@ import {
   mdiPower,
   mdiTuneVariant,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attribute-icon";
-import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
-import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { FanEntity } from "../../../data/fan";
 import {
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
   FanEntityFeature,
@@ -25,11 +33,6 @@ import {
   computeFanSpeedStateDisplay,
 } from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
-import "../../../state-control/fan/ha-state-control-fan-speed";
-import "../../../state-control/ha-state-control-toggle";
-import type { HomeAssistant } from "../../../types";
-import "../components/ha-more-info-control-select-container";
-import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-fan")

@@ -1,3 +1,31 @@
+import type {
+  ConfigEntry,
+  DisableConfigEntryResult,
+} from "../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DiagnosticInfo } from "../../../data/diagnostics";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { SceneEntities } from "../../../data/scene";
+import type { RelatedResult } from "../../../data/search";
+import type { HomeAssistant } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
+import "../../logbook/ha-logbook";
+import "./device-detail/ha-device-entities-card";
+import "./device-detail/ha-device-info-card";
+import "./device-detail/ha-device-via-devices-card";
+
 import { consume } from "@lit-labs/context";
 import {
   mdiCog,
@@ -9,11 +37,11 @@ import {
   mdiPencil,
   mdiPlusCircle,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -24,63 +52,38 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
-import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-expansion-panel";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-tooltip";
 import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
 import { getSignedPath } from "../../../data/auth";
-import type {
-  ConfigEntry,
-  DisableConfigEntryResult,
-} from "../../../data/config_entries";
 import {
   disableConfigEntry,
   sortConfigEntries,
 } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
-import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
   fetchDiagnosticHandler,
   getConfigEntryDiagnosticsDownloadUrl,
   getDeviceDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
-import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
-import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../../../dialogs/voice-assistant-setup/show-voice-assistant-setup-dialog";
-import "../../../layouts/hass-error-screen";
-import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
-import "../../logbook/ha-logbook";
-import "./device-detail/ha-device-entities-card";
-import "./device-detail/ha-device-info-card";
-import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
 import {
   loadDeviceRegistryDetailDialog,

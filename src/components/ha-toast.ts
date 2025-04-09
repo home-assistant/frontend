@@ -1,5 +1,6 @@
-import { Snackbar } from "@material/mwc-snackbar/mwc-snackbar";
 import { styles } from "@material/mwc-snackbar/mwc-snackbar.css";
+
+import { Snackbar } from "@material/mwc-snackbar/mwc-snackbar";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

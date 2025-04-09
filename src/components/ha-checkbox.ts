@@ -1,5 +1,6 @@
-import { CheckboxBase } from "@material/mwc-checkbox/mwc-checkbox-base";
 import { styles } from "@material/mwc-checkbox/mwc-checkbox.css";
+
+import { CheckboxBase } from "@material/mwc-checkbox/mwc-checkbox-base";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

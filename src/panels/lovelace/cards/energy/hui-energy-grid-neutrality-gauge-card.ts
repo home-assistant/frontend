@@ -1,24 +1,27 @@
-import { mdiInformation } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { formatNumber } from "../../../../common/number/format_number";
-import "../../../../components/ha-card";
-import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tooltip";
 import type {
   EnergyData,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridNeutralityGaugeCardConfig } from "../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
+
+import { mdiInformation } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { formatNumber } from "../../../../common/number/format_number";
+import { getEnergyDataCollection } from "../../../../data/energy";
+import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { hasConfigChanged } from "../../common/has-changed";
 
 const LEVELS: LevelDefinition[] = [

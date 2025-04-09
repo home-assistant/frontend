@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface EditViewHeaderDialogParams {
   saveConfig: (config: LovelaceViewHeaderConfig) => void;

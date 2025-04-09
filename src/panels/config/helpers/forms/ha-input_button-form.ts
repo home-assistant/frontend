@@ -1,12 +1,15 @@
+import type { InputButton } from "../../../../data/input_button";
+import type { HomeAssistant } from "../../../../types";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
-import type { InputButton } from "../../../../data/input_button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_button-form")
 class HaInputButtonForm extends LitElement {

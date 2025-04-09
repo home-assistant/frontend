@@ -1,7 +1,7 @@
-import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
 import type { LocalizeFunc } from "./localize";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 
 export type FormatEntityStateFunc = (
   stateObj: HassEntity,

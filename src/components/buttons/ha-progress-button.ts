@@ -1,10 +1,12 @@
-import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../ha-button";
 import "../ha-spinner";
 import "../ha-svg-icon";
+
+import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {

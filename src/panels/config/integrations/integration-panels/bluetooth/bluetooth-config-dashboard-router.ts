@@ -1,7 +1,9 @@
-import { customElement, property } from "lit/decorators";
 import type { RouterOptions } from "../../../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
+
+import { customElement, property } from "lit/decorators";
+
+import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 
 @customElement("bluetooth-config-dashboard-router")
 class BluetoothConfigDashboardRouter extends HassRouterPage {

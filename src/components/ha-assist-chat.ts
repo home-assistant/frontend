@@ -1,21 +1,25 @@
+import type { HomeAssistant } from "../types";
+import type { HaTextField } from "./ha-textfield";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, LitElement, html, nothing } from "lit";
+
+import "./ha-alert";
+import "./ha-textfield";
+
 import { mdiAlertCircle, mdiMicrophone, mdiSend } from "@mdi/js";
+import { css, LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { HomeAssistant } from "../types";
+
+import { supportsFeature } from "../common/entity/supports-feature";
 import {
   runAssistPipeline,
   type AssistPipeline,
 } from "../data/assist_pipeline";
-import { supportsFeature } from "../common/entity/supports-feature";
 import { ConversationEntityFeature } from "../data/conversation";
-import { AudioRecorder } from "../util/audio-recorder";
-import "./ha-alert";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
-import { documentationUrl } from "../util/documentation-url";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import { AudioRecorder } from "../util/audio-recorder";
+import { documentationUrl } from "../util/documentation-url";
+
 
 interface AssistMessage {
   who: string;

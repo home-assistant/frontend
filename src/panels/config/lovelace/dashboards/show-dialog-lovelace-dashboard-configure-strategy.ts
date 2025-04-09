@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceDashboardStrategyConfig } from "../../../../data/lovelace/config/types";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface LovelaceDashboardConfigureStrategyDialogParams {
   config: LovelaceDashboardStrategyConfig;

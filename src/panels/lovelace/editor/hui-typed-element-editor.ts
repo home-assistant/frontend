@@ -1,4 +1,5 @@
 import { state } from "lit/decorators";
+
 import { HuiElementEditor } from "./hui-element-editor";
 
 export abstract class HuiTypedElementEditor<

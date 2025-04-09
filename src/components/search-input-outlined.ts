@@ -1,13 +1,16 @@
-import { mdiClose, mdiMagnify } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
+import type { HaOutlinedTextField } from "./ha-outlined-text-field";
+import type { TemplateResult } from "lit";
+
 import "./ha-icon-button";
 import "./ha-outlined-text-field";
-import type { HaOutlinedTextField } from "./ha-outlined-text-field";
 import "./ha-svg-icon";
+
+import { mdiClose, mdiMagnify } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("search-input-outlined")
 class SearchInputOutlined extends LitElement {

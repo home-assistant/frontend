@@ -1,11 +1,14 @@
+import type { Supervisor } from "../../src/data/supervisor/supervisor";
+import type { HomeAssistant, Route } from "../../src/types";
 import type { TemplateResult } from "lit";
+
+import "../../src/layouts/hass-loading-screen";
+import "./hassio-panel-router";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { Supervisor } from "../../src/data/supervisor/supervisor";
+
 import { supervisorCollection } from "../../src/data/supervisor/supervisor";
-import "../../src/layouts/hass-loading-screen";
-import type { HomeAssistant, Route } from "../../src/types";
-import "./hassio-panel-router";
 
 @customElement("hassio-panel")
 class HassioPanel extends LitElement {

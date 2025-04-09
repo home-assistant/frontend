@@ -1,15 +1,18 @@
+import type { HomeAssistant } from "../../../types";
 import type { TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "./ha-integration-header";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import {
   domainToName,
   type IntegrationManifest,
 } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
-import "./ha-integration-header";
-import "../../../components/ha-card";
-import { brandsUrl } from "../../../util/brands-url";
 import { haStyle } from "../../../resources/styles";
+import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-integration-action-card")
 export class HaIntegrationActionCard extends LitElement {

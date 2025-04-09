@@ -1,13 +1,16 @@
-import "@material/mwc-button/mwc-button";
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-card";
+import "./integrations-startup-time";
+import "@material/mwc-button/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-card";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "./integrations-startup-time";
 
 @customElement("dialog-integration-startup")
 class DialogIntegrationStartup extends LitElement {

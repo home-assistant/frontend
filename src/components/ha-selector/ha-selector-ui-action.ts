@@ -1,10 +1,13 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { ActionConfig } from "../../data/lovelace/config/action";
 import type { UiActionSelector } from "../../data/selector";
-import "../../panels/lovelace/components/hui-action-editor";
 import type { HomeAssistant } from "../../types";
+
+import "../../panels/lovelace/components/hui-action-editor";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-ui_action")
 export class HaSelectorUiAction extends LitElement {

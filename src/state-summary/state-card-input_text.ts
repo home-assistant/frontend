@@ -1,12 +1,15 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../components/entity/state-info";
 import "../components/ha-textfield";
-import type { HomeAssistant } from "../types";
-import { haStyle } from "../resources/styles";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { haStyle } from "../resources/styles";
 
 @customElement("state-card-input_text")
 class StateCardInputText extends LitElement {

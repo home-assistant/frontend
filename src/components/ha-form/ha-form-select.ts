@@ -1,16 +1,19 @@
-import memoizeOne from "memoize-one";
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import type {
   HaFormElement,
   HaFormSelectData,
   HaFormSelectSchema,
 } from "./types";
-import type { SelectSelector } from "../../data/selector";
+import type { TemplateResult } from "lit";
+
 import "../ha-selector/ha-selector-select";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {

@@ -1,3 +1,20 @@
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
+import type { TagTrigger } from "../../../data/automation";
+import type { Tag, TagScannedEvent, UpdateTagParams } from "../../../data/tag";
+import type { HomeAssistant, Route } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-relative-time";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import "./tag-image";
+
 import {
   mdiDelete,
   mdiHelpCircle,
@@ -5,23 +22,12 @@ import {
   mdiPlus,
   mdiRobot,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { storage } from "../../../common/decorators/storage";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-} from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-relative-time";
-import type { TagTrigger } from "../../../data/automation";
 import { showAutomationEditor } from "../../../data/automation";
-import type { Tag, TagScannedEvent, UpdateTagParams } from "../../../data/tag";
 import {
   createTag,
   deleteTag,
@@ -33,13 +39,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { configSections } from "../ha-panel-config";
 import { showTagDetailDialog } from "./show-dialog-tag-detail";
-import "./tag-image";
 
 export interface TagRowData extends Tag {
   display_name: string;

@@ -1,25 +1,28 @@
-import { consume } from "@lit-labs/context";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/device/ha-device-condition-picker";
-import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/ha-form/ha-form";
-import { fullEntitiesContext } from "../../../../../data/context";
 import type {
   DeviceCapabilities,
   DeviceCondition,
 } from "../../../../../data/device_automation";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/device/ha-device-condition-picker";
+import "../../../../../components/device/ha-device-picker";
+import "../../../../../components/ha-form/ha-form";
+
+import { consume } from "@lit-labs/context";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { fullEntitiesContext } from "../../../../../data/context";
 import {
   deviceAutomationsEqual,
   fetchDeviceConditionCapabilities,
   localizeExtraFieldsComputeLabelCallback,
   localizeExtraFieldsComputeHelperCallback,
 } from "../../../../../data/device_automation";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {

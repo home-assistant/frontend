@@ -1,12 +1,15 @@
-import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { HomeAssistant } from "../../../types";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
-import type { IntegrationManifest } from "../../../data/integration";
+
+import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { domainToName } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-integration-header")

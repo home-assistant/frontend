@@ -1,8 +1,9 @@
-import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
+import type { PropertyValues } from "lit";
+
+import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;

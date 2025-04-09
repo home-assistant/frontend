@@ -2,6 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
 import { UNAVAILABLE } from "./entity";
 
 export type LawnMowerEntityState =

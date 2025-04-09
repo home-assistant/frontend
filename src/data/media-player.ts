@@ -1,3 +1,10 @@
+import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
+import type { HomeAssistant, TranslationDict } from "../types";
+import type {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
+
 import {
   mdiAccountMusic,
   mdiAccountMusicOutline,
@@ -28,14 +35,9 @@ import {
   mdiVideo,
   mdiWeb,
 } from "@mdi/js";
-import type {
-  HassEntityAttributeBase,
-  HassEntityBase,
-} from "home-assistant-js-websocket";
-import { supportsFeature } from "../common/entity/supports-feature";
+
 import { stateActive } from "../common/entity/state_active";
-import type { MediaPlayerItemId } from "../components/media-player/ha-media-player-browse";
-import type { HomeAssistant, TranslationDict } from "../types";
+import { supportsFeature } from "../common/entity/supports-feature";
 import { isUnavailableState } from "./entity";
 import { isTTSMediaSource } from "./tts";
 

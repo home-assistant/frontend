@@ -1,19 +1,24 @@
-import "@material/mwc-button";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+import type { HomeAssistant } from "../../types";
+import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
-import { fireEvent } from "../../common/dom/fire_event";
-import { supportsFeature } from "../../common/entity/supports-feature";
+
 import "../../components/ha-alert";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
-import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
+import "@material/mwc-button";
+
+import { formatInTimeZone, toDate } from "date-fns-tz";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
+import { fireEvent } from "../../common/dom/fire_event";
+import { supportsFeature } from "../../common/entity/supports-feature";
+import { createCloseHeading } from "../../components/ha-dialog";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -23,8 +28,6 @@ import {
 } from "../../data/todo";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {

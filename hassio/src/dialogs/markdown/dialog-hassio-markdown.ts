@@ -1,12 +1,15 @@
+import type { HomeAssistant } from "../../../../src/types";
+import type { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../src/components/ha-markdown";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-markdown";
 import { haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
-import type { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
 
 @customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends LitElement {

@@ -1,5 +1,17 @@
-import "@material/mwc-list/mwc-list";
+import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
+import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import type { HomeAssistant } from "../../types";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
+import type { TemplateResult } from "lit";
+
+import "../../components/ha-icon-button";
+import "../../components/ha-label";
+import "../../components/ha-list-item";
+import "../../components/ha-spinner";
+import "../../components/ha-textfield";
+import "../../components/ha-tip";
+import "@material/mwc-list/mwc-list";
+
 import {
   mdiClose,
   mdiConsoleLine,
@@ -9,12 +21,12 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -23,23 +35,14 @@ import { computeDeviceNameDisplay } from "../../common/entity/compute_device_nam
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
-import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-icon-button";
-import "../../components/ha-label";
-import "../../components/ha-list-item";
-import "../../components/ha-spinner";
-import "../../components/ha-textfield";
-import "../../components/ha-tip";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
 

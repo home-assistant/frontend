@@ -1,22 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import {
-  mdiDelete,
-  mdiHomeExportOutline,
-  mdiHomeImportOutline,
-  mdiPencil,
-  mdiTransmissionTower,
-} from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon-button";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import {
-  deleteConfigEntry,
-  getConfigEntries,
-} from "../../../../data/config_entries";
 import type {
   EnergyPreferences,
   EnergyPreferencesValidation,
@@ -26,12 +8,35 @@ import type {
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
+import type { StatisticsMetaData } from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
+import "./ha-energy-validation-result";
+import "@material/mwc-button/mwc-button";
+
+import {
+  mdiDelete,
+  mdiHomeExportOutline,
+  mdiHomeImportOutline,
+  mdiPencil,
+  mdiTransmissionTower,
+} from "@mdi/js";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../../data/config_entries";
 import {
   emptyGridSourceEnergyPreference,
   energySourcesByType,
   saveEnergyPreferences,
 } from "../../../../data/energy";
-import type { StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -39,14 +44,12 @@ import {
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import { documentationUrl } from "../../../../util/documentation-url";
 import {
   showEnergySettingsGridFlowFromDialog,
   showEnergySettingsGridFlowToDialog,
 } from "../dialogs/show-dialogs-energy";
-import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-grid-settings")

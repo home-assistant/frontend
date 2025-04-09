@@ -1,8 +1,11 @@
-import { LitElement, html, css, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../../common/translations/localize";
+
 import "../../components/ha-button";
 import "../../components/ha-icon-button-arrow-prev";
+
+import { LitElement, html, css, type CSSResultGroup } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { removeSearchParam } from "../../common/url/search-params";

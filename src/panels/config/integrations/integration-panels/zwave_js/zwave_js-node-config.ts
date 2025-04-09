@@ -1,27 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import {
-  mdiCheckCircle,
-  mdiCircle,
-  mdiCloseCircle,
-  mdiProgressClock,
-} from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
-import { groupBy } from "../../../../../common/util/group-by";
-import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
-import "../../../../../components/ha-alert";
-import "../../../../../components/ha-card";
-import "../../../../../components/ha-select";
-import "../../../../../components/ha-selector/ha-selector-boolean";
-import "../../../../../components/ha-settings-row";
-import "../../../../../components/ha-svg-icon";
-import "../../../../../components/ha-textfield";
 import type {
   ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
@@ -29,6 +6,38 @@ import type {
   ZWaveJSSetConfigParamResult,
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
+import type { HomeAssistant, Route } from "../../../../../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-alert";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-select";
+import "../../../../../components/ha-selector/ha-selector-boolean";
+import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-textfield";
+import "../../../../../layouts/hass-error-screen";
+import "../../../../../layouts/hass-loading-screen";
+import "../../../../../layouts/hass-tabs-subpage";
+import "../../../ha-config-section";
+import "./zwave_js-custom-param";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import {
+  mdiCheckCircle,
+  mdiCircle,
+  mdiCloseCircle,
+  mdiProgressClock,
+} from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import { groupBy } from "../../../../../common/util/group-by";
 import {
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
@@ -37,14 +46,8 @@ import {
   setZwaveNodeConfigParameter,
 } from "../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import "../../../../../layouts/hass-error-screen";
-import "../../../../../layouts/hass-loading-screen";
-import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
-import "./zwave_js-custom-param";
 
 const icons = {
   accepted: mdiCheckCircle,

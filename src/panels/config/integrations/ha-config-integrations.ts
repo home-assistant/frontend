@@ -1,23 +1,25 @@
-import type { PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { ConfigEntry } from "../../../data/config_entries";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../layouts/hass-loading-screen";
+import "./ha-config-integration-page";
+import "./ha-config-integrations-dashboard";
+
+import { customElement, property, state } from "lit/decorators";
+
+import { navigate } from "../../../common/navigate";
 import { subscribeConfigEntries } from "../../../data/config_entries";
 import {
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { domainToName } from "../../../data/integration";
-import "../../../layouts/hass-loading-screen";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
-
-import "./ha-config-integration-page";
-import "./ha-config-integrations-dashboard";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;

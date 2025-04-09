@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import type { LovelaceBadgeConfig } from "../../data/lovelace/config/badge";
@@ -8,13 +7,14 @@ import type {
   LovelaceRawConfig,
 } from "../../data/lovelace/config/types";
 import type { FrontendLocaleData } from "../../data/translation";
+import type { ShowToastParams } from "../../managers/notification-manager";
 import type { Constructor, HomeAssistant } from "../../types";
-import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
-import type { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import type { LovelaceCardFeatureConfig } from "./card-features/types";
 import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
+import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "./header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
-import type { ShowToastParams } from "../../managers/notification-manager";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 declare global {
   interface HASSDomEvents {

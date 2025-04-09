@@ -1,26 +1,31 @@
-import "@material/mwc-button/mwc-button";
-import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-alert";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-qr-scanner";
-import "../../../../../components/ha-radio";
-import "../../../../../components/ha-switch";
-import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 import type {
   QRProvisioningInformation,
   RequestedGrant,
 } from "../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-alert";
+import "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-qr-scanner";
+import "../../../../../components/ha-radio";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-switch";
+import "../../../../../components/ha-textfield";
+import "@material/mwc-button/mwc-button";
+
+import { mdiAlertCircle, mdiCheckCircle, mdiQrcodeScan } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
   cancelSecureBootstrapS2,
   InclusionStrategy,
@@ -37,8 +42,6 @@ import {
   zwaveValidateDskAndEnterPin,
 } from "../../../../../data/zwave_js";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;

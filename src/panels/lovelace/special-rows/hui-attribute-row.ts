@@ -1,14 +1,17 @@
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import checkValidDate from "../../../common/datetime/check_valid_date";
-import "../../../components/ha-attribute-value";
 import type { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import type { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-attribute-value";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import checkValidDate from "../../../common/datetime/check_valid_date";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {

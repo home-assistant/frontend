@@ -1,28 +1,31 @@
-import { mdiClose, mdiDotsVertical } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-form/ha-form";
 import type {
   AssistPipeline,
   AssistPipelineMutableParams,
 } from "../../../data/assist_pipeline";
-import { fetchAssistPipelineLanguages } from "../../../data/assist_pipeline";
-import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-button";
+import "../../../components/ha-dialog-header";
+import "../../../components/ha-form/ha-form";
 import "./assist-pipeline-detail/assist-pipeline-detail-config";
 import "./assist-pipeline-detail/assist-pipeline-detail-conversation";
 import "./assist-pipeline-detail/assist-pipeline-detail-stt";
 import "./assist-pipeline-detail/assist-pipeline-detail-tts";
 import "./assist-pipeline-detail/assist-pipeline-detail-wakeword";
 import "./debug/assist-render-pipeline-events";
-import type { VoiceAssistantPipelineDetailsDialogParams } from "./show-dialog-voice-assistant-pipeline-detail";
-import { computeDomain } from "../../../common/entity/compute_domain";
+
+import { mdiClose, mdiDotsVertical } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { fetchAssistPipelineLanguages } from "../../../data/assist_pipeline";
+import { haStyleDialog } from "../../../resources/styles";
 
 @customElement("dialog-voice-assistant-pipeline-detail")
 export class DialogVoiceAssistantPipelineDetail extends LitElement {

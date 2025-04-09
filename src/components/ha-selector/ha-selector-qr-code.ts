@@ -1,7 +1,9 @@
+import type { QRCodeSelector } from "../../data/selector";
+
+import "../ha-qr-code";
+
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { QRCodeSelector } from "../../data/selector";
-import "../ha-qr-code";
 
 @customElement("ha-selector-qr_code")
 export class HaSelectorQRCode extends LitElement {

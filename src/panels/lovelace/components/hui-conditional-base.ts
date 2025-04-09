@@ -1,19 +1,21 @@
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
-import { deepEqual } from "../../../common/util/deep-equal";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import type { ConditionalCardConfig } from "../cards/types";
 import type { Condition } from "../common/validate-condition";
+import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
+import type { PropertyValues } from "lit";
+
+import { ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { deepEqual } from "../../../common/util/deep-equal";
 import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
   extractMediaQueries,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 
 declare global {
   interface HASSDomEvents {

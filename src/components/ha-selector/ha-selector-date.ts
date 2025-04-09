@@ -1,8 +1,10 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { DateSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-date-input";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-date")
 export class HaDateSelector extends LitElement {

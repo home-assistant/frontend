@@ -1,29 +1,33 @@
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import type { CustomCardFeatureEntry } from "../../../../data/lovelace_custom_cards";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCardFeatureConfig } from "../../card-features/types";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
+
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type { CustomCardFeatureEntry } from "../../../../data/lovelace_custom_cards";
+
+import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import {
   CUSTOM_TYPE_PREFIX,
   getCustomCardFeatures,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
-import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
-import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
@@ -47,7 +51,6 @@ import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-f
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];

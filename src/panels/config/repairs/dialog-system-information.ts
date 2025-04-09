@@ -1,31 +1,34 @@
-import "@material/mwc-button/mwc-button";
+import type { HassioStats } from "../../../data/hassio/common";
+import type { HassioResolution } from "../../../data/hassio/resolution";
+import type {
+  SystemCheckValueObject,
+  SystemHealthInfo,
+} from "../../../data/system_health";
+import type { HomeAssistant } from "../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-metric";
+import "../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { subscribePollingCollection } from "../../../common/util/subscribe-polling";
-import "../../../components/ha-alert";
-import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-metric";
-import type { HassioStats } from "../../../data/hassio/common";
 import { fetchHassioStats } from "../../../data/hassio/common";
-import type { HassioResolution } from "../../../data/hassio/resolution";
 import { fetchHassioResolution } from "../../../data/hassio/resolution";
 import { domainToName } from "../../../data/integration";
-import type {
-  SystemCheckValueObject,
-  SystemHealthInfo,
-} from "../../../data/system_health";
 import { subscribeSystemHealthInfo } from "../../../data/system_health";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 

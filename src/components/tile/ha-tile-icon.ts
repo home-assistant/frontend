@@ -1,8 +1,10 @@
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../ha-icon";
 import "../ha-svg-icon";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 
 export type TileIconImageStyle = "square" | "rounded-square" | "circle";

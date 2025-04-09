@@ -1,9 +1,11 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, state } from "lit/decorators";
+
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-circular-slider";
 import "../../../../src/components/ha-slider";
+
+import { css, html, LitElement } from "lit";
+import { customElement, state } from "lit/decorators";
 
 @customElement("demo-components-ha-control-circular-slider")
 export class DemoHaCircularSlider extends LitElement {

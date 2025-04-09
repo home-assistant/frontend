@@ -1,13 +1,16 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceBadge } from "../types";
+import type { ErrorBadgeConfig } from "./types";
+
+import "../../../components/ha-badge";
+import "../../../components/ha-svg-icon";
+
 import { mdiAlertCircle } from "@mdi/js";
 import { dump } from "js-yaml";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import "../../../components/ha-badge";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+
 import { showAlertDialog } from "../custom-card-helpers";
-import type { LovelaceBadge } from "../types";
-import type { ErrorBadgeConfig } from "./types";
 
 export const createErrorBadgeElement = (config) => {
   const el = document.createElement("hui-error-badge");

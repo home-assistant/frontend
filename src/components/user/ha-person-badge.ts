@@ -1,10 +1,12 @@
+import type { BasePerson } from "../../data/person";
+import type { HomeAssistant } from "../../types";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import type { BasePerson } from "../../data/person";
+
 import { computeUserInitials } from "../../data/user";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-person-badge")
 class PersonBadge extends LitElement {

@@ -1,8 +1,10 @@
-import { html, nothing } from "lit";
-import { customElement } from "lit/decorators";
-import { FlowPreviewGeneric } from "./flow-preview-generic";
 import "../../../components/ha-hls-player";
 import "../../../components/ha-spinner";
+
+import { html, nothing } from "lit";
+import { customElement } from "lit/decorators";
+
+import { FlowPreviewGeneric } from "./flow-preview-generic";
 
 @customElement("flow-preview-generic_camera")
 class FlowPreviewGenericCamera extends FlowPreviewGeneric {

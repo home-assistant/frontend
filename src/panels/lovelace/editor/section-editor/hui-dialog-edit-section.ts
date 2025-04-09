@@ -1,11 +1,12 @@
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
+
 import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-dialog";
@@ -13,21 +14,23 @@ import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import "./hui-section-settings-editor";
+import "./hui-section-visibility-editor";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+
+import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import {
   findLovelaceContainer,
   updateLovelaceContainer,
 } from "../lovelace-path";
-import "./hui-section-settings-editor";
-import "./hui-section-visibility-editor";
-import type { EditSectionDialogParams } from "./show-edit-section-dialog";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 

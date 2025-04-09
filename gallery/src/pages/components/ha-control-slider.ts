@@ -1,10 +1,12 @@
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-control-slider";
+
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-control-slider";
-import "../../../../src/components/ha-card";
 
 const sliders: {
   id: string;

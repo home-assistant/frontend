@@ -1,11 +1,13 @@
+import type { LogbookEntry } from "../../data/logbook";
+import type { TraceExtended } from "../../data/trace";
+import type { HomeAssistant } from "../../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../panels/logbook/ha-logbook-renderer";
+import "./hat-logbook-note";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { LogbookEntry } from "../../data/logbook";
-import type { HomeAssistant } from "../../types";
-import "./hat-logbook-note";
-import "../../panels/logbook/ha-logbook-renderer";
-import type { TraceExtended } from "../../data/trace";
 
 @customElement("ha-trace-logbook")
 export class HaTraceLogbook extends LitElement {

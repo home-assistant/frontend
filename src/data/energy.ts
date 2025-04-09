@@ -1,3 +1,12 @@
+import type { DateRange } from "../common/datetime/calc_date_range";
+import type { HomeAssistant } from "../types";
+import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticsUnitConfiguration,
+} from "./recorder";
+import type { Collection } from "home-assistant-js-websocket";
+
 import {
   addDays,
   addHours,
@@ -10,26 +19,19 @@ import {
   isFirstDayOfMonth,
   isLastDayOfMonth,
 } from "date-fns";
-import type { Collection } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+
 import {
   calcDate,
   calcDateProperty,
   calcDateDifferenceProperty,
 } from "../common/datetime/calc_date";
-import { formatTime24h } from "../common/datetime/format_time";
-import { groupBy } from "../common/util/group-by";
-import type { HomeAssistant } from "../types";
-import type {
-  Statistics,
-  StatisticsMetaData,
-  StatisticsUnitConfiguration,
-} from "./recorder";
-import { fetchStatistics, getStatisticMetadata } from "./recorder";
 import { calcDateRange } from "../common/datetime/calc_date_range";
-import type { DateRange } from "../common/datetime/calc_date_range";
+import { formatTime24h } from "../common/datetime/format_time";
 import { formatNumber } from "../common/number/format_number";
+import { groupBy } from "../common/util/group-by";
+import { fetchStatistics, getStatisticMetadata } from "./recorder";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 

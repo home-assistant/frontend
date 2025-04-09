@@ -1,4 +1,5 @@
-import { isToday } from "date-fns";
+import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
+import type { HomeAssistant, ThemeMode } from "../../types";
 import type {
   Circle,
   CircleMarker,
@@ -11,23 +12,25 @@ import type {
   MarkerClusterGroup,
 } from "leaflet";
 import type { PropertyValues } from "lit";
+
+import "../ha-icon-button";
+import "./ha-entity-marker";
+
+import { isToday } from "date-fns";
 import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import {
   formatTimeWeekday,
   formatTimeWithSeconds,
 } from "../../common/datetime/format_time";
-import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
+import { fireEvent } from "../../common/dom/fire_event";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import type { HomeAssistant, ThemeMode } from "../../types";
-import { isTouch } from "../../util/is_touch";
-import "../ha-icon-button";
-import "./ha-entity-marker";
 import { DecoratedMarker } from "../../common/map/decorated_marker";
+import { isTouch } from "../../util/is_touch";
 
 declare global {
   // for fire event

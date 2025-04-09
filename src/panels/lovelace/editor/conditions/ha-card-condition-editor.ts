@@ -1,14 +1,12 @@
+import type { HomeAssistant } from "../../../../types";
+import type {
+  Condition,
+  LegacyCondition,
+} from "../../common/validate-condition";
+import type { LovelaceConditionEditorConstructor } from "./types";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiFlask, mdiPlaylistEdit } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { handleStructError } from "../../../../common/structs/handle-errors";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
@@ -17,19 +15,24 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
+
+import { mdiDelete, mdiDotsVertical, mdiFlask, mdiPlaylistEdit } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefault } from "../../../../common/dom/prevent_default";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { ICON_CONDITION } from "../../common/icon-condition";
-import type {
-  Condition,
-  LegacyCondition,
-} from "../../common/validate-condition";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../../common/validate-condition";
-import type { LovelaceConditionEditorConstructor } from "./types";
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {

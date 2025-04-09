@@ -1,10 +1,13 @@
 /* eslint-disable lit/prefer-static-styles */
 import type { TemplateResult } from "lit";
-import { html } from "lit";
-import { customElement } from "lit/decorators";
-import { HaFormString } from "../components/ha-form/ha-form-string";
+
 import "../components/ha-icon-button";
 import "./ha-auth-textfield";
+
+import { html } from "lit";
+import { customElement } from "lit/decorators";
+
+import { HaFormString } from "../components/ha-form/ha-form-string";
 
 @customElement("ha-auth-form-string")
 export class HaAuthFormString extends HaFormString {

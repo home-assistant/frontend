@@ -1,9 +1,11 @@
-import { mdiHelpCircle } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "./ha-svg-icon";
 import "./ha-tooltip";
+
+import { mdiHelpCircle } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-help-tooltip")
 export class HaHelpTooltip extends LitElement {

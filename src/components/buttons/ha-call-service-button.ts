@@ -1,11 +1,14 @@
+import type { HomeAssistant } from "../../types";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "./ha-progress-button";
+
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
-import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import "./ha-progress-button";
-import type { HomeAssistant } from "../../types";
+
 import { fireEvent } from "../../common/dom/fire_event";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-call-service-button")
 class HaCallServiceButton extends LitElement {

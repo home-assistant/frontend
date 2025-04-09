@@ -1,28 +1,5 @@
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { formatNumber } from "../../../common/number/format_number";
-import "../../../components/ha-alert";
-import "../../../components/ha-card";
-import "../../../components/ha-state-icon";
-import { getEnergyDataCollection } from "../../../data/energy";
 import type { StatisticsMetaData } from "../../../data/recorder";
-import {
-  fetchStatistic,
-  getDisplayUnit,
-  getStatisticLabel,
-  getStatisticMetadata,
-  isExternalStatistic,
-} from "../../../data/recorder";
 import type { HomeAssistant } from "../../../types";
-import { computeCardSize } from "../common/compute-card-size";
-import { findEntities } from "../common/find-entities";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -31,6 +8,32 @@ import type {
 } from "../types";
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-state-icon";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { formatNumber } from "../../../common/number/format_number";
+import { getEnergyDataCollection } from "../../../data/energy";
+import {
+  fetchStatistic,
+  getDisplayUnit,
+  getStatisticLabel,
+  getStatisticMetadata,
+  isExternalStatistic,
+} from "../../../data/recorder";
+import { computeCardSize } from "../common/compute-card-size";
+import { findEntities } from "../common/find-entities";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 
 export const PERIOD_ENERGY = "energy_date_selection";
 

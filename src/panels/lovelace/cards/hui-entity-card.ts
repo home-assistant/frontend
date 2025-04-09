@@ -1,10 +1,24 @@
+import type { HomeAssistant } from "../../../types";
+import type {
+  LovelaceCard,
+  LovelaceGridOptions,
+  LovelaceHeaderFooter,
+} from "../types";
+import type { HuiErrorCard } from "./hui-error-card";
+import type { EntityCardConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-attribute-value";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -20,24 +34,13 @@ import {
   isNumericState,
 } from "../../../common/number/format_number";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
-import "../../../components/ha-attribute-value";
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import { isUnavailableState } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import type {
-  LovelaceCard,
-  LovelaceGridOptions,
-  LovelaceHeaderFooter,
-} from "../types";
-import type { HuiErrorCard } from "./hui-error-card";
-import type { EntityCardConfig } from "./types";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {

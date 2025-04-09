@@ -1,9 +1,11 @@
-import { mdiHelpCircle } from "@mdi/js";
+import type { HomeAssistant } from "../../../src/types";
 import type { TemplateResult } from "lit";
+
+import "../../../src/components/ha-svg-icon";
+
+import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../src/components/ha-svg-icon";
-import type { HomeAssistant } from "../../../src/types";
 
 @customElement("hassio-card-content")
 class HassioCardContent extends LitElement {

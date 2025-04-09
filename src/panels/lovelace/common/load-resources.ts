@@ -1,6 +1,7 @@
-import { loadCSS, loadJS, loadModule } from "../../../common/dom/load_resource";
 import type { LovelaceResource } from "../../../data/lovelace/resource";
 import type { HomeAssistant } from "../../../types";
+
+import { loadCSS, loadJS, loadModule } from "../../../common/dom/load_resource";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};

@@ -1,12 +1,13 @@
-import { MdMenu } from "@material/web/menu/menu";
+import type { HaMdMenuItem } from "./ha-md-menu-item";
 import type { CloseMenuEvent } from "@material/web/menu/menu";
+
 import {
   CloseReason,
   KeydownCloseKey,
 } from "@material/web/menu/internal/controllers/shared";
+import { MdMenu } from "@material/web/menu/menu";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-import type { HaMdMenuItem } from "./ha-md-menu-item";
 
 @customElement("ha-menu")
 export class HaMenu extends MdMenu {

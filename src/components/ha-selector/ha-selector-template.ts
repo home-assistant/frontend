@@ -1,11 +1,14 @@
-import { css, html, nothing, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant } from "../../types";
-import { documentationUrl } from "../../util/documentation-url";
+
+import "../ha-alert";
 import "../ha-code-editor";
 import "../ha-input-helper-text";
-import "../ha-alert";
+
+import { css, html, nothing, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { documentationUrl } from "../../util/documentation-url";
 
 const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 

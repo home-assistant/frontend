@@ -1,16 +1,19 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { DOMAINS_TOGGLE } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import type { HomeAssistant } from "../../../types";
-import { processConfigEntities } from "../common/process-config-entities";
-import "../components/hui-buttons-base";
 import type {
   ButtonsRowConfig,
   EntityConfig,
   LovelaceRow,
 } from "../entity-rows/types";
+import type { TemplateResult } from "lit";
+
+import "../components/hui-buttons-base";
+
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { processConfigEntities } from "../common/process-config-entities";
 
 @customElement("hui-buttons-row")
 export class HuiButtonsRow extends LitElement implements LovelaceRow {

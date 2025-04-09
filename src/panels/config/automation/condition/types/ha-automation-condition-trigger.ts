@@ -1,20 +1,23 @@
-import "@material/mwc-list/mwc-list-item";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+
+import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-select";
+import "@material/mwc-list/mwc-list-item";
+
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-select";
 import {
   flattenTriggers,
   type AutomationConfig,
   type Trigger,
   type TriggerCondition,
 } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
 
 const getTriggersIds = (triggers: Trigger[]): string[] => {
   const triggerIds = flattenTriggers(triggers)

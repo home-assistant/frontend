@@ -1,7 +1,9 @@
-import type { DurationInput } from "@formatjs/intl-durationformat/src/types";
-import memoizeOne from "memoize-one";
 import type { HaDurationData } from "../../components/ha-duration-input";
 import type { FrontendLocaleData } from "../../data/translation";
+import type { DurationInput } from "@formatjs/intl-durationformat/src/types";
+
+import memoizeOne from "memoize-one";
+
 import { round } from "../number/round";
 
 const leftPad = (num: number) => (num < 10 ? `0${num}` : num);

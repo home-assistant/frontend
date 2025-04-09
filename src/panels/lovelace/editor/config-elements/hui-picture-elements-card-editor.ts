@@ -1,6 +1,23 @@
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../../types";
+import type { PictureElementsCardConfig } from "../../cards/types";
+import type { LovelaceElementConfig } from "../../elements/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-switch";
+import "../hui-picture-elements-card-row-editor";
+import "../hui-sub-element-editor";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   any,
   array,
@@ -11,24 +28,10 @@ import {
   string,
   type,
 } from "superstruct";
-import memoizeOne from "memoize-one";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
-import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-icon";
-import "../../../../components/ha-switch";
-import type { HomeAssistant } from "../../../../types";
-import type { PictureElementsCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
-import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EditDetailElementEvent, SubElementEditorConfig } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "../hui-picture-elements-card-row-editor";
-import type { LovelaceElementConfig } from "../../elements/types";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const genericElementConfigStruct = type({
   type: string(),

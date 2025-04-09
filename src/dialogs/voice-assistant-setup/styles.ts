@@ -1,4 +1,5 @@
 import { css } from "lit";
+
 import { haStyle } from "../../resources/styles";
 
 export const AssistantSetupStyles = [

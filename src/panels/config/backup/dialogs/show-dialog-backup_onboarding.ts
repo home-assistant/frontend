@@ -1,6 +1,7 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { BackupConfig } from "../../../../data/backup";
 import type { CloudStatus } from "../../../../data/cloud";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface BackupOnboardingDialogParams {
   submit?: (value: boolean) => void;

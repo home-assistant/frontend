@@ -1,24 +1,12 @@
-import "@material/mwc-button/mwc-button";
-import { mdiChevronLeft, mdiClose, mdiMenuDown } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { formatLanguageCode } from "../../common/language/format_language";
-import "../../components/chips/ha-assist-chip";
-import "../../components/ha-dialog";
-import { getLanguageOptions } from "../../components/ha-language-picker";
-import "../../components/ha-md-button-menu";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
-import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
-import { getLanguageScores } from "../../data/conversation";
-import { UNAVAILABLE } from "../../data/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
-import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { VoiceAssistantSetupDialogParams } from "./show-voice-assistant-setup-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../../components/chips/ha-assist-chip";
+import "../../components/ha-dialog";
+import "../../components/ha-md-button-menu";
 import "./voice-assistant-setup-step-area";
 import "./voice-assistant-setup-step-change-wake-word";
 import "./voice-assistant-setup-step-check";
@@ -28,6 +16,21 @@ import "./voice-assistant-setup-step-pipeline";
 import "./voice-assistant-setup-step-success";
 import "./voice-assistant-setup-step-update";
 import "./voice-assistant-setup-step-wake-word";
+import "@material/mwc-button/mwc-button";
+
+import { mdiChevronLeft, mdiClose, mdiMenuDown } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { formatLanguageCode } from "../../common/language/format_language";
+import { getLanguageOptions } from "../../components/ha-language-picker";
+import { fetchAssistSatelliteConfiguration } from "../../data/assist_satellite";
+import { getLanguageScores } from "../../data/conversation";
+import { UNAVAILABLE } from "../../data/entity";
+import { haStyleDialog } from "../../resources/styles";
 
 export const enum STEP {
   INIT,

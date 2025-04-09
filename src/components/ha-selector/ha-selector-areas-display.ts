@@ -1,8 +1,10 @@
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { AreasDisplaySelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-areas-display-editor";
+
+import { LitElement, html } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-areas_display")
 export class HaAreasDisplaySelector extends LitElement {

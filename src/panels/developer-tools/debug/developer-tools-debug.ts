@@ -1,10 +1,13 @@
+import type { HomeAssistant } from "../../../types";
+
+import "../../../components/ha-card";
+import "./ha-debug-connection-row";
+
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-card";
+
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "./ha-debug-connection-row";
 
 @customElement("developer-tools-debug")
 class HaPanelDevDebug extends SubscribeMixin(LitElement) {

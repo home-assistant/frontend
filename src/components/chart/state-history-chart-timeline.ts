@@ -1,6 +1,6 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { TimelineEntity } from "../../data/history";
+import type { ECOption } from "../../resources/echarts";
+import type { HomeAssistant } from "../../types";
 import type {
   CustomSeriesOption,
   CustomSeriesRenderItem,
@@ -8,19 +8,21 @@ import type {
   TooltipFormatterCallback,
   TooltipPositionCallbackParams,
 } from "echarts/types/dist/shared";
+import type { PropertyValues } from "lit";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { hex2rgb } from "../../common/color/convert-color";
+import { luminosity } from "../../common/color/rgb";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
-import type { TimelineEntity } from "../../data/history";
-import type { HomeAssistant } from "../../types";
+import echarts from "../../resources/echarts";
+import { measureTextWidth } from "../../util/text";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { computeTimelineColor } from "./timeline-color";
-import type { ECOption } from "../../resources/echarts";
-import echarts from "../../resources/echarts";
-import { luminosity } from "../../common/color/rgb";
-import { hex2rgb } from "../../common/color/convert-color";
-import { measureTextWidth } from "../../util/text";
-import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {

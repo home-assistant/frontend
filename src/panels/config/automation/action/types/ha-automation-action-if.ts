@@ -1,14 +1,17 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
 import type { Action, IfAction } from "../../../../../data/script";
-import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
-import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-textfield";
+import "../ha-automation-action";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { haStyle } from "../../../../../resources/styles";
 
 @customElement("ha-automation-action-if")
 export class HaIfAction extends LitElement implements ActionElement {

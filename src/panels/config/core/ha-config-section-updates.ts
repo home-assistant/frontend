@@ -1,24 +1,30 @@
-import "@material/mwc-list/mwc-list-item";
+import type {
+  HassioSupervisorInfo,
+  SupervisorOptions,
+} from "../../../data/hassio/supervisor";
+import type { HomeAssistant } from "../../../types";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-bar";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-metric";
+import "../../../layouts/hass-subpage";
+import "../dashboard/ha-config-updates";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiDotsVertical, mdiRefresh } from "@mdi/js";
+import { LitElement, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type {
-  HassioSupervisorInfo,
-  SupervisorOptions,
-} from "../../../data/hassio/supervisor";
 import {
   fetchHassioSupervisorInfo,
   reloadSupervisor,
@@ -29,9 +35,6 @@ import {
   filterUpdateEntitiesWithInstall,
 } from "../../../data/update";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../types";
-import "../dashboard/ha-config-updates";
 import { showJoinBetaDialog } from "./updates/show-dialog-join-beta";
 
 @customElement("ha-config-section-updates")

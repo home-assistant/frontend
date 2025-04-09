@@ -1,14 +1,14 @@
 import type { ActionConfig } from "../../../data/lovelace/config/action";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace/config/view";
-import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
-import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { LovelaceElementConfig } from "../elements/types";
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
+import type { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
 export interface YamlChangedEvent extends Event {

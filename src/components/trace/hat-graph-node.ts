@@ -1,7 +1,9 @@
-import { mdiExclamationThick } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import { mdiExclamationThick } from "@mdi/js";
 import { LitElement, css, html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { isSafari } from "../../util/is_safari";
 import { NODE_SIZE, SPACING } from "./hat-graph-const";
 

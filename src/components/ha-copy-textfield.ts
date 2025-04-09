@@ -1,15 +1,17 @@
-import { customElement, property, state } from "lit/decorators";
-import { css, html, LitElement, nothing } from "lit";
-import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
+import type { HomeAssistant } from "../types";
+import type { HaTextField } from "./ha-textfield";
 
 import "./ha-button";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
-import type { HomeAssistant } from "../types";
+
+import { mdiContentCopy, mdiEye, mdiEyeOff } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { showToast } from "../util/toast";
-import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-copy-textfield")
 export class HaCopyTextfield extends LitElement {

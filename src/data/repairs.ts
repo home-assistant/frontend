@@ -1,9 +1,11 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
-import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
 import type { DataEntryFlowStep } from "./data_entry_flow";
+import type { Connection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+
+import { createCollection } from "home-assistant-js-websocket";
+
+import { debounce } from "../common/util/debounce";
 
 export interface RepairsIssue {
   domain: string;

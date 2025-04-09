@@ -1,12 +1,46 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-formfield/mwc-formfield";
-import { mdiContentCopy } from "@mdi/js";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../common/translations/localize";
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { ConfigEntry } from "../../../data/config_entries";
+import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type {
+  AlarmControlPanelEntityOptions,
+  EntityRegistryEntry,
+  EntityRegistryEntryUpdateParams,
+  ExtEntityRegistryEntry,
+  LockEntityOptions,
+  SensorEntityOptions,
+} from "../../../data/entity_registry";
+import type { WeatherUnits } from "../../../data/weather";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-area-picker";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button-next";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
+import "../../../components/ha-list-item";
+import "../../../components/ha-radio";
+import "../../../components/ha-select";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-state-icon";
+import "../../../components/ha-switch";
+import "../../../components/ha-textfield";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-formfield/mwc-formfield";
+
+import { mdiContentCopy } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -15,25 +49,8 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { formatNumber } from "../../../common/number/format_number";
 import { stringCompare } from "../../../common/string/compare";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../../common/translations/localize";
+import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import "../../../components/ha-alert";
-import "../../../components/ha-area-picker";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-button-next";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-list-item";
-import "../../../components/ha-radio";
-import "../../../components/ha-select";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-state-icon";
-import "../../../components/ha-switch";
-import "../../../components/ha-labels-picker";
-import type { HaSwitch } from "../../../components/ha-switch";
-import "../../../components/ha-textfield";
 import {
   CAMERA_ORIENTATIONS,
   CAMERA_SUPPORT_STREAM,
@@ -43,23 +60,12 @@ import {
   STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
-import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteConfigEntry } from "../../../data/config_entries";
 import {
   createConfigFlow,
   handleConfigFlowStep,
 } from "../../../data/config_flow";
-import type { DataEntryFlowStepCreateEntry } from "../../../data/data_entry_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
-import type {
-  AlarmControlPanelEntityOptions,
-  EntityRegistryEntry,
-  EntityRegistryEntryUpdateParams,
-  ExtEntityRegistryEntry,
-  LockEntityOptions,
-  SensorEntityOptions,
-} from "../../../data/entity_registry";
 import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
@@ -78,7 +84,6 @@ import {
   getSensorDeviceClassConvertibleUnits,
   getSensorNumericDeviceClasses,
 } from "../../../data/sensor";
-import type { WeatherUnits } from "../../../data/weather";
 import { getWeatherConvertibleUnits } from "../../../data/weather";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -88,10 +93,8 @@ import {
 import { showVoiceAssistantsView } from "../../../dialogs/more-info/components/voice/show-view-voice-assistants";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import { autoCaseNoun } from "../../../common/translations/auto_case_noun";
 
 const OVERRIDE_DEVICE_CLASSES = {
   cover: [

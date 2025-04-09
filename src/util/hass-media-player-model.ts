@@ -1,7 +1,8 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
 import { supportsFeature } from "../common/entity/supports-feature";
 import { cleanupMediaTitle } from "../data/media-player";
-import type { HomeAssistant } from "../types";
 
 export default class MediaPlayerEntity {
   public hass: HomeAssistant;

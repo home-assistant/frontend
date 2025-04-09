@@ -1,17 +1,23 @@
+import type { WindowWithPreloads } from "../data/preloads";
+import type { RecorderInfo } from "../data/recorder";
+import type { HomeAssistant, Route } from "../types";
+import type { Connection } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../resources/custom-card-support";
+import "./ha-init-page";
+import "./home-assistant-main";
+
 import { html } from "lit";
 import { customElement, state } from "lit/decorators";
-import type { Connection } from "home-assistant-js-websocket";
+
+import { storage } from "../common/decorators/storage";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
-import type { WindowWithPreloads } from "../data/preloads";
-import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
-import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
 import QuickBarMixin from "../state/quick-bar-mixin";
-import type { HomeAssistant, Route } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
   removeLaunchScreen,
@@ -21,9 +27,6 @@ import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
-import "./ha-init-page";
-import "./home-assistant-main";
-import { storage } from "../common/decorators/storage";
 
 const useHash = __DEMO__;
 const curPath = () =>

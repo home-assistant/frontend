@@ -1,3 +1,10 @@
+import type { HomeAssistant } from "../types";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity_registry";
+import type { HassEntity } from "home-assistant-js-websocket";
+
 import {
   mdiAccount,
   mdiAirFilter,
@@ -43,20 +50,15 @@ import {
   mdiWeatherPartlyCloudy,
   mdiWhiteBalanceSunny,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { atLeastVersion } from "../common/config/version";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stateIcon } from "../common/entity/state_icon";
-import type { HomeAssistant } from "../types";
-import type {
-  EntityRegistryDisplayEntry,
-  EntityRegistryEntry,
-} from "./entity_registry";
-
 import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
+
 
 /** Icon to use when no icon specified for service. */
 export const DEFAULT_SERVICE_ICON = mdiRoomService;

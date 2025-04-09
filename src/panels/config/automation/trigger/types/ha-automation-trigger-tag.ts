@@ -1,15 +1,18 @@
-import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
-import "../../../../../components/ha-select";
 import type { TagTrigger } from "../../../../../data/automation";
 import type { Tag } from "../../../../../data/tag";
-import { fetchTags } from "../../../../../data/tag";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-select";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../../common/string/compare";
+import { fetchTags } from "../../../../../data/tag";
 
 @customElement("ha-automation-trigger-tag")
 export class HaTagTrigger extends LitElement implements TriggerElement {

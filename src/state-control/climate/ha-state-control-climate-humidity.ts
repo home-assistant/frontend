@@ -1,22 +1,25 @@
-import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
+import type { ClimateEntity } from "../../data/climate";
+import type { HomeAssistant } from "../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
+
+import { mdiMinus, mdiPlus, mdiWaterPercent } from "@mdi/js";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { stateActive } from "../../common/entity/state_active";
 import { domainStateColorProperties } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-big-number";
-import "../../components/ha-control-circular-slider";
-import "../../components/ha-outlined-icon-button";
-import "../../components/ha-svg-icon";
-import type { ClimateEntity } from "../../data/climate";
 import { ClimateEntityFeature } from "../../data/climate";
 import { UNAVAILABLE } from "../../data/entity";
 import { computeCssVariable } from "../../resources/css-variables";
-import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,

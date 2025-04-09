@@ -1,13 +1,15 @@
 /* eslint-disable max-classes-per-file */
-import { noChange } from "lit";
-import type { AttributePart, DirectiveParameters } from "lit/directive";
-import { directive, Directive } from "lit/directive";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { deepEqual } from "../../../../common/util/deep-equal";
 import type {
   ActionHandlerDetail,
   ActionHandlerOptions,
 } from "../../../../data/lovelace/action_handler";
+import type { AttributePart, DirectiveParameters } from "lit/directive";
+
+import { noChange } from "lit";
+import { directive, Directive } from "lit/directive";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import { isTouch } from "../../../../util/is_touch";
 
 interface ActionHandlerType extends HTMLElement {

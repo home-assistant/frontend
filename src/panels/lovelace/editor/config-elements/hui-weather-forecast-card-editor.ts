@@ -1,3 +1,12 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { ForecastType, WeatherEntity } from "../../../../data/weather";
+import type { HomeAssistant } from "../../../../types";
+import type { WeatherForecastCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
 import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,17 +20,11 @@ import {
   optional,
   string,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { UNAVAILABLE } from "../../../../data/entity";
-import type { ForecastType, WeatherEntity } from "../../../../data/weather";
 import { WeatherEntityFeature } from "../../../../data/weather";
-import type { HomeAssistant } from "../../../../types";
-import type { WeatherForecastCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 

@@ -1,11 +1,13 @@
-import { load } from "js-yaml";
+import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
+import type { HomeAssistant } from "../../../src/types";
 import type { PropertyValueMap } from "lit";
+
+import "../../../src/panels/lovelace/cards/hui-card";
+
+import { load } from "js-yaml";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import "../../../src/panels/lovelace/cards/hui-card";
-import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
-import type { HomeAssistant } from "../../../src/types";
 
 export interface DemoCardConfig {
   heading: string;

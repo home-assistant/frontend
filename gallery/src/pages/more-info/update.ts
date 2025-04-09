@@ -1,14 +1,17 @@
+import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+
 import "../../../../src/components/ha-card";
 import "../../../../src/dialogs/more-info/more-info-content";
-import { getEntity } from "../../../../src/fake_data/entity";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
-import { provideHass } from "../../../../src/fake_data/provide_hass";
 import "../../components/demo-more-infos";
-import { LONG_TEXT } from "../../data/text";
+
+import { html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
 import { UpdateEntityFeature } from "../../../../src/data/update";
+import { getEntity } from "../../../../src/fake_data/entity";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { LONG_TEXT } from "../../data/text";
 
 const base_attributes = {
   title: "Awesome",

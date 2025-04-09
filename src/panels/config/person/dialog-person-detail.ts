@@ -1,20 +1,28 @@
-import { mdiPencil } from "@mdi/js";
+import type { HaPictureUpload } from "../../../components/ha-picture-upload";
+import type { PersonMutableParams } from "../../../data/person";
+import type { User } from "../../../data/user";
+import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
+
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
-import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
+
+import { mdiPencil } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import { adminChangeUsername } from "../../../data/auth";
-import type { PersonMutableParams } from "../../../data/person";
-import type { User } from "../../../data/user";
 import {
   deleteUser,
   SYSTEM_GROUP_ID_ADMIN,
@@ -26,15 +34,10 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showAddUserDialog } from "../users/show-dialog-add-user";
 import { showAdminChangePasswordDialog } from "../users/show-dialog-admin-change-password";
-import type { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import { fireEvent } from "../../../common/dom/fire_event";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 
 const includeDomains = ["device_tracker"];
 

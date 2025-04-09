@@ -1,3 +1,24 @@
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { HeadingCardConfig } from "../../cards/types";
+import type { UiAction } from "../../components/hui-action-editor";
+import type {
+  EntityHeadingBadgeConfig,
+  LovelaceHeadingBadgeConfig,
+} from "../../heading-badges/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { EditSubElementEvent } from "../types";
+
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-svg-icon";
+import "./hui-heading-badges-editor";
+
 import { mdiGestureTap, mdiListBox } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,30 +33,12 @@ import {
   optional,
   string,
 } from "superstruct";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import "../../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../../types";
 import { migrateHeadingCardConfig } from "../../cards/hui-heading-card";
-import type { HeadingCardConfig } from "../../cards/types";
-import type { UiAction } from "../../components/hui-action-editor";
-import type {
-  EntityHeadingBadgeConfig,
-  LovelaceHeadingBadgeConfig,
-} from "../../heading-badges/types";
-import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-heading-badges-editor";
 
 const actions: UiAction[] = ["navigate", "url", "perform-action", "none"];
 

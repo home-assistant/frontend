@@ -1,6 +1,8 @@
-import { mdiContentSave, mdiMedal, mdiTrophy } from "@mdi/js";
-import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import type { LocalizeKeys } from "../common/translations/localize";
+
+import { mdiContentSave, mdiMedal, mdiTrophy } from "@mdi/js";
+
+import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 
 /**
  * Map integration quality scale to icon and translation key.

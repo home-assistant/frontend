@@ -1,16 +1,19 @@
-import "@material/mwc-list/mwc-list-item";
+import type { User } from "../../data/user";
+import type { HomeAssistant } from "../../types";
 import type { TemplateResult } from "lit";
+
+import "../ha-list-item";
+import "../ha-select";
+import "./ha-user-badge";
+import "@material/mwc-list/mwc-list-item";
+
 import { css, html, LitElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
-import type { User } from "../../data/user";
 import { fetchUsers } from "../../data/user";
-import type { HomeAssistant } from "../../types";
-import "../ha-select";
-import "./ha-user-badge";
-import "../ha-list-item";
 
 class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;

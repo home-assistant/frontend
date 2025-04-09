@@ -1,12 +1,15 @@
-import { html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { HomeAssistant } from "../../types";
+
 import "../../components/ha-button";
 import "../../components/ha-spinner";
+
+import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { testAssistSatelliteConnection } from "../../data/assist_satellite";
-import type { HomeAssistant } from "../../types";
-import { AssistantSetupStyles } from "./styles";
 import { documentationUrl } from "../../util/documentation-url";
+import { AssistantSetupStyles } from "./styles";
 
 @customElement("ha-voice-assistant-setup-step-check")
 export class HaVoiceAssistantSetupStepCheck extends LitElement {

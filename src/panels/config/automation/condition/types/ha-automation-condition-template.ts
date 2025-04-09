@@ -1,8 +1,11 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../../../components/ha-textarea";
 import type { TemplateCondition } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+
+import "../../../../../components/ha-textarea";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { handleChangeEvent } from "../ha-automation-condition-row";
 
 @customElement("ha-automation-condition-template")

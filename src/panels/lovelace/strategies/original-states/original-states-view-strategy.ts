@@ -1,11 +1,13 @@
+import type { AreasDisplayValue } from "../../../../components/ha-areas-display-editor";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import type { AreasDisplayValue } from "../../../../components/ha-areas-display-editor";
 import { getEnergyPreferences } from "../../../../data/energy";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HomeAssistant } from "../../../../types";
 import { generateDefaultViewConfig } from "../../common/generate-lovelace-config";
 
 export interface OriginalStatesViewStrategyConfig {

@@ -1,22 +1,25 @@
-import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
+import type { ValveEntity } from "../../data/valve";
+import type { HomeAssistant } from "../../types";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
-import { supportsFeature } from "../../common/entity/supports-feature";
+
 import "../../components/ha-control-button";
 import "../../components/ha-control-button-group";
 import "../../components/ha-control-slider";
 import "../../components/ha-svg-icon";
-import type { ValveEntity } from "../../data/valve";
+
+import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+
+import { supportsFeature } from "../../common/entity/supports-feature";
 import {
   ValveEntityFeature,
   canClose,
   canOpen,
   canStop,
 } from "../../data/valve";
-import type { HomeAssistant } from "../../types";
 
 type ValveButton = "open" | "close" | "stop" | "none";
 

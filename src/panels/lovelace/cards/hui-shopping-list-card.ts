@@ -1,6 +1,7 @@
 import { customElement } from "lit/decorators";
-import { HuiTodoListCard } from "./hui-todo-list-card";
+
 import { getTodoLists } from "../../../data/todo";
+import { HuiTodoListCard } from "./hui-todo-list-card";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends HuiTodoListCard {

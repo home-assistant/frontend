@@ -1,16 +1,26 @@
 import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticType,
+} from "../../data/recorder";
+import type { ECOption } from "../../resources/echarts";
+import type { HomeAssistant } from "../../types";
+import type {
   BarSeriesOption,
   LineSeriesOption,
   ZRColor,
 } from "echarts/types/dist/shared";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-chart-base";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import {
   formatNumber,
@@ -18,20 +28,12 @@ import {
 } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { computeRTL } from "../../common/util/compute_rtl";
-import type {
-  Statistics,
-  StatisticsMetaData,
-  StatisticType,
-} from "../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticLabel,
   getStatisticMetadata,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { ECOption } from "../../resources/echarts";
-import type { HomeAssistant } from "../../types";
-import "./ha-chart-base";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
   mean: "mean",

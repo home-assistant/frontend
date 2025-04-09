@@ -1,18 +1,21 @@
-import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { HomeAssistant, Route } from "../../types";
 import type { ActionDetail } from "@material/mwc-list";
-import { navigate } from "../../common/navigate";
-import "../../components/ha-menu-button";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
 import "../../components/ha-button-menu";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, Route } from "../../types";
+import "../../components/ha-menu-button";
 import "./developer-tools-router";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+
+import { mdiDotsVertical } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { navigate } from "../../common/navigate";
+import { haStyle } from "../../resources/styles";
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {

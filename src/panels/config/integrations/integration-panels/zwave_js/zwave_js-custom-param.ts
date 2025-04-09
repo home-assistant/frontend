@@ -1,17 +1,20 @@
+import type { HomeAssistant } from "../../../../../types";
+
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-select";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-textfield";
+
+import { mdiCloseCircle } from "@mdi/js";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiCloseCircle } from "@mdi/js";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-select";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-list-item";
-import type { HomeAssistant } from "../../../../../types";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   getZwaveNodeRawConfigParameter,
   setZwaveNodeRawConfigParameter,
 } from "../../../../../data/zwave_js";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("zwave_js-custom-param")
 class ZWaveJSCustomParam extends LitElement {

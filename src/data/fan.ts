@@ -1,3 +1,9 @@
+import type { HomeAssistant } from "../types";
+import type {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
+
 import {
   mdiFan,
   mdiFanOff,
@@ -5,12 +11,8 @@ import {
   mdiFanSpeed2,
   mdiFanSpeed3,
 } from "@mdi/js";
-import type {
-  HassEntityAttributeBase,
-  HassEntityBase,
-} from "home-assistant-js-websocket";
+
 import { stateActive } from "../common/entity/state_active";
-import type { HomeAssistant } from "../types";
 
 export const enum FanEntityFeature {
   SET_SPEED = 1,

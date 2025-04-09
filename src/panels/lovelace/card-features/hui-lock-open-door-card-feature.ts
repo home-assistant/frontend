@@ -1,21 +1,23 @@
-import { mdiCheck } from "@mdi/js";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import type { LockOpenDoorCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../common/entity/compute_domain";
 
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+
+import { mdiCheck } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
   callProtectedLockService,
   canOpen,
   LockEntityFeature,
 } from "../../../data/lock";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
-import type { LockOpenDoorCardFeatureConfig } from "./types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 
 export const supportsLockOpenDoorCardFeature = (stateObj: HassEntity) => {

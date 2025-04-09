@@ -1,5 +1,6 @@
-import { StructError } from "superstruct";
 import type { HomeAssistant } from "../../types";
+
+import { StructError } from "superstruct";
 
 export const handleStructError = (
   hass: HomeAssistant,

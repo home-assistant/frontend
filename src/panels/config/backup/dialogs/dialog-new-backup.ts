@@ -1,20 +1,23 @@
-import { mdiCalendarSync, mdiClose, mdiGestureTap } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { NewBackupDialogParams } from "./show-dialog-new-backup";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-svg-icon";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+
+import { mdiCalendarSync, mdiClose, mdiGestureTap } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { NewBackupDialogParams } from "./show-dialog-new-backup";
 
 @customElement("ha-dialog-new-backup")
 class DialogNewBackup extends LitElement implements HassDialog {

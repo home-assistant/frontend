@@ -1,9 +1,11 @@
+import type { HomeAssistant, Route } from "../../../types";
 import type { TemplateResult } from "lit";
+
+import "../../../layouts/hass-subpage";
+import "./ha-config-analytics";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../types";
-import "./ha-config-analytics";
 
 @customElement("ha-config-section-analytics")
 class HaConfigSectionAnalytics extends LitElement {

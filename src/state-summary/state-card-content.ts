@@ -1,9 +1,6 @@
-import { LitElement, nothing } from "lit";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../types";
-import { dynamicElement } from "../common/dom/dynamic-element-directive";
-import { stateCardType } from "../common/entity/state_card_type";
+import type { HassEntity } from "home-assistant-js-websocket";
+
 import "./state-card-alert";
 import "./state-card-button";
 import "./state-card-climate";
@@ -29,6 +26,12 @@ import "./state-card-toggle";
 import "./state-card-update";
 import "./state-card-vacuum";
 import "./state-card-water_heater";
+
+import { LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { dynamicElement } from "../common/dom/dynamic-element-directive";
+import { stateCardType } from "../common/entity/state_card_type";
 
 @customElement("state-card-content")
 class StateCardContent extends LitElement {

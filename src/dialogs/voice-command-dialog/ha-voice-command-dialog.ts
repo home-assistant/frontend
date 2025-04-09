@@ -1,34 +1,37 @@
-import "@material/mwc-button/mwc-button";
-import {
-  mdiChevronDown,
-  mdiClose,
-  mdiHelpCircleOutline,
-  mdiStar,
-} from "@mdi/js";
+import type { AssistPipeline } from "../../data/assist_pipeline";
+import type { HomeAssistant } from "../../types";
+import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { storage } from "../../common/decorators/storage";
-import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+
+import "../../components/ha-alert";
+import "../../components/ha-assist-chat";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
-import "../../components/ha-alert";
-import "../../components/ha-assist-chat";
 import "../../components/ha-spinner";
-import type { AssistPipeline } from "../../data/assist_pipeline";
+import "@material/mwc-button/mwc-button";
+
+import {
+  mdiChevronDown,
+  mdiClose,
+  mdiHelpCircleOutline,
+  mdiStar,
+} from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { storage } from "../../common/decorators/storage";
+import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import {
   getAssistPipeline,
   listAssistPipelines,
 } from "../../data/assist_pipeline";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import type { VoiceCommandDialogParams } from "./show-ha-voice-command-dialog";
 
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {

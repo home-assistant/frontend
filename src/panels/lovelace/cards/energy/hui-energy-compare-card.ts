@@ -1,18 +1,21 @@
-import { differenceInDays, endOfDay } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { formatDate } from "../../../../common/datetime/format_date";
 import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyCardBaseConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
 import "../../../../components/ha-alert";
+
+import { differenceInDays, endOfDay } from "date-fns";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { formatDate } from "../../../../common/datetime/format_date";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { getEnergyDataCollection } from "../../../../data/energy";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-compare-card")
 export class HuiEnergyCompareCard

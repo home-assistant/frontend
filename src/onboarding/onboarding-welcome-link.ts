@@ -1,9 +1,11 @@
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../components/ha-card";
 import "../components/ha-ripple";
 import "../components/ha-svg-icon";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("onboarding-welcome-link")
 class OnboardingWelcomeLink extends LitElement {

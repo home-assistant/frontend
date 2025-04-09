@@ -1,23 +1,26 @@
-import "@material/mwc-list";
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
-import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import { createCloseHeading } from "../ha-dialog";
-import "../ha-list-item";
-import "../ha-sortable";
-import "../ha-button";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
 } from "./ha-data-table";
 import type { DataTableSettingsDialogParams } from "./show-dialog-data-table-settings";
+import type { CSSResultGroup } from "lit";
+
+import "../ha-button";
+import "../ha-list-item";
+import "../ha-sortable";
+import "@material/mwc-list";
+
+import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../common/dom/fire_event";
+import { haStyleDialog } from "../../resources/styles";
+import { createCloseHeading } from "../ha-dialog";
 
 @customElement("dialog-data-table-settings")
 export class DialogDataTableSettings extends LitElement {

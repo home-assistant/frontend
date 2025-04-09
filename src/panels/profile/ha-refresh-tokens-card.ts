@@ -1,4 +1,15 @@
+import type { RefreshToken } from "../../data/refresh_token";
+import type { HomeAssistant } from "../../types";
 import type { ActionDetail } from "@material/mwc-list";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../components/ha-button-menu";
+import "../../components/ha-card";
+import "../../components/ha-icon-button";
+import "../../components/ha-label";
+import "../../components/ha-list-item";
+import "../../components/ha-settings-row";
+
 import {
   mdiAndroid,
   mdiApple,
@@ -8,26 +19,18 @@ import {
   mdiDotsVertical,
   mdiWeb,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-button-menu";
-import "../../components/ha-card";
-import "../../components/ha-icon-button";
-import "../../components/ha-label";
-import "../../components/ha-settings-row";
-import "../../components/ha-list-item";
 import { deleteAllRefreshTokens } from "../../data/auth";
-import type { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 
 // Client ID used by iOS app
 const iOSclientId = "https://home-assistant.io/iOS";

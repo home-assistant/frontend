@@ -1,37 +1,40 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
-import deepFreeze from "deep-freeze";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-spinner";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { ConfigChangedEvent } from "../hui-element-editor";
+import type { GUIModeChangedEvent } from "../types";
+import type { HuiCardElementEditor } from "./hui-card-element-editor";
+import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import "../../../../components/ha-spinner";
+import "../../cards/hui-card";
+import "../../sections/hui-section";
+import "./hui-card-element-editor";
+
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import deepFreeze from "deep-freeze";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import {
   getCustomCardEntry,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import "../../cards/hui-card";
-import "../../sections/hui-section";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
-import type { ConfigChangedEvent } from "../hui-element-editor";
-import type { GUIModeChangedEvent } from "../types";
-import "./hui-card-element-editor";
-import type { HuiCardElementEditor } from "./hui-card-element-editor";
-import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
   // for fire event

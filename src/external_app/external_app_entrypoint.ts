@@ -5,9 +5,6 @@ in core bundle slows things down and causes duplicate registration.
 This is the entry point for providing external app stuff from app entrypoint.
 */
 
-import { fireEvent } from "../common/dom/fire_event";
-import { mainWindow } from "../common/dom/get_main_window";
-import { showAutomationEditor } from "../data/automation";
 import type { HomeAssistantMain } from "../layouts/home-assistant-main";
 import type {
   EMIncomingMessageBarCodeScanAborted,
@@ -15,6 +12,10 @@ import type {
   EMIncomingMessageCommands,
   ImprovDiscoveredDevice,
 } from "./external_messaging";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
+import { showAutomationEditor } from "../data/automation";
 
 const barCodeListeners = new Set<
   (

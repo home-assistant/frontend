@@ -1,13 +1,15 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { getCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
 import type {
   DataEntryFlowProgress,
   DataEntryFlowStep,
 } from "./data_entry_flow";
 import type { IntegrationType } from "./integration";
+import type { Connection } from "home-assistant-js-websocket";
+
+import { getCollection } from "home-assistant-js-websocket";
+
+import { debounce } from "../common/util/debounce";
 import { domainToName } from "./integration";
 
 export const DISCOVERY_SOURCES = [

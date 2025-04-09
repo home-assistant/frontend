@@ -1,10 +1,13 @@
+import type { HomeAssistant } from "../../../../types";
 import type { TemplateResult } from "lit";
+
+import "../../../../layouts/hass-subpage";
+import "./cloud-forgot-password-card";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "./cloud-forgot-password-card";
-import "../../../../layouts/hass-subpage";
+
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("cloud-forgot-password")
 export class CloudForgotPassword extends LitElement {

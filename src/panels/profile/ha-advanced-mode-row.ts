@@ -1,12 +1,15 @@
+import type { CoreFrontendUserData } from "../../data/frontend";
+import type { HomeAssistant } from "../../types";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../../components/ha-card";
 import "../../components/ha-settings-row";
 import "../../components/ha-switch";
-import type { CoreFrontendUserData } from "../../data/frontend";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {

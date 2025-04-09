@@ -1,4 +1,5 @@
 import type { TemplateResult } from "lit";
+
 import { render } from "lit";
 
 export const removeLaunchScreen = () => {

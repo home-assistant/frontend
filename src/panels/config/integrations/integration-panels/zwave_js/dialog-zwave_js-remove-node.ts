@@ -1,16 +1,19 @@
-import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-alert";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-alert";
+import "../../../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../../resources/styles";
 
 export interface ZWaveJSRemovedNode {
   node_id: number;

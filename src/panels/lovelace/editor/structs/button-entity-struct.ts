@@ -1,4 +1,5 @@
 import { boolean, object, optional, string } from "superstruct";
+
 import { actionConfigStruct } from "./action-struct";
 
 export const buttonEntityConfigStruct = object({

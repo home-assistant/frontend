@@ -1,6 +1,8 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { LocalizeFunc } from "../../common/translations/localize";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 

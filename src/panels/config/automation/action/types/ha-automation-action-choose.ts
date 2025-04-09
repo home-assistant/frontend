@@ -1,14 +1,17 @@
+import type { Action, ChooseAction, Option } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
+
+import "../../../../../components/ha-button";
+import "../../option/ha-automation-option";
+import "../ha-automation-action";
+
 import { type CSSResultGroup, LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button";
-import type { Action, ChooseAction, Option } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import "../../option/ha-automation-option";
-import type { ActionElement } from "../ha-automation-action-row";
-import "../ha-automation-action";
 
 @customElement("ha-automation-action-choose")
 export class HaChooseAction extends LitElement implements ActionElement {

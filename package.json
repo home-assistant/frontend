@@ -198,6 +198,7 @@
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-lit": "2.0.0",
     "eslint-plugin-lit-a11y": "4.1.4",
+    "eslint-plugin-perfectionist": "4.11.0",
     "eslint-plugin-unused-imports": "4.1.4",
     "eslint-plugin-wc": "3.0.0",
     "fancy-log": "2.0.0",

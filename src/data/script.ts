@@ -1,9 +1,19 @@
+import type { HomeAssistant } from "../types";
+import type {
+  Condition,
+  ShorthandAndCondition,
+  ShorthandNotCondition,
+  ShorthandOrCondition,
+  Trigger,
+} from "./automation";
+import type { BlueprintInput } from "./blueprint";
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import type { Describe } from "superstruct";
+
 import {
   object,
   optional,
@@ -15,20 +25,12 @@ import {
   is,
   boolean,
 } from "superstruct";
+
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
-import { navigate } from "../common/navigate";
-import type { HomeAssistant } from "../types";
-import type {
-  Condition,
-  ShorthandAndCondition,
-  ShorthandNotCondition,
-  ShorthandOrCondition,
-  Trigger,
-} from "./automation";
-import { migrateAutomationTrigger } from "./automation";
-import type { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import { navigate } from "../common/navigate";
 import { createSearchParam } from "../common/url/search-params";
+import { migrateAutomationTrigger } from "./automation";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;

@@ -1,10 +1,16 @@
-import { mdiImagePlus } from "@mdi/js";
+import type { MediaPickedEvent } from "../data/media-player";
+import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
+import type { HomeAssistant } from "../types";
 import type { TemplateResult } from "lit";
+
+import "./ha-button";
+import "./ha-file-upload";
+
+import { mdiImagePlus } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { MediaPickedEvent } from "../data/media-player";
+
 import { fireEvent } from "../common/dom/fire_event";
-import { haStyle } from "../resources/styles";
 import {
   MEDIA_PREFIX,
   getIdFromUrl,
@@ -13,11 +19,8 @@ import {
   getImageData,
 } from "../data/image_upload";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import type { HomeAssistant } from "../types";
-import "./ha-button";
-import "./ha-file-upload";
+import { haStyle } from "../resources/styles";
 import { showMediaBrowserDialog } from "./media-player/show-media-browser-dialog";
 
 @customElement("ha-picture-upload")

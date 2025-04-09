@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
-import type { PropertyValueMap, ReactiveElement } from "lit";
-import { mainWindow } from "../common/dom/get_main_window";
-import { closeLastDialog } from "../dialogs/make-dialog-manager";
 import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import type { Constructor } from "../types";
+import type { PropertyValueMap, ReactiveElement } from "lit";
+
+import { mainWindow } from "../common/dom/get_main_window";
+import { closeLastDialog } from "../dialogs/make-dialog-manager";
 
 const DEBUG = false;
 

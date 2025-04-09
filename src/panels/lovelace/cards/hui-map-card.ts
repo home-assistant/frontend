@@ -1,25 +1,3 @@
-import {
-  mdiDotsHexagon,
-  mdiGoogleCirclesCommunities,
-  mdiImageFilterCenterFocus,
-} from "@mdi/js";
-import type { HassEntities } from "home-assistant-js-websocket";
-import type { LatLngTuple } from "leaflet";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { getColorByIndex } from "../../../common/color/colors";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { deepEqual } from "../../../common/util/deep-equal";
-import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/ha-alert";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/map/ha-map";
 import type {
   HaMap,
   HaMapEntity,
@@ -27,17 +5,42 @@ import type {
   HaMapPaths,
 } from "../../../components/map/ha-map";
 import type { HistoryStates } from "../../../data/history";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
+import type { EntityConfig } from "../entity-rows/types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { MapCardConfig } from "./types";
+import type { HassEntities } from "home-assistant-js-websocket";
+import type { LatLngTuple } from "leaflet";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/map/ha-map";
+
+import {
+  mdiDotsHexagon,
+  mdiGoogleCirclesCommunities,
+  mdiImageFilterCenterFocus,
+} from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { getColorByIndex } from "../../../common/color/colors";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { deepEqual } from "../../../common/util/deep-equal";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import { findEntities } from "../common/find-entities";
 import {
   hasConfigChanged,
   hasConfigOrEntitiesChanged,
 } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { EntityConfig } from "../entity-rows/types";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { MapCardConfig } from "./types";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;

@@ -1,3 +1,6 @@
+import type { HomeAssistant } from "../../types";
+import type { Options, WeekdayStr } from "rrule";
+
 // Library for converting back and forth from values use by this webcomponent
 // and the values defined by rrule.js.
 import {
@@ -10,13 +13,12 @@ import {
   isLastDayOfMonth,
   isSameMonth,
 } from "date-fns";
-import type { Options, WeekdayStr } from "rrule";
 import { Frequency, RRule, Weekday } from "rrule";
+
 import { formatDate } from "../../common/datetime/format_date";
 import { capitalizeFirstLetter } from "../../common/string/capitalize-first-letter";
 import { dayNames } from "../../common/translations/day_names";
 import { monthNames } from "../../common/translations/month_names";
-import type { HomeAssistant } from "../../types";
 
 export type RepeatFrequency =
   | "none"

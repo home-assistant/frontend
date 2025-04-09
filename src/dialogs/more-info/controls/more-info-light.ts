@@ -1,4 +1,24 @@
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { LightEntity } from "../../../data/light";
+import type { HomeAssistant } from "../../../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-attribute-icon";
+import "../../../components/ha-attributes";
+import "../../../components/ha-control-select-menu";
+import "../../../components/ha-icon-button-group";
+import "../../../components/ha-icon-button-toggle";
+import "../../../components/ha-list-item";
+import "../../../state-control/ha-state-control-toggle";
+import "../../../state-control/light/ha-state-control-light-brightness";
+import "../components/ha-more-info-control-select-container";
+import "../components/ha-more-info-state-header";
+import "../components/lights/ha-favorite-color-button";
+import "../components/lights/ha-more-info-light-favorite-colors";
+import "../components/lights/light-color-rgb-picker";
+import "../components/lights/light-color-temp-picker";
 import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiBrightness6,
   mdiCreation,
@@ -7,21 +27,13 @@ import {
   mdiLightbulbOn,
   mdiPower,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attribute-icon";
-import "../../../components/ha-attributes";
-import "../../../components/ha-control-select-menu";
-import "../../../components/ha-icon-button-group";
-import "../../../components/ha-icon-button-toggle";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
-import type { LightEntity } from "../../../data/light";
 import {
   LightColorMode,
   LightEntityFeature,
@@ -30,15 +42,6 @@ import {
   lightSupportsColorMode,
   lightSupportsFavoriteColors,
 } from "../../../data/light";
-import "../../../state-control/ha-state-control-toggle";
-import "../../../state-control/light/ha-state-control-light-brightness";
-import type { HomeAssistant } from "../../../types";
-import "../components/ha-more-info-control-select-container";
-import "../components/ha-more-info-state-header";
-import "../components/lights/ha-favorite-color-button";
-import "../components/lights/ha-more-info-light-favorite-colors";
-import "../components/lights/light-color-rgb-picker";
-import "../components/lights/light-color-temp-picker";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type MainControl = "brightness" | "color_temp" | "color";

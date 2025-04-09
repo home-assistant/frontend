@@ -1,28 +1,30 @@
-import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { mdiClose, mdiPlus } from "@mdi/js";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-domain-icon";
-import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-textarea";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-labels-picker";
-import "../../category/ha-category-picker";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/chips/ha-chip-set";
-import "../../../../components/chips/ha-assist-chip";
-import "../../../../components/ha-area-picker";
-
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type {
   EntityRegistryUpdate,
   SaveDialogParams,
 } from "./show-dialog-automation-save";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/chips/ha-assist-chip";
+import "../../../../components/chips/ha-chip-set";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-area-picker";
+import "../../../../components/ha-domain-icon";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-labels-picker";
+import "../../../../components/ha-textarea";
+import "../../../../components/ha-textfield";
+import "../../category/ha-category-picker";
+import "@material/mwc-button";
+
+import { mdiClose, mdiPlus } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {

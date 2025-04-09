@@ -1,9 +1,11 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { isUnavailableState, OFF } from "../data/entity";
 import type { HumidifierEntity } from "../data/humidifier";
 import type { HomeAssistant } from "../types";
+import type { TemplateResult } from "lit";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { isUnavailableState, OFF } from "../data/entity";
 
 @customElement("ha-humidifier-state")
 class HaHumidifierState extends LitElement {

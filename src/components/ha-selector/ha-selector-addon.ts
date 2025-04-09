@@ -1,8 +1,10 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { AddonSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-addon-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-addon")
 export class HaAddonSelector extends LitElement {

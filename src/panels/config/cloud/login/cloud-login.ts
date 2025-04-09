@@ -1,27 +1,30 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaPasswordField } from "../../../../components/ha-password-field";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import type { HomeAssistant } from "../../../../types";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-card";
 import "../../../../components/ha-button";
+import "../../../../components/ha-card";
 import "../../../../components/ha-password-field";
-import type { HaPasswordField } from "../../../../components/ha-password-field";
 import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import { haStyle } from "../../../../resources/styles";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { cloudLogin } from "../../../../data/cloud";
+import { loginHaCloud } from "../../../../data/onboarding";
+import { haStyle } from "../../../../resources/styles";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../lovelace/custom-card-helpers";
-import { setAssistPipelinePreferred } from "../../../../data/assist_pipeline";
 import { showCloudAlreadyConnectedDialog } from "../dialog-cloud-already-connected/show-dialog-cloud-already-connected";
-import type { HomeAssistant } from "../../../../types";
-import { loginHaCloud } from "../../../../data/onboarding";
 
 @customElement("cloud-login")
 export class CloudLogin extends LitElement {

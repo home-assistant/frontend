@@ -1,17 +1,24 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import type { NetworkInfo } from "../../../src/data/hassio/network";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../src/types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-settings-row";
+import "../components/supervisor-metric";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiDotsVertical } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -23,21 +30,17 @@ import {
   rebootHost,
   shutdownHost,
 } from "../../../src/data/hassio/host";
-import type { NetworkInfo } from "../../../src/data/hassio/network";
 import { fetchNetworkInfo } from "../../../src/data/hassio/network";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
 import {
   getValueInPercentage,
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
-import "../components/supervisor-metric";
 import { showHassioDatadiskDialog } from "../dialogs/datadisk/show-dialog-hassio-datadisk";
 import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";

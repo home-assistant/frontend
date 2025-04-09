@@ -1,44 +1,47 @@
-import { mdiAlertCircle } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   EntityDomainFilter,
   EntityDomainFilterFunc,
 } from "../../../common/entity/entity_domain_filter";
+import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import type { GoogleEntity } from "../../../data/google_assistant";
+import type { HomeAssistant } from "../../../types";
+import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-aliases-editor";
+import "../../../components/ha-checkbox";
+import "../../../components/ha-formfield";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-switch";
+
+import { mdiAlertCircle } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   generateEntityDomainFilter,
   isEmptyEntityDomainFilter,
 } from "../../../common/entity/entity_domain_filter";
-import "../../../components/ha-aliases-editor";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-alert";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
-import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import {
   fetchCloudStatus,
   updateCloudGoogleEntityConfig,
 } from "../../../data/cloud";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { GoogleEntity } from "../../../data/google_assistant";
-import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
-import type { ExposeEntitySettings } from "../../../data/expose";
 import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
 import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("entity-voice-settings")

@@ -1,9 +1,11 @@
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon";
 import "./ha-input-helper-text";
 import "./ha-slider";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-labeled-slider")
 class HaLabeledSlider extends LitElement {

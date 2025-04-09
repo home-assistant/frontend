@@ -1,10 +1,13 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
 import type { AssistPipeline } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
+
 import "../../../../components/ha-form/ha-form";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("assist-pipeline-detail-conversation")

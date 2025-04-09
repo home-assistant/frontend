@@ -1,8 +1,10 @@
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-label-badge";
+
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-label-badge";
-import "../../../../src/components/ha-card";
 
 const colors = ["#03a9f4", "#ffa600", "#43a047"];
 

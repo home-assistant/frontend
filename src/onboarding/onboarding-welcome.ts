@@ -1,15 +1,18 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
-import { onBoardingStyles } from "./styles";
-import { fireEvent } from "../common/dom/fire_event";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
 import "../components/ha-button";
 import "../components/ha-divider";
+import "../components/ha-icon-button-next";
 import "../components/ha-md-list";
 import "../components/ha-md-list-item";
-import "../components/ha-icon-button-next";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { onBoardingStyles } from "./styles";
 
 @customElement("onboarding-welcome")
 class OnboardingWelcome extends LitElement {

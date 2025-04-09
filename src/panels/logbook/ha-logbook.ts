@@ -1,18 +1,21 @@
+import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
+import type { TraceContexts } from "../../data/trace";
+import type { HomeAssistant } from "../../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../../components/ha-spinner";
+import "./ha-logbook-renderer";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
-import "../../components/ha-spinner";
-import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
 import { subscribeLogbook } from "../../data/logbook";
-import type { TraceContexts } from "../../data/trace";
 import { loadTraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
-import type { HomeAssistant } from "../../types";
-import "./ha-logbook-renderer";
 
 interface LogbookTimePeriod {
   now: Date;

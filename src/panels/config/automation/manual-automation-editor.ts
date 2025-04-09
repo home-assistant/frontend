@@ -1,34 +1,38 @@
-import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { ensureArray } from "../../../common/array/ensure-array";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-markdown";
 import type {
   Condition,
   ManualAutomationConfig,
   Trigger,
 } from "../../../data/automation";
 import type { Action } from "../../../data/script";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { documentationUrl } from "../../../util/documentation-url";
+import type HaAutomationAction from "./action/ha-automation-action";
+import type HaAutomationCondition from "./condition/ha-automation-condition";
+import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-markdown";
 import "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
-import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
-import type HaAutomationAction from "./action/ha-automation-action";
-import type HaAutomationCondition from "./condition/ha-automation-condition";
+import "@material/mwc-button/mwc-button";
+
+import { mdiHelpCircle } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { ensureArray } from "../../../common/array/ensure-array";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import { haStyle } from "../../../resources/styles";
+import { documentationUrl } from "../../../util/documentation-url";
+
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {

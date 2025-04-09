@@ -1,25 +1,31 @@
+import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { CreateCardDialogParams } from "./show-create-card-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-header";
+import "./hui-card-picker";
+import "./hui-entity-picker-table";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-header";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { isStrategySection } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import {
   computeCards,
   computeSection,
@@ -29,9 +35,6 @@ import {
   findLovelaceContainer,
   parseLovelaceContainerPath,
 } from "../lovelace-path";
-import "./hui-card-picker";
-import "./hui-entity-picker-table";
-import type { CreateCardDialogParams } from "./show-create-card-dialog";
 import { showEditCardDialog } from "./show-edit-card-dialog";
 import { showSuggestCardDialog } from "./show-suggest-card-dialog";
 

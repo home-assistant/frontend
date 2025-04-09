@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   LabelRegistryEntry,
   LabelRegistryEntryMutableParams,
 } from "../../../data/label_registry";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface LabelDetailDialogParams {
   entry?: LabelRegistryEntry;

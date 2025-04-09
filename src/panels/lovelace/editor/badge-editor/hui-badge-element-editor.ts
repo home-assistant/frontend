@@ -1,13 +1,16 @@
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "./hui-badge-visibility-editor";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import type { CSSResultGroup, TemplateResult } from "lit";
+
 import { css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+
 import { getBadgeElementClass } from "../../create-element/create-badge-element";
-import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
-import "./hui-badge-visibility-editor";
 
 const tabs = ["config", "visibility"] as const;
 

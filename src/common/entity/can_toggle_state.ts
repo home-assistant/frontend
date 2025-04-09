@@ -1,5 +1,6 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
 import { canToggleDomain } from "./can_toggle_domain";
 import { computeStateDomain } from "./compute_state_domain";
 import { supportsFeature } from "./supports-feature";

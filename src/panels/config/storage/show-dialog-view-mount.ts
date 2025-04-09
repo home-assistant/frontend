@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { SupervisorMount } from "../../../data/supervisor/mounts";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface MountViewDialogParams {
   mount?: SupervisorMount;

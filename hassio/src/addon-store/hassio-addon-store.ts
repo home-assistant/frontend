@@ -1,29 +1,32 @@
+import type { HassioAddonRepository } from "../../../src/data/hassio/addon";
+import type { StoreAddon } from "../../../src/data/supervisor/store";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant, Route } from "../../../src/types";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-icon-button";
+import "../../../src/components/search-input";
+import "../../../src/layouts/hass-loading-screen";
+import "../../../src/layouts/hass-subpage";
+import "./hassio-addon-repository";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
-import "../../../src/components/ha-button-menu";
-import "../../../src/components/ha-icon-button";
-import "../../../src/components/search-input";
-import type { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { reloadHassioAddons } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import type { StoreAddon } from "../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/layouts/hass-loading-screen";
-import "../../../src/layouts/hass-subpage";
-import type { HomeAssistant, Route } from "../../../src/types";
 import { showRegistriesDialog } from "../dialogs/registries/show-dialog-registries";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
-import "./hassio-addon-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {

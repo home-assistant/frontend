@@ -1,3 +1,6 @@
+import "./ha-icon-button";
+import "./ha-svg-icon";
+
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
@@ -8,9 +11,8 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-icon-button";
-import "./ha-svg-icon";
 
 const ALERT_ICONS = {
   info: mdiInformationOutline,

@@ -1,4 +1,5 @@
 import type { HassConfig } from "home-assistant-js-websocket";
+
 import { STATE_RUNNING } from "home-assistant-js-websocket";
 
 export const demoConfig: HassConfig = {

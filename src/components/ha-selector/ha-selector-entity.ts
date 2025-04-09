@@ -1,19 +1,22 @@
+import type { EntitySources } from "../../data/entity_sources";
+import type { EntitySelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../entity/ha-entities-picker";
+import "../entity/ha-entity-picker";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntitySources } from "../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
-import type { EntitySelector } from "../../data/selector";
 import {
   filterSelectorEntities,
   computeCreateDomains,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
-import "../entity/ha-entities-picker";
-import "../entity/ha-entity-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends LitElement {

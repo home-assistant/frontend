@@ -1,17 +1,20 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { assert, literal, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import "../../../../../components/ha-form/ha-form";
 import type {
   SchemaUnion,
   HaFormSchema,
 } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { StateCondition } from "../../../common/validate-condition";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-form/ha-form";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { assert, literal, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const stateConditionStruct = object({
   condition: literal("state"),

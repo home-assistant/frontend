@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 export const loadSirenAdvancedControlsView = () =>

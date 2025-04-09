@@ -1,17 +1,20 @@
-import { consume } from "@lit-labs/context";
+import type { DeviceAutomation } from "../../data/device_automation";
+import type { EntityRegistryEntry } from "../../data/entity_registry";
+import type { HomeAssistant } from "../../types";
+
+import "../ha-select";
 import "@material/mwc-list/mwc-list-item";
+
+import { consume } from "@lit-labs/context";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { fullEntitiesContext } from "../../data/context";
-import type { DeviceAutomation } from "../../data/device_automation";
 import {
   deviceAutomationsEqual,
   sortDeviceAutomations,
 } from "../../data/device_automation";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { HomeAssistant } from "../../types";
-import "../ha-select";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";

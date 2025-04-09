@@ -1,7 +1,8 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
 import type { HassioResponse } from "./common";
 import type { CreateSessionResponse } from "./supervisor";
+
+import { atLeastVersion } from "../../common/config/version";
 
 function setIngressCookie(session: string): string {
   document.cookie = `ingress_session=${session};path=/api/hassio_ingress/;SameSite=Strict${

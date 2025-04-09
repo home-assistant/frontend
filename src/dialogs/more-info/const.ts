@@ -1,11 +1,12 @@
+import type { GroupEntity } from "../../data/group";
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeDomain } from "../../common/entity/compute_domain";
-import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
-import { CONTINUOUS_DOMAINS } from "../../data/logbook";
-import type { HomeAssistant } from "../../types";
 import { isNumericEntity } from "../../data/history";
+import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 
 export const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**

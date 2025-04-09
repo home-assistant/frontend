@@ -1,21 +1,25 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { TodoListCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-alert";
+import "../../../../components/ha-form/ha-form";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
+
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-form/ha-form";
-import type { HomeAssistant } from "../../../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { TodoListCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import { configElementStyle } from "./config-elements-style";
-import { TodoListEntityFeature, TodoSortMode } from "../../../../data/todo";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { TodoListEntityFeature, TodoSortMode } from "../../../../data/todo";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { configElementStyle } from "./config-elements-style";
+
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

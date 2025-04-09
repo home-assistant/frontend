@@ -1,27 +1,34 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { supportsFeature } from "../../../common/entity/supports-feature";
-import { extractColors } from "../../../common/image/extract_color";
-import { stateActive } from "../../../common/entity/state_active";
-import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-state-icon";
-import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
-import { isUnavailableState } from "../../../data/entity";
 import type {
   MediaPickedEvent,
   MediaPlayerEntity,
 } from "../../../data/media-player";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { MediaControlCardConfig } from "./types";
+import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
+import "../components/hui-marquee";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateActive } from "../../../common/entity/state_active";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import { extractColors } from "../../../common/image/extract_color";
+import { debounce } from "../../../common/util/debounce";
+import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { isUnavailableState } from "../../../data/entity";
 import {
   cleanupMediaTitle,
   computeMediaControls,
@@ -31,13 +38,9 @@ import {
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
 } from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { MediaControlCardConfig } from "./types";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {

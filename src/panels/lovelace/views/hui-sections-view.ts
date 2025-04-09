@@ -1,3 +1,22 @@
+import type { LovelaceViewElement } from "../../../data/lovelace";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
+import type { HuiBadge } from "../badges/hui-badge";
+import type { HuiCard } from "../cards/hui-card";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { HuiSection } from "../sections/hui-section";
+import type { Lovelace } from "../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-icon-button";
+import "../../../components/ha-ripple";
+import "../../../components/ha-sortable";
+import "../../../components/ha-svg-icon";
+import "../components/hui-badge-edit-mode";
+import "./hui-view-header";
+
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiDelete,
@@ -6,35 +25,21 @@ import {
   mdiPencil,
   mdiViewGridPlus,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { clamp } from "../../../common/number/clamp";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-ripple";
-import "../../../components/ha-sortable";
-import "../../../components/ha-svg-icon";
-import type { LovelaceViewElement } from "../../../data/lovelace";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
-import type { HuiBadge } from "../badges/hui-badge";
-import "./hui-view-header";
-import type { HuiCard } from "../cards/hui-card";
-import "../components/hui-badge-edit-mode";
 import {
   addSection,
   deleteSection,
   moveCard,
   moveSection,
 } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
   findLovelaceContainer,
   findLovelaceItems,
@@ -42,8 +47,6 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
-import type { HuiSection } from "../sections/hui-section";
-import type { Lovelace } from "../types";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 

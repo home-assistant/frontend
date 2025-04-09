@@ -1,15 +1,15 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import { mdiPower } from "@mdi/js";
+import type { ConfigEntry } from "../../../data/config_entries";
+import type {
+  HardwareInfo,
+  SystemStatusStreamMessage,
+} from "../../../data/hardware";
+import type { HassioHassOSInfo } from "../../../data/hassio/host";
+import type { ECOption } from "../../../resources/echarts";
+import type { HomeAssistant } from "../../../types";
+import type { SeriesOption } from "echarts/types/dist/shared";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type { SeriesOption } from "echarts/types/dist/shared";
-import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { round } from "../../../common/number/round";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
@@ -18,27 +18,30 @@ import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
-import type { ConfigEntry } from "../../../data/config_entries";
+import "../../../layouts/hass-subpage";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiPower } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { round } from "../../../common/number/round";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import { subscribeConfigEntries } from "../../../data/config_entries";
-import type {
-  HardwareInfo,
-  SystemStatusStreamMessage,
-} from "../../../data/hardware";
 import { BOARD_NAMES } from "../../../data/hardware";
-import type { HassioHassOSInfo } from "../../../data/hassio/host";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { DEFAULT_PRIMARY_COLOR } from "../../../resources/styles-data";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { DEFAULT_PRIMARY_COLOR } from "../../../resources/styles-data";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { ECOption } from "../../../resources/echarts";
 
 const DATASAMPLES = 60;
 

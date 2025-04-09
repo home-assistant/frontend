@@ -1,6 +1,7 @@
-import type { TemplateResult } from "lit";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { RecurrenceRange } from "../../data/calendar";
+import type { TemplateResult } from "lit";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface ConfirmEventDialogBoxParams {
   confirmText?: string;

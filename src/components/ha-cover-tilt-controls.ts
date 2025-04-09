@@ -1,17 +1,20 @@
+import type { CoverEntity } from "../data/cover";
+import type { HomeAssistant } from "../types";
+
+import "./ha-icon-button";
+
 import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { CoverEntity } from "../data/cover";
 import {
   canCloseTilt,
   canOpenTilt,
   canStopTilt,
   CoverEntityFeature,
 } from "../data/cover";
-import type { HomeAssistant } from "../types";
-import "./ha-icon-button";
 
 @customElement("ha-cover-tilt-controls")
 class HaCoverTiltControls extends LitElement {

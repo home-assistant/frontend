@@ -1,34 +1,37 @@
+import type { ImageEntity } from "../../../data/image";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { PersonEntity } from "../../../data/person";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  PictureGlanceCardConfig,
+  PictureGlanceEntityConfig,
+} from "./types";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
+import "../components/hui-image";
+import "../components/hui-warning-element";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-state-icon";
-import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../components/hui-warning-element";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type {
-  PictureGlanceCardConfig,
-  PictureGlanceEntityConfig,
-} from "./types";
-import type { PersonEntity } from "../../../data/person";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 

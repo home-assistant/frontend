@@ -1,6 +1,7 @@
-import memoizeOne from "memoize-one";
 import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import type { SupervisorArch } from "../../../src/data/supervisor/supervisor";
+
+import memoizeOne from "memoize-one";
 
 export const addonArchIsSupported = memoizeOne(
   (supported_archs: SupervisorArch[], addon_archs: SupervisorArch[]) =>

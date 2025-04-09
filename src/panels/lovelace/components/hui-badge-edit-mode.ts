@@ -1,4 +1,15 @@
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { Lovelace } from "../types";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
+
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -8,28 +19,20 @@ import {
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
 import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
 import {
   findLovelaceItems,
   getLovelaceContainerPath,
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
-import type { Lovelace } from "../types";
 
 @customElement("hui-badge-edit-mode")
 export class HuiBadgeEditMode extends LitElement {

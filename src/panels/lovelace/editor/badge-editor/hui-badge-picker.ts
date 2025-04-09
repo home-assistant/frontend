@@ -1,36 +1,39 @@
+import type { CustomBadgeEntry } from "../../../../data/lovelace_custom_cards";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceBadge } from "../../types";
+import type { Badge, BadgePickTarget } from "../types";
 import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../../components/ha-spinner";
+import "../../../../components/search-input";
+
+import Fuse from "fuse.js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-spinner";
-import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
-import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
-import type { CustomBadgeEntry } from "../../../../data/lovelace_custom_cards";
 import {
   CUSTOM_TYPE_PREFIX,
   customBadges,
   getCustomBadgeEntry,
 } from "../../../../data/lovelace_custom_cards";
-import type { HomeAssistant } from "../../../../types";
 import {
   calcUnusedEntities,
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
 import { tryCreateBadgeElement } from "../../create-element/create-badge-element";
-import type { LovelaceBadge } from "../../types";
 import { getBadgeStubConfig } from "../get-badge-stub-config";
 import { coreBadges } from "../lovelace-badges";
-import type { Badge, BadgePickTarget } from "../types";
 
 interface BadgeElement {
   badge: Badge;

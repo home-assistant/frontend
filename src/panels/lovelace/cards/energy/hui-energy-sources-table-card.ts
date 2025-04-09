@@ -1,15 +1,22 @@
-// @ts-ignore
-import dataTableStyles from "@material/data-table/dist/mdc.data-table.min.css";
+import type { EnergyData } from "../../../../data/energy";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergySourcesTableCardConfig } from "../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+// @ts-ignore
+import dataTableStyles from "@material/data-table/dist/mdc.data-table.min.css";
+
+import "../../../../components/ha-card";
+
 import { css, html, LitElement, unsafeCSS, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { formatNumber } from "../../../../common/number/format_number";
-import { getEnergyColor } from "./common/color";
-import "../../../../components/ha-card";
-import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
@@ -22,11 +29,8 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
-import type { EnergySourcesTableCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { getEnergyColor } from "./common/color";
 
 const colorPropertyMap = {
   grid_return: "--energy-grid-return-color",

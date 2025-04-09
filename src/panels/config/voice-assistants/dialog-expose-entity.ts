@@ -1,26 +1,29 @@
+import type { ExposeEntitySettings } from "../../../data/expose";
+import type { HomeAssistant } from "../../../types";
+import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-check-list-item";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-header";
+import "../../../components/ha-state-icon";
+import "../../../components/search-input";
+import "./entity-voice-settings";
 import "@lit-labs/virtualizer";
 import "@material/mwc-button";
 import "@material/mwc-list";
+
 import { mdiClose } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-check-list-item";
-import "../../../components/search-input";
-import "../../../components/ha-dialog";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-state-icon";
-import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "./entity-voice-settings";
-import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
 
 @customElement("dialog-expose-entity")
 class DialogExposeEntity extends LitElement {

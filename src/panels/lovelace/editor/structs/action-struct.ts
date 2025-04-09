@@ -1,3 +1,5 @@
+import type { BaseActionConfig } from "../../../../data/lovelace/config/action";
+
 import {
   array,
   boolean,
@@ -10,7 +12,6 @@ import {
   type,
   union,
 } from "superstruct";
-import type { BaseActionConfig } from "../../../../data/lovelace/config/action";
 
 const actionConfigStructUser = object({
   user: string(),

@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+
 import { computeObjectId } from "./compute_object_id";
 
 export const computeStateNameFromEntityAttributes = (

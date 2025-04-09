@@ -1,11 +1,15 @@
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
-import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-svg-icon";
+
+import { ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import { migrateLayoutToGridOptions } from "../common/compute-card-grid-size";
 import { computeCardSize } from "../common/compute-card-size";
 import {
@@ -14,7 +18,6 @@ import {
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
 import { createErrorCardConfig } from "../create-element/create-element-base";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
   interface HASSDomEvents {

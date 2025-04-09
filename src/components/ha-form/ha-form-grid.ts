@@ -1,14 +1,16 @@
-import "./ha-form";
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { HomeAssistant } from "../../types";
 import type {
   HaFormGridSchema,
   HaFormDataContainer,
   HaFormElement,
   HaFormSchema,
 } from "./types";
-import type { HomeAssistant } from "../../types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-form";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-form-grid")
 export class HaFormGrid extends LitElement implements HaFormElement {

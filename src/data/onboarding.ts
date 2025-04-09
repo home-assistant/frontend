@@ -1,6 +1,7 @@
 import type { HomeAssistant } from "../types";
-import { handleFetchPromise } from "../util/hass-call-api";
 import type { CloudStatus } from "./cloud";
+
+import { handleFetchPromise } from "../util/hass-call-api";
 
 export interface InstallationType {
   installation_type:

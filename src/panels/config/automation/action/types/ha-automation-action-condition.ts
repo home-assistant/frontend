@@ -1,16 +1,19 @@
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { HaSelect } from "../../../../../components/ha-select";
+import type { Condition } from "../../../../../data/automation";
+import type { Entries, HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
+
+import "../../../../../components/ha-select";
+import "../../condition/ha-automation-condition-editor";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import "../../../../../components/ha-select";
-import type { HaSelect } from "../../../../../components/ha-select";
-import type { Condition } from "../../../../../data/automation";
 import { CONDITION_ICONS } from "../../../../../data/condition";
-import type { Entries, HomeAssistant } from "../../../../../types";
-import "../../condition/ha-automation-condition-editor";
-import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
 export class HaConditionAction extends LitElement implements ActionElement {

@@ -1,9 +1,11 @@
-import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import type { PropertyValues } from "lit";
+
+import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { hsv2rgb, rgb2hex } from "../common/color/convert-color";
 import { rgbw2rgb, rgbww2rgb } from "../common/color/convert-light-color";
 import { fireEvent } from "../common/dom/fire_event";

@@ -1,19 +1,22 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { changeZHANetworkChannel } from "../../../../../data/zha";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type { HomeAssistant } from "../../../../../types";
+import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
+import type { TemplateResult } from "lit";
+
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
-import "../../../../../components/ha-select";
 import "../../../../../components/ha-list-item";
-import type { ZHAChangeChannelDialogParams } from "./show-dialog-zha-change-channel";
+import "../../../../../components/ha-select";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { changeZHANetworkChannel } from "../../../../../data/zha";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
 const VALID_CHANNELS = [
   "auto",

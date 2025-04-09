@@ -1,11 +1,14 @@
-import "@material/mwc-button/mwc-button";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
-import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
+
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-logo-svg";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
+
+import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 
 const alerts: {
   title?: string;

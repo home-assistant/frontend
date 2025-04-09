@@ -1,6 +1,8 @@
-import type { HassConfig } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
 import type { FrontendLocaleData } from "../../data/translation";
+import type { HassConfig } from "home-assistant-js-websocket";
+
+import memoizeOne from "memoize-one";
+
 import { DateFormat } from "../../data/translation";
 import { resolveTimeZone } from "./resolve-time-zone";
 

@@ -1,20 +1,23 @@
+import type { HaCameraStream } from "../../../components/ha-camera-stream";
+import type { CameraEntity } from "../../../data/camera";
+import type { ImageEntity } from "../../../data/image";
+import type { HomeAssistant } from "../../../types";
 import type { PropertyValues } from "lit";
+
+import "../../../components/ha-camera-stream";
+import "../../../components/ha-spinner";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { STATES_OFF } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import "../../../components/ha-camera-stream";
-import type { HaCameraStream } from "../../../components/ha-camera-stream";
-import "../../../components/ha-spinner";
-import type { CameraEntity } from "../../../data/camera";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
-import type { HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";

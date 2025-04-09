@@ -1,12 +1,14 @@
-import { mdiFanOff, mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3 } from "@mdi/js";
+import type { ControlSelectOption } from "../../../../src/components/ha-control-select";
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-control-select";
+
+import { mdiFanOff, mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3 } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-control-select";
-import type { ControlSelectOption } from "../../../../src/components/ha-control-select";
 
 const fullOptions: ControlSelectOption[] = [
   {

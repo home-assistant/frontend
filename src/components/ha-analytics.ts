@@ -1,14 +1,17 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { Analytics, AnalyticsPreferences } from "../data/analytics";
-import { haStyle } from "../resources/styles";
+import type { HaSwitch } from "./ha-switch";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
 import "./ha-settings-row";
 import "./ha-switch";
 import "./ha-tooltip";
-import type { HaSwitch } from "./ha-switch";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { haStyle } from "../resources/styles";
 
 const ADDITIONAL_PREFERENCES = ["usage", "statistics"] as const;
 

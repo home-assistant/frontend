@@ -1,5 +1,5 @@
-import type { LitElement } from "lit";
 import type { Constructor } from "../types";
+import type { LitElement } from "lit";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;

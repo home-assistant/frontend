@@ -1,8 +1,10 @@
+import type { RepairsIssue } from "../../../data/repairs";
+import type { HomeAssistant } from "../../../types";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
+
 import { domainToName } from "../../../data/integration";
-import type { RepairsIssue } from "../../../data/repairs";
 
 @customElement("dialog-repairs-issue-subtitle")
 class DialogRepairsIssueSubtitle extends LitElement {

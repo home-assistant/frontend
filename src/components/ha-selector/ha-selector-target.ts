@@ -1,24 +1,27 @@
+import type { DeviceRegistryEntry } from "../../data/device_registry";
+import type { EntitySources } from "../../data/entity_sources";
+import type { TargetSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import type {
   HassEntity,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../ha-target-picker";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../common/array/ensure-array";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import type { EntitySources } from "../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
-import type { TargetSelector } from "../../data/selector";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
   computeCreateDomains,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
-import "../ha-target-picker";
 
 @customElement("ha-selector-target")
 export class HaTargetSelector extends LitElement {

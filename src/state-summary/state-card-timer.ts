@@ -1,11 +1,14 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../components/entity/state-info";
+import "../state-display/ha-timer-remaining-time";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/entity/state-info";
+
 import { haStyle } from "../resources/styles";
-import "../state-display/ha-timer-remaining-time";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-timer")
 class StateCardTimer extends LitElement {

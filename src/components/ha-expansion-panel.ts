@@ -1,11 +1,14 @@
-import { mdiChevronDown } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-svg-icon";
+
+import { mdiChevronDown } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
-import "./ha-svg-icon";
 
 @customElement("ha-expansion-panel")
 export class HaExpansionPanel extends LitElement {

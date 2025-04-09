@@ -1,27 +1,29 @@
-import { mdiHelpCircle } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import type { CloudStatusLoggedIn } from "../../../../data/cloud";
+import type { HomeAssistant } from "../../../../types";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-copy-textfield";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
 
+import { mdiHelpCircle } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { formatDate } from "../../../../common/datetime/format_date";
-import type { HaSwitch } from "../../../../components/ha-switch";
-import type { CloudStatusLoggedIn } from "../../../../data/cloud";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   connectCloudRemote,
   disconnectCloudRemote,
   updateCloudPref,
 } from "../../../../data/cloud";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 import { obfuscateUrl } from "../../../../util/url";
-import "../../../../components/ha-copy-textfield";
+import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {

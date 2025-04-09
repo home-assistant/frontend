@@ -1,6 +1,6 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import type { IntegrationType } from "./integration";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 export interface ConfigEntry {
   entry_id: string;

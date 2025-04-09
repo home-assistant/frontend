@@ -1,14 +1,16 @@
+import type { Selector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import type { Selector } from "../../data/selector";
 import {
   handleLegacyDeviceSelector,
   handleLegacyEntitySelector,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),

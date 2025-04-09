@@ -1,11 +1,14 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { HomeAssistant } from "../../types";
+
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
-import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { setWakeWords } from "../../data/assist_satellite";
-import type { HomeAssistant } from "../../types";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
 

@@ -1,8 +1,10 @@
-import { css } from "lit";
-import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
 import { styles as controlStyles } from "@material/mwc-list/mwc-control-list-item.css";
 import { styles } from "@material/mwc-list/mwc-list-item.css";
+
+import { CheckListItemBase } from "@material/mwc-list/mwc-check-list-item-base";
+import { css } from "lit";
 import { customElement } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-check-list-item")

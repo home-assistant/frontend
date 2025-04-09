@@ -1,3 +1,12 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import type { ToggleCardFeatureConfig } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-control-switch";
+
 import {
   mdiFan,
   mdiFanOff,
@@ -8,22 +17,16 @@ import {
   mdiVolumeHigh,
   mdiVolumeOff,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-switch";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { ToggleCardFeatureConfig } from "./types";
 
 export const supportsToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

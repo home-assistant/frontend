@@ -1,5 +1,6 @@
-import type { LovelaceElementConfig } from "../elements/types";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceElementConfig } from "../elements/types";
+
 import { getPictureElementClass } from "../create-element/create-picture-element";
 
 export const getElementStubConfig = async (

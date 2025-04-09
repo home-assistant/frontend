@@ -1,5 +1,6 @@
 import { css, LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { SPACING, NODE_SIZE } from "./hat-graph-const";
 
 /**

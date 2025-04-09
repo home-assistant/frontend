@@ -1,14 +1,17 @@
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
+import "./ha-backup-formfield-label";
+
 import { mdiPuzzle } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
-import type { HomeAssistant } from "../../../../types";
-import "./ha-backup-formfield-label";
 
 export interface BackupAddonItem {
   slug: string;

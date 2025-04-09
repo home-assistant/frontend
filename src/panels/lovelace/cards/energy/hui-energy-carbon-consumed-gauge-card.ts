@@ -1,27 +1,30 @@
-import { mdiInformation } from "@mdi/js";
+import type { EnergyData } from "../../../../data/energy";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyCarbonGaugeCardConfig } from "../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { round } from "../../../../common/number/round";
+
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
-import type { EnergyData } from "../../../../data/energy";
+
+import { mdiInformation } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+
+import { round } from "../../../../common/number/round";
 import {
   energySourcesByType,
   getEnergyDataCollection,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import { createEntityNotFoundWarning } from "../../components/hui-warning";
-import type { LovelaceCard } from "../../types";
-import { severityMap } from "../hui-gauge-card";
-import type { EnergyCarbonGaugeCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { createEntityNotFoundWarning } from "../../components/hui-warning";
+import { severityMap } from "../hui-gauge-card";
 
 const FORMAT_OPTIONS = {
   maximumFractionDigits: 0,

@@ -1,16 +1,19 @@
+import type { LocalizeKeys } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
+import type { HaSelect } from "./ha-select";
+
+import "./ha-list-item";
+import "./ha-md-divider";
+import "./ha-select";
+
 import { mdiInvertColorsOff, mdiPalette } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { computeCssColor, THEME_COLORS } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import type { LocalizeKeys } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
-import "./ha-list-item";
-import "./ha-md-divider";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
 
 @customElement("ha-color-picker")
 export class HaColorPicker extends LitElement {

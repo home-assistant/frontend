@@ -1,6 +1,8 @@
-import { customElement } from "lit/decorators";
-import { HaLogicalCondition } from "./ha-automation-condition-logical";
 import type { LogicalCondition } from "../../../../../data/automation";
+
+import { customElement } from "lit/decorators";
+
+import { HaLogicalCondition } from "./ha-automation-condition-logical";
 
 @customElement("ha-automation-condition-and")
 export class HaAndCondition extends HaLogicalCondition {

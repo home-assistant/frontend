@@ -1,24 +1,27 @@
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { UpdateEntity } from "../../../data/update";
+import type { HomeAssistant } from "../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { subscribeDeviceRegistry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import type { UpdateEntity } from "../../../data/update";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends SubscribeMixin(LitElement) {

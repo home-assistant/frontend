@@ -1,15 +1,18 @@
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
+import type { LovelacePictureElementEditor } from "../types";
+import type { IconElementConfig, LovelaceElement } from "./types";
+
+import "../../../components/ha-icon";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import "../../../components/ha-icon";
-import type { HomeAssistant } from "../../../types";
+
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import type { IconElementConfig, LovelaceElement } from "./types";
-import type { LovelacePictureElementEditor } from "../types";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {

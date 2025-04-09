@@ -1,19 +1,21 @@
+import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import type { Constructor, HomeAssistant } from "../types";
+import type { HassElement } from "./hass-element";
 import type { PropertyValues } from "lit";
-import { tinykeys } from "tinykeys";
+
 import memoizeOne from "memoize-one";
+import { tinykeys } from "tinykeys";
+
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { mainWindow } from "../common/dom/get_main_window";
-import type { QuickBarParams } from "../dialogs/quick-bar/show-dialog-quick-bar";
+import { extractSearchParamsObject } from "../common/url/search-params";
 import {
   QuickBarMode,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import type { Constructor, HomeAssistant } from "../types";
+import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { storeState } from "../util/ha-pref-storage";
 import { showToast } from "../util/toast";
-import type { HassElement } from "./hass-element";
-import { extractSearchParamsObject } from "../common/url/search-params";
-import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 declare global {
   interface HASSDomEvents {

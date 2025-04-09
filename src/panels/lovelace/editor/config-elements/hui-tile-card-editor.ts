@@ -1,5 +1,24 @@
-import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { TileCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-svg-icon";
+
+import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -15,27 +34,11 @@ import {
   string,
   union,
 } from "superstruct";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import "../../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../../types";
-import type {
-  LovelaceCardFeatureConfig,
-  LovelaceCardFeatureContext,
-} from "../../card-features/types";
 import { getEntityDefaultTileIconAction } from "../../cards/hui-tile-card";
-import type { TileCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
 

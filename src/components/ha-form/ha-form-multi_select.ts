@@ -1,23 +1,25 @@
-import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-button-menu";
-import "../ha-check-list-item";
-import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-formfield";
-import "../ha-icon-button";
-import "../ha-textfield";
-import "../ha-md-button-menu";
-import "../ha-md-menu-item";
-
 import type {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../ha-button-menu";
+import "../ha-check-list-item";
+import "../ha-checkbox";
+import "../ha-formfield";
+import "../ha-icon-button";
+import "../ha-md-button-menu";
+import "../ha-md-menu-item";
+import "../ha-textfield";
+
+import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 function optionValue(item: string | string[]): string {
   return Array.isArray(item) ? item[0] : item;

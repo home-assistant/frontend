@@ -1,11 +1,13 @@
-import "@material/mwc-button";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard } from "../types";
 import type { TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../config/logs/error-log-card";
+import "@material/mwc-button";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-card";
-import type { HomeAssistant } from "../../../types";
-import "../../config/logs/error-log-card";
-import type { LovelaceCard } from "../types";
 
 @customElement("hui-recovery-mode-card")
 export class HuiRecoveryModeCard extends LitElement implements LovelaceCard {

@@ -1,15 +1,18 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { canShowPage } from "../../../common/config/can_show_page";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-navigation-list";
 import type { CloudStatus } from "../../../data/cloud";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-navigation-list";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { canShowPage } from "../../../common/config/can_show_page";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {

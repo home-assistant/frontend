@@ -1,14 +1,16 @@
-import "@material/mwc-list/mwc-list";
-import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import type {
+  HaLocationsEditor,
+  MarkerLocation,
+} from "../../../components/map/ha-locations-editor";
+import type {
+  HomeZoneMutableParams,
+  Zone,
+  ZoneMutableParams,
+} from "../../../data/zone";
+import type { HomeAssistant, Route } from "../../../types";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { navigate } from "../../../common/navigate";
-import { stringCompare } from "../../../common/string/compare";
+
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -16,17 +18,22 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/map/ha-locations-editor";
-import type {
-  HaLocationsEditor,
-  MarkerLocation,
-} from "../../../components/map/ha-locations-editor";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
+import "../ha-config-section";
+import "@material/mwc-list/mwc-list";
+
+import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
+import { navigate } from "../../../common/navigate";
+import { stringCompare } from "../../../common/string/compare";
 import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import type {
-  HomeZoneMutableParams,
-  Zone,
-  ZoneMutableParams,
-} from "../../../data/zone";
 import {
   createZone,
   deleteZone,
@@ -37,11 +44,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant, Route } from "../../../types";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";

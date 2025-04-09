@@ -1,5 +1,6 @@
-import { RadioBase } from "@material/mwc-radio/mwc-radio-base";
 import { styles } from "@material/mwc-radio/mwc-radio.css";
+
+import { RadioBase } from "@material/mwc-radio/mwc-radio-base";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 

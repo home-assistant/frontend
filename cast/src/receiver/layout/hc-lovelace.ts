@@ -1,14 +1,17 @@
+import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
+import type { Lovelace } from "../../../../src/panels/lovelace/types";
+import type { HomeAssistant } from "../../../../src/types";
+
+import "../../../../src/panels/lovelace/views/hui-view";
+import "../../../../src/panels/lovelace/views/hui-view-background";
+import "../../../../src/panels/lovelace/views/hui-view-container";
+import "./hc-launch-screen";
+
 import { css, html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types";
 import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
-import type { Lovelace } from "../../../../src/panels/lovelace/types";
-import "../../../../src/panels/lovelace/views/hui-view";
-import "../../../../src/panels/lovelace/views/hui-view-container";
-import type { HomeAssistant } from "../../../../src/types";
-import "./hc-launch-screen";
-import "../../../../src/panels/lovelace/views/hui-view-background";
 
 (window as any).loadCardHelpers = () =>
   import("../../../../src/panels/lovelace/custom-card-helpers");

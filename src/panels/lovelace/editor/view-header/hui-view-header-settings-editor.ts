@@ -1,10 +1,4 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { computeRTL } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -14,11 +8,20 @@ import type {
   LovelaceViewHeaderConfig,
 } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import {
   DEFAULT_VIEW_HEADER_BADGES_POSITION,
   DEFAULT_VIEW_HEADER_LAYOUT,
 } from "../../views/hui-view-header";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
 
 @customElement("hui-view-header-settings-editor")
 export class HuiViewHeaderSettingsEditor extends LitElement {

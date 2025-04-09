@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   BackupContentExtended,
   BackupData,
 } from "../../../../data/backup";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface RestoreBackupDialogParams {
   backup: BackupContentExtended;

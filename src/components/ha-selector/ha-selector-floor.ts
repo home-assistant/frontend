@@ -1,24 +1,27 @@
+import type { ConfigEntry } from "../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
+import type { EntitySources } from "../../data/entity_sources";
+import type { FloorSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../ha-floor-picker";
+import "../ha-floors-picker";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../common/array/ensure-array";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { getDeviceIntegrationLookup } from "../../data/device_registry";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
-import type { FloorSelector } from "../../data/selector";
-import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
+import { getDeviceIntegrationLookup } from "../../data/device_registry";
+import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
-import "../ha-floor-picker";
-import "../ha-floors-picker";
 
 @customElement("ha-selector-floor")
 export class HaFloorSelector extends LitElement {

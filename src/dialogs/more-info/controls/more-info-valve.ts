@@ -1,21 +1,24 @@
-import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import type { ValveEntity } from "../../../data/valve";
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import type { ValveEntity } from "../../../data/valve";
+import "../../../state-control/valve/ha-state-control-valve-buttons";
+import "../../../state-control/valve/ha-state-control-valve-position";
+import "../../../state-control/valve/ha-state-control-valve-toggle";
+import "../components/ha-more-info-state-header";
+
+import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
   ValveEntityFeature,
   computeValvePositionStateDisplay,
 } from "../../../data/valve";
-import "../../../state-control/valve/ha-state-control-valve-buttons";
-import "../../../state-control/valve/ha-state-control-valve-position";
-import "../../../state-control/valve/ha-state-control-valve-toggle";
-import type { HomeAssistant } from "../../../types";
-import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type Mode = "position" | "button";

@@ -1,24 +1,27 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../src/components/ha-form/types";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../../src/types";
+import type { RegistriesDialogParams } from "./show-dialog-registries";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-settings-row";
+import "@material/mwc-button/mwc-button";
+
+import { mdiDelete } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   addHassioDockerRegistry,
   fetchHassioDockerRegistries,
   removeHassioDockerRegistry,
 } from "../../../../src/data/hassio/docker";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
-import type { RegistriesDialogParams } from "./show-dialog-registries";
 
 const SCHEMA = [
   {

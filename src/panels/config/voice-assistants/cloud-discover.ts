@@ -1,12 +1,15 @@
+import type { HomeAssistant } from "../../../types";
+
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
+
 import { mdiMicrophoneMessage, mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-card";
-import type { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-button";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("cloud-discover")
 export class CloudDiscover extends LitElement {

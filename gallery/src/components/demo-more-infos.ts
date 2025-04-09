@@ -1,11 +1,14 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
+import type { HomeAssistant } from "../../../src/types";
+
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-import type { HomeAssistant } from "../../../src/types";
 import "../ha-demo-options";
 import "./demo-more-info";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 
 @customElement("demo-more-infos")
 class DemoMoreInfos extends LitElement {

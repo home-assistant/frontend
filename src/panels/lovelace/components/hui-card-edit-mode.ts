@@ -1,3 +1,13 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { Lovelace } from "../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
+
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -7,19 +17,12 @@ import {
   mdiPencil,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
-import type { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {

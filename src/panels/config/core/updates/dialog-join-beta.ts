@@ -1,16 +1,19 @@
-import "@material/mwc-button/mwc-button";
-import { mdiOpenInNew } from "@mdi/js";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { JoinBetaDialogParams } from "./show-dialog-join-beta";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-alert";
+import "@material/mwc-button/mwc-button";
+
+import { mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
-import type { JoinBetaDialogParams } from "./show-dialog-join-beta";
 
 @customElement("dialog-join-beta")
 export class DialogJoinBeta

@@ -1,30 +1,33 @@
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
+import type { HomeAssistant } from "../../../../../types";
+import type { ConfigChangedEvent } from "../../hui-element-editor";
+import type { GUIModeChangedEvent } from "../../types";
+import type { HuiDashboardStrategyElementEditor } from "../hui-dashboard-strategy-element-editor";
+import type { DashboardStrategyEditorDialogParams } from "./show-dialog-dashboard-strategy-editor";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-icon-button";
+import "../hui-dashboard-strategy-element-editor";
+
 import {
   mdiAccountHardHat,
   mdiClose,
   mdiDotsVertical,
   mdiPlaylistEdit,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-header";
-import "../../../../../components/ha-icon-button";
-import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import { showSaveSuccessToast } from "../../../../../util/toast-saved-success";
 import { cleanLegacyStrategyConfig } from "../../../strategies/legacy-strategy";
-import type { ConfigChangedEvent } from "../../hui-element-editor";
-import type { GUIModeChangedEvent } from "../../types";
-import "../hui-dashboard-strategy-element-editor";
-import type { HuiDashboardStrategyElementEditor } from "../hui-dashboard-strategy-element-editor";
-import type { DashboardStrategyEditorDialogParams } from "./show-dialog-dashboard-strategy-editor";
 
 @customElement("dialog-dashboard-strategy-editor")
 class DialogDashboardStrategyEditor extends LitElement {

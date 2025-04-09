@@ -3,6 +3,7 @@ import type {
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+
 import { supportsFeature } from "../common/entity/supports-feature";
 import { ClimateEntityFeature } from "../data/climate";
 

@@ -1,19 +1,30 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
+import type { HomeAssistant } from "../../../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
+import type { WeatherForecastCardConfig } from "./types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
-import "../../../components/ha-card";
-import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { ForecastEvent, WeatherEntity } from "../../../data/weather";
 import {
   getForecast,
   getSecondaryWeatherAttribute,
@@ -24,20 +35,12 @@ import {
   weatherAttrIcons,
   weatherSVGStyles,
 } from "../../../data/weather";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
-import type { WeatherForecastCardConfig } from "./types";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {

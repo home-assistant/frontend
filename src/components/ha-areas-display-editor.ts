@@ -1,16 +1,19 @@
-import { mdiTextureBox } from "@mdi/js";
+import type { HomeAssistant } from "../types";
+import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import type { TemplateResult } from "lit";
+
+import "./ha-expansion-panel";
+import "./ha-items-display-editor";
+import "./ha-svg-icon";
+import "./ha-textfield";
+
+import { mdiTextureBox } from "@mdi/js";
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { getAreaContext } from "../common/entity/context/get_area_context";
 import { areaCompare } from "../data/area_registry";
-import type { HomeAssistant } from "../types";
-import "./ha-expansion-panel";
-import "./ha-items-display-editor";
-import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
-import "./ha-svg-icon";
-import "./ha-textfield";
 
 export interface AreasDisplayValue {
   hidden?: string[];

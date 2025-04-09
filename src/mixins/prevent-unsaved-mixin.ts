@@ -1,6 +1,7 @@
-import type { LitElement, PropertyValues } from "lit";
-import { isNavigationClick } from "../common/dom/is-navigation-click";
 import type { Constructor } from "../types";
+import type { LitElement, PropertyValues } from "lit";
+
+import { isNavigationClick } from "../common/dom/is-navigation-click";
 
 export const PreventUnsavedMixin = <T extends Constructor<LitElement>>(
   superClass: T

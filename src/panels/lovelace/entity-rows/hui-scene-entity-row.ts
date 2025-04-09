@@ -1,16 +1,19 @@
-import "@material/mwc-button/mwc-button";
+import type { HomeAssistant } from "../../../types";
+import type { ActionRowConfig, LovelaceRow } from "./types";
 import type { PropertyValues } from "lit";
+
+import "../../../components/entity/ha-entity-toggle";
+import "../components/hui-generic-entity-row";
+import "@material/mwc-button/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/entity/ha-entity-toggle";
+
 import { UNAVAILABLE } from "../../../data/entity";
 import { activateScene } from "../../../data/scene";
-import type { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { ActionRowConfig, LovelaceRow } from "./types";
 import { confirmAction } from "../common/confirm-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {

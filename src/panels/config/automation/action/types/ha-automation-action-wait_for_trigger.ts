@@ -1,16 +1,19 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { ensureArray } from "../../../../../common/array/ensure-array";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { TimeChangedEvent } from "../../../../../components/ha-base-time-input";
+import type { WaitForTriggerAction } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
+
 import "../../../../../components/ha-duration-input";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-textfield";
-import type { WaitForTriggerAction } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
 import "../../trigger/ha-automation-trigger";
-import type { ActionElement } from "../ha-automation-action-row";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { ensureArray } from "../../../../../common/array/ensure-array";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-wait_for_trigger")

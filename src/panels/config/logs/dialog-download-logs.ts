@@ -1,21 +1,24 @@
-import { mdiClose } from "@mdi/js";
+import type { HaMdDialog } from "../../../components/ha-md-dialog";
+import type { HomeAssistant } from "../../../types";
+import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+
 import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-md-select";
 import "../../../components/ha-md-select-option";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import { getSignedPath } from "../../../data/auth";
 import { getHassioLogDownloadLinesUrl } from "../../../data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
-import type { DownloadLogsDialogParams } from "./show-dialog-download-logs";
 
 const DEFAULT_LINE_COUNT = 500;
 

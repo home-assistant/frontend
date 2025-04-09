@@ -1,3 +1,5 @@
+import type { KeyBinding } from "@codemirror/view";
+
 import { indentLess, indentMore } from "@codemirror/commands";
 import {
   foldService,
@@ -8,7 +10,6 @@ import {
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
 import { Compartment } from "@codemirror/state";
-import type { KeyBinding } from "@codemirror/view";
 import { EditorView } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 

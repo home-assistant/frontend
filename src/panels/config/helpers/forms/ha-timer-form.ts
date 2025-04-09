@@ -1,14 +1,17 @@
+import type { DurationDict, Timer } from "../../../../data/timer";
+import type { HomeAssistant } from "../../../../types";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
-import type { DurationDict, Timer } from "../../../../data/timer";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-timer-form")
 class HaTimerForm extends LitElement {

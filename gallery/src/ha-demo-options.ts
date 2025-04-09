@@ -1,11 +1,13 @@
-import "@material/mwc-drawer";
-import "@material/mwc-top-app-bar-fixed";
-import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators";
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
-import { haStyle } from "../../src/resources/styles";
 import "./components/page-description";
+import "@material/mwc-drawer";
+import "@material/mwc-top-app-bar-fixed";
+
+import { html, css, LitElement } from "lit";
+import { customElement } from "lit/decorators";
+
+import { haStyle } from "../../src/resources/styles";
 
 @customElement("ha-demo-options")
 class HaDemoOptions extends LitElement {

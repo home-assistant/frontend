@@ -1,7 +1,8 @@
-import { ReactiveElement } from "lit";
-import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { MapViewStrategyConfig } from "./map-view-strategy";
+
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
 
 export type MapDashboardStrategyConfig = MapViewStrategyConfig;
 

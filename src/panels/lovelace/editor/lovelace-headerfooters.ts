@@ -1,9 +1,10 @@
+import type { HeaderFooter } from "./types";
+
 import {
   mdiChartBellCurveCumulative,
   mdiGestureTapButton,
   mdiImageArea,
 } from "@mdi/js";
-import type { HeaderFooter } from "./types";
 
 export const headerFooterElements: HeaderFooter[] = [
   { type: "graph", icon: mdiChartBellCurveCumulative },

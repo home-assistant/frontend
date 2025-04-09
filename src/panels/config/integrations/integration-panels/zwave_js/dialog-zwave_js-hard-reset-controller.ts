@@ -1,17 +1,20 @@
-import { mdiCheckCircle, mdiDeleteForever, mdiRestore } from "@mdi/js";
-import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-svg-icon";
-import { hardResetController } from "../../../../../data/zwave_js";
-import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSHardResetControllerDialogParams } from "./show-dialog-zwave_js-hard-reset-controller";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-svg-icon";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCheckCircle, mdiDeleteForever, mdiRestore } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { hardResetController } from "../../../../../data/zwave_js";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { haStyleDialog } from "../../../../../resources/styles";
 
 enum ResetStatus {
   NotStarted,

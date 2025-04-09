@@ -1,18 +1,21 @@
+import type { UpdateEntity } from "../data/update";
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "../components/ha-relative-time";
+import "../panels/lovelace/components/hui-timestamp-display";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { join } from "lit/directives/join";
+
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
-import "../components/ha-relative-time";
 import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
-import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
-import "../panels/lovelace/components/hui-timestamp-display";
-import type { HomeAssistant } from "../types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 

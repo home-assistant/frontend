@@ -1,9 +1,11 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { Condition } from "../../data/automation";
 import type { ConditionSelector } from "../../data/selector";
-import "../../panels/config/automation/condition/ha-automation-condition";
 import type { HomeAssistant } from "../../types";
+
+import "../../panels/config/automation/condition/ha-automation-condition";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-condition")
 export class HaConditionSelector extends LitElement {

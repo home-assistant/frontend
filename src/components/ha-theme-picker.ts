@@ -1,11 +1,14 @@
-import "@material/mwc-list/mwc-list-item";
+import type { HomeAssistant } from "../types";
 import type { TemplateResult } from "lit";
+
+import "./ha-select";
+import "@material/mwc-list/mwc-list-item";
+
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import type { HomeAssistant } from "../types";
-import "./ha-select";
 
 const DEFAULT_THEME = "default";
 

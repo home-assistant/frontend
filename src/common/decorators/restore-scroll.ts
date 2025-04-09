@@ -1,5 +1,6 @@
-import type { LitElement } from "lit";
 import type { ClassElement } from "../../types";
+import type { LitElement } from "lit";
+
 import { throttle } from "../util/throttle";
 
 const throttleReplaceState = throttle((value) => {

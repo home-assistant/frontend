@@ -1,12 +1,15 @@
-import { format } from "date-fns";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";
+
+import { format } from "date-fns";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { setDateTimeValue } from "../../../data/datetime";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-datetime")
 class MoreInfoDatetime extends LitElement {

@@ -1,9 +1,15 @@
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+import type { EntityFilterEntityConfig } from "../entity-rows/types";
+import type { LovelaceCard } from "../types";
+import type { HuiCard } from "./hui-card";
+import type { EntityFilterCardConfig } from "./types";
+import type { PropertyValues } from "lit";
+
+import { ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeCardSize } from "../common/compute-card-size";
 import { evaluateStateFilter } from "../common/evaluate-filter";
 import { findEntities } from "../common/find-entities";
@@ -13,10 +19,6 @@ import {
   checkConditionsMet,
   extractConditionEntityIds,
 } from "../common/validate-condition";
-import type { EntityFilterEntityConfig } from "../entity-rows/types";
-import type { LovelaceCard } from "../types";
-import type { HuiCard } from "./hui-card";
-import type { EntityFilterCardConfig } from "./types";
 
 @customElement("hui-entity-filter-card")
 export class HuiEntityFilterCard

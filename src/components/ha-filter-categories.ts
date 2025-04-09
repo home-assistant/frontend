@@ -1,6 +1,16 @@
+import type { CategoryRegistryEntry } from "../data/category_registry";
+import type { HomeAssistant } from "../types";
+import type { ActionDetail, SelectedDetail } from "@material/mwc-list";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "./ha-button-menu";
+import "./ha-expansion-panel";
+import "./ha-icon";
+import "./ha-list-item";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import type { ActionDetail, SelectedDetail } from "@material/mwc-list";
+
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -9,12 +19,11 @@ import {
   mdiPlus,
   mdiTag,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { CategoryRegistryEntry } from "../data/category_registry";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import {
   createCategoryRegistryEntry,
   deleteCategoryRegistryEntry,
@@ -25,12 +34,6 @@ import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-expansion-panel";
-import "./ha-icon";
-import "./ha-button-menu";
-import "./ha-list-item";
-import { stopPropagation } from "../common/dom/stop_propagation";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {

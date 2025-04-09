@@ -1,13 +1,16 @@
+import type { HomeAssistant } from "../../types";
+
+import "./ha-more-info-history";
+import "./ha-more-info-logbook";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
+
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
 } from "./const";
-import "./ha-more-info-history";
-import "./ha-more-info-logbook";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 @customElement("ha-more-info-history-and-logbook")
 export class MoreInfoHistoryAndLogbook extends LitElement {

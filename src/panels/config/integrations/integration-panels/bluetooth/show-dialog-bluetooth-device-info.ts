@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { BluetoothDeviceData } from "../../../../../data/bluetooth";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface BluetoothDeviceInfoDialogParams {
   entry: BluetoothDeviceData;

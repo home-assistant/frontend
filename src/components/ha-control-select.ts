@@ -1,12 +1,15 @@
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-icon";
+import "./ha-svg-icon";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
+
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-icon";
-import "./ha-svg-icon";
 
 export interface ControlSelectOption {
   value: string;

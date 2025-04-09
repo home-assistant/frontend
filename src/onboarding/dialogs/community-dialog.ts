@@ -1,11 +1,14 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
+
+import "../../components/ha-list-item";
 import "@material/mwc-list/mwc-list";
+
 import { mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../common/translations/localize";
 import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-list-item";
 
 @customElement("community-dialog")
 class DialogCommunity extends LitElement {

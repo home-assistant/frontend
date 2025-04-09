@@ -1,5 +1,6 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
 import { ensureArray } from "../array/ensure-array";
 import { computeDomain } from "./compute_domain";
 import { getEntityContext } from "./context/get_entity_context";

@@ -1,10 +1,13 @@
-import "@material/mwc-list/mwc-list";
-import { LitElement, css, html } from "lit";
-import { customElement, state } from "lit/decorators";
-import { formatDateTimeWithSeconds } from "../../../../src/common/datetime/format_date_time";
+import type { FrontendLocaleData } from "../../../../src/data/translation";
+
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-select";
-import type { FrontendLocaleData } from "../../../../src/data/translation";
+import "@material/mwc-list/mwc-list";
+
+import { LitElement, css, html } from "lit";
+import { customElement, state } from "lit/decorators";
+
+import { formatDateTimeWithSeconds } from "../../../../src/common/datetime/format_date_time";
 import {
   DateFormat,
   FirstWeekday,

@@ -1,22 +1,25 @@
-import { mdiPlayBox, mdiPlus } from "@mdi/js";
+import type { MediaPickedEvent } from "../../data/media-player";
+import type { MediaSelector, MediaSelectorValue } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+import type { SchemaUnion } from "../ha-form/types";
 import type { PropertyValues } from "lit";
+
+import "../ha-alert";
+import "../ha-form/ha-form";
+
+import { mdiPlayBox, mdiPlus } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { getSignedPath } from "../../data/auth";
-import type { MediaPickedEvent } from "../../data/media-player";
 import {
   MediaClassBrowserSettings,
   MediaPlayerEntityFeature,
 } from "../../data/media-player";
-import type { MediaSelector, MediaSelectorValue } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import { brandsUrl, extractDomainFromBrandUrl } from "../../util/brands-url";
-import "../ha-alert";
-import "../ha-form/ha-form";
-import type { SchemaUnion } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
 
 const MANUAL_SCHEMA = [

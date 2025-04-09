@@ -1,5 +1,6 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
+
+import { atLeastVersion } from "../../common/config/version";
 
 export interface HassioResponse<T> {
   data: T;

@@ -1,17 +1,20 @@
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-yaml-editor";
-import "../../../components/ha-textfield";
+
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { documentationUrl } from "../../../util/documentation-url";
+import "../../../components/ha-textfield";
+import "../../../components/ha-yaml-editor";
 import "./event-subscribe-card";
 import "./events-list";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../common/dom/fire_event";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
+import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("developer-tools-event")
 class HaPanelDevEvent extends LitElement {

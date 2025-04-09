@@ -1,10 +1,11 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import type { HomeAssistant, TranslationDict } from "../../types";
-import { supervisorApiCall } from "../supervisor/common";
 import type { StoreAddonDetails } from "../supervisor/store";
 import type { Supervisor, SupervisorArch } from "../supervisor/supervisor";
 import type { HassioResponse } from "./common";
+
+import { atLeastVersion } from "../../common/config/version";
+import { supervisorApiCall } from "../supervisor/common";
 import { extractApiErrorMessage, hassioApiResultExtractor } from "./common";
 
 export type AddonCapability = Exclude<

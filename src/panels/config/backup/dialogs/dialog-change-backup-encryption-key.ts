@@ -1,27 +1,30 @@
-import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { ChangeBackupEncryptionKeyDialogParams } from "./show-dialog-change-backup-encryption-key";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
+
+import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import {
   downloadEmergencyKit,
   generateEncryptionKey,
 } from "../../../../data/backup";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import type { ChangeBackupEncryptionKeyDialogParams } from "./show-dialog-change-backup-encryption-key";
 
 const STEPS = ["current", "new", "done"] as const;
 

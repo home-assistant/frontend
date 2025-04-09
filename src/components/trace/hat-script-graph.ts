@@ -1,3 +1,31 @@
+import type { Condition, Trigger } from "../../data/automation";
+import type {
+  Action,
+  ChooseAction,
+  IfAction,
+  ManualScriptConfig,
+  ParallelAction,
+  RepeatAction,
+  SequenceAction,
+  ServiceAction,
+  WaitAction,
+  WaitForTriggerAction,
+} from "../../data/script";
+import type {
+  ChooseActionTraceStep,
+  ConditionTraceStep,
+  IfActionTraceStep,
+  TraceExtended,
+} from "../../data/trace";
+import type { HomeAssistant } from "../../types";
+import type { PropertyValues } from "lit";
+
+import "../ha-icon-button";
+import "../ha-service-icon";
+import "./hat-graph-branch";
+import "./hat-graph-node";
+import "./hat-graph-spacer";
+
 import {
   mdiAbTesting,
   mdiArrowDecision,
@@ -18,40 +46,15 @@ import {
   mdiRoomService,
   mdiShuffleDisabled,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { Condition, Trigger } from "../../data/automation";
-import { flattenTriggers } from "../../data/automation";
-import type {
-  Action,
-  ChooseAction,
-  IfAction,
-  ManualScriptConfig,
-  ParallelAction,
-  RepeatAction,
-  SequenceAction,
-  ServiceAction,
-  WaitAction,
-  WaitForTriggerAction,
-} from "../../data/script";
-import { getActionType } from "../../data/script";
-import type {
-  ChooseActionTraceStep,
-  ConditionTraceStep,
-  IfActionTraceStep,
-  TraceExtended,
-} from "../../data/trace";
-import type { HomeAssistant } from "../../types";
-import "../ha-icon-button";
-import "../ha-service-icon";
-import "./hat-graph-branch";
-import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
-import "./hat-graph-node";
-import "./hat-graph-spacer";
 import { ACTION_ICONS } from "../../data/action";
+import { flattenTriggers } from "../../data/automation";
+import { getActionType } from "../../data/script";
+import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
 
 type NodeType = "trigger" | "condition" | "action" | "chooseOption" | undefined;
 

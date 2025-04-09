@@ -1,6 +1,14 @@
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { NumericStateCondition } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
 import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-form/ha-form";
+
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   boolean,
@@ -11,13 +19,8 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import type { NumericStateCondition } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
 
 const numericStateConditionStruct = object({
   alias: optional(string()),

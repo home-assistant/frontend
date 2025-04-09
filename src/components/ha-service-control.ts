@@ -1,13 +1,25 @@
-import { mdiHelpCircle } from "@mdi/js";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { HaYamlEditor } from "./ha-yaml-editor";
 import type {
   HassService,
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "./ha-checkbox";
+import "./ha-icon-button";
+import "./ha-selector/ha-selector";
+import "./ha-service-picker";
+import "./ha-service-section-icon";
+import "./ha-settings-row";
+import "./ha-yaml-editor";
+
+import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -28,16 +40,7 @@ import {
   type Selector,
   type TargetSelector,
 } from "../data/selector";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
-import "./ha-checkbox";
-import "./ha-icon-button";
-import "./ha-selector/ha-selector";
-import "./ha-service-picker";
-import "./ha-settings-row";
-import "./ha-yaml-editor";
-import type { HaYamlEditor } from "./ha-yaml-editor";
-import "./ha-service-section-icon";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {

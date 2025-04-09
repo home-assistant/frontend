@@ -1,15 +1,18 @@
+import type { HomeAssistant } from "../types";
+
+import "./ha-icon";
+import "./ha-svg-icon";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
+
 import { computeDomain } from "../common/entity/compute_domain";
 import {
   DEFAULT_SERVICE_ICON,
   FALLBACK_DOMAIN_ICONS,
   serviceIcon,
 } from "../data/icons";
-import type { HomeAssistant } from "../types";
-import "./ha-icon";
-import "./ha-svg-icon";
 
 @customElement("ha-service-icon")
 export class HaServiceIcon extends LitElement {

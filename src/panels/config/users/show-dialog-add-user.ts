@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { User } from "../../../data/user";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface AddUserDialogParams {
   userAddedCallback: (user: User) => void;

@@ -1,25 +1,36 @@
-import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type {
+  BackupConfig,
+  BackupMutableConfig,
+} from "../../../../data/backup";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { BackupConfigData } from "../components/config/ha-backup-config-data";
+import type { BackupConfigSchedule } from "../components/config/ha-backup-config-schedule";
+import type { BackupOnboardingDialogParams } from "./show-dialog-backup_onboarding";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-button-prev";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
 import "../../../../components/ha-password-field";
 import "../../../../components/ha-svg-icon";
-import type {
-  BackupConfig,
-  BackupMutableConfig,
-} from "../../../../data/backup";
+import "../components/config/ha-backup-config-agents";
+import "../components/config/ha-backup-config-data";
+import "../components/config/ha-backup-config-schedule";
+
+import { mdiClose, mdiContentCopy, mdiDownload } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import {
   BackupScheduleRecurrence,
   CLOUD_AGENT,
@@ -29,16 +40,8 @@ import {
   HASSIO_LOCAL_AGENT,
   updateBackupConfig,
 } from "../../../../data/backup";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import "../components/config/ha-backup-config-agents";
-import "../components/config/ha-backup-config-data";
-import type { BackupConfigData } from "../components/config/ha-backup-config-data";
-import "../components/config/ha-backup-config-schedule";
-import type { BackupConfigSchedule } from "../components/config/ha-backup-config-schedule";
-import type { BackupOnboardingDialogParams } from "./show-dialog-backup_onboarding";
 
 const STEPS = [
   "welcome",

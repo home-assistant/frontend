@@ -1,7 +1,8 @@
+import { styles } from "@material/mwc-button/styles.css";
+
 import { Button } from "@material/mwc-button";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-import { styles } from "@material/mwc-button/styles.css";
 
 @customElement("ha-button")
 export class HaButton extends Button {

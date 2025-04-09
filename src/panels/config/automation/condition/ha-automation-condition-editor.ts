@@ -1,13 +1,7 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
-import { expandConditionWithShorthand } from "../../../../data/automation";
-import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-yaml-editor";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-not";
@@ -19,6 +13,15 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { expandConditionWithShorthand } from "../../../../data/automation";
+import { haStyle } from "../../../../resources/styles";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {

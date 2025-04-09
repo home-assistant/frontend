@@ -1,42 +1,44 @@
-import { mdiHelpCircle } from "@mdi/js";
-import type { HassService } from "home-assistant-js-websocket";
-import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { load } from "js-yaml";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { storage } from "../../../common/decorators/storage";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { hasTemplate, isTemplate } from "../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { extractSearchParam } from "../../../common/url/search-params";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
-import { showToast } from "../../../util/toast";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import type { Action, ServiceAction } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
+import type { HassService } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
 
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
-import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
 import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
+
+import { mdiHelpCircle } from "@mdi/js";
+import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
+import { load } from "js-yaml";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { storage } from "../../../common/decorators/storage";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { hasTemplate, isTemplate } from "../../../common/string/has-template";
+import { extractSearchParam } from "../../../common/url/search-params";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { forwardHaptic } from "../../../data/haptics";
-import type { Action, ServiceAction } from "../../../data/script";
 import { migrateAutomationAction } from "../../../data/script";
 import {
   callExecuteScript,
   serviceCallWillDisconnect,
 } from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 
 @customElement("developer-tools-action")
 class HaPanelDevAction extends LitElement {

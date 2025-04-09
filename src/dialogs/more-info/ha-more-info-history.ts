@@ -1,25 +1,28 @@
-import { startOfYesterday, subHours } from "date-fns";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { createSearchParam } from "../../common/url/search-params";
-import "../../components/chart/state-history-charts";
-import "../../components/chart/statistics-chart";
 import type { HistoryResult } from "../../data/history";
-import {
-  computeHistory,
-  subscribeHistoryStatesTimeWindow,
-} from "../../data/history";
 import type {
   Statistics,
   StatisticsMetaData,
   StatisticsTypes,
 } from "../../data/recorder";
+import type { HomeAssistant } from "../../types";
+import type { PropertyValues } from "lit";
+
+import "../../components/chart/state-history-charts";
+import "../../components/chart/statistics-chart";
+
+import { startOfYesterday, subHours } from "date-fns";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { createSearchParam } from "../../common/url/search-params";
+import {
+  computeHistory,
+  subscribeHistoryStatesTimeWindow,
+} from "../../data/history";
 import { fetchStatistics, getStatisticMetadata } from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
-import type { HomeAssistant } from "../../types";
 
 declare global {
   interface HASSDomEvents {

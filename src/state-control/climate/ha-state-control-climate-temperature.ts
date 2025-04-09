@@ -1,9 +1,19 @@
-import { mdiMinus, mdiPlus, mdiThermometer, mdiThermostat } from "@mdi/js";
+import type { ControlCircularSliderMode } from "../../components/ha-control-circular-slider";
+import type { ClimateEntity, HvacMode } from "../../data/climate";
+import type { HomeAssistant } from "../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
+
+import { mdiMinus, mdiPlus, mdiThermometer, mdiThermostat } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { UNIT_F } from "../../common/const";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
@@ -12,18 +22,11 @@ import { clamp } from "../../common/number/clamp";
 import { formatNumber } from "../../common/number/format_number";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-big-number";
-import "../../components/ha-control-circular-slider";
-import type { ControlCircularSliderMode } from "../../components/ha-control-circular-slider";
-import "../../components/ha-outlined-icon-button";
-import "../../components/ha-svg-icon";
-import type { ClimateEntity, HvacMode } from "../../data/climate";
 import {
   CLIMATE_HVAC_ACTION_TO_MODE,
   ClimateEntityFeature,
 } from "../../data/climate";
 import { UNAVAILABLE } from "../../data/entity";
-import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,

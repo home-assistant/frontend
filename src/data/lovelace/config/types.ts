@@ -1,8 +1,8 @@
-import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceResource } from "../resource";
 import type { LovelaceStrategyConfig } from "./strategy";
 import type { LovelaceViewRawConfig } from "./view";
+import type { Connection } from "home-assistant-js-websocket";
 
 export interface LovelaceDashboardBaseConfig {}
 

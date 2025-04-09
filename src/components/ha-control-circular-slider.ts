@@ -1,3 +1,5 @@
+import type { PropertyValues, TemplateResult } from "lit";
+
 import {
   DIRECTION_ALL,
   Manager,
@@ -6,7 +8,6 @@ import {
   Tap,
   TouchMouseInput,
 } from "@egjs/hammerjs";
-import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing, svg } from "lit";
 import {
   customElement,
@@ -17,6 +18,7 @@ import {
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { clamp } from "../common/number/clamp";
 import { svgArc } from "../resources/svg-arc";

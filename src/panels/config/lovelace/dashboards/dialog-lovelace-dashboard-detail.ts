@@ -1,12 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { slugify } from "../../../../common/string/slugify";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { CoreFrontendUserData } from "../../../../data/frontend";
 import type {
@@ -14,10 +5,22 @@ import type {
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
-import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-form/ha-form";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { slugify } from "../../../../common/string/slugify";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {

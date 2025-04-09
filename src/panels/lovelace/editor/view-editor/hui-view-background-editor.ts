@@ -1,13 +1,16 @@
-import "@material/mwc-list/mwc-list-item";
-import memoizeOne from "memoize-one";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-selector/ha-selector-background";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-selector/ha-selector-background";
+import "@material/mwc-list/mwc-list-item";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-view-background-editor")
 export class HuiViewBackgroundEditor extends LitElement {

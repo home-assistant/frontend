@@ -1,34 +1,37 @@
-import { dump } from "js-yaml";
-import { consume } from "@lit-labs/context";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import "../ha-code-editor";
-import "../ha-icon-button";
-import "./hat-logbook-note";
+import type { EntityRegistryEntry } from "../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../data/label_registry";
 import type { LogbookEntry } from "../../data/logbook";
 import type {
   ActionTraceStep,
   ChooseActionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import { getDataFromPath } from "../../data/trace";
-import "../../panels/logbook/ha-logbook-renderer";
-import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../panels/logbook/ha-logbook-renderer";
+import "../ha-code-editor";
+import "../ha-icon-button";
+import "./hat-logbook-note";
+
+import { consume } from "@lit-labs/context";
+import { dump } from "js-yaml";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { describeCondition, describeTrigger } from "../../data/automation_i18n";
-import type { EntityRegistryEntry } from "../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../data/label_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
 import {
   floorsContext,
   fullEntitiesContext,
   labelsContext,
 } from "../../data/context";
 import { describeAction } from "../../data/script_i18n";
+import { getDataFromPath } from "../../data/trace";
+import { traceTabStyles } from "./trace-tab-styles";
 
 const TRACE_PATH_TABS = [
   "step_config",

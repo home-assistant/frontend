@@ -1,7 +1,6 @@
-import { consume } from "@lit-labs/context";
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
-import { differenceInMinutes } from "date-fns";
+import type { Themes } from "../../data/ws-themes";
+import type { ECOption } from "../../resources/echarts";
+import type { HomeAssistant } from "../../types";
 import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
@@ -11,22 +10,26 @@ import type {
   YAXisOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
+
+import "../chips/ha-assist-chip";
+import "../ha-icon-button";
+
+import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
+import { differenceInMinutes } from "date-fns";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
+import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { themesContext } from "../../data/context";
-import type { Themes } from "../../data/ws-themes";
-import type { ECOption } from "../../resources/echarts";
-import type { HomeAssistant } from "../../types";
 import { isMac } from "../../util/is_mac";
-import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
-import { ensureArray } from "../../common/array/ensure-array";
-import "../chips/ha-assist-chip";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;

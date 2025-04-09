@@ -1,7 +1,15 @@
+import type { HomeAssistant } from "../../../types";
+import type { EntityFilterEntityConfig } from "../entity-rows/types";
+import type { LovelaceBadge } from "../types";
+import type { HuiBadge } from "./hui-badge";
+import type { EntityFilterBadgeConfig } from "./types";
 import type { PropertyValues } from "lit";
+
+import "./hui-badge";
+
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
+
 import { evaluateStateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";
 import {
@@ -9,11 +17,6 @@ import {
   checkConditionsMet,
   extractConditionEntityIds,
 } from "../common/validate-condition";
-import type { EntityFilterEntityConfig } from "../entity-rows/types";
-import type { LovelaceBadge } from "../types";
-import "./hui-badge";
-import type { HuiBadge } from "./hui-badge";
-import type { EntityFilterBadgeConfig } from "./types";
 
 @customElement("hui-entity-filter-badge")
 export class HuiEntityFilterBadge

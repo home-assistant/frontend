@@ -1,50 +1,53 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import type { AuthUrlSearchParams } from "../data/auth";
+import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
+import type { HomeAssistant } from "../types";
 import type { Auth } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../components/ha-card";
+import "./onboarding-analytics";
+import "./onboarding-create-user";
+import "./onboarding-loading";
+import "./onboarding-welcome";
+import "./onboarding-welcome-links";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
 import {
   createConnection,
   genClientId,
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import {
   enableWrite,
   loadTokens,
   saveTokens,
 } from "../common/auth/token_storage";
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
-import type { HASSDomEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
+import { navigate } from "../common/navigate";
 import {
   addSearchParam,
   extractSearchParam,
   extractSearchParamsObject,
 } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
-import "../components/ha-card";
-import type { AuthUrlSearchParams } from "../data/auth";
 import { hassUrl } from "../data/auth";
-import type { OnboardingResponses, OnboardingStep } from "../data/onboarding";
 import {
   fetchInstallationType,
   fetchOnboardingOverview,
   onboardIntegrationStep,
 } from "../data/onboarding";
 import { subscribeUser } from "../data/ws-user";
+import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
-import type { HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { registerServiceWorker } from "../util/register-service-worker";
-import "./onboarding-analytics";
-import "./onboarding-create-user";
-import "./onboarding-loading";
-import "./onboarding-welcome";
-import "./onboarding-welcome-links";
-import { makeDialogManager } from "../dialogs/make-dialog-manager";
-import { navigate } from "../common/navigate";
-import { mainWindow } from "../common/dom/get_main_window";
 
 type OnboardingEvent =
   | {

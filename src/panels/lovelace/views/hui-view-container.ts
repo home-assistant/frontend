@@ -1,10 +1,12 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { listenMediaQuery } from "../../../common/dom/media_query";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { listenMediaQuery } from "../../../common/dom/media_query";
 
 type BackgroundConfig = LovelaceViewConfig["background"];
 

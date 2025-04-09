@@ -1,6 +1,7 @@
 import type { ConfirmationRestrictionConfig } from "../../../data/lovelace/config/action";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 export const confirmAction = async (
   node: HTMLElement,

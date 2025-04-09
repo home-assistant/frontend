@@ -1,19 +1,22 @@
-import { mdiPlus } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { nextRender } from "../../../common/util/render-status";
-import "../../../components/entity/ha-state-label-badge";
-import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
-import { computeCardSize } from "../common/compute-card-size";
 import type { Lovelace } from "../types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/entity/ha-state-label-badge";
+import "../../../components/ha-svg-icon";
+import "../badges/hui-view-badges";
+
+import { mdiPlus } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { nextRender } from "../../../common/util/render-status";
+import { computeCardSize } from "../common/compute-card-size";
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {

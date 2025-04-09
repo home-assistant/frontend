@@ -1,16 +1,19 @@
-import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+import type { CreateHeaderFooterDialogParams } from "./show-create-headerfooter-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../resources/styles";
 import { headerFooterElements } from "../lovelace-headerfooters";
 import { getHeaderFooterStubConfig } from "./get-headerfooter-stub-config";
-import type { CreateHeaderFooterDialogParams } from "./show-create-headerfooter-dialog";
 
 @customElement("hui-dialog-create-headerfooter")
 export class HuiCreateDialogHeaderFooter

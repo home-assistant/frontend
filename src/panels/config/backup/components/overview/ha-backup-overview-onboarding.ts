@@ -1,13 +1,16 @@
-import { mdiInformationOutline } from "@mdi/js";
+import type { HomeAssistant } from "../../../../../types";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-svg-icon";
+
+import { mdiInformationOutline } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 
 declare global {
   // for fire event

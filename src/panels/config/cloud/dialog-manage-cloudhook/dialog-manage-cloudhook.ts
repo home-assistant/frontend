@@ -1,17 +1,20 @@
-import "@material/mwc-button";
-import { mdiOpenInNew } from "@mdi/js";
+import type { HomeAssistant } from "../../../../types";
+import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-copy-textfield";
+import "@material/mwc-button";
+
+import { mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { state } from "lit/decorators";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
-import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
-import "../../../../components/ha-copy-textfield";
 
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;

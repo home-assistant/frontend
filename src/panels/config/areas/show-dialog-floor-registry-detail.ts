@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   FloorRegistryEntry,
   FloorRegistryEntryMutableParams,
 } from "../../../data/floor_registry";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface FloorRegistryDetailDialogParams {
   entry?: FloorRegistryEntry;

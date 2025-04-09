@@ -1,8 +1,3 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -13,6 +8,13 @@ import type {
   ZHAEntityReference,
 } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../../components/data-table/ha-data-table";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import memoizeOne from "memoize-one";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
   id: string;

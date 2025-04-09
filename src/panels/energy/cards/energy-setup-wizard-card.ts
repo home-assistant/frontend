@@ -1,21 +1,24 @@
-import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { EnergyInfo, EnergyPreferences } from "../../../data/energy";
-import { getEnergyInfo, saveEnergyPreferences } from "../../../data/energy";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import type { Lovelace, LovelaceCard } from "../../lovelace/types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
 import "../../config/energy/components/ha-energy-battery-settings";
 import "../../config/energy/components/ha-energy-device-settings";
 import "../../config/energy/components/ha-energy-gas-settings";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
 import "../../config/energy/components/ha-energy-water-settings";
-import type { Lovelace, LovelaceCard } from "../../lovelace/types";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { getEnergyInfo, saveEnergyPreferences } from "../../../data/energy";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
 
 @customElement("energy-setup-wizard-card")
 export class EnergySetupWizard extends LitElement implements LovelaceCard {

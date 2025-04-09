@@ -1,7 +1,8 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { AutomationConfig } from "../../../../data/automation";
-import type { ScriptConfig } from "../../../../data/script";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { ScriptConfig } from "../../../../data/script";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export const loadAutomationSaveDialog = () =>
   import("./dialog-automation-save");

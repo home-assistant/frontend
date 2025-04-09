@@ -1,9 +1,12 @@
+import type { StateSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+
+import "../entity/ha-entity-state-picker";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { StateSelector } from "../../data/selector";
+
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../types";
-import "../entity/ha-entity-state-picker";
 
 @customElement("ha-selector-state")
 export class HaSelectorState extends SubscribeMixin(LitElement) {

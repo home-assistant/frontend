@@ -1,9 +1,10 @@
+import type { HomeAssistant, ServiceCallResponse } from "../types";
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
 import { navigate } from "../common/navigate";
-import type { HomeAssistant, ServiceCallResponse } from "../types";
 
 export const SCENE_IGNORED_DOMAINS = [
   "binary_sensor",

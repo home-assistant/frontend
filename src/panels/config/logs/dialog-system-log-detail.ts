@@ -1,15 +1,20 @@
-import { mdiClose, mdiContentCopy } from "@mdi/js";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { HomeAssistant } from "../../../types";
+import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import type { IntegrationManifest } from "../../../data/integration";
+
+import { mdiClose, mdiContentCopy } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -20,10 +25,8 @@ import {
   isCustomIntegrationError,
 } from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import type { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 
 class DialogSystemLogDetail extends LitElement {

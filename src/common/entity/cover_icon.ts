@@ -1,3 +1,5 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+
 /** Return an icon representing a cover state. */
 import {
   mdiArrowCollapseHorizontal,
@@ -5,7 +7,6 @@ import {
   mdiArrowExpandHorizontal,
   mdiArrowUp,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 
 export const computeOpenIcon = (stateObj: HassEntity): string => {
   switch (stateObj.attributes.device_class) {

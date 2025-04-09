@@ -1,12 +1,13 @@
-import type { LitElement } from "lit";
-import { getSignedPath } from "../../../../data/auth";
 import type { BackupConfig, BackupContent } from "../../../../data/backup";
+import type { HomeAssistant } from "../../../../types";
+import type { LitElement } from "lit";
+
+import { getSignedPath } from "../../../../data/auth";
 import {
   canDecryptBackupOnDownload,
   getBackupDownloadUrl,
   getPreferredAgentForDownload,
 } from "../../../../data/backup";
-import type { HomeAssistant } from "../../../../types";
 import { fileDownload } from "../../../../util/file_download";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
 import { showDownloadDecryptedBackupDialog } from "../dialogs/show-dialog-download-decrypted-backup";

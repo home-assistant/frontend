@@ -1,12 +1,14 @@
-import "@material/mwc-button";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-markdown";
+import "../../../components/ha-spinner";
+import "../../../components/ha-textfield";
+import "@material/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
-import "../../../components/ha-markdown";
-import "../../../components/ha-textfield";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-configurator")
 export class MoreInfoConfigurator extends LitElement {

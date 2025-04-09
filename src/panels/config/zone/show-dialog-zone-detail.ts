@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { Zone, ZoneMutableParams } from "../../../data/zone";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface ZoneDetailDialogParams {
   entry?: Zone;

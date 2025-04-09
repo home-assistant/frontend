@@ -1,10 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { assert, literal, number, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-form/ha-form";
 import type {
   SchemaUnion,
   HaFormSchema,
@@ -14,6 +7,16 @@ import type {
   NumericStateCondition,
   StateCondition,
 } from "../../../common/validate-condition";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../../components/ha-form/ha-form";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { assert, literal, number, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const numericStateConditionStruct = object({
   condition: literal("numeric_state"),

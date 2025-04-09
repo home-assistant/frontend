@@ -1,16 +1,19 @@
-import "@material/mwc-drawer";
-import "@material/mwc-top-app-bar-fixed";
-import { mdiMenu } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, query, state } from "lit/decorators";
-import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
-import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
+
 import "../../src/components/ha-icon-button";
 import "../../src/managers/notification-manager";
+import "./components/page-description";
+import "@material/mwc-drawer";
+import "@material/mwc-top-app-bar-fixed";
+
+import { mdiMenu } from "@mdi/js";
+import { LitElement, css, html } from "lit";
+import { customElement, query, state } from "lit/decorators";
+
+import { dynamicElement } from "../../src/common/dom/dynamic-element-directive";
+import { HaExpansionPanel } from "../../src/components/ha-expansion-panel";
 import { haStyle } from "../../src/resources/styles";
 import { PAGES, SIDEBAR } from "../build/import-pages";
-import "./components/page-description";
 
 const GITHUB_DEMO_URL =
   "https://github.com/home-assistant/frontend/blob/dev/gallery/src/pages/";

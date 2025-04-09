@@ -1,17 +1,20 @@
-import "@material/mwc-button";
-import { mdiContentCopy } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-textfield";
-import "../../components/ha-icon-button";
-import { haStyleDialog } from "../../resources/styles";
+import type { HaTextField } from "../../components/ha-textfield";
 import type { HomeAssistant } from "../../types";
 import type { LongLivedAccessTokenDialogParams } from "./show-long-lived-access-token-dialog";
-import type { HaTextField } from "../../components/ha-textfield";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../components/ha-icon-button";
+import "../../components/ha-textfield";
+import "@material/mwc-button";
+
+import { mdiContentCopy } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
+import { createCloseHeading } from "../../components/ha-dialog";
+import { haStyleDialog } from "../../resources/styles";
 import { showToast } from "../../util/toast";
 
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";

@@ -1,27 +1,30 @@
-import { undoDepth } from "@codemirror/commands";
+import type { HaCodeEditor } from "../../components/ha-code-editor";
+import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
+import type { HomeAssistant } from "../../types";
+import type { Lovelace } from "./types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-code-editor";
+import "../../components/ha-icon-button";
+import "../../components/ha-top-app-bar-fixed";
 import "@material/mwc-button";
+
+import { undoDepth } from "@codemirror/commands";
 import { mdiClose } from "@mdi/js";
 import { dump, load } from "js-yaml";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
+
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-code-editor";
-import type { HaCodeEditor } from "../../components/ha-code-editor";
-import "../../components/ha-icon-button";
+import { isStrategyDashboard } from "../../data/lovelace/config/types";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
-import type { Lovelace } from "./types";
-import "../../components/ha-top-app-bar-fixed";
-import type { LovelaceRawConfig } from "../../data/lovelace/config/types";
-import { isStrategyDashboard } from "../../data/lovelace/config/types";
 
 const lovelaceStruct = type({
   title: optional(string()),

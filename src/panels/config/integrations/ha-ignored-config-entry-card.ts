@@ -1,14 +1,17 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { deleteConfigEntry } from "../../../data/config_entries";
 import type { IntegrationManifest } from "../../../data/integration";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
-import "./ha-integration-action-card";
+import type { TemplateResult } from "lit";
+
 import "../../../components/ha-button";
+import "./ha-integration-action-card";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { deleteConfigEntry } from "../../../data/config_entries";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-ignored-config-entry-card")
 export class HaIgnoredConfigEntryCard extends LitElement {

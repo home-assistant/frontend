@@ -1,10 +1,4 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -12,6 +6,15 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import type { MarkdownCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(

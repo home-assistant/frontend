@@ -1,27 +1,30 @@
-import { mdiClose } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { DownloadDecryptedBackupDialogParams } from "./show-dialog-download-decrypted-backup";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
+import "../../../../components/ha-alert";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import "../../../../components/ha-md-list";
 import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-password-field";
-import "../../../../components/ha-alert";
+import "../../../../components/ha-svg-icon";
+
+import { mdiClose } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   canDecryptBackupOnDownload,
   getPreferredAgentForDownload,
 } from "../../../../data/backup";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { downloadBackupFile } from "../helper/download_backup";
-import type { DownloadDecryptedBackupDialogParams } from "./show-dialog-download-decrypted-backup";
 
 @customElement("ha-dialog-download-decrypted-backup")
 class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {

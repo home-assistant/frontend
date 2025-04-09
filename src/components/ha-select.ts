@@ -1,11 +1,14 @@
-import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { styles } from "@material/mwc-select/mwc-select.css";
+
+import "./ha-icon-button";
+
+import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { mdiClose } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
-import "./ha-icon-button";
 
 @customElement("ha-select")
 export class HaSelect extends SelectBase {

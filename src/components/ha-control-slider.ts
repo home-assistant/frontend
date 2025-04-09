@@ -1,11 +1,13 @@
-import { DIRECTION_ALL, Manager, Pan, Press, Tap } from "@egjs/hammerjs";
+import type { FrontendLocaleData } from "../data/translation";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import { DIRECTION_ALL, Manager, Pan, Press, Tap } from "@egjs/hammerjs";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { FrontendLocaleData } from "../data/translation";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 

@@ -1,30 +1,33 @@
-import "@material/mwc-button/mwc-button";
-import { mdiBatteryHigh, mdiDelete, mdiPencil } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-settings-row";
 import type {
   BatterySourceTypeEnergyPreference,
   EnergyPreferences,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
 } from "../../../../data/energy";
-import { saveEnergyPreferences } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-settings-row";
+import "./ha-energy-validation-result";
+import "@material/mwc-button/mwc-button";
+
+import { mdiBatteryHigh, mdiDelete, mdiPencil } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { saveEnergyPreferences } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsBatteryDialog } from "../dialogs/show-dialogs-energy";
-import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-battery-settings")

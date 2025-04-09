@@ -1,6 +1,7 @@
 import type { ThemeVars } from "../../data/ws-themes";
-import { darkStyles, derivedStyles } from "../../resources/styles-data";
 import type { HomeAssistant } from "../../types";
+
+import { darkStyles, derivedStyles } from "../../resources/styles-data";
 import {
   hex2rgb,
   lab2hex,

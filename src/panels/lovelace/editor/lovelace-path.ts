@@ -1,9 +1,10 @@
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
+
+import { isStrategySection } from "../../../data/lovelace/config/section";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 
 export type LovelaceCardPath = [number, number] | [number, number, number];

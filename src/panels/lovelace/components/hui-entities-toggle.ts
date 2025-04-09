@@ -1,11 +1,14 @@
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { HomeAssistant } from "../../../types";
 import type { PropertyValues } from "lit";
+
+import "../../../components/ha-switch";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import { forwardHaptic } from "../../../data/haptics";
-import type { HomeAssistant } from "../../../types";
 import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
 
 @customElement("hui-entities-toggle")

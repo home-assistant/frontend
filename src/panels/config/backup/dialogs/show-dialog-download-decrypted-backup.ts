@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { BackupContent } from "../../../../data/backup";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface DownloadDecryptedBackupDialogParams {
   backup: BackupContent;

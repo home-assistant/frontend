@@ -1,6 +1,7 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { Person, PersonMutableParams } from "../../../data/person";
 import type { User } from "../../../data/user";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface PersonDetailDialogParams {
   entry?: Person;

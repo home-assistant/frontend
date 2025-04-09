@@ -1,20 +1,23 @@
-import "@material/mwc-list/mwc-list";
-import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
-import { stringCompare } from "../common/string/compare";
 import type { RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
-import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./search-input-outlined";
+import "@material/mwc-list/mwc-list";
+
+import { mdiFilterVariantRemove } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
+import { stringCompare } from "../common/string/compare";
+import { findRelated } from "../data/search";
+import { haStyleScrollbar } from "../resources/styles";
+import { loadVirtualizer } from "../resources/virtualizer";
 
 @customElement("ha-filter-devices")
 export class HaFilterDevices extends LitElement {

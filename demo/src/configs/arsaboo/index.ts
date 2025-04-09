@@ -1,4 +1,5 @@
 import type { DemoConfig } from "../types";
+
 import { demoEntitiesArsaboo } from "./entities";
 import { demoLovelaceArsaboo } from "./lovelace";
 import { demoThemeArsaboo } from "./theme";

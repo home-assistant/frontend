@@ -1,11 +1,14 @@
-import "@material/mwc-button";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import { domainToName } from "../../data/integration";
 import type { PersitentNotificationEntity } from "../../data/persistent_notification";
 import type { HomeAssistant } from "../../types";
+
 import "./notification-item-template";
+import "@material/mwc-button";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { domainToName } from "../../data/integration";
 
 @customElement("configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {

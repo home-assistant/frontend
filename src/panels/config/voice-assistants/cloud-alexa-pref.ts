@@ -1,23 +1,26 @@
-import "@material/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { CloudStatusLoggedIn } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
-import type { CloudStatusLoggedIn } from "../../../data/cloud";
+import "@material/mwc-button";
+
+import { mdiHelpCircle } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import { updateCloudPref } from "../../../data/cloud";
-import type { ExposeEntitySettings } from "../../../data/expose";
 import {
   getExposeNewEntities,
   setExposeNewEntities,
 } from "../../../data/expose";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 
 export class CloudAlexaPref extends LitElement {

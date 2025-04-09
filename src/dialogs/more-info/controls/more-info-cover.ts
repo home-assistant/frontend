@@ -1,22 +1,25 @@
-import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import type { CoverEntity } from "../../../data/cover";
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import type { CoverEntity } from "../../../data/cover";
-import {
-  CoverEntityFeature,
-  computeCoverPositionStateDisplay,
-} from "../../../data/cover";
 import "../../../state-control/cover/ha-state-control-cover-buttons";
 import "../../../state-control/cover/ha-state-control-cover-position";
 import "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import "../../../state-control/cover/ha-state-control-cover-toggle";
-import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
+
+import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import {
+  CoverEntityFeature,
+  computeCoverPositionStateDisplay,
+} from "../../../data/cover";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 type Mode = "position" | "button";

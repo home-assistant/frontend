@@ -1,20 +1,23 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-spinner";
-import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entities";
-import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
-import "../components/hui-graph-base";
 import type {
   LovelaceHeaderFooter,
   LovelaceHeaderFooterEditor,
 } from "../types";
 import type { GraphHeaderFooterConfig } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-spinner";
+import "../components/hui-graph-base";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
+import { findEntities } from "../common/find-entities";
+import { coordinatesMinimalResponseCompressedState } from "../common/graph/coordinates";
 
 const MINUTE = 60000;
 const HOUR = 60 * MINUTE;

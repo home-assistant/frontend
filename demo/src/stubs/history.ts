@@ -1,6 +1,6 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { HistoryStates } from "../../../src/data/history";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 const generateStateHistory = (
   state: HassEntity,

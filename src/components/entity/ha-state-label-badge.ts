@@ -1,9 +1,16 @@
-import { mdiAlert } from "@mdi/js";
+import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../ha-label-badge";
+import "../ha-state-icon";
+
+import { mdiAlert } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -15,11 +22,7 @@ import {
   isNumericState,
 } from "../../common/number/format_number";
 import { isUnavailableState, UNAVAILABLE, UNKNOWN } from "../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import { timerTimeRemaining } from "../../data/timer";
-import type { HomeAssistant } from "../../types";
-import "../ha-label-badge";
-import "../ha-state-icon";
 
 // Define the domains whose states have special truncated strings
 const TRUNCATED_DOMAINS = [

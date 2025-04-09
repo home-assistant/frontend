@@ -1,19 +1,22 @@
-import "@material/mwc-button";
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-textfield";
+import "../../../../../layouts/hass-subpage";
+import "../../../ha-config-section";
+import "./zha-device-endpoint-data-table";
+import "@material/mwc-button";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+
 import { navigate } from "../../../../../common/navigate";
-import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-spinner";
-import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import { addGroup, fetchGroupableDevices } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
-import "../../../../../components/ha-textfield";
-import "./zha-device-endpoint-data-table";
-import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {

@@ -1,16 +1,20 @@
 /* eslint-disable lit/prefer-static-styles */
+import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
 import type { PropertyValues } from "lit";
+
+import "../components/ha-alert";
+import "./ha-auth-flow";
+
+import punycode from "punycode";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import punycode from "punycode";
+
 import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
-import "../components/ha-alert";
-import type { AuthProvider, AuthUrlSearchParams } from "../data/auth";
 import { fetchAuthProviders } from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
-import "./ha-auth-flow";
 
 import("./ha-pick-auth-provider");
 

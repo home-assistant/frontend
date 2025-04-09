@@ -1,8 +1,3 @@
-import { mdiCheck, mdiPlus } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -10,10 +5,21 @@ import type {
   RowClickedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import type { User } from "../../../data/user";
+import type { HomeAssistant, Route } from "../../../types";
+import type { PropertyValues } from "lit";
+
 import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
-import type { User } from "../../../data/user";
+import "../../../layouts/hass-tabs-subpage-data-table";
+
+import { mdiCheck, mdiPlus } from "@mdi/js";
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { storage } from "../../../common/decorators/storage";
 import {
   computeUserBadges,
   deleteUser,
@@ -21,12 +27,9 @@ import {
   updateUser,
 } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
-import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {

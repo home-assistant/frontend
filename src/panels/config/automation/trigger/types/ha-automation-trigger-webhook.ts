@@ -1,23 +1,26 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiCog, mdiContentCopy } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { slugify } from "../../../../../common/string/slugify";
-import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-check-list-item";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../../components/ha-textfield";
 import type {
   AutomationConfig,
   WebhookTrigger,
 } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-check-list-item";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-textfield";
+
+import { mdiCog, mdiContentCopy } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import { slugify } from "../../../../../common/string/slugify";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { showToast } from "../../../../../util/toast";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 

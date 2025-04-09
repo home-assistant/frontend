@@ -1,4 +1,27 @@
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  HaDataTable,
+  SelectionChangedEvent,
+  SortingDirection,
+} from "../../../components/data-table/ha-data-table";
+import type { HaMenu } from "../../../components/ha-menu";
+import type {
+  StatisticsMetaData,
+  StatisticsValidationResult,
+} from "../../../data/recorder";
+import type { HomeAssistant } from "../../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/data-table/ha-data-table";
+import "../../../components/ha-dialog";
+import "../../../components/ha-md-button-menu";
+import "../../../components/ha-md-menu-item";
+import "../../../components/search-input-outlined";
 import "@material/mwc-button/mwc-button";
+
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -10,34 +33,14 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-
-import type { HassEntity } from "home-assistant-js-websocket";
 import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/data-table/ha-data-table";
-import type {
-  DataTableColumnContainer,
-  HaDataTable,
-  SelectionChangedEvent,
-  SortingDirection,
-} from "../../../components/data-table/ha-data-table";
 import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-dialog";
-import type { HaMenu } from "../../../components/ha-menu";
-import "../../../components/ha-md-menu-item";
-import "../../../components/search-input-outlined";
-import type {
-  StatisticsMetaData,
-  StatisticsValidationResult,
-} from "../../../data/recorder";
 import {
   clearStatistics,
   getStatisticIds,
@@ -45,12 +48,11 @@ import {
   updateStatisticsIssues,
   validateStatistics,
 } from "../../../data/recorder";
+import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
-import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 
 const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,

@@ -1,11 +1,14 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { BackgroundSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-picture-upload";
-import "../ha-alert";
 import type { HaPictureUpload } from "../ha-picture-upload";
+
+import "../ha-alert";
+import "../ha-picture-upload";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { URL_PREFIX } from "../../data/image_upload";
 
 @customElement("ha-selector-background")

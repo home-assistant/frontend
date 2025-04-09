@@ -1,12 +1,14 @@
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+
+import "../custom-cards/cast-demo-row";
+import "../custom-cards/ha-demo-card";
+
 import {
   selectedDemoConfig,
   selectedDemoConfigIndex,
   setDemoConfig,
 } from "../configs/demo-configs";
-import "../custom-cards/cast-demo-row";
-import "../custom-cards/ha-demo-card";
 import { mapEntities } from "./entities";
 
 export const mockLovelace = (

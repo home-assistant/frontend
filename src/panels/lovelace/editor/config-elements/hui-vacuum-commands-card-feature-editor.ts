@@ -1,19 +1,22 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../types";
-import { supportsVacuumCommand } from "../../card-features/hui-vacuum-commands-card-feature";
 import type {
   LovelaceCardFeatureContext,
   VacuumCommandsCardFeatureConfig,
 } from "../../card-features/types";
-import { VACUUM_COMMANDS } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportsVacuumCommand } from "../../card-features/hui-vacuum-commands-card-feature";
+import { VACUUM_COMMANDS } from "../../card-features/types";
 
 @customElement("hui-vacuum-commands-card-feature-editor")
 export class HuiVacuumCommandsCardFeatureEditor

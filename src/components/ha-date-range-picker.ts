@@ -1,15 +1,26 @@
+import type { DateRange } from "../common/datetime/calc_date_range";
+import type { HomeAssistant } from "../types";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "./date-range-picker";
+import "./ha-icon-button";
+import "./ha-icon-button-next";
+import "./ha-icon-button-prev";
+import "./ha-textarea";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
+
 import { mdiCalendar } from "@mdi/js";
 import { isThisYear } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
-import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { shiftDateRange } from "../common/datetime/calc_date";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import {
   formatShortDateTime,
@@ -18,14 +29,6 @@ import {
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
-import type { HomeAssistant } from "../types";
-import "./date-range-picker";
-import "./ha-icon-button";
-import "./ha-icon-button-next";
-import "./ha-icon-button-prev";
-import "./ha-textarea";
-import { calcDateRange } from "../common/datetime/calc_date_range";
-import type { DateRange } from "../common/datetime/calc_date_range";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
 

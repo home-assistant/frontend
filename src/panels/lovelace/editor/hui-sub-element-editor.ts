@@ -1,19 +1,22 @@
-import { mdiCodeBraces, mdiListBoxOutline } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../types";
+import type { HuiElementEditor } from "./hui-element-editor";
+import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
+import type { TemplateResult } from "lit";
+
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
-import type { HomeAssistant } from "../../../types";
 import "./entity-row-editor/hui-row-element-editor";
 import "./feature-editor/hui-card-feature-element-editor";
 import "./header-footer-editor/hui-header-footer-element-editor";
 import "./heading-badge-editor/hui-heading-badge-element-editor";
-import type { HuiElementEditor } from "./hui-element-editor";
 import "./picture-element-editor/hui-picture-element-element-editor";
-import type { GUIModeChangedEvent, SubElementEditorConfig } from "./types";
+
+import { mdiCodeBraces, mdiListBoxOutline } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {

@@ -1,5 +1,6 @@
-import { fireEvent } from "../../common/dom/fire_event";
 import type { TodoItem } from "../../data/todo";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface TodoItemEditDialogParams {
   entity: string;

@@ -1,12 +1,15 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-selector/ha-selector-media";
 import type { PlayMediaAction } from "../../../../../data/script";
 import type { MediaSelectorValue } from "../../../../../data/selector";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+
+import "../../../../../components/ha-selector/ha-selector-media";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("ha-automation-action-play_media")
 export class HaPlayMediaAction extends LitElement implements ActionElement {

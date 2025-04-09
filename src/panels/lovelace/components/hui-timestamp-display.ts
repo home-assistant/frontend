@@ -1,15 +1,17 @@
+import type { FrontendLocaleData } from "../../../data/translation";
+import type { HomeAssistant } from "../../../types";
+import type { TimestampRenderingFormat } from "./types";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
-import type { FrontendLocaleData } from "../../../data/translation";
-import type { HomeAssistant } from "../../../types";
-import type { TimestampRenderingFormat } from "./types";
 
 const FORMATS: Record<
   string,

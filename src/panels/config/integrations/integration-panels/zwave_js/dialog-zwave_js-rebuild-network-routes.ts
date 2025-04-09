@@ -1,16 +1,21 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type {
   ZWaveJSRebuildRoutesStatusMessage,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSRebuildNetworkRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-network-routes";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
   fetchZwaveNetworkStatus,
   rebuildZwaveNetworkRoutes,
@@ -18,8 +23,6 @@ import {
   subscribeRebuildZwaveNetworkRoutesProgress,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSRebuildNetworkRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-network-routes";
 
 @customElement("dialog-zwave_js-rebuild-network-routes")
 class DialogZWaveJSRebuildNetworkRoutes extends LitElement {

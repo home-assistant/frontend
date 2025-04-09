@@ -1,8 +1,8 @@
 import SlTooltip from "@shoelace-style/shoelace/dist/components/tooltip/tooltip.component";
 import styles from "@shoelace-style/shoelace/dist/components/tooltip/tooltip.styles";
+import { setDefaultAnimation } from "@shoelace-style/shoelace/dist/utilities/animation-registry";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
-import { setDefaultAnimation } from "@shoelace-style/shoelace/dist/utilities/animation-registry";
 
 setDefaultAnimation("tooltip.show", {
   keyframes: [{ opacity: 0 }, { opacity: 1 }],

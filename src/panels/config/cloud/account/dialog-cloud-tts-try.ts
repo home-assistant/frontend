@@ -1,9 +1,17 @@
+import type { HaTextArea } from "../../../../components/ha-textarea";
+import type { HomeAssistant } from "../../../../types";
+import type { TryTtsDialogParams } from "./show-dialog-cloud-tts-try";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-select";
+import "../../../../components/ha-textarea";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
+
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -11,16 +19,11 @@ import { computeStateDomain } from "../../../../common/entity/compute_state_doma
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-select";
-import "../../../../components/ha-textarea";
-import type { HaTextArea } from "../../../../components/ha-textarea";
 import { showAutomationEditor } from "../../../../data/automation";
 import { MediaPlayerEntityFeature } from "../../../../data/media-player";
 import { convertTextToSpeech } from "../../../../data/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { TryTtsDialogParams } from "./show-dialog-cloud-tts-try";
 
 @customElement("dialog-cloud-try-tts")
 export class DialogTryTts extends LitElement {

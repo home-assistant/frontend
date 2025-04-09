@@ -1,11 +1,13 @@
-import "@material/mwc-button";
+import type { HomeAssistant } from "../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
+import "../components/ha-alert";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
-import type { HomeAssistant } from "../types";
-import "../components/ha-alert";
+import "@material/mwc-button";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {

@@ -1,7 +1,9 @@
 import type { TemplateResult } from "lit";
+
+import "../../../src/components/ha-svg-icon";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../src/components/ha-svg-icon";
 
 @customElement("supervisor-formfield-label")
 class SupervisorFormfieldLabel extends LitElement {

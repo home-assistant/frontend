@@ -1,21 +1,23 @@
+import type { HassBaseEl } from "../../src/state/hass-base-mixin";
+import type { Constructor, Resources } from "../../src/types";
 import type { PropertyValues } from "lit";
+
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators";
+
 import {
   computeLocalize,
   type LandingPageKeys,
   type LocalizeFunc,
 } from "../../src/common/translations/localize";
+import { computeDirectionStyles } from "../../src/common/util/compute_rtl";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
-import type { Constructor, Resources } from "../../src/types";
+import { translationMetadata } from "../../src/resources/translations-metadata";
+import themesMixin from "../../src/state/themes-mixin";
 import {
   getLocalLanguage,
   getTranslation,
 } from "../../src/util/common-translation";
-import { computeDirectionStyles } from "../../src/common/util/compute_rtl";
-import themesMixin from "../../src/state/themes-mixin";
-import { translationMetadata } from "../../src/resources/translations-metadata";
-import type { HassBaseEl } from "../../src/state/hass-base-mixin";
 
 export class LandingPageBaseElement extends themesMixin(
   ProvideHassLitMixin(LitElement) as unknown as Constructor<HassBaseEl>

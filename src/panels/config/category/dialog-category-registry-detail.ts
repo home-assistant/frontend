@@ -1,20 +1,23 @@
-import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-textfield";
 import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
-import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { CategoryRegistryDetailDialogParams } from "./show-dialog-category-registry-detail";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-textfield";
+import "@material/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import { haStyleDialog } from "../../../resources/styles";
 
 @customElement("dialog-category-registry-detail")
 class DialogCategoryDetail extends LitElement {

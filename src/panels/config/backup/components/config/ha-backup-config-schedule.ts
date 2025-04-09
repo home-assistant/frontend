@@ -1,18 +1,28 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { clamp } from "../../../../../common/number/clamp";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import type { HaMdSelect } from "../../../../../components/ha-md-select";
+import type { BackupConfig, BackupDay } from "../../../../../data/backup";
+import type { HomeAssistant } from "../../../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-md-select";
-import type { HaMdSelect } from "../../../../../components/ha-md-select";
 import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-switch";
-import type { BackupConfig, BackupDay } from "../../../../../data/backup";
+import "../../../../../components/ha-time-input";
+import "../../../../../components/ha-tip";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { formatTime } from "../../../../../common/datetime/format_time";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { clamp } from "../../../../../common/number/clamp";
 import {
   BACKUP_DAYS,
   BackupScheduleRecurrence,
@@ -20,13 +30,6 @@ import {
   DEFAULT_OPTIMIZED_BACKUP_START_TIME,
   sortWeekdays,
 } from "../../../../../data/backup";
-import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-time-input";
-import "../../../../../components/ha-tip";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-formfield";
-import { formatTime } from "../../../../../common/datetime/format_time";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;

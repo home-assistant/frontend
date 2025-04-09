@@ -1,8 +1,3 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
-import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
 import type {
   LovelaceCard,
@@ -10,8 +5,16 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ClockCardConfig } from "./types";
-import { useAmPm } from "../../../common/datetime/use_am_pm";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
+import { useAmPm } from "../../../common/datetime/use_am_pm";
 
 const INTERVAL = 1000;
 

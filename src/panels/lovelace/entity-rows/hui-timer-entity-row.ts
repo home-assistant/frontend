@@ -1,12 +1,15 @@
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig } from "./types";
 import type { PropertyValues } from "lit";
+
+import "../../../state-display/ha-timer-remaining-time";
+import "../components/hui-generic-entity-row";
+
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../state-display/ha-timer-remaining-time";
-import type { HomeAssistant } from "../../../types";
+
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig } from "./types";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {

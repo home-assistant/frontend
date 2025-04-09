@@ -1,11 +1,14 @@
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
+
+import "../../../../components/ha-alert";
 import "../conditions/ha-card-conditions-editor";
+
+import { LitElement, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-section-visibility-editor")
 export class HuiDialogEditSection extends LitElement {

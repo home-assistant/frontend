@@ -1,7 +1,9 @@
-import { FabBase } from "@material/mwc-fab/mwc-fab-base";
 import { styles } from "@material/mwc-fab/mwc-fab.css";
-import { customElement } from "lit/decorators";
+
+import { FabBase } from "@material/mwc-fab/mwc-fab-base";
 import { css } from "lit";
+import { customElement } from "lit/decorators";
+
 import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-fab")

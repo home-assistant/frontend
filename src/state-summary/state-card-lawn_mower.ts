@@ -1,11 +1,14 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../components/entity/state-info";
 import "../components/ha-lawn_mower-action-button";
+
+import { LitElement, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-lawn_mower")
 class StateCardLawnMower extends LitElement {

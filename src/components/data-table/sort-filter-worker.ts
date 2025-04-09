@@ -1,12 +1,14 @@
-import { expose } from "comlink";
-import { stringCompare } from "../../common/string/compare";
-import { stripDiacritics } from "../../common/string/strip-diacritics";
 import type {
   ClonedDataTableColumnData,
   DataTableRowData,
   SortableColumnContainer,
   SortingDirection,
 } from "./ha-data-table";
+
+import { expose } from "comlink";
+
+import { stringCompare } from "../../common/string/compare";
+import { stripDiacritics } from "../../common/string/strip-diacritics";
 
 const filterData = (
   data: DataTableRowData[],

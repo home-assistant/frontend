@@ -1,4 +1,27 @@
+import type {
+  HatScriptGraph,
+  NodeInfo,
+} from "../../../components/trace/hat-script-graph";
+import type { AutomationEntity } from "../../../data/automation";
+import type { LogbookEntry } from "../../../data/logbook";
+import type {
+  AutomationTrace,
+  AutomationTraceExtended,
+} from "../../../data/trace";
+import type { HomeAssistant, Route } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
+import "../../../components/trace/ha-trace-blueprint-config";
+import "../../../components/trace/ha-trace-config";
+import "../../../components/trace/ha-trace-logbook";
+import "../../../components/trace/ha-trace-path-details";
+import "../../../components/trace/ha-trace-timeline";
+import "../../../components/trace/hat-script-graph";
+import "../../../layouts/hass-subpage";
 import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -8,40 +31,20 @@ import {
   mdiRayStartArrow,
   mdiRefresh,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-icon-button";
-import "../../../components/trace/ha-trace-blueprint-config";
-import "../../../components/trace/ha-trace-config";
-import "../../../components/trace/ha-trace-logbook";
-import "../../../components/trace/ha-trace-path-details";
-import "../../../components/trace/ha-trace-timeline";
-import "../../../components/trace/hat-script-graph";
-import type {
-  HatScriptGraph,
-  NodeInfo,
-} from "../../../components/trace/hat-script-graph";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
-import type { AutomationEntity } from "../../../data/automation";
-import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
-import type {
-  AutomationTrace,
-  AutomationTraceExtended,
-} from "../../../data/trace";
 import { loadTrace, loadTraces } from "../../../data/trace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 

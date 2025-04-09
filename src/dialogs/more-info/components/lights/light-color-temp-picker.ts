@@ -1,8 +1,14 @@
+import type { LightColor, LightEntity } from "../../../../data/light";
+import type { HomeAssistant } from "../../../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../components/ha-control-slider";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { rgb2hex } from "../../../../common/color/convert-color";
 import {
   DEFAULT_MAX_KELVIN,
@@ -12,12 +18,9 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateColorCss } from "../../../../common/entity/state_color";
 import { throttle } from "../../../../common/util/throttle";
-import "../../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../../data/entity";
-import type { LightColor, LightEntity } from "../../../../data/light";
-import { LightColorMode } from "../../../../data/light";
-import type { HomeAssistant } from "../../../../types";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
+import { LightColorMode } from "../../../../data/light";
 
 declare global {
   interface HASSDomEvents {

@@ -1,7 +1,7 @@
+import type { ClassElement } from "../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { ReactiveElement } from "lit";
 import type { InternalPropertyDeclaration } from "lit/decorators";
-import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;
 

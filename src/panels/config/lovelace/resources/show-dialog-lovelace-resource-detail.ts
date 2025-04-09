@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   LovelaceResource,
   LovelaceResourcesMutableParams,
 } from "../../../../data/lovelace/resource";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface LovelaceResourceDetailsDialogParams {
   resource?: LovelaceResource;

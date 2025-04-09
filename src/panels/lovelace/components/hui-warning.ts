@@ -1,9 +1,11 @@
-import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import type { HomeAssistant } from "../../../types";
 import type { TemplateResult } from "lit";
+
+import "../../../components/ha-alert";
+
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../components/ha-alert";
-import type { HomeAssistant } from "../../../types";
 
 export const createEntityNotFoundWarning = (
   hass: HomeAssistant,

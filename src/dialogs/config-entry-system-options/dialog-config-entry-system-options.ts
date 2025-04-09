@@ -1,18 +1,21 @@
-import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-formfield";
-import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { ConfigEntryMutableParams } from "../../data/config_entries";
+import type { HomeAssistant } from "../../types";
+import type { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
+import type { CSSResultGroup } from "lit";
+
+import "../../components/ha-formfield";
+import "../../components/ha-switch";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { createCloseHeading } from "../../components/ha-dialog";
 import { updateConfigEntry } from "../../data/config_entries";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import type { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {

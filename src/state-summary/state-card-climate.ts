@@ -1,10 +1,13 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+
 import "../components/entity/state-info";
 import "../components/ha-climate-state";
+
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../types";
+
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-climate")

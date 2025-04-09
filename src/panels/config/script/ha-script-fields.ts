@@ -1,16 +1,19 @@
-import "@material/mwc-button";
-import { mdiPlus } from "@mdi/js";
+import type { Fields } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
+import type HaScriptFieldRow from "./ha-script-field-row";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
-import type { Fields } from "../../../data/script";
-import type { HomeAssistant } from "../../../types";
 import "./ha-script-field-row";
-import type HaScriptFieldRow from "./ha-script-field-row";
+import "@material/mwc-button";
+
+import { mdiPlus } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("ha-script-fields")
 export default class HaScriptFields extends LitElement {

@@ -1,11 +1,14 @@
+import type { Action } from "../../data/script";
+import type { ActionSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+
+import "../../panels/config/automation/action/ha-automation-action";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { Action } from "../../data/script";
+
 import { migrateAutomationAction } from "../../data/script";
-import type { ActionSelector } from "../../data/selector";
-import "../../panels/config/automation/action/ha-automation-action";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
 export class HaActionSelector extends LitElement {

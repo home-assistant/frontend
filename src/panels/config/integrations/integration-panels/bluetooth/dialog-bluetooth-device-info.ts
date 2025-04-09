@@ -1,14 +1,18 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type { HomeAssistant } from "../../../../../types";
 import type { BluetoothDeviceInfoDialogParams } from "./show-dialog-bluetooth-device-info";
+import type { TemplateResult } from "lit";
+
 import "../../../../../components/ha-button";
-import { showToast } from "../../../../../util/toast";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { showToast } from "../../../../../util/toast";
+
 
 @customElement("dialog-bluetooth-device-info")
 class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {

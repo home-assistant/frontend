@@ -1,21 +1,26 @@
-import { mdiOpenInNew } from "@mdi/js";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
+
+import "../../components/ha-spinner";
+
+import { mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import "../../components/ha-spinner";
 import {
   createAssistPipeline,
   listAssistPipelines,
 } from "../../data/assist_pipeline";
-import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import {
   createConfigFlow,
   fetchConfigFlowInProgress,
   handleConfigFlowStep,
 } from "../../data/config_flow";
+import { listAgents } from "../../data/conversation";
 import {
   type ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntries,
@@ -28,11 +33,9 @@ import {
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
 import { fetchWyomingInfo } from "../../data/wyoming";
-import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { listAgents } from "../../data/conversation";
 
 @customElement("ha-voice-assistant-setup-step-local")
 export class HaVoiceAssistantSetupStepLocal extends LitElement {

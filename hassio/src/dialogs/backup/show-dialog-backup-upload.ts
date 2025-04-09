@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "./dialog-hassio-backup-upload";
+
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 
 export interface HassioBackupUploadDialogParams {
   showBackup: (slug: string) => void;

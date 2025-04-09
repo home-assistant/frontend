@@ -1,32 +1,35 @@
-import { mdiTextureBox } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../common/dom/fire_event";
-import { computeDomain } from "../common/entity/compute_domain";
 import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
 import type { AreaRegistryEntry } from "../data/area_registry";
-import { createAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
 } from "../data/device_registry";
-import { getDeviceEntityDisplayLookup } from "../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-combo-box";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-svg-icon";
+
+import { mdiTextureBox } from "@mdi/js";
+import { LitElement, html } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { computeDomain } from "../common/entity/compute_domain";
+import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
+import { createAreaRegistryEntry } from "../data/area_registry";
+import { getDeviceEntityDisplayLookup } from "../data/device_registry";
+import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 

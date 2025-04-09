@@ -1,13 +1,16 @@
-import "@material/mwc-list/mwc-list-item";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { DataEntryFlowStepMenu } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
+import type { TemplateResult } from "lit";
+
 import "../../components/ha-icon-next";
-import { configFlowContentStyles } from "./styles";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
+import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-menu")
 class StepFlowMenu extends LitElement {

@@ -1,7 +1,9 @@
-import { TextAreaBase } from "@material/mwc-textarea/mwc-textarea-base";
-import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield.css";
-import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
 import type { PropertyValues } from "lit";
+
+import { styles as textareaStyles } from "@material/mwc-textarea/mwc-textarea.css";
+import { styles as textfieldStyles } from "@material/mwc-textfield/mwc-textfield.css";
+
+import { TextAreaBase } from "@material/mwc-textarea/mwc-textarea-base";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 

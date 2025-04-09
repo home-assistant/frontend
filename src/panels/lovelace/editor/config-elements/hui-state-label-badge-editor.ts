@@ -1,14 +1,17 @@
-import { customElement } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
-import "../../../../components/ha-form/ha-form";
 import type {
   EntityBadgeConfig,
   StateLabelBadgeConfig,
 } from "../../badges/types";
+
+import "../../../../components/ha-form/ha-form";
 import "../hui-sub-element-editor";
+import "./hui-card-features-editor";
+
+import { customElement } from "lit/decorators";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
+
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
-import "./hui-card-features-editor";
 import { HuiEntityBadgeEditor } from "./hui-entity-badge-editor";
 
 const badgeConfigStruct = assign(

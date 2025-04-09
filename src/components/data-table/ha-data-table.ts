@@ -1,6 +1,14 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type { HomeAssistant } from "../../types";
+import type { HaCheckbox } from "../ha-checkbox";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../ha-checkbox";
+import "../ha-svg-icon";
+import "../search-input";
+
 import { mdiArrowDown, mdiArrowUp, mdiChevronUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
@@ -13,21 +21,16 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
 import { groupBy } from "../../common/util/group-by";
+import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HomeAssistant } from "../../types";
-import "../ha-checkbox";
-import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-svg-icon";
-import "../search-input";
 import { filterData, sortData } from "./sort-filter";
-import type { LocalizeFunc } from "../../common/translations/localize";
-import { nextRender } from "../../common/util/render-status";
 
 export interface RowClickedEvent {
   id: string;

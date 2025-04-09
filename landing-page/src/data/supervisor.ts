@@ -4,6 +4,7 @@ import type {
   DockerNetwork,
   NetworkInterface,
 } from "../../../src/data/hassio/network";
+
 import { handleFetchPromise } from "../../../src/util/hass-call-api";
 
 export interface NetworkInfo {

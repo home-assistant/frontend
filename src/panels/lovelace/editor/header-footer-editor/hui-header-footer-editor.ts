@@ -1,12 +1,15 @@
-import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-button";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+import type { TemplateResult } from "lit";
+
+import "../../../../components/ha-icon-button";
+
+import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { showCreateHeaderFooterDialog } from "./show-create-headerfooter-dialog";
 
 @customElement("hui-header-footer-editor")

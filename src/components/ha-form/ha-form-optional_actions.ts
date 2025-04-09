@@ -1,17 +1,20 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
-import "./ha-form";
 import type {
   HaFormOptionalActionsSchema,
   HaFormDataContainer,
   HaFormElement,
   HaFormSchema,
 } from "./types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-form";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { stopPropagation } from "../../common/dom/stop_propagation";
 
 const NO_ACTIONS = [];
 

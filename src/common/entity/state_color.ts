@@ -1,7 +1,8 @@
+import type { GroupEntity } from "../../data/group";
 /** Return a color representing a state. */
 import type { HassEntity } from "home-assistant-js-websocket";
+
 import { UNAVAILABLE } from "../../data/entity";
-import type { GroupEntity } from "../../data/group";
 import { computeGroupDomain } from "../../data/group";
 import { computeCssVariable } from "../../resources/css-variables";
 import { slugify } from "../string/slugify";

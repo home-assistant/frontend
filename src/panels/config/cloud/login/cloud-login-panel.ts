@@ -1,27 +1,30 @@
-import "@material/mwc-list/mwc-list";
-import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
+import type { HomeAssistant } from "../../../../types";
+import type { CloudLogin } from "./cloud-login";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { navigate } from "../../../../common/navigate";
+
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
 import "../../../../components/ha-list-item";
-import "../../../../components/ha-button-menu";
+import "../../../../layouts/hass-subpage";
+import "../../ha-config-section";
+import "./cloud-login";
+import "@material/mwc-list/mwc-list";
+
+import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { navigate } from "../../../../common/navigate";
 import { removeCloudData } from "../../../../data/cloud";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import "../../ha-config-section";
-import "./cloud-login";
 import { showSupportPackageDialog } from "../account/show-dialog-cloud-support-package";
-import type { CloudLogin } from "./cloud-login";
 
 @customElement("cloud-login-panel")
 export class CloudLoginPanel extends LitElement {

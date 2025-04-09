@@ -1,5 +1,15 @@
-import "@material/mwc-button";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../types";
+import type { Lovelace, LovelaceCard } from "../types";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "@material/mwc-button";
+
 import {
   mdiContentCopy,
   mdiContentCut,
@@ -10,16 +20,11 @@ import {
   mdiPlus,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
+
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import { saveConfig } from "../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import {
@@ -27,7 +32,6 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import {
   addCard,
@@ -43,7 +47,6 @@ import {
   parseLovelaceCardPath,
 } from "../editor/lovelace-path";
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
-import type { Lovelace, LovelaceCard } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {

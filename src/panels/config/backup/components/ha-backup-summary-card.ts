@@ -1,3 +1,8 @@
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-spinner";
+
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
@@ -7,10 +12,6 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-button";
-import "../../../../components/ha-card";
-import "../../../../components/ha-spinner";
-import "../../../../components/ha-icon";
 
 type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
 

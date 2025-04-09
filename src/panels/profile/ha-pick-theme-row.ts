@@ -1,20 +1,23 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+import type { HaRadio } from "../../components/ha-radio";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+
 import "../../components/ha-formfield";
 import "../../components/ha-radio";
-import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import {
   DEFAULT_ACCENT_COLOR,
   DEFAULT_PRIMARY_COLOR,
 } from "../../resources/styles-data";
-import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 const USE_DEFAULT_THEME = "__USE_DEFAULT_THEME__";

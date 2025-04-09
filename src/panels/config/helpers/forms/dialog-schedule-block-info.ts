@@ -1,18 +1,21 @@
-import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
-import memoizeOne from "memoize-one";
-import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-form/ha-form";
-import "../../../../components/ha-button";
-import { haStyleDialog } from "../../../../resources/styles";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
   ScheduleBlockInfo,
   ScheduleBlockInfoDialogParams,
 } from "./show-dialog-schedule-block-info";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../resources/styles";
 
 class DialogScheduleBlockInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

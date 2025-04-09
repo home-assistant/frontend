@@ -1,9 +1,11 @@
+import type { Constructor } from "../types";
 import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 import type { PaperTabElement } from "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
 import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
+
+import "@polymer/paper-tabs/paper-tabs";
+
 import { customElement } from "lit/decorators";
-import type { Constructor } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const PaperTabs = customElements.get(

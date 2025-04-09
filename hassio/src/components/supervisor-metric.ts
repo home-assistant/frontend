@@ -1,9 +1,12 @@
 import type { TemplateResult } from "lit";
+
+import "../../../src/components/ha-bar";
+import "../../../src/components/ha-settings-row";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../src/components/ha-bar";
-import "../../../src/components/ha-settings-row";
+
 import { roundWithOneDecimal } from "../../../src/util/calculate";
 
 @customElement("supervisor-metric")

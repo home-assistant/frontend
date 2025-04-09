@@ -1,5 +1,5 @@
-import type { HassEventBase } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import type { HassEventBase } from "home-assistant-js-websocket";
 
 export const EVENT_TAG_SCANNED = "tag_scanned";
 

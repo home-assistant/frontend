@@ -1,16 +1,17 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
+import type { Statistics } from "./recorder";
+import type { FrontendLocaleData } from "./translation";
 import type {
   HassConfig,
   HassEntities,
   HassEntity,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
-import type { FrontendLocaleData } from "./translation";
-import type { Statistics } from "./recorder";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [

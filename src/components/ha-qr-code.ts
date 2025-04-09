@@ -1,8 +1,11 @@
 import type { PropertyValues } from "lit";
+
+import "./ha-alert";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import QRCode from "qrcode";
-import "./ha-alert";
+
 import { rgb2hex } from "../common/color/convert-color";
 
 @customElement("ha-qr-code")

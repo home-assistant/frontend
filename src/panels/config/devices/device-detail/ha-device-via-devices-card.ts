@@ -1,13 +1,16 @@
+import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon-next";
 import "@material/mwc-list/mwc-list-item";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon-next";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import type { HomeAssistant } from "../../../../types";
 
 const MAX_VISIBLE_VIA_DEVICES = 10;
 

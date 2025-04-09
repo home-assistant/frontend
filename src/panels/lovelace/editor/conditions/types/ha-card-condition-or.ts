@@ -1,15 +1,18 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { any, array, assert, literal, object, optional } from "superstruct";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../../types";
 import type {
   Condition,
   OrCondition,
   StateCondition,
 } from "../../../common/validate-condition";
+
+import "../../../../../components/ha-form/ha-form";
 import "../ha-card-conditions-editor";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { any, array, assert, literal, object, optional } from "superstruct";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const orConditionStruct = object({
   condition: literal("or"),

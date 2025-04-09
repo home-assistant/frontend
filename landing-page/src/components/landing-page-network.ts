@@ -1,21 +1,24 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import memoizeOne from "memoize-one";
-import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
 import type {
   LandingPageKeys,
   LocalizeFunc,
 } from "../../../src/common/translations/localize";
-import "../../../src/components/ha-button";
+import type { NetworkInterface } from "../../../src/data/hassio/network";
+
 import "../../../src/components/ha-alert";
+import "../../../src/components/ha-button";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import {
   ALTERNATIVE_DNS_SERVERS,
   setSupervisorNetworkDns,
   type NetworkInfo,
 } from "../data/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import type { NetworkInterface } from "../../../src/data/hassio/network";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("landing-page-network")
 class LandingPageNetwork extends LitElement {

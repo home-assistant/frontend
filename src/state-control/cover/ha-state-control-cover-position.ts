@@ -1,14 +1,17 @@
+import type { CoverEntity } from "../../data/cover";
+import type { HomeAssistant } from "../../types";
 import type { TemplateResult } from "lit";
+
+import "../../components/ha-control-slider";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import { stateColorCss } from "../../common/entity/state_color";
-import "../../components/ha-control-slider";
-import type { CoverEntity } from "../../data/cover";
 import { UNAVAILABLE } from "../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-cover-position")
 export class HaStateControlCoverPosition extends LitElement {

@@ -1,3 +1,5 @@
+import type { HomeAssistant } from "../../types";
+
 import {
   addDays,
   subHours,
@@ -14,7 +16,7 @@ import {
   subDays,
   subMonths,
 } from "date-fns";
-import type { HomeAssistant } from "../../types";
+
 import { calcDate } from "./calc_date";
 import { firstWeekdayIndex } from "./first_weekday";
 

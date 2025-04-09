@@ -1,26 +1,29 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
+
 import {
   mdiSprout,
   mdiThermometer,
   mdiWaterPercent,
   mdiWhiteBalanceSunny,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-card";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
 
 const SENSOR_ICONS = {
   moisture: mdiWaterPercent,

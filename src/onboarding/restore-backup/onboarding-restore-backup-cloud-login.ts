@@ -1,15 +1,18 @@
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import "../../panels/config/cloud/login/cloud-login";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-spinner";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupContentExtended } from "../../data/backup";
+import type { CloudForgotPasswordCard } from "../../panels/config/cloud/forgot-password/cloud-forgot-password-card";
+import type { CloudLogin } from "../../panels/config/cloud/login/cloud-login";
+
+import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-spinner";
+import "../../panels/config/cloud/login/cloud-login";
+
+import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+
 import { navigate } from "../../common/navigate";
 import { removeSearchParam } from "../../common/url/search-params";
 import { onBoardingStyles } from "../styles";
-import type { CloudLogin } from "../../panels/config/cloud/login/cloud-login";
-import type { CloudForgotPasswordCard } from "../../panels/config/cloud/forgot-password/cloud-forgot-password-card";
 
 @customElement("onboarding-restore-backup-cloud-login")
 class OnboardingRestoreBackupCloudLogin extends LitElement {

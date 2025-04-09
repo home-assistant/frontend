@@ -1,3 +1,5 @@
+import type { LovelaceHeaderFooterConfig } from "./types";
+
 import {
   array,
   dynamic,
@@ -7,9 +9,9 @@ import {
   union,
   string,
 } from "superstruct";
+
 import { actionConfigStruct } from "../editor/structs/action-struct";
 import { buttonEntityConfigStruct } from "../editor/structs/button-entity-struct";
-import type { LovelaceHeaderFooterConfig } from "./types";
 
 export const pictureHeaderFooterConfigStruct = object({
   type: string(),

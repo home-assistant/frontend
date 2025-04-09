@@ -1,20 +1,22 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
+import type { BackupManagerState, ManagerStateEvent } from "./backup_manager";
+import type { FrontendLocaleData } from "./translation";
+import type { HassConfig } from "home-assistant-js-websocket";
+
 import { memoize } from "@fullcalendar/core/internal";
 import { setHours, setMinutes } from "date-fns";
-import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+
+import checkValidDate from "../common/datetime/check_valid_date";
 import {
   formatDateTime,
   formatDateTimeNumeric,
 } from "../common/datetime/format_date_time";
 import { formatTime } from "../common/datetime/format_time";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
 import { fileDownload } from "../util/file_download";
-import { domainToName } from "./integration";
-import type { FrontendLocaleData } from "./translation";
-import type { BackupManagerState, ManagerStateEvent } from "./backup_manager";
-import checkValidDate from "../common/datetime/check_valid_date";
 import { handleFetchPromise } from "../util/hass-call-api";
+import { domainToName } from "./integration";
 
 export const enum BackupScheduleRecurrence {
   NEVER = "never",

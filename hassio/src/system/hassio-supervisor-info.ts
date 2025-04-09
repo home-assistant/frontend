@@ -1,25 +1,30 @@
+import type { HassioStats } from "../../../src/data/hassio/common";
+import type { SupervisorOptions } from "../../../src/data/hassio/supervisor";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../src/types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
-import type { HassioStats } from "../../../src/data/hassio/common";
+import "../components/supervisor-metric";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
   extractApiErrorMessage,
   fetchHassioStats,
 } from "../../../src/data/hassio/common";
-import type { SupervisorOptions } from "../../../src/data/hassio/supervisor";
 import {
   reloadSupervisor,
   restartSupervisor,
   setSupervisorOption,
 } from "../../../src/data/hassio/supervisor";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -30,10 +35,8 @@ import {
   UNSUPPORTED_REASON_URL,
 } from "../../../src/panels/config/repairs/dialog-system-information";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";
 import { documentationUrl } from "../../../src/util/documentation-url";
-import "../components/supervisor-metric";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-supervisor-info")

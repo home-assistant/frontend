@@ -1,15 +1,18 @@
+import type { HASSDomEvent } from "../common/dom/fire_event";
+import type { HomeAssistant, Route } from "../types";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../components/ha-drawer";
+import "./partial-panel-resolver";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { HASSDomEvent } from "../common/dom/fire_event";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
-import "../components/ha-drawer";
-import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
-import type { HomeAssistant, Route } from "../types";
-import "./partial-panel-resolver";
 import { computeRTLDirection } from "../common/util/compute_rtl";
+import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 
 declare global {
   // for fire event

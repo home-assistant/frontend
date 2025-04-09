@@ -1,10 +1,12 @@
-import { mdiDotsVertical } from "@mdi/js";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-button-menu";
 import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-button";
-import type { HomeAssistant } from "../../../types";
+
+import { mdiDotsVertical } from "@mdi/js";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-integration-overflow-menu")
 export class HaIntegrationOverflowMenu extends LitElement {

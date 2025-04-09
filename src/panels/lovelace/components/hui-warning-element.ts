@@ -1,8 +1,10 @@
-import { mdiAlertOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
+
+import "../../../components/ha-svg-icon";
+
+import { mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-svg-icon";
 
 @customElement("hui-warning-element")
 export class HuiWarningElement extends LitElement {

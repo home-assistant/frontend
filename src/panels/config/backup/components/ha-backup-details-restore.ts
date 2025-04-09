@@ -1,17 +1,20 @@
-import memoizeOne from "memoize-one";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../../../components/ha-card";
-import "../../../../components/ha-md-list";
-import "../../../../components/ha-md-list-item";
-import "../../../../components/ha-button";
-import "./ha-backup-data-picker";
-import type { HomeAssistant } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type {
   BackupContentExtended,
   BackupData,
 } from "../../../../data/backup";
+import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-card";
+import "../../../../components/ha-md-list";
+import "../../../../components/ha-md-list-item";
+import "./ha-backup-data-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("ha-backup-details-restore")

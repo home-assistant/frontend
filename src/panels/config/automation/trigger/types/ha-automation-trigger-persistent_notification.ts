@@ -1,18 +1,20 @@
-import memoizeOne from "memoize-one";
-
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-check-list-item";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-textfield";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { PersistentNotificationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-check-list-item";
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-textfield";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const DEFAULT_UPDATE_TYPES = ["added", "removed"];
 const DEFAULT_NOTIFICATION_ID = "";

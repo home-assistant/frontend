@@ -1,12 +1,15 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-switch";
 import type { StopAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+
+import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-switch";
+import "../../../../../components/ha-textfield";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("ha-automation-action-stop")
 export class HaStopAction extends LitElement implements ActionElement {

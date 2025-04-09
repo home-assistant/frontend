@@ -1,21 +1,24 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-areas-display-editor";
 import type { AreasDisplayValue } from "../../../../../components/ha-areas-display-editor";
+import type { HomeAssistant } from "../../../../../types";
+import type { LovelaceStrategyEditor } from "../../types";
+import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
+import type { AreaStrategyGroup } from "../helpers/areas-strategy-helper";
+
+import "../../../../../components/ha-areas-display-editor";
 import "../../../../../components/ha-entities-display-editor";
+import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
-import "../../../../../components/ha-icon";
-import type { HomeAssistant } from "../../../../../types";
-import type { AreaStrategyGroup } from "../helpers/areas-strategy-helper";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUPS,
   getAreaGroupedEntities,
 } from "../helpers/areas-strategy-helper";
-import type { LovelaceStrategyEditor } from "../../types";
-import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor

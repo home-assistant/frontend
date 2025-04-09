@@ -1,21 +1,24 @@
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import type { LawnMowerEntity } from "../../../data/lawn_mower";
+import type { HomeAssistant } from "../../../types";
+
+import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-icon-button";
+
 import { mdiHomeImportOutline, mdiPause, mdiPlay } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
-import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-icon-button";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import type { LawnMowerEntity } from "../../../data/lawn_mower";
 import { LawnMowerEntityFeature } from "../../../data/lawn_mower";
-import type { HomeAssistant } from "../../../types";
 
 interface LawnMowerCommand {
   translationKey: string;

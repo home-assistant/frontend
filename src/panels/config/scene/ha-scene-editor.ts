@@ -1,32 +1,16 @@
-import { consume } from "@lit-labs/context";
-import "@material/mwc-list/mwc-list";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type {
+  SceneConfig,
+  SceneEntities,
+  SceneEntity,
+  SceneMetaData,
+} from "../../../data/scene";
+import type { HomeAssistant, Route } from "../../../types";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import {
-  mdiCog,
-  mdiContentDuplicate,
-  mdiContentSave,
-  mdiDelete,
-  mdiDotsVertical,
-  mdiEye,
-  mdiInformationOutline,
-  mdiMotionPlayOutline,
-  mdiPlay,
-  mdiPlaylistEdit,
-  mdiTag,
-} from "@mdi/js";
 import type { HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { navigate } from "../../../common/navigate";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
+
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
@@ -40,16 +24,38 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
+import "../../../layouts/hass-subpage";
+import "../ha-config-section";
+import "@material/mwc-list/mwc-list";
+
+import { consume } from "@lit-labs/context";
+import {
+  mdiCog,
+  mdiContentDuplicate,
+  mdiContentSave,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiEye,
+  mdiInformationOutline,
+  mdiMotionPlayOutline,
+  mdiPlay,
+  mdiPlaylistEdit,
+  mdiTag,
+} from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { navigate } from "../../../common/navigate";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { afterNextRender } from "../../../common/util/render-status";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type {
-  SceneConfig,
-  SceneEntities,
-  SceneEntity,
-  SceneMetaData,
-} from "../../../data/scene";
 import {
   activateScene,
   applyScene,
@@ -65,14 +71,11 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import "../ha-config-section";
 
 interface DeviceEntities {
   id: string;

@@ -1,3 +1,10 @@
+import type {
+  Statistics,
+  StatisticsMetaData,
+  StatisticValue,
+} from "../../../src/data/recorder";
+import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+
 import {
   addDays,
   addHours,
@@ -5,12 +12,6 @@ import {
   differenceInHours,
   endOfDay,
 } from "date-fns";
-import type {
-  Statistics,
-  StatisticsMetaData,
-  StatisticValue,
-} from "../../../src/data/recorder";
-import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 const generateMeanStatistics = (
   start: Date,

@@ -1,9 +1,16 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../common/entity/compute_domain";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "./ha-more-info-history";
+import "./ha-more-info-logbook";
+import "./more-info-content";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { computeDomain } from "../../common/entity/compute_domain";
+import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
@@ -12,10 +19,6 @@ import {
   DOMAINS_NO_INFO,
   DOMAINS_WITH_MORE_INFO,
 } from "./const";
-import "./ha-more-info-history";
-import "./ha-more-info-logbook";
-import "./more-info-content";
-import { getSensorNumericDeviceClasses } from "../../data/sensor";
 
 @customElement("ha-more-info-info")
 export class MoreInfoInfo extends LitElement {

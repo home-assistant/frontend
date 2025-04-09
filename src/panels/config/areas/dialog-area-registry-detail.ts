@@ -1,34 +1,37 @@
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-alert";
-import "../../../components/ha-aliases-editor";
-import "../../../components/ha-picture-upload";
-import type { HaPictureUpload } from "../../../components/ha-picture-upload";
-import "../../../components/ha-settings-row";
-import "../../../components/ha-icon-picker";
-import "../../../components/ha-floor-picker";
-import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-textfield";
-import "../../../components/ha-labels-picker";
+import type { HaPictureUpload } from "../../../components/ha-picture-upload";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
 } from "../../../data/area_registry";
-import { deleteAreaRegistryEntry } from "../../../data/area_registry";
 import type { CropOptions } from "../../../dialogs/image-cropper-dialog/show-image-cropper-dialog";
-import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-alert";
+import "../../../components/ha-aliases-editor";
+import "../../../components/ha-floor-picker";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-labels-picker";
+import "../../../components/ha-picture-upload";
+import "../../../components/ha-settings-row";
+import "../../../components/ha-textfield";
+
+import { css, html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import { deleteAreaRegistryEntry } from "../../../data/area_registry";
 import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
 } from "../../../data/sensor";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import { haStyleDialog } from "../../../resources/styles";
 
 const cropOptions: CropOptions = {
   round: false,

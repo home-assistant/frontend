@@ -1,10 +1,12 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { WaitAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 const SCHEMA = [
   {

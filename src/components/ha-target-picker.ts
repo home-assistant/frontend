@@ -1,7 +1,31 @@
+import type { AreaRegistryEntry } from "../data/area_registry";
+import type { DeviceRegistryEntry } from "../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
+import type { LabelRegistryEntry } from "../data/label_registry";
+import type { HomeAssistant } from "../types";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
+import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type {
+  HassEntity,
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
+
+import "./device/ha-device-picker";
+import "./entity/ha-entity-picker";
+import "./ha-area-floor-picker";
+import "./ha-icon-button";
+import "./ha-input-helper-text";
+import "./ha-svg-icon";
+import "./ha-tooltip";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-menu/mwc-menu-surface";
+
 import {
   mdiClose,
   mdiDevices,
@@ -11,16 +35,10 @@ import {
   mdiTextureBox,
   mdiUnfoldMoreVertical,
 } from "@mdi/js";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import type {
-  HassEntity,
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { ensureArray } from "../common/array/ensure-array";
 import { computeCssColor } from "../common/color/compute-color";
 import { hex2rgb } from "../common/color/convert-color";
@@ -30,23 +48,9 @@ import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import type { AreaRegistryEntry } from "../data/area_registry";
-import type { DeviceRegistryEntry } from "../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../types";
-import "./device/ha-device-picker";
-import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./entity/ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
-import "./ha-area-floor-picker";
 import { floorDefaultIconPath } from "./ha-floor-icon";
-import "./ha-icon-button";
-import "./ha-input-helper-text";
-import "./ha-svg-icon";
-import "./ha-tooltip";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {

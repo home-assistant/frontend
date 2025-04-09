@@ -1,8 +1,10 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { BackupLocationSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-mount-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-backup_location")
 export class HaBackupLocationSelector extends LitElement {

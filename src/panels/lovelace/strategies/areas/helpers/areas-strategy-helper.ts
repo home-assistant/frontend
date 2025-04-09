@@ -1,20 +1,21 @@
+import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
+import type { AreaRegistryEntry } from "../../../../../data/area_registry";
+import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../../../../types";
+import type { LovelaceCardFeatureConfig } from "../../../card-features/types";
+import type { TileCardConfig } from "../../../cards/types";
+
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
-import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
-import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import { areaCompare } from "../../../../../data/area_registry";
-import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
-import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-cover-open-close-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
 import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../../card-features/types";
-import type { TileCardConfig } from "../../../cards/types";
 
 export const AREA_STRATEGY_GROUPS = [
   "lights",

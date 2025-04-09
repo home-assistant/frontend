@@ -1,16 +1,19 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "./ha-icon";
+import "./ha-svg-icon";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
+
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import {
   DEFAULT_DOMAIN_ICON,
   entityIcon,
   FALLBACK_DOMAIN_ICONS,
 } from "../data/icons";
-import type { HomeAssistant } from "../types";
-import "./ha-icon";
-import "./ha-svg-icon";
 
 @customElement("ha-state-icon")
 export class HaStateIcon extends LitElement {

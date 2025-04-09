@@ -1,6 +1,8 @@
 import type { TemplateResult } from "lit";
+
 import { css, LitElement, svg } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import {
   getValueInPercentage,
   normalize,

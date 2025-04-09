@@ -1,23 +1,26 @@
-import { mdiBackupRestore, mdiFolder, mdiHarddisk, mdiPlayBox } from "@mdi/js";
+import type { SupervisorMounts } from "../data/supervisor/mounts";
+import type { HomeAssistant } from "../types";
+import type { HaSelect } from "./ha-select";
 import type { CSSResultGroup } from "lit";
+
+import "./ha-alert";
+import "./ha-list-item";
+import "./ha-select";
+
+import { mdiBackupRestore, mdiFolder, mdiHarddisk, mdiPlayBox } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import type { SupervisorMounts } from "../data/supervisor/mounts";
 import {
   fetchSupervisorMounts,
   SupervisorMountType,
   SupervisorMountUsage,
 } from "../data/supervisor/mounts";
-import type { HomeAssistant } from "../types";
-import "./ha-alert";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
 
 const _BACKUP_DATA_DISK_ = "/backup";
 

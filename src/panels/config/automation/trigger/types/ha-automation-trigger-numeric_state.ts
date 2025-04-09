@@ -1,16 +1,19 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { hasTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { NumericStateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-form/ha-form";
+
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../../../../common/array/ensure-array";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
 
 @customElement("ha-automation-trigger-numeric_state")
 export class HaNumericStateTrigger extends LitElement {

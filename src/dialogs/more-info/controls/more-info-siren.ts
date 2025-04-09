@@ -1,16 +1,19 @@
-import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-attributes";
+import "../../../components/ha-button";
+import "../../../state-control/ha-state-control-toggle";
+import "../components/ha-more-info-state-header";
+
+import { mdiVolumeHigh, mdiVolumeOff } from "@mdi/js";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../components/ha-attributes";
-import "../../../state-control/ha-state-control-toggle";
-import "../../../components/ha-button";
-import type { HomeAssistant } from "../../../types";
-import "../components/ha-more-info-state-header";
-import { moreInfoControlStyle } from "../components/more-info-control-style";
+
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SirenEntityFeature } from "../../../data/siren";
+import { moreInfoControlStyle } from "../components/more-info-control-style";
 import { showSirenAdvancedControlsView } from "../components/siren/show-dialog-siren-advanced-controls";
 
 @customElement("more-info-siren")

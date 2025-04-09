@@ -1,14 +1,32 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type {
+  Brand,
+  Brands,
+  Integration,
+  Integrations,
+} from "../../../data/integrations";
+import type { HomeAssistant } from "../../../types";
+import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-spinner";
+import "../../../components/search-input";
+import "./ha-domain-integrations";
+import "./ha-integration-list-item";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list";
+
+import Fuse from "fuse.js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
@@ -17,23 +35,13 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-icon-button-prev";
-import "../../../components/search-input";
 import { getConfigEntries } from "../../../data/config_entries";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   domainToName,
   fetchIntegrationManifest,
 } from "../../../data/integration";
-import type {
-  Brand,
-  Brands,
-  Integration,
-  Integrations,
-} from "../../../data/integrations";
 import {
   findIntegration,
   getIntegrationDescriptions,
@@ -45,11 +53,6 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import { loadVirtualizer } from "../../../resources/virtualizer";
-import type { HomeAssistant } from "../../../types";
-import "./ha-domain-integrations";
-import "./ha-integration-list-item";
-import "../../../components/ha-spinner";
-import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 
 export interface IntegrationListItem {

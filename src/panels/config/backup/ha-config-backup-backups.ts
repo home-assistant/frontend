@@ -1,3 +1,34 @@
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  DataTableRowData,
+  RowClickedEvent,
+  SelectionChangedEvent,
+} from "../../../components/data-table/ha-data-table";
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContent,
+} from "../../../data/backup";
+import type { ManagerStateEvent } from "../../../data/backup_manager";
+import type { CloudStatus } from "../../../data/cloud";
+import type { DataTableFiltersValues } from "../../../data/data_table_filters";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import type { HomeAssistant, Route } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-fab";
+import "../../../components/ha-filter-states";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
+import "../../../layouts/hass-tabs-subpage-data-table";
+
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -7,10 +38,10 @@ import {
   mdiPlus,
   mdiUpload,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
@@ -18,28 +49,6 @@ import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import type {
-  DataTableColumnContainer,
-  DataTableRowData,
-  RowClickedEvent,
-  SelectionChangedEvent,
-} from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-spinner";
-import "../../../components/ha-fab";
-import "../../../components/ha-filter-states";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
-import type {
-  BackupAgent,
-  BackupConfig,
-  BackupContent,
-} from "../../../data/backup";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -52,19 +61,13 @@ import {
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
-import type { ManagerStateEvent } from "../../../data/backup_manager";
-import type { CloudStatus } from "../../../data/cloud";
-import type { DataTableFiltersValues } from "../../../data/data_table_filters";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { bytesToString } from "../../../util/bytes-to-string";
 import { showGenerateBackupDialog } from "./dialogs/show-dialog-generate-backup";

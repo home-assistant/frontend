@@ -1,3 +1,10 @@
+import type { CloudStatus } from "../../data/cloud";
+import type { RouterOptions } from "../../layouts/hass-router-page";
+import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import type { HomeAssistant, Route } from "../../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
 import { ContextProvider } from "@lit-labs/context";
 import {
   mdiAccount,
@@ -29,12 +36,10 @@ import {
   mdiUpdate,
   mdiViewDashboard,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import type { CloudStatus } from "../../data/cloud";
 import { fetchCloudStatus } from "../../data/cloud";
 import { fullEntitiesContext, labelsContext } from "../../data/context";
 import {
@@ -43,11 +48,8 @@ import {
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
 import { subscribeLabelRegistry } from "../../data/label_registry";
-import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant, Route } from "../../types";
 
 declare global {
   // for fire event

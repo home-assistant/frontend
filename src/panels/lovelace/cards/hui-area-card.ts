@@ -1,3 +1,23 @@
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { HomeAssistant } from "../../../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
+import type { AreaCardConfig } from "./types";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-domain-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
+import "../components/hui-image";
+import "../components/hui-warning";
+
 import {
   mdiFan,
   mdiFanOff,
@@ -8,13 +28,12 @@ import {
   mdiToggleSwitchOff,
   mdiWaterAlert,
 } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -26,28 +45,12 @@ import {
 import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import { subscribeOne } from "../../../common/util/subscribe-one";
-import "../../../components/ha-card";
-import "../../../components/ha-domain-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-state-icon";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { subscribeAreaRegistry } from "../../../data/area_registry";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import { isUnavailableState } from "../../../data/entity";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
-import "../components/hui-image";
-import "../components/hui-warning";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
-import type { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
 

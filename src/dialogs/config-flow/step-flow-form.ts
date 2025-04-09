@@ -1,23 +1,26 @@
-import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../common/dom/fire_event";
-import { isNavigationClick } from "../../common/dom/is-navigation-click";
-import "../../components/ha-alert";
-import "../../components/ha-spinner";
-import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
-import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
-import "../../components/ha-markdown";
-import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
-import { configFlowContentStyles } from "./styles";
-import { haStyle } from "../../resources/styles";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-alert";
+import "../../components/ha-form/ha-form";
+import "../../components/ha-markdown";
+import "../../components/ha-spinner";
+import "@material/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../common/dom/fire_event";
+import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
+import { autocompleteLoginFields } from "../../data/auth";
 import { previewModule } from "../../data/preview";
+import { haStyle } from "../../resources/styles";
+import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {

@@ -1,12 +1,15 @@
-import { mdiClose, mdiMagnify } from "@mdi/js";
+import type { HomeAssistant } from "../types";
+import type { HaTextField } from "./ha-textfield";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+
 import "./ha-icon-button";
 import "./ha-svg-icon";
 import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
-import type { HomeAssistant } from "../types";
+
+import { mdiClose, mdiMagnify } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("search-input")

@@ -1,20 +1,23 @@
-import { mdiEye, mdiEyeOff } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-icon-button";
-import "../ha-textfield";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import type { HaTextField } from "../ha-textfield";
 import type {
   HaFormElement,
   HaFormStringData,
   HaFormStringSchema,
 } from "./types";
-import type {
-  LocalizeFunc,
-  LocalizeKeys,
-} from "../../common/translations/localize";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../ha-icon-button";
+import "../ha-textfield";
+
+import { mdiEye, mdiEyeOff } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 

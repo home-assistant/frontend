@@ -1,5 +1,19 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { LovelaceCardConfig } from "../../data/lovelace/config/card";
+import type { HomeAssistant } from "../../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-button";
+import "../../components/ha-fab";
+import "../../components/ha-icon-button";
+import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
+import "../../components/ha-state-icon";
+import "../../components/ha-svg-icon";
+import "../../components/ha-two-pane-top-app-bar-fixed";
+import "../lovelace/cards/hui-card";
 import "@material/mwc-list";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiChevronDown,
   mdiCommentProcessingOutline,
@@ -8,10 +22,10 @@ import {
   mdiInformationOutline,
   mdiPlus,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -23,18 +37,9 @@ import {
   createSearchParam,
   extractSearchParam,
 } from "../../common/url/search-params";
-import "../../components/ha-button";
-import "../../components/ha-fab";
-import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
-import "../../components/ha-menu-button";
-import "../../components/ha-state-icon";
-import "../../components/ha-svg-icon";
-import "../../components/ha-two-pane-top-app-bar-fixed";
 import { deleteConfigEntry } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
-import type { LovelaceCardConfig } from "../../data/lovelace/config/card";
 import { TodoListEntityFeature, getTodoLists } from "../../data/todo";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import {
@@ -43,8 +48,6 @@ import {
 } from "../../dialogs/generic/show-dialog-box";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../lovelace/cards/hui-card";
 import { showTodoItemEditDialog } from "./show-dialog-todo-item-editor";
 
 @customElement("ha-panel-todo")

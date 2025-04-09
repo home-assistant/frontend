@@ -1,18 +1,21 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
   SelectionChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import type { HomeAssistant } from "../../../../types";
+import type { TemplateResult } from "lit";
+
+import "../../../../components/data-table/ha-data-table";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-relative-time";
-import type { HomeAssistant } from "../../../../types";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-entity-picker-table")
 export class HuiEntityPickerTable extends LitElement {

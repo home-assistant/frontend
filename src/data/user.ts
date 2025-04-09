@@ -1,11 +1,12 @@
+import type { HomeAssistant, TranslationDict } from "../types";
+import type { Credential } from "./auth";
+
 import {
   mdiCrownCircleOutline,
   mdiAlphaSCircleOutline,
   mdiHomeCircleOutline,
   mdiCancel,
 } from "@mdi/js";
-import type { HomeAssistant, TranslationDict } from "../types";
-import type { Credential } from "./auth";
 
 export const SYSTEM_GROUP_ID_ADMIN = "system-admin";
 export const SYSTEM_GROUP_ID_USER = "system-users";

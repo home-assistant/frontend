@@ -1,23 +1,26 @@
-import "@material/mwc-button";
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../types";
+import type { SaveDialogParams } from "./show-save-config-dialog";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-spinner";
+
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
-import type { LovelaceConfig } from "../../../data/lovelace/config/types";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import "@material/mwc-button";
+
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { expandLovelaceConfigStrategies } from "../strategies/get-strategy";
-import type { SaveDialogParams } from "./show-save-config-dialog";
 
 const EMPTY_CONFIG: LovelaceConfig = { views: [{ title: "Home" }] };
 

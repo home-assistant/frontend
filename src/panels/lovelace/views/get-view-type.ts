@@ -1,4 +1,5 @@
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+
 import {
   MASONRY_VIEW_LAYOUT,
   PANEL_VIEW_LAYOUT,

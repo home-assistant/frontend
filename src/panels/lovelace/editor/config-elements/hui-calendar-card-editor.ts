@@ -1,3 +1,12 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { CalendarCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/entity/ha-entities-picker";
+import "../../../../components/ha-form/ha-form";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -11,14 +20,8 @@ import {
   string,
   union,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/entity/ha-entities-picker";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { CalendarCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(

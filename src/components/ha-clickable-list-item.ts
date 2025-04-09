@@ -1,6 +1,8 @@
 import type { CSSResultGroup } from "lit";
+
 import { css, html } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { HaListItem } from "./ha-list-item";
 
 @customElement("ha-clickable-list-item")

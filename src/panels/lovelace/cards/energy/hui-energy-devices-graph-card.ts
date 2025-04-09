@@ -1,18 +1,27 @@
+import type { EnergyData } from "../../../../data/energy";
+import type { ECOption } from "../../../../resources/echarts";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyDevicesGraphCardConfig } from "../types";
+import type { BarSeriesOption } from "echarts/charts";
+import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import type { BarSeriesOption } from "echarts/charts";
-import type { ECElementEvent } from "echarts/types/dist/shared";
+
 import { getGraphColorByIndex } from "../../../../common/color/colors";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   formatNumber,
   getNumberFormatOptions,
 } from "../../../../common/number/format_number";
-import "../../../../components/chart/ha-chart-base";
-import type { EnergyData } from "../../../../data/energy";
 import { getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -20,14 +29,8 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
-import type { EnergyDevicesGraphCardConfig } from "../types";
-import { hasConfigChanged } from "../../common/has-changed";
-import type { ECOption } from "../../../../resources/echarts";
-import "../../../../components/ha-card";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { measureTextWidth } from "../../../../util/text";
+import { hasConfigChanged } from "../../common/has-changed";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard

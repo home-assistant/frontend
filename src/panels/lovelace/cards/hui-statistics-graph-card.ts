@@ -1,31 +1,34 @@
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { subHours, differenceInDays } from "date-fns";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-card";
-import { getEnergyDataCollection } from "../../../data/energy";
-import {
-  getSuggestedMax,
-  getSuggestedPeriod,
-} from "./energy/common/energy-chart-options";
 import type {
   Statistics,
   StatisticsMetaData,
   StatisticType,
 } from "../../../data/recorder";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { StatisticsGraphCardConfig } from "./types";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+
+import { subHours, differenceInDays } from "date-fns";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { getEnergyDataCollection } from "../../../data/energy";
 import {
   fetchStatistics,
   getDisplayUnit,
   getStatisticMetadata,
 } from "../../../data/recorder";
-import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
-import type { StatisticsGraphCardConfig } from "./types";
+import {
+  getSuggestedMax,
+  getSuggestedPeriod,
+} from "./energy/common/energy-chart-options";
 
 export const DEFAULT_DAYS_TO_SHOW = 30;
 

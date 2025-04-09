@@ -1,4 +1,14 @@
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import type { VacuumEntity } from "../../../data/vacuum";
+import type { HomeAssistant } from "../../../types";
+
+import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-attributes";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-select";
 import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiFan,
   mdiHomeImportOutline,
@@ -12,23 +22,16 @@ import {
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/entity/ha-battery-icon";
-import "../../../components/ha-attributes";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import type { VacuumEntity } from "../../../data/vacuum";
 import { VacuumEntityFeature } from "../../../data/vacuum";
-import type { HomeAssistant } from "../../../types";
 
 interface VacuumCommand {
   translationKey: string;

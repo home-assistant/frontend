@@ -1,7 +1,13 @@
+import type { HomeAssistant } from "../types";
+
+import "./ha-hls-player";
+import "./ha-web-rtc-player";
+
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
@@ -15,9 +21,6 @@ import {
   STREAM_TYPE_WEB_RTC,
   type StreamType,
 } from "../data/camera";
-import type { HomeAssistant } from "../types";
-import "./ha-hls-player";
-import "./ha-web-rtc-player";
 
 const MJPEG_STREAM = "mjpeg";
 

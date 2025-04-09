@@ -1,12 +1,14 @@
-import { customElement } from "lit/decorators";
 import type { EntityCardConfig } from "../cards/types";
-import { HuiConditionalBase } from "../components/hui-conditional-base";
-import { createRowElement } from "../create-element/create-row-element";
 import type {
   ConditionalRowConfig,
   EntityConfig,
   LovelaceRow,
 } from "../entity-rows/types";
+
+import { customElement } from "lit/decorators";
+
+import { HuiConditionalBase } from "../components/hui-conditional-base";
+import { createRowElement } from "../create-element/create-row-element";
 
 @customElement("hui-conditional-row")
 class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {

@@ -1,20 +1,23 @@
-import "@material/mwc-list/mwc-list";
-import { mdiFilterVariantRemove } from "@mdi/js";
+import type { HomeAssistant } from "../types";
 import type { CSSResultGroup } from "lit";
+
+import "./ha-check-list-item";
+import "./ha-domain-icon";
+import "./ha-expansion-panel";
+import "./search-input-outlined";
+import "@material/mwc-list/mwc-list";
+
+import { mdiFilterVariantRemove } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../common/dom/fire_event";
+import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
 import { domainToName } from "../data/integration";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-domain-icon";
-import "./ha-expansion-panel";
-import "./ha-check-list-item";
-import "./search-input-outlined";
-import { computeDomain } from "../common/entity/compute_domain";
 
 @customElement("ha-filter-domains")
 export class HaFilterDomains extends LitElement {

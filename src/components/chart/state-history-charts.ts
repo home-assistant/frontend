@@ -1,18 +1,21 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { restoreScroll } from "../../common/decorators/restore-scroll";
 import type {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
 } from "../../data/history";
-import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { PropertyValues } from "lit";
+
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
+
+import { css, html, LitElement } from "lit";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
+import { loadVirtualizer } from "../../resources/virtualizer";
 
 const CANVAS_TIMELINE_ROWS_CHUNK = 10; // Split up the canvases to avoid hitting the render limit
 

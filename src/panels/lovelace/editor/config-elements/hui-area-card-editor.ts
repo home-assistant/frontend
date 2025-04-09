@@ -1,3 +1,11 @@
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { SelectOption } from "../../../../data/selector";
+import type { HomeAssistant } from "../../../../types";
+import type { AreaCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -10,21 +18,16 @@ import {
   optional,
   string,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
+import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 import {
   DEFAULT_ASPECT_RATIO,
   DEVICE_CLASSES,
 } from "../../cards/hui-area-card";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { AreaCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
-import type { SelectOption } from "../../../../data/selector";
-import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

@@ -1,4 +1,3 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   LovelaceSectionElement,
   LovelaceViewElement,
@@ -7,10 +6,6 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import {
-  isCustomType,
-  stripCustomPrefix,
-} from "../../../data/lovelace_custom_cards";
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import type { ErrorCardConfig } from "../cards/types";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
@@ -31,6 +26,12 @@ import type {
   LovelaceHeadingBadgeConstructor,
   LovelaceRowConstructor,
 } from "../types";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  isCustomType,
+  stripCustomPrefix,
+} from "../../../data/lovelace_custom_cards";
 
 const TIMEOUT = 2000;
 

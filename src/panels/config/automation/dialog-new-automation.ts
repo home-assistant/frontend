@@ -1,4 +1,19 @@
+import type {
+  Blueprint,
+  BlueprintDomain,
+  BlueprintSourceType,
+  Blueprints,
+} from "../../../data/blueprint";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../types";
+import type { NewAutomationDialogParams } from "./show-dialog-new-automation";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
+import "../../../components/ha-tip";
 import "@material/mwc-list/mwc-list";
+
 import {
   mdiAccount,
   mdiFile,
@@ -6,35 +21,23 @@ import {
   mdiPencilOutline,
   mdiWeb,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
-import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
-import type {
-  Blueprint,
-  BlueprintDomain,
-  BlueprintSourceType,
-  Blueprints,
-} from "../../../data/blueprint";
 import {
   fetchBlueprints,
   getBlueprintSourceType,
 } from "../../../data/blueprint";
 import { showScriptEditor } from "../../../data/script";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { NewAutomationDialogParams } from "./show-dialog-new-automation";
 
 const SOURCE_TYPE_ICONS: Record<BlueprintSourceType, string> = {
   local: mdiFile,

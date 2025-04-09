@@ -1,58 +1,19 @@
-import { consume } from "@lit-labs/context";
-import {
-  mdiArrowDown,
-  mdiArrowUp,
-  mdiContentCopy,
-  mdiContentCut,
-  mdiContentDuplicate,
-  mdiDelete,
-  mdiDotsVertical,
-  mdiIdentifier,
-  mdiPlayCircleOutline,
-  mdiPlaylistEdit,
-  mdiRenameBox,
-  mdiStopCircleOutline,
-} from "@mdi/js";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { AutomationClipboard, Trigger } from "../../../../data/automation";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { storage } from "../../../../common/decorators/storage";
-import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import { handleStructError } from "../../../../common/structs/handle-errors";
-import { debounce } from "../../../../common/util/debounce";
+
 import "../../../../components/ha-alert";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-menu-item";
-import "../../../../components/ha-md-divider";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-textfield";
 import "../../../../components/ha-list-item";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { AutomationClipboard, Trigger } from "../../../../data/automation";
-import {
-  migrateAutomationTrigger,
-  subscribeTrigger,
-} from "../../../../data/automation";
-import { describeTrigger } from "../../../../data/automation_i18n";
-import { validateConfig } from "../../../../data/config";
-import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-  showPromptDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-md-button-menu";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
+import "../../../../components/ha-textfield";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -71,6 +32,48 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+
+import { consume } from "@lit-labs/context";
+import {
+  mdiArrowDown,
+  mdiArrowUp,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentDuplicate,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiIdentifier,
+  mdiPlayCircleOutline,
+  mdiPlaylistEdit,
+  mdiRenameBox,
+  mdiStopCircleOutline,
+} from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { storage } from "../../../../common/decorators/storage";
+import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefault } from "../../../../common/dom/prevent_default";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { handleStructError } from "../../../../common/structs/handle-errors";
+import { debounce } from "../../../../common/util/debounce";
+import {
+  migrateAutomationTrigger,
+  subscribeTrigger,
+} from "../../../../data/automation";
+import { describeTrigger } from "../../../../data/automation_i18n";
+import { validateConfig } from "../../../../data/config";
+import { fullEntitiesContext } from "../../../../data/context";
+import { TRIGGER_ICONS, isTriggerList } from "../../../../data/trigger";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;

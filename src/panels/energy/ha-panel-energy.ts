@@ -1,18 +1,3 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { mdiPencil, mdiDownload } from "@mdi/js";
-import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-menu-button";
-import "../../components/ha-list-item";
-import "../../components/ha-top-app-bar-fixed";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-energy-period-selector";
-import type { Lovelace } from "../lovelace/types";
-import "../lovelace/views/hui-view";
-import "../lovelace/views/hui-view-container";
-import { navigate } from "../../common/navigate";
 import type {
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
@@ -21,11 +6,29 @@ import type {
   WaterSourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
 } from "../../data/energy";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { HomeAssistant } from "../../types";
+import type { Lovelace } from "../lovelace/types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
+import "../lovelace/components/hui-energy-period-selector";
+import "../lovelace/views/hui-view";
+import "../lovelace/views/hui-view-container";
+
+import { mdiPencil, mdiDownload } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { navigate } from "../../common/navigate";
 import {
   getEnergyDataCollection,
   getEnergyGasUnit,
   getEnergyWaterUnit,
 } from "../../data/energy";
+import { haStyle } from "../../resources/styles";
 import { fileDownload } from "../../util/file_download";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {

@@ -1,25 +1,28 @@
+import type { Schedule, ScheduleDay } from "../../../../data/schedule";
+import type { HomeAssistant } from "../../../../types";
 import type { CalendarOptions } from "@fullcalendar/core";
+import type { Day } from "date-fns";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-textfield";
+
 import { Calendar } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import type { Day } from "date-fns";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { firstWeekdayIndex } from "../../../../common/datetime/first_weekday";
 import { formatTime24h } from "../../../../common/datetime/format_time";
 import { useAmPm } from "../../../../common/datetime/use_am_pm";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-textfield";
-import type { Schedule, ScheduleDay } from "../../../../data/schedule";
 import { weekdays } from "../../../../data/schedule";
 import { TimeZone } from "../../../../data/translation";
-import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
+import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
 
 const defaultFullCalendarConfig: CalendarOptions = {
   plugins: [timeGridPlugin, interactionPlugin],

@@ -1,11 +1,13 @@
 /* eslint-disable lit/value-after-constraints */
 /* eslint-disable lit/prefer-static-styles */
-import { floatingLabel } from "@material/mwc-floating-label/mwc-floating-label-directive";
 import type { TemplateResult } from "lit";
+
+import { floatingLabel } from "@material/mwc-floating-label/mwc-floating-label-directive";
 import { html } from "lit";
 import { customElement } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";
+
 import { HaTextField } from "../components/ha-textfield";
 
 @customElement("ha-auth-textfield")

@@ -1,31 +1,34 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type {
   BackupAgent,
   BackupConfig,
   BackupInfo,
 } from "../../../data/backup";
+import type { ManagerStateEvent } from "../../../data/backup_manager";
+import type { CloudStatus } from "../../../data/cloud";
+import type { RouterOptions } from "../../../layouts/hass-router-page";
+import type { HomeAssistant } from "../../../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../layouts/hass-tabs-subpage-data-table";
+import "./ha-config-backup-backups";
+import "./ha-config-backup-overview";
+
+import { customElement, property, state } from "lit/decorators";
+
 import {
   compareAgents,
   fetchBackupAgentsInfo,
   fetchBackupConfig,
   fetchBackupInfo,
 } from "../../../data/backup";
-import type { ManagerStateEvent } from "../../../data/backup_manager";
 import {
   DEFAULT_MANAGER_STATE,
   subscribeBackupEvents,
 } from "../../../data/backup_manager";
-import type { CloudStatus } from "../../../data/cloud";
-import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
-import "./ha-config-backup-backups";
-import "./ha-config-backup-overview";
 
 declare global {
   interface HASSDomEvents {

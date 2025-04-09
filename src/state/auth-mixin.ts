@@ -1,7 +1,8 @@
-import { subscribeUser, userCollection } from "../data/ws-user";
 import type { Constructor } from "../types";
-import { clearState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
+
+import { subscribeUser, userCollection } from "../data/ws-user";
+import { clearState } from "../util/ha-pref-storage";
 
 declare global {
   // for fire event

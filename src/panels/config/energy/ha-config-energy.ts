@@ -1,31 +1,34 @@
-import "../../../layouts/hass-error-screen";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type {
   EnergyPreferencesValidation,
   EnergyInfo,
   EnergyPreferences,
 } from "../../../data/energy";
+import type { StatisticsMetaData } from "../../../data/recorder";
+import type { HomeAssistant, Route } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-subpage";
+import "./components/ha-energy-battery-settings";
+import "./components/ha-energy-device-settings";
+import "./components/ha-energy-gas-settings";
+import "./components/ha-energy-grid-settings";
+import "./components/ha-energy-solar-settings";
+import "./components/ha-energy-water-settings";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import {
   getEnergyPreferenceValidation,
   getEnergyInfo,
   getEnergyPreferences,
   getReferencedStatisticIds,
 } from "../../../data/energy";
-import type { StatisticsMetaData } from "../../../data/recorder";
 import { getStatisticMetadata } from "../../../data/recorder";
-import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
-import "../../../components/ha-alert";
-import "./components/ha-energy-device-settings";
-import "./components/ha-energy-grid-settings";
-import "./components/ha-energy-solar-settings";
-import "./components/ha-energy-battery-settings";
-import "./components/ha-energy-gas-settings";
-import "./components/ha-energy-water-settings";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],

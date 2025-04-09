@@ -1,13 +1,16 @@
+import type { Action, SequenceAction } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-textfield";
+import "../ha-automation-action";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
-import type { Action, SequenceAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import "../ha-automation-action";
-import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-sequence")
 export class HaSequenceAction extends LitElement implements ActionElement {

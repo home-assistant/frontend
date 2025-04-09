@@ -1,21 +1,24 @@
-import { mdiCog } from "@mdi/js";
+import type { ConfigEntry } from "../data/config_entries";
+import type { Agent } from "../data/conversation";
+import type { HomeAssistant } from "../types";
+import type { HaSelect } from "./ha-select";
 import type { PropertyValues } from "lit";
+
+import "./ha-list-item";
+import "./ha-select";
+
+import { mdiCog } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntry } from "../data/config_entries";
-import type { Agent } from "../data/conversation";
 import { listAgents } from "../data/conversation";
+import { getExtendedEntityRegistryEntry } from "../data/entity_registry";
 import { fetchIntegrationManifest } from "../data/integration";
 import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
-import type { HomeAssistant } from "../types";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
-import { getExtendedEntityRegistryEntry } from "../data/entity_registry";
 
 const NONE = "__NONE_OPTION__";
 

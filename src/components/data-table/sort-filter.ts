@@ -1,6 +1,7 @@
-import type { Remote } from "comlink";
-import { wrap } from "comlink";
 import type { Api } from "./sort-filter-worker";
+import type { Remote } from "comlink";
+
+import { wrap } from "comlink";
 
 type FilterDataType = Api["filterData"];
 type FilterDataParamTypes = Parameters<FilterDataType>;

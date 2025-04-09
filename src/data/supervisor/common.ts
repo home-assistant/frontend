@@ -1,6 +1,7 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
 import type { HassioResponse } from "../hassio/common";
+
+import { atLeastVersion } from "../../common/config/version";
 import { hassioApiResultExtractor } from "../hassio/common";
 
 export interface SupervisorApiCallOptions {

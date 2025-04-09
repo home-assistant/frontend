@@ -1,25 +1,28 @@
-import "@material/mwc-list/mwc-list-item";
-import { mdiDrag } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { ensureArray } from "../../common/array/ensure-array";
-import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { HaComboBox } from "../ha-combo-box";
+
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
 import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
 import "../ha-input-helper-text";
 import "../ha-radio";
 import "../ha-select";
-import "../ha-sortable";
 import "../ha-select-box";
+import "../ha-sortable";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiDrag } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+
+import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {

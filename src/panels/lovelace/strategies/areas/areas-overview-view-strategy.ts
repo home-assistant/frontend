@@ -1,9 +1,11 @@
-import { ReactiveElement } from "lit";
-import { customElement } from "lit/decorators";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesDisplay } from "./area-view-strategy";
+
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
+
 import {
   computeAreaPath,
   computeAreaTileCardConfig,

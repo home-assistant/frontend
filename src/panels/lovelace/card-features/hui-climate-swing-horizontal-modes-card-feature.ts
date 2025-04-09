@@ -1,24 +1,27 @@
-import { mdiArrowOscillating } from "@mdi/js";
+import type { ControlSelectOption } from "../../../components/ha-control-select";
+import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import type { ClimateEntity } from "../../../data/climate";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { ClimateSwingHorizontalModesCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-attribute-icon";
+import "../../../components/ha-control-select";
+import "../../../components/ha-control-select-menu";
+
+import { mdiArrowOscillating } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-attribute-icon";
-import "../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../components/ha-control-select";
-import "../../../components/ha-control-select-menu";
-import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
-import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { ClimateSwingHorizontalModesCardFeatureConfig } from "./types";
 
 export const supportsClimateSwingHorizontalModesCardFeature = (
   stateObj: HassEntity

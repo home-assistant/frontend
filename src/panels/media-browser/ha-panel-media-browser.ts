@@ -1,3 +1,28 @@
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  HaMediaPlayerBrowse,
+  MediaPlayerItemId,
+} from "../../components/media-player/ha-media-player-browse";
+import type { ResolvedMediaSource } from "../../data/media_source";
+import type {
+  MediaPickedEvent,
+  MediaPlayerItem,
+  MediaPlayerLayoutType,
+} from "../../data/media-player";
+import type { HomeAssistant, Route } from "../../types";
+import type { BarMediaPlayer } from "./ha-bar-media-player";
+import type { ActionDetail } from "@material/mwc-list";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
+import "../../components/media-player/ha-media-manage-button";
+import "../../components/media-player/ha-media-player-browse";
+import "./ha-bar-media-player";
+import "@material/mwc-button";
+
 import {
   mdiGrid,
   mdiListBoxOutline,
@@ -5,43 +30,21 @@ import {
   mdiAlphaABoxOutline,
   mdiDotsVertical,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { storage } from "../../common/decorators/storage";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-menu-button";
-import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/media-player/ha-media-player-browse";
-import "../../components/media-player/ha-media-manage-button";
-import type {
-  HaMediaPlayerBrowse,
-  MediaPlayerItemId,
-} from "../../components/media-player/ha-media-player-browse";
-import type {
-  MediaPickedEvent,
-  MediaPlayerItem,
-  MediaPlayerLayoutType,
-} from "../../data/media-player";
-import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
-import type { ResolvedMediaSource } from "../../data/media_source";
-import { resolveMediaSource } from "../../data/media_source";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, Route } from "../../types";
-import "./ha-bar-media-player";
-import type { BarMediaPlayer } from "./ha-bar-media-player";
-import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import {
   getEntityIdFromCameraMediaSource,
   isCameraMediaSource,
 } from "../../data/camera";
-import "../../components/ha-top-app-bar-fixed";
+import { resolveMediaSource } from "../../data/media_source";
+import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../resources/styles";
+import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;

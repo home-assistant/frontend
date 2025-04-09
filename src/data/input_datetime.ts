@@ -1,5 +1,5 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 export interface InputDateTime {
   id: string;

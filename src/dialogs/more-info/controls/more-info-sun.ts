@@ -1,9 +1,12 @@
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-relative-time";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { formatTime } from "../../../common/datetime/format_time";
-import "../../../components/ha-relative-time";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-sun")
 class MoreInfoSun extends LitElement {

@@ -1,26 +1,29 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-card";
 import type { CameraEntity } from "../../../data/camera";
 import type { ImageEntity } from "../../../data/image";
-import { computeImageUrl } from "../../../data/image";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { PersonEntity } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { PictureEntityCardConfig } from "./types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../components/hui-image";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeImageUrl } from "../../../data/image";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-image";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { PictureEntityCardConfig } from "./types";
 
 export const STUB_IMAGE =
   "https://demo.home-assistant.io/stub_config/bedroom.png";

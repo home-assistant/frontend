@@ -1,8 +1,9 @@
+import "./ha-ripple";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import "./ha-ripple";
 
 type BadgeType = "badge" | "button";
 

@@ -1,10 +1,11 @@
+import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+
 import "../heading-badges/hui-entity-heading-badge";
 
 import {
   createLovelaceElement,
   getLovelaceElementClass,
 } from "./create-element-base";
-import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 
 const ALWAYS_LOADED_TYPES = new Set(["error", "entity"]);
 

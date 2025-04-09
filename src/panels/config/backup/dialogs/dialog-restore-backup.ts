@@ -1,35 +1,37 @@
-import { mdiClose } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { RestoreBackupParams } from "../../../../data/backup";
+import type {
+  RestoreBackupStage,
+  RestoreBackupState,
+} from "../../../../data/backup_manager";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-password-field";
 
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import "../../../../components/ha-password-field";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
-import type { RestoreBackupParams } from "../../../../data/backup";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   fetchBackupConfig,
   getPreferredAgentForDownload,
   restoreBackup,
 } from "../../../../data/backup";
-import type {
-  RestoreBackupStage,
-  RestoreBackupState,
-} from "../../../../data/backup_manager";
 import { subscribeBackupEvents } from "../../../../data/backup_manager";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
 
 interface FormData {
   encryption_key_type: "config" | "custom";

@@ -1,6 +1,19 @@
-import { consume } from "@lit-labs/context";
+import type { Condition } from "../../../../data/automation";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { Action, Option } from "../../../../data/script";
+import type { HomeAssistant } from "../../../../types";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-button-menu";
+import "../../../../components/ha-card";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
+import "../action/ha-automation-action";
+import "../condition/ha-automation-condition";
 import "@material/mwc-list/mwc-list-item";
+
+import { consume } from "@lit-labs/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -9,31 +22,21 @@ import {
   mdiDotsVertical,
   mdiRenameBox,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import "../../../../components/ha-button-menu";
-import "../../../../components/ha-card";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-icon-button";
-import "../condition/ha-automation-condition";
-import "../action/ha-automation-action";
-import type { Condition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import type { Action, Option } from "../../../../data/script";
 import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {

@@ -1,12 +1,15 @@
-import { mdiLightbulbOn, mdiPacMan } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
+
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-markdown";
 import "../../components/demo-black-white-row";
+
+import { mdiLightbulbOn, mdiPacMan } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
+
 import { LONG_TEXT } from "../../data/text";
 
 const SHORT_TEXT = LONG_TEXT.substring(0, 113);

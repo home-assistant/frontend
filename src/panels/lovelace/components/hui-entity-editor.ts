@@ -1,17 +1,20 @@
-import { mdiDrag } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entity-picker";
 import type {
   HaEntityPicker,
   HaEntityPickerEntityFilterFunc,
 } from "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-sortable";
 import type { HomeAssistant } from "../../../types";
 import type { EntityConfig } from "../entity-rows/types";
+
+import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-sortable";
+
+import { mdiDrag } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {

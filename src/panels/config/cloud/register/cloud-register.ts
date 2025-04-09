@@ -1,18 +1,21 @@
+import type { HaTextField } from "../../../../components/ha-textfield";
+import type { HomeAssistant } from "../../../../types";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import { cloudRegister, cloudResendVerification } from "../../../../data/cloud";
-import "../../../../layouts/hass-subpage";
-import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import "../../ha-config-section";
 import "../../../../components/ha-password-field";
+import "../../../../components/ha-textfield";
+import "../../../../layouts/hass-subpage";
+import "../../ha-config-section";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { cloudRegister, cloudResendVerification } from "../../../../data/cloud";
+import { haStyle } from "../../../../resources/styles";
 
 @customElement("cloud-register")
 export class CloudRegister extends LitElement {

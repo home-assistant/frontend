@@ -1,15 +1,18 @@
+import type { AssistPipeline } from "../data/assist_pipeline";
+import type { HomeAssistant } from "../types";
+import type { HaSelect } from "./ha-select";
 import type { PropertyValueMap } from "lit";
+
+import "./ha-list-item";
+import "./ha-select";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { formatLanguageCode } from "../common/language/format_language";
-import type { AssistPipeline } from "../data/assist_pipeline";
 import { listAssistPipelines } from "../data/assist_pipeline";
-import type { HomeAssistant } from "../types";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
 
 const PREFERRED = "preferred";
 const LAST_USED = "last_used";

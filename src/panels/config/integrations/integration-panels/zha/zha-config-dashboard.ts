@@ -1,4 +1,24 @@
+import type { ConfigEntry } from "../../../../../data/config_entries";
+import type {
+  ZHAConfiguration,
+  ZHANetworkSettings,
+  ZHANetworkBackupAndMetadata,
+} from "../../../../../data/zha";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+import type { HomeAssistant, Route } from "../../../../../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../../../components/buttons/ha-progress-button";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-fab";
+import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-settings-row";
+import "../../../../../layouts/hass-tabs-subpage";
+import "../../../ha-config-section";
 import "@material/mwc-button/mwc-button";
+
 import {
   mdiFolderMultipleOutline,
   mdiLan,
@@ -6,38 +26,21 @@ import {
   mdiPlus,
   mdiPencil,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { ConfigEntry } from "../../../../../data/config_entries";
+
 import { getConfigEntries } from "../../../../../data/config_entries";
-import "../../../../../components/ha-card";
-import "../../../../../components/ha-fab";
-import "../../../../../components/ha-icon-button";
-import { fileDownload } from "../../../../../util/file_download";
-import "../../../../../components/ha-icon-next";
-import "../../../../../layouts/hass-tabs-subpage";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../ha-config-section";
-import "../../../../../components/ha-form/ha-form";
-import "../../../../../components/buttons/ha-progress-button";
-import "../../../../../components/ha-settings-row";
-import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
-import type {
-  ZHAConfiguration,
-  ZHANetworkSettings,
-  ZHANetworkBackupAndMetadata,
-} from "../../../../../data/zha";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
   fetchZHANetworkSettings,
   createZHANetworkBackup,
 } from "../../../../../data/zha";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../../resources/styles";
+import { fileDownload } from "../../../../../util/file_download";
+import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
 
 const MULTIPROTOCOL_ADDON_URL = "socket://core-silabs-multiprotocol:9999";
 

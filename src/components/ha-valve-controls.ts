@@ -1,12 +1,15 @@
+import type { ValveEntity } from "../data/valve";
+import type { HomeAssistant } from "../types";
+
+import "./ha-icon-button";
+
 import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { ValveEntity } from "../data/valve";
 import { ValveEntityFeature, canClose, canOpen, canStop } from "../data/valve";
-import type { HomeAssistant } from "../types";
-import "./ha-icon-button";
 
 @customElement("ha-valve-controls")
 class HaValveControls extends LitElement {

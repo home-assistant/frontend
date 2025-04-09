@@ -1,8 +1,10 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { HomeAssistant, Route } from "../../../../types";
+
 import "./assist-pipeline-debug";
 import "./assist-pipeline-run-debug";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("assist-debug")
 export class AssistDebug extends LitElement {

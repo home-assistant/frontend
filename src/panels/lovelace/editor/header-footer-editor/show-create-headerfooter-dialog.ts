@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface CreateHeaderFooterDialogParams {
   pickHeaderFooter: (config: LovelaceHeaderFooterConfig) => void;

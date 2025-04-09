@@ -1,4 +1,7 @@
+import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
+
 import { html } from "lit";
+
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -6,7 +9,6 @@ import {
   handleConfigFlowStep,
 } from "../../data/config_flow";
 import { domainToName } from "../../data/integration";
-import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
   loadDataEntryFlowDialog,
   showFlowDialog,

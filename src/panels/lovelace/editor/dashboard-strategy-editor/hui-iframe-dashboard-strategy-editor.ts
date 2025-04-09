@@ -1,7 +1,3 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -9,6 +5,13 @@ import type {
 import type { HomeAssistant } from "../../../../types";
 import type { IframeDashboardStrategyConfig } from "../../strategies/iframe/iframe-dashboard-strategy";
 import type { LovelaceStrategyEditor } from "../../strategies/types";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 const SCHEMA = [
   {

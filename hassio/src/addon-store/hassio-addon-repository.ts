@@ -1,17 +1,20 @@
-import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { navigate } from "../../../src/common/navigate";
-import { caseInsensitiveStringCompare } from "../../../src/common/string/compare";
-import "../../../src/components/ha-card";
 import type { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import type { StoreAddon } from "../../../src/data/supervisor/store";
 import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import type { HomeAssistant } from "../../../src/types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../src/components/ha-card";
 import "../components/hassio-card-content";
+
+import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { atLeastVersion } from "../../../src/common/config/version";
+import { navigate } from "../../../src/common/navigate";
+import { caseInsensitiveStringCompare } from "../../../src/common/string/compare";
 import { filterAndSort } from "../components/hassio-filter-addons";
 import { hassioStyle } from "../resources/hassio-style";
 

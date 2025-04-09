@@ -1,18 +1,20 @@
+import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-control-button";
+import "../../../../src/components/ha-control-button-group";
+import "../../../../src/components/ha-svg-icon";
+
 import {
   mdiFanSpeed1,
   mdiFanSpeed2,
   mdiFanSpeed3,
   mdiLightbulb,
 } from "@mdi/js";
-import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
-import "../../../../src/components/ha-control-button";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-svg-icon";
-import "../../../../src/components/ha-control-button-group";
 
 interface Button {
   label: string;

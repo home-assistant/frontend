@@ -1,3 +1,17 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { Condition } from "../../common/validate-condition";
+import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
+import type { LovelaceGenericElementEditor } from "../../types";
+
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-form/ha-form";
+import "../conditions/ha-card-conditions-editor";
+
 import { mdiEye, mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -12,19 +26,8 @@ import {
   string,
   union,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { Condition } from "../../common/validate-condition";
-import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
-import type { LovelaceGenericElementEditor } from "../../types";
-import "../conditions/ha-card-conditions-editor";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { actionConfigStruct } from "../structs/action-struct";
 

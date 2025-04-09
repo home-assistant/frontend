@@ -1,4 +1,20 @@
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { AssistPipeline } from "../../../data/assist_pipeline";
+import type { CloudStatus } from "../../../data/cloud";
+import type { ExposeEntitySettings } from "../../../data/expose";
+import type { HomeAssistant } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-switch";
 import "@material/mwc-list/mwc-list";
+
 import {
   mdiBug,
   mdiCommentProcessingOutline,
@@ -8,20 +24,14 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../../common/language/format_language";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-switch";
-import type { AssistPipeline } from "../../../data/assist_pipeline";
+import { navigate } from "../../../common/navigate";
 import {
   createAssistPipeline,
   deleteAssistPipeline,
@@ -29,8 +39,6 @@ import {
   setAssistPipelinePreferred,
   updateAssistPipeline,
 } from "../../../data/assist_pipeline";
-import type { CloudStatus } from "../../../data/cloud";
-import type { ExposeEntitySettings } from "../../../data/expose";
 import {
   getExposeNewEntities,
   setExposeNewEntities,
@@ -39,15 +47,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
+import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
-import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import type { HaSwitch } from "../../../components/ha-switch";
-import { navigate } from "../../../common/navigate";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {

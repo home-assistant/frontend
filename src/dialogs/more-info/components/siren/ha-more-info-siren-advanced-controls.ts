@@ -1,24 +1,27 @@
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { HomeAssistant } from "../../../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-control-button";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-select";
+import "../../../../components/ha-textfield";
+
+import { mdiClose, mdiPlay, mdiStop } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { mdiClose, mdiPlay, mdiStop } from "@mdi/js";
-import type { HomeAssistant } from "../../../../types";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 import {
   getMobileCloseToBottomAnimation,
   getMobileOpenFromBottomAnimation,
 } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-button";
-import "../../../../components/ha-textfield";
-import "../../../../components/ha-control-button";
-import "../../../../components/ha-select";
-import "../../../../components/ha-list-item";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { SirenEntityFeature } from "../../../../data/siren";
 import { haStyle } from "../../../../resources/styles";
 

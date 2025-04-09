@@ -1,11 +1,14 @@
-import "@material/mwc-button/mwc-button";
 import type { Button } from "@material/mwc-button";
 import type { TemplateResult } from "lit";
+
+import "../../../src/components/ha-card";
+import "@material/mwc-button/mwc-button";
+
 import { html, LitElement, css, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-card";
 
 @customElement("demo-black-white-row")
 class DemoBlackWhiteRow extends LitElement {

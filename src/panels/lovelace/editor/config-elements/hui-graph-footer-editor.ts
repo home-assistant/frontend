@@ -1,18 +1,21 @@
-import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { assert } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../types";
+import type { GraphHeaderFooterConfig } from "../../header-footer/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { EditorTarget, EntitiesEditorEvent } from "../types";
+import type { CSSResultGroup } from "lit";
+
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-import type { HomeAssistant } from "../../../../types";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { assert } from "superstruct";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { graphHeaderFooterConfigStruct } from "../../header-footer/structs";
-import type { GraphHeaderFooterConfig } from "../../header-footer/types";
-import type { LovelaceCardEditor } from "../../types";
-import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const includeDomains = ["sensor"];

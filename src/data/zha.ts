@@ -1,6 +1,6 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 export interface ZHAEntityReference extends HassEntity {
   name: string;

@@ -1,10 +1,12 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
-import { stringCompare } from "../common/string/compare";
-import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
 import type { RegistryEntry } from "./registry";
+import type { Connection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+
+import { createCollection } from "home-assistant-js-websocket";
+
+import { stringCompare } from "../common/string/compare";
+import { debounce } from "../common/util/debounce";
 
 export interface LabelRegistryEntry extends RegistryEntry {
   label_id: string;

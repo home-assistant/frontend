@@ -1,3 +1,27 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+  SortingChangedEvent,
+} from "../../../../components/data-table/ha-data-table";
+import type { LovelacePanelConfig } from "../../../../data/lovelace";
+import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
+import type {
+  LovelaceDashboard,
+  LovelaceDashboardCreateParams,
+} from "../../../../data/lovelace/dashboard";
+import type { HomeAssistant, Route } from "../../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-clickable-list-item";
+import "../../../../components/ha-fab";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
+import "../../../../layouts/hass-loading-screen";
+import "../../../../layouts/hass-tabs-subpage-data-table";
+
 import {
   mdiCheck,
   mdiCheckCircleOutline,
@@ -5,35 +29,19 @@ import {
   mdiOpenInNew,
   mdiPlus,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
+
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { storage } from "../../../../common/decorators/storage";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-  SortingChangedEvent,
-} from "../../../../components/data-table/ha-data-table";
-import "../../../../components/ha-clickable-list-item";
-import "../../../../components/ha-fab";
-import "../../../../components/ha-icon";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tooltip";
-import type { LovelacePanelConfig } from "../../../../data/lovelace";
-import type { LovelaceRawConfig } from "../../../../data/lovelace/config/types";
 import {
   isStrategyDashboard,
   saveConfig,
 } from "../../../../data/lovelace/config/types";
-import type {
-  LovelaceDashboard,
-  LovelaceDashboardCreateParams,
-} from "../../../../data/lovelace/dashboard";
 import {
   createDashboard,
   deleteDashboard,
@@ -41,16 +49,11 @@ import {
   updateDashboard,
 } from "../../../../data/lovelace/dashboard";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import "../../../../layouts/hass-loading-screen";
-import "../../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { getLovelaceStrategy } from "../../../lovelace/strategies/get-strategy";
 import { showNewDashboardDialog } from "../../dashboard/show-dialog-new-dashboard";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardConfigureStrategyDialog } from "./show-dialog-lovelace-dashboard-configure-strategy";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
-import { storage } from "../../../../common/decorators/storage";
 
 type DataTableItem = Pick<
   LovelaceDashboard,

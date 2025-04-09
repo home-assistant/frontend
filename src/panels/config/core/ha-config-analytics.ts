@@ -1,19 +1,22 @@
-import "@material/mwc-button/mwc-button";
+import type { Analytics } from "../../../data/analytics";
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+
 import "../../../components/ha-analytics";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
-import type { Analytics } from "../../../data/analytics";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   getAnalyticsDetails,
   setAnalyticsPreferences,
 } from "../../../data/analytics";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-analytics")

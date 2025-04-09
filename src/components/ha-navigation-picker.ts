@@ -1,16 +1,19 @@
-import "@material/mwc-list/mwc-list-item";
+import type { LovelaceViewRawConfig } from "../data/lovelace/config/view";
+import type { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
+import type { HaComboBox } from "./ha-combo-box";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-combo-box";
+import "./ha-icon";
+import "@material/mwc-list/mwc-list-item";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
 import { fetchConfig } from "../data/lovelace/config/types";
-import type { LovelaceViewRawConfig } from "../data/lovelace/config/view";
-import type { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
-import "./ha-icon";
 
 interface NavigationItem {
   path: string;

@@ -1,25 +1,28 @@
-import { mdiPlus } from "@mdi/js";
+import type { HaSortableOptions } from "../../../components/ha-sortable";
+import type { LovelaceSectionElement } from "../../../data/lovelace";
+import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
+import type { HomeAssistant } from "../../../types";
+import type { HuiCard } from "../cards/hui-card";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { Lovelace } from "../types";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-ripple";
+import "../../../components/ha-sortable";
+import "../components/hui-card-edit-mode";
+
+import { mdiPlus } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-ripple";
-import "../../../components/ha-sortable";
-import type { HaSortableOptions } from "../../../components/ha-sortable";
-import type { LovelaceSectionElement } from "../../../data/lovelace";
-import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
-import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
-import type { Lovelace } from "../types";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,

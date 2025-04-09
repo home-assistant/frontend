@@ -1,24 +1,27 @@
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../../types";
+import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-spinner";
+import "../../../../components/ha-yaml-editor";
+import "./hui-view-header-settings-editor";
+
+import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { deepEqual } from "../../../../common/util/deep-equal";
-import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import "./hui-view-header-settings-editor";
-import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
 
 @customElement("hui-dialog-edit-view-header")
 export class HuiDialogEditViewHeader extends LitElement {

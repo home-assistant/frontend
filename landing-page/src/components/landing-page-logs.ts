@@ -1,28 +1,31 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
-// eslint-disable-next-line import/extensions
-import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
-import { LitElement, type PropertyValues, css, html, nothing } from "lit";
-import { classMap } from "lit/directives/class-map";
-import { customElement, property, query, state } from "lit/decorators";
 import type {
   LandingPageKeys,
   LocalizeFunc,
 } from "../../../src/common/translations/localize";
+import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
+
+import "../../../src/components/ha-alert";
+import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
-import "../../../src/components/ha-ansi-to-html";
-import "../../../src/components/ha-alert";
-import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+// eslint-disable-next-line import/extensions
+import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
+import { LitElement, type PropertyValues, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import { waitForSeconds } from "../../../src/common/util/wait";
+import { fileDownload } from "../../../src/util/file_download";
 import {
   getObserverLogs,
   downloadUrl as observerLogsDownloadUrl,
 } from "../data/observer";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import { fileDownload } from "../../../src/util/file_download";
 import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
-import { waitForSeconds } from "../../../src/common/util/wait";
 import { ASSUME_CORE_START_SECONDS } from "../ha-landing-page";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;

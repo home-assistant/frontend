@@ -1,10 +1,13 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import { ensureArray } from "../../common/array/ensure-array";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { LabelSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-labels-picker";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-label")
 export class HaLabelSelector extends LitElement {

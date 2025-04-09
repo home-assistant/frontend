@@ -1,12 +1,15 @@
+import type { HomeAssistant } from "../types";
+import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import type { TemplateResult } from "lit";
+
+import "./ha-items-display-editor";
+
 import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { entityIcon } from "../data/icons";
-import type { HomeAssistant } from "../types";
-import "./ha-items-display-editor";
-import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 
 export interface EntitiesDisplayValue {
   hidden?: string[];

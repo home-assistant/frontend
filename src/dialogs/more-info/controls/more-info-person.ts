@@ -1,13 +1,16 @@
-import "@material/mwc-button";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-attributes";
+import "../../../components/map/ha-map";
+import "@material/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-attributes";
-import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {

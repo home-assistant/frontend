@@ -1,3 +1,7 @@
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../../../types";
+import type { DeviceAction } from "../../../ha-config-device-page";
+
 import {
   mdiCogRefresh,
   mdiDelete,
@@ -5,14 +9,12 @@ import {
   mdiGroup,
   mdiPlus,
 } from "@mdi/js";
+
 import { navigate } from "../../../../../../common/navigate";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../../../types";
 import { showZHAManageZigbeeDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-manage-zigbee-device";
 import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
-import type { DeviceAction } from "../../../ha-config-device-page";
 
 export const getZHADeviceActions = async (
   el: HTMLElement,

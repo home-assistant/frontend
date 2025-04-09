@@ -1,29 +1,32 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiWater, mdiPencil } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon-button";
 import type {
   EnergyPreferences,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { saveEnergyPreferences } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
+import "./ha-energy-validation-result";
+import "@material/mwc-button/mwc-button";
+
+import { mdiDelete, mdiWater, mdiPencil } from "@mdi/js";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { saveEnergyPreferences } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsWaterDialog } from "../dialogs/show-dialogs-energy";
-import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-water-settings")

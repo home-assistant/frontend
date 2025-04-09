@@ -1,20 +1,23 @@
-import "@material/mwc-button";
+import type { RefreshToken } from "../../data/refresh_token";
+import type { HomeAssistant } from "../../types";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
+import "../../components/ha-alert";
 import "../../components/ha-card";
+import "../../components/ha-password-field";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
-import "../../components/ha-password-field";
-import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../../components/ha-alert";
+import "@material/mwc-button";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import type { RefreshToken } from "../../data/refresh_token";
-import { changePassword, deleteAllRefreshTokens } from "../../data/auth";
+import { haStyle } from "../../resources/styles";
 
 @customElement("ha-change-password-card")
 class HaChangePasswordCard extends LitElement {

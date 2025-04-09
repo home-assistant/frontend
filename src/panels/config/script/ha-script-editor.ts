@@ -1,4 +1,21 @@
+import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
+import type { Entries, HomeAssistant, Route } from "../../../types";
+import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import type { HaManualScriptEditor } from "./manual-script-editor";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-yaml-editor";
+import "../../../layouts/hass-subpage";
+import "./blueprint-script-editor";
+import "./manual-script-editor";
 import "@material/mwc-button";
+
+import { consume } from "@lit-labs/context";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -16,31 +33,25 @@ import {
   mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
+
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-fab";
-
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-yaml-editor";
+import { afterNextRender } from "../../../common/util/render-status";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
   deleteScript,
   fetchScriptFileConfig,
@@ -56,23 +67,14 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
-import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
-import "./blueprint-script-editor";
-import "./manual-script-editor";
-import type { HaManualScriptEditor } from "./manual-script-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))

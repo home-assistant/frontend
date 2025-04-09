@@ -1,17 +1,20 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { mdiDelete, mdiFileUpload } from "@mdi/js";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-button";
+import "./ha-icon-button";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+import { mdiDelete, mdiFileUpload } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
-import "./ha-button";
-import "./ha-icon-button";
-import { blankBeforePercent } from "../common/translations/blank_before_percent";
+
 import { ensureArray } from "../common/array/ensure-array";
+import { fireEvent } from "../common/dom/fire_event";
+import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { bytesToString } from "../util/bytes-to-string";
-import type { LocalizeFunc } from "../common/translations/localize";
 
 declare global {
   interface HASSDomEvents {

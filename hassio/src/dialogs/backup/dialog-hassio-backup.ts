@@ -1,24 +1,33 @@
+import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
+import type { HassioBackupDetail } from "../../../../src/data/hassio/backup";
+import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../src/types";
+import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
+import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-button";
+import "../../../../src/components/ha-button-menu";
+import "../../../../src/components/ha-dialog-header";
+import "../../../../src/components/ha-header-bar";
+import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-md-dialog";
+import "../../../../src/components/ha-spinner";
+import "../../components/supervisor-backup-content";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
-import "../../../../src/components/ha-md-dialog";
-import "../../../../src/components/ha-dialog-header";
-import "../../../../src/components/buttons/ha-progress-button";
-import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-spinner";
-import "../../../../src/components/ha-button";
-import "../../../../src/components/ha-button-menu";
-import "../../../../src/components/ha-header-bar";
-import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
-import type { HassioBackupDetail } from "../../../../src/data/hassio/backup";
 import {
   fetchHassioBackupInfo,
   removeBackup,
@@ -29,14 +38,8 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
-import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
 import { fileDownload } from "../../../../src/util/file_download";
-import "../../components/supervisor-backup-content";
-import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
-import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog

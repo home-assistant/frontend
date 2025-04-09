@@ -1,12 +1,15 @@
+import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-tooltip";
+
 import { mdiAlertCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { voiceAssistants } from "../../../../data/expose";
-import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
-import "../../../../components/ha-svg-icon";
-import "../../../../components/ha-tooltip";
 
 @customElement("voice-assistants-expose-assistant-icon")
 export class VoiceAssistantExposeAssistantIcon extends LitElement {

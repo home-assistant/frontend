@@ -1,13 +1,16 @@
+import type { LocalizeKeys } from "../../common/translations/localize";
+import type { HomeAssistant } from "../../types";
+
+import "../../components/chips/ha-assist-chip";
+import "../../components/ha-alert";
+import "../../components/ha-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-button";
 import { createCloseHeading } from "../../components/ha-dialog";
-import type { HomeAssistant } from "../../types";
 import { haStyleDialog } from "../../resources/styles";
-import "../../components/ha-alert";
-import "../../components/chips/ha-assist-chip";
-import type { LocalizeKeys } from "../../common/translations/localize";
 
 interface Text {
   type: "text";

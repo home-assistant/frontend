@@ -1,13 +1,16 @@
-import { customElement, property, state } from "lit/decorators";
 import type { ConfigEntry } from "../../../data/config_entries";
-import { getConfigEntries } from "../../../data/config_entries";
 import type { IntegrationManifest } from "../../../data/integration";
-import { fetchIntegrationManifests } from "../../../data/integration";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
+
 import "./ha-config-device-page";
 import "./ha-config-devices-dashboard";
+
+import { customElement, property, state } from "lit/decorators";
+
+import { getConfigEntries } from "../../../data/config_entries";
+import { fetchIntegrationManifests } from "../../../data/integration";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
 
 @customElement("ha-config-devices")
 class HaConfigDevices extends HassRouterPage {

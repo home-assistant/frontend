@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import "./dialog-join-beta";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface JoinBetaDialogParams {
   join?: () => any;

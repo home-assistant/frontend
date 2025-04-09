@@ -1,8 +1,11 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../ha-icon";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { batteryLevelIcon } from "../../common/entity/battery_icon";
-import "../ha-icon";
 
 @customElement("ha-battery-icon")
 export class HaBatteryIcon extends LitElement {

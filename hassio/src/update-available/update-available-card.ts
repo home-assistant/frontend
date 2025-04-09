@@ -1,4 +1,24 @@
+import type { HaSwitch } from "../../../src/components/ha-switch";
+import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
+import type { StoreAddon } from "../../../src/data/supervisor/store";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant, Route } from "../../../src/types";
+
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-alert";
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-checkbox";
+import "../../../src/components/ha-faded";
+import "../../../src/components/ha-icon-button";
+import "../../../src/components/ha-markdown";
+import "../../../src/components/ha-md-list";
+import "../../../src/components/ha-md-list-item";
+import "../../../src/components/ha-spinner";
+import "../../../src/components/ha-svg-icon";
+import "../../../src/components/ha-switch";
 import "@material/mwc-list/mwc-list-item";
+
 import {
   css,
   type CSSResultGroup,
@@ -9,23 +29,9 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-alert";
-import "../../../src/components/ha-button-menu";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-spinner";
-import "../../../src/components/ha-checkbox";
-import "../../../src/components/ha-faded";
-import "../../../src/components/ha-icon-button";
-import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-md-list";
-import "../../../src/components/ha-md-list-item";
-import "../../../src/components/ha-svg-icon";
-import "../../../src/components/ha-switch";
-import type { HaSwitch } from "../../../src/components/ha-switch";
-import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
@@ -42,11 +48,8 @@ import {
   updateSupervisor,
 } from "../../../src/data/hassio/supervisor";
 import { updateCore } from "../../../src/data/supervisor/core";
-import type { StoreAddon } from "../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant, Route } from "../../../src/types";
 import { addonArchIsSupported, extractChangelog } from "../util/addon";
 
 declare global {

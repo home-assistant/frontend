@@ -1,3 +1,5 @@
+import type { LovelaceElementConfig } from "../elements/types";
+
 import "../elements/hui-conditional-element";
 import "../elements/hui-icon-element";
 import "../elements/hui-image-element";
@@ -5,7 +7,7 @@ import "../elements/hui-service-button-element";
 import "../elements/hui-state-badge-element";
 import "../elements/hui-state-icon-element";
 import "../elements/hui-state-label-element";
-import type { LovelaceElementConfig } from "../elements/types";
+
 import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([

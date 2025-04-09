@@ -1,10 +1,9 @@
-import { mdiPencil } from "@mdi/js";
+import type { HomeAssistant } from "../../../types";
+import type { UserDetailDialogParams } from "./show-dialog-user-detail";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-label";
@@ -12,6 +11,12 @@ import "../../../components/ha-settings-row";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
+
+import { mdiPencil } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { createCloseHeading } from "../../../components/ha-dialog";
 import { adminChangeUsername } from "../../../data/auth";
 import {
   computeUserBadges,
@@ -23,9 +28,7 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showAdminChangePasswordDialog } from "./show-dialog-admin-change-password";
-import type { UserDetailDialogParams } from "./show-dialog-user-detail";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {

@@ -1,22 +1,23 @@
-import { css, html, LitElement, nothing } from "lit";
-import "../../../../src/components/ha-formfield";
-import "../../../../src/components/ha-switch";
-
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import type { IntegrationManifest } from "../../../../src/data/integration";
-
 import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 import type { EntityRegistryEntry } from "../../../../src/data/entity_registry";
-import { provideHass } from "../../../../src/fake_data/provide_hass";
-import "../../../../src/panels/config/integrations/ha-config-flow-card";
+import type { IntegrationManifest } from "../../../../src/data/integration";
 import type {
   ConfigEntryExtended,
   DataEntryFlowProgressExtended,
 } from "../../../../src/panels/config/integrations/ha-config-integrations";
+import type { HomeAssistant } from "../../../../src/types";
+
+import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-switch";
+import "../../../../src/panels/config/integrations/ha-config-flow-card";
 import "../../../../src/panels/config/integrations/ha-ignored-config-entry-card";
 import "../../../../src/panels/config/integrations/ha-integration-card";
-import type { HomeAssistant } from "../../../../src/types";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { provideHass } from "../../../../src/fake_data/provide_hass";
 
 const createConfigEntry = (
   title: string,

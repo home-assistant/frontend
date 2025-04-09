@@ -1,29 +1,32 @@
-import "@material/mwc-list/mwc-list";
+import type { LabelRegistryEntry } from "../data/label_registry";
+import type { HomeAssistant } from "../types";
 import type { SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
-import memoizeOne from "memoize-one";
-import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { computeCssColor } from "../common/color/compute-color";
-import { fireEvent } from "../common/dom/fire_event";
-import { navigate } from "../common/navigate";
-import type { LabelRegistryEntry } from "../data/label_registry";
-import { subscribeLabelRegistry } from "../data/label_registry";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-label";
 import "./ha-icon-button";
+import "./ha-label";
 import "./ha-list-item";
 import "./search-input-outlined";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-menu/mwc-menu-surface";
+
+import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+
+import { computeCssColor } from "../common/color/compute-color";
+import { fireEvent } from "../common/dom/fire_event";
+import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
+import { subscribeLabelRegistry } from "../data/label_registry";
+import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { haStyleScrollbar } from "../resources/styles";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {

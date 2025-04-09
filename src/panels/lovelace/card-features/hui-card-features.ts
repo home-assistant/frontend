@@ -1,9 +1,11 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "./hui-card-feature";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
-import "./hui-card-feature";
-import type { LovelaceCardFeatureConfig } from "./types";
 
 @customElement("hui-card-features")
 export class HuiCardFeatures extends LitElement {

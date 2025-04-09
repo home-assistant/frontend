@@ -1,4 +1,5 @@
 import type { Auth } from "home-assistant-js-websocket";
+
 import { fetchWithAuth } from "./fetch-with-auth";
 
 export const handleFetchPromise = async <T>(

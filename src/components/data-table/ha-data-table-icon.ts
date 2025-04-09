@@ -1,8 +1,10 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../ha-svg-icon";
 import "../ha-tooltip";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-data-table-icon")
 class HaDataTableIcon extends LitElement {

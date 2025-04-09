@@ -1,17 +1,20 @@
-import { mdiDotsVertical } from "@mdi/js";
+import type { HomeAssistant } from "../types";
 import type { TemplateResult } from "lit";
+
+import "./ha-icon-button";
+import "./ha-list-item";
+import "./ha-md-button-menu";
+import "./ha-md-divider";
+import "./ha-md-menu-item";
+import "./ha-svg-icon";
+import "./ha-tooltip";
+
+import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-md-button-menu";
-import "./ha-icon-button";
-import "./ha-list-item";
-import "./ha-svg-icon";
-import "./ha-tooltip";
-import "./ha-md-menu-item";
-import "./ha-md-divider";
 
 export interface IconOverflowMenuItem {
   [key: string]: any;

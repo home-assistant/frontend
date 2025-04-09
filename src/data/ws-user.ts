@@ -1,6 +1,7 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { getCollection, getUser } from "home-assistant-js-websocket";
 import type { CurrentUser } from "../types";
+import type { Connection } from "home-assistant-js-websocket";
+
+import { getCollection, getUser } from "home-assistant-js-websocket";
 
 export const userCollection = (conn: Connection) =>
   getCollection(

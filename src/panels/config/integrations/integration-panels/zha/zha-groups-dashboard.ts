@@ -1,23 +1,26 @@
-import "@material/mwc-button";
-import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
-import { navigate } from "../../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
+import type { ZHAGroup } from "../../../../../data/zha";
+import type { HomeAssistant, Route } from "../../../../../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
-import type { ZHAGroup } from "../../../../../data/zha";
-import { fetchGroups } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
+import "@material/mwc-button";
+
+import { mdiPlus } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { navigate } from "../../../../../common/navigate";
+import { fetchGroups } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex, sortZHAGroups } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
 

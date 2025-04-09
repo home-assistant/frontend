@@ -1,20 +1,29 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDeleteOff } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
-import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-tooltip";
-import "../../../../src/components/ha-spinner";
-import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-icon-button";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
 import type {
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../../src/data/hassio/addon";
+import type { HomeAssistant } from "../../../../src/types";
+import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-md-list";
+import "../../../../src/components/ha-md-list-item";
+import "../../../../src/components/ha-spinner";
+import "../../../../src/components/ha-textfield";
+import "../../../../src/components/ha-tooltip";
+import "@material/mwc-button/mwc-button";
+
+import { mdiDelete, mdiDeleteOff } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
+import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   addStoreRepository,
@@ -22,12 +31,6 @@ import {
   removeStoreRepository,
 } from "../../../../src/data/supervisor/store";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
-import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-md-list";
-import "../../../../src/components/ha-md-list-item";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {

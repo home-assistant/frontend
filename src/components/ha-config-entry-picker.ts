@@ -1,16 +1,19 @@
-import "@material/mwc-list/mwc-list-item";
+import type { ConfigEntry } from "../data/config_entries";
+import type { ValueChangedEvent, HomeAssistant } from "../types";
+import type { HaComboBox } from "./ha-combo-box";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+
+import "./ha-combo-box";
+import "@material/mwc-list/mwc-list-item";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntries } from "../data/config_entries";
 import { domainToName } from "../data/integration";
-import type { ValueChangedEvent, HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
 
 export interface ConfigEntryExtended extends ConfigEntry {
   localized_domain_name?: string;

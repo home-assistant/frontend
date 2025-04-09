@@ -1,4 +1,11 @@
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { SensorCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-form/ha-form";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -11,15 +18,11 @@ import {
   string,
   union,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { SensorCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { configElementStyle } from "./config-elements-style";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-sensor-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

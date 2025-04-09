@@ -1,5 +1,6 @@
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
+
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 export interface CloudTTSInfo {
   languages: [string, string][];

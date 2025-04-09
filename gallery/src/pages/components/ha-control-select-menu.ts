@@ -1,12 +1,14 @@
-import { mdiFan, mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3 } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
+
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-control-select-menu";
 import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-svg-icon";
+
+import { mdiFan, mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3 } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 
 interface SelectMenuOptions {
   label: string;

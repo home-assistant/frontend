@@ -1,9 +1,12 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { NavigationSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-navigation-picker";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-navigation")
 export class HaNavigationSelector extends LitElement {

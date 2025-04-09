@@ -1,5 +1,18 @@
-import "@material/mwc-button/mwc-button";
+import type { DateRange } from "../../../common/datetime/calc_date_range";
+import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
+import type { EnergyData } from "../../../data/energy";
+import type { HomeAssistant } from "../../../types";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
+import "../../../components/ha-date-range-picker";
+import "../../../components/ha-icon-button-next";
+import "../../../components/ha-icon-button-prev";
+import "@material/mwc-button/mwc-button";
+
 import { mdiDotsVertical } from "@mdi/js";
 import {
   differenceInDays,
@@ -13,17 +26,17 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import {
   calcDate,
   calcDateProperty,
   calcDateDifferenceProperty,
   shiftDateRange,
 } from "../../../common/datetime/calc_date";
+import { calcDateRange } from "../../../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import {
   formatDate,
@@ -33,18 +46,8 @@ import {
   formatDateYear,
 } from "../../../common/datetime/format_date";
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../../components/ha-date-range-picker";
-import "../../../components/ha-icon-button-next";
-import "../../../components/ha-icon-button-prev";
-import type { EnergyData } from "../../../data/energy";
 import { getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
-import { calcDateRange } from "../../../common/datetime/calc_date_range";
-import type { DateRange } from "../../../common/datetime/calc_date_range";
 
 const RANGE_KEYS: DateRange[] = [
   "today",

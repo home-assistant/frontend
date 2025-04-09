@@ -1,16 +1,19 @@
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
+import type { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
+
+import "../../../components/ha-state-icon";
 import "@material/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-state-icon";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import type { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {

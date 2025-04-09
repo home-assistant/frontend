@@ -1,9 +1,11 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { computeDisplayTimer, timerTimeRemaining } from "../data/timer";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-timer-remaining-time")
 class HaTimerRemainingTime extends ReactiveElement {

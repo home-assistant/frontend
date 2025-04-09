@@ -1,15 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { property, query, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { debounce } from "../../../common/util/debounce";
-import { handleStructError } from "../../../common/structs/handle-errors";
-import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
-import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../types";
@@ -18,13 +7,27 @@ import type {
   LovelaceGenericElementEditor,
 } from "../types";
 import type { HuiFormEditor } from "./config-elements/hui-form-editor";
-import { GUISupportError } from "./gui-support-error";
 import type {
   EditDetailElementEvent,
   EditSubElementEvent,
   GUIModeChangedEvent,
   SubElementEditorConfig,
 } from "./types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-spinner";
+import "../../../components/ha-yaml-editor";
+
+import { css, html, LitElement, nothing } from "lit";
+import { property, query, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { handleStructError } from "../../../common/structs/handle-errors";
+import { debounce } from "../../../common/util/debounce";
+import { deepEqual } from "../../../common/util/deep-equal";
+import { GUISupportError } from "./gui-support-error";
 
 export interface ConfigChangedEvent<T extends object = object> {
   config: T;

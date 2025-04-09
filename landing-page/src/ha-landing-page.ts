@@ -1,20 +1,22 @@
+import "../../src/components/ha-alert";
+import "../../src/onboarding/onboarding-welcome-links";
+import "./components/landing-page-logs";
+import "./components/landing-page-network";
 import "@material/mwc-linear-progress";
+
 import { type PropertyValues, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../src/components/ha-alert";
-import { haStyle } from "../../src/resources/styles";
-import "../../src/onboarding/onboarding-welcome-links";
-import "./components/landing-page-network";
-import "./components/landing-page-logs";
+
 import { extractSearchParam } from "../../src/common/url/search-params";
-import { onBoardingStyles } from "../../src/onboarding/styles";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import { LandingPageBaseElement } from "./landing-page-base-element";
+import { onBoardingStyles } from "../../src/onboarding/styles";
+import { haStyle } from "../../src/resources/styles";
 import {
   getSupervisorNetworkInfo,
   pingSupervisor,
   type NetworkInfo,
 } from "./data/supervisor";
+import { LandingPageBaseElement } from "./landing-page-base-element";
 
 export const ASSUME_CORE_START_SECONDS = 60;
 const SCHEDULE_CORE_CHECK_SECONDS = 1;

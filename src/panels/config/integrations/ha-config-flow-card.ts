@@ -1,8 +1,18 @@
-import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { HomeAssistant } from "../../../types";
+import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import type { TemplateResult } from "lit";
+
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-list-item";
+import "./ha-integration-action-card";
+
+import { mdiBookshelf, mdiCog, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ATTENTION_SOURCES,
@@ -10,16 +20,9 @@ import {
   ignoreConfigFlow,
   localizeConfigFlowTitle,
 } from "../../../data/config_flow";
-import type { IntegrationManifest } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
-import "./ha-integration-action-card";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-button";
-import "../../../components/ha-list-item";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {

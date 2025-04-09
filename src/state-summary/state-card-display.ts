@@ -1,15 +1,18 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../components/entity/state-info";
+import "../panels/lovelace/components/hui-timestamp-display";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { computeDomain } from "../common/entity/compute_domain";
-import "../components/entity/state-info";
 import { isUnavailableState } from "../data/entity";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../data/sensor";
-import "../panels/lovelace/components/hui-timestamp-display";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-display")
 class StateCardDisplay extends LitElement {

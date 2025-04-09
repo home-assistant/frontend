@@ -1,24 +1,27 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/buttons/ha-progress-button";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
+import type { HomeAssistant } from "../../../../../types";
+import type { ItemSelectedEvent } from "./types";
+import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
-import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
+import "./zha-clusters-data-table";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import {
   bindDeviceToGroup,
   fetchClustersForZhaDevice,
   unbindDeviceFromGroup,
 } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ItemSelectedEvent } from "./types";
-import "./zha-clusters-data-table";
-import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
-import "@material/mwc-list/mwc-list-item";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {

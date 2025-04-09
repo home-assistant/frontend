@@ -1,34 +1,37 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
-import "../../../components/ha-relative-time";
-import { isUnavailableState } from "../../../data/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type {
   CallServiceActionConfig,
   MoreInfoActionConfig,
 } from "../../../data/lovelace/config/action";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { GlanceCardConfig, GlanceConfigEntity } from "./types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/entity/state-badge";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+import "../../../components/ha-relative-time";
+import "../components/hui-timestamp-display";
+import "../components/hui-warning-element";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { isUnavailableState } from "../../../data/entity";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntitiesChanged } from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
-import "../components/hui-timestamp-display";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import "../components/hui-warning-element";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { GlanceCardConfig, GlanceConfigEntity } from "./types";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {

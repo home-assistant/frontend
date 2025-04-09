@@ -1,6 +1,12 @@
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../components/demo-cards";
+
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+
+import { mockIcons } from "../../../../demo/src/stubs/icons";
+import { ClimateEntityFeature } from "../../../../src/data/climate";
 import { CoverEntityFeature } from "../../../../src/data/cover";
 import { LightColorMode } from "../../../../src/data/light";
 import { LockEntityFeature } from "../../../../src/data/lock";
@@ -8,9 +14,6 @@ import { MediaPlayerEntityFeature } from "../../../../src/data/media-player";
 import { VacuumEntityFeature } from "../../../../src/data/vacuum";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import "../../components/demo-cards";
-import { mockIcons } from "../../../../demo/src/stubs/icons";
-import { ClimateEntityFeature } from "../../../../src/data/climate";
 
 const ENTITIES = [
   getEntity("switch", "tv_outlet", "on", {

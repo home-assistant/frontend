@@ -1,3 +1,8 @@
+import type {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
+
 import {
   mdiFinance,
   mdiFireCircle,
@@ -7,10 +12,6 @@ import {
   mdiPower,
   mdiRocketLaunch,
 } from "@mdi/js";
-import type {
-  HassEntityAttributeBase,
-  HassEntityBase,
-} from "home-assistant-js-websocket";
 
 export const enum WaterHeaterEntityFeature {
   TARGET_TEMPERATURE = 1,

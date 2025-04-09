@@ -1,22 +1,25 @@
-import "@material/mwc-list/mwc-list-item";
-import { mdiDownload } from "@mdi/js";
+import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
+import type { HomeAssistant, Route } from "../../../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultArray } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-select";
-import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
+import "../../../../../layouts/hass-tabs-subpage";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiDownload } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
   subscribeZWaveJSLogs,
 } from "../../../../../data/zwave_js";
-import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import { configTabs } from "./zwave_js-config-router";
 

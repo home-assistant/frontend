@@ -1,15 +1,18 @@
+import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
+
+import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
+
 import {
   addHasRemoveClass,
   BaseElement,
 } from "@material/mwc-base/base-element";
 import { supportsPassiveEventListener } from "@material/mwc-base/utils";
-import type { MDCTopAppBarAdapter } from "@material/top-app-bar/adapter";
 import { strings } from "@material/top-app-bar/constants";
 import MDCFixedTopAppBarFoundation from "@material/top-app-bar/fixed/foundation";
 import { html, css, nothing } from "lit";
 import { property, query, customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styles } from "@material/mwc-top-app-bar/mwc-top-app-bar.css";
+
 import { haStyleScrollbar } from "../resources/styles";
 
 export const passiveEventOptionsIfSupported = supportsPassiveEventListener

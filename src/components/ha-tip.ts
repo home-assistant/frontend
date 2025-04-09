@@ -1,9 +1,10 @@
-import { mdiLightbulbOutline } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../types";
 
 import "./ha-svg-icon";
+
+import { mdiLightbulbOutline } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-tip")
 class HaTip extends LitElement {

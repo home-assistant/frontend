@@ -1,6 +1,3 @@
-import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import { ReactiveElement } from "lit";
-import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -10,6 +7,11 @@ import type {
   EntitiesDisplay,
 } from "./area-view-strategy";
 import type { AreasViewStrategyConfig } from "./areas-overview-view-strategy";
+
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
+
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
 interface AreaOptions {

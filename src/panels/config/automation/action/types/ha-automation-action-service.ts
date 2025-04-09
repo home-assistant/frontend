@@ -1,17 +1,20 @@
+import type { ServiceAction } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
+import type { ActionElement } from "../ha-automation-action-row";
 import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-service-control";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert } from "superstruct";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import "../../../../../components/ha-service-control";
-import type { ServiceAction } from "../../../../../data/script";
 import { serviceActionStruct } from "../../../../../data/script";
-import type { HomeAssistant } from "../../../../../types";
-import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {

@@ -1,10 +1,13 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-button";
-import { createCloseHeading } from "../../components/ha-dialog";
 import type { HomeAssistant } from "../../types";
 import type { UpdateBackupDialogParams } from "./show-update-backup-dialog";
+
+import "../../components/ha-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { createCloseHeading } from "../../components/ha-dialog";
 
 @customElement("dialog-update-backup")
 class DialogBox extends LitElement {

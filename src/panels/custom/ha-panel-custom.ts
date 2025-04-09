@@ -1,11 +1,13 @@
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
-import { property } from "lit/decorators";
 import type { NavigateOptions } from "../../common/navigate";
-import { navigate } from "../../common/navigate";
-import { deepEqual } from "../../common/util/deep-equal";
 import type { CustomPanelInfo } from "../../data/panel_custom";
 import type { HomeAssistant, Route } from "../../types";
+import type { PropertyValues } from "lit";
+
+import { ReactiveElement } from "lit";
+import { property } from "lit/decorators";
+
+import { navigate } from "../../common/navigate";
+import { deepEqual } from "../../common/util/deep-equal";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
 import {
   getUrl,

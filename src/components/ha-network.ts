@@ -1,20 +1,23 @@
-import { mdiStar } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import type {
   Adapter,
   IPv4ConfiguredAddress,
   IPv6ConfiguredAddress,
   NetworkConfig,
 } from "../data/network";
-import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "./ha-checkbox";
 import "./ha-settings-row";
 import "./ha-svg-icon";
+
+import { mdiStar } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { haStyle } from "../resources/styles";
 
 const format_addresses = (
   addresses: IPv6ConfiguredAddress[] | IPv4ConfiguredAddress[]

@@ -1,14 +1,17 @@
-import { mdiEye, mdiEyeOff } from "@mdi/js";
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { ensureArray } from "../../common/array/ensure-array";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { StringSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-icon-button";
 import "../ha-multi-textfield";
 import "../ha-textarea";
 import "../ha-textfield";
+
+import { mdiEye, mdiEyeOff } from "@mdi/js";
+import { LitElement, css, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {

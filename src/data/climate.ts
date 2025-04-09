@@ -1,3 +1,8 @@
+import type {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
+
 import {
   mdiFan,
   mdiFire,
@@ -8,10 +13,6 @@ import {
   mdiThermostatAuto,
   mdiWaterPercent,
 } from "@mdi/js";
-import type {
-  HassEntityAttributeBase,
-  HassEntityBase,
-} from "home-assistant-js-websocket";
 
 export const HVAC_MODES = [
   "auto",

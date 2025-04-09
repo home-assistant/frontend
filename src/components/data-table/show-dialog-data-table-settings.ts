@@ -1,6 +1,7 @@
-import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DataTableColumnContainer } from "./ha-data-table";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface DataTableSettingsDialogParams {
   columns: DataTableColumnContainer;

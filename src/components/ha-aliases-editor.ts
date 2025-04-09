@@ -1,8 +1,11 @@
+import type { HomeAssistant } from "../types";
+
+import "./ha-multi-textfield";
+
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
-import "./ha-multi-textfield";
 
 @customElement("ha-aliases-editor")
 class AliasesEditor extends LitElement {

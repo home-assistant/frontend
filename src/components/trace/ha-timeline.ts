@@ -1,9 +1,12 @@
-import { mdiCircleOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
+
+import "../ha-svg-icon";
+
+import { mdiCircleOutline } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { buttonLinkStyle } from "../../resources/styles";
-import "../ha-svg-icon";
 
 @customElement("ha-timeline")
 export class HaTimeline extends LitElement {

@@ -1,14 +1,16 @@
+import type { HomeAssistant } from "../../../../../types";
+
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+
 import { mdiDownload } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
-import type { HomeAssistant } from "../../../../../types";
+import { downloadEmergencyKit } from "../../../../../data/backup";
 import { showChangeBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-change-backup-encryption-key";
 import { showSetBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-set-backup-encryption-key";
-
-import { downloadEmergencyKit } from "../../../../../data/backup";
 import { showShowBackupEncryptionKeyDialog } from "../../dialogs/show-dialog-show-backup-encryption-key";
 
 @customElement("ha-backup-config-encryption-key")

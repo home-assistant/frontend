@@ -1,8 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { computeStateDomain } from "./compute_state_domain";
-import { updateIcon } from "./update_icon";
-import { deviceTrackerIcon } from "./device_tracker_icon";
+
 import { batteryIcon } from "./battery_icon";
+import { computeStateDomain } from "./compute_state_domain";
+import { deviceTrackerIcon } from "./device_tracker_icon";
+import { updateIcon } from "./update_icon";
 
 export const stateIcon = (
   stateObj: HassEntity,

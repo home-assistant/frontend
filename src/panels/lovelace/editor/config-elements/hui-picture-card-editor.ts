@@ -1,14 +1,17 @@
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { PictureCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/ha-theme-picker";
+import "../../components/hui-action-editor";
+
 import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-theme-picker";
-import type { HomeAssistant } from "../../../../types";
-import type { PictureCardConfig } from "../../cards/types";
-import "../../components/hui-action-editor";
-import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 

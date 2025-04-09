@@ -1,9 +1,10 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
 import { computeDeviceName } from "./compute_device_name";
 import { computeStateName } from "./compute_state_name";
 import { stripPrefixFromEntityName } from "./strip_prefix_from_entity_name";

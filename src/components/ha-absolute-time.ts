@@ -1,9 +1,11 @@
-import { addDays, differenceInMilliseconds, startOfDay } from "date-fns";
+import type { HomeAssistant } from "../types";
 import type { PropertyValues } from "lit";
+
+import { addDays, differenceInMilliseconds, startOfDay } from "date-fns";
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { absoluteTime } from "../common/datetime/absolute_time";
-import type { HomeAssistant } from "../types";
 
 const SAFE_MARGIN = 5 * 1000;
 

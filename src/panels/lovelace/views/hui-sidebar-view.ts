@@ -1,17 +1,20 @@
-import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
-import { property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
-import { replaceCard } from "../editor/config-util";
 import type { Lovelace } from "../types";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../badges/hui-view-badges";
+
+import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
+import { LitElement, css, html } from "lit";
+import { property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { replaceCard } from "../editor/config-util";
 
 export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

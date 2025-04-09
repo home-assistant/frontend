@@ -1,4 +1,5 @@
 import type { HomeAssistant } from "../types";
+
 import { isIosApp } from "./is_ios";
 
 export const fileDownload = (href: string, filename = ""): void => {

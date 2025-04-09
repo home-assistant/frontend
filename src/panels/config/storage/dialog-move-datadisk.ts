@@ -1,22 +1,27 @@
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-spinner";
-import "../../../components/ha-select";
-import "../../../components/ha-dialog";
-import {
-  extractApiErrorMessage,
-  ignoreSupervisorError,
-} from "../../../data/hassio/common";
 import type {
   DatadiskList,
   HassioHassOSInfo,
   HassioHostInfo,
 } from "../../../data/hassio/host";
+import type { HomeAssistant } from "../../../types";
+import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-dialog";
+import "../../../components/ha-select";
+import "../../../components/ha-spinner";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import {
+  extractApiErrorMessage,
+  ignoreSupervisorError,
+} from "../../../data/hassio/common";
 import {
   fetchHassioHassOsInfo,
   listDatadisks,
@@ -24,9 +29,7 @@ import {
 } from "../../../data/hassio/host";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
-import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
   const speed = hostInfo.disk_life_time !== "" ? 30 : 10;

@@ -1,4 +1,5 @@
 import type { DemoConfig } from "../types";
+
 import { demoEntitiesSections } from "./entities";
 import { demoLovelaceSections } from "./lovelace";
 

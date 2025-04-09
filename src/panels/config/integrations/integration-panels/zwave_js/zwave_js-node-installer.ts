@@ -1,29 +1,32 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
-import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
-import "../../../../../components/ha-card";
 import type {
   ZWaveJSNodeCapabilities,
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
-import {
-  fetchZwaveNodeCapabilities,
-  fetchZwaveNodeMetadata,
-} from "../../../../../data/zwave_js";
+import type { HomeAssistant, Route } from "../../../../../types";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../../../components/ha-card";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-subpage";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import "./capability-controls/zwave_js-capability-control-color-switch";
 import "./capability-controls/zwave_js-capability-control-door-lock";
 import "./capability-controls/zwave_js-capability-control-multilevel-switch";
 import "./capability-controls/zwave_js-capability-control-thermostat-setback";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
+import {
+  fetchZwaveNodeCapabilities,
+  fetchZwaveNodeMetadata,
+} from "../../../../../data/zwave_js";
+import { haStyle } from "../../../../../resources/styles";
 
 const CAPABILITY_CONTROLS = {
   38: "multilevel_switch",

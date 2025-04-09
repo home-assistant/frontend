@@ -1,9 +1,11 @@
-import { assert, assign, boolean, object, optional, string } from "superstruct";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import type { EntityCardConfig } from "../../cards/types";
-import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceConfigForm } from "../../types";
+
+import { assert, assign, boolean, object, optional, string } from "superstruct";
+
+import { headerFooterConfigStructs } from "../../header-footer/structs";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const struct = assign(

@@ -1,15 +1,19 @@
+import type { ControlSelectOption } from "../../components/ha-control-select";
+import type { FanEntity, FanSpeed } from "../../data/fan";
+import type { HomeAssistant } from "../../types";
+
+import "../../components/ha-control-select";
+import "../../components/ha-control-slider";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
-import "../../components/ha-control-select";
-import type { ControlSelectOption } from "../../components/ha-control-select";
-import "../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity_attributes";
-import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
@@ -18,7 +22,6 @@ import {
   fanPercentageToSpeed,
   fanSpeedToPercentage,
 } from "../../data/fan";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-fan-speed")
 export class HaStateControlFanSpeed extends LitElement {

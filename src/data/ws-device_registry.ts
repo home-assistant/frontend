@@ -1,7 +1,9 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
 import type { DeviceRegistryEntry } from "./device_registry";
+import type { Connection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+
+import { createCollection } from "home-assistant-js-websocket";
+
 import { debounce } from "../common/util/debounce";
 
 export const fetchDeviceRegistry = (conn: Connection) =>

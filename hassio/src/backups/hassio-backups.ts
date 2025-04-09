@@ -1,25 +1,33 @@
-import "@material/mwc-button";
-import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { relativeTime } from "../../../src/common/datetime/relative_time";
 import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../src/components/data-table/ha-data-table";
+import type { HassioBackup } from "../../../src/data/hassio/backup";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
+import type { HomeAssistant, Route } from "../../../src/types";
+import type { ActionDetail } from "@material/mwc-list";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
-import type { HassioBackup } from "../../../src/data/hassio/backup";
+import "../../../src/layouts/hass-loading-screen";
+import "../../../src/layouts/hass-tabs-subpage-data-table";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { mdiBackupRestore, mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+
+import { atLeastVersion } from "../../../src/common/config/version";
+import { relativeTime } from "../../../src/common/datetime/relative_time";
 import {
   fetchHassioBackups,
   friendlyFolderName,
@@ -27,22 +35,17 @@ import {
   removeBackup,
 } from "../../../src/data/hassio/backup";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
-import "../../../src/layouts/hass-tabs-subpage-data-table";
-import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant, Route } from "../../../src/types";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
 import { showHassioBackupLocationDialog } from "../dialogs/backup/show-dialog-hassio-backu-location";
 import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
 import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
-import "../../../src/layouts/hass-loading-screen";
 
 type BackupItem = HassioBackup & {
   secondary: string;

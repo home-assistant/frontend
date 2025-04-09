@@ -1,11 +1,12 @@
+import type { HomeAssistant } from "../types";
 import type {
   HassEntity,
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
 import durationToSeconds from "../common/datetime/duration_to_seconds";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
-import type { HomeAssistant } from "../types";
 
 export type TimerEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {

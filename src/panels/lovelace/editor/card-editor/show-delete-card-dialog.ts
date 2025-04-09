@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface DeleteCardDialogParams {
   deleteCard: () => void;

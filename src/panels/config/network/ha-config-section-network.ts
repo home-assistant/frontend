@@ -1,13 +1,16 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
+import type { TemplateResult } from "lit";
+
+import "../../../layouts/hass-subpage";
 import "./ha-config-network";
 import "./ha-config-url-form";
 import "./supervisor-hostname";
 import "./supervisor-network";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-section-network")
 class HaConfigSectionNetwork extends LitElement {

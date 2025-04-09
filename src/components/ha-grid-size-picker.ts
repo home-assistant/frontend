@@ -1,14 +1,17 @@
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { CardGridSize } from "../panels/lovelace/common/compute-card-grid-size";
+import type { HomeAssistant } from "../types";
+
 import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
 import "./ha-icon-button";
+
 import { mdiRestore } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
-import type { CardGridSize } from "../panels/lovelace/common/compute-card-grid-size";
 import { DEFAULT_GRID_SIZE } from "../panels/lovelace/common/compute-card-grid-size";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {

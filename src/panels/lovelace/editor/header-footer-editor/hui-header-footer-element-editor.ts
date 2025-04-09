@@ -1,7 +1,9 @@
-import { customElement } from "lit/decorators";
-import { getHeaderFooterElementClass } from "../../create-element/create-header-footer-element";
 import type { LovelaceHeaderFooterConfig } from "../../header-footer/types";
 import type { LovelaceHeaderFooterEditor } from "../../types";
+
+import { customElement } from "lit/decorators";
+
+import { getHeaderFooterElementClass } from "../../create-element/create-header-footer-element";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 
 @customElement("hui-headerfooter-element-editor")

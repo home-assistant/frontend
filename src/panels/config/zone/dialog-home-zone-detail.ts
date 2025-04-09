@@ -1,15 +1,18 @@
-import "@material/mwc-button";
+import type { HomeZoneMutableParams } from "../../../data/zone";
+import type { HomeAssistant } from "../../../types";
+import type { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-form/ha-form";
+import "@material/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-form/ha-form";
-import type { HomeZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { HomeZoneDetailDialogParams } from "./show-dialog-home-zone-detail";
 
 const SCHEMA = [
   {

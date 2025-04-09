@@ -1,11 +1,5 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FormatEntityAttributeValueFunc } from "../../../../common/translations/entity-state";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -16,6 +10,15 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 type ClimateSwingModesCardFeatureData = ClimateSwingModesCardFeatureConfig & {
   customize_modes: boolean;

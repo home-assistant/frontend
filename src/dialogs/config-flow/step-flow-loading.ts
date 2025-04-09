@@ -1,10 +1,12 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../components/ha-spinner";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig, LoadingReason } from "./show-dialog-data-entry-flow";
+import type { TemplateResult } from "lit";
+
+import "../../components/ha-spinner";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("step-flow-loading")
 class StepFlowLoading extends LitElement {

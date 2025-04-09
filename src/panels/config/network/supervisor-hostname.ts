@@ -1,25 +1,28 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+import type { HomeAssistant } from "../../../types";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-radio";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   changeHostOptions,
   fetchHassioHostInfo,
 } from "../../../data/hassio/host";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("supervisor-hostname")
 export class HassioHostname extends LitElement {

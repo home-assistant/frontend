@@ -1,36 +1,39 @@
-import { animate } from "@lit-labs/motion";
+import type { MediaPlayerItem } from "../../data/media-player";
+import type { HomeAssistant } from "../../types";
+import type { MediaManageDialogParams } from "./show-media-manage-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../ha-button";
+import "../ha-check-list-item";
+import "../ha-dialog";
+import "../ha-dialog-header";
+import "../ha-spinner";
+import "../ha-svg-icon";
+import "../ha-tip";
+import "./ha-media-player-browse";
+import "./ha-media-upload-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
+
+import { animate } from "@lit-labs/motion";
 import { mdiClose, mdiDelete } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import type { MediaPlayerItem } from "../../data/media-player";
-import { MediaClassBrowserSettings } from "../../data/media-player";
+import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import {
   browseLocalMediaPlayer,
   removeLocalMedia,
   isLocalMediaSourceContentId,
   isImageUploadMediaSourceContentId,
 } from "../../data/media_source";
-import { deleteImage, getIdFromUrl } from "../../data/image_upload";
+import { MediaClassBrowserSettings } from "../../data/media-player";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../ha-button";
-import "../ha-check-list-item";
-import "../ha-spinner";
-import "../ha-dialog";
-import "../ha-dialog-header";
-import "../ha-svg-icon";
-import "../ha-tip";
-import "./ha-media-player-browse";
-import "./ha-media-upload-button";
-import type { MediaManageDialogParams } from "./show-media-manage-dialog";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {

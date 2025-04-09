@@ -1,3 +1,5 @@
+import type { AutomationElementGroup } from "./automation";
+
 import {
   mdiAbTesting,
   mdiApplicationVariableOutline,
@@ -19,7 +21,6 @@ import {
   mdiTools,
   mdiTrafficLight,
 } from "@mdi/js";
-import type { AutomationElementGroup } from "./automation";
 
 export const ACTION_ICONS = {
   condition: mdiAbTesting,

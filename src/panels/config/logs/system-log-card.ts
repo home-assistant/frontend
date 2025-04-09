@@ -1,27 +1,30 @@
-import "@material/mwc-list/mwc-list";
-import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { LoggedError } from "../../../data/system_log";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
+import "@material/mwc-list/mwc-list";
+
+import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import { getSignedPath } from "../../../data/auth";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
-import type { LoggedError } from "../../../data/system_log";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
   isCustomIntegrationError,
 } from "../../../data/system_log";
-import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";

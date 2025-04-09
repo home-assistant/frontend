@@ -1,20 +1,23 @@
-import "@material/mwc-button/mwc-button";
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
-import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import type { ConfigUpdateValues } from "../data/core";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { PropertyValues, TemplateResult } from "lit";
+
 import "../components/ha-alert";
 import "../components/ha-spinner";
+import "./onboarding-location";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
+import { fireEvent } from "../common/dom/fire_event";
 import { COUNTRIES } from "../components/ha-country-picker";
-import type { ConfigUpdateValues } from "../data/core";
 import { saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
 import { onboardCoreConfigStep } from "../data/onboarding";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { getLocalLanguage } from "../util/common-translation";
-import "./onboarding-location";
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {

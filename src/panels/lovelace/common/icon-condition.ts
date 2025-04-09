@@ -1,3 +1,5 @@
+import type { Condition } from "./validate-condition";
+
 import {
   mdiAccount,
   mdiAmpersand,
@@ -6,7 +8,6 @@ import {
   mdiResponsive,
   mdiStateMachine,
 } from "@mdi/js";
-import type { Condition } from "./validate-condition";
 
 export const ICON_CONDITION: Record<Condition["condition"], string> = {
   numeric_state: mdiNumeric,

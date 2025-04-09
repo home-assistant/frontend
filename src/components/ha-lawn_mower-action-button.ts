@@ -1,10 +1,13 @@
+import type { LawnMowerEntity, LawnMowerEntityState } from "../data/lawn_mower";
+import type { HomeAssistant } from "../types";
+
 import "@material/mwc-button";
+
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { LawnMowerEntity, LawnMowerEntityState } from "../data/lawn_mower";
 import { LawnMowerEntityFeature } from "../data/lawn_mower";
-import type { HomeAssistant } from "../types";
 
 interface LawnMowerAction {
   action: string;

@@ -1,6 +1,7 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import type { HomeAssistant } from "../../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 const arrayFilter = (
   array: any[],

@@ -1,16 +1,19 @@
+import type { HomeAssistant } from "../types";
+import type { HaCodeEditor } from "./ha-code-editor";
 import type { Schema } from "js-yaml";
-import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "./ha-button";
+import "./ha-code-editor";
+
+import { DEFAULT_SCHEMA, dump, load } from "js-yaml";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { HomeAssistant } from "../types";
-import { haStyle } from "../resources/styles";
-import "./ha-code-editor";
-import { showToast } from "../util/toast";
 import { copyToClipboard } from "../common/util/copy-clipboard";
-import type { HaCodeEditor } from "./ha-code-editor";
-import "./ha-button";
+import { haStyle } from "../resources/styles";
+import { showToast } from "../util/toast";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object" || obj === null) {

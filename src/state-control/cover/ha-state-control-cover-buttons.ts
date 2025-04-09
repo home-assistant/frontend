@@ -1,19 +1,23 @@
-import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
+import type { CoverEntity } from "../../data/cover";
+import type { HomeAssistant } from "../../types";
 import type { TemplateResult } from "lit";
+
+import "../../components/ha-control-button";
+import "../../components/ha-control-button-group";
+import "../../components/ha-control-slider";
+import "../../components/ha-svg-icon";
+
+import { mdiArrowBottomLeft, mdiArrowTopRight, mdiStop } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+
 import {
   computeCloseIcon,
   computeOpenIcon,
 } from "../../common/entity/cover_icon";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import "../../components/ha-control-button";
-import "../../components/ha-control-button-group";
-import "../../components/ha-control-slider";
-import "../../components/ha-svg-icon";
-import type { CoverEntity } from "../../data/cover";
 import {
   CoverEntityFeature,
   canClose,
@@ -23,7 +27,6 @@ import {
   canStop,
   canStopTilt,
 } from "../../data/cover";
-import type { HomeAssistant } from "../../types";
 
 type CoverButton =
   | "open"

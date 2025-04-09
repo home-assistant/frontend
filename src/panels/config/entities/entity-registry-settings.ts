@@ -1,19 +1,25 @@
+import type { ConfigEntry } from "../../../data/config_entries";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { HomeAssistant } from "../../../types";
+import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "./entity-registry-settings-editor";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-formfield/mwc-formfield";
 import "@material/mwc-list/mwc-list-item";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-alert";
-import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
   getConfigEntry,
 } from "../../../data/config_entries";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
@@ -25,10 +31,7 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
-import "./entity-registry-settings-editor";
-import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
 
 const invalidDomainUpdate = false;
 

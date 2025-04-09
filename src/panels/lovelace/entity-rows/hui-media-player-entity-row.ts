@@ -1,3 +1,16 @@
+import type {
+  ControlButton,
+  MediaPlayerEntity,
+} from "../../../data/media-player";
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig, LovelaceRow } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-icon-button";
+import "../../../components/ha-slider";
+import "../components/hui-generic-entity-row";
+
 import {
   mdiPause,
   mdiPlay,
@@ -11,29 +24,19 @@ import {
   mdiVolumeOff,
   mdiVolumePlus,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-slider";
 import { isUnavailableState } from "../../../data/entity";
-import type {
-  ControlButton,
-  MediaPlayerEntity,
-} from "../../../data/media-player";
 import {
   MediaPlayerEntityFeature,
   computeMediaDescription,
 } from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {

@@ -1,14 +1,17 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type {
   PipelineRun,
   PipelineRunEvent,
 } from "../../../../data/assist_pipeline";
-import { processEvent } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
+import type { TemplateResult } from "lit";
+
 import "./assist-render-pipeline-run";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { processEvent } from "../../../../data/assist_pipeline";
 
 @customElement("assist-render-pipeline-events")
 export class AssistPipelineEvents extends LitElement {

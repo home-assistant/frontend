@@ -1,13 +1,15 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
-import "./ha-form";
 import type {
   HaFormDataContainer,
   HaFormElement,
   HaFormExpandableSchema,
   HaFormSchema,
 } from "./types";
+
+import "./ha-form";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-form-expandable")
 export class HaFormExpendable extends LitElement implements HaFormElement {

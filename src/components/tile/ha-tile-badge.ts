@@ -1,7 +1,9 @@
 import type { TemplateResult } from "lit";
+
+import "../ha-icon";
+
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../ha-icon";
 
 @customElement("ha-tile-badge")
 export class HaTileBadge extends LitElement {

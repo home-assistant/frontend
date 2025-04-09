@@ -1,9 +1,12 @@
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
+
 import "./cloud/cloud-step-intro";
 import "./cloud/cloud-step-signin";
 import "./cloud/cloud-step-signup";
+
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { STEP } from "./voice-assistant-setup-dialog";
 

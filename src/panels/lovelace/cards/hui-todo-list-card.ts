@@ -1,27 +1,13 @@
-import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { TodoItem } from "../../../data/todo";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { TodoListCardConfig } from "./types";
 import type { List } from "@material/mwc-list/mwc-list";
-import {
-  mdiClock,
-  mdiDelete,
-  mdiDeleteSweep,
-  mdiDotsVertical,
-  mdiDrag,
-  mdiPlus,
-  mdiSort,
-} from "@mdi/js";
-import { endOfDay, isSameDay } from "date-fns";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValueMap, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { repeat } from "lit/directives/repeat";
-import memoizeOne from "memoize-one";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { supportsFeature } from "../../../common/entity/supports-feature";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
@@ -33,9 +19,29 @@ import "../../../components/ha-select";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "@material/mwc-list/mwc-list";
+
+import {
+  mdiClock,
+  mdiDelete,
+  mdiDeleteSweep,
+  mdiDotsVertical,
+  mdiDrag,
+  mdiPlus,
+  mdiSort,
+} from "@mdi/js";
+import { endOfDay, isSameDay } from "date-fns";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { isUnavailableState } from "../../../data/entity";
-import type { TodoItem } from "../../../data/todo";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
@@ -47,12 +53,9 @@ import {
   TodoSortMode,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
 import { showTodoItemEditDialog } from "../../todo/show-dialog-todo-item-editor";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { TodoListCardConfig } from "./types";
 
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {

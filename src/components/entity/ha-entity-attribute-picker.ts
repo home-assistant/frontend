@@ -1,11 +1,14 @@
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HaComboBox } from "../ha-combo-box";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../ha-combo-box";
+
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 

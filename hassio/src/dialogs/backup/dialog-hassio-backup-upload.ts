@@ -1,16 +1,19 @@
-import { mdiClose } from "@mdi/js";
+import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../src/types";
+import type { HassioBackupUploadDialogParams } from "./show-dialog-backup-upload";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../src/common/dom/fire_event";
+
+import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
-import "../../../../src/components/ha-dialog";
-import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
-import { haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-upload-backup";
-import type { HassioBackupUploadDialogParams } from "./show-dialog-backup-upload";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { haStyleDialog } from "../../../../src/resources/styles";
 
 @customElement("dialog-hassio-backup-upload")
 export class DialogHassioBackupUpload

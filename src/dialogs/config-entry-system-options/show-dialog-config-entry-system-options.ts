@@ -1,6 +1,7 @@
-import { fireEvent } from "../../common/dom/fire_event";
 import type { ConfigEntry } from "../../data/config_entries";
 import type { IntegrationManifest } from "../../data/integration";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface ConfigEntrySystemOptionsDialogParams {
   entry: ConfigEntry;

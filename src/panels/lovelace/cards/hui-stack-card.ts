@@ -1,12 +1,15 @@
-import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import "./hui-card";
 import type { HuiCard } from "./hui-card";
 import type { StackCardConfig } from "./types";
+
+import "./hui-card";
+
+import { LitElement, css, html, nothing } from "lit";
+import { property, state } from "lit/decorators";
+
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement

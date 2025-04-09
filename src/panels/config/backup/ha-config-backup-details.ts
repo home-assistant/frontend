@@ -1,4 +1,26 @@
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContentAgent,
+  BackupContentExtended,
+} from "../../../data/backup";
+import type { HomeAssistant } from "../../../types";
 import type { ActionDetail } from "@material/mwc-list";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
+import "../../../layouts/hass-subpage";
+import "./components/ha-backup-details-restore";
+import "./components/ha-backup-details-summary";
+
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -8,26 +30,11 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
-import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
-import type {
-  BackupAgent,
-  BackupConfig,
-  BackupContentAgent,
-  BackupContentExtended,
-} from "../../../data/backup";
-import "./components/ha-backup-details-summary";
-import "./components/ha-backup-details-restore";
 import {
   compareAgents,
   computeBackupAgentName,
@@ -36,14 +43,11 @@ import {
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
-import "../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../types";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { brandsUrl } from "../../../util/brands-url";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { downloadBackup } from "./helper/download_backup";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+
 
 interface Agent extends BackupContentAgent {
   id: string;

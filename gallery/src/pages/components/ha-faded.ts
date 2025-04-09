@@ -1,9 +1,12 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
+
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-faded";
 import "../../../../src/components/ha-markdown";
+
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
+
 import { LONG_TEXT } from "../../data/text";
 
 const SMALL_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";

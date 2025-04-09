@@ -1,4 +1,5 @@
 import { union, object, string, optional, boolean, enums } from "superstruct";
+
 import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import {
   actionConfigStruct,

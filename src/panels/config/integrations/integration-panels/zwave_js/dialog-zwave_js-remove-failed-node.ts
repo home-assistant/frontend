@@ -1,17 +1,20 @@
-import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCloseCircle, mdiRobotDead } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type { ZWaveJSRemovedNode } from "../../../../../data/zwave_js";
-import { removeFailedZwaveNode } from "../../../../../data/zwave_js";
-import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSRemoveFailedNodeDialogParams } from "./show-dialog-zwave_js-remove-failed-node";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCheckCircle, mdiCloseCircle, mdiRobotDead } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { removeFailedZwaveNode } from "../../../../../data/zwave_js";
+import { haStyleDialog } from "../../../../../resources/styles";
 
 @customElement("dialog-zwave_js-remove-failed-node")
 class DialogZWaveJSRemoveFailedNode extends LitElement {

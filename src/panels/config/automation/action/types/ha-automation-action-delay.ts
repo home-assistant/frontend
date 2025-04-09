@@ -1,14 +1,17 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { hasTemplate } from "../../../../../common/string/has-template";
 import type { HaDurationData } from "../../../../../components/ha-duration-input";
-import "../../../../../components/ha-duration-input";
 import type { DelayAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-duration-input";
+
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
 
 @customElement("ha-automation-action-delay")
 export class HaDelayAction extends LitElement implements ActionElement {

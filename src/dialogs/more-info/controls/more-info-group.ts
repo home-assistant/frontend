@@ -1,12 +1,15 @@
+import type { GroupEntity } from "../../../data/group";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../state-summary/state-card-content";
+
 import { LitElement, css, html, nothing } from "lit";
 import { property, state } from "lit/decorators";
+
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import type { GroupEntity } from "../../../data/group";
 import { computeGroupDomain } from "../../../data/group";
-import "../../../state-summary/state-card-content";
-import type { HomeAssistant } from "../../../types";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 import {
   domainMoreInfoType,

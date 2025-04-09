@@ -1,20 +1,23 @@
+import type { Cluster, ZHADevice } from "../../../../../data/zha";
+import type { HomeAssistant } from "../../../../../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-select";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
-import type { CSSResultGroup, PropertyValues } from "lit";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import "../../../../../components/ha-card";
-import "../../../../../components/ha-select";
-import type { Cluster, ZHADevice } from "../../../../../data/zha";
 import { fetchClustersForZhaDevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import { computeClusterKey } from "./functions";
-import "./zha-cluster-attributes";
-import "./zha-cluster-commands";
 
 declare global {
   // for fire event

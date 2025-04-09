@@ -1,12 +1,15 @@
-import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import type { HomeAssistant } from "../../../../../../types";
-import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
+
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-spinner";
-import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 import "./zwave_js-capability-control-multilevel-switch";
+
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
+import { invokeZWaveCCApi } from "../../../../../../data/zwave_js";
 
 enum ColorComponent {
   "Warm White" = 0,

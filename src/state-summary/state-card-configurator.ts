@@ -1,10 +1,13 @@
-import "@material/mwc-button";
-import type { HassEntity } from "home-assistant-js-websocket";
-import "../components/entity/state-info";
-import { customElement, property } from "lit/decorators";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
 import type { HomeAssistant } from "../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../components/entity/state-info";
+import "@material/mwc-button";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-configurator")

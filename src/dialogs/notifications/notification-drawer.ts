@@ -1,18 +1,21 @@
-import "@material/mwc-button";
+import type { HaDrawer } from "../../components/ha-drawer";
+import type { PersistentNotification } from "../../data/persistent_notification";
+import type { HomeAssistant } from "../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+
+import "../../components/ha-drawer";
+import "../../components/ha-header-bar";
+import "../../components/ha-icon-button-prev";
+import "./notification-item";
+import "@material/mwc-button";
+
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import "../../components/ha-icon-button-prev";
-import type { PersistentNotification } from "../../data/persistent_notification";
-import { subscribeNotifications } from "../../data/persistent_notification";
-import type { HomeAssistant } from "../../types";
-import "./notification-item";
-import "../../components/ha-header-bar";
-import "../../components/ha-drawer";
-import type { HaDrawer } from "../../components/ha-drawer";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
+import { subscribeNotifications } from "../../data/persistent_notification";
 
 @customElement("notification-drawer")
 export class HuiNotificationDrawer extends LitElement {

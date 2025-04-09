@@ -1,11 +1,16 @@
-import "@material/mwc-button";
+import type { HomeAssistant } from "../../../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../layouts/hass-subpage";
+import "@material/mwc-button";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import {
   acceptSharedMatterDevice,
   canCommissionMatterExternal,
@@ -16,9 +21,7 @@ import {
   startExternalCommissioning,
 } from "../../../../../data/matter";
 import { showPromptDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 
 @customElement("matter-config-dashboard")
 export class MatterConfigDashboard extends LitElement {

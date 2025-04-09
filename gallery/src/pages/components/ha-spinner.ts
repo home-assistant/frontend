@@ -1,10 +1,12 @@
+import type { HomeAssistant } from "../../../../src/types";
 import type { TemplateResult } from "lit";
-import { html, css, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../../../../src/components/ha-bar";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-spinner";
-import type { HomeAssistant } from "../../../../src/types";
+
+import { html, css, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("demo-components-ha-spinner")
 export class DemoHaSpinner extends LitElement {

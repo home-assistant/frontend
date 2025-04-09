@@ -1,21 +1,7 @@
-import { ensureArray } from "../common/array/ensure-array";
-import { formatNumericDuration } from "../common/datetime/format_duration";
-import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
-import { computeStateName } from "../common/entity/compute_state_name";
-import { formatListWithAnds } from "../common/string/format-list";
-import { isTemplate } from "../common/string/has-template";
 import type { HomeAssistant } from "../types";
 import type { Condition } from "./automation";
-import { describeCondition } from "./automation_i18n";
-import { localizeDeviceAutomationAction } from "./device_automation";
 import type { EntityRegistryEntry } from "./entity_registry";
-import {
-  computeEntityRegistryName,
-  entityRegistryById,
-} from "./entity_registry";
 import type { FloorRegistryEntry } from "./floor_registry";
-import { domainToName } from "./integration";
 import type { LabelRegistryEntry } from "./label_registry";
 import type {
   ActionType,
@@ -34,6 +20,21 @@ import type {
   VariablesAction,
   WaitForTriggerAction,
 } from "./script";
+
+import { ensureArray } from "../common/array/ensure-array";
+import { formatNumericDuration } from "../common/datetime/format_duration";
+import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { formatListWithAnds } from "../common/string/format-list";
+import { isTemplate } from "../common/string/has-template";
+import { describeCondition } from "./automation_i18n";
+import { localizeDeviceAutomationAction } from "./device_automation";
+import {
+  computeEntityRegistryName,
+  entityRegistryById,
+} from "./entity_registry";
+import { domainToName } from "./integration";
 import { getActionType } from "./script";
 
 const actionTranslationBaseKey =

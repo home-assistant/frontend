@@ -1,15 +1,22 @@
+import type { ControlSelectOption } from "../../../components/ha-control-select";
+import type { FanEntity, FanSpeed } from "../../../data/fan";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import type { FanSpeedCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-control-select";
+import "../../../components/ha-control-slider";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../components/ha-control-select";
-import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { FanEntity, FanSpeed } from "../../../data/fan";
+import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import {
   computeFanSpeedCount,
   computeFanSpeedIcon,
@@ -19,10 +26,6 @@ import {
   fanPercentageToSpeed,
   fanSpeedToPercentage,
 } from "../../../data/fan";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
-import type { FanSpeedCardFeatureConfig } from "./types";
-import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 
 export const supportsFanSpeedCardFeature = (stateObj: HassEntity) => {

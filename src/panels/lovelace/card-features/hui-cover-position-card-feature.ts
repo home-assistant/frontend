@@ -1,7 +1,14 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import type { CoverPositionCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-control-slider";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -11,11 +18,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { CoverEntityFeature } from "../../../data/cover";
 import { UNAVAILABLE } from "../../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { CoverPositionCardFeatureConfig } from "./types";
-import "../../../components/ha-control-slider";
 
 export const supportsCoverPositionCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

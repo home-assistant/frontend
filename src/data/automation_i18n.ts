@@ -1,4 +1,10 @@
+import type { HomeAssistant } from "../types";
+import type { Condition, ForDict, Trigger } from "./automation";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
+import type { EntityRegistryEntry } from "./entity_registry";
+import type { FrontendLocaleData } from "./translation";
 import type { HassConfig } from "home-assistant-js-websocket";
+
 import { ensureArray } from "../common/array/ensure-array";
 import {
   formatDurationLong,
@@ -16,15 +22,10 @@ import {
   formatListWithAnds,
   formatListWithOrs,
 } from "../common/string/format-list";
-import type { HomeAssistant } from "../types";
-import type { Condition, ForDict, Trigger } from "./automation";
-import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import {
   localizeDeviceAutomationCondition,
   localizeDeviceAutomationTrigger,
 } from "./device_automation";
-import type { EntityRegistryEntry } from "./entity_registry";
-import type { FrontendLocaleData } from "./translation";
 import { isTriggerList } from "./trigger";
 
 const triggerTranslationBaseKey =

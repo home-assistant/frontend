@@ -1,3 +1,16 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { EntityBadgeConfig } from "../../badges/types";
+import type { LovelaceBadgeEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+import "../hui-sub-element-editor";
+import "./hui-card-features-editor";
+
 import { mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,26 +26,16 @@ import {
   string,
   union,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
 import {
   DEFAULT_CONFIG,
   DISPLAY_TYPES,
   migrateLegacyEntityBadgeConfig,
 } from "../../badges/hui-entity-badge";
-import type { EntityBadgeConfig } from "../../badges/types";
-import type { LovelaceBadgeEditor } from "../../types";
-import "../hui-sub-element-editor";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-card-features-editor";
 
 const badgeConfigStruct = assign(
   baseLovelaceBadgeConfig,

@@ -1,6 +1,7 @@
+import type { HomeAssistant } from "../../types";
+
 import { css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../types";
 
 @customElement("hat-logbook-note")
 class HatLogbookNote extends LitElement {

@@ -8,20 +8,21 @@ import type {
   LovelaceDashboardStrategyConfig,
   LovelaceRawConfig,
 } from "../../../data/lovelace/config/types";
-import { isStrategyDashboard } from "../../../data/lovelace/config/types";
 import type {
   LovelaceStrategyViewConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace/config/view";
-import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { AsyncReturnType, HomeAssistant } from "../../../types";
-import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 import type {
   LovelaceDashboardStrategy,
   LovelaceSectionStrategy,
   LovelaceStrategy,
   LovelaceViewStrategy,
 } from "./types";
+
+import { isStrategyDashboard } from "../../../data/lovelace/config/types";
+import { isStrategyView } from "../../../data/lovelace/config/view";
+import { cleanLegacyStrategyConfig, isLegacyStrategy } from "./legacy-strategy";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
 const CUSTOM_PREFIX = "custom:";

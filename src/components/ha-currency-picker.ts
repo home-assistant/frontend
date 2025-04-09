@@ -1,12 +1,15 @@
+import type { HaSelect } from "./ha-select";
+
+import "./ha-list-item";
+import "./ha-select";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
 
 const CURRENCIES = [
   "AED",

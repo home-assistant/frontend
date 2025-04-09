@@ -1,9 +1,11 @@
-import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import { DIRECTION_ALL, Manager, Pan, Tap } from "@egjs/hammerjs";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 declare global {

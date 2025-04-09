@@ -1,17 +1,20 @@
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { LitElement, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { debounce } from "../../../common/util/debounce";
 import type { FlowType } from "../../../data/data_entry_flow";
 import type {
   TemplateListeners,
   TemplatePreview,
 } from "../../../data/ws-templates";
-import { subscribePreviewTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
-import "./entity-preview-row";
-import { fireEvent } from "../../../common/dom/fire_event";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+
 import "../../../components/ha-alert";
+import "./entity-preview-row";
+
+import { LitElement, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { debounce } from "../../../common/util/debounce";
+import { subscribePreviewTemplate } from "../../../data/ws-templates";
 
 @customElement("flow-preview-template")
 class FlowPreviewTemplate extends LitElement {

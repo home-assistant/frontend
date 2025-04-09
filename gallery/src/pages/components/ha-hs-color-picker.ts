@@ -1,11 +1,12 @@
-import "../../../../src/components/ha-hs-color-picker";
-
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-hs-color-picker";
+import "../../../../src/components/ha-slider";
+
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 
-import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-slider";
 import { hsv2rgb } from "../../../../src/common/color/convert-color";
 
 @customElement("demo-components-ha-hs-color-picker")

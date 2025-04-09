@@ -1,13 +1,16 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { formatDateTime } from "../../common/datetime/format_date_time";
+import type { PersistentNotification } from "../../data/persistent_notification";
+import type { HomeAssistant } from "../../types";
+
+import "../../components/ha-button";
 import "../../components/ha-markdown";
 import "../../components/ha-relative-time";
 import "../../components/ha-tooltip";
-import "../../components/ha-button";
-import type { PersistentNotification } from "../../data/persistent_notification";
-import type { HomeAssistant } from "../../types";
 import "./notification-item-template";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { formatDateTime } from "../../common/datetime/format_date_time";
 
 @customElement("persistent-notification-item")
 export class HuiPersistentNotificationItem extends LitElement {

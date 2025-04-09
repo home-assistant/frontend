@@ -1,8 +1,9 @@
+import type { Constructor, HomeAssistant } from "../types";
+import type { HassBaseEl } from "./hass-base-mixin";
+
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { getSensorNumericDeviceClasses } from "../data/sensor";
-import type { Constructor, HomeAssistant } from "../types";
-import type { HassBaseEl } from "./hass-base-mixin";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
   class StateDisplayMixin extends superClass {

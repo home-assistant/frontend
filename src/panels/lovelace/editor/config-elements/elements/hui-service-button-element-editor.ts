@@ -1,15 +1,18 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { any, assert, enums, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-service-control";
 import type { ServiceAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ServiceButtonElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
+
+import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-service-control";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { any, assert, enums, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const serviceButtonElementConfigStruct = object({
   type: enums(["service-button", "action-button"]),

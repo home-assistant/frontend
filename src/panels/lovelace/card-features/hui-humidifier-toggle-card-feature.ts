@@ -1,22 +1,25 @@
-import { mdiPower, mdiWaterPercent } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
-import { UNAVAILABLE } from "../../../data/entity";
 import type {
   HumidifierEntity,
   HumidifierState,
 } from "../../../data/humidifier";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
 import type { HumidifierToggleCardFeatureConfig } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-control-select";
+
+import { mdiPower, mdiWaterPercent } from "@mdi/js";
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateColorCss } from "../../../common/entity/state_color";
+import { UNAVAILABLE } from "../../../data/entity";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 
 export const supportsHumidifierToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

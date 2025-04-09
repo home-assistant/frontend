@@ -1,5 +1,7 @@
-import { customElement } from "lit/decorators";
 import type { CallServiceConfig } from "../entity-rows/types";
+
+import { customElement } from "lit/decorators";
+
 import { HuiButtonRow } from "./hui-button-row";
 
 @customElement("hui-call-service-row")

@@ -1,12 +1,15 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-yaml-editor";
-import "../../../../../components/user/ha-users-picker";
 import type { EventTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+
+import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-yaml-editor";
+import "../../../../../components/user/ha-users-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger-event")

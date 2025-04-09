@@ -1,35 +1,38 @@
-import { mdiPower } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { canShowPage } from "../../../common/config/can_show_page";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { relativeTime } from "../../../common/datetime/relative_time";
-import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-navigation-list";
 import type { BackupContent } from "../../../data/backup";
-import { fetchBackupInfo } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
-import { fetchCloudStatus } from "../../../data/cloud";
 import type { HardwareInfo } from "../../../data/hardware";
-import { BOARD_NAMES } from "../../../data/hardware";
 import type { HassioBackup } from "../../../data/hassio/backup";
-import { fetchHassioBackups } from "../../../data/hassio/backup";
 import type {
   HassioHassOSInfo,
   HassioHostInfo,
 } from "../../../data/hassio/host";
+import type { HomeAssistant } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-navigation-list";
+import "../../../layouts/hass-subpage";
+import "../ha-config-section";
+
+import { mdiPower } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { canShowPage } from "../../../common/config/can_show_page";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
+import { fetchBackupInfo } from "../../../data/backup";
+import { fetchCloudStatus } from "../../../data/cloud";
+import { BOARD_NAMES } from "../../../data/hardware";
+import { fetchHassioBackups } from "../../../data/hassio/backup";
 import {
   fetchHassioHassOsInfo,
   fetchHassioHostInfo,
 } from "../../../data/hassio/host";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-system-navigation")

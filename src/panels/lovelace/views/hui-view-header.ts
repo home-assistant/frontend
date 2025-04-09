@@ -1,11 +1,3 @@
-import { mdiPencil, mdiPlus } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-ripple";
-import "../../../components/ha-sortable";
-import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
   LovelaceViewConfig,
@@ -13,13 +5,24 @@ import type {
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
+import type { Lovelace } from "../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-ripple";
+import "../../../components/ha-sortable";
+import "../../../components/ha-svg-icon";
+import "../badges/hui-view-badges";
 import "../components/hui-badge-edit-mode";
+
+import { mdiPencil, mdiPlus } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
-import type { Lovelace } from "../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";

@@ -1,7 +1,3 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
 import type {
   LocationSelector,
   LocationSelectorValue,
@@ -9,8 +5,15 @@ import type {
 import type { HomeAssistant } from "../../types";
 import type { SchemaUnion } from "../ha-form/types";
 import type { MarkerLocation } from "../map/ha-locations-editor";
-import "../map/ha-locations-editor";
+
 import "../ha-form/ha-form";
+import "../map/ha-locations-editor";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-location")
 export class HaLocationSelector extends LitElement {

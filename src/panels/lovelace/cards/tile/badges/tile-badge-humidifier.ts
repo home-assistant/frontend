@@ -1,11 +1,14 @@
-import { html, nothing } from "lit";
-import { styleMap } from "lit/directives/style-map";
-import { stateColorCss } from "../../../../../common/entity/state_color";
+import type { HumidifierEntity } from "../../../../../data/humidifier";
+import type { RenderBadgeFunction } from "./tile-badge";
+
 import "../../../../../components/ha-attribute-icon";
 import "../../../../../components/tile/ha-tile-badge";
-import type { HumidifierEntity } from "../../../../../data/humidifier";
+
+import { html, nothing } from "lit";
+import { styleMap } from "lit/directives/style-map";
+
+import { stateColorCss } from "../../../../../common/entity/state_color";
 import { HUMIDIFIER_ACTION_MODE } from "../../../../../data/humidifier";
-import type { RenderBadgeFunction } from "./tile-badge";
 
 export const renderHumidifierBadge: RenderBadgeFunction = (stateObj, hass) => {
   const action = (stateObj as HumidifierEntity).attributes.action;

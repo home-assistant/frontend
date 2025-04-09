@@ -1,10 +1,19 @@
-import { mdiDrag } from "@mdi/js";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { HaComboBox } from "../ha-combo-box";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../chips/ha-chip-set";
+import "../chips/ha-input-chip";
+import "../ha-combo-box";
+import "../ha-sortable";
+
+import { mdiDrag } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -12,12 +21,6 @@ import {
   STATE_DISPLAY_SPECIAL_CONTENT,
   STATE_DISPLAY_SPECIAL_CONTENT_DOMAINS,
 } from "../../state-display/state-display";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-combo-box";
-import "../ha-sortable";
-import "../chips/ha-input-chip";
-import "../chips/ha-chip-set";
-import type { HaComboBox } from "../ha-combo-box";
 
 const HIDDEN_ATTRIBUTES = [
   "access_token",

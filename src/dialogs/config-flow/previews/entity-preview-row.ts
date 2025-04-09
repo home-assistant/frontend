@@ -1,10 +1,10 @@
+import type { ImageEntity } from "../../../data/image";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { format } from "date-fns";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/entity/state-badge";
 import "../../../components/ha-climate-state";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
@@ -13,15 +13,18 @@ import "../../../components/ha-humidifier-state";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
-import "../../../components/entity/ha-entity-toggle";
-import "../../../components/entity/state-badge";
+import "../../../panels/lovelace/components/hui-timestamp-display";
+
+import { format } from "date-fns";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
-import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
-import "../../../panels/lovelace/components/hui-timestamp-display";
-import type { HomeAssistant } from "../../../types";
 
 @customElement("entity-preview-row")
 class EntityPreviewRow extends LitElement {

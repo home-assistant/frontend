@@ -1,13 +1,16 @@
-import { mdiFile } from "@mdi/js";
+import type { FileSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
+
+import "../ha-file-upload";
+
+import { mdiFile } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { removeFile, uploadFile } from "../../data/file_upload";
-import type { FileSelector } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../types";
-import "../ha-file-upload";
 
 @customElement("ha-selector-file")
 export class HaFileSelector extends LitElement {

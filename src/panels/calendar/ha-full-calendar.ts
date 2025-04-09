@@ -1,11 +1,29 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type {
+  Calendar as CalendarData,
+  CalendarEvent,
+} from "../../data/calendar";
+import type {
+  CalendarViewChanged,
+  FullCalendarView,
+  HomeAssistant,
+  ToggleButton,
+} from "../../types";
 import type { CalendarOptions } from "@fullcalendar/core";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../components/ha-button-toggle-group";
+import "../../components/ha-fab";
+import "../../components/ha-icon-button-next";
+import "../../components/ha-icon-button-prev";
+import "@material/mwc-button";
+
 import { Calendar } from "@fullcalendar/core";
 import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-button";
 import {
   mdiPlus,
   mdiViewAgenda,
@@ -13,32 +31,17 @@ import {
   mdiViewModule,
   mdiViewWeek,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
+
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import type { LocalizeFunc } from "../../common/translations/localize";
-import "../../components/ha-button-toggle-group";
-import "../../components/ha-fab";
-import "../../components/ha-icon-button-next";
-import "../../components/ha-icon-button-prev";
-import type {
-  Calendar as CalendarData,
-  CalendarEvent,
-} from "../../data/calendar";
 import { CalendarEntityFeature } from "../../data/calendar";
 import { TimeZone } from "../../data/translation";
 import { haStyle } from "../../resources/styles";
-import type {
-  CalendarViewChanged,
-  FullCalendarView,
-  HomeAssistant,
-  ToggleButton,
-} from "../../types";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
 

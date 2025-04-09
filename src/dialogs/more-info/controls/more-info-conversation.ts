@@ -1,13 +1,16 @@
+import type { AssistPipeline } from "../../../data/assist_pipeline";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-assist-chat";
+import "../../../components/ha-attributes";
+import "../../../components/ha-spinner";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-attributes";
-import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-assist-chat";
-import "../../../components/ha-spinner";
-import "../../../components/ha-alert";
-import type { AssistPipeline } from "../../../data/assist_pipeline";
+
 import { getAssistPipeline } from "../../../data/assist_pipeline";
 
 @customElement("more-info-conversation")

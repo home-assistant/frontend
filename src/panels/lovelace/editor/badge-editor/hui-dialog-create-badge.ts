@@ -1,27 +1,30 @@
+import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { CreateBadgeDialogParams } from "./show-create-badge-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-dialog";
+import "../../../../components/ha-dialog-header";
+import "../card-editor/hui-entity-picker-table";
+import "./hui-badge-picker";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
+
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import memoize from "memoize-one";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-header";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { computeBadges } from "../../common/generate-lovelace-config";
-import "../card-editor/hui-entity-picker-table";
 import { findLovelaceContainer } from "../lovelace-path";
-import "./hui-badge-picker";
-import type { CreateBadgeDialogParams } from "./show-create-badge-dialog";
 import { showEditBadgeDialog } from "./show-edit-badge-dialog";
 import { showSuggestBadgeDialog } from "./show-suggest-badge-dialog";
 

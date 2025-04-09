@@ -1,15 +1,18 @@
+import type { HaTextField } from "../../../../../components/ha-textfield";
+import type { ConversationTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import type { TriggerElement } from "../ha-automation-trigger-row";
+
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-textfield";
+
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../../components/ha-textfield";
-import "../../../../../components/ha-icon-button";
-import type { ConversationTrigger } from "../../../../../data/automation";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../../types";
-import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const PATTERN = "^[^.。,，?¿？؟!！;；:：]+$";
 

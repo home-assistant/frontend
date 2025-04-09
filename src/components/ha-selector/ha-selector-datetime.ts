@@ -1,13 +1,16 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { DateTimeSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
-import "../ha-date-input";
 import type { HaDateInput } from "../ha-date-input";
-import "../ha-time-input";
-import "../ha-input-helper-text";
 import type { HaTimeInput } from "../ha-time-input";
+
+import "../ha-date-input";
+import "../ha-input-helper-text";
+import "../ha-time-input";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-datetime")
 export class HaDateTimeSelector extends LitElement {

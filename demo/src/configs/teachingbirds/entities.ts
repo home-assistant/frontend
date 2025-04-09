@@ -1,5 +1,6 @@
-import { convertEntities } from "../../../../src/fake_data/entity";
 import type { DemoConfig } from "../types";
+
+import { convertEntities } from "../../../../src/fake_data/entity";
 
 export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
   convertEntities({

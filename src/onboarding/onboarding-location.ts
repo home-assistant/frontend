@@ -1,35 +1,38 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HaTextField } from "../components/ha-textfield";
+import type {
+  HaLocationsEditor,
+  MarkerLocation,
+} from "../components/map/ha-locations-editor";
+import type { ConfigUpdateValues } from "../data/core";
+import type { OpenStreetMapPlace } from "../data/openstreetmap";
+import type { HomeAssistant } from "../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../components/ha-alert";
+import "../components/ha-formfield";
+import "../components/ha-list-item";
+import "../components/ha-radio";
+import "../components/ha-spinner";
+import "../components/ha-textfield";
+import "../components/map/ha-locations-editor";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
+
 import {
   mdiCrosshairsGps,
   mdiMagnify,
   mdiMapMarker,
   mdiMapSearchOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-alert";
-import "../components/ha-spinner";
-import "../components/ha-formfield";
-import "../components/ha-list-item";
-import "../components/ha-radio";
-import "../components/ha-textfield";
-import type { HaTextField } from "../components/ha-textfield";
-import "../components/map/ha-locations-editor";
-import type {
-  HaLocationsEditor,
-  MarkerLocation,
-} from "../components/map/ha-locations-editor";
-import type { ConfigUpdateValues } from "../data/core";
 import { detectCoreConfig } from "../data/core";
-import type { OpenStreetMapPlace } from "../data/openstreetmap";
 import { reverseGeocode, searchPlaces } from "../data/openstreetmap";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
 
 const AMSTERDAM: [number, number] = [52.3731339, 4.8903147];

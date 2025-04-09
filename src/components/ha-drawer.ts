@@ -1,8 +1,11 @@
-import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
-import { styles } from "@material/mwc-drawer/mwc-drawer.css";
 import type { PropertyValues } from "lit";
+
+import { styles } from "@material/mwc-drawer/mwc-drawer.css";
+
+import { DrawerBase } from "@material/mwc-drawer/mwc-drawer-base";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 
 const blockingElements = (document as any).$blockingElements;

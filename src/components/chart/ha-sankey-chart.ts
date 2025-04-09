@@ -1,17 +1,20 @@
-import { customElement, property, state } from "lit/decorators";
-import { LitElement, html, css } from "lit";
-import type { EChartsType } from "echarts/core";
-import type { CallbackDataParams } from "echarts/types/dist/shared";
-import type { SankeySeriesOption } from "echarts/types/dist/echarts";
-import { SankeyChart } from "echarts/charts";
-import memoizeOne from "memoize-one";
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import type { HomeAssistant } from "../../types";
 import type { ECOption } from "../../resources/echarts";
-import { measureTextWidth } from "../../util/text";
-import "./ha-chart-base";
-import { NODE_SIZE } from "../trace/hat-graph-const";
+import type { HomeAssistant } from "../../types";
+import type { EChartsType } from "echarts/core";
+import type { SankeySeriesOption } from "echarts/types/dist/echarts";
+import type { CallbackDataParams } from "echarts/types/dist/shared";
+
 import "../ha-alert";
+import "./ha-chart-base";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { SankeyChart } from "echarts/charts";
+import { LitElement, html, css } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { measureTextWidth } from "../../util/text";
+import { NODE_SIZE } from "../trace/hat-graph-const";
 
 export interface Node {
   id: string;

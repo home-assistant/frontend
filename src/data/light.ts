@@ -2,6 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
 import { temperature2rgb } from "../common/color/convert-light-color";
 
 export const enum LightEntityFeature {

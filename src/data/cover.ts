@@ -1,10 +1,11 @@
+import type { HomeAssistant } from "../types";
 import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+
 import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity";
 
 export const enum CoverEntityFeature {

@@ -1,11 +1,13 @@
-import { ReactiveElement } from "lit";
-import { customElement } from "lit/decorators";
-import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+
+import { ReactiveElement } from "lit";
+import { customElement } from "lit/decorators";
+
+import { clamp } from "../../../../common/number/clamp";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   computeAreaTileCardConfig,

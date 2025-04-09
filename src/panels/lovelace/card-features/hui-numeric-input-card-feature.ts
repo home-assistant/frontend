@@ -1,18 +1,21 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { NumericInputCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../common/entity/compute_domain";
+
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { isUnavailableState } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { NumericInputCardFeatureConfig } from "./types";
 
 export const supportsNumericInputCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

@@ -1,8 +1,11 @@
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-tip";
+
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-tip";
-import "../../../../src/components/ha-card";
+
 import { applyThemesOnElement } from "../../../../src/common/dom/apply_themes_on_element";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 

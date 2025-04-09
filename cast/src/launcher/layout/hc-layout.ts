@@ -1,9 +1,11 @@
 import type { Auth, Connection, HassUser } from "home-assistant-js-websocket";
-import { getUser } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+
+import { getUser } from "home-assistant-js-websocket";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../src/components/ha-card";
 
 @customElement("hc-layout")
 class HcLayout extends LitElement {

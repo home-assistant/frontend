@@ -1,15 +1,18 @@
-import "@material/mwc-button/mwc-button";
+import type { HomeAssistant } from "../../../types";
+import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-dialog";
+import "../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-spinner";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-dialog";
 import { clearStatistics, getStatisticLabel } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 import { showAlertDialog } from "../../lovelace/custom-card-helpers";
 
 @customElement("dialog-statistics-fix")

@@ -1,12 +1,15 @@
+import type { HaIconButton } from "./ha-icon-button";
 import type { Button } from "@material/mwc-button";
-import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import type { TemplateResult } from "lit";
+
+import "@material/mwc-menu";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { mainWindow } from "../common/dom/get_main_window";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
-import type { HaIconButton } from "./ha-icon-button";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {

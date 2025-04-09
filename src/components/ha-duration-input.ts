@@ -1,9 +1,12 @@
+import type { TimeChangedEvent } from "./ha-base-time-input";
 import type { TemplateResult } from "lit";
+
+import "./ha-base-time-input";
+
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-base-time-input";
-import type { TimeChangedEvent } from "./ha-base-time-input";
 
 export interface HaDurationData {
   days?: number;

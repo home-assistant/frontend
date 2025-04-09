@@ -1,21 +1,23 @@
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../../../types";
+import type { DeviceAction } from "../../../ha-config-device-page";
+
 import {
   mdiAccessPoint,
   mdiChatProcessing,
   mdiChatQuestion,
   mdiExportVariant,
 } from "@mdi/js";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+
+import { navigate } from "../../../../../../common/navigate";
 import {
   NetworkType,
   getMatterNodeDiagnostics,
 } from "../../../../../../data/matter";
-import type { HomeAssistant } from "../../../../../../types";
-import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
-import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
-import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
-import type { DeviceAction } from "../../../ha-config-device-page";
 import { showMatterManageFabricsDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-manage-fabrics";
-import { navigate } from "../../../../../../common/navigate";
+import { showMatterOpenCommissioningWindowDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-open-commissioning-window";
+import { showMatterPingNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-ping-node";
+import { showMatterReinterviewNodeDialog } from "../../../../integrations/integration-panels/matter/show-dialog-matter-reinterview-node";
 
 export const getMatterDeviceDefaultActions = (
   el: HTMLElement,

@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
 } from "../../../data/area_registry";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface AreaRegistryDetailDialogParams {
   entry?: AreaRegistryEntry;

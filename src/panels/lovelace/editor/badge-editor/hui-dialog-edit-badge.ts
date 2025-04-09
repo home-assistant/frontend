@@ -1,38 +1,41 @@
-import { mdiClose, mdiHelpCircle } from "@mdi/js";
-import deepFreeze from "deep-freeze";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-spinner";
+import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { ConfigChangedEvent } from "../hui-element-editor";
+import type { GUIModeChangedEvent } from "../types";
+import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
+import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
-import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import { ensureBadgeConfig } from "../../../../data/lovelace/config/badge";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import "../../../../components/ha-spinner";
+import "../../badges/hui-badge";
+import "../../sections/hui-section";
+import "./hui-badge-element-editor";
+
+import { mdiClose, mdiHelpCircle } from "@mdi/js";
+import deepFreeze from "deep-freeze";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import {
   getCustomBadgeEntry,
   isCustomType,
   stripCustomPrefix,
 } from "../../../../data/lovelace_custom_cards";
+import { ensureBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import "../../badges/hui-badge";
-import "../../sections/hui-section";
 import { addBadge, replaceBadge } from "../config-util";
 import { getBadgeDocumentationURL } from "../get-dashboard-documentation-url";
-import type { ConfigChangedEvent } from "../hui-element-editor";
 import { findLovelaceContainer } from "../lovelace-path";
-import type { GUIModeChangedEvent } from "../types";
-import "./hui-badge-element-editor";
-import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
-import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
 
 declare global {
   // for fire event

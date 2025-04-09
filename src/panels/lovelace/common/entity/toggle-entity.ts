@@ -1,5 +1,6 @@
-import { STATES_OFF } from "../../../../common/const";
 import type { HomeAssistant, ServiceCallResponse } from "../../../../types";
+
+import { STATES_OFF } from "../../../../common/const";
 import { turnOnOffEntity } from "./turn-on-off-entity";
 
 export const toggleEntity = (

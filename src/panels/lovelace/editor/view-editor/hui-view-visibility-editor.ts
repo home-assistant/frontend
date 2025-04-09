@@ -1,21 +1,24 @@
-import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { stringCompare } from "../../../../common/string/compare";
 import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/user/ha-user-badge";
-import "../../../../components/ha-list-item";
-import "../../../../components/ha-switch";
 import type {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../../data/lovelace/config/view";
 import type { User } from "../../../../data/user";
-import { fetchUsers } from "../../../../data/user";
 import type { HomeAssistant } from "../../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-switch";
+import "../../../../components/user/ha-user-badge";
+import "@material/mwc-list/mwc-list-item";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { stringCompare } from "../../../../common/string/compare";
+import { fetchUsers } from "../../../../data/user";
 
 declare global {
   interface HASSDomEvents {

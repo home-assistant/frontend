@@ -1,8 +1,12 @@
-import { html, nothing } from "lit";
 import type { DataEntryFlowStep } from "../../../data/data_entry_flow";
-import { domainToName } from "../../../data/integration";
-import "./dialog-repairs-issue-subtitle";
 import type { RepairsIssue } from "../../../data/repairs";
+import type { HomeAssistant } from "../../../types";
+
+import "./dialog-repairs-issue-subtitle";
+
+import { html, nothing } from "lit";
+
+import { domainToName } from "../../../data/integration";
 import {
   createRepairsFlow,
   deleteRepairsFlow,
@@ -13,7 +17,6 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-data-entry-flow";
-import type { HomeAssistant } from "../../../types";
 
 const mergePlaceholders = (issue: RepairsIssue, step: DataEntryFlowStep) =>
   step.description_placeholders && issue.translation_placeholders

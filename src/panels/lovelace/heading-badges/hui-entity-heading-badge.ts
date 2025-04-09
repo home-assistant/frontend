@@ -1,29 +1,32 @@
-import { mdiAlertCircle } from "@mdi/js";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
+import type {
+  LovelaceHeadingBadge,
+  LovelaceHeadingBadgeEditor,
+} from "../types";
+import type { EntityHeadingBadgeConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-heading-badge";
+import "../../../components/ha-state-icon";
+import "../../../state-display/state-display";
+
+import { mdiAlertCircle } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-heading-badge";
-import "../../../components/ha-state-icon";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { DEFAULT_CONFIG } from "../editor/heading-badge-editor/hui-entity-heading-badge-editor";
-import type {
-  LovelaceHeadingBadge,
-  LovelaceHeadingBadgeEditor,
-} from "../types";
-import type { EntityHeadingBadgeConfig } from "./types";
 
 const DEFAULT_ACTIONS: Pick<
   EntityHeadingBadgeConfig,

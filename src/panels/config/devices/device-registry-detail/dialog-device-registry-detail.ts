@@ -1,19 +1,22 @@
-import "@material/mwc-button/mwc-button";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../types";
+import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-area-picker";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-labels-picker";
-import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/ha-textfield";
-import type { DeviceRegistryEntry } from "../../../../data/device_registry";
+import "@material/mwc-button/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {

@@ -1,27 +1,30 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDotsVertical } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
 import type { HumidifierEntity } from "../../../data/humidifier";
-import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import type { HomeAssistant } from "../../../types";
-import "../card-features/hui-card-features";
-import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import type { HumidifierCardConfig } from "./types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
+import "../card-features/hui-card-features";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiDotsVertical } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorCss } from "../../../common/entity/state_color";
+import { findEntities } from "../common/find-entities";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {

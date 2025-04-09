@@ -1,11 +1,14 @@
+import type { UpdateEntity } from "../data/update";
+import type { HomeAssistant } from "../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../components/entity/state-info";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/entity/state-info";
-import type { UpdateEntity } from "../data/update";
+
 import { computeUpdateStateDisplay } from "../data/update";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-update")
 export class StateCardUpdate extends LitElement {

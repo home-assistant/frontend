@@ -1,5 +1,25 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
+import type { ResolvedMediaSource } from "../../data/media_source";
+import type {
+  ControlButton,
+  MediaPlayerEntity,
+  MediaPlayerItem,
+} from "../../data/media-player";
+import type { HomeAssistant } from "../../types";
 import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
+import type { PropertyValues } from "lit";
+
+import "../../components/ha-button";
+import "../../components/ha-button-menu";
+import "../../components/ha-domain-icon";
+import "../../components/ha-icon-button";
+import "../../components/ha-list-item";
+import "../../components/ha-slider";
+import "../../components/ha-spinner";
+import "../../components/ha-state-icon";
+import "../../components/ha-svg-icon";
+import "../lovelace/components/hui-marquee";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
 import {
   mdiChevronDown,
   mdiMonitor,
@@ -9,32 +29,18 @@ import {
   mdiStop,
   mdiVolumeHigh,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
+
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-slider";
-import "../../components/ha-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-spinner";
-import "../../components/ha-domain-icon";
-import "../../components/ha-icon-button";
-import "../../components/ha-list-item";
-import "../../components/ha-state-icon";
-import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
-import type {
-  ControlButton,
-  MediaPlayerEntity,
-  MediaPlayerItem,
-} from "../../data/media-player";
 import {
   BROWSER_PLAYER,
   MediaPlayerEntityFeature,
@@ -46,11 +52,8 @@ import {
   handleMediaControlClick,
   setMediaPlayerVolume,
 } from "../../data/media-player";
-import type { ResolvedMediaSource } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-marquee";
 import {
   BrowserMediaPlayer,
   ERR_UNSUPPORTED_MEDIA,

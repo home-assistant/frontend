@@ -1,13 +1,16 @@
+import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../../src/components/ha-card";
+import "../../../../src/dialogs/more-info/more-info-content";
+import "../../components/demo-more-infos";
+
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import "../../../../src/components/ha-card";
+
 import { WaterHeaterEntityFeature } from "../../../../src/data/water_heater";
-import "../../../../src/dialogs/more-info/more-info-content";
 import { getEntity } from "../../../../src/fake_data/entity";
-import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import "../../components/demo-more-infos";
 
 const ENTITIES = [
   getEntity("water_heater", "basic", "eco", {

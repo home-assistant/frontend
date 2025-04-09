@@ -1,21 +1,24 @@
-import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { preventDefault } from "../../../../common/dom/prevent_default";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceHeadingBadgeConfig } from "../../heading-badges/types";
+import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+
+import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceHeadingBadgeConfig } from "../../heading-badges/types";
+
+import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefault } from "../../../../common/dom/prevent_default";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
 
 declare global {
   interface HASSDomEvents {

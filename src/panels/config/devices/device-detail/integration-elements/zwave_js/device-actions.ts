@@ -1,3 +1,7 @@
+import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import type { HomeAssistant } from "../../../../../../types";
+import type { DeviceAction } from "../../../ha-config-device-page";
+
 import {
   mdiChatQuestion,
   mdiCog,
@@ -7,8 +11,8 @@ import {
   mdiUpload,
   mdiWrench,
 } from "@mdi/js";
+
 import { getConfigEntries } from "../../../../../../data/config_entries";
-import type { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
   fetchZwaveIntegrationSettings,
   fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
@@ -16,14 +20,12 @@ import {
   fetchZwaveNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../../../../types";
-import { showZWaveJSRebuildNodeRoutesDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-rebuild-node-routes";
+import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
+import { showZWaveJSRebuildNodeRoutesDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-rebuild-node-routes";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
 import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
 import { showZWaveJSUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
-import type { DeviceAction } from "../../../ha-config-device-page";
-import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
 
 export const getZwaveDeviceActions = async (
   el: HTMLElement,

@@ -1,13 +1,41 @@
+import type { ConfigEntry } from "../../../data/config_entries";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type {
+  IntegrationLogInfo,
+  IntegrationManifest,
+} from "../../../data/integration";
+import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
+import type { HomeAssistant, Route } from "../../../types";
+import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import type { HaIntegrationCard } from "./ha-integration-card";
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiFilterVariant, mdiPlus } from "@mdi/js";
 import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
+import "../../../components/ha-checkbox";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
+import "../../../components/search-input";
+import "../../../components/search-input-outlined";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
+import "./ha-config-flow-card";
+import "./ha-disabled-config-entry-card";
+import "./ha-ignored-config-entry-card";
+import "./ha-integration-card";
+import "./ha-integration-overflow-menu";
+
+import { mdiFilterVariant, mdiPlus } from "@mdi/js";
+import Fuse from "fuse.js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -17,25 +45,11 @@ import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-fab";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
-import "../../../components/search-input";
-import "../../../components/search-input-outlined";
-import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
 import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import type {
-  IntegrationLogInfo,
-  IntegrationManifest,
-} from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifest,
@@ -52,22 +66,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { ImprovDiscoveredDevice } from "../../../external_app/external_messaging";
-import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { isHelperDomain } from "../helpers/const";
-import "./ha-config-flow-card";
-import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
-import "./ha-disabled-config-entry-card";
-import "./ha-ignored-config-entry-card";
-import "./ha-integration-card";
-import type { HaIntegrationCard } from "./ha-integration-card";
-import "./ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 
 export interface ConfigEntryExtended extends Omit<ConfigEntry, "entry_id"> {

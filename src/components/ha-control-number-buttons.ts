@@ -1,15 +1,18 @@
+import type { FrontendLocaleData } from "../data/translation";
+import type { TemplateResult } from "lit";
+
+import "./ha-svg-icon";
+
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiMinus, mdiPlus } from "@mdi/js";
-import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
-import type { FrontendLocaleData } from "../data/translation";
-import "./ha-svg-icon";
 
 const A11Y_KEY_CODES = new Set([
   "ArrowRight",

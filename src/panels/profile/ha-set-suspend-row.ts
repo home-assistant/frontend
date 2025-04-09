@@ -1,12 +1,15 @@
-import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-settings-row";
-import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
+import type { TemplateResult } from "lit";
+
+import "../../components/ha-settings-row";
+import "../../components/ha-switch";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 declare global {
   // for fire event

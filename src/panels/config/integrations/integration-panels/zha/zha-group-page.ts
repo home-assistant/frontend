@@ -1,15 +1,26 @@
-import "@material/mwc-button";
-import { mdiDelete } from "@mdi/js";
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
+import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-spinner";
+import "../../../../../layouts/hass-error-screen";
+import "../../../../../layouts/hass-subpage";
+import "../../../ha-config-section";
+import "./zha-device-endpoint-data-table";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list";
+
+import { mdiDelete } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
+
 import { navigate } from "../../../../../common/navigate";
-import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-card";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-icon-button";
-import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
   addMembersToGroup,
   fetchGroup,
@@ -17,15 +28,7 @@ import {
   removeGroups,
   removeMembersFromGroup,
 } from "../../../../../data/zha";
-import "../../../../../layouts/hass-error-screen";
-import "../../../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../../../types";
-import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
-import "./zha-device-endpoint-data-table";
-import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
-import "@material/mwc-list/mwc-list";
-import "../../../../../components/ha-list-item";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {

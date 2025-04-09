@@ -1,24 +1,28 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
-import { mdiDeleteOutline, mdiPlus, mdiMenuDown, mdiWifi } from "@mdi/js";
-import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
+import type { HaRadio } from "../../../components/ha-radio";
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
-import "../../../components/ha-list-item";
-import type { HaRadio } from "../../../components/ha-radio";
+import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
+
+import { mdiDeleteOutline, mdiPlus, mdiMenuDown, mdiWifi } from "@mdi/js";
+import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   type AccessPoint,
@@ -34,7 +38,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 

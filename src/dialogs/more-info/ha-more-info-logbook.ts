@@ -1,12 +1,15 @@
-import { startOfYesterday } from "date-fns";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
+
+import "../../panels/logbook/ha-logbook";
+
+import { startOfYesterday } from "date-fns";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { createSearchParam } from "../../common/url/search-params";
-import "../../panels/logbook/ha-logbook";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {

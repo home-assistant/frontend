@@ -1,12 +1,15 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../components/ha-alert";
-import "../../components/ha-button";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { BackupOnboardingInfo } from "../../data/backup_onboarding";
-import { onBoardingStyles } from "../styles";
+
+import "../../components/ha-alert";
+import "../../components/ha-button";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
+import { onBoardingStyles } from "../styles";
 
 @customElement("onboarding-restore-backup-status")
 class OnboardingRestoreBackupStatus extends LitElement {

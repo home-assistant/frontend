@@ -1,8 +1,9 @@
 import type { LovelaceSectionRawConfig } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
-import { isStrategyDashboard } from "../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../data/lovelace/config/view";
+
+import { isStrategySection } from "../../../data/lovelace/config/section";
+import { isStrategyDashboard } from "../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 
 export const checkLovelaceConfig = (

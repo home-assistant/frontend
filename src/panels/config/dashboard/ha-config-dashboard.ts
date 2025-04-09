@@ -1,17 +1,12 @@
+import type { CloudStatus } from "../../../data/cloud";
+import type { RepairsIssue } from "../../../data/repairs";
+import type { UpdateEntity } from "../../../data/update";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { HomeAssistant } from "../../../types";
 import type { ActionDetail } from "@material/mwc-list";
-import {
-  mdiCloudLock,
-  mdiDotsVertical,
-  mdiMagnify,
-  mdiPower,
-  mdiRefresh,
-} from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
@@ -22,13 +17,27 @@ import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import "../../../components/ha-top-app-bar-fixed";
-import type { CloudStatus } from "../../../data/cloud";
-import type { RepairsIssue } from "../../../data/repairs";
+import "../ha-config-section";
+import "../repairs/ha-config-repairs";
+import "./ha-config-navigation";
+import "./ha-config-updates";
+
+import {
+  mdiCloudLock,
+  mdiDotsVertical,
+  mdiMagnify,
+  mdiPower,
+  mdiRefresh,
+} from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   severitySort,
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
-import type { UpdateEntity } from "../../../data/update";
 import {
   checkForEntityUpdates,
   filterUpdateEntitiesWithInstall,
@@ -38,17 +47,11 @@ import {
   showQuickBar,
 } from "../../../dialogs/quick-bar/show-dialog-quick-bar";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import "../repairs/ha-config-repairs";
-import "./ha-config-navigation";
-import "./ha-config-updates";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
   const weighted: string[] = [];

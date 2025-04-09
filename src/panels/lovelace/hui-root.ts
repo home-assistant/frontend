@@ -1,6 +1,29 @@
+import type { LocalizeKeys } from "../../common/translations/localize";
+import type { LovelacePanelConfig } from "../../data/lovelace";
+import type { LovelaceConfig } from "../../data/lovelace/config/types";
+import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import type { HomeAssistant, PanelInfo } from "../../types";
+import type { Lovelace } from "./types";
+import type { HUIView } from "./views/hui-view";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-button-menu";
+import "../../components/ha-icon";
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-next";
+import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-menu-button";
+import "../../components/ha-svg-icon";
+import "../../components/ha-tabs";
+import "./views/hui-view";
+import "./views/hui-view-background";
+import "./views/hui-view-container";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+
 import {
   mdiCodeBraces,
   mdiCommentProcessingOutline,
@@ -15,19 +38,16 @@ import {
   mdiShape,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
-import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -37,18 +57,7 @@ import {
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
-import "../../components/ha-button-menu";
-import "../../components/ha-icon";
-import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-next";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
-import "../../components/ha-svg-icon";
-import "../../components/ha-tabs";
-import type { LovelacePanelConfig } from "../../data/lovelace";
-import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
 import {
   deleteDashboard,
   fetchDashboards,
@@ -63,9 +72,9 @@ import {
   QuickBarMode,
   showQuickBar,
 } from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
 import { swapView } from "./editor/config-util";
@@ -74,12 +83,6 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
-import type { Lovelace } from "./types";
-import "./views/hui-view";
-import "./views/hui-view-container";
-import type { HUIView } from "./views/hui-view";
-import "./views/hui-view-background";
-import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {

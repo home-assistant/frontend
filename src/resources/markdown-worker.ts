@@ -1,7 +1,8 @@
-import { expose } from "comlink";
 import type { MarkedOptions } from "marked";
-import { marked } from "marked";
 import type { IWhiteList } from "xss";
+
+import { expose } from "comlink";
+import { marked } from "marked";
 import { filterXSS, getDefaultWhiteList } from "xss";
 
 let whiteListNormal: IWhiteList | undefined;

@@ -1,3 +1,19 @@
+import type {
+  AutomationClipboard,
+  Condition,
+} from "../../../../data/automation";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../types";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-md-button-menu";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
+import "./ha-automation-condition-editor";
+
 import { consume } from "@lit-labs/context";
 import {
   mdiArrowDown,
@@ -14,39 +30,26 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-menu-item";
-import "../../../../components/ha-md-divider";
-import "../../../../components/ha-card";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-icon-button";
-import type {
-  AutomationClipboard,
-  Condition,
-} from "../../../../data/automation";
 import { testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { CONDITION_ICONS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import "./ha-automation-condition-editor";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;

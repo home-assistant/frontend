@@ -1,6 +1,3 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { getCollection } from "home-assistant-js-websocket";
-import type { Store } from "home-assistant-js-websocket/dist/store";
 import type {
   FlattenObjectKeys,
   LocalizeFunc,
@@ -16,6 +13,10 @@ import type {
   HassioSupervisorInfo,
 } from "../hassio/supervisor";
 import type { SupervisorStore } from "./store";
+import type { Connection } from "home-assistant-js-websocket";
+import type { Store } from "home-assistant-js-websocket/dist/store";
+
+import { getCollection } from "home-assistant-js-websocket";
 
 export const supervisorWSbaseCommand = {
   type: "supervisor/api",

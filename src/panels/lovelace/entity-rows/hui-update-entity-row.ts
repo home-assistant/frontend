@@ -1,14 +1,17 @@
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
 import type { UpdateEntity } from "../../../data/update";
-import { computeUpdateStateDisplay } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import type { PropertyValues } from "lit";
+
+import "../components/hui-generic-entity-row";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { computeUpdateStateDisplay } from "../../../data/update";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-update-entity-row")
 class HuiUpdateEntityRow extends LitElement implements LovelaceRow {

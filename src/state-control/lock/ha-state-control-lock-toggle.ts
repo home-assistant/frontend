@@ -1,18 +1,21 @@
+import type { LockEntity } from "../../data/lock";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../components/ha-control-button";
+import "../../components/ha-control-switch";
+import "../../components/ha-state-icon";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
-import "../../components/ha-control-button";
-import "../../components/ha-control-switch";
-import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
-import type { LockEntity } from "../../data/lock";
 import { callProtectedLockService } from "../../data/lock";
-import type { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {

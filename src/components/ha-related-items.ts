@@ -1,30 +1,33 @@
+import type { Blueprints } from "../data/blueprint";
+import type { ConfigEntry } from "../data/config_entries";
+import type { ItemType, RelatedResult } from "../data/search";
+import type { HomeAssistant } from "../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "./ha-icon-next";
+import "./ha-list-item";
+import "./ha-state-icon";
+import "./ha-switch";
 import "@material/mwc-list/mwc-list";
+
 import {
   mdiAlertCircleOutline,
   mdiDevices,
   mdiPaletteSwatch,
   mdiTextureBox,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
-import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
-import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntries } from "../data/config_entries";
-import type { ItemType, RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import { brandsUrl } from "../util/brands-url";
-import "./ha-icon-next";
-import "./ha-list-item";
-import "./ha-state-icon";
-import "./ha-switch";
 
 @customElement("ha-related-items")
 export class HaRelatedItems extends LitElement {

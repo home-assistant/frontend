@@ -1,3 +1,13 @@
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { LogbookCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
+
+import "../../../../components/entity/ha-entities-picker";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-target-picker";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -9,19 +19,12 @@ import {
   optional,
   string,
 } from "superstruct";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/entity/ha-entities-picker";
-import "../../../../components/ha-target-picker";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { filterLogbookCompatibleEntities } from "../../../../data/logbook";
-import type { HomeAssistant } from "../../../../types";
-import type { LogbookCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
 import { targetStruct } from "../../../../data/script";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-logbook-card";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

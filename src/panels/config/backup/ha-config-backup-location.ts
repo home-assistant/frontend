@@ -1,33 +1,36 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
-import "../../../components/ha-button";
-import "../../../components/ha-switch";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
-import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import type {
   BackupAgent,
   BackupAgentConfig,
   BackupConfig,
 } from "../../../data/backup";
+import type { HomeAssistant } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-switch";
+import "../../../layouts/hass-subpage";
+import "./components/ha-backup-data-picker";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
   updateBackupConfig,
 } from "../../../data/backup";
-import "../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../types";
-import "./components/ha-backup-data-picker";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("ha-config-backup-location")
 class HaConfigBackupDetails extends LitElement {

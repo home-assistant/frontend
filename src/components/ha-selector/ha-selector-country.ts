@@ -1,8 +1,10 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { CountrySelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-country-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-country")
 export class HaCountrySelector extends LitElement {

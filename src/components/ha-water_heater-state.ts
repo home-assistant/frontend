@@ -1,10 +1,12 @@
-import { customElement, property } from "lit/decorators";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { formatNumber } from "../common/number/format_number";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("ha-water_heater-state")
 export class HaWaterHeaterState extends LitElement {

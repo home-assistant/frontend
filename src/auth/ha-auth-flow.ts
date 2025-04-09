@@ -1,16 +1,24 @@
 /* eslint-disable lit/prefer-static-styles */
-import "@material/mwc-button";
-import { genClientId } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { keyed } from "lit/directives/keyed";
-import { customElement, property, state } from "lit/decorators";
 import type { LocalizeFunc } from "../common/translations/localize";
+import type { AuthProvider } from "../data/auth";
+import type {
+  DataEntryFlowStep,
+  DataEntryFlowStepForm,
+} from "../data/data_entry_flow";
+import type { PropertyValues } from "lit";
+
 import "../components/ha-alert";
 import "../components/ha-checkbox";
-import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-formfield";
-import type { AuthProvider } from "../data/auth";
+import "./ha-auth-form";
+import "@material/mwc-button";
+
+import { genClientId } from "home-assistant-js-websocket";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
+
+import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import {
   autocompleteLoginFields,
   createLoginFlow,
@@ -18,11 +26,6 @@ import {
   redirectWithAuthCode,
   submitLoginFlow,
 } from "../data/auth";
-import type {
-  DataEntryFlowStep,
-  DataEntryFlowStepForm,
-} from "../data/data_entry_flow";
-import "./ha-auth-form";
 
 type State = "loading" | "error" | "step";
 

@@ -1,28 +1,31 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+import type { HassioStats } from "../../../src/data/hassio/common";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../src/types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { atLeastVersion } from "../../../src/common/config/version";
+
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
-import type { HassioStats } from "../../../src/data/hassio/common";
+import "../components/supervisor-metric";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { atLeastVersion } from "../../../src/common/config/version";
 import {
   extractApiErrorMessage,
   fetchHassioStats,
 } from "../../../src/data/hassio/common";
 import { restartCore } from "../../../src/data/supervisor/core";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
 import { bytesToString } from "../../../src/util/bytes-to-string";
-import "../components/supervisor-metric";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-core-info")

@@ -1,19 +1,22 @@
-import "@material/mwc-button";
+import type { CheckConfigResult } from "../../../data/core";
+import type { HomeAssistant, Route, TranslationDict } from "../../../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { componentsWithService } from "../../../common/config/components_with_service";
+
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-spinner";
-import type { CheckConfigResult } from "../../../data/core";
+import "@material/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { componentsWithService } from "../../../common/config/components_with_service";
+import { stringCompare } from "../../../common/string/compare";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
-import { stringCompare } from "../../../common/string/compare";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route, TranslationDict } from "../../../types";
 
 type ReloadableDomain = Exclude<
   keyof TranslationDict["ui"]["panel"]["developer-tools"]["tabs"]["yaml"]["section"]["reloading"],

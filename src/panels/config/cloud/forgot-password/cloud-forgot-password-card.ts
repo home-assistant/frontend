@@ -1,17 +1,20 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import type { HomeAssistant } from "../../../../types";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-card";
-import type { HaTextField } from "../../../../components/ha-textfield";
 import "../../../../components/ha-textfield";
-import { haStyle } from "../../../../resources/styles";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { cloudForgotPassword } from "../../../../data/cloud";
 import { forgotPasswordHaCloud } from "../../../../data/onboarding";
-import type { HomeAssistant } from "../../../../types";
+import { haStyle } from "../../../../resources/styles";
 
 @customElement("cloud-forgot-password-card")
 export class CloudForgotPasswordCard extends LitElement {

@@ -1,3 +1,8 @@
+import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
+import type { HomeAssistant, ThemeMode } from "../../types";
+import type { HaIcon } from "../ha-icon";
+import type { HaSvgIcon } from "../ha-svg-icon";
+import type { HaMap } from "./ha-map";
 import type {
   Circle,
   DivIcon,
@@ -8,17 +13,15 @@ import type {
   MarkerOptions,
 } from "leaflet";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../ha-input-helper-text";
+import "./ha-map";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
-import type { HomeAssistant, ThemeMode } from "../../types";
-import "../ha-input-helper-text";
-import "./ha-map";
-import type { HaMap } from "./ha-map";
-import type { HaIcon } from "../ha-icon";
-import type { HaSvgIcon } from "../ha-svg-icon";
 
 declare global {
   // for fire event

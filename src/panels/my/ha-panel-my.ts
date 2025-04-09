@@ -1,6 +1,11 @@
+import type { HomeAssistant, Route } from "../../types";
+
+import "../../layouts/hass-error-screen";
+
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   protocolIntegrationPicked,
@@ -12,8 +17,6 @@ import {
   extractSearchParamsObject,
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
-import "../../layouts/hass-error-screen";
-import type { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 export const getMyRedirects = (): Redirects => ({

@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { CertificateInformation } from "../../../../data/cloud";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface CloudCertificateParams {
   certificateInfo: CertificateInformation;

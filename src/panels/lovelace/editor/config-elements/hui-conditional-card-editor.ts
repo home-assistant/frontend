@@ -1,32 +1,35 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
-import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
-import deepClone from "deep-clone-simple";
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { any, array, assert, assign, object, optional } from "superstruct";
-import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-button";
-import "../../../../components/ha-list-item";
-import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
 import type { ConditionalCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
-import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
+import type { ConfigChangedEvent } from "../hui-element-editor";
+import type { GUIModeChangedEvent } from "../types";
+import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-svg-icon";
+import "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../conditions/ha-card-conditions-editor";
 import "../hui-element-editor";
-import type { ConfigChangedEvent } from "../hui-element-editor";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+
+import { mdiCodeBraces, mdiContentCopy, mdiListBoxOutline } from "@mdi/js";
+import deepClone from "deep-clone-simple";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { any, array, assert, assign, object, optional } from "superstruct";
+
+import { storage } from "../../../../common/decorators/storage";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = assign(

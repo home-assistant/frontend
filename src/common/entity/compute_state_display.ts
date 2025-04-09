@@ -1,12 +1,14 @@
-import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
-import { TimeZone } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
-import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
+import type { LocalizeFunc } from "../translations/localize";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
+
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { TimeZone } from "../../data/translation";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
+import { DURATION_UNITS, formatDuration } from "../datetime/format_duration";
 import { formatTime } from "../datetime/format_time";
 import {
   formatNumber,
@@ -14,7 +16,6 @@ import {
   isNumericFromAttributes,
 } from "../number/format_number";
 import { blankBeforeUnit } from "../translations/blank_before_unit";
-import type { LocalizeFunc } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 
 export const computeStateDisplay = (

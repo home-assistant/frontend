@@ -1,8 +1,9 @@
-import { css, LitElement, nothing } from "lit";
-import type { PropertyValues } from "lit";
-import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewBackgroundConfig } from "../../../data/lovelace/config/view";
+import type { HomeAssistant } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import { css, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("hui-view-background")
 export class HUIViewBackground extends LitElement {

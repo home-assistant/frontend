@@ -1,13 +1,16 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { HomeAssistant } from "../../types";
+import type { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
+
+import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-svg-icon";
 import "../../components/ha-switch";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 import { RecurrenceRange } from "../../data/calendar";
-import type { HomeAssistant } from "../../types";
-import type { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
-import "../../components/ha-button";
 
 @customElement("confirm-event-dialog-box")
 class ConfirmEventDialogBox extends LitElement {

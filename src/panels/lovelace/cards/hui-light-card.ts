@@ -1,30 +1,33 @@
-import { mdiDotsVertical } from "@mdi/js";
-import "@thomasloven/round-slider";
+import type { LightEntity } from "../../../data/light";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { LightCardConfig } from "./types";
 import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
+import "@thomasloven/round-slider";
+
+import { mdiDotsVertical } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateColorBrightness } from "../../../common/entity/state_color";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-state-icon";
 import { UNAVAILABLE, isUnavailableState } from "../../../data/entity";
-import type { LightEntity } from "../../../data/light";
 import { lightSupportsBrightness } from "../../../data/light";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { LightCardConfig } from "./types";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {

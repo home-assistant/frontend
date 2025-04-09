@@ -1,17 +1,20 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
-import { stopPropagation } from "../common/dom/stop_propagation";
-import { computeStateName } from "../common/entity/compute_state_name";
-import { debounce } from "../common/util/debounce";
 import type { STTEngine } from "../data/stt";
-import { listSTTEngines } from "../data/stt";
 import type { HomeAssistant } from "../types";
+import type { HaSelect } from "./ha-select";
+import type { PropertyValues } from "lit";
+
 import "./ha-list-item";
 import "./ha-select";
-import type { HaSelect } from "./ha-select";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeDomain } from "../common/entity/compute_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { debounce } from "../common/util/debounce";
+import { listSTTEngines } from "../data/stt";
 
 const NONE = "__NONE_OPTION__";
 

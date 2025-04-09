@@ -1,12 +1,15 @@
+import type { InputBoolean } from "../../../../data/input_boolean";
+import type { HomeAssistant } from "../../../../types";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textfield";
-import type { InputBoolean } from "../../../../data/input_boolean";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_boolean-form")
 class HaInputBooleanForm extends LitElement {

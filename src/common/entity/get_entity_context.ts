@@ -1,4 +1,3 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { AreaRegistryEntry } from "../../data/area_registry";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import type {
@@ -8,6 +7,7 @@ import type {
 } from "../../data/entity_registry";
 import type { FloorRegistryEntry } from "../../data/floor_registry";
 import type { HomeAssistant } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
 
 interface EntityContext {
   device: DeviceRegistryEntry | null;

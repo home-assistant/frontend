@@ -1,11 +1,14 @@
-import { customElement, property, state } from "lit/decorators";
-import { navigate } from "../../../common/navigate";
 import type { CloudStatus } from "../../../data/cloud";
 import type { RouterOptions } from "../../../layouts/hass-router-page";
-import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { ValueChangedEvent, HomeAssistant, Route } from "../../../types";
+
 import "./account/cloud-account";
 import "./login/cloud-login-panel";
+
+import { customElement, property, state } from "lit/decorators";
+
+import { navigate } from "../../../common/navigate";
+import { HassRouterPage } from "../../../layouts/hass-router-page";
 
 const LOGGED_IN_URLS = ["account", "google-assistant", "alexa"];
 const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];

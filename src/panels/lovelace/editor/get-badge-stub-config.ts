@@ -1,5 +1,6 @@
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
+
 import { getBadgeElementClass } from "../create-element/create-badge-element";
 
 export const getBadgeStubConfig = async (

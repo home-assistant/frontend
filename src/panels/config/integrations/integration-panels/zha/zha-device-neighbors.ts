@@ -1,17 +1,20 @@
-import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import "../../../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-code-editor";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchDevices } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-spinner";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fetchDevices } from "../../../../../data/zha";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;

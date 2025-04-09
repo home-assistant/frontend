@@ -1,6 +1,7 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { GenerateBackupParams } from "../../../../data/backup";
 import type { CloudStatus } from "../../../../data/cloud";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface GenerateBackupDialogParams {
   submit?: (response: GenerateBackupParams) => void;

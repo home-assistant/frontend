@@ -1,19 +1,22 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../src/types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-select";
+import "../../../src/layouts/hass-loading-screen";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
-import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 
 interface LogProvider {

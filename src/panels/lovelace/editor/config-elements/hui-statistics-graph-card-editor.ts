@@ -1,4 +1,17 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaFormSchema } from "../../../../components/ha-form/types";
+import type {
+  StatisticsMetaData,
+  StatisticType,
+} from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
+import type { StatisticsGraphCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../components/entity/ha-statistics-picker";
+import "../../../../components/ha-form/ha-form";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -14,31 +27,21 @@ import {
   string,
   union,
 } from "superstruct";
+
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import { supportedStatTypeMap } from "../../../../components/chart/statistics-chart";
-import "../../../../components/entity/ha-statistics-picker";
-import "../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
-import type {
-  StatisticsMetaData,
-  StatisticType,
-} from "../../../../data/recorder";
 import {
   getDisplayUnit,
   getStatisticMetadata,
   isExternalStatistic,
   statisticsMetaHasType,
 } from "../../../../data/recorder";
-import type { HomeAssistant } from "../../../../types";
-import type { StatisticsGraphCardConfig } from "../../cards/types";
+import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
 import { processConfigEntities } from "../../common/process-config-entities";
-import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import { DEFAULT_DAYS_TO_SHOW } from "../../cards/hui-statistics-graph-card";
 
 const statTypeStruct = union([
   literal("state"),

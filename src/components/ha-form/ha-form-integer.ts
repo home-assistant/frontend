@@ -1,19 +1,22 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-slider";
-import "../ha-checkbox";
-import "../ha-input-helper-text";
-import "../ha-textfield";
 import type { HaTextField } from "../ha-textfield";
 import type {
   HaFormElement,
   HaFormIntegerData,
   HaFormIntegerSchema,
 } from "./types";
-import type { LocalizeFunc } from "../../common/translations/localize";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../ha-checkbox";
+import "../ha-input-helper-text";
+import "../ha-slider";
+import "../ha-textfield";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {

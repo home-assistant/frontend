@@ -1,19 +1,35 @@
+import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
+import type { HistoryResult } from "../../data/history";
+import type { HomeAssistant } from "../../types";
+import type { ActionDetail } from "@material/mwc-list";
+import type {
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket/dist/types";
+import type { PropertyValues } from "lit";
+
+import "../../components/chart/state-history-charts";
+import "../../components/ha-button-menu";
+import "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
+import "../../components/ha-spinner";
+import "../../components/ha-target-picker";
+import "../../components/ha-top-app-bar-fixed";
+
 import {
   mdiDotsVertical,
   mdiDownload,
   mdiFilterRemove,
   mdiImagePlus,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
 import { differenceInHours } from "date-fns";
-import type {
-  HassServiceTarget,
-  UnsubscribeFunc,
-} from "home-assistant-js-websocket/dist/types";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -25,18 +41,6 @@ import {
   removeSearchParam,
 } from "../../common/url/search-params";
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
-import "../../components/chart/state-history-charts";
-import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-spinner";
-import "../../components/ha-date-range-picker";
-import "../../components/ha-icon-button";
-import "../../components/ha-button-menu";
-import "../../components/ha-list-item";
-import "../../components/ha-icon-button-arrow-prev";
-import "../../components/ha-menu-button";
-import "../../components/ha-target-picker";
-import "../../components/ha-top-app-bar-fixed";
-import type { HistoryResult } from "../../data/history";
 import {
   computeHistory,
   subscribeHistory,
@@ -48,7 +52,6 @@ import { resolveEntityIDs } from "../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { fileDownload } from "../../util/file_download";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
 

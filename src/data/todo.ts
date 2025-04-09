@@ -1,8 +1,9 @@
 import type { HomeAssistant, ServiceCallResponse } from "../types";
+
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { isUnavailableState } from "./entity";
 import { stringCompare } from "../common/string/compare";
+import { isUnavailableState } from "./entity";
 
 export interface TodoList {
   entity_id: string;

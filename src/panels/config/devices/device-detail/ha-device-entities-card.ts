@@ -1,31 +1,34 @@
-import "@material/mwc-list/mwc-list";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
+import type {
+  LovelaceRow,
+  LovelaceRowConfig,
+} from "../../../lovelace/entity-rows/types";
+import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-list-item";
+import "@material/mwc-list/mwc-list";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
+
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon";
-import "../../../../components/ha-list-item";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
-import type { HomeAssistant } from "../../../../types";
-import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import {
   computeCards,
   computeSection,
 } from "../../../lovelace/common/generate-lovelace-config";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type {
-  LovelaceRow,
-  LovelaceRowConfig,
-} from "../../../lovelace/entity-rows/types";
-import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {

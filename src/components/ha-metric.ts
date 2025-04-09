@@ -1,10 +1,13 @@
 import type { TemplateResult } from "lit";
+
+import "./ha-bar";
+import "./ha-settings-row";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { roundWithOneDecimal } from "../util/calculate";
-import "./ha-bar";
-import "./ha-settings-row";
 
 @customElement("ha-metric")
 class HaMetric extends LitElement {

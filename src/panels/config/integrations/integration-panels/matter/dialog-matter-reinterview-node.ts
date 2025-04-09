@@ -1,15 +1,18 @@
-import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import type { HomeAssistant } from "../../../../../types";
+import type { MatterReinterviewNodeDialogParams } from "./show-dialog-matter-reinterview-node";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { interviewMatterNode } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { MatterReinterviewNodeDialogParams } from "./show-dialog-matter-reinterview-node";
 
 @customElement("dialog-matter-reinterview-node")
 class DialogMatterReinterviewNode extends LitElement {

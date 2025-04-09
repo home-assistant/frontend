@@ -1,5 +1,21 @@
+import type { CalendarEventMutableParams } from "../../data/calendar";
+import type { HomeAssistant } from "../../types";
+import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+
+import "../../components/entity/ha-entity-picker";
+import "../../components/ha-alert";
+import "../../components/ha-date-input";
+import "../../components/ha-formfield";
+import "../../components/ha-switch";
+import "../../components/ha-textarea";
+import "../../components/ha-textfield";
+import "../../components/ha-time-input";
+import "../lovelace/components/hui-generic-entity-row";
+import "./ha-recurrence-rule-editor";
 import "@material/mwc-button";
-import { formatInTimeZone, toDate } from "date-fns-tz";
+
 import {
   addDays,
   addHours,
@@ -7,26 +23,17 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
-import "../../components/entity/ha-entity-picker";
-import "../../components/ha-alert";
-import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-formfield";
-import "../../components/ha-switch";
-import "../../components/ha-textarea";
-import "../../components/ha-textfield";
-import "../../components/ha-time-input";
-import type { CalendarEventMutableParams } from "../../data/calendar";
 import {
   CalendarEntityFeature,
   RecurrenceRange,
@@ -35,11 +42,7 @@ import {
   updateCalendarEvent,
 } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
-import "./ha-recurrence-rule-editor";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
-import type { CalendarEventEditDialogParams } from "./show-dialog-calendar-event-editor";
 
 const CALENDAR_DOMAINS = ["calendar"];
 

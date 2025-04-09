@@ -1,6 +1,7 @@
-import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
 import type { StoreAddon } from "../../../src/data/supervisor/store";
+import type { IFuseOptions } from "fuse.js";
+
+import Fuse from "fuse.js";
 
 export function filterAndSort(addons: StoreAddon[], filter: string) {
   const options: IFuseOptions<StoreAddon> = {

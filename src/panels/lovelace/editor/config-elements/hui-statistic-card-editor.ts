@@ -1,25 +1,28 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { any, assert, assign, object, optional, string } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import { deepEqual } from "../../../../common/util/deep-equal";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type {
   StatisticsMetaData,
   StatisticType,
 } from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
+import type { StatisticCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { any, assert, assign, object, optional, string } from "superstruct";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import {
   getStatisticMetadata,
   StatisticMeanType,
   statisticsMetaHasType,
 } from "../../../../data/recorder";
-import type { HomeAssistant } from "../../../../types";
-import type { StatisticCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
-import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(

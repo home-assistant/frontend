@@ -1,11 +1,14 @@
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../ha-relative-time";
+import "../ha-tooltip";
+import "./state-badge";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { computeStateName } from "../../common/entity/compute_state_name";
-import type { HomeAssistant } from "../../types";
-import "../ha-relative-time";
-import "./state-badge";
-import "../ha-tooltip";
 
 @customElement("state-info")
 class StateInfo extends LitElement {

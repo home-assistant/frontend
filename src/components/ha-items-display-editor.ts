@@ -1,16 +1,6 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
-import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
-import { repeat } from "lit/directives/repeat";
-import { until } from "lit/directives/until";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../common/dom/fire_event";
-import { orderCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
+import type { TemplateResult } from "lit";
+
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-next";
@@ -18,6 +8,19 @@ import "./ha-md-list";
 import "./ha-md-list-item";
 import "./ha-sortable";
 import "./ha-svg-icon";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiDrag, mdiEye, mdiEyeOff } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { repeat } from "lit/directives/repeat";
+import { until } from "lit/directives/until";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { orderCompare } from "../common/string/compare";
 
 export interface DisplayItem {
   icon?: string | Promise<string | undefined>;

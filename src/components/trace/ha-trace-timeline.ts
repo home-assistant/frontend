@@ -1,12 +1,14 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import "./hat-logbook-note";
-import "./hat-trace-timeline";
 import type { LogbookEntry } from "../../data/logbook";
 import type { TraceExtended } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "./hat-logbook-note";
+import "./hat-trace-timeline";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-trace-timeline")
 export class HaTraceTimeline extends LitElement {

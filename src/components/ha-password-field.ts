@@ -1,4 +1,10 @@
+import type { HomeAssistant } from "../types";
+import type { HaTextField } from "./ha-textfield";
 import type { TextAreaCharCounter } from "@material/mwc-textfield/mwc-textfield-base";
+
+import "./ha-icon-button";
+import "./ha-textfield";
+
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import {
@@ -8,10 +14,6 @@ import {
   query,
   state,
 } from "lit/decorators";
-import type { HomeAssistant } from "../types";
-import "./ha-icon-button";
-import "./ha-textfield";
-import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-password-field")
 export class HaPasswordField extends LitElement {

@@ -1,27 +1,30 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiDotsVertical } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-button";
 import type { ClimateEntity } from "../../../data/climate";
-import "../../../state-control/climate/ha-state-control-climate-temperature";
 import type { HomeAssistant } from "../../../types";
-import "../card-features/hui-card-features";
-import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import type { ThermostatCardConfig } from "./types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
+import "../../../state-control/climate/ha-state-control-climate-temperature";
+import "../card-features/hui-card-features";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiDotsVertical } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateColorCss } from "../../../common/entity/state_color";
+import { findEntities } from "../common/find-entities";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {

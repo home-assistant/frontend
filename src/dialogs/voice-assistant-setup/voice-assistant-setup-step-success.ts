@@ -1,30 +1,33 @@
-import { mdiCog, mdiMicrophone, mdiPlay } from "@mdi/js";
+import type { AssistPipeline } from "../../data/assist_pipeline";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { InputSelectEntity } from "../../data/input_select";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
+
 import "../../components/ha-select";
 import "../../components/ha-tts-voice-picker";
-import type { AssistPipeline } from "../../data/assist_pipeline";
+import "../../panels/lovelace/entity-rows/hui-select-entity-row";
+
+import { mdiCog, mdiMicrophone, mdiPlay } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import {
   listAssistPipelines,
   updateAssistPipeline,
 } from "../../data/assist_pipeline";
-import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import {
   assistSatelliteAnnounce,
   setWakeWords,
 } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
-import type { InputSelectEntity } from "../../data/input_select";
 import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";
-import "../../panels/lovelace/entity-rows/hui-select-entity-row";
-import type { HomeAssistant } from "../../types";
+import { getTranslation } from "../../util/common-translation";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { getTranslation } from "../../util/common-translation";
 
 @customElement("ha-voice-assistant-setup-step-success")
 export class HaVoiceAssistantSetupStepSuccess extends LitElement {

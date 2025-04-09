@@ -1,8 +1,10 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { ManagerStateEvent } from "../../../../../data/backup_manager";
 import type { HomeAssistant } from "../../../../../types";
+
 import "../ha-backup-summary-card";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-backup-overview-progress")
 export class HaBackupOverviewProgress extends LitElement {

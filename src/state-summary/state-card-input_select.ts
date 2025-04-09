@@ -1,15 +1,18 @@
-import "@material/mwc-list/mwc-list-item";
-import "../components/ha-select";
+import type { InputSelectEntity } from "../data/input_select";
+import type { HomeAssistant } from "../types";
 import type { TemplateResult } from "lit";
+
+import "../components/entity/state-badge";
+import "../components/ha-select";
+import "@material/mwc-list/mwc-list-item";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
-import "../components/entity/state-badge";
 import { UNAVAILABLE } from "../data/entity";
-import type { InputSelectEntity } from "../data/input_select";
 import { setInputSelectOption } from "../data/input_select";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-input_select")
 class StateCardInputSelect extends LitElement {

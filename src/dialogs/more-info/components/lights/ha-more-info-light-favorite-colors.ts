@@ -1,20 +1,23 @@
-import { mdiCheck, mdiMinus, mdiPlus } from "@mdi/js";
+import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
+import type { LightColor, LightEntity } from "../../../../data/light";
+import type { HomeAssistant } from "../../../../types";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../../components/ha-control-slider";
+import "../../../../components/ha-sortable";
+import "./ha-favorite-color-button";
+
+import { mdiCheck, mdiMinus, mdiPlus } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-control-slider";
-import "../../../../components/ha-sortable";
 import { UNAVAILABLE } from "../../../../data/entity";
-import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
 import { updateEntityRegistryEntry } from "../../../../data/entity_registry";
-import type { LightColor, LightEntity } from "../../../../data/light";
 import { computeDefaultFavoriteColors } from "../../../../data/light";
 import { actionHandler } from "../../../../panels/lovelace/common/directives/action-handler-directive";
-import type { HomeAssistant } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
-import "./ha-favorite-color-button";
 import { showLightColorFavoriteDialog } from "./show-dialog-light-color-favorite";
 
 declare global {

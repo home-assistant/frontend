@@ -1,3 +1,22 @@
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+  SortingChangedEvent,
+} from "../../../components/data-table/ha-data-table";
+import type {
+  LabelRegistryEntry,
+  LabelRegistryEntryMutableParams,
+} from "../../../data/label_registry";
+import type { HomeAssistant, Route } from "../../../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-relative-time";
+import "../../../layouts/hass-tabs-subpage-data-table";
+
 import {
   mdiDelete,
   mdiDevices,
@@ -6,28 +25,14 @@ import {
   mdiRobot,
   mdiShape,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-  SortingChangedEvent,
-} from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-overflow-menu";
-import "../../../components/ha-relative-time";
-import type {
-  LabelRegistryEntry,
-  LabelRegistryEntryMutableParams,
-} from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
   deleteLabelRegistryEntry,
@@ -38,8 +43,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "./show-dialog-label-detail";
 

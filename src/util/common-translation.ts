@@ -1,7 +1,8 @@
 import type { FrontendLocaleData } from "../data/translation";
+import type { HomeAssistant } from "../types";
+
 import { fetchTranslationPreferences } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant } from "../types";
 
 const BASE_URL = `${__STATIC_PATH__}translations`;
 const STORAGE = window.localStorage || {};

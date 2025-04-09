@@ -1,9 +1,24 @@
-import "@material/mwc-button";
-import deepFreeze from "deep-freeze";
+import type {
+  LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
+  LovelaceRawConfig,
+} from "../../data/lovelace/config/types";
+import type { WindowWithPreloads } from "../../data/preloads";
+import type { ShowToastParams } from "../../managers/notification-manager";
+import type { HomeAssistant, PanelInfo, Route } from "../../types";
+import type { Lovelace } from "./types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../layouts/hass-error-screen";
+import "../../layouts/hass-loading-screen";
+import "./hui-root";
+import "@material/mwc-button";
+
+import deepFreeze from "deep-freeze";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,
@@ -11,11 +26,6 @@ import {
 } from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
 import { subscribeLovelaceUpdates } from "../../data/lovelace";
-import type {
-  LovelaceConfig,
-  LovelaceDashboardStrategyConfig,
-  LovelaceRawConfig,
-} from "../../data/lovelace/config/types";
 import {
   deleteConfig,
   fetchConfig,
@@ -23,18 +33,11 @@ import {
   saveConfig,
 } from "../../data/lovelace/config/types";
 import { fetchResources } from "../../data/lovelace/resource";
-import type { WindowWithPreloads } from "../../data/preloads";
-import "../../layouts/hass-error-screen";
-import "../../layouts/hass-loading-screen";
-import type { ShowToastParams } from "../../managers/notification-manager";
-import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
 import { checkLovelaceConfig } from "./common/check-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
-import "./hui-root";
 import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
-import type { Lovelace } from "./types";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 

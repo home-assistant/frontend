@@ -1,18 +1,21 @@
-import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
+import type { HassioAddonInfo } from "../../../src/data/hassio/addon";
+import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../src/types";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../src/components/ha-card";
+import "../../../src/components/search-input";
+import "../components/hassio-card-content";
+
+import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
 import { caseInsensitiveStringCompare } from "../../../src/common/string/compare";
-import "../../../src/components/ha-card";
-import "../../../src/components/search-input";
-import type { HassioAddonInfo } from "../../../src/data/hassio/addon";
-import type { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
-import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-addons")

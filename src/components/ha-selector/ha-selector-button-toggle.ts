@@ -1,11 +1,14 @@
-import "@material/mwc-list/mwc-list-item";
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ButtonToggleSelector, SelectOption } from "../../data/selector";
 import type { HomeAssistant, ToggleButton } from "../../types";
+
 import "../ha-button-toggle-group";
+import "@material/mwc-list/mwc-list-item";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 
 @customElement("ha-selector-button_toggle")
 export class HaButtonToggleSelector extends LitElement {

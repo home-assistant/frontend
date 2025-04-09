@@ -1,7 +1,9 @@
 import type { PropertyValues } from "lit";
+
 import { ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import hash from "object-hash";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 import { CacheManager } from "../util/cache-manager";

@@ -1,17 +1,20 @@
+import type { HaIcon } from "./ha-icon";
+import type { HaSvgIcon } from "./ha-svg-icon";
+import type { PropertyValues } from "lit";
+
+import "./ha-icon";
+import "./ha-ripple";
+import "./ha-svg-icon";
+
 import { SelectBase } from "@material/mwc-select/mwc-select-base";
 import { mdiMenuDown } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
-import "./ha-icon";
-import type { HaIcon } from "./ha-icon";
-import "./ha-ripple";
-import "./ha-svg-icon";
-import type { HaSvgIcon } from "./ha-svg-icon";
 
 @customElement("ha-control-select-menu")
 export class HaControlSelectMenu extends SelectBase {

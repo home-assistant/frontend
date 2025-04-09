@@ -1,3 +1,18 @@
+import type { HaMdSelect } from "../../../../../components/ha-md-select";
+import type { HaSwitch } from "../../../../../components/ha-switch";
+import type { HomeAssistant } from "../../../../../types";
+import type { BackupAddonItem } from "../ha-backup-addons-picker";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-md-list";
+import "../../../../../components/ha-md-list-item";
+import "../../../../../components/ha-md-select";
+import "../../../../../components/ha-md-select-option";
+import "../../../../../components/ha-switch";
+import "../ha-backup-addons-picker";
+
 import {
   mdiChartBox,
   mdiCog,
@@ -5,25 +20,13 @@ import {
   mdiPlayBoxMultiple,
   mdiPuzzle,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
-import "../../../../../components/ha-md-select";
-import type { HaMdSelect } from "../../../../../components/ha-md-select";
-import "../../../../../components/ha-md-select-option";
-import "../../../../../components/ha-switch";
-import type { HaSwitch } from "../../../../../components/ha-switch";
 import { fetchHassioAddonsInfo } from "../../../../../data/hassio/addon";
-import type { HomeAssistant } from "../../../../../types";
-import "../ha-backup-addons-picker";
-import type { BackupAddonItem } from "../ha-backup-addons-picker";
 import { getRecorderInfo } from "../../../../../data/recorder";
 
 export interface FormData {

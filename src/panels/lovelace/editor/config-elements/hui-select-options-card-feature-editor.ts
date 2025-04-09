@@ -1,10 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { FormatEntityStateFunc } from "../../../../common/translations/entity-state";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
@@ -15,6 +9,15 @@ import type {
   SelectOptionsCardFeatureConfig,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 type SelectOptionsCardFeatureData = SelectOptionsCardFeatureConfig & {
   customize_options: boolean;

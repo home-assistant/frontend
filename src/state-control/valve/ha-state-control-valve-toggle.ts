@@ -1,16 +1,19 @@
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "../../components/ha-control-button";
+import "../../components/ha-control-switch";
+import "../../components/ha-state-icon";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+
 import { stateColorCss } from "../../common/entity/state_color";
-import "../../components/ha-control-button";
-import "../../components/ha-control-switch";
-import "../../components/ha-state-icon";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-valve-toggle")
 export class HaStateControlValveToggle extends LitElement {

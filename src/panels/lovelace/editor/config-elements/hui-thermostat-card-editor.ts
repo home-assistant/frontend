@@ -1,3 +1,23 @@
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { ThermostatCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
+import type { FeatureType } from "./hui-card-features-editor";
+
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-form/ha-form";
+import "../../../../components/ha-svg-icon";
+import "./hui-card-features-editor";
+
 import { mdiListBox } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,27 +31,10 @@ import {
   optional,
   string,
 } from "superstruct";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import "../../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../../types";
-import type {
-  LovelaceCardFeatureConfig,
-  LovelaceCardFeatureContext,
-} from "../../card-features/types";
-import type { ThermostatCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-card-features-editor";
-import type { FeatureType } from "./hui-card-features-editor";
 
 const COMPATIBLE_FEATURES_TYPES: FeatureType[] = [
   "climate-hvac-modes",

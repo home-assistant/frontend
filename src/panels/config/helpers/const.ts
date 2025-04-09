@@ -1,4 +1,3 @@
-import { arrayLiteralIncludes } from "../../../common/array/literal-includes";
 import type { Counter } from "../../../data/counter";
 import type { InputBoolean } from "../../../data/input_boolean";
 import type { InputButton } from "../../../data/input_button";
@@ -8,6 +7,8 @@ import type { InputSelect } from "../../../data/input_select";
 import type { InputText } from "../../../data/input_text";
 import type { Schedule } from "../../../data/schedule";
 import type { Timer } from "../../../data/timer";
+
+import { arrayLiteralIncludes } from "../../../common/array/literal-includes";
 
 export const HELPER_DOMAINS = [
   "input_boolean",

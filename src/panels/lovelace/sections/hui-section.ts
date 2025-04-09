@@ -1,21 +1,25 @@
-import deepClone from "deep-clone-simple";
-import type { PropertyValues } from "lit";
-import { ReactiveElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { storage } from "../../../common/decorators/storage";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
-import "../../../components/ha-svg-icon";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
   LovelaceSectionRawConfig,
 } from "../../../data/lovelace/config/section";
-import { isStrategySection } from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
-import "../cards/hui-card";
 import type { HuiCard } from "../cards/hui-card";
+import type { Lovelace } from "../types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-svg-icon";
+import "../cards/hui-card";
+
+import deepClone from "deep-clone-simple";
+import { ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { storage } from "../../../common/decorators/storage";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { isStrategySection } from "../../../data/lovelace/config/section";
 import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
@@ -27,7 +31,6 @@ import { addCard, replaceCard } from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
-import type { Lovelace } from "../types";
 import { DEFAULT_SECTION_LAYOUT } from "./const";
 
 declare global {

@@ -1,21 +1,24 @@
-import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-settings-row";
-import "../../../src/components/ha-svg-icon";
 import type { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import type {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import type { Supervisor } from "../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../src/types";
+import type { CSSResultGroup } from "lit";
+
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-settings-row";
+import "../../../src/components/ha-svg-icon";
+import "@material/mwc-button";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
 import { mdiHomeAssistant } from "../../../src/resources/home-assistant-logo-svg";
 import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 
 const computeVersion = (key: string, version: string): string =>

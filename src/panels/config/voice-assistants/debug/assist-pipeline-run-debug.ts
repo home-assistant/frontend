@@ -1,29 +1,32 @@
-import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { extractSearchParam } from "../../../../common/url/search-params";
-import "../../../../components/ha-assist-pipeline-picker";
-import "../../../../components/ha-button";
-import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
-import "../../../../components/ha-textfield";
 import type { HaTextField } from "../../../../components/ha-textfield";
 import type {
   PipelineRun,
   PipelineRunOptions,
 } from "../../../../data/assist_pipeline";
+import type { HomeAssistant } from "../../../../types";
+import type { TemplateResult } from "lit";
+
+import "../../../../components/ha-assist-pipeline-picker";
+import "../../../../components/ha-button";
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-textfield";
+import "../../../../layouts/hass-subpage";
+import "./assist-render-pipeline-run";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { extractSearchParam } from "../../../../common/url/search-params";
 import { runDebugAssistPipeline } from "../../../../data/assist_pipeline";
 import {
   showAlertDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import "../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { AudioRecorder } from "../../../../util/audio-recorder";
 import { fileDownload } from "../../../../util/file_download";
-import "./assist-render-pipeline-run";
 
 @customElement("assist-pipeline-run-debug")
 export class AssistPipelineRunDebug extends LitElement {

@@ -1,19 +1,22 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+import type { HaPasswordField } from "../../../components/ha-password-field";
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-password-field";
-import type { HaPasswordField } from "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   cloudLogin,
   cloudRegister,
   cloudResendVerification,
 } from "../../../data/cloud";
-import type { HomeAssistant } from "../../../types";
 import { AssistantSetupStyles } from "../styles";
 
 @customElement("cloud-step-signup")

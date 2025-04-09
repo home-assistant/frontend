@@ -1,21 +1,24 @@
-import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../types";
+import type { ZWaveJSRebuildNodeRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-node-routes";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-spinner";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
   rebuildZwaveNodeRoutes,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSRebuildNodeRoutesDialogParams } from "./show-dialog-zwave_js-rebuild-node-routes";
 
 @customElement("dialog-zwave_js-rebuild-node-routes")
 class DialogZWaveJSRebuildNodeRoutes extends LitElement {

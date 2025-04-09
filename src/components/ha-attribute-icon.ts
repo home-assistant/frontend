@@ -1,11 +1,14 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "./ha-icon";
+import "./ha-svg-icon";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
+
 import { attributeIcon } from "../data/icons";
-import type { HomeAssistant } from "../types";
-import "./ha-icon";
-import "./ha-svg-icon";
 
 @customElement("ha-attribute-icon")
 export class HaAttributeIcon extends LitElement {

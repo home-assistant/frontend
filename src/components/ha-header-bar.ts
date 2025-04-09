@@ -1,5 +1,6 @@
 // @ts-ignore
 import topAppBarStyles from "@material/top-app-bar/dist/mdc.top-app-bar.min.css";
+
 import { css, html, LitElement, unsafeCSS } from "lit";
 import { customElement } from "lit/decorators";
 

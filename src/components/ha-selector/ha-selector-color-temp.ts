@@ -1,17 +1,20 @@
+import type { ColorTempSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+
+import "../ha-labeled-slider";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../common/dom/fire_event";
-import type { ColorTempSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
-import "../ha-labeled-slider";
-import { generateColorTemperatureGradient } from "../../dialogs/more-info/components/lights/light-color-temp-picker";
+
 import {
   DEFAULT_MAX_KELVIN,
   DEFAULT_MIN_KELVIN,
   mired2kelvin,
 } from "../../common/color/convert-light-color";
+import { fireEvent } from "../../common/dom/fire_event";
+import { generateColorTemperatureGradient } from "../../dialogs/more-info/components/lights/light-color-temp-picker";
 
 @customElement("ha-selector-color_temp")
 export class HaColorTempSelector extends LitElement {

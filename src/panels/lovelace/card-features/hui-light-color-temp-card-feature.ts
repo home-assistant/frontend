@@ -1,23 +1,26 @@
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature } from "../types";
+import type { LightColorTempCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-control-slider";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import {
   DEFAULT_MAX_KELVIN,
   DEFAULT_MIN_KELVIN,
 } from "../../../common/color/convert-light-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
-import "../../../components/ha-control-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity_attributes";
 import { LightColorMode, lightSupportsColorMode } from "../../../data/light";
 import { generateColorTemperatureGradient } from "../../../dialogs/more-info/components/lights/light-color-temp-picker";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { LightColorTempCardFeatureConfig } from "./types";
 
 export const supportsLightColorTempCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

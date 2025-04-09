@@ -1,16 +1,16 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
-import { mdiClose } from "@mdi/js";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
+import type {
+  AccessPoints,
+  NetworkInterface,
+  WifiConfiguration,
+} from "../../../../src/data/hassio/network";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../src/types";
+import type { HassioNetworkDialogParams } from "./show-dialog-network";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
-import { fireEvent } from "../../../../src/common/dom/fire_event";
+
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
@@ -18,27 +18,30 @@ import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-password-field";
 import "../../../../src/components/ha-radio";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-textfield";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
-import type {
-  AccessPoints,
-  NetworkInterface,
-  WifiConfiguration,
-} from "../../../../src/data/hassio/network";
 import {
   accesspointScan,
   updateNetworkInterface,
 } from "../../../../src/data/hassio/network";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
-import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
-import type { HassioNetworkDialogParams } from "./show-dialog-network";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 

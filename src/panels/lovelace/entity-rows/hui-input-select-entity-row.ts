@@ -1,20 +1,23 @@
-import "@material/mwc-list/mwc-list-item";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-select";
-import { UNAVAILABLE } from "../../../data/entity";
-import { forwardHaptic } from "../../../data/haptics";
 import type { InputSelectEntity } from "../../../data/input_select";
-import { setInputSelectOption } from "../../../data/input_select";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceRow } from "./types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-select";
+import "../components/hui-generic-entity-row";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { UNAVAILABLE } from "../../../data/entity";
+import { forwardHaptic } from "../../../data/haptics";
+import { setInputSelectOption } from "../../../data/input_select";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {

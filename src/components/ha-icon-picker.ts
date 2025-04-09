@@ -1,18 +1,21 @@
+import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type {
   ComboBoxDataProviderCallback,
   ComboBoxDataProviderParams,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import type { TemplateResult } from "lit";
+
+import "./ha-combo-box";
+import "./ha-icon";
+import "./ha-list-item";
+
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
-import "./ha-combo-box";
-import "./ha-list-item";
-import "./ha-icon";
 
 interface IconItem {
   icon: string;

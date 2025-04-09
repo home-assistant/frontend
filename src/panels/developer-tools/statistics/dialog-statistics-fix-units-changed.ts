@@ -1,19 +1,22 @@
-import "@material/mwc-button/mwc-button";
+import type { HomeAssistant } from "../../../types";
+import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
+
 import "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
+import "@material/mwc-button/mwc-button";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 import {
   clearStatistics,
   getStatisticLabel,
   updateStatisticsMetadata,
 } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 
 @customElement("dialog-statistics-fix-units-changed")
 export class DialogStatisticsFixUnitsChanged extends LitElement {

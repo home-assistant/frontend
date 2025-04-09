@@ -1,23 +1,26 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { CloudStatus } from "../data/cloud";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
+import "./onboarding-loading";
 import "./restore-backup/onboarding-restore-backup-restore";
 import "./restore-backup/onboarding-restore-backup-status";
-import type { LocalizeFunc } from "../common/translations/localize";
-import "./onboarding-loading";
-import { removeSearchParam } from "../common/url/search-params";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { storage } from "../common/decorators/storage";
 import { navigate } from "../common/navigate";
-import { onBoardingStyles } from "./styles";
+import { removeSearchParam } from "../common/url/search-params";
+import { CLOUD_AGENT, type BackupContentExtended } from "../data/backup";
 import {
   fetchBackupOnboardingInfo,
   type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
-import { CLOUD_AGENT, type BackupContentExtended } from "../data/backup";
-import { storage } from "../common/decorators/storage";
 import { fetchHaCloudStatus, signOutHaCloud } from "../data/onboarding";
-import type { CloudStatus } from "../data/cloud";
 import { showToast } from "../util/toast";
+import { onBoardingStyles } from "./styles";
 
 const STATUS_INTERVAL_IN_MS = 5000;
 

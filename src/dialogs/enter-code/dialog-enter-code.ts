@@ -1,16 +1,19 @@
-import { mdiCheck, mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-button";
-import "../../components/ha-control-button";
-import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-textfield";
 import type { HaTextField } from "../../components/ha-textfield";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { EnterCodeDialogParams } from "./show-enter-code-dialog";
+
+import "../../components/ha-button";
+import "../../components/ha-control-button";
+import "../../components/ha-textfield";
+
+import { mdiCheck, mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { fireEvent } from "../../common/dom/fire_event";
+import { createCloseHeading } from "../../components/ha-dialog";
 
 const BUTTONS = [
   "1",

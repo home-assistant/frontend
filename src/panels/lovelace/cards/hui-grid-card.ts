@@ -1,9 +1,11 @@
-import type { CSSResultGroup } from "lit";
-import { css } from "lit";
-import { computeCardSize } from "../common/compute-card-size";
 import type { LovelaceCardEditor } from "../types";
-import { HuiStackCard } from "./hui-stack-card";
 import type { GridCardConfig } from "./types";
+import type { CSSResultGroup } from "lit";
+
+import { css } from "lit";
+
+import { computeCardSize } from "../common/compute-card-size";
+import { HuiStackCard } from "./hui-stack-card";
 
 export const DEFAULT_COLUMNS = 3;
 const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {

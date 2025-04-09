@@ -1,24 +1,27 @@
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
+import type { HomeAssistant } from "../../../../types";
+import type { SelectViewDialogParams } from "./show-select-view-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-alert";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-select";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-list/mwc-radio-list-item";
-import type { CSSResultGroup } from "lit";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import "../../../../components/ha-alert";
 import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-icon";
-import "../../../../components/ha-select";
-import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { fetchConfig } from "../../../../data/lovelace/config/types";
-import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
+import { isStrategyView } from "../../../../data/lovelace/config/view";
 import { fetchDashboards } from "../../../../data/lovelace/dashboard";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { SelectViewDialogParams } from "./show-select-view-dialog";
-import { isStrategyView } from "../../../../data/lovelace/config/view";
 
 declare global {
   interface HASSDomEvents {

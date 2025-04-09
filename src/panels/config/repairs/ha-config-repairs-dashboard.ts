@@ -1,25 +1,28 @@
+import type { RepairsIssue } from "../../../data/repairs";
+import type { HomeAssistant } from "../../../types";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
-import { mdiDotsVertical } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-check-list-item";
+import "../../../layouts/hass-subpage";
+import "./ha-config-repairs";
+
+import { mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/ha-card";
-import "../../../components/ha-check-list-item";
-import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
   subscribeRepairsIssueRegistry,
 } from "../../../data/repairs";
-import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../types";
-import "./ha-config-repairs";
 import { showIntegrationStartupDialog } from "./show-integration-startup-dialog";
 import { showSystemInformationDialog } from "./show-system-information-dialog";
 

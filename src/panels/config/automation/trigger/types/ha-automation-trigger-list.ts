@@ -1,10 +1,13 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { ensureArray } from "../../../../../common/array/ensure-array";
 import type { TriggerList } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
-import "../ha-automation-trigger";
 import type { TriggerElement } from "../ha-automation-trigger-row";
+
+import "../ha-automation-trigger";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { ensureArray } from "../../../../../common/array/ensure-array";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger-list")

@@ -1,13 +1,16 @@
+import type { HomeAssistant } from "../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "./ha-attribute-value";
+import "./ha-expansion-panel";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
 import { STATE_ATTRIBUTES } from "../data/entity_attributes";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-attribute-value";
-import "./ha-expansion-panel";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {

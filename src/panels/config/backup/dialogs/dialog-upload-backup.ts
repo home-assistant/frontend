@@ -1,19 +1,25 @@
-import { mdiClose, mdiFolderUpload } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import {
-  fireEvent,
-  type HASSDomEvent,
-} from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-file-upload";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+
+import { mdiClose, mdiFolderUpload } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
@@ -22,11 +28,8 @@ import {
   INITIAL_UPLOAD_FORM_DATA,
   type BackupUploadFileFormData,
 } from "../../../../data/backup";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../lovelace/custom-card-helpers";
-import type { UploadBackupDialogParams } from "./show-dialog-upload-backup";
 
 @customElement("ha-dialog-upload-backup")
 export class DialogUploadBackup

@@ -1,27 +1,30 @@
-import { mdiThermostat } from "@mdi/js";
+import type { ControlSelectOption } from "../../../components/ha-control-select";
+import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import type { ClimateEntity, HvacMode } from "../../../data/climate";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { ClimateHvacModesCardFeatureConfig } from "./types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-control-select";
+import "../../../components/ha-control-select-menu";
+
+import { mdiThermostat } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-select";
-import type { ControlSelectOption } from "../../../components/ha-control-select";
-import "../../../components/ha-control-select-menu";
-import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
-import type { ClimateEntity, HvacMode } from "../../../data/climate";
 import {
   climateHvacModeIcon,
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { ClimateHvacModesCardFeatureConfig } from "./types";
 
 export const supportsClimateHvacModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

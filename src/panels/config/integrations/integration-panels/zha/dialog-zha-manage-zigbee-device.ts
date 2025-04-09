@@ -1,24 +1,14 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { cache } from "lit/directives/cache";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-header";
 import type { ZHADevice, ZHAGroup } from "../../../../../data/zha";
-import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
-import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import { sortZHADevices, sortZHAGroups } from "./functions";
 import type {
   Tab,
   ZHAManageZigbeeDeviceDialogParams,
 } from "./show-dialog-zha-manage-zigbee-device";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../../components/ha-code-editor";
+import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-header";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-device-binding";
@@ -26,6 +16,19 @@ import "./zha-device-neighbors";
 import "./zha-device-signature";
 import "./zha-group-binding";
 import "./zha-manage-clusters";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { fetchBindableDevices, fetchGroups } from "../../../../../data/zha";
+import { haStyleDialog } from "../../../../../resources/styles";
+import { sortZHADevices, sortZHAGroups } from "./functions";
 
 @customElement("dialog-zha-manage-zigbee-device")
 class DialogZHAManageZigbeeDevice extends LitElement {

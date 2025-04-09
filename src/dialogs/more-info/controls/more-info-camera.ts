@@ -1,13 +1,16 @@
-import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
-import "../../../components/ha-camera-stream";
 import type { CameraEntity } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
+
 import "../../../components/buttons/ha-progress-button";
+import "../../../components/ha-camera-stream";
+
+import { css, html, LitElement, nothing } from "lit";
+import { property, state } from "lit/decorators";
+
+import { slugify } from "../../../common/string/slugify";
 import { UNAVAILABLE } from "../../../data/entity";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
-import { slugify } from "../../../common/string/slugify";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

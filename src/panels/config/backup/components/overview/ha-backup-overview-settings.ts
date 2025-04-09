@@ -1,25 +1,28 @@
-import { mdiCalendar, mdiDatabase, mdiPuzzle, mdiUpload } from "@mdi/js";
+import type { BackupAgent, BackupConfig } from "../../../../../data/backup";
+import type { HomeAssistant } from "../../../../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { navigate } from "../../../../../common/navigate";
+
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
-import type { BackupAgent, BackupConfig } from "../../../../../data/backup";
+
+import { mdiCalendar, mdiDatabase, mdiPuzzle, mdiUpload } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { navigate } from "../../../../../common/navigate";
 import {
   BackupScheduleRecurrence,
   computeBackupAgentName,
   getFormattedBackupTime,
   isLocalAgent,
 } from "../../../../../data/backup";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { getRecorderInfo } from "../../../../../data/recorder";
+import { haStyle } from "../../../../../resources/styles";
 
 @customElement("ha-backup-overview-settings")
 class HaBackupBackupsSummary extends LitElement {

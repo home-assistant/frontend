@@ -1,16 +1,19 @@
-import "@material/mwc-button/mwc-button";
-import { mdiOpenInNew } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import type { Analytics } from "../data/analytics";
+import type { HomeAssistant } from "../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
 import "../components/ha-analytics";
 import "../components/ha-svg-icon";
-import type { Analytics } from "../data/analytics";
+import "@material/mwc-button/mwc-button";
+
+import { mdiOpenInNew } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
 import { setAnalyticsPreferences } from "../data/analytics";
 import { onboardAnalyticsStep } from "../data/onboarding";
-import type { HomeAssistant } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import { onBoardingStyles } from "./styles";
 

@@ -1,3 +1,15 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
+import type { BackupData } from "../../../../data/backup";
+import type { HomeAssistant } from "../../../../types";
+import type { BackupAddonItem } from "./ha-backup-addons-picker";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-checkbox";
+import "../../../../components/ha-formfield";
+import "./ha-backup-addons-picker";
+import "./ha-backup-formfield-label";
+
 import {
   mdiChartBox,
   mdiCog,
@@ -6,24 +18,15 @@ import {
   mdiPuzzle,
   mdiShieldCheck,
 } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-formfield";
-import type { BackupData } from "../../../../data/backup";
 import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
-import type { HomeAssistant } from "../../../../types";
-import "./ha-backup-addons-picker";
-import type { BackupAddonItem } from "./ha-backup-addons-picker";
-import "./ha-backup-formfield-label";
 
 interface CheckBoxItem {
   label: string;

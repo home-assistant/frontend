@@ -1,10 +1,20 @@
+import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
+import type { EnergyData } from "../../../../data/energy";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard, LovelaceGridOptions } from "../../types";
+import type { EnergySankeyCardConfig } from "../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
+import "../../../../components/chart/ha-sankey-chart";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
-import type { EnergyData } from "../../../../data/energy";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { getGraphColorByIndex } from "../../../../common/color/colors";
+import { formatNumber } from "../../../../common/number/format_number";
 import {
   energySourcesByType,
   getEnergyDataCollection,
@@ -15,13 +25,6 @@ import {
   getStatisticLabel,
 } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard, LovelaceGridOptions } from "../../types";
-import type { EnergySankeyCardConfig } from "../types";
-import "../../../../components/chart/ha-sankey-chart";
-import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
-import { getGraphColorByIndex } from "../../../../common/color/colors";
-import { formatNumber } from "../../../../common/number/format_number";
 
 @customElement("hui-energy-sankey-card")
 class HuiEnergySankeyCard

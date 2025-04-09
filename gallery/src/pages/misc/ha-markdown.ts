@@ -1,7 +1,7 @@
-import { css, html, LitElement } from "lit";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-markdown";
 
+import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 
 interface MarkdownContent {

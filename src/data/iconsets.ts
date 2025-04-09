@@ -1,8 +1,10 @@
+import type { IconMeta } from "../types";
+
 import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
 import memoizeOne from "memoize-one";
+
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
-import type { IconMeta } from "../types";
 
 export type Icons = Record<string, string>;
 

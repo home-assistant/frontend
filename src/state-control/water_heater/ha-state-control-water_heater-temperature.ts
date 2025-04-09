@@ -1,22 +1,25 @@
-import { mdiMinus, mdiPlus } from "@mdi/js";
+import type { WaterHeaterEntity } from "../../data/water_heater";
+import type { HomeAssistant } from "../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../components/ha-big-number";
+import "../../components/ha-control-circular-slider";
+import "../../components/ha-outlined-icon-button";
+import "../../components/ha-svg-icon";
+
+import { mdiMinus, mdiPlus } from "@mdi/js";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { UNIT_F } from "../../common/const";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-big-number";
-import "../../components/ha-control-circular-slider";
-import "../../components/ha-outlined-icon-button";
-import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
-import type { WaterHeaterEntity } from "../../data/water_heater";
 import { WaterHeaterEntityFeature } from "../../data/water_heater";
-import type { HomeAssistant } from "../../types";
 import {
   createStateControlCircularSliderController,
   stateControlCircularSliderStyle,

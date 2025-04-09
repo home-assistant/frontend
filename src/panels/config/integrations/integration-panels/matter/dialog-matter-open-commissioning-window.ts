@@ -1,20 +1,23 @@
-import "@material/mwc-button/mwc-button";
-import { mdiCloseCircle } from "@mdi/js";
+import type { MatterCommissioningParameters } from "../../../../../data/matter";
+import type { HomeAssistant } from "../../../../../types";
+import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../../components/ha-qr-code";
+import "../../../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
+import { mdiCloseCircle } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
+import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-qr-code";
 import { domainToName } from "../../../../../data/integration";
-import type { MatterCommissioningParameters } from "../../../../../data/matter";
 import { openMatterCommissioningWindow } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
-import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
-import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 
 @customElement("dialog-matter-open-commissioning-window")
 class DialogMatterOpenCommissioningWindow extends LitElement {

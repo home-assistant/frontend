@@ -1,10 +1,13 @@
+import type { HomeAssistant } from "../../../types";
+
+import "../../../components/ha-button";
+import "../../../components/ha-svg-icon";
+
 import { mdiEarth, mdiMicrophoneMessage, mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-button";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { AssistantSetupStyles } from "../styles";
 

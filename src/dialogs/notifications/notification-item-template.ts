@@ -1,7 +1,9 @@
 import type { TemplateResult } from "lit";
+
+import "../../components/ha-card";
+
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../../components/ha-card";
 
 @customElement("notification-item-template")
 export class HuiNotificationItemTemplate extends LitElement {

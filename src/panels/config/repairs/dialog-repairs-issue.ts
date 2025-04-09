@@ -1,21 +1,24 @@
-import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { isNavigationClick } from "../../../common/dom/is-navigation-click";
-import "../../../components/ha-alert";
-import "../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../components/ha-md-dialog";
-import "../../../components/ha-button";
-import "../../../components/ha-dialog-header";
-import "./dialog-repairs-issue-subtitle";
-import "../../../components/ha-markdown";
 import type { RepairsIssue } from "../../../data/repairs";
-import { ignoreRepairsIssue } from "../../../data/repairs";
-import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { RepairsIssueDialogParams } from "./show-repair-issue-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-button";
+import "../../../components/ha-dialog-header";
+import "../../../components/ha-markdown";
+import "../../../components/ha-md-dialog";
+import "./dialog-repairs-issue-subtitle";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
+import { ignoreRepairsIssue } from "../../../data/repairs";
+import { haStyleDialog } from "../../../resources/styles";
 
 @customElement("dialog-repairs-issue")
 class DialogRepairsIssue extends LitElement {

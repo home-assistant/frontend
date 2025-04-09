@@ -1,15 +1,18 @@
+import type { MediaPlayerItem } from "../../data/media-player";
+import type { HomeAssistant } from "../../types";
+
+import "../ha-svg-icon";
 import "@material/mwc-button";
+
 import { mdiFolderEdit } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import type { MediaPlayerItem } from "../../data/media-player";
 import {
   isLocalMediaSourceContentId,
   isImageUploadMediaSourceContentId,
 } from "../../data/media_source";
-import type { HomeAssistant } from "../../types";
-import "../ha-svg-icon";
 import { showMediaManageDialog } from "./show-media-manage-dialog";
 
 declare global {

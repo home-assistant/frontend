@@ -1,17 +1,20 @@
-import { mdiRestore, mdiPlus, mdiMinus } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-control-select";
-import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-control-select";
+
+import { mdiRestore, mdiPlus, mdiMinus } from "@mdi/js";
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { UNAVAILABLE } from "../../../data/entity";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { COUNTER_ACTIONS, type CounterActionsCardFeatureConfig } from "./types";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-button";
 
 export const supportsCounterActionsCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

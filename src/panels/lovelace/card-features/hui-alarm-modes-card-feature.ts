@@ -1,32 +1,35 @@
-import { mdiShieldOff } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateColorCss } from "../../../common/entity/state_color";
-import "../../../components/ha-control-button";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
-import "../../../components/ha-control-slider";
 import type {
   AlarmControlPanelEntity,
   AlarmMode,
 } from "../../../data/alarm_control_panel";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import type { AlarmModesCardFeatureConfig } from "./types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
+import "../../../components/ha-control-select";
+import "../../../components/ha-control-slider";
+
+import { mdiShieldOff } from "@mdi/js";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateColorCss } from "../../../common/entity/state_color";
 import {
   ALARM_MODES,
   setProtectedAlarmControlPanelMode,
   supportedAlarmModes,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { AlarmModesCardFeatureConfig } from "./types";
 
 export const supportsAlarmModesCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);

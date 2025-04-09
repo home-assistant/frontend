@@ -1,25 +1,28 @@
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
-import "../../components/ha-button";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
+
+import "../../components/buttons/ha-progress-button";
 import "../../components/ha-alert";
+import "../../components/ha-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-md-list";
 import "../../components/ha-md-list-item";
-import "../../components/buttons/ha-progress-button";
-import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-password-field";
 import "../../panels/config/backup/components/ha-backup-data-picker";
 import "../../panels/config/backup/components/ha-backup-formfield-label";
-import type { LocalizeFunc } from "../../common/translations/localize";
+
+import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+
+import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import {
   getPreferredAgentForDownload,
   type BackupContentExtended,
   type BackupData,
 } from "../../data/backup";
 import { restoreOnboardingBackup } from "../../data/backup_onboarding";
-import type { HaProgressButton } from "../../components/buttons/ha-progress-button";
-import { fireEvent } from "../../common/dom/fire_event";
 import { onBoardingStyles } from "../styles";
-import { formatDateTimeWithBrowserDefaults } from "../../common/datetime/format_date_time";
 
 @customElement("onboarding-restore-backup-restore")
 class OnboardingRestoreBackupRestore extends LitElement {

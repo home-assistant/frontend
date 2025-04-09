@@ -1,11 +1,14 @@
+import type { Trigger } from "../../data/automation";
+import type { TriggerSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+
+import "../../panels/config/automation/trigger/ha-automation-trigger";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { Trigger } from "../../data/automation";
+
 import { migrateAutomationTrigger } from "../../data/automation";
-import type { TriggerSelector } from "../../data/selector";
-import "../../panels/config/automation/trigger/ha-automation-trigger";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-trigger")
 export class HaTriggerSelector extends LitElement {

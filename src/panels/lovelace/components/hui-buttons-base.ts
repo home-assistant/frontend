@@ -1,18 +1,21 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, state, property } from "lit/decorators";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/chips/ha-chip-set";
+import "../../../components/entity/state-badge";
+
+import { css, html, LitElement } from "lit";
+import { customElement, state, property } from "lit/decorators";
+
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { haStyleScrollbar } from "../../../resources/styles";
 import { computeTooltip } from "../common/compute-tooltip";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/chips/ha-chip-set";
-import { haStyleScrollbar } from "../../../resources/styles";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {

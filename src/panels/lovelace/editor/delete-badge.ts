@@ -1,7 +1,8 @@
 import type { HomeAssistant } from "../../../types";
 import type { Lovelace } from "../types";
-import { deleteBadge } from "./config-util";
 import type { LovelaceCardPath } from "./lovelace-path";
+
+import { deleteBadge } from "./config-util";
 
 export interface DeleteBadgeParams {
   path: LovelaceCardPath;

@@ -1,9 +1,12 @@
+import type { HomeAssistant } from "../types";
+import type { EntitySources } from "./entity_sources";
 import type {
   HassEntities,
   HassEntityAttributeBase,
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
+
 import { BINARY_STATE_ON } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
@@ -11,9 +14,7 @@ import { supportsFeature } from "../common/entity/supports-feature";
 import { formatNumber } from "../common/number/format_number";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
-import type { EntitySources } from "./entity_sources";
 
 export enum UpdateEntityFeature {
   INSTALL = 1,

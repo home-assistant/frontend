@@ -1,8 +1,11 @@
+import type { HomeAssistant } from "../../../../../../types";
+
+import "../../../../../../components/ha-spinner";
+
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { HomeAssistant } from "../../../../../../types";
+
 import { sharedStyles } from "./matter-add-device-shared-styles";
-import "../../../../../../components/ha-spinner";
 
 @customElement("matter-add-device-commissioning")
 class MatterAddDeviceCommissioning extends LitElement {

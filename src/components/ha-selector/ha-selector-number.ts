@@ -1,13 +1,16 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { NumberSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { PropertyValues } from "lit";
+
 import "../ha-input-helper-text";
 import "../ha-slider";
 import "../ha-textfield";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-number")
 export class HaNumberSelector extends LitElement {

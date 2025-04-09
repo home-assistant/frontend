@@ -1,5 +1,6 @@
 import { tsParticles } from "@tsparticles/engine";
 import { loadLinksPreset } from "@tsparticles/preset-links";
+
 import { DEFAULT_PRIMARY_COLOR } from "./styles-data";
 
 loadLinksPreset(tsParticles).then(() => {

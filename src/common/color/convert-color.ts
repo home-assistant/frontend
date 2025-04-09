@@ -1,4 +1,5 @@
 import colors from "color-name";
+
 import { expandHex } from "./hex";
 
 const rgb_hex = (component: number): string => {

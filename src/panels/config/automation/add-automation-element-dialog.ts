@@ -1,20 +1,14 @@
-import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
-import type { IFuseOptions } from "fuse.js";
-import Fuse from "fuse.js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { repeat } from "lit/directives/repeat";
-import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { deepEqual } from "../../../common/util/deep-equal";
-import "../../../components/ha-dialog";
 import type { HaDialog } from "../../../components/ha-dialog";
+import type { AutomationElementGroup } from "../../../data/automation";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { HassDialog } from "../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../types";
+import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
+import type { IFuseOptions } from "fuse.js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
@@ -25,6 +19,20 @@ import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-service-icon";
 import "../../../components/search-input";
+
+import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
+import Fuse from "fuse.js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { stringCompare } from "../../../common/string/compare";
+import { deepEqual } from "../../../common/util/deep-equal";
 import {
   ACTION_GROUPS,
   ACTION_ICONS,
@@ -32,19 +40,14 @@ import {
   getService,
   isService,
 } from "../../../data/action";
-import type { AutomationElementGroup } from "../../../data/automation";
 import { CONDITION_GROUPS, CONDITION_ICONS } from "../../../data/condition";
 import { getServiceIcons } from "../../../data/icons";
-import type { IntegrationManifest } from "../../../data/integration";
 import {
   domainToName,
   fetchIntegrationManifests,
 } from "../../../data/integration";
 import { TRIGGER_GROUPS, TRIGGER_ICONS } from "../../../data/trigger";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
-import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
 
 const TYPES = {

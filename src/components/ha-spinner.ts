@@ -1,6 +1,7 @@
+import type { PropertyValues } from "lit";
+
 import Spinner from "@shoelace-style/shoelace/dist/components/spinner/spinner.component";
 import spinnerStyles from "@shoelace-style/shoelace/dist/components/spinner/spinner.styles";
-import type { PropertyValues } from "lit";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 

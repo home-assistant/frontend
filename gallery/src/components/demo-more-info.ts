@@ -1,10 +1,12 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { HomeAssistant } from "../../../src/types";
+
 import "../../../src/components/ha-card";
 import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
 import "../ha-demo-options";
-import type { HomeAssistant } from "../../../src/types";
+
+import { LitElement, css, html } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("demo-more-info")
 class DemoMoreInfo extends LitElement {

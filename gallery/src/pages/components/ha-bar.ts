@@ -1,9 +1,11 @@
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-bar";
+import "../../../../src/components/ha-card";
+
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../../src/components/ha-bar";
-import "../../../../src/components/ha-card";
 
 const bars: {
   min?: number;

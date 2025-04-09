@@ -1,23 +1,26 @@
+import type { BluetoothAllocationsData } from "../../../../../data/bluetooth";
+import type { HomeAssistant } from "../../../../../types";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-metric";
 import "../../../../../components/ha-switch";
-import "../../../../../components/ha-button";
+import "../../../../../layouts/hass-subpage";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { subscribeBluetoothConnectionAllocations } from "../../../../../data/bluetooth";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
-import { subscribeBluetoothConnectionAllocations } from "../../../../../data/bluetooth";
 import {
   getValueInPercentage,
   roundWithOneDecimal,
 } from "../../../../../util/calculate";
-import "../../../../../components/ha-metric";
-import type { BluetoothAllocationsData } from "../../../../../data/bluetooth";
 
 @customElement("bluetooth-config-dashboard")
 export class BluetoothConfigDashboard extends LitElement {

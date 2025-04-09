@@ -1,8 +1,9 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type {
   CategoryRegistryEntry,
   CategoryRegistryEntryMutableParams,
 } from "../../../data/category_registry";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface CategoryRegistryDetailDialogParams {
   entry?: CategoryRegistryEntry;

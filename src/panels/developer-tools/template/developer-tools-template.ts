@@ -1,19 +1,22 @@
-import "@material/mwc-button/mwc-button";
+import type { RenderTemplateResult } from "../../../data/ws-templates";
+import type { HomeAssistant } from "../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-card";
+import "../../../components/ha-code-editor";
+import "../../../components/ha-spinner";
+import "@material/mwc-button/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
-import "../../../components/ha-code-editor";
-import "../../../components/ha-card";
-import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
 const DEMO_TEMPLATE = `{## Imitate available variables: ##}

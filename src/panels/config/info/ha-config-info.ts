@@ -1,4 +1,15 @@
+import type { HassioHassOSInfo } from "../../../data/hassio/host";
+import type { HassioInfo } from "../../../data/hassio/supervisor";
+import type { HomeAssistant, Route } from "../../../types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-logo-svg";
+import "../../../layouts/hass-subpage";
 import "@material/mwc-list/mwc-list";
+
 import {
   mdiBug,
   mdiFileDocument,
@@ -9,24 +20,16 @@ import {
   mdiOpenInNew,
   mdiTshirtCrew,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
-import "../../../components/ha-logo-svg";
-import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
-import type { HassioInfo } from "../../../data/hassio/supervisor";
 import { fetchHassioInfo } from "../../../data/hassio/supervisor";
-import "../../../layouts/hass-subpage";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../../../components/ha-icon-next";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;

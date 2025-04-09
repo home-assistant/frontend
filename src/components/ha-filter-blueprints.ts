@@ -1,20 +1,23 @@
-import "@material/mwc-list/mwc-list";
-import type { SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
-import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import type { Blueprints } from "../data/blueprint";
-import { fetchBlueprints } from "../data/blueprint";
 import type { RelatedResult } from "../data/search";
-import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import type { SelectedDetail } from "@material/mwc-list";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
-import "./ha-check-list-item";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-menu/mwc-menu-surface";
+
+import { mdiFilterVariantRemove } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../common/dom/fire_event";
+import { fetchBlueprints } from "../data/blueprint";
+import { findRelated } from "../data/search";
+import { haStyleScrollbar } from "../resources/styles";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {

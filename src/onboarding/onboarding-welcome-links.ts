@@ -1,13 +1,16 @@
-import { mdiAccountGroup, mdiFileDocument, mdiTabletCellphone } from "@mdi/js";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HomeAssistant } from "../types";
 import type { TemplateResult } from "lit";
+
+import "../components/ha-card";
+import "./onboarding-welcome-link";
+
+import { mdiAccountGroup, mdiFileDocument, mdiTabletCellphone } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-card";
-import type { HomeAssistant } from "../types";
+
 import { showAppDialog } from "./dialogs/show-app-dialog";
 import { showCommunityDialog } from "./dialogs/show-community-dialog";
-import "./onboarding-welcome-link";
 
 @customElement("onboarding-welcome-links")
 class OnboardingWelcomeLinks extends LitElement {

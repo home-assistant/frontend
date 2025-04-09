@@ -1,12 +1,15 @@
-import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
+import type { HomeAssistant } from "../../../src/types";
+import type { DemoCardConfig } from "./demo-card";
+
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-import type { HomeAssistant } from "../../../src/types";
-import "./demo-card";
-import type { DemoCardConfig } from "./demo-card";
 import "../ha-demo-options";
+import "./demo-card";
+
+import { html, css, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 
 @customElement("demo-cards")
 class DemoCards extends LitElement {

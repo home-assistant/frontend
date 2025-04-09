@@ -1,24 +1,27 @@
+import type { ConfigEntry } from "../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
+import type { EntitySources } from "../../data/entity_sources";
+import type { DeviceSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
+
+import "../device/ha-device-picker";
+import "../device/ha-devices-picker";
+
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import { getDeviceIntegrationLookup } from "../../data/device_registry";
-import type { EntitySources } from "../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
-import type { DeviceSelector } from "../../data/selector";
-import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
+import { getDeviceIntegrationLookup } from "../../data/device_registry";
+import { fetchEntitySourcesWithCache } from "../../data/entity_sources";
 import {
   filterSelectorDevices,
   filterSelectorEntities,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
-import "../device/ha-device-picker";
-import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {

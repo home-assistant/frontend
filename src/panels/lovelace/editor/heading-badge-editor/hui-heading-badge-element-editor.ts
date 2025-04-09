@@ -1,10 +1,12 @@
-import { customElement } from "lit/decorators";
-import { getHeadingBadgeElementClass } from "../../create-element/create-heading-badge-element";
 import type { EntityHeadingBadgeConfig } from "../../heading-badges/types";
 import type {
   LovelaceConfigForm,
   LovelaceHeadingBadgeEditor,
 } from "../../types";
+
+import { customElement } from "lit/decorators";
+
+import { getHeadingBadgeElementClass } from "../../create-element/create-heading-badge-element";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 
 @customElement("hui-heading-badge-element-editor")

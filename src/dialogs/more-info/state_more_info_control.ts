@@ -1,4 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import {
   DOMAINS_HIDE_DEFAULT_MORE_INFO,

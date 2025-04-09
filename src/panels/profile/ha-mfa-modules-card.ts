@@ -1,11 +1,14 @@
-import "@material/mwc-button";
+import type { HomeAssistant, MFAModule } from "../../types";
 import type { TemplateResult } from "lit";
+
+import "../../components/ha-card";
+import "@material/mwc-button";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-card";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant, MFAModule } from "../../types";
 import { showMfaModuleSetupFlowDialog } from "./show-ha-mfa-module-setup-flow-dialog";
 
 @customElement("ha-mfa-modules-card")

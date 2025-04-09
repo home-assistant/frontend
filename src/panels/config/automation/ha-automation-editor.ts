@@ -1,4 +1,26 @@
+import type {
+  AutomationConfig,
+  AutomationEntity,
+  BlueprintAutomationConfig,
+} from "../../../data/automation";
+import type { Entries, HomeAssistant, Route } from "../../../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-button-menu";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-yaml-editor";
+import "../../../layouts/hass-subpage";
+import "../ha-config-section";
+import "./blueprint-automation-editor";
+import "./manual-automation-editor";
 import "@material/mwc-button";
+
+import { consume } from "@lit-labs/context";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -17,29 +39,16 @@ import {
   mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
+
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-fab";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-yaml-editor";
-import type {
-  AutomationConfig,
-  AutomationEntity,
-  BlueprintAutomationConfig,
-} from "../../../data/automation";
+import { afterNextRender } from "../../../common/util/render-status";
 import {
   deleteAutomation,
   fetchAutomationFileConfig,
@@ -52,6 +61,7 @@ import {
 } from "../../../data/automation";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
@@ -61,24 +71,17 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-subpage";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
-import "../ha-config-section";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import {
   type EntityRegistryUpdate,
   showAutomationSaveDialog,
 } from "./automation-save-dialog/show-dialog-automation-save";
-import "./blueprint-automation-editor";
-import "./manual-automation-editor";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
 
 declare global {
   interface HTMLElementTagNameMap {

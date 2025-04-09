@@ -1,9 +1,10 @@
-import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
 import type { BaseTrigger } from "./automation";
-import { migrateAutomationTrigger } from "./automation";
 import type { EntityRegistryEntry } from "./entity_registry";
+
+import { computeStateName } from "../common/entity/compute_state_name";
+import { migrateAutomationTrigger } from "./automation";
 import {
   computeEntityRegistryName,
   entityRegistryByEntityId,

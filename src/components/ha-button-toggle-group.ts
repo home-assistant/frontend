@@ -1,12 +1,15 @@
-import "@material/mwc-button/mwc-button";
+import type { ToggleButton } from "../types";
 import type { Button } from "@material/mwc-button/mwc-button";
 import type { TemplateResult } from "lit";
+
+import "./ha-icon-button";
+import "@material/mwc-button/mwc-button";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { ToggleButton } from "../types";
-import "./ha-icon-button";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {

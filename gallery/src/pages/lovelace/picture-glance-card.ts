@@ -1,10 +1,13 @@
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../components/demo-cards";
+
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
+
+import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import "../../components/demo-cards";
-import { mockIcons } from "../../../../demo/src/stubs/icons";
 
 const ENTITIES = [
   getEntity("switch", "decorative_lights", "on", {

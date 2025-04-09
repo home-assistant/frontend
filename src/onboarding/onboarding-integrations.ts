@@ -1,20 +1,23 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { ConfigEntry } from "../data/config_entries";
+import type { HomeAssistant } from "../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../components/ha-button";
+import "./integration-badge";
+
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
-import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/ha-button";
-import type { ConfigEntry } from "../data/config_entries";
 import { subscribeConfigEntries } from "../data/config_entries";
 import { subscribeConfigFlowInProgress } from "../data/config_flow";
 import { domainToName } from "../data/integration";
 import { scanUSBDevices } from "../data/usb";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../types";
-import "./integration-badge";
 import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([

@@ -1,8 +1,10 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-alert";
 import type { EnergyValidationIssue } from "../../../../data/energy";
 import type { HomeAssistant } from "../../../../types";
+
+import "../../../../components/ha-alert";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-energy-validation-result")
 class EnergyValidationMessage extends LitElement {

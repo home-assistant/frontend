@@ -1,4 +1,3 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
@@ -12,6 +11,8 @@ import type {
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export interface EnergySettingsGridFlowDialogParams {
   source?:

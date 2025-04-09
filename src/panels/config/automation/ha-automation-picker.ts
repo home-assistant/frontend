@@ -1,3 +1,43 @@
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+  SelectionChangedEvent,
+  SortingChangedEvent,
+} from "../../../components/data-table/ha-data-table";
+import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
+import type { HaMenu } from "../../../components/ha-menu";
+import type { AutomationEntity } from "../../../data/automation";
+import type { CategoryRegistryEntry } from "../../../data/category_registry";
+import type { DataTableFilters } from "../../../data/data_table_filters";
+import type {
+  EntityRegistryEntry,
+  UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/chips/ha-assist-chip";
+import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-fab";
+import "../../../components/ha-filter-blueprints";
+import "../../../components/ha-filter-categories";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-entities";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-labels";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu-item";
+import "../../../components/ha-menu";
+import "../../../components/ha-sub-menu";
+import "../../../components/ha-svg-icon";
+import "../../../layouts/hass-tabs-subpage-data-table";
+
 import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
@@ -19,52 +59,24 @@ import {
   mdiTransitConnection,
 } from "@mdi/js";
 import { differenceInDays } from "date-fns";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { computeCssColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import "../../../components/chips/ha-assist-chip";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-  SelectionChangedEvent,
-  SortingChangedEvent,
-} from "../../../components/data-table/ha-data-table";
-import "../../../components/data-table/ha-data-table-labels";
-import "../../../components/entity/ha-entity-toggle";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-fab";
-import "../../../components/ha-filter-blueprints";
-import "../../../components/ha-filter-categories";
-import "../../../components/ha-filter-devices";
-import "../../../components/ha-filter-entities";
-import "../../../components/ha-filter-floor-areas";
-import "../../../components/ha-filter-labels";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-menu-item";
-import type { HaMdMenuItem } from "../../../components/ha-md-menu-item";
-import "../../../components/ha-menu";
-import type { HaMenu } from "../../../components/ha-menu";
-import "../../../components/ha-sub-menu";
-import "../../../components/ha-svg-icon";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { AutomationEntity } from "../../../data/automation";
 import {
   deleteAutomation,
   duplicateAutomation,
@@ -73,24 +85,17 @@ import {
   showAutomationEditor,
   triggerAutomationActions,
 } from "../../../data/automation";
-import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
   createCategoryRegistryEntry,
   subscribeCategoryRegistry,
 } from "../../../data/category_registry";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
-import type {
-  EntityRegistryEntry,
-  UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
@@ -100,10 +105,8 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route, ServiceCallResponse } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";

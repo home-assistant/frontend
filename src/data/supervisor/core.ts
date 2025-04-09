@@ -1,6 +1,7 @@
-import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
 import type { HassioResponse } from "../hassio/common";
+
+import { atLeastVersion } from "../../common/config/version";
 
 export const restartCore = async (hass: HomeAssistant) => {
   await hass.callService("homeassistant", "restart");

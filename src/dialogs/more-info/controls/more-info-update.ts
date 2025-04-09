@@ -1,33 +1,36 @@
-import "@material/mwc-linear-progress/mwc-linear-progress";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { BINARY_STATE_OFF } from "../../../common/const";
-import { relativeTime } from "../../../common/datetime/relative_time";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { BackupConfig } from "../../../data/backup";
+import type { EntitySources } from "../../../data/entity_sources";
+import type { UpdateEntity } from "../../../data/update";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
-import "../../../components/ha-spinner";
 import "../../../components/ha-faded";
 import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
-import type { BackupConfig } from "../../../data/backup";
+import "@material/mwc-linear-progress/mwc-linear-progress";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { BINARY_STATE_OFF } from "../../../common/const";
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import { fetchBackupConfig } from "../../../data/backup";
 import { isUnavailableState } from "../../../data/entity";
-import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import type { UpdateEntity } from "../../../data/update";
 import {
   getUpdateType,
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
 } from "../../../data/update";
-import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
 
 @customElement("more-info-update")

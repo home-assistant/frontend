@@ -1,8 +1,3 @@
-import { mdiDelete, mdiPlus } from "@mdi/js";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
@@ -10,11 +5,23 @@ import type {
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import type { ApplicationCredential } from "../../../data/application_credential";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import type { HomeAssistant, Route } from "../../../types";
+import type { PropertyValues } from "lit";
+
 import "../../../components/ha-fab";
 import "../../../components/ha-help-tooltip";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-overflow-menu";
-import type { ApplicationCredential } from "../../../data/application_credential";
+import "../../../components/ha-svg-icon";
+import "../../../layouts/hass-tabs-subpage-data-table";
+
+import { mdiDelete, mdiPlus } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { storage } from "../../../common/decorators/storage";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentials,
@@ -24,12 +31,8 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddApplicationCredentialDialog } from "./show-dialog-add-application-credential";
-import { storage } from "../../../common/decorators/storage";
 
 @customElement("ha-config-application-credentials")
 export class HaConfigApplicationCredentials extends LitElement {

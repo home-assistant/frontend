@@ -1,3 +1,26 @@
+import type {
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+} from "../../data/entity_registry";
+import type { ItemType } from "../../data/search";
+import type { HomeAssistant } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../components/ha-button-menu";
+import "../../components/ha-dialog";
+import "../../components/ha-dialog-header";
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-button-prev";
+import "../../components/ha-list-item";
+import "../../components/ha-related-items";
+import "../../state-summary/state-card-content";
+import "./controls/more-info-default";
+import "./ha-more-info-history-and-logbook";
+import "./ha-more-info-info";
+import "./ha-more-info-settings";
+import "./more-info-content";
+
 import {
   mdiChartBoxOutline,
   mdiClose,
@@ -9,12 +32,11 @@ import {
   mdiPencilOff,
   mdiPencilOutline,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { join } from "lit/directives/join";
+
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -25,27 +47,17 @@ import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
+import {
+  getEntityContext,
+  getEntityEntryContext,
+} from "../../common/entity/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-button-menu";
-import "../../components/ha-dialog";
-import "../../components/ha-dialog-header";
-import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-prev";
-import "../../components/ha-list-item";
-import "../../components/ha-related-items";
-import type {
-  EntityRegistryEntry,
-  ExtEntityRegistryEntry,
-} from "../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../data/entity_registry";
 import { lightSupportsFavoriteColors } from "../../data/light";
-import type { ItemType } from "../../data/search";
 import { SearchableDomains } from "../../data/search";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyleDialog } from "../../resources/styles";
-import "../../state-summary/state-card-content";
-import type { HomeAssistant } from "../../types";
 import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
@@ -53,15 +65,6 @@ import {
   computeShowHistoryComponent,
   computeShowLogBookComponent,
 } from "./const";
-import "./controls/more-info-default";
-import "./ha-more-info-history-and-logbook";
-import "./ha-more-info-info";
-import "./ha-more-info-settings";
-import "./more-info-content";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/get_entity_context";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;

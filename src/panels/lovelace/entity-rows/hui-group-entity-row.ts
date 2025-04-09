@@ -1,14 +1,17 @@
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig, LovelaceRow } from "./types";
 import type { PropertyValues } from "lit";
+
+import "../../../components/entity/ha-entity-toggle";
+import "../components/hui-generic-entity-row";
+
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/entity/ha-entity-toggle";
-import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-group-entity-row")
 class HuiGroupEntityRow extends LitElement implements LovelaceRow {

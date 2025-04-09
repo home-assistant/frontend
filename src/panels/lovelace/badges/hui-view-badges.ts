@@ -1,20 +1,23 @@
-import { mdiPlus } from "@mdi/js";
+import type { HaSortableOptions } from "../../../components/ha-sortable";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { Lovelace } from "../types";
+import type { HuiBadge } from "./hui-badge";
 import type { PropertyValues } from "lit";
+
+import "../../../components/ha-ripple";
+import "../../../components/ha-sortable";
+import "../../../components/ha-svg-icon";
+import "../components/hui-badge-edit-mode";
+
+import { mdiPlus } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
+
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-ripple";
-import "../../../components/ha-sortable";
-import type { HaSortableOptions } from "../../../components/ha-sortable";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
-import "../components/hui-badge-edit-mode";
 import { moveBadge } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
-import type { Lovelace } from "../types";
-import type { HuiBadge } from "./hui-badge";
 
 const BADGE_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,

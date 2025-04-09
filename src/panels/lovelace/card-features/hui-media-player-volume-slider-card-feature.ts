@@ -1,16 +1,19 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateActive } from "../../../common/entity/state_active";
-import "../../../components/ha-control-slider";
-import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
-import { cardFeatureStyles } from "./common/card-feature-styles";
 import type { MediaPlayerVolumeSliderCardFeatureConfig } from "./types";
-import { MediaPlayerEntityFeature } from "../../../data/media-player";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../components/ha-control-slider";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { isUnavailableState } from "../../../data/entity";
+import { MediaPlayerEntityFeature } from "../../../data/media-player";
+import { cardFeatureStyles } from "./common/card-feature-styles";
 
 export const supportsMediaPlayerVolumeSliderCardFeature = (
   stateObj: HassEntity

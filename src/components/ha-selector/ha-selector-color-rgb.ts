@@ -1,10 +1,13 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { hex2rgb, rgb2hex } from "../../common/color/convert-color";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { ColorRGBSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-textfield";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { hex2rgb, rgb2hex } from "../../common/color/convert-color";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-selector-color_rgb")
 export class HaColorRGBSelector extends LitElement {

@@ -1,35 +1,38 @@
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { AlarmMode } from "../../../data/alarm_control_panel";
+import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceCard } from "../types";
+import type { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stateColorCss } from "../../../common/entity/state_color";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
-import type { AlarmMode } from "../../../data/alarm_control_panel";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { stateColorCss } from "../../../common/entity/state_color";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
   ALARM_MODES,
   FORMAT_NUMBER,
   callAlarmAction,
 } from "../../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard } from "../types";
-import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
   getExtendedEntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import type { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
+import { findEntities } from "../common/find-entities";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 

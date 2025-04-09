@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { ExposeEntitySettings } from "../../../data/expose";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface ExposeEntityDialogParams {
   filterAssistants: string[];

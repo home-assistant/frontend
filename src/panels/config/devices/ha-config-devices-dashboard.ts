@@ -1,41 +1,24 @@
-import { consume } from "@lit-labs/context";
-import {
-  mdiChevronRight,
-  mdiDotsVertical,
-  mdiMenuDown,
-  mdiPlus,
-  mdiTextureBox,
-  mdiCancel,
-} from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-
-import { ResizeController } from "@lit-labs/observers/resize-controller";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { computeCssColor } from "../../../common/color/compute-color";
-import { formatShortDateTime } from "../../../common/datetime/format_date_time";
-import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import {
-  PROTOCOL_INTEGRATIONS,
-  protocolIntegrationPicked,
-} from "../../../common/integrations/protocolIntegrationPicked";
-import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import {
-  hasRejectedItems,
-  rejectedItems,
-} from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import type { DataTableFilters } from "../../../data/data_table_filters";
+import type {
+  DeviceEntityLookup,
+  DeviceRegistryEntry,
+} from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { HomeAssistant, Route } from "../../../types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
@@ -51,40 +34,59 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import "../integrations/ha-integration-overflow-menu";
+
+import { consume } from "@lit-labs/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import {
+  mdiChevronRight,
+  mdiDotsVertical,
+  mdiMenuDown,
+  mdiPlus,
+  mdiTextureBox,
+  mdiCancel,
+} from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { computeCssColor } from "../../../common/color/compute-color";
+import { formatShortDateTime } from "../../../common/datetime/format_date_time";
+import { storage } from "../../../common/decorators/storage";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import {
+  PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
+} from "../../../common/integrations/protocolIntegrationPicked";
+import { navigate } from "../../../common/navigate";
+import {
+  hasRejectedItems,
+  rejectedItems,
+} from "../../../common/util/promise-all-settled-results";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
-import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
-import type { DataTableFilters } from "../../../data/data_table_filters";
 import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import type {
-  DeviceEntityLookup,
-  DeviceRegistryEntry,
-} from "../../../data/device_registry";
 import { updateDeviceRegistryEntry } from "../../../data/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import type { IntegrationManifest } from "../../../data/integration";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { configSections } from "../ha-panel-config";
-import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 

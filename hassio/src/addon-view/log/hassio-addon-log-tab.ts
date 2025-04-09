@@ -1,3 +1,11 @@
+import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { HomeAssistant } from "../../../../src/types";
+
+import "../../../../src/components/ha-spinner";
+import "../../../../src/components/search-input";
+import "../../../../src/panels/config/logs/error-log-card";
+
 import {
   css,
   type CSSResultGroup,
@@ -6,15 +14,10 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../src/components/ha-spinner";
-import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
-import { haStyle } from "../../../../src/resources/styles";
-import type { HomeAssistant } from "../../../../src/types";
-import { hassioStyle } from "../../resources/hassio-style";
-import "../../../../src/panels/config/logs/error-log-card";
-import "../../../../src/components/search-input";
+
 import { extractSearchParam } from "../../../../src/common/url/search-params";
+import { haStyle } from "../../../../src/resources/styles";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-log-tab")
 class HassioAddonLogDashboard extends LitElement {

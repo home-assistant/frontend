@@ -2,10 +2,11 @@ import type { LovelacePanelConfig } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
+import type { HomeAssistant } from "../../../types";
+
 import { fetchConfig, saveConfig } from "../../../data/lovelace/config/types";
 import { fetchDashboards } from "../../../data/lovelace/dashboard";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
 

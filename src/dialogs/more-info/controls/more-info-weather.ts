@@ -1,20 +1,26 @@
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
-import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
-import { formatTime } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/number/format_number";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-tooltip";
 import type {
   ForecastEvent,
   ModernForecastType,
   WeatherEntity,
 } from "../../../data/weather";
+import type { HomeAssistant } from "../../../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-relative-time";
+import "../../../components/ha-state-icon";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
+
+import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
+import { formatTime } from "../../../common/datetime/format_time";
+import { formatNumber } from "../../../common/number/format_number";
 import {
   getDefaultForecastType,
   getForecast,
@@ -26,9 +32,6 @@ import {
   subscribeForecast,
   weatherSVGStyles,
 } from "../../../data/weather";
-import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-state-icon";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {

@@ -1,3 +1,14 @@
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { ClockCardConfig } from "../../cards/types";
+import type { LovelaceCardEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
 import timezones from "google-timezones-json";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,18 +24,10 @@ import {
   string,
   union,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
-import type { ClockCardConfig } from "../../cards/types";
-import type { LovelaceCardEditor } from "../../types";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { TimeFormat } from "../../../../data/translation";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

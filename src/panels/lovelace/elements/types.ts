@@ -1,8 +1,8 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../types";
 import type { Condition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 
 interface LovelaceElementConfigBase {
   type: string;

@@ -1,22 +1,25 @@
-import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, query, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-md-select";
-import "../../../../components/ha-md-select-option";
-import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceDashboard } from "../../../../data/lovelace/dashboard";
-import { fetchDashboards } from "../../../../data/lovelace/dashboard";
-import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { SelectDashboardDialogParams } from "./show-select-dashboard-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-md-dialog";
+import "../../../../components/ha-md-select";
+import "../../../../components/ha-md-select-option";
+import "../../../../components/ha-spinner";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, query, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { fetchDashboards } from "../../../../data/lovelace/dashboard";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("hui-dialog-select-dashboard")
 export class HuiDialogSelectDashboard extends LitElement {

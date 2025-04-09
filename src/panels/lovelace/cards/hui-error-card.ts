@@ -1,10 +1,12 @@
-import { dump } from "js-yaml";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard } from "../types";
 import type { ErrorCardConfig } from "./types";
+
+import "../../../components/ha-alert";
+
+import { dump } from "js-yaml";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
 
 @customElement("hui-error-card")
 export class HuiErrorCard extends LitElement implements LovelaceCard {

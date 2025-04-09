@@ -1,13 +1,16 @@
+import type { HaRadio } from "../../../../../components/ha-radio";
+import type { ZoneTrigger } from "../../../../../data/automation";
+import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
+
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-formfield";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { hasLocation } from "../../../../../common/entity/has_location";
-import type { ZoneTrigger } from "../../../../../data/automation";
-import type { ValueChangedEvent, HomeAssistant } from "../../../../../types";
-import type { HaRadio } from "../../../../../components/ha-radio";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";

@@ -1,11 +1,14 @@
-import { LitElement, html, css } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-alert";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../types";
 import type { Condition } from "../../common/validate-condition";
+
+import "../../../../components/ha-alert";
 import "../conditions/ha-card-conditions-editor";
+
+import { LitElement, html, css } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-badge-visibility-editor")
 export class HuiBadgeVisibilityEditor extends LitElement {

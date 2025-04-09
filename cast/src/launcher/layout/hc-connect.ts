@@ -1,10 +1,18 @@
-import "@material/mwc-button";
-import { mdiCastConnected, mdiCast } from "@mdi/js";
+import type { CastManager } from "../../../../src/cast/cast_manager";
 import type {
   Auth,
   Connection,
   getAuthOptions,
 } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-textfield";
+import "../../../../src/layouts/hass-loading-screen";
+import "./hc-layout";
+import "@material/mwc-button";
+
+import { mdiCastConnected, mdiCast } from "@mdi/js";
 import {
   createConnection,
   ERR_CANNOT_CONNECT,
@@ -13,21 +21,16 @@ import {
   ERR_INVALID_HTTPS_TO_HTTP,
   getAuth,
 } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
-import type { CastManager } from "../../../../src/cast/cast_manager";
+
 import { getCastManager } from "../../../../src/cast/cast_manager";
 import { castSendShowDemo } from "../../../../src/cast/receiver_messages";
 import {
   loadTokens,
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
-import "../../../../src/components/ha-svg-icon";
-import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
-import "./hc-layout";
-import "../../../../src/components/ha-textfield";
 
 const seeFAQ = (qid) => html`
   See <a href="./faq.html${qid ? `#${qid}` : ""}">the FAQ</a> for more

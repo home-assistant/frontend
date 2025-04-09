@@ -1,11 +1,13 @@
+import type { HaToast } from "../components/ha-toast";
+import type { HomeAssistant } from "../types";
+
+import "../components/ha-button";
+import "../components/ha-icon-button";
+import "../components/ha-toast";
+
 import { mdiClose } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
-import "../components/ha-button";
-import "../components/ha-toast";
-import "../components/ha-icon-button";
-import type { HaToast } from "../components/ha-toast";
-import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
   // Unique ID for the toast. If a new toast is shown with the same ID as the previous toast, it will be replaced to avoid flickering.

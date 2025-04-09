@@ -1,3 +1,16 @@
+import type { HaMdDialog } from "../../components/ha-md-dialog";
+import type { HassioHostInfo } from "../../data/hassio/host";
+import type { HomeAssistant } from "../../types";
+import type { CSSResultGroup } from "lit";
+
+import "../../components/ha-expansion-panel";
+import "../../components/ha-icon-button";
+import "../../components/ha-icon-next";
+import "../../components/ha-md-dialog";
+import "../../components/ha-md-list";
+import "../../components/ha-md-list-item";
+import "../../components/ha-spinner";
+
 import {
   mdiAutoFix,
   mdiLifebuoy,
@@ -6,31 +19,21 @@ import {
   mdiRefresh,
   mdiClose,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-spinner";
-import "../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../components/ha-md-dialog";
-import "../../components/ha-md-list";
-import "../../components/ha-expansion-panel";
-import "../../components/ha-md-list-item";
-import "../../components/ha-icon-button";
-import "../../components/ha-icon-next";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../data/hassio/common";
-import type { HassioHostInfo } from "../../data/hassio/host";
 import {
   fetchHassioHostInfo,
   rebootHost,
   shutdownHost,
 } from "../../data/hassio/host";
 import { haStyle, haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import {
   showAlertDialog,

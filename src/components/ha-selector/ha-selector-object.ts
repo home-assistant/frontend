@@ -1,11 +1,14 @@
+import type { HomeAssistant } from "../../types";
+import type { HaYamlEditor } from "../ha-yaml-editor";
 import type { PropertyValues } from "lit";
+
+import "../ha-input-helper-text";
+import "../ha-yaml-editor";
+
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
-import "../ha-yaml-editor";
-import "../ha-input-helper-text";
-import type { HaYamlEditor } from "../ha-yaml-editor";
 
 @customElement("ha-selector-object")
 export class HaObjectSelector extends LitElement {

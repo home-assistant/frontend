@@ -1,3 +1,13 @@
+import type { HomeAssistant } from "../types";
+import type {
+  HassConfig,
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
+import type { SVGTemplateResult, TemplateResult } from "lit";
+
+import "../components/ha-svg-icon";
+
 import {
   mdiAlertCircleOutline,
   mdiGauge,
@@ -20,18 +30,11 @@ import {
   mdiWeatherWindy,
   mdiWeatherWindyVariant,
 } from "@mdi/js";
-import type {
-  HassConfig,
-  HassEntityAttributeBase,
-  HassEntityBase,
-} from "home-assistant-js-websocket";
-import type { SVGTemplateResult, TemplateResult } from "lit";
 import { css, html, svg } from "lit";
 import { styleMap } from "lit/directives/style-map";
+
 import { supportsFeature } from "../common/entity/supports-feature";
 import { round } from "../common/number/round";
-import "../components/ha-svg-icon";
-import type { HomeAssistant } from "../types";
 
 export const enum WeatherEntityFeature {
   FORECAST_DAILY = 1,

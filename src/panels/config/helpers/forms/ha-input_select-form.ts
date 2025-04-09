@@ -1,21 +1,24 @@
-import "@material/mwc-list/mwc-list";
-import { mdiDelete, mdiDrag } from "@mdi/js";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import type { InputSelect } from "../../../../data/input_select";
+import type { HomeAssistant } from "../../../../types";
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-textfield";
-import type { HaTextField } from "../../../../components/ha-textfield";
-import type { InputSelect } from "../../../../data/input_select";
+import "@material/mwc-list/mwc-list";
+
+import { mdiDelete, mdiDrag } from "@mdi/js";
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {

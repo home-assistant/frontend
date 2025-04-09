@@ -1,8 +1,10 @@
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
 import type { TTSVoiceSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+
 import "../ha-tts-voice-picker";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-selector-tts_voice")
 export class HaTTSVoiceSelector extends LitElement {

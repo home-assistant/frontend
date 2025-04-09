@@ -1,10 +1,11 @@
+import type { HomeAssistant } from "../../../types";
+
 import {
   getCustomBadgeEntry,
   getCustomCardEntry,
   isCustomType,
   stripCustomPrefix,
 } from "../../../data/lovelace_custom_cards";
-import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 
 export const getCardDocumentationURL = (

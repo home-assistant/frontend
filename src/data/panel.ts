@@ -1,5 +1,6 @@
-import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant, PanelInfo } from "../types";
+
+import { fireEvent } from "../common/dom/fire_event";
 
 /** Panel to show when no panel is picked. */
 export const DEFAULT_PANEL = "lovelace";

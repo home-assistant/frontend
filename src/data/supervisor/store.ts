@@ -1,7 +1,8 @@
 import type { HomeAssistant } from "../../types";
 import type { AddonRole, AddonStage } from "../hassio/addon";
-import { supervisorApiCall } from "./common";
 import type { SupervisorArch } from "./supervisor";
+
+import { supervisorApiCall } from "./common";
 
 export interface StoreAddon {
   advanced: boolean;

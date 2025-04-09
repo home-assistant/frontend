@@ -1,25 +1,15 @@
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { splitByGroups } from "../../../common/entity/split_by_groups";
-import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
-import { stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
-import { areaCompare } from "../../../data/area_registry";
 import type {
   EnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
-import { domainToName } from "../../../data/integration";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
-import { computeUserInitials } from "../../../data/user";
 import type { HomeAssistant } from "../../../types";
-import { HELPER_DOMAINS } from "../../config/helpers/const";
+import type { EntityBadgeConfig } from "../badges/types";
 import type {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
@@ -31,8 +21,19 @@ import type {
 } from "../cards/types";
 import type { EntityConfig } from "../entity-rows/types";
 import type { ButtonsHeaderFooterConfig } from "../header-footer/types";
-import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import type { EntityBadgeConfig } from "../badges/types";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
+
+import { SENSOR_ENTITIES, ASSIST_ENTITIES } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { splitByGroups } from "../../../common/entity/split_by_groups";
+import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
+import { stringCompare } from "../../../common/string/compare";
+import { areaCompare } from "../../../data/area_registry";
+import { domainToName } from "../../../data/integration";
+import { computeUserInitials } from "../../../data/user";
+import { HELPER_DOMAINS } from "../../config/helpers/const";
 
 const HIDE_DOMAIN = new Set([
   "automation",

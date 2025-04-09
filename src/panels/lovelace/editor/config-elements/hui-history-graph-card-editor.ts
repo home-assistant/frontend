@@ -1,4 +1,13 @@
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../../types";
+import type { HistoryGraphCardConfig } from "../../cards/types";
+import type { EntityConfig } from "../../entity-rows/types";
+import type { LovelaceCardEditor } from "../../types";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-form/ha-form";
+import "../../components/hui-entity-editor";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,18 +21,12 @@ import {
   optional,
   string,
 } from "superstruct";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { HomeAssistant } from "../../../../types";
-import type { HistoryGraphCardConfig } from "../../cards/types";
-import "../../components/hui-entity-editor";
-import type { EntityConfig } from "../../entity-rows/types";
-import type { LovelaceCardEditor } from "../../types";
+import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
 import { processEditorEntities } from "../process-editor-entities";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
-import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,

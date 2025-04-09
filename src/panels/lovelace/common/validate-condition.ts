@@ -1,9 +1,10 @@
-import { ensureArray } from "../../../common/array/ensure-array";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
+import type { HomeAssistant } from "../../../types";
+
+import { ensureArray } from "../../../common/array/ensure-array";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
-import type { HomeAssistant } from "../../../types";
 
 export type Condition =
   | NumericStateCondition

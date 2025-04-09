@@ -1,4 +1,8 @@
+import type { Constructor, HomeAssistant } from "../types";
+import type { HassBaseEl } from "./hass-base-mixin";
+
 import { ContextProvider } from "@lit-labs/context";
+
 import {
   areasContext,
   configContext,
@@ -15,8 +19,6 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
-import type { Constructor, HomeAssistant } from "../types";
-import type { HassBaseEl } from "./hass-base-mixin";
 
 export const contextMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T

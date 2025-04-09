@@ -1,24 +1,27 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { getColorByIndex } from "../../../common/color/colors";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { debounce } from "../../../common/util/debounce";
-import "../../../components/ha-card";
 import type { Calendar, CalendarEvent } from "../../../data/calendar";
-import { fetchCalendarEvents } from "../../../data/calendar";
 import type {
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
 } from "../../../types";
-import "../../calendar/ha-full-calendar";
-import { findEntities } from "../common/find-entities";
-import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
+import type { PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../calendar/ha-full-calendar";
+import "../components/hui-warning";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { getColorByIndex } from "../../../common/color/colors";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { debounce } from "../../../common/util/debounce";
+import { fetchCalendarEvents } from "../../../data/calendar";
+import { findEntities } from "../common/find-entities";
 
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {

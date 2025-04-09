@@ -1,14 +1,3 @@
-import type { DurationFormatConstructor } from "@formatjs/intl-durationformat/src/types";
-import type {
-  Auth,
-  Connection,
-  HassConfig,
-  HassEntities,
-  HassEntity,
-  HassServices,
-  HassServiceTarget,
-  MessageBase,
-} from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "./common/translations/localize";
 import type { AreaRegistryEntry } from "./data/area_registry";
 import type { DeviceRegistryEntry } from "./data/device_registry";
@@ -21,6 +10,17 @@ import type {
 } from "./data/translation";
 import type { Themes } from "./data/ws-themes";
 import type { ExternalMessaging } from "./external_app/external_messaging";
+import type { DurationFormatConstructor } from "@formatjs/intl-durationformat/src/types";
+import type {
+  Auth,
+  Connection,
+  HassConfig,
+  HassEntities,
+  HassEntity,
+  HassServices,
+  HassServiceTarget,
+  MessageBase,
+} from "home-assistant-js-websocket";
 
 declare global {
   /* eslint-disable no-var, @typescript-eslint/naming-convention */

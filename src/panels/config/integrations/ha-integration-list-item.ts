@@ -1,18 +1,22 @@
+import type { HomeAssistant } from "../../../types";
+import type { IntegrationListItem } from "./dialog-add-integration";
 import type { GraphicType } from "@material/mwc-list/mwc-list-item-base";
-import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
-import { styles } from "@material/mwc-list/mwc-list-item.css";
-import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
+
+import { styles } from "@material/mwc-list/mwc-list-item.css";
+
+import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+
+import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
+import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { domainToName } from "../../../data/integration";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { IntegrationListItem } from "./dialog-add-integration";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-tooltip";
 
 @customElement("ha-integration-list-item")
 export class HaIntegrationListItem extends ListItemBase {

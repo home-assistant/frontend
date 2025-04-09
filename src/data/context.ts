@@ -1,8 +1,9 @@
-import { createContext } from "@lit-labs/context";
-import type { HassConfig } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 import type { EntityRegistryEntry } from "./entity_registry";
 import type { LabelRegistryEntry } from "./label_registry";
+import type { HassConfig } from "home-assistant-js-websocket";
+
+import { createContext } from "@lit-labs/context";
 
 export const connectionContext =
   createContext<HomeAssistant["connection"]>("connection");

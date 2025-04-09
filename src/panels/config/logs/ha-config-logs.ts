@@ -1,22 +1,25 @@
-import { mdiChevronDown } from "@mdi/js";
+import type { LogProvider } from "../../../data/error_log";
+import type { HomeAssistant, Route } from "../../../types";
+import type { SystemLogCard } from "./system-log-card";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { navigate } from "../../../common/navigate";
-import { extractSearchParam } from "../../../common/url/search-params";
+
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/search-input";
-import type { LogProvider } from "../../../data/error_log";
-import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
-import type { SystemLogCard } from "./system-log-card";
+
+import { mdiChevronDown } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { navigate } from "../../../common/navigate";
+import { extractSearchParam } from "../../../common/url/search-params";
+import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
 
 const logProviders: LogProvider[] = [
   {

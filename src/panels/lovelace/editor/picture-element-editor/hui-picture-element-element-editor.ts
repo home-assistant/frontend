@@ -1,8 +1,10 @@
-import { customElement } from "lit/decorators";
 import type { LovelaceElementConfig } from "../../elements/types";
 import type { LovelacePictureElementEditor } from "../../types";
-import { HuiTypedElementEditor } from "../hui-typed-element-editor";
+
+import { customElement } from "lit/decorators";
+
 import { getPictureElementClass } from "../../create-element/create-picture-element";
+import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 
 @customElement("hui-picture-element-element-editor")
 export class HuiPictureElementElementEditor extends HuiTypedElementEditor<LovelaceElementConfig> {

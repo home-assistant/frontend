@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { BackupConfig } from "../../../../data/backup";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export type NewBackupType = "automatic" | "manual";
 

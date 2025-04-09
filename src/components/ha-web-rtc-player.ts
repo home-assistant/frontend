@@ -1,8 +1,13 @@
-import type { PropertyValues, TemplateResult } from "lit";
+import type { HomeAssistant } from "../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-alert";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
@@ -12,8 +17,6 @@ import {
   webRtcOffer,
   type WebRtcOfferEvent,
 } from "../data/camera";
-import type { HomeAssistant } from "../types";
-import "./ha-alert";
 
 /**
  * A WebRTC stream is established by first sending an offer through a signal

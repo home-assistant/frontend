@@ -1,16 +1,19 @@
+import type { HomeAssistant } from "../../../../types";
+import type { CloudAlreadyConnectedParams as CloudAlreadyConnectedDialogParams } from "./show-dialog-cloud-already-connected";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
-import { mdiEye, mdiEyeOff } from "@mdi/js";
-import { formatDateTime } from "../../../../common/datetime/format_date_time";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
+
+import { mdiEye, mdiEyeOff } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
+
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { CloudAlreadyConnectedParams as CloudAlreadyConnectedDialogParams } from "./show-dialog-cloud-already-connected";
 import { obfuscateUrl } from "../../../../util/url";
 
 @customElement("dialog-cloud-already-connected")

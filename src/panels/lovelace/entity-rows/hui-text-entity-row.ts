@@ -1,16 +1,19 @@
+import type { TextEntity } from "../../../data/text";
+import type { HomeAssistant } from "../../../types";
+import type { EntityConfig, LovelaceRow } from "./types";
 import type { PropertyValues } from "lit";
+
+import "../../../components/ha-textfield";
+import "../components/hui-generic-entity-row";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-textfield";
 import { isUnavailableState, UNAVAILABLE } from "../../../data/entity";
-import type { TextEntity } from "../../../data/text";
 import { setValue } from "../../../data/text";
-import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-text-entity-row")
 class HuiTextEntityRow extends LitElement implements LovelaceRow {

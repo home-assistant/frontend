@@ -1,14 +1,17 @@
+import type { LocalizeKeys } from "../../../../common/translations/localize";
+import type { AssistPipeline } from "../../../../data/assist_pipeline";
+import type { WakeWord } from "../../../../data/wake_word";
+import type { HomeAssistant } from "../../../../types";
 import type { PropertyValues } from "lit";
+
+import "../../../../components/ha-form/ha-form";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { LocalizeKeys } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
-import type { AssistPipeline } from "../../../../data/assist_pipeline";
-import type { HomeAssistant } from "../../../../types";
-import type { WakeWord } from "../../../../data/wake_word";
-import { fetchWakeWordInfo } from "../../../../data/wake_word";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { fetchWakeWordInfo } from "../../../../data/wake_word";
 
 @customElement("assist-pipeline-detail-wakeword")
 export class AssistPipelineDetailWakeWord extends LitElement {

@@ -1,21 +1,24 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
+
+import "../../components/ha-alert";
+import "../../components/ha-file-upload";
+import "../../components/ha-icon-button-arrow-prev";
+
 import { mdiFolderUpload } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../components/ha-file-upload";
-import "../../components/ha-alert";
-import "../../components/ha-icon-button-arrow-prev";
+
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../common/navigate";
+import { removeSearchParam } from "../../common/url/search-params";
 import {
   CORE_LOCAL_AGENT,
   HASSIO_LOCAL_AGENT,
   SUPPORTED_UPLOAD_FORMAT,
 } from "../../data/backup";
-import type { LocalizeFunc } from "../../common/translations/localize";
 import { uploadOnboardingBackup } from "../../data/backup_onboarding";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { onBoardingStyles } from "../styles";
-import { navigate } from "../../common/navigate";
-import { removeSearchParam } from "../../common/url/search-params";
 
 declare global {
   interface HASSDomEvents {

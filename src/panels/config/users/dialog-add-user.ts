@@ -1,19 +1,25 @@
+import type { HaSwitch } from "../../../components/ha-switch";
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { User } from "../../../data/user";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { AddUserDialogParams } from "./show-dialog-add-user";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-spinner";
-import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-password-field";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { createCloseHeading } from "../../../components/ha-dialog";
 import { createAuthForUser } from "../../../data/auth";
-import type { User } from "../../../data/user";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
@@ -21,9 +27,6 @@ import {
   deleteUser,
 } from "../../../data/user";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import type { AddUserDialogParams } from "./show-dialog-add-user";
-import "../../../components/ha-password-field";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {

@@ -1,23 +1,26 @@
-import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-state-icon";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
-import "../heading-badges/hui-heading-badge";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import type { HeadingCardConfig } from "./types";
+
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-state-icon";
+import "../../../state-display/state-display";
+import "../heading-badges/hui-heading-badge";
+
+import { LitElement, css, html, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 
 export const migrateHeadingCardConfig = (
   config: HeadingCardConfig

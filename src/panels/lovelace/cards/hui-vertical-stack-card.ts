@@ -1,5 +1,7 @@
 import type { CSSResultGroup } from "lit";
+
 import { css } from "lit";
+
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 

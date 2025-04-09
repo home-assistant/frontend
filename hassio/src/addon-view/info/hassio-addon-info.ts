@@ -1,4 +1,34 @@
+import type { HaSwitch } from "../../../../src/components/ha-switch";
+import type {
+  AddonCapability,
+  HassioAddonDetails,
+  HassioAddonSetOptionParams,
+  HassioAddonSetSecurityParams,
+} from "../../../../src/data/hassio/addon";
+import type { HassioStats } from "../../../../src/data/hassio/common";
+import type {
+  StoreAddon,
+  StoreAddonDetails,
+} from "../../../../src/data/supervisor/store";
+import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import type { HomeAssistant, Route } from "../../../../src/types";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/chips/ha-assist-chip";
+import "../../../../src/components/chips/ha-chip-set";
+import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-settings-row";
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-switch";
+import "../../components/hassio-card-content";
+import "../../components/supervisor-metric";
+import "../../update-available/update-available-card";
 import "@material/mwc-button";
+
 import {
   mdiCheckCircle,
   mdiChip,
@@ -22,31 +52,15 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
-import "../../../../src/components/buttons/ha-progress-button";
-import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/chips/ha-chip-set";
-import "../../../../src/components/chips/ha-assist-chip";
-import "../../../../src/components/ha-markdown";
-import "../../../../src/components/ha-settings-row";
-import "../../../../src/components/ha-svg-icon";
-import "../../../../src/components/ha-switch";
-import "../../../../src/components/ha-formfield";
-import type { HaSwitch } from "../../../../src/components/ha-switch";
-import type {
-  AddonCapability,
-  HassioAddonDetails,
-  HassioAddonSetOptionParams,
-  HassioAddonSetSecurityParams,
-} from "../../../../src/data/hassio/addon";
+import { capitalizeFirstLetter } from "../../../../src/common/string/capitalize-first-letter";
 import {
   fetchHassioAddonChangelog,
   fetchHassioAddonInfo,
@@ -60,31 +74,20 @@ import {
   uninstallHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import type { HassioStats } from "../../../../src/data/hassio/common";
 import {
   extractApiErrorMessage,
   fetchHassioStats,
 } from "../../../../src/data/hassio/common";
-import type {
-  StoreAddon,
-  StoreAddonDetails,
-} from "../../../../src/data/supervisor/store";
-import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 import { haStyle } from "../../../../src/resources/styles";
-import type { HomeAssistant, Route } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
-import "../../components/hassio-card-content";
-import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
-import "../../update-available/update-available-card";
 import { addonArchIsSupported, extractChangelog } from "../../util/addon";
-import { capitalizeFirstLetter } from "../../../../src/common/string/capitalize-first-letter";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,

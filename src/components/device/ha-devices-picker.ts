@@ -1,12 +1,15 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../../common/dom/fire_event";
 import type { ValueChangedEvent, HomeAssistant } from "../../types";
-import "./ha-device-picker";
 import type {
   HaDevicePickerDeviceFilterFunc,
   HaDevicePickerEntityFilterFunc,
 } from "./ha-device-picker";
+
+import "./ha-device-picker";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {

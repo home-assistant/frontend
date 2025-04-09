@@ -1,28 +1,31 @@
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type { SelectBoxOption } from "../../components/ha-select-box";
+import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { LanguageScore, LanguageScores } from "../../data/conversation";
+import type { HomeAssistant } from "../../types";
 import type { PropertyValues } from "lit";
+
+import "../../components/ha-select-box";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../common/language/format_language";
-import type { LocalizeFunc } from "../../common/translations/localize";
-import "../../components/ha-select-box";
-import type { SelectBoxOption } from "../../components/ha-select-box";
 import {
   createAssistPipeline,
   listAssistPipelines,
 } from "../../data/assist_pipeline";
-import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
-import type { LanguageScore, LanguageScores } from "../../data/conversation";
 import { getLanguageScores, listAgents } from "../../data/conversation";
 import { listSTTEngines } from "../../data/stt";
 import { listTTSEngines, listTTSVoices } from "../../data/tts";
-import type { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { documentationUrl } from "../../util/documentation-url";
 
 const OPTIONS = ["cloud", "focused_local", "full_local"] as const;
 

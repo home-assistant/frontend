@@ -1,9 +1,4 @@
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
@@ -11,6 +6,14 @@ import type {
   UpdateActionsCardFeatureConfig,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { UpdateEntityFeature } from "../../../../data/update";
 import { DEFAULT_UPDATE_BACKUP_OPTION } from "../../card-features/hui-update-actions-card-feature";

@@ -1,5 +1,6 @@
-import { fireEvent } from "../../common/dom/fire_event";
 import type { MediaPlayerItem } from "../../data/media-player";
+
+import { fireEvent } from "../../common/dom/fire_event";
 
 export interface MediaManageDialogParams {
   currentItem: MediaPlayerItem;

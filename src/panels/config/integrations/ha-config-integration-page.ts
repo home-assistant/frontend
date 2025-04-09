@@ -1,4 +1,32 @@
+import type {
+  ConfigEntry,
+  DisableConfigEntryResult,
+  SubEntry,
+} from "../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { DiagnosticInfo } from "../../../data/diagnostics";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
+import type {
+  IntegrationLogInfo,
+  IntegrationManifest,
+} from "../../../data/integration";
+import type { HomeAssistant } from "../../../types";
+import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../components/ha-button";
+import "../../../components/ha-card";
+import "../../../components/ha-list-item";
+import "../../../components/ha-md-button-menu";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-md-menu-item";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 import "@material/mwc-list/mwc-list";
+
 import {
   mdiAlertCircle,
   mdiBookshelf,
@@ -25,35 +53,21 @@ import {
   mdiWeb,
   mdiWrench,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isDevVersion } from "../../../common/config/version";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
-import "../../../components/ha-button";
-import "../../../components/ha-card";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-list-item";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
-import "../../../components/ha-md-menu-item";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
 } from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
-import type {
-  ConfigEntry,
-  DisableConfigEntryResult,
-  SubEntry,
-} from "../../../data/config_entries";
 import {
   ERROR_STATES,
   RECOVERABLE_STATES,
@@ -67,20 +81,13 @@ import {
   updateConfigEntry,
 } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import type { DiagnosticInfo } from "../../../data/diagnostics";
 import {
   fetchDiagnosticHandler,
   getConfigEntryDiagnosticsDownloadUrl,
 } from "../../../data/diagnostics";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
-import type {
-  IntegrationLogInfo,
-  IntegrationManifest,
-} from "../../../data/integration";
 import {
   LogSeverity,
   domainToName,
@@ -90,26 +97,22 @@ import {
   setIntegrationLogLevel,
   subscribeLogInfo,
 } from "../../../data/integration";
+import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-error-screen";
-import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
-import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
-import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
-import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,

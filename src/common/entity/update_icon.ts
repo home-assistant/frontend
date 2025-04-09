@@ -1,5 +1,6 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { UpdateEntity } from "../../data/update";
+import type { HassEntity } from "home-assistant-js-websocket";
+
 import { updateIsInstalling } from "../../data/update";
 
 export const updateIcon = (stateObj: HassEntity, state?: string) => {

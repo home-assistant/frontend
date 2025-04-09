@@ -1,6 +1,7 @@
-import { fireEvent } from "../../../../src/common/dom/fire_event";
 import type { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
+
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 
 export interface HassioHardwareDialogParams {
   supervisor: Supervisor;

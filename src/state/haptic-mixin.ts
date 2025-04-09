@@ -1,9 +1,10 @@
-import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import type { HapticType } from "../data/haptics";
 import type { Constructor, HomeAssistant } from "../types";
-import { storeState } from "../util/ha-pref-storage";
 import type { HassBaseEl } from "./hass-base-mixin";
+import type { PropertyValues } from "lit";
+
+import { storeState } from "../util/ha-pref-storage";
 
 interface VibrateParams {
   vibrate: HomeAssistant["vibrate"];

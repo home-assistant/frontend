@@ -1,9 +1,12 @@
+import type { UiColorSelector } from "../../data/selector";
+import type { HomeAssistant } from "../../types";
+
+import "../ha-color-picker";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { fireEvent } from "../../common/dom/fire_event";
-import type { UiColorSelector } from "../../data/selector";
-import "../ha-color-picker";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-ui_color")
 export class HaSelectorUiColor extends LitElement {

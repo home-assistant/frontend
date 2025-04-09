@@ -1,9 +1,3 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { createConnection, getAuth } from "home-assistant-js-websocket";
-import type { TemplateResult } from "lit";
-import { html } from "lit";
-import { customElement, state } from "lit/decorators";
-import { CAST_NS } from "../../../../src/cast/const";
 import type {
   ConnectMessage,
   GetStatusMessage,
@@ -15,6 +9,21 @@ import type {
   ReceiverErrorMessage,
   ReceiverStatusMessage,
 } from "../../../../src/cast/sender_messages";
+import type {
+  LegacyLovelaceConfig,
+  LovelaceConfig,
+  LovelaceDashboardStrategyConfig,
+} from "../../../../src/data/lovelace/config/types";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { TemplateResult } from "lit";
+
+import "./hc-launch-screen";
+
+import { createConnection, getAuth } from "home-assistant-js-websocket";
+import { html } from "lit";
+import { customElement, state } from "lit/decorators";
+
+import { CAST_NS } from "../../../../src/cast/const";
 import { ReceiverErrorCode } from "../../../../src/cast/sender_messages";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
@@ -22,19 +31,13 @@ import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
 } from "../../../../src/data/lovelace";
-import type {
-  LegacyLovelaceConfig,
-  LovelaceConfig,
-  LovelaceDashboardStrategyConfig,
-} from "../../../../src/data/lovelace/config/types";
 import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
 import { fetchResources } from "../../../../src/data/lovelace/resource";
+import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
+import { checkLovelaceConfig } from "../../../../src/panels/lovelace/common/check-lovelace-config";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { HassElement } from "../../../../src/state/hass-element";
 import { castContext } from "../cast_context";
-import "./hc-launch-screen";
-import { getPanelTitleFromUrlPath } from "../../../../src/data/panel";
-import { checkLovelaceConfig } from "../../../../src/panels/lovelace/common/check-lovelace-config";
 
 const DEFAULT_CONFIG: LovelaceDashboardStrategyConfig = {
   strategy: {

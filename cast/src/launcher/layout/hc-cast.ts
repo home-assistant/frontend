@@ -1,12 +1,21 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+import type { CastManager } from "../../../../src/cast/cast_manager";
+import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import type { ActionDetail } from "@material/mwc-list/mwc-list";
-import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/ha-icon";
+import "../../../../src/components/ha-list-item";
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/layouts/hass-loading-screen";
+import "./hc-layout";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+
+import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { CastManager } from "../../../../src/cast/cast_manager";
+
 import {
   castSendShowLovelaceView,
   ensureConnectedCastSession,
@@ -18,18 +27,12 @@ import {
 } from "../../../../src/common/auth/token_storage";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
-import "../../../../src/components/ha-icon";
-import "../../../../src/components/ha-svg-icon";
 import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
 } from "../../../../src/data/lovelace";
 import { isStrategyDashboard } from "../../../../src/data/lovelace/config/types";
-import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
-import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
-import "./hc-layout";
-import "../../../../src/components/ha-list-item";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {

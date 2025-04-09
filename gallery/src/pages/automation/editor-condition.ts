@@ -1,26 +1,29 @@
+import type { ConditionWithShorthand } from "../../../../src/data/automation";
+import type { HomeAssistant } from "../../../../src/types";
 import type { TemplateResult } from "lit";
+
+import "../../../../src/panels/config/automation/condition/ha-automation-condition";
+import "../../components/demo-black-white-row";
+
 import { LitElement, html, css } from "lit";
 import { customElement, state } from "lit/decorators";
-import { provideHass } from "../../../../src/fake_data/provide_hass";
-import type { HomeAssistant } from "../../../../src/types";
-import "../../components/demo-black-white-row";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
-import type { ConditionWithShorthand } from "../../../../src/data/automation";
-import "../../../../src/panels/config/automation/condition/ha-automation-condition";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { HaAndCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-and";
 import { HaDeviceCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-device";
+import { HaNotCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-not";
 import HaNumericStateCondition from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-numeric_state";
+import { HaOrCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-or";
 import { HaStateCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-state";
 import { HaSunCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-sun";
 import { HaTemplateCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-template";
 import { HaTimeCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-time";
 import { HaTriggerCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-trigger";
 import { HaZoneCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-zone";
-import { HaAndCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-and";
-import { HaOrCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-or";
-import { HaNotCondition } from "../../../../src/panels/config/automation/condition/types/ha-automation-condition-not";
 
 const SCHEMAS: { name: string; conditions: ConditionWithShorthand[] }[] = [
   {

@@ -1,28 +1,31 @@
-import { mdiClose } from "@mdi/js";
+import type { HomeAssistant } from "../../../../../types";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+
+import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import {
-  commissionMatterDevice,
-  redirectOnNewMatterDevice,
-} from "../../../../../data/matter";
-import { haStyleDialog } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import "./matter-add-device/matter-add-device-apple-home";
+import "./matter-add-device/matter-add-device-commissioning";
 import "./matter-add-device/matter-add-device-existing";
 import "./matter-add-device/matter-add-device-generic";
 import "./matter-add-device/matter-add-device-google-home";
 import "./matter-add-device/matter-add-device-google-home-fallback";
 import "./matter-add-device/matter-add-device-main";
 import "./matter-add-device/matter-add-device-new";
-import "./matter-add-device/matter-add-device-commissioning";
+
+import { mdiClose } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import {
+  commissionMatterDevice,
+  redirectOnNewMatterDevice,
+} from "../../../../../data/matter";
+import { haStyleDialog } from "../../../../../resources/styles";
 import { showToast } from "../../../../../util/toast";
 
 export type MatterAddDeviceStep =

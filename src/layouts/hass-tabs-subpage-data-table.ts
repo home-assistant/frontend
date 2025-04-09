@@ -1,5 +1,27 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { LocalizeFunc } from "../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  DataTableRowData,
+  HaDataTable,
+  SortingDirection,
+} from "../components/data-table/ha-data-table";
+import type { HomeAssistant, Route } from "../types";
+import type { PageNavigation } from "./hass-tabs-subpage";
+import type { TemplateResult } from "lit";
+
+import "../components/chips/ha-assist-chip";
+import "../components/chips/ha-filter-chip";
+import "../components/data-table/ha-data-table";
+import "../components/ha-dialog";
+import "../components/ha-dialog-header";
+import "../components/ha-md-button-menu";
+import "../components/ha-md-divider";
+import "../components/ha-md-menu-item";
+import "../components/search-input-outlined";
+import "./hass-tabs-subpage";
 import "@material/mwc-button/mwc-button";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -12,30 +34,11 @@ import {
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
-import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/chips/ha-assist-chip";
-import "../components/chips/ha-filter-chip";
-import "../components/data-table/ha-data-table";
-import type {
-  DataTableColumnContainer,
-  DataTableRowData,
-  HaDataTable,
-  SortingDirection,
-} from "../components/data-table/ha-data-table";
-import "../components/ha-md-button-menu";
-import "../components/ha-dialog";
-import "../components/ha-dialog-header";
-import "../components/ha-md-divider";
-import "../components/ha-md-menu-item";
-import "../components/search-input-outlined";
-import type { HomeAssistant, Route } from "../types";
-import "./hass-tabs-subpage";
-import type { PageNavigation } from "./hass-tabs-subpage";
 import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 

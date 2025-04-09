@@ -4,6 +4,7 @@ import type {
   EntityRegistryEntry,
 } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
+
 import { computeStateName } from "./compute_state_name";
 
 export const computeDeviceName = (

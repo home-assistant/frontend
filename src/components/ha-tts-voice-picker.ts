@@ -1,15 +1,18 @@
+import type { TTSVoice } from "../data/tts";
+import type { HomeAssistant } from "../types";
+import type { HaSelect } from "./ha-select";
 import type { PropertyValues } from "lit";
+
+import "./ha-list-item";
+import "./ha-select";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
-import type { TTSVoice } from "../data/tts";
 import { listTTSVoices } from "../data/tts";
-import type { HomeAssistant } from "../types";
-import "./ha-list-item";
-import "./ha-select";
-import type { HaSelect } from "./ha-select";
 
 const NONE = "__NONE_OPTION__";
 

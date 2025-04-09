@@ -1,8 +1,17 @@
-import "@material/mwc-button";
-import { mdiEyedropper } from "@mdi/js";
+import type { LightColor, LightEntity } from "../../../../data/light";
+import type { HomeAssistant } from "../../../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../components/ha-hs-color-picker";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-button-prev";
+import "../../../../components/ha-labeled-slider";
+import "@material/mwc-button";
+
+import { mdiEyedropper } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+
 import {
   hex2rgb,
   hs2rgb,
@@ -13,17 +22,11 @@ import {
 } from "../../../../common/color/convert-color";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { throttle } from "../../../../common/util/throttle";
-import "../../../../components/ha-hs-color-picker";
-import "../../../../components/ha-icon";
-import "../../../../components/ha-icon-button-prev";
-import "../../../../components/ha-labeled-slider";
-import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   getLightCurrentModeRgbColor,
   LightColorMode,
   lightSupportsColorMode,
 } from "../../../../data/light";
-import type { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {

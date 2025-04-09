@@ -1,16 +1,19 @@
+import type { HaTextArea } from "../../components/ha-textarea";
+import type { HomeAssistant } from "../../types";
+import type { TTSTryDialogParams } from "./show-dialog-tts-try";
+
+import "../../components/buttons/ha-progress-button";
+import "../../components/ha-textarea";
+
 import { mdiPlayCircleOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
-import "../../components/ha-textarea";
-import type { HaTextArea } from "../../components/ha-textarea";
 import { convertTextToSpeech } from "../../data/tts";
-import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
-import type { TTSTryDialogParams } from "./show-dialog-tts-try";
-import "../../components/buttons/ha-progress-button";
 
 @customElement("dialog-tts-try")
 export class TTSTryDialog extends LitElement {

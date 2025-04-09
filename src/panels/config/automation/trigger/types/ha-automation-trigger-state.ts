@@ -1,6 +1,15 @@
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type { StateTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import type { TriggerElement } from "../ha-automation-trigger-row";
 import type { PropertyValues } from "lit";
+
+import "../../../../../components/ha-form/ha-form";
+
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
@@ -13,18 +22,12 @@ import {
   string,
   union,
 } from "superstruct";
-import memoizeOne from "memoize-one";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
+
 import { ensureArray } from "../../../../../common/array/ensure-array";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import type { StateTrigger } from "../../../../../data/automation";
-import type { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct, forDictStruct } from "../../structs";
-import type { TriggerElement } from "../ha-automation-trigger-row";
-import "../../../../../components/ha-form/ha-form";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,

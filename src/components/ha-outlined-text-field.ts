@@ -1,8 +1,9 @@
+import "./ha-outlined-field";
+
 import { MdOutlinedTextField } from "@material/web/textfield/outlined-text-field";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { literal } from "lit/static-html";
-import "./ha-outlined-field";
 
 @customElement("ha-outlined-text-field")
 export class HaOutlinedTextField extends MdOutlinedTextField {

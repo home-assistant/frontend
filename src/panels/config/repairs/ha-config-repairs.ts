@@ -1,25 +1,28 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
-import { relativeTime } from "../../../common/datetime/relative_time";
-import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
+import type { StatisticsValidationResult } from "../../../data/recorder";
+import type { HomeAssistant } from "../../../types";
+
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { relativeTime } from "../../../common/datetime/relative_time";
+import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import { domainToName } from "../../../data/integration";
+import {
+  STATISTIC_TYPES,
+  updateStatisticsIssues,
+} from "../../../data/recorder";
 import {
   fetchRepairsIssueData,
   type RepairsIssue,
 } from "../../../data/repairs";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { fixStatisticsIssue } from "../../developer-tools/statistics/fix-statistics";
 import { showRepairsFlowDialog } from "./show-dialog-repair-flow";
 import { showRepairsIssueDialog } from "./show-repair-issue-dialog";
-import type { StatisticsValidationResult } from "../../../data/recorder";
-import {
-  STATISTIC_TYPES,
-  updateStatisticsIssues,
-} from "../../../data/recorder";
 
 @customElement("ha-config-repairs")
 class HaConfigRepairs extends LitElement {

@@ -1,4 +1,5 @@
 import memoizeOne from "memoize-one";
+
 import { theme2hex } from "./convert-color";
 
 export const COLORS = [

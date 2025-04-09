@@ -1,5 +1,8 @@
-import { html } from "lit";
 import type { ConfigEntry } from "../../data/config_entries";
+import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
+
+import { html } from "lit";
+
 import { domainToName } from "../../data/integration";
 import {
   createOptionsFlow,
@@ -7,7 +10,6 @@ import {
   fetchOptionsFlow,
   handleOptionsFlowStep,
 } from "../../data/options_flow";
-import type { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import {
   loadDataEntryFlowDialog,
   showFlowDialog,

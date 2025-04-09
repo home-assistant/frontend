@@ -1,15 +1,18 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-service-picker";
-import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import type { EventAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+import type { PropertyValues } from "lit";
+
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-service-picker";
+import "../../../../../components/ha-textfield";
+import "../../../../../components/ha-yaml-editor";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-event")

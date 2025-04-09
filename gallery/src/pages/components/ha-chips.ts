@@ -1,12 +1,15 @@
 import type { TemplateResult } from "lit";
+
+import "../../../../src/components/chips/ha-assist-chip";
+import "../../../../src/components/chips/ha-chip-set";
+import "../../../../src/components/chips/ha-filter-chip";
+import "../../../../src/components/chips/ha-input-chip";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-svg-icon";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/chips/ha-chip-set";
-import "../../../../src/components/chips/ha-assist-chip";
-import "../../../../src/components/chips/ha-input-chip";
-import "../../../../src/components/chips/ha-filter-chip";
-import "../../../../src/components/ha-svg-icon";
+
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 
 const chips: {

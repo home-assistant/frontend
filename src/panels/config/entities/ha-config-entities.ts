@@ -1,3 +1,50 @@
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  DataTableColumnContainer,
+  RowClickedEvent,
+  SelectionChangedEvent,
+  SortingChangedEvent,
+} from "../../../components/data-table/ha-data-table";
+import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
+import type {
+  DataTableFiltersItems,
+  DataTableFiltersValues,
+} from "../../../data/data_table_filters";
+import type {
+  EntityRegistryEntry,
+  UpdateEntityRegistryEntryResult,
+} from "../../../data/entity_registry";
+import type { EntitySources } from "../../../data/entity_sources";
+import type { IntegrationManifest } from "../../../data/integration";
+import type { LabelRegistryEntry } from "../../../data/label_registry";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import type { HomeAssistant, Route } from "../../../types";
+import type { Helper } from "../helpers/const";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/data-table/ha-data-table-labels";
+import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-check-list-item";
+import "../../../components/ha-filter-devices";
+import "../../../components/ha-filter-domains";
+import "../../../components/ha-filter-floor-areas";
+import "../../../components/ha-filter-integrations";
+import "../../../components/ha-filter-labels";
+import "../../../components/ha-filter-states";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu-item";
+import "../../../components/ha-sub-menu";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import "../integrations/ha-integration-overflow-menu";
+
 import { consume } from "@lit-labs/context";
 import {
   mdiAlertCircle,
@@ -14,82 +61,42 @@ import {
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
-import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
+
 import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   isDeletableEntity,
   deleteEntity,
 } from "../../../common/entity/delete_entity";
-import type { Helper } from "../helpers/const";
-import { isHelperDomain } from "../helpers/const";
-import { HELPERS_CRUD } from "../../../data/helpers_crud";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   hasRejectedItems,
   rejectedItems,
 } from "../../../common/util/promise-all-settled-results";
-import type {
-  DataTableColumnContainer,
-  RowClickedEvent,
-  SelectionChangedEvent,
-  SortingChangedEvent,
-} from "../../../components/data-table/ha-data-table";
-import "../../../components/data-table/ha-data-table-labels";
-import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-check-list-item";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-filter-devices";
-import "../../../components/ha-filter-domains";
-import "../../../components/ha-filter-floor-areas";
-import "../../../components/ha-filter-integrations";
-import "../../../components/ha-filter-labels";
-import "../../../components/ha-filter-states";
-import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-menu-item";
-import "../../../components/ha-sub-menu";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-tooltip";
-import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
 import { fullEntitiesContext } from "../../../data/context";
-import type {
-  DataTableFiltersItems,
-  DataTableFiltersValues,
-} from "../../../data/data_table_filters";
 import { UNAVAILABLE } from "../../../data/entity";
-import type {
-  EntityRegistryEntry,
-  UpdateEntityRegistryEntryResult,
-} from "../../../data/entity_registry";
 import {
   computeEntityRegistryName,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { IntegrationManifest } from "../../../data/integration";
+import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import {
   fetchIntegrationManifests,
   domainToName,
 } from "../../../data/integration";
-import type { EntitySources } from "../../../data/entity_sources";
-import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
@@ -99,14 +106,10 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import "../integrations/ha-integration-overflow-menu";
+import { isHelperDomain } from "../helpers/const";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
 

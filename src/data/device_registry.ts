@@ -1,5 +1,3 @@
-import { computeStateName } from "../common/entity/compute_state_name";
-import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import type { ConfigEntry } from "./config_entries";
 import type {
@@ -8,6 +6,9 @@ import type {
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
 import type { RegistryEntry } from "./registry";
+
+import { computeStateName } from "../common/entity/compute_state_name";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 
 export {
   fetchDeviceRegistry,

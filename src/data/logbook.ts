@@ -1,4 +1,8 @@
+import type { LocalizeFunc } from "../common/translations/localize";
+import type { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
+import type { HomeAssistant } from "../types";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+
 import {
   BINARY_STATE_OFF,
   BINARY_STATE_ON,
@@ -7,9 +11,6 @@ import {
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { autoCaseNoun } from "../common/translations/auto_case_noun";
-import type { LocalizeFunc } from "../common/translations/localize";
-import type { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
-import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";

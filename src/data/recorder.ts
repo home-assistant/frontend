@@ -1,7 +1,8 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { computeStateName } from "../common/entity/compute_state_name";
 import type { HaDurationData } from "../components/ha-duration-input";
 import type { HomeAssistant } from "../types";
+import type { Connection } from "home-assistant-js-websocket";
+
+import { computeStateName } from "../common/entity/compute_state_name";
 
 export interface RecorderInfo {
   backlog: number | null;

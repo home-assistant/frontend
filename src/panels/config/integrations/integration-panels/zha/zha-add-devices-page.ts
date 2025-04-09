@@ -1,17 +1,20 @@
-import "@material/mwc-button";
+import type { ZHADevice } from "../../../../../data/zha";
+import type { HomeAssistant, Route } from "../../../../../types";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-textarea";
+import "../../../../../layouts/hass-tabs-subpage";
+import "./zha-device-pairing-status-card";
+import "@material/mwc-button";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../../components/ha-spinner";
-import type { ZHADevice } from "../../../../../data/zha";
+
 import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
-import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
 import { zhaTabs } from "./zha-config-dashboard";
-import "./zha-device-pairing-status-card";
-import "../../../../../components/ha-textarea";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {

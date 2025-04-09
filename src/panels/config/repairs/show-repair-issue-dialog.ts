@@ -1,5 +1,6 @@
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { RepairsIssue } from "../../../data/repairs";
+
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export interface RepairsIssueDialogParams {
   issue: RepairsIssue;

@@ -1,5 +1,15 @@
-import "@material/mwc-button";
+import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
+import type { ThreadDataSet, ThreadRouter } from "../../../../../data/thread";
+import type { HomeAssistant } from "../../../../../types";
 import type { ActionDetail } from "@material/mwc-list";
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../../../../components/ha-button-menu";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
+import "../../../../../layouts/hass-subpage";
+import "@material/mwc-button";
+
 import {
   mdiDeleteOutline,
   mdiDevices,
@@ -7,26 +17,21 @@ import {
   mdiInformationOutline,
   mdiCellphoneKey,
 } from "@mdi/js";
-import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
 import { extractSearchParam } from "../../../../../common/url/search-params";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-list-item";
-import "../../../../../components/ha-card";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
-import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
 import {
   OTBRCreateNetwork,
   OTBRSetChannel,
   OTBRSetNetwork,
   getOTBRInfo,
 } from "../../../../../data/otbr";
-import type { ThreadDataSet, ThreadRouter } from "../../../../../data/thread";
 import {
   addThreadDataSet,
   getThreadDataSetTLV,
@@ -42,13 +47,11 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
-import "../../../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
-import { fileDownload } from "../../../../../util/file_download";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
 
 export interface ThreadNetwork {

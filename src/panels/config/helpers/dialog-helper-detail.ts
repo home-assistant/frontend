@@ -1,17 +1,26 @@
-import { mdiAlertOutline } from "@mdi/js";
-import "@material/mwc-button/mwc-button";
+import type { HomeAssistant } from "../../../types";
+import type { Helper, HelperDomain } from "./const";
+import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
+import "@material/mwc-button/mwc-button";
+
+import { mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import "../../../components/ha-spinner";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { stringCompare } from "../../../common/string/compare";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-list-item";
-import "../../../components/ha-tooltip";
-import "../../../components/ha-svg-icon";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -28,14 +37,8 @@ import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
-import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stringCompare } from "../../../common/string/compare";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 type HelperCreators = Record<
   HelperDomain,

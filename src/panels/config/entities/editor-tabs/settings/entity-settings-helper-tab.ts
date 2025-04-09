@@ -1,16 +1,9 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
-import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { ExtEntityRegistryEntry } from "../../../../../data/entity_registry";
-import { removeEntityRegistryEntry } from "../../../../../data/entity_registry";
-import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
+import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
 import "../../../helpers/forms/ha-counter-form";
 import "../../../helpers/forms/ha-input_boolean-form";
 import "../../../helpers/forms/ha-input_button-form";
@@ -22,7 +15,17 @@ import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
-import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { removeEntityRegistryEntry } from "../../../../../data/entity_registry";
+import { HELPERS_CRUD } from "../../../../../data/helpers_crud";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../../resources/styles";
 
 @customElement("entity-settings-helper-tab")
 export class EntitySettingsHelperTab extends LitElement {

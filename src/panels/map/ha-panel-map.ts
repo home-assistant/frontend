@@ -1,15 +1,18 @@
-import { mdiPencil } from "@mdi/js";
+import type { HomeAssistant } from "../../types";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { navigate } from "../../common/navigate";
+
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import "../../components/ha-top-app-bar-fixed";
 import "../../components/map/ha-map";
+
+import { mdiPencil } from "@mdi/js";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { navigate } from "../../common/navigate";
 import { haStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-panel-map")
 class HaPanelMap extends LitElement {

@@ -1,3 +1,37 @@
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import type { AutomationClipboard } from "../../../../data/automation";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { FloorRegistryEntry } from "../../../../data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../data/label_registry";
+import type { Action, NonConditionAction } from "../../../../data/script";
+import type { HomeAssistant } from "../../../../types";
+import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../../components/ha-alert";
+import "../../../../components/ha-card";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-md-button-menu";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
+import "../../../../components/ha-service-icon";
+import "../../../../components/ha-tooltip";
+import "./types/ha-automation-action-choose";
+import "./types/ha-automation-action-condition";
+import "./types/ha-automation-action-delay";
+import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-if";
+import "./types/ha-automation-action-parallel";
+import "./types/ha-automation-action-play_media";
+import "./types/ha-automation-action-repeat";
+import "./types/ha-automation-action-sequence";
+import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-set_conversation_response";
+import "./types/ha-automation-action-stop";
+import "./types/ha-automation-action-wait_for_trigger";
+import "./types/ha-automation-action-wait_template";
+
 import { consume } from "@lit-labs/context";
 import {
   mdiAlertCircleCheck,
@@ -15,38 +49,23 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
-import "../../../../components/ha-alert";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-menu-item";
-import "../../../../components/ha-md-divider";
-import "../../../../components/ha-card";
-import "../../../../components/ha-expansion-panel";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-service-icon";
-import "../../../../components/ha-tooltip";
-import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
-import type { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
   fullEntitiesContext,
   labelsContext,
 } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import type { FloorRegistryEntry } from "../../../../data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../data/label_registry";
-import type { Action, NonConditionAction } from "../../../../data/script";
 import {
   getActionType,
   migrateAutomationAction,
@@ -59,23 +78,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import "./types/ha-automation-action-choose";
-import "./types/ha-automation-action-condition";
-import "./types/ha-automation-action-delay";
-import "./types/ha-automation-action-device_id";
-import "./types/ha-automation-action-event";
-import "./types/ha-automation-action-if";
-import "./types/ha-automation-action-parallel";
-import "./types/ha-automation-action-play_media";
-import "./types/ha-automation-action-repeat";
-import "./types/ha-automation-action-sequence";
-import "./types/ha-automation-action-service";
-import "./types/ha-automation-action-set_conversation_response";
-import "./types/ha-automation-action-stop";
-import "./types/ha-automation-action-wait_for_trigger";
-import "./types/ha-automation-action-wait_template";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {

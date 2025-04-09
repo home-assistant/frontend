@@ -1,3 +1,7 @@
+import type { PropertyValues, TemplateResult } from "lit";
+
+import "./ha-svg-icon";
+
 import {
   DIRECTION_HORIZONTAL,
   DIRECTION_VERTICAL,
@@ -6,11 +10,10 @@ import {
   Swipe,
   Tap,
 } from "@egjs/hammerjs";
-import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+
 import { fireEvent } from "../common/dom/fire_event";
-import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
 export class HaControlSwitch extends LitElement {

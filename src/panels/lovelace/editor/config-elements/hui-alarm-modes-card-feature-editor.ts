@@ -1,21 +1,24 @@
-import type { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
-import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { supportedAlarmModes } from "../../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../../types";
 import type {
   AlarmModesCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+import type { HassEntity } from "home-assistant-js-websocket";
+
+import "../../../../components/ha-form/ha-form";
+
+import { html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportedAlarmModes } from "../../../../data/alarm_control_panel";
 
 type AlarmModesCardFeatureData = AlarmModesCardFeatureConfig & {
   customize_modes: boolean;

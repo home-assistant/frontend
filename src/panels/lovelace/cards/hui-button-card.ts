@@ -1,14 +1,31 @@
-import { consume } from "@lit-labs/context";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
+import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type { Themes } from "../../../data/ws-themes";
+import type { HomeAssistant } from "../../../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
+import type { ButtonCardConfig } from "./types";
 import type {
   HassConfig,
   HassEntities,
   HassEntity,
 } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
+
+import "../../../components/ha-card";
+import "../../../components/ha-ripple";
+
+import { consume } from "@lit-labs/context";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -22,9 +39,6 @@ import {
 } from "../../../common/entity/state_color";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/ha-card";
-import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import {
   configContext,
@@ -34,21 +48,10 @@ import {
   statesContext,
   themesContext,
 } from "../../../data/context";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
-import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { FrontendLocaleData } from "../../../data/translation";
-import type { Themes } from "../../../data/ws-themes";
-import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type {
-  LovelaceCard,
-  LovelaceCardEditor,
-  LovelaceGridOptions,
-} from "../types";
-import type { ButtonCardConfig } from "./types";
 
 export const getEntityDefaultButtonAction = (entityId?: string) =>
   entityId && DOMAINS_TOGGLE.has(computeDomain(entityId))

@@ -1,4 +1,16 @@
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { FloorRegistryEntry } from "../../../data/floor_registry";
+import type { HomeAssistant, Route } from "../../../types";
 import type { ActionDetail } from "@material/mwc-list";
+
+import "../../../components/ha-fab";
+import "../../../components/ha-floor-icon";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-sortable";
+import "../../../components/ha-svg-icon";
+import "../../../layouts/hass-tabs-subpage";
+import "../ha-config-section";
+
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -17,18 +29,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+
 import { formatListWithAnds } from "../../../common/string/format-list";
-import "../../../components/ha-fab";
-import "../../../components/ha-floor-icon";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-sortable";
-import "../../../components/ha-svg-icon";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
   createAreaRegistryEntry,
   updateAreaRegistryEntry,
 } from "../../../data/area_registry";
-import type { FloorRegistryEntry } from "../../../data/floor_registry";
 import {
   createFloorRegistryEntry,
   deleteFloorRegistryEntry,
@@ -39,9 +45,6 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-tabs-subpage";
-import type { HomeAssistant, Route } from "../../../types";
-import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import {
   loadAreaRegistryDetailDialog,

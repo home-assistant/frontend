@@ -1,33 +1,36 @@
-import "@material/mwc-list/mwc-list-item";
-import type { TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { UNIT_C } from "../../../common/const";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { navigate } from "../../../common/navigate";
-import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
+import type { HaRadio } from "../../../components/ha-radio";
+import type { HaTextField } from "../../../components/ha-textfield";
+import type { ConfigUpdateValues } from "../../../data/core";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import type { TemplateResult } from "lit";
+
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-country-picker";
 import "../../../components/ha-currency-picker";
 import "../../../components/ha-formfield";
 import "../../../components/ha-language-picker";
 import "../../../components/ha-radio";
-import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-select";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
 import "../../../components/ha-timezone-picker";
-import type { ConfigUpdateValues } from "../../../data/core";
+import "../../../layouts/hass-subpage";
+import "@material/mwc-list/mwc-list-item";
+
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { UNIT_C } from "../../../common/const";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { navigate } from "../../../common/navigate";
 import { saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {

@@ -1,6 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
-import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 
 @customElement("ha-divider")
 export class HaMdDivider extends LitElement {

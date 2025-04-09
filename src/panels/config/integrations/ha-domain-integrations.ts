@@ -1,6 +1,13 @@
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { Brand, Integration } from "../../../data/integrations";
+import type { HomeAssistant } from "../../../types";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
+
+import "./ha-integration-list-item";
+
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
@@ -11,17 +18,13 @@ import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-req
 import { navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { localizeConfigFlowTitle } from "../../../data/config_flow";
-import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   domainToName,
   fetchIntegrationManifest,
 } from "../../../data/integration";
-import type { Brand, Integration } from "../../../data/integrations";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import "./ha-integration-list-item";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 
 const standardToDomain = { zigbee: "zha", zwave: "zwave_js" } as const;

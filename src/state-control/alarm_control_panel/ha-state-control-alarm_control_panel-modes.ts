@@ -1,23 +1,26 @@
-import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
-import memoizeOne from "memoize-one";
-import { stateColorCss } from "../../common/entity/state_color";
-import { supportsFeature } from "../../common/entity/supports-feature";
-import "../../components/ha-control-select";
 import type { ControlSelectOption } from "../../components/ha-control-select";
-import "../../components/ha-control-slider";
 import type {
   AlarmControlPanelEntity,
   AlarmMode,
 } from "../../data/alarm_control_panel";
+import type { HomeAssistant } from "../../types";
+import type { PropertyValues } from "lit";
+
+import "../../components/ha-control-select";
+import "../../components/ha-control-slider";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
+
+import { stateColorCss } from "../../common/entity/state_color";
+import { supportsFeature } from "../../common/entity/supports-feature";
 import {
   ALARM_MODES,
   setProtectedAlarmControlPanelMode,
 } from "../../data/alarm_control_panel";
 import { UNAVAILABLE } from "../../data/entity";
-import type { HomeAssistant } from "../../types";
 
 @customElement("ha-state-control-alarm_control_panel-modes")
 export class HaStateControlAlarmControlPanelModes extends LitElement {

@@ -1,15 +1,18 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import type { HaDurationData } from "../../../../../components/ha-duration-input";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { CalendarTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
-import type { HaDurationData } from "../../../../../components/ha-duration-input";
+
 import "../../../../../components/ha-form/ha-form";
+
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("ha-automation-trigger-calendar")
 export class HaCalendarTrigger extends LitElement implements TriggerElement {

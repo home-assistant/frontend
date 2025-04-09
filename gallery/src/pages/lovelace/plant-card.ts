@@ -1,10 +1,13 @@
 import type { PropertyValues, TemplateResult } from "lit";
+
+import "../../components/demo-cards";
+
 import { html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators";
-import { provideHass } from "../../../../src/fake_data/provide_hass";
-import "../../components/demo-cards";
-import { createPlantEntities } from "../../data/plants";
+
 import { mockIcons } from "../../../../demo/src/stubs/icons";
+import { provideHass } from "../../../../src/fake_data/provide_hass";
+import { createPlantEntities } from "../../data/plants";
 
 const CONFIGS = [
   {

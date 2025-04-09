@@ -1,21 +1,24 @@
-import "@material/mwc-button/mwc-button";
-import { mdiBatteryHigh } from "@mdi/js";
+import type { BatterySourceTypeEnergyPreference } from "../../../../data/energy";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
+
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
-import type { BatterySourceTypeEnergyPreference } from "../../../../data/energy";
+import "@material/mwc-button/mwc-button";
+
+import { mdiBatteryHigh } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+
+import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   emptyBatteryEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
 

@@ -1,12 +1,15 @@
-import { mdiPower, mdiPowerOff } from "@mdi/js";
+import type { HomeAssistant } from "../../../types";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { LitElement, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+
 import "../../../components/ha-attributes";
 import "../../../state-control/ha-state-control-toggle";
-import type { HomeAssistant } from "../../../types";
 import "../components/ha-more-info-state-header";
+
+import { mdiPower, mdiPowerOff } from "@mdi/js";
+import { LitElement, html, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
 @customElement("more-info-switch")

@@ -1,5 +1,6 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { ReactiveControllerHost } from "lit";
+
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { css } from "lit";
 
 export const stateControlCircularSliderStyle = css`

@@ -1,4 +1,5 @@
 import type { LatLngExpression, Layer, Map, MarkerOptions } from "leaflet";
+
 import { Marker } from "leaflet";
 
 export class DecoratedMarker extends Marker {

@@ -1,43 +1,46 @@
-import { endOfToday, startOfToday } from "date-fns";
-import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
-import type { BarSeriesOption } from "echarts/charts";
-import { getGraphColorByIndex } from "../../../../common/color/colors";
-import { getEnergyColor } from "./common/color";
-import "../../../../components/ha-card";
-import "../../../../components/chart/ha-chart-base";
 import type {
   DeviceConsumptionEnergyPreference,
   EnergyData,
 } from "../../../../data/energy";
+import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
+import type { FrontendLocaleData } from "../../../../data/translation";
+import type { ECOption } from "../../../../resources/echarts";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import type { EnergyDevicesDetailGraphCardConfig } from "../types";
+import type { BarSeriesOption } from "echarts/charts";
+import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
+
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
+
+import { endOfToday, startOfToday } from "date-fns";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+
+import { getGraphColorByIndex } from "../../../../common/color/colors";
+import { storage } from "../../../../common/decorators/storage";
+import { formatNumber } from "../../../../common/number/format_number";
 import {
   getEnergyDataCollection,
   getSummedData,
   computeConsumptionData,
 } from "../../../../data/energy";
-import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
 } from "../../../../data/recorder";
-import type { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import type { LovelaceCard } from "../../types";
-import type { EnergyDevicesDetailGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
+import { getEnergyColor } from "./common/color";
 import {
   fillDataGapsAndRoundCaps,
   getCommonOptions,
   getCompareTransform,
 } from "./common/energy-chart-options";
-import { storage } from "../../../../common/decorators/storage";
-import type { ECOption } from "../../../../resources/echarts";
-import { formatNumber } from "../../../../common/number/format_number";
 
 const UNIT = "kWh";
 

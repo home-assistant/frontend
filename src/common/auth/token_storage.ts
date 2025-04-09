@@ -1,4 +1,5 @@
 import type { AuthData } from "home-assistant-js-websocket";
+
 import { extractSearchParam } from "../url/search-params";
 
 declare global {

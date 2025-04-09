@@ -1,10 +1,11 @@
-import { handleFetchPromise } from "../util/hass-call-api";
 import type { BackupContentExtended } from "./backup";
 import type {
   BackupManagerState,
   RestoreBackupStage,
   RestoreBackupState,
 } from "./backup_manager";
+
+import { handleFetchPromise } from "../util/hass-call-api";
 
 export interface BackupOnboardingInfo {
   state: BackupManagerState;

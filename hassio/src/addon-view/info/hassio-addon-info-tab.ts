@@ -1,13 +1,16 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import "../../../../src/components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
-import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant, Route } from "../../../../src/types";
-import { hassioStyle } from "../../resources/hassio-style";
+import type { CSSResultGroup, TemplateResult } from "lit";
+
+import "../../../../src/components/ha-spinner";
 import "./hassio-addon-info";
+
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+
+import { haStyle } from "../../../../src/resources/styles";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {

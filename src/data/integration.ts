@@ -1,7 +1,9 @@
-import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
+import type { Connection } from "home-assistant-js-websocket";
+
+import { createCollection } from "home-assistant-js-websocket";
+
 import { debounce } from "../common/util/debounce";
 
 export const integrationsWithPanel = {

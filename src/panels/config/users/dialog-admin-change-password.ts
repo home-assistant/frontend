@@ -1,18 +1,20 @@
-import "@material/mwc-button";
+import type { SchemaUnion } from "../../../components/ha-form/types";
+import type { HomeAssistant } from "../../../types";
+import type { AdminChangePasswordDialogParams } from "./show-dialog-admin-change-password";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-form/ha-form";
+import "../../../components/ha-textfield";
+import "@material/mwc-button";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../components/ha-form/types";
-import "../../../components/ha-textfield";
 import { adminChangePassword } from "../../../data/auth";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
-import type { AdminChangePasswordDialogParams } from "./show-dialog-admin-change-password";
 
 const SCHEMA = [
   {

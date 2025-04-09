@@ -1,15 +1,18 @@
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { domainToName } from "../data/integration";
 import type { HomeAssistant } from "../types";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+
 import "./ha-combo-box";
 import "./ha-list-item";
 import "./ha-service-icon";
+
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+
+import { fireEvent } from "../common/dom/fire_event";
 import { getServiceIcons } from "../data/icons";
+import { domainToName } from "../data/integration";
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {

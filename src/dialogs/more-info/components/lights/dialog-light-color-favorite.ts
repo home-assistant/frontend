@@ -1,29 +1,32 @@
-import { mdiClose } from "@mdi/js";
+import type { HaMdDialog } from "../../../../components/ha-md-dialog";
+import type { EntityRegistryEntry } from "../../../../data/entity_registry";
+import type { LightColor, LightEntity } from "../../../../data/light";
+import type { HomeAssistant } from "../../../../types";
+import type { LightColorFavoriteDialogParams } from "./show-dialog-light-color-favorite";
 import type { CSSResultGroup } from "lit";
+
+import "../../../../components/ha-button";
+import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-icon-button-toggle";
+import "./light-color-rgb-picker";
+import "./light-color-temp-picker";
+
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
 import {
   getMobileOpenFromBottomAnimation,
   getMobileCloseToBottomAnimation,
 } from "../../../../components/ha-md-dialog";
-import type { HaMdDialog } from "../../../../components/ha-md-dialog";
-import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-icon-button-toggle";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
-import type { LightColor, LightEntity } from "../../../../data/light";
 import {
   LightColorMode,
   lightSupportsColor,
   lightSupportsColorMode,
 } from "../../../../data/light";
 import { haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import "./light-color-rgb-picker";
-import "./light-color-temp-picker";
-import type { LightColorFavoriteDialogParams } from "./show-dialog-light-color-favorite";
 
 export type LightPickerMode = "color_temp" | "color";
 

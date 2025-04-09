@@ -1,25 +1,28 @@
+import type { SchemaUnion } from "../../../components/ha-form/types";
+import type { Field } from "../../../data/script";
+import type { HomeAssistant } from "../../../types";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { mdiDelete, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
+
+import "../../../components/ha-alert";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-expansion-panel";
+import "../../../components/ha-form/ha-form";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
+import "../../../components/ha-yaml-editor";
+
+import { mdiDelete, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+
 import { fireEvent } from "../../../common/dom/fire_event";
 import { slugify } from "../../../common/string/slugify";
-import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
-import "../../../components/ha-form/ha-form";
-import "../../../components/ha-expansion-panel";
-import "../../../components/ha-list-item";
-import type { SchemaUnion } from "../../../components/ha-form/types";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-yaml-editor";
-import type { Field } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 
 const preventDefault = (ev) => ev.preventDefault();
 
