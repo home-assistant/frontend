@@ -49,7 +49,7 @@ export class HaSlTabGroup extends TabGroup {
   protected override handleClick(event: MouseEvent) {
     if (
       this._mouseReleasedAt &&
-      new Date().getTime() - this._mouseReleasedAt < 500
+      new Date().getTime() - this._mouseReleasedAt < 100
     ) {
       return;
     }

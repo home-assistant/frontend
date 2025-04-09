@@ -1056,7 +1056,19 @@ class HUIRoot extends LitElement {
         }
         sl-tab-group::part(scroll-button) {
           background-color: var(--app-header-background-color);
+          background: linear-gradient(
+            90deg,
+            var(--app-header-background-color),
+            transparent
+          );
           z-index: 1;
+        }
+        sl-tab-group::part(scroll-button--end) {
+          background: linear-gradient(
+            270deg,
+            var(--app-header-background-color),
+            transparent
+          );
         }
         .edit-mode sl-tab-group::part(scroll-button) {
           background-color: var(--app-header-edit-background-color, #455a64);
