@@ -19,10 +19,7 @@ import type { HomeAssistant } from "../../../../../types";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { MatterNodeBindingDialogParams } from "./show-dialog-matter-node-binding";
-import {
-  getDeviceIdByNodeId,
-  getNodeIdByDeviceId,
-} from "./matter-device-binding-card";
+import type { MatterDeviceMapper } from "./matter-binding-node-device-mapper";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -40,6 +37,8 @@ class DialogMatterNodeBinding extends LitElement {
 
   @state() private _bindableDevices: DeviceRegistryEntry[] = [];
 
+  @state() private deviceMapper?: MatterDeviceMapper;
+
   @state() private targetNodeId = -1;
 
   public async showDialog(
@@ -47,6 +46,7 @@ class DialogMatterNodeBinding extends LitElement {
   ): Promise<void> {
     this.device_id = params.device_id;
     this.bindings = params.bindings;
+    this.deviceMapper = params.deviceMapper;
     this._params = params;
   }
 
@@ -85,7 +85,7 @@ class DialogMatterNodeBinding extends LitElement {
   private _bindTargetChanged(event: ItemSelectedEvent): void {
     const index = Number(event.target!.value);
     this.targetNodeId = Number(
-      getNodeIdByDeviceId(this._bindableDevices[index].id)
+      this.deviceMapper.getNodeIdByDeviceId(this._bindableDevices[index].id)
     );
   }
 

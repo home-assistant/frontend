@@ -23,32 +23,7 @@ import {
   setMatterNodeBinding,
 } from "../../../../../data/matter";
 
-const nodeDeviceMap = new Map<string, string>();
-const deviceNodeMap = new Map<string, string>();
-
-function initGlobalNodeDeviceMapping(hass: HomeAssistant) {
-  if (!hass.devices) return;
-
-  for (const device of Object.values(hass.devices)) {
-    if (!device.identifiers) continue;
-
-    for (const identifier of device.identifiers) {
-      if (identifier[0] === "matter") {
-        const nodeId = String(parseInt(identifier[1].split("-")[1], 16));
-        nodeDeviceMap.set(nodeId, device.id);
-        deviceNodeMap.set(device.id, nodeId);
-      }
-    }
-  }
-}
-
-export function getDeviceIdByNodeId(nodeId: string): string | undefined {
-  return nodeDeviceMap.get(nodeId);
-}
-
-export function getNodeIdByDeviceId(deviceId: string): string | undefined {
-  return deviceNodeMap.get(deviceId);
-}
+import { MatterDeviceMapper } from "./matter-binding-node-device-mapper";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -71,6 +46,9 @@ export class MatterDeviceBindingCard extends LitElement {
 
   @property({ attribute: false })
   public bindings?: Record<string, MatterNodeBinding[]>;
+
+  @state()
+  private deviceMapper?: MatterDeviceMapper;
 
   async handleDeleteClickCallback(event: Event) {
     const button = event.target as HTMLElement;
@@ -122,6 +100,7 @@ export class MatterDeviceBindingCard extends LitElement {
       device_id: this.device.id,
       bindings: this.bindings!,
       onUpdate: this._onDialogUpdate,
+      deviceMapper: this.deviceMapper!,
     });
   }
 
@@ -145,7 +124,7 @@ export class MatterDeviceBindingCard extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("hass")) {
       this._fetchBindingForMatterDevice();
-      initGlobalNodeDeviceMapping(this.hass);
+      this.deviceMapper = new MatterDeviceMapper(this.hass);
     }
   }
 
