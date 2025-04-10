@@ -20,22 +20,16 @@ module.exports.ignorePackages = () => [];
 // Files from NPM packages that we should replace with empty file
 module.exports.emptyPackages = ({ isHassioBuild }) =>
   [
-    // Contains all color definitions for all material color sets.
-    // We don't use it
-    require.resolve("@polymer/paper-styles/color.js"),
-    require.resolve("@polymer/paper-styles/default-theme.js"),
-    // Loads stuff from a CDN
-    require.resolve("@polymer/font-roboto/roboto.js"),
     require.resolve("@vaadin/vaadin-material-styles/typography.js"),
     require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
       require.resolve(
-        path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
+        path.resolve(paths.root_dir, "src/components/ha-icon.ts")
       ),
     isHassioBuild &&
       require.resolve(
-        path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
+        path.resolve(paths.root_dir, "src/components/ha-icon-picker.ts")
       ),
   ].filter(Boolean);
 
@@ -50,7 +44,8 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __HASS_URL__: `\`${
     "HASS_URL" in process.env
       ? process.env.HASS_URL
-      : "${location.protocol}//${location.host}"
+      : // eslint-disable-next-line no-template-curly-in-string
+        "${location.protocol}//${location.host}"
   }\``,
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
@@ -164,7 +159,7 @@ module.exports.babelOptions = ({
         ],
       ],
       exclude: [
-        path.join(paths.polymer_dir, "src/resources/polyfills"),
+        path.join(paths.root_dir, "src/resources/polyfills"),
         ...[
           "@formatjs/(?:ecma402-abstract|intl-\\w+)",
           "@lit-labs/virtualizer/polyfills",

@@ -323,7 +323,8 @@ ${type === "object"
         }
 
         .rendered {
-          @apply --paper-font-code1;
+          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+          -webkit-font-smoothing: antialiased;
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
