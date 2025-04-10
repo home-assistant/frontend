@@ -11,7 +11,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-list-item";
 import "@material/mwc-button/mwc-button";
 import type {
-  BlueprintConfig,
+  Blueprint,
   BlueprintDomain,
   BlueprintInput,
   Blueprints,
@@ -67,26 +67,26 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   @state() private _blueprintPath?: string;
 
-  protected abstract _config: BlueprintConfig | undefined;
+  protected abstract _blueprint: Blueprint | undefined;
 
   protected abstract _domain: BlueprintDomain;
 
-  protected abstract getDefaultConfig(): BlueprintConfig;
+  protected abstract getDefaultBlueprint(): Blueprint;
 
   protected abstract renderEditor(): TemplateResult | symbol;
 
   protected abstract renderHeader(): TemplateResult | symbol;
 
-  protected abstract normalizeBlueprintConfig(
-    config: Partial<BlueprintConfig>
-  ): BlueprintConfig;
+  protected abstract normalizeBlueprint(
+    blueprint: Partial<Blueprint>
+  ): Blueprint;
 
   protected abstract checkValidation(): Promise<void>;
 
-  protected _valueChanged(ev: CustomEvent<{ value: BlueprintConfig }>) {
+  protected _valueChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
 
-    this._config = ev.detail.value;
+    this._blueprint = ev.detail.value;
     this._updateInputsInHass();
     if (this._readOnly) {
       return;
@@ -99,9 +99,9 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     return new Promise((resolve) => {
       showBlueprintRenameDialog(this, {
         path: this._blueprintPath!,
-        config: this._config!,
-        updateConfig: (config) => {
-          this._config = config;
+        blueprint: this._blueprint!,
+        updateBlueprint: (blueprint) => {
+          this._blueprint = blueprint;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
@@ -115,7 +115,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   }
 
   private async _saveBlueprint(): Promise<void> {
-    if (!this._config) {
+    if (!this._blueprint) {
       return;
     }
 
@@ -139,10 +139,10 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     try {
       await saveBlueprint(
         this.hass,
-        this._config.blueprint.domain,
+        this._blueprint.metadata.domain,
         this._blueprintPath as string,
-        yaml.dump(this._config),
-        this._config.blueprint.source_url,
+        yaml.dump(this._blueprint),
+        this._blueprint.metadata.source_url,
         true
       );
 
@@ -164,21 +164,21 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     }
   }
 
-  private async _loadConfig() {
+  private async _loadBlueprint() {
     try {
       const inputTag = new yaml.Type("!input", { kind: "scalar" });
       const schema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
-      const blueprint = await getBlueprint(
+      const blueprintGetResult = await getBlueprint(
         this.hass,
         this._domain,
         this._blueprintPath!
       );
-      const blueprintConfig = yaml.load(blueprint.yaml, {
+      const blueprint = yaml.load(blueprintGetResult.yaml, {
         schema,
-      }) as BlueprintConfig;
+      }) as Blueprint;
       this._dirty = false;
       this._readOnly = false;
-      this._config = this.normalizeBlueprintConfig(blueprintConfig);
+      this._blueprint = this.normalizeBlueprint(blueprint);
       await this.checkValidation();
       this._updateInputsInHass();
     } catch (err: any) {
@@ -228,11 +228,13 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       (acc, [key, i]) => ({ ...acc, [key]: i }),
       {}
     );
-    const config = this._config ? this._config : this.getDefaultConfig();
-    this._config = {
-      ...config,
-      blueprint: {
-        ...config.blueprint,
+    const blueprint = this._blueprint
+      ? this._blueprint
+      : this.getDefaultBlueprint();
+    this._blueprint = {
+      ...blueprint,
+      metadata: {
+        ...blueprint.metadata,
         input,
       },
     };
@@ -250,15 +252,15 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       oldBlueprintPath !== this.blueprintPath
     ) {
       this._blueprintPath = this.blueprintPath;
-      this._loadConfig();
+      this._loadBlueprint();
     }
 
     if (changedProps.has("blueprintPath") && !this.blueprintPath && this.hass) {
       const initData = getBlueprintEditorInitData();
-      this._config = {
-        ...this.getDefaultConfig(),
-        ...(initData ? this.normalizeBlueprintConfig(initData) : initData),
-      } as BlueprintConfig;
+      this._blueprint = {
+        ...this.getDefaultBlueprint(),
+        ...(initData ? this.normalizeBlueprint(initData) : initData),
+      } as Blueprint;
       this._blueprintPath = undefined;
       this._readOnly = false;
       this._dirty = true;
@@ -266,7 +268,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   }
 
   protected render() {
-    if (!this._config) {
+    if (!this._blueprint) {
       return nothing;
     }
 
@@ -276,7 +278,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${this._config?.blueprint.name ||
+        .header=${this._blueprint?.metadata.name ||
         this.hass.localize("ui.panel.config.blueprint.editor.default_name")}
       >
         ${this.renderHeader()}
@@ -301,7 +303,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
               ></ha-icon-button>
             </a>
           </div>
-          ${!Object.entries(this._config?.blueprint?.input || {})?.length
+          ${!Object.entries(this._blueprint?.metadata?.input || {})?.length
             ? html`<p class="section-description">
                 ${this.hass.localize(
                   "ui.panel.config.blueprint.editor.inputs.section_description"
@@ -312,7 +314,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
           <ha-blueprint-input
             role="region"
             aria-labelledby="inputs-heading"
-            .inputs=${Object.entries(this._config?.blueprint.input || {})}
+            .inputs=${Object.entries(this._blueprint?.metadata.input || {})}
             @value-changed=${this._inputChanged}
             .hass=${this.hass}
             .disabled=${this._readOnly}

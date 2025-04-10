@@ -148,7 +148,7 @@ class HaBlueprintOverview extends LitElement {
             });
           } else {
             result.push({
-              ...blueprint.blueprint,
+              ...blueprint.metadata,
               type,
               translated_type: localize(
                 `ui.panel.config.blueprint.overview.types.${type as "automation" | "script"}`
@@ -474,7 +474,7 @@ class HaBlueprintOverview extends LitElement {
     showToast(this, {
       message: this.hass.localize(
         "ui.panel.config.blueprint.overview.re_import_success",
-        { name: importResult!.blueprint.blueprint.name }
+        { name: importResult!.blueprint.metadata.name }
       ),
     });
   };

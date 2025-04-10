@@ -8,7 +8,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { showImportBlueprintDialog } from "./show-dialog-import-blueprint";
-import type { BlueprintConfig, BlueprintDomain } from "../../../data/blueprint";
+import type { Blueprint, BlueprintDomain } from "../../../data/blueprint";
 import { showBlueprintEditor } from "../../../data/blueprint";
 
 import "@material/mwc-list/mwc-list";
@@ -44,7 +44,7 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
       const editorClass = customElements.get(
         `ha-blueprint-${type}-editor`
       ) as CustomElementConstructor & {
-        defaultConfig: BlueprintConfig;
+        defaultConfig: Blueprint;
       };
 
       showBlueprintEditor(type, editorClass.defaultConfig);

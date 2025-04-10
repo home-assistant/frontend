@@ -48,12 +48,12 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
     this._params = params;
     this._newPath = params.path;
     this._newName =
-      params.config.blueprint.name ||
+      params.blueprint.metadata.name ||
       this.hass.localize(`ui.panel.config.blueprint.editor.default_name`);
-    this._newDescription = params.config.blueprint.description || "";
-    this._newAuthor = params.config.blueprint.author || "";
+    this._newDescription = params.blueprint.metadata.description || "";
+    this._newAuthor = params.blueprint.metadata.author || "";
     this._newMinimumVersion =
-      params.config.blueprint.homeassistant?.min_version || "";
+      params.blueprint.metadata.homeassistant?.min_version || "";
 
     this._visibleOptionals = [
       this._newDescription ? "description" : "",
@@ -94,7 +94,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         scrimClickAction
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
-          this._params.config.alias
+          this._params.blueprint.alias
             ? "ui.panel.config.blueprint.editor.rename"
             : "ui.panel.config.blueprint.editor.save"
         )}
@@ -108,7 +108,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           ></ha-icon-button>
           <span slot="title"
             >${this.hass.localize(
-              this._params.config.alias
+              this._params.blueprint.alias
                 ? "ui.panel.config.blueprint.editor.rename"
                 : "ui.panel.config.blueprint.editor.save"
             )}</span
@@ -216,7 +216,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           </mwc-button>
           <mwc-button @click=${this._save}>
             ${this.hass.localize(
-              this._params.config.blueprint.name
+              this._params.blueprint.blueprint.name
                 ? "ui.panel.config.blueprint.editor.rename"
                 : "ui.panel.config.blueprint.editor.save"
             )}
@@ -260,10 +260,10 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
       return;
     }
 
-    this._params.updateConfig({
-      ...this._params.config,
-      blueprint: {
-        ...this._params.config.blueprint,
+    this._params.updateBlueprint({
+      ...this._params.blueprint,
+      metadata: {
+        ...this._params.blueprint.metadata,
         name: this._newName,
         description: this._newDescription || undefined,
         author: this._newAuthor || undefined,

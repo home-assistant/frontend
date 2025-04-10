@@ -364,7 +364,7 @@ export class HaRelatedItems extends LitElement {
                     ></ha-svg-icon>
                     ${!blueprintMeta || "error" in blueprintMeta
                       ? path
-                      : blueprintMeta.blueprint.name || path}
+                      : blueprintMeta.metadata.name || path}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
                 </a>`;
@@ -418,7 +418,7 @@ export class HaRelatedItems extends LitElement {
                     ></ha-svg-icon>
                     ${!blueprintMeta || "error" in blueprintMeta
                       ? path
-                      : blueprintMeta.blueprint.name || path}
+                      : blueprintMeta.metadata.name || path}
                     <ha-icon-next slot="meta"></ha-icon-next>
                   </ha-list-item>
                 </a>`;

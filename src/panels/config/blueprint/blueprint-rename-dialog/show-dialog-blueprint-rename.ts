@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { BlueprintConfig } from "../../../../data/blueprint";
+import type { Blueprint } from "../../../../data/blueprint";
 
 export const loadBlueprintRenameDialog = () =>
   import("./dialog-blueprint-rename");
@@ -7,8 +7,8 @@ export const loadBlueprintRenameDialog = () =>
 export interface RenameDialogParams {
   onClose: () => void;
   path: string;
-  config: BlueprintConfig;
-  updateConfig: (config: BlueprintConfig) => void;
+  blueprint: Blueprint;
+  updateBlueprint: (blueprint: Blueprint) => void;
   updatePath: (path: string) => void;
 }
 

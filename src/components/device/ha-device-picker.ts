@@ -85,9 +85,6 @@ export class HaDevicePicker extends LitElement {
   @property({ type: Array, attribute: "exclude-devices" })
   public excludeDevices?: string[];
 
-  @property({ type: Array, attribute: "blueprint-inputs" })
-  blueprintInputs?: string[];
-
   @property({ attribute: false })
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
@@ -216,36 +213,22 @@ export class HaDevicePicker extends LitElement {
         );
       }
 
-      if (this.blueprintInputs) {
-        const additionalDeviceEntities = this.blueprintInputs.map(
-          (device) =>
-            ({
-              name: device,
-              labels: ["__INTERNAL_IS_BLUEPRINT_INPUT"],
-            }) as DeviceRegistryEntry
-        );
-        inputDevices = inputDevices.concat(additionalDeviceEntities);
-      }
-
       const outputDevices = inputDevices.map((device) => {
         const name = computeDeviceName(
           device,
           this.hass,
           deviceEntityLookup[device.id]
         );
-        const area =
-          device.area_id && areas[device.area_id]
-            ? areas[device.area_id].name
-            : this.hass.localize("ui.components.device-picker.no_area");
 
         return {
           id: device.id,
           name:
             name ||
             this.hass.localize("ui.components.device-picker.unnamed_device"),
-          area: device.labels.includes("__INTERNAL_IS_BLUEPRINT_INPUT")
-            ? "Blueprint Input"
-            : area,
+          area:
+            device.area_id && areas[device.area_id]
+              ? areas[device.area_id].name
+              : this.hass.localize("ui.components.device-picker.no_area"),
           strings: [name || ""],
         };
       });

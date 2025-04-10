@@ -46,17 +46,17 @@ export type BlueprintDomain = "automation" | "script";
 
 export type Blueprints = Record<string, BlueprintOrError>;
 
-export type BlueprintOrError = BlueprintConfig | { error: string };
+export type BlueprintOrError = Blueprint | { error: string };
 
 export interface BlueprintBase {
-  blueprint: BlueprintMetaData;
+  metadata: BlueprintMetaData;
 }
 
 export interface AutomationBlueprint
   extends ManualAutomationConfig,
     BlueprintBase {}
 export interface ScriptBlueprint extends ManualScriptConfig, BlueprintBase {}
-export type BlueprintConfig = AutomationBlueprint | ScriptBlueprint;
+export type Blueprint = AutomationBlueprint | ScriptBlueprint;
 
 export interface BlueprintMetaData {
   domain: BlueprintDomain;
@@ -87,7 +87,7 @@ export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
   exists?: boolean;
-  blueprint: BlueprintConfig;
+  blueprint: Blueprint;
   validation_errors: string[] | null;
 }
 
@@ -143,9 +143,9 @@ export const deleteBlueprint = (
 export type BlueprintSourceType = "local" | "community" | "homeassistant";
 
 export const getBlueprintSourceType = (
-  blueprint: BlueprintConfig
+  blueprint: Blueprint
 ): BlueprintSourceType => {
-  const sourceUrl = blueprint.blueprint.source_url;
+  const sourceUrl = blueprint.metadata.source_url;
 
   if (!sourceUrl) {
     return "local";
@@ -171,11 +171,11 @@ export const substituteBlueprint = <
     input,
   });
 
-let initialBlueprintEditorData: Partial<BlueprintConfig> | undefined;
+let initialBlueprintEditorData: Partial<Blueprint> | undefined;
 
 export const showBlueprintEditor = (
   domain: BlueprintDomain,
-  data?: Partial<BlueprintConfig>,
+  data?: Partial<Blueprint>,
   expanded?: boolean
 ) => {
   initialBlueprintEditorData = data;

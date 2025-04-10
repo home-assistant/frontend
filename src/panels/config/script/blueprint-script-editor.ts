@@ -15,10 +15,6 @@ export class BlueprintScriptEditor extends BlueprintGenericEditor {
   }
 
   protected render() {
-    if (!this.config) {
-      return nothing;
-    }
-
     return html`
       ${this.config.description
         ? html`<ha-markdown

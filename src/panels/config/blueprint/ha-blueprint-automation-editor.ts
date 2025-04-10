@@ -3,16 +3,16 @@ import { html, nothing } from "lit";
 import { HaBlueprintGenericEditor } from "./ha-blueprint-generic-editor";
 import type {
   AutomationBlueprint,
-  BlueprintConfig,
+  Blueprint,
   BlueprintDomain,
 } from "../../../data/blueprint";
 import "../automation/manual-automation-editor";
 
 @customElement("ha-blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
-  @state() protected _config: AutomationBlueprint | undefined;
+  @state() protected _blueprint: AutomationBlueprint | undefined;
 
-  public static defaultConfig: BlueprintConfig = {
+  public static defaultConfig: Blueprint = {
     blueprint: {
       name: "New blueprint",
       domain: "automation",
@@ -25,7 +25,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 
   protected _domain: BlueprintDomain = "automation";
 
-  protected getDefaultConfig(): BlueprintConfig {
+  protected getDefaultBlueprint(): Blueprint {
     return HaBlueprintAutomationEditor.defaultConfig;
   }
 
@@ -33,9 +33,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
     return Promise.resolve(undefined);
   }
 
-  protected normalizeBlueprintConfig(
-    config: Partial<BlueprintConfig>
-  ): BlueprintConfig {
+  protected normalizeBlueprint(config: Partial<Blueprint>): Blueprint {
     // TODO: Fix this method
     // config = migrateBlueprintConfig(config);
 
@@ -48,7 +46,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
       }
     }
 
-    return config as BlueprintConfig;
+    return config as Blueprint;
   }
 
   protected renderHeader() {
@@ -56,7 +54,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
   }
 
   protected renderEditor() {
-    if (!this._config) {
+    if (!this._blueprint) {
       return nothing;
     }
 
@@ -65,7 +63,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
-        .config=${this._config}
+        .config=${this._blueprint}
         .disabled=${Boolean(this._readOnly)}
         @value-changed=${this._valueChanged}
       ></manual-automation-editor>

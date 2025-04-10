@@ -1,6 +1,6 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { BlueprintConfig, BlueprintDomain } from "../../../data/blueprint";
+import type { Blueprint, BlueprintDomain } from "../../../data/blueprint";
 import "./ha-blueprint-automation-editor";
 import "./ha-blueprint-script-editor";
 import type { HomeAssistant, Route } from "../../../types";
@@ -16,7 +16,7 @@ class HaBlueprintEditor extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public blueprints!: BlueprintConfig[];
+  @property({ attribute: false }) public blueprints!: Blueprint[];
 
   @property({ attribute: "blueprint-path" }) public blueprintPath?: string;
 

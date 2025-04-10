@@ -85,16 +85,16 @@ export abstract class BlueprintGenericEditor extends LitElement {
             ? html`<p class="warning padding">
                 There is an error in this Blueprint: ${blueprint.error}
               </p>`
-            : html`${blueprint?.blueprint.description
+            : html`${blueprint?.metadata.description
                 ? html`<ha-markdown
                     class="card-content"
                     breaks
-                    .content=${blueprint.blueprint.description}
+                    .content=${blueprint.metadata.description}
                   ></ha-markdown>`
                 : ""}
-              ${blueprint?.blueprint?.input &&
-              Object.keys(blueprint.blueprint.input).length
-                ? Object.entries(blueprint.blueprint.input).map(
+              ${blueprint?.metadata?.input &&
+              Object.keys(blueprint.metadata.input).length
+                ? Object.entries(blueprint.metadata.input).map(
                     ([key, value]) => {
                       if (value && "input" in value) {
                         const section = this._renderSection(key, value);
