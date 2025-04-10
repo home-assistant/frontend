@@ -20,6 +20,11 @@ export class HaSlTabGroup extends TabGroup {
 
   @query(".tab-group__nav", true) private _scrollContainer?: HTMLElement;
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.removeEventListener("mousemove", this._mouseMove);
+  }
+
   override setAriaLabels() {
     // Override the method to prevent setting aria-labels, as we don't use panels
     // and don't want to set aria-labels for the tabs
@@ -37,12 +42,10 @@ export class HaSlTabGroup extends TabGroup {
 
     const scrollContainer = this._scrollContainer;
 
-    if (!scrollContainer) {
-      return;
+    if (scrollContainer) {
+      scrollContainer.addEventListener("mousedown", this._mouseDown);
+      scrollContainer.addEventListener("mouseup", this._mouseUp);
     }
-
-    scrollContainer.addEventListener("mousedown", this._mouseDown);
-    scrollContainer.addEventListener("mouseup", this._mouseUp);
   }
 
   // @ts-ignore
