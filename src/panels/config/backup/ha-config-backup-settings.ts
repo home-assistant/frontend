@@ -417,11 +417,14 @@ class HaConfigBackupSettings extends LitElement {
         this.hass,
         this._supervisorUpdateConfig
       );
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.addon_update_backup.error_save"
+        "ui.panel.config.backup.settings.addon_update_backup.error_save",
+        {
+          error: err?.message || err?.toString(),
+        }
       );
     }
   }
