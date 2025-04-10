@@ -102,7 +102,7 @@ class HuiEnergyCarbonGaugeCard
 
     let value: number | undefined;
 
-    if (this._data.fossilEnergyConsumption && totalGridConsumption) {
+    if (this._data.fossilEnergyConsumption && totalGridConsumption != null) {
       const highCarbonEnergy = this._data.fossilEnergyConsumption
         ? Object.values(this._data.fossilEnergyConsumption).reduce(
             (sum, a) => sum + a,
@@ -127,7 +127,9 @@ class HuiEnergyCarbonGaugeCard
         totalGridConsumption +
         Math.max(0, totalSolarProduction - totalGridReturned);
 
-      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+      if (totalEnergyConsumed) {
+        value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+      }
     }
 
     return html`
