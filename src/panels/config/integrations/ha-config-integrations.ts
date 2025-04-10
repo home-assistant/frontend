@@ -77,6 +77,10 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
       subscribeConfigEntries(
         this.hass,
         async (messages) => {
+          if (messages.length === 0) {
+            this._configEntries = [];
+            return;
+          }
           let fullUpdate = this._configEntries === undefined;
           const newEntries: ConfigEntryExtended[] = [];
           await this._loadTranslationsPromise?.then(
@@ -120,6 +124,11 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
         { type: ["device", "hub", "service", "hardware"] }
       ),
       subscribeConfigFlowInProgress(this.hass, async (messages) => {
+        if (messages.length === 0) {
+          this._configEntriesInProgress = [];
+          return;
+        }
+
         let fullUpdate = this._configEntriesInProgress === undefined;
         const newEntries: DataEntryFlowProgressExtended[] = [];
 
