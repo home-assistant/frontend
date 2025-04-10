@@ -27,7 +27,6 @@ import "../../../components/search-input";
 import "../../../components/search-input-outlined";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
-import { getConfigFlowInProgressCollection } from "../../../data/config_flow";
 import { fetchDiagnosticHandlers } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
@@ -754,7 +753,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
   }
 
   private _handleFlowUpdated() {
-    getConfigFlowInProgressCollection(this.hass.connection).refresh();
     this._reScanImprovDevices();
     this._fetchManifests();
   }
