@@ -95,11 +95,13 @@ export const subscribeConfigFlowInProgress = (
   hass: HomeAssistant,
   onChange: (update) => void
 ) =>
-  hass.connection.subscribeMessage<{
-    type: "init" | "remove";
-    flow_id: string;
-    flow: DataEntryFlowProgress;
-  }>((message) => onChange(message), { type: "config_entries/flow/subscribe" });
+  hass.connection.subscribeMessage<
+    {
+      type: null | "added" | "removed";
+      flow_id: string;
+      flow: DataEntryFlowProgress;
+    }[]
+  >((message) => onChange(message), { type: "config_entries/flow/subscribe" });
 
 export const localizeConfigFlowTitle = (
   localize: LocalizeFunc,

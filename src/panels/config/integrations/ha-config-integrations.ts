@@ -68,8 +68,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
 
   @state() private _configEntries?: ConfigEntryExtended[];
 
-  @state() private _configEntriesInProgress: DataEntryFlowProgressExtended[] =
-    [];
+  @state() private _configEntriesInProgress?: DataEntryFlowProgressExtended[];
 
   private _loadTranslationsPromise?: Promise<LocalizeFunc>;
 
@@ -78,6 +77,8 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
       subscribeConfigEntries(
         this.hass,
         async (messages) => {
+          let fullUpdate = this._configEntries === undefined;
+          const newEntries: ConfigEntryExtended[] = [];
           await this._loadTranslationsPromise?.then(
             () =>
               // allow hass to update
@@ -85,8 +86,6 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
                 window.setTimeout(resolve, 0);
               })
           );
-          let fullUpdate = this._configEntries === undefined;
-          const newEntries: ConfigEntryExtended[] = [];
           messages.forEach((message) => {
             if (message.type === null || message.type === "added") {
               newEntries.push({
@@ -115,34 +114,54 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
               );
             }
           });
-          if (!newEntries.length && !fullUpdate) {
-            return;
-          }
           const existingEntries = fullUpdate ? [] : this._configEntries;
           this._configEntries = [...existingEntries!, ...newEntries];
         },
         { type: ["device", "hub", "service", "hardware"] }
       ),
-      subscribeConfigFlowInProgress(this.hass, async (update) => {
-        if (update.type === "remove") {
-          this._configEntriesInProgress = this._configEntriesInProgress.filter(
-            (flow) => flow.flow_id !== update.flow_id
-          );
+      subscribeConfigFlowInProgress(this.hass, async (messages) => {
+        let fullUpdate = this._configEntriesInProgress === undefined;
+        const newEntries: DataEntryFlowProgressExtended[] = [];
+
+        messages.forEach((message) => {
+          if (message.type === "removed") {
+            if (!this._configEntriesInProgress) {
+              return;
+            }
+            this._configEntriesInProgress =
+              this._configEntriesInProgress.filter(
+                (flow) => flow.flow_id !== message.flow_id
+              );
+            return;
+          }
+
+          if (message.type === null || message.type === "added") {
+            if (message.type === null) {
+              fullUpdate = true;
+            }
+
+            newEntries.push(message.flow);
+          }
+        });
+
+        if (!newEntries.length && !fullUpdate) {
           return;
         }
-        if (update.type !== "init") {
-          return;
-        }
-        const flow = update.flow;
-        const localize = flow.context.title_placeholders
-          ? await this.hass.loadBackendTranslation("config", [flow.handler])
+        const existingEntries = fullUpdate ? [] : this._configEntriesInProgress;
+
+        const titleIntegrations = newEntries
+          .filter((flow) => flow.context.title_placeholders)
+          .map((flow) => flow.handler);
+        const localize = titleIntegrations.length
+          ? await this.hass.loadBackendTranslation("config", titleIntegrations)
           : this.hass.localize;
+
         this._configEntriesInProgress = [
-          ...this._configEntriesInProgress,
-          {
+          ...existingEntries!,
+          ...newEntries.map((flow) => ({
             ...flow,
             localized_title: localizeConfigFlowTitle(localize, flow),
-          },
+          })),
         ];
       }),
     ];
