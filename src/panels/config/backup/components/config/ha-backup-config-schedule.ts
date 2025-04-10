@@ -2,9 +2,13 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { formatTime } from "../../../../../common/datetime/format_time";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
+import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-expansion-panel";
+import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-md-select";
@@ -12,6 +16,8 @@ import type { HaMdSelect } from "../../../../../components/ha-md-select";
 import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-switch";
+import "../../../../../components/ha-time-input";
+import "../../../../../components/ha-tip";
 import type { BackupConfig, BackupDay } from "../../../../../data/backup";
 import {
   BACKUP_DAYS,
@@ -20,13 +26,8 @@ import {
   DEFAULT_OPTIMIZED_BACKUP_START_TIME,
   sortWeekdays,
 } from "../../../../../data/backup";
+import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-time-input";
-import "../../../../../components/ha-tip";
-import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-formfield";
-import { formatTime } from "../../../../../common/datetime/format_time";
 import { documentationUrl } from "../../../../../util/documentation-url";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
@@ -115,6 +116,11 @@ class HaBackupConfigSchedule extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public value?: BackupConfigSchedule;
+
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ attribute: false })
+  public supervisorUpdateConfig?: SupervisorUpdateConfig;
 
   @state() private _retentionPreset?: RetentionPreset;
 
@@ -333,6 +339,44 @@ class HaBackupConfigSchedule extends LitElement {
                 : nothing}
             `
           : nothing}
+        ${this.supervisor
+          ? html`
+              <ha-md-list-item>
+                <span slot="headline">
+                  ${this.hass.localize(
+                    `ui.panel.config.backup.schedule.update_preference.label`
+                  )}
+                </span>
+                <span slot="supporting-text">
+                  ${this.hass.localize(
+                    `ui.panel.config.backup.schedule.update_preference.supporting_text`
+                  )}
+                </span>
+                <ha-md-select
+                  slot="end"
+                  @change=${this._updatePreferenceChanged}
+                  .value=${this.supervisorUpdateConfig?.core_backup_before_update?.toString() ||
+                  "false"}
+                >
+                  <ha-md-select-option .value=${"false"}>
+                    <div slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.schedule.update_preference.skip_backups"
+                      )}
+                    </div>
+                  </ha-md-select-option>
+                  <ha-md-select-option .value=${"true"}>
+                    <div slot="headline">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.schedule.update_preference.backup_before_update"
+                      )}
+                    </div>
+                  </ha-md-select-option>
+                </ha-md-select>
+              </ha-md-list-item>
+            `
+          : nothing}
+
         <ha-md-list-item>
           <span slot="headline">
             ${this.hass.localize(`ui.panel.config.backup.schedule.retention`)}
@@ -488,6 +532,17 @@ class HaBackupConfigSchedule extends LitElement {
     });
   }
 
+  private _updatePreferenceChanged(ev) {
+    ev.stopPropagation();
+    const target = ev.currentTarget as HaMdSelect;
+    const core_backup_before_update = target.value === "true";
+    fireEvent(this, "update-config-changed", {
+      value: {
+        core_backup_before_update,
+      },
+    });
+  }
+
   private _retentionPresetChanged(ev) {
     ev.stopPropagation();
     const target = ev.currentTarget as HaMdSelect;
@@ -613,5 +668,11 @@ class HaBackupConfigSchedule extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-backup-config-schedule": HaBackupConfigSchedule;
+  }
+
+  interface HASSDomEvents {
+    "update-config-changed": {
+      value: Partial<SupervisorUpdateConfig>;
+    };
   }
 }
