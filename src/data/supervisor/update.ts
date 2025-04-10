@@ -6,12 +6,12 @@ export interface SupervisorUpdateConfig {
   core_backup_before_update: boolean;
 }
 
-export const getConfig = async (hass: HomeAssistant) =>
+export const getSupervisorUpdateConfig = async (hass: HomeAssistant) =>
   hass.callWS<SupervisorUpdateConfig>({
     type: "hassio/update/config/info",
   });
 
-export const updateConfig = async (
+export const updateSupervisorUpdateConfig = async (
   hass: HomeAssistant,
   config: Partial<SupervisorUpdateConfig>
 ) =>

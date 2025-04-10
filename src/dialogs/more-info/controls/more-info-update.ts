@@ -15,13 +15,12 @@ import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-switch";
-import type { HaSwitch } from "../../../components/ha-switch";
 import type { BackupConfig } from "../../../data/backup";
 import { fetchBackupConfig } from "../../../data/backup";
 import { isUnavailableState } from "../../../data/entity";
 import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
-import { getConfig } from "../../../data/supervisor/update";
+import { getSupervisorUpdateConfig } from "../../../data/supervisor/update";
 import type { UpdateEntity, UpdateType } from "../../../data/update";
 import {
   getUpdateType,
@@ -63,7 +62,7 @@ class MoreInfoUpdate extends LitElement {
 
   private async _fetchUpdateBackupConfig(type: UpdateType) {
     try {
-      const config = await getConfig(this.hass);
+      const config = await getSupervisorUpdateConfig(this.hass);
 
       if (type === "home_assistant") {
         this._createBackup = config.core_backup_before_update;
@@ -285,8 +284,8 @@ class MoreInfoUpdate extends LitElement {
                     : nothing}
                   <ha-switch
                     slot="end"
-                    id="create-backup"
                     .checked=${this._createBackup}
+                    @change=${this._createBackupChanged}
                     .disabled=${updateIsInstalling(this.stateObj)}
                   ></ha-switch>
                 </ha-md-list-item>
@@ -383,13 +382,7 @@ class MoreInfoUpdate extends LitElement {
     if (!supportsFeature(this.stateObj!, UpdateEntityFeature.BACKUP)) {
       return false;
     }
-    const createBackupSwitch = this.shadowRoot?.getElementById(
-      "create-backup"
-    ) as HaSwitch;
-    if (createBackupSwitch) {
-      return createBackupSwitch.checked;
-    }
-    return false;
+    return this._createBackup;
   }
 
   private _handleInstall(): void {
@@ -409,6 +402,10 @@ class MoreInfoUpdate extends LitElement {
     }
 
     this.hass.callService("update", "install", installData);
+  }
+
+  private _createBackupChanged(ev) {
+    this._createBackup = ev.target.checked;
   }
 
   private _handleSkip(): void {

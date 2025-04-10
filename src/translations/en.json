@@ -2711,8 +2711,8 @@
               "description": "Creates a backup of your add-on and its data. That way you can keep around the previous version of the add-on, so you can always roll back to it if needed.",
               "local_only": "This backup is only saved on this system.",
               "retention_description": "Prevent your system from filling up with old versions.",
-              "error_load": "Error loading supervisor update config, check your logs for more information.",
-              "error_save": "Error saving supervisor update config, check your logs for more information."
+              "error_load": "Error loading supervisor update config: {error}",
+              "error_save": "Error saving supervisor update config: {error}"
             }
           },
           "details": {

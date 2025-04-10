@@ -20,8 +20,8 @@ import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
 import {
-  getConfig,
-  updateConfig,
+  getSupervisorUpdateConfig,
+  updateSupervisorUpdateConfig,
   type SupervisorUpdateConfig,
 } from "../../../data/supervisor/update";
 import "../../../layouts/hass-subpage";
@@ -74,12 +74,15 @@ class HaConfigBackupSettings extends LitElement {
 
   private async _getSupervisorUpdateConfig() {
     try {
-      this._supervisorUpdateConfig = await getConfig(this.hass);
-    } catch (err) {
+      this._supervisorUpdateConfig = await getSupervisorUpdateConfig(this.hass);
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(err);
       this._supervisorUpdateConfigError = this.hass.localize(
-        "ui.panel.config.backup.settings.addon_update_backup.error_load"
+        "ui.panel.config.backup.settings.addon_update_backup.error_load",
+        {
+          error: err?.message || err,
+        }
       );
     }
   }
@@ -172,9 +175,9 @@ class HaConfigBackupSettings extends LitElement {
                 )}
               </p>
               ${this._supervisorUpdateConfigError
-                ? html`<p class="error">
+                ? html`<ha-alert alert-type="error">
                     ${this._supervisorUpdateConfigError}
-                  </p>`
+                  </ha-alert>`
                 : nothing}
               <ha-backup-config-schedule
                 .hass=${this.hass}
@@ -282,9 +285,9 @@ class HaConfigBackupSettings extends LitElement {
                 )}
               </p>
               ${this._supervisorUpdateConfigError
-                ? html`<p class="error">
+                ? html`<ha-alert alert-type="error">
                     ${this._supervisorUpdateConfigError}
-                  </p>`
+                  </ha-alert>`
                 : nothing}
               <ha-backup-config-addon
                 .hass=${this.hass}
@@ -410,7 +413,10 @@ class HaConfigBackupSettings extends LitElement {
       return;
     }
     try {
-      await updateConfig(this.hass, this._supervisorUpdateConfig);
+      await updateSupervisorUpdateConfig(
+        this.hass,
+        this._supervisorUpdateConfig
+      );
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
