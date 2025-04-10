@@ -23,6 +23,7 @@ export class HaSlTabGroup extends TabGroup {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("mousemove", this._mouseMove);
+    window.removeEventListener("mouseup", this._mouseUp);
   }
 
   override setAriaLabels() {
@@ -44,7 +45,6 @@ export class HaSlTabGroup extends TabGroup {
 
     if (scrollContainer) {
       scrollContainer.addEventListener("mousedown", this._mouseDown);
-      scrollContainer.addEventListener("mouseup", this._mouseUp);
     }
   }
 
@@ -73,6 +73,7 @@ export class HaSlTabGroup extends TabGroup {
     this._scrolled = false;
 
     window.addEventListener("mousemove", this._mouseMove);
+    window.addEventListener("mouseup", this._mouseUp, { once: true });
   };
 
   private _mouseUp = () => {
