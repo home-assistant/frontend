@@ -16,7 +16,6 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./integration-badge";
 import { onBoardingStyles } from "./styles";
-import { debounce } from "../common/util/debounce";
 
 const HIDDEN_DOMAINS = new Set([
   "google_translate",
@@ -40,12 +39,20 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
-      subscribeConfigFlowInProgress(this.hass, (update) => {
-        if (update.type !== "init" || HIDDEN_DOMAINS.has(update.flow.handler)) {
-          return;
-        }
-        this._discoveredDomains.add(update.flow.handler);
-        this._debouncedFetchDiscoveredtranslations();
+      subscribeConfigFlowInProgress(this.hass, (messages) => {
+        messages.forEach((message) => {
+          if (
+            message.type === "removed" ||
+            HIDDEN_DOMAINS.has(message.flow.handler)
+          ) {
+            return;
+          }
+          this._discoveredDomains.add(message.flow.handler);
+        });
+        this.hass.loadBackendTranslation(
+          "title",
+          Array.from(this._discoveredDomains)
+        );
       }),
       subscribeConfigEntries(
         this.hass,
@@ -88,13 +95,6 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
       ),
     ];
   }
-
-  private _debouncedFetchDiscoveredtranslations = debounce(() => {
-    this.hass.loadBackendTranslation(
-      "title",
-      Array.from(this._discoveredDomains)
-    );
-  }, 100);
 
   protected render() {
     if (!this._discoveredDomains.size) {
