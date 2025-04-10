@@ -125,7 +125,7 @@
     "lit": "2.8.0",
     "lit-html": "2.8.0",
     "luxon": "3.6.1",
-    "marked": "15.0.7",
+    "marked": "15.0.8",
     "memoize-one": "6.0.0",
     "node-vibrant": "4.0.3",
     "object-hash": "3.0.0",
