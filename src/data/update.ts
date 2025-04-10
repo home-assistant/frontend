@@ -207,7 +207,7 @@ export const computeUpdateStateDisplay = (
   return hass.formatEntityState(stateObj);
 };
 
-type UpdateType = "addon" | "home_assistant" | "generic";
+export type UpdateType = "addon" | "home_assistant" | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,
