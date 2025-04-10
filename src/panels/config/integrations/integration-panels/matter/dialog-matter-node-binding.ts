@@ -8,10 +8,12 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
 
+import type { MatterNodeBinding } from "../../../../../data/matter";
+
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { HaSelect } from "../../../../../components/ha-select";
@@ -26,20 +28,44 @@ export interface ItemSelectedEvent {
 class DialogMatterNodeBinding extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state() private _params?: MatterNodeBindingDialogParams;
+
   @state() private device_id?: string;
 
-  @state() private _bindTargetIndex = -1;
+  @state() private bindings?: Record<string, MatterNodeBinding[]>;
 
   @state() private _bindableDevices: DeviceRegistryEntry[] = [];
+
+  @state() private targetNodeId = -1;
 
   public async showDialog(
     params: MatterNodeBindingDialogParams
   ): Promise<void> {
     this.device_id = params.device_id;
+    this.bindings = params.bindings;
+    this._params = params;
   }
 
-  private _bindTargetIndexChanged(event: ItemSelectedEvent): void {
-    this._bindTargetIndex = Number(event.target!.value);
+  private _handleAddClick(_event: Event) {
+    // check target node id
+    if (this.targetNodeId === -1) return;
+
+    const nodeBinding: MatterNodeBinding = {
+      node: this.targetNodeId,
+      group: null,
+      endpoint: 1,
+      cluster: null,
+      fabricIndex: null,
+    };
+    const ishas = this.bindings![1].some(
+      (node) =>
+        node.node === nodeBinding.node && node.endpoint === nodeBinding.endpoint
+    );
+    if (!ishas) {
+      this.bindings![1].push(nodeBinding);
+      this._params?.onUpdate(this.bindings!);
+    }
+    this.closeDialog();
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -49,6 +75,23 @@ class DialogMatterNodeBinding extends LitElement {
           device.identifiers.find((identifier) => identifier[0] === "matter") &&
           device.id !== this.device_id
       );
+    }
+  }
+
+  private _bindTargetChanged(event: ItemSelectedEvent): void {
+    const index = Number(event.target!.value);
+    const target_identifier = Object.values(
+      this._bindableDevices[index].identifiers
+    )
+      .filter((identifier) => identifier[0] === "matter")
+      .map((value) => value[1]);
+
+    if (target_identifier) {
+      const target_node_id = parseInt(
+        String(target_identifier).split("-")[1],
+        16
+      );
+      this.targetNodeId = target_node_id;
     }
   }
 
@@ -65,10 +108,8 @@ class DialogMatterNodeBinding extends LitElement {
       >
         <section class="binding-controls">
           <ha-select
-            label="source"
-            class="menu"
-            .value=${String(this._bindTargetIndex)}
-            @selected=${this._bindTargetIndexChanged}
+            label="target"
+            @selected=${this._bindTargetChanged}
             @closed=${stopPropagation}
           >
             ${this._bindableDevices.map(
@@ -80,16 +121,7 @@ class DialogMatterNodeBinding extends LitElement {
             )}
           </ha-select>
 
-          <ha-select
-            label="target"
-            class="menu"
-            .value=${String(this._bindTargetIndex)}
-            @selected=${this._bindTargetIndexChanged}
-            @closed=${stopPropagation}
-          >
-          </ha-select>
-
-          <ha-button> "binding" </ha-button>
+          <ha-button @click=${this._handleAddClick}> binding </ha-button>
         </section>
       </ha-dialog>
     `;

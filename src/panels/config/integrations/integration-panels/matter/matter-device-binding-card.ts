@@ -16,15 +16,9 @@ import type { HaSelect } from "../../../../../components/ha-select";
 import type { HomeAssistant } from "../../../../../types";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
-import type {
-  MatterNodeBinding,
-  MatterNodeDiagnostics,
-} from "../../../../../data/matter";
+import type { MatterNodeBinding } from "../../../../../data/matter";
 
-import {
-  setMatterNodeBinding,
-  getMatterNodeBinding,
-} from "../../../../../data/matter";
+import { getMatterNodeBinding } from "../../../../../data/matter";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -32,10 +26,7 @@ export interface ItemSelectedEvent {
 
 declare global {
   interface HTMLElementEventMap {
-    "node-binding-changed": CustomEvent<{
-      nodeBinding: {};
-      nodeDiagnostics: MatterNodeDiagnostics;
-    }>;
+    "binding-updated": CustomEvent<Record<string, MatterNodeBinding[]>>;
   }
 }
 
@@ -56,30 +47,40 @@ export class MatterDeviceBindingCard extends LitElement {
     const index = Number(button.dataset.index);
     const source_endpoint = button.dataset.endpoint!;
 
-    const device_id = this.hass.entities[0].device_id;
+    // const device_id = this.device.id;
     const bindings = this.bindings![source_endpoint];
 
     if (bindings) {
       // remove data
       bindings.splice(index, 1);
       // send to device
-      const ret = await setMatterNodeBinding(
-        this.hass,
-        device_id!,
-        Number(source_endpoint),
-        bindings
-      );
+      // const ret = await setMatterNodeBinding(
+      //   this.hass,
+      //   device_id!,
+      //   Number(source_endpoint),
+      //   bindings
+      // );
+      //
+      // if (ret[0].Status === 0) {
+      //   this.bindings![source_endpoint].splice(index, 1);
+      //   this.requestUpdate();
+      // }
 
-      if (ret[0].Status === 0) {
-        this.bindings![source_endpoint].splice(index, 1);
-        this.requestUpdate();
-      }
+      this.requestUpdate();
     }
   }
+
+  private _onDialogUpdate = (bindings: Record<string, MatterNodeBinding[]>) => {
+    // console.log("onDialogUpdate", bindings);
+    this.bindings = bindings;
+    this.requestUpdate();
+  };
 
   async handleAddClickCallback(_ev: Event): Promise<any> {
     showMatterNodeBindingDialog(this, {
       device_id: this.device.id,
+      bindings: this.bindings!,
+      onUpdate: this._onDialogUpdate,
     });
   }
 
@@ -90,6 +91,14 @@ export class MatterDeviceBindingCard extends LitElement {
         this.showHidden = true;
       }
     }
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
   }
 
   protected updated(changedProperties: PropertyValues): void {
