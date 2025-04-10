@@ -91,17 +91,20 @@ export const fetchConfigFlowInProgress = (
     type: "config_entries/flow/progress",
   });
 
+export interface ConfigFlowInProgressMessage {
+  type: null | "added" | "removed";
+  flow_id: string;
+  flow: DataEntryFlowProgress;
+}
+
 export const subscribeConfigFlowInProgress = (
   hass: HomeAssistant,
-  onChange: (update) => void
+  onChange: (update: ConfigFlowInProgressMessage[]) => void
 ) =>
-  hass.connection.subscribeMessage<
-    {
-      type: null | "added" | "removed";
-      flow_id: string;
-      flow: DataEntryFlowProgress;
-    }[]
-  >((message) => onChange(message), { type: "config_entries/flow/subscribe" });
+  hass.connection.subscribeMessage<ConfigFlowInProgressMessage[]>(
+    (message) => onChange(message),
+    { type: "config_entries/flow/subscribe" }
+  );
 
 export const localizeConfigFlowTitle = (
   localize: LocalizeFunc,
