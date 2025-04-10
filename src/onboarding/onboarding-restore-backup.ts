@@ -15,7 +15,11 @@ import {
 } from "../data/backup_onboarding";
 import { CLOUD_AGENT, type BackupContentExtended } from "../data/backup";
 import { storage } from "../common/decorators/storage";
-import { fetchHaCloudStatus, signOutHaCloud } from "../data/onboarding";
+import {
+  fetchHaCloudStatus,
+  signOutHaCloud,
+  waitForIntegration,
+} from "../data/onboarding";
 import type { CloudStatus } from "../data/cloud";
 import { showToast } from "../util/toast";
 
@@ -45,6 +49,8 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _failed?: boolean;
 
+  @state() private _cloudLoaded = false;
+
   @state() private _cloudStatus?: CloudStatus;
 
   @storage({
@@ -59,6 +65,9 @@ class OnboardingRestoreBackup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      ${this._error && this._view !== "restore"
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : nothing}
       ${this._view === "loading"
         ? html`<onboarding-loading></onboarding-loading>`
         : this._view === "upload"
@@ -169,6 +178,15 @@ class OnboardingRestoreBackup extends LitElement {
 
     if (this.mode === "cloud") {
       try {
+        if (!this._cloudLoaded) {
+          this._cloudLoaded = (
+            await waitForIntegration("cloud")
+          ).integration_loaded;
+          if (!this._cloudLoaded) {
+            this._error = "Cloud integration not loaded";
+            return;
+          }
+        }
         this._cloudStatus = await fetchHaCloudStatus();
       } catch (err: any) {
         this._error = err?.message || "Cannot get Home Assistant Cloud status";
