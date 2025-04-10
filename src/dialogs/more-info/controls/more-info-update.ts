@@ -64,7 +64,8 @@ class MoreInfoUpdate extends LitElement {
     try {
       const config = await getSupervisorUpdateConfig(this.hass);
 
-      if (type === "home_assistant") {
+      // for home assistant and OS updates
+      if (type.startsWith("home_assistant")) {
         this._createBackup = config.core_backup_before_update;
         return;
       }
@@ -83,7 +84,7 @@ class MoreInfoUpdate extends LitElement {
     this._entitySources = await fetchEntitySourcesWithCache(this.hass);
   }
 
-  private _computeCreateBackupTexts():
+  private _computeCreateBackupTexts(updateType: UpdateType):
     | { title: string; description?: string }
     | undefined {
     if (
@@ -93,12 +94,8 @@ class MoreInfoUpdate extends LitElement {
       return undefined;
     }
 
-    const updateType = this._entitySources
-      ? getUpdateType(this.stateObj, this._entitySources)
-      : "generic";
-
-    // Automatic or manual for Home Assistant update
-    if (updateType === "home_assistant") {
+    // Automatic or manual for Home Assistant and HA OS update
+    if (updateType.startsWith("home_assistant")) {
       const isBackupConfigValid =
         !!this._backupConfig &&
         !!this._backupConfig.automatic_backups_configured &&
@@ -182,7 +179,13 @@ class MoreInfoUpdate extends LitElement {
       this.stateObj.attributes.skipped_version ===
         this.stateObj.attributes.latest_version;
 
-    const createBackupTexts = this._computeCreateBackupTexts();
+    
+
+    const updateType = this._entitySources
+      ? getUpdateType(this.stateObj, this._entitySources)
+      : "generic";
+
+    const createBackupTexts = this._computeCreateBackupTexts(updateType);
 
     return html`
       <div class="content">
@@ -279,6 +282,7 @@ class MoreInfoUpdate extends LitElement {
                     ? html`
                         <span slot="supporting-text">
                           ${createBackupTexts.description}
+                          ${updateType === "home_assistant_os" ? html`<div>${this.hass.localize("ui.dialogs.more_info_control.update.create_backup.os_backups_not_supported")}</div>` : nothing}
                         </span>
                       `
                     : nothing}
@@ -349,12 +353,14 @@ class MoreInfoUpdate extends LitElement {
       this._fetchEntitySources().then(() => {
         const type = getUpdateType(this.stateObj!, this._entitySources!);
         if (
-          isComponentLoaded(this.hass, "hassio") &&
-          ["home_assistant", "addon"].includes(type)
+          isComponentLoaded(this.hass, "hassio") && 
+          ["addon", "home_assistant", "home_assistant_os"].includes(type)
         ) {
           this._fetchUpdateBackupConfig(type);
         }
-        if (type === "home_assistant") {
+
+        // For Home Assistant and OS updates
+        if (type.startsWith("home_assistant")) {
           this._fetchBackupConfig();
         }
       });
