@@ -3645,53 +3645,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-checked-element-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-checked-element-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-form-element-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/iron-validatable-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/2e8b09bb417d13e7c9862e7bb882b486b0b8df56b25f7b551bf671b87606c3a3629b6451695d94eade0d468c8d5723a152d8255ccd94ff354a14cb7ffe4e60b5
-  languageName: node
-  linkType: hard
-
 "@polymer/iron-flex-layout@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-flex-layout@npm:3.0.1"
   dependencies:
     "@polymer/polymer": "npm:^3.0.0"
   checksum: 10/0cddf0d4ca4c2475060cef9a8249ffa92a27bfd881d7463fc4bd94be09de6b93ac79d716fcc47df20863c2c789e186ae724a2500331060d4b34eec3492fc504d
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-form-element-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-form-element-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/b48f2ae7e29e7762f53c316e006a67ab53f61f9f5b631fd459169889f5b77194766d7d546ffbd2dbd68a0bbe717a26df5e3f8045e7a60dbae05817231c689ed6
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-icon@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-icon@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-flex-layout": "npm:^3.0.0-pre.26"
-    "@polymer/iron-meta": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/6bea3e965e9b61ed1d3567064e01c6f0e4586a79afe4354b53ef2dffe8b7157e120dc1b83c43df27a7cf27170b2fffbe9d4da4abf6afcdcc9dd7f8b7913bcd60
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-iconset-svg@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-iconset-svg@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-meta": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/22dbad29ef88f0087ee6b5aa95fe45f65190c9ee8274cd3558ee9527e04269b2736d2f0c6eb151b3eb39dc5275c63b3197fe50fbc56fd855295b1fe44114b6ed
   languageName: node
   linkType: hard
 
@@ -3707,64 +3666,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-meta@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-meta@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/3b4c3f51d60a28f6c54b6bd0f4dfe92ab0ec208701d00a30aefeacf889015d7670a9c9e050024466b59360a15282351f5e02c128f7a6f00189a4aa6bc2546436
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-resizable-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-resizable-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/9b4ccdb1602758b9fa05398b7046e7a164ea971e147a81d22e81183d60d697766ba384d9154a5e620cc28d8a4914ae229823d8368b2307c40c749045cab1e27f
-  languageName: node
-  linkType: hard
-
 "@polymer/iron-selector@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/iron-selector@npm:3.0.1"
   dependencies:
     "@polymer/polymer": "npm:^3.0.0"
   checksum: 10/1b3c8e8dd979d357abb7db738a3212b2b81f6a408a223490e57e759409e7acce09d152753c5e6364453d179af1797b4be284d750aed6145df271e4ab125928c1
-  languageName: node
-  linkType: hard
-
-"@polymer/iron-validatable-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-validatable-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-meta": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/d2a88a1f20c04daf1c09a4b95719b2991242f1d83a065bc91f2713c7e6d1d13cf139d7847427f17f2fd31a7ed1f7a95b07a5628c02a3ea111f83f86582fa29a9
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-behaviors@npm:^3.0.0-pre.27":
-  version: 3.0.1
-  resolution: "@polymer/paper-behaviors@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-behaviors": "npm:^3.0.0-pre.26"
-    "@polymer/iron-checked-element-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/paper-ripple": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/70e054943c9c37bad903ab591fc92d4a27668ae5025639997d886e8182c81663f59094eaaa9e0900a8f12e6dd825a361afdecc5873cc02561b214305ce4b05f8
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-icon-button@npm:^3.0.0-pre.26":
-  version: 3.0.2
-  resolution: "@polymer/paper-icon-button@npm:3.0.2"
-  dependencies:
-    "@polymer/iron-icon": "npm:^3.0.0-pre.26"
-    "@polymer/paper-behaviors": "npm:^3.0.0-pre.27"
-    "@polymer/paper-styles": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/f6e763186538b9adcace8941e2b8405ad1bb9b34059073cf05131f43c1ab3af02b6d9e168a07a645a6186b690ef9e0c4283e4df2521bdb3ea99bc6d23bd14e4d
   languageName: node
   linkType: hard
 
@@ -3792,16 +3699,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-ripple@npm:^3.0.0-pre.26":
-  version: 3.0.2
-  resolution: "@polymer/paper-ripple@npm:3.0.2"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/db2b8e237e175a7b02fa6bed35750f41d80c7885d4a938006272198e6326af85837e265af0e3ab53b38818c47270bb2b8b15a5355f9ce9dd4dc4106d78d64a53
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-styles@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/paper-styles@npm:3.0.1"
@@ -3810,24 +3707,6 @@ __metadata:
     "@polymer/iron-flex-layout": "npm:^3.0.0-pre.26"
     "@polymer/polymer": "npm:^3.0.0"
   checksum: 10/ee1ab8e2b1d3898f007c18921b6c3e549608e9fb7bb880014ae8a42b6255b08e67bfa646edb69d33b60a0a05bf0936b6b229198cb7ca6df181c09dc0fe7b41c7
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-tabs@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@polymer/paper-tabs@npm:3.1.0"
-  dependencies:
-    "@polymer/iron-behaviors": "npm:^3.0.0-pre.26"
-    "@polymer/iron-flex-layout": "npm:^3.0.0-pre.26"
-    "@polymer/iron-icon": "npm:^3.0.0-pre.26"
-    "@polymer/iron-iconset-svg": "npm:^3.0.0-pre.26"
-    "@polymer/iron-menu-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/iron-resizable-behavior": "npm:^3.0.0-pre.26"
-    "@polymer/paper-behaviors": "npm:^3.0.0-pre.27"
-    "@polymer/paper-icon-button": "npm:^3.0.0-pre.26"
-    "@polymer/paper-styles": "npm:^3.0.0-pre.26"
-    "@polymer/polymer": "npm:^3.0.0"
-  checksum: 10/a12accadfd9a8029dbf48663625c79b0d3a83fff63f3b0e84bd7d4ce2b44c327f703bdbfad0f3f7fc7c84f6d895d788fcc9cdca49b0630d80fb0d7a1c9585499
   languageName: node
   linkType: hard
 
@@ -9637,7 +9516,6 @@ __metadata:
     "@octokit/rest": "npm:21.1.1"
     "@polymer/paper-item": "npm:3.0.1"
     "@polymer/paper-listbox": "npm:3.0.1"
-    "@polymer/paper-tabs": "npm:3.1.0"
     "@polymer/polymer": "npm:3.5.2"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:1.0.1"
