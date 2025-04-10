@@ -42,7 +42,6 @@ export default tseslint.config(
         __VERSION__: false,
         __STATIC_PATH__: false,
         __SUPERVISOR__: false,
-        Polymer: true,
       },
 
       parser: tseslint.parser,
