@@ -1,11 +1,6 @@
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type {
-  BlueprintConfig,
-  BlueprintDomain,
-  BlueprintUrlSearchParams,
-} from "../../../data/blueprint";
-import { extractSearchParamsObject } from "../../../common/url/search-params";
+import { customElement, property } from "lit/decorators";
+import type { BlueprintConfig, BlueprintDomain } from "../../../data/blueprint";
 import "./ha-blueprint-automation-editor";
 import "./ha-blueprint-script-editor";
 import type { HomeAssistant, Route } from "../../../types";
@@ -23,17 +18,9 @@ class HaBlueprintEditor extends LitElement {
 
   @property({ attribute: false }) public blueprints!: BlueprintConfig[];
 
-  @state() public domain?: BlueprintDomain;
+  @property({ attribute: "blueprint-path" }) public blueprintPath?: string;
 
-  constructor() {
-    super();
-    const query = extractSearchParamsObject() as BlueprintUrlSearchParams;
-    if (!query.domain) {
-      return;
-    }
-
-    this.domain = query.domain;
-  }
+  @property({ attribute: false }) public domain?: BlueprintDomain;
 
   protected render() {
     return html`
@@ -43,6 +30,7 @@ class HaBlueprintEditor extends LitElement {
         isWide: this.isWide,
         narrow: this.narrow,
         blueprints: this.blueprints,
+        blueprintPath: this.blueprintPath,
       })}
     `;
   }

@@ -1,25 +1,15 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { BlueprintConfig } from "../../../../data/blueprint";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 
 export const loadBlueprintRenameDialog = () =>
   import("./dialog-blueprint-rename");
 
 export interface RenameDialogParams {
-  entityRegistryUpdate?: EntityRegistryUpdate;
-  entityRegistryEntry?: EntityRegistryEntry;
   onClose: () => void;
+  path: string;
   config: BlueprintConfig;
-  updateConfig: (
-    config: BlueprintConfig,
-    entityRegistryUpdate: EntityRegistryUpdate
-  ) => void;
-}
-
-export interface EntityRegistryUpdate {
-  area: string;
-  labels: string[];
-  category: string;
+  updateConfig: (config: BlueprintConfig) => void;
+  updatePath: (path: string) => void;
 }
 
 export const showBlueprintRenameDialog = (

@@ -29,16 +29,24 @@ export class HaBlueprintInputDefault extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  private _propertyChanged(propertyName: string) {
-    return (e: InputEvent) => {
+  private _propertyChanged(
+    propertyName: string,
+    useEventValue: boolean = false
+  ) {
+    return (e: any) => {
+      e.stopPropagation();
       const target = e.currentTarget as HaTextField;
       fireEvent(this, "value-changed", {
-        value: { ...this.input, [propertyName]: target.value },
+        value: {
+          ...this.input,
+          [propertyName]: useEventValue ? e.detail.value : target.value,
+        },
       });
     };
   }
 
   private _selectorChanged(e: CustomEvent) {
+    e.stopPropagation();
     const type = (e.target as HaSelect).value;
     if (!type) {
       return;
@@ -151,7 +159,7 @@ export class HaBlueprintInputDefault extends LitElement {
         .required=${false}
         .value=${this.input.default}
         label="Default Value"
-        @value-changed=${this._propertyChanged("default")}
+        @value-changed=${this._propertyChanged("default", true)}
       ></ha-selector>
     `;
   }

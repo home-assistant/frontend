@@ -394,7 +394,7 @@ class HaBlueprintOverview extends LitElement {
       });
       return;
     }
-    this._createNew(blueprint);
+    navigate(`/config/blueprint/edit/${blueprint.fullpath}`);
   }
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {

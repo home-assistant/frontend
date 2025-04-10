@@ -1,8 +1,11 @@
 import { html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { HaBlueprintGenericEditor } from "./ha-blueprint-generic-editor";
-import type { BlueprintConfig, ScriptBlueprint } from "../../../data/blueprint";
+import type {
+  BlueprintConfig,
+  BlueprintDomain,
+  ScriptBlueprint,
+} from "../../../data/blueprint";
 import "../script/manual-script-editor";
 
 @customElement("ha-blueprint-script-editor")
@@ -18,6 +21,8 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
     alias: "",
     sequence: [],
   };
+
+  protected _domain: BlueprintDomain = "script";
 
   protected getDefaultConfig(): BlueprintConfig {
     return HaBlueprintScriptEditor.defaultConfig;
@@ -38,7 +43,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
     return nothing;
   }
 
-  protected renderEditor(_: HassEntity | undefined) {
+  protected renderEditor() {
     return html`
       <manual-script-editor
         .hass=${this.hass}

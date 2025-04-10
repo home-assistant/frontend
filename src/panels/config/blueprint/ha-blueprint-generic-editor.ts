@@ -3,9 +3,8 @@ import { html, css, nothing, LitElement } from "lit";
 import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import { classMap } from "lit/directives/class-map";
 import { property, state } from "lit/decorators";
+import yaml from "js-yaml";
 import "../../../layouts/hass-subpage";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { consume } from "@lit-labs/context";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-fab";
 import "../../../components/ha-button-menu";
@@ -13,29 +12,25 @@ import "../../../components/ha-list-item";
 import "@material/mwc-button/mwc-button";
 import type {
   BlueprintConfig,
-  BlueprintEntity,
+  BlueprintDomain,
   BlueprintInput,
+  Blueprints,
 } from "../../../data/blueprint";
 import {
-  fetchBlueprintFileConfig,
+  getBlueprint,
   getBlueprintEditorInitData,
-  saveBlueprintConfig,
+  saveBlueprint,
 } from "../../../data/blueprint";
 import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { afterNextRender } from "../../../common/util/render-status";
 import { showToast } from "../../../util/toast";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
-import { promiseTimeout } from "../../../common/util/promise-timeout";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../common/navigate";
-import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
 import { showBlueprintRenameDialog } from "./blueprint-rename-dialog/show-dialog-blueprint-rename";
-import { fullEntitiesContext } from "../../../data/context";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./input/ha-blueprint-input";
 import { haStyle } from "../../../resources/styles";
@@ -51,7 +46,12 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @property({ attribute: false }) public blueprints!: BlueprintEntity[];
+  @property({ attribute: false }) public blueprints!: Record<
+    "automation" | "script",
+    Blueprints
+  >;
+
+  @property({ attribute: "blueprint-path" }) public blueprintPath?: string;
 
   @state() private _dirty = false;
 
@@ -65,34 +65,15 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   @state() private _yamlErrors?: string;
 
-  @state() private blueprintId?: string;
-
-  @state() private _newBlueprintId?: string;
-
-  @state() private _entityId?: string;
-
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityRegistry!: EntityRegistryEntry[];
-
-  private _entityRegistryUpdate?: EntityRegistryUpdate;
+  @state() private _blueprintPath?: string;
 
   protected abstract _config: BlueprintConfig | undefined;
 
+  protected abstract _domain: BlueprintDomain;
+
   protected abstract getDefaultConfig(): BlueprintConfig;
 
-  private _entityRegCreated?: (
-    value: PromiseLike<EntityRegistryEntry> | EntityRegistryEntry
-  ) => void;
-
-  private _configSubscriptions: Record<
-    string,
-    (config?: BlueprintConfig) => void
-  > = {};
-
-  protected abstract renderEditor(
-    stateObj: HassEntity | undefined
-  ): TemplateResult | symbol;
+  protected abstract renderEditor(): TemplateResult | symbol;
 
   protected abstract renderHeader(): TemplateResult | symbol;
 
@@ -117,24 +98,27 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   private async _promptBlueprintAlias(): Promise<boolean> {
     return new Promise((resolve) => {
       showBlueprintRenameDialog(this, {
+        path: this._blueprintPath!,
         config: this._config!,
-        updateConfig: (config, entityRegistryUpdate) => {
+        updateConfig: (config) => {
           this._config = config;
-          this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
         },
+        updatePath: (path) => {
+          this._blueprintPath = path;
+        },
         onClose: () => resolve(false),
-        entityRegistryUpdate: this._entityRegistryUpdate,
-        entityRegistryEntry: this._entityRegistry.find(
-          (entry) => entry.unique_id === this.blueprintId
-        ),
       });
     });
   }
 
   private async _saveBlueprint(): Promise<void> {
+    if (!this._config) {
+      return;
+    }
+
     if (this._yamlErrors) {
       showToast(this, {
         message: this._yamlErrors,
@@ -142,8 +126,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       return;
     }
 
-    const id = this.blueprintId || String(Date.now());
-    if (!this.blueprintId) {
+    if (!this._blueprintPath) {
       const saved = await this._promptBlueprintAlias();
       if (!saved) {
         return;
@@ -153,70 +136,22 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     this._saving = true;
     this._validationErrors = undefined;
 
-    let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
-    if (this._entityRegistryUpdate !== undefined && !this._entityId) {
-      this._newBlueprintId = id;
-      entityRegPromise = new Promise<EntityRegistryEntry>((resolve) => {
-        this._entityRegCreated = resolve;
-      });
-    }
-
     try {
-      await saveBlueprintConfig(this.hass, id, this._config!);
-
-      if (this._entityRegistryUpdate !== undefined) {
-        let entityId = this._entityId;
-
-        // wait for blueprint to appear in entity registry when creating a new blueprint
-        if (entityRegPromise) {
-          try {
-            const blueprint = await promiseTimeout(5000, entityRegPromise);
-            entityId = blueprint.entity_id;
-          } catch (e) {
-            if (e instanceof Error && e.name === "TimeoutError") {
-              showAlertDialog(this, {
-                title: this.hass.localize(
-                  "ui.panel.config.blueprint.editor.new_blueprint_setup_failed_title",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.blueprint.editor.type_blueprint"
-                    ),
-                  }
-                ),
-                text: this.hass.localize(
-                  "ui.panel.config.blueprint.editor.new_blueprint_setup_failed_text",
-                  {
-                    type: this.hass.localize(
-                      "ui.panel.config.blueprint.editor.type_blueprint"
-                    ),
-                    types: this.hass.localize(
-                      "ui.panel.config.blueprint.editor.type_blueprint_plural"
-                    ),
-                  }
-                ),
-                warning: true,
-              });
-            } else {
-              throw e;
-            }
-          }
-        }
-
-        if (entityId) {
-          await updateEntityRegistryEntry(this.hass, entityId, {
-            categories: {
-              blueprint: this._entityRegistryUpdate.category || null,
-            },
-            labels: this._entityRegistryUpdate.labels || [],
-            area_id: this._entityRegistryUpdate.area || null,
-          });
-        }
-      }
+      await saveBlueprint(
+        this.hass,
+        this._config.blueprint.domain,
+        this._blueprintPath as string,
+        yaml.dump(this._config),
+        this._config.blueprint.source_url,
+        true
+      );
 
       this._dirty = false;
 
-      if (!this.blueprintId) {
-        navigate(`/config/blueprint/edit/${id}`, { replace: true });
+      if (!this.blueprintPath) {
+        navigate(`/config/blueprint/edit/${this._blueprintPath}`, {
+          replace: true,
+        });
       }
     } catch (errors: any) {
       this._errors = errors.body?.message || errors.error || errors.body;
@@ -231,25 +166,22 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   private async _loadConfig() {
     try {
-      const config = await fetchBlueprintFileConfig(
+      const inputTag = new yaml.Type("!input", { kind: "scalar" });
+      const schema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
+      const blueprint = await getBlueprint(
         this.hass,
-        this.blueprintId as string
+        this._domain,
+        this._blueprintPath!
       );
+      const blueprintConfig = yaml.load(blueprint.yaml, {
+        schema,
+      }) as BlueprintConfig;
       this._dirty = false;
       this._readOnly = false;
-      this._config = this.normalizeBlueprintConfig(config);
+      this._config = this.normalizeBlueprintConfig(blueprintConfig);
       await this.checkValidation();
+      this._updateInputsInHass();
     } catch (err: any) {
-      const entity = this._entityRegistry.find(
-        (ent) =>
-          ent.platform === "blueprint" && ent.unique_id === this.blueprintId
-      );
-      if (entity) {
-        navigate(`/config/blueprint/show/${entity.entity_id}`, {
-          replace: true,
-        });
-        return;
-      }
       await showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -289,13 +221,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     }
   };
 
-  private _setEntityId() {
-    const blueprint = this.blueprints.find(
-      (entity: BlueprintEntity) => entity.attributes.id === this.blueprintId
-    );
-    this._entityId = blueprint?.entity_id;
-  }
-
   private _inputChanged(
     ev: CustomEvent<{ value: [string, BlueprintInput][] }>
   ) {
@@ -303,10 +228,11 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       (acc, [key, i]) => ({ ...acc, [key]: i }),
       {}
     );
+    const config = this._config ? this._config : this.getDefaultConfig();
     this._config = {
-      ...this._config,
+      ...config,
       blueprint: {
-        ...this._config?.blueprint,
+        ...config.blueprint,
         input,
       },
     };
@@ -315,44 +241,27 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldBlueprintId = changedProps.get("blueprintId");
+    const oldBlueprintPath = changedProps.get("blueprintPath");
     if (
-      changedProps.has("blueprintId") &&
-      this.blueprintId &&
+      (changedProps.has("blueprintPath") || changedProps.has("blueprints")) &&
+      this.blueprintPath &&
       this.hass &&
       // Only refresh config if we picked a new blueprint. If same ID, don't fetch it.
-      oldBlueprintId !== this.blueprintId
+      oldBlueprintPath !== this.blueprintPath
     ) {
-      this._setEntityId();
+      this._blueprintPath = this.blueprintPath;
       this._loadConfig();
     }
 
-    if (!this.blueprintId && !this._entityId && !this._config && this.hass) {
+    if (changedProps.has("blueprintPath") && !this.blueprintPath && this.hass) {
       const initData = getBlueprintEditorInitData();
-      let baseConfig: Partial<BlueprintConfig> = { description: "" };
-      if (!initData) {
-        baseConfig = {
-          ...baseConfig,
-          ...this.getDefaultConfig(),
-        };
-      }
       this._config = {
-        ...baseConfig,
+        ...this.getDefaultConfig(),
         ...(initData ? this.normalizeBlueprintConfig(initData) : initData),
       } as BlueprintConfig;
-      this._entityId = undefined;
+      this._blueprintPath = undefined;
       this._readOnly = false;
       this._dirty = true;
-    }
-
-    if (changedProps.has("blueprints") && this.blueprintId && !this._entityId) {
-      this._setEntityId();
-    }
-
-    if (changedProps.has("_config")) {
-      Object.values(this._configSubscriptions).forEach((sub) =>
-        sub(this._config)
-      );
     }
   }
 
@@ -360,10 +269,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     if (!this._config) {
       return nothing;
     }
-
-    const stateObj = this._entityId
-      ? this.hass.states[this._entityId]
-      : undefined;
 
     return html`
       <hass-subpage
@@ -413,7 +318,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
             .disabled=${this._readOnly}
           ></ha-blueprint-input>
 
-          ${this.renderEditor(stateObj)}
+          ${this.renderEditor()}
         </div>
 
         <ha-fab
@@ -432,10 +337,13 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     `;
   }
 
-  private _updateInputsInHass() {}
+  private _updateInputsInHass() {
+    // TODO: Add temporary inputs to HASS object to be consumed by pickers
+  }
 
-  protected disconnectedCallback(): void {
+  public disconnectedCallback(): void {
     super.disconnectedCallback();
+    // TODO: Remove temporary inputs from HASS object
   }
 
   static get styles(): CSSResultGroup {
@@ -534,6 +442,11 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
           line-height: 0;
         }
         .section-description {
+          margin-bottom: 16px;
+        }
+
+        ha-blueprint-input {
+          display: block;
           margin-bottom: 16px;
         }
       `,

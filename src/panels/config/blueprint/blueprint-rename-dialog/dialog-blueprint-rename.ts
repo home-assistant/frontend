@@ -19,10 +19,7 @@ import "../../../../components/ha-area-picker";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import type {
-  RenameDialogParams,
-  EntityRegistryUpdate,
-} from "./show-dialog-blueprint-rename";
+import type { RenameDialogParams } from "./show-dialog-blueprint-rename";
 
 @customElement("ha-dialog-blueprint-rename")
 class DialogBlueprintRename extends LitElement implements HassDialog {
@@ -34,36 +31,34 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
 
   @state() private _visibleOptionals: string[] = [];
 
-  @state() private _entryUpdates!: EntityRegistryUpdate;
-
   private _params!: RenameDialogParams;
 
-  private _newName?: string;
+  private _newPath!: string;
 
-  private _newIcon?: string;
+  private _newName!: string;
 
-  private _newDescription?: string;
+  private _newDescription!: string;
+
+  private _newAuthor!: string;
+
+  private _newMinimumVersion!: string;
 
   public showDialog(params: RenameDialogParams): void {
     this._opened = true;
     this._params = params;
-    this._newIcon = "icon" in params.config ? params.config.icon : undefined;
+    this._newPath = params.path;
     this._newName =
-      params.config.alias ||
+      params.config.blueprint.name ||
       this.hass.localize(`ui.panel.config.blueprint.editor.default_name`);
-    this._newDescription = params.config.description || "";
-    this._entryUpdates = params.entityRegistryUpdate || {
-      area: params.entityRegistryEntry?.area_id || "",
-      labels: params.entityRegistryEntry?.labels || [],
-      category: params.entityRegistryEntry?.categories.blueprint || "",
-    };
+    this._newDescription = params.config.blueprint.description || "";
+    this._newAuthor = params.config.blueprint.author || "";
+    this._newMinimumVersion =
+      params.config.blueprint.homeassistant?.min_version || "";
 
     this._visibleOptionals = [
       this._newDescription ? "description" : "",
-      this._newIcon ? "icon" : "",
-      this._entryUpdates.category ? "category" : "",
-      this._entryUpdates.labels.length > 0 ? "labels" : "",
-      this._entryUpdates.area ? "area" : "",
+      this._newAuthor ? "author" : "",
+      this._newMinimumVersion ? "minimumVersion" : "",
     ];
   }
 
@@ -100,8 +95,8 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
           this._params.config.alias
-            ? "ui.panel.config.automation.editor.rename"
-            : "ui.panel.config.automation.editor.save"
+            ? "ui.panel.config.blueprint.editor.rename"
+            : "ui.panel.config.blueprint.editor.save"
         )}
       >
         <ha-dialog-header slot="heading">
@@ -114,27 +109,41 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           <span slot="title"
             >${this.hass.localize(
               this._params.config.alias
-                ? "ui.panel.config.automation.editor.rename"
-                : "ui.panel.config.automation.editor.save"
+                ? "ui.panel.config.blueprint.editor.rename"
+                : "ui.panel.config.blueprint.editor.save"
             )}</span
           >
         </ha-dialog-header>
         ${this._error
-          ? html`<ha-alert alert-type="error"
+          ? html` <ha-alert alert-type="error"
               >${this.hass.localize(
-                "ui.panel.config.automation.editor.missing_name"
-              )}</ha-alert
-            >`
+                "ui.panel.config.blueprint.editor.missing_path"
+              )}
+            </ha-alert>`
           : ""}
         <ha-textfield
           dialogInitialFocus
+          .value=${this._newPath}
+          .label=${this.hass.localize("ui.panel.config.blueprint.editor.path")}
+          name="path"
+          required
+          type="string"
+          @input=${this._valueChanged}
+        ></ha-textfield>
+        ${this._error
+          ? html` <ha-alert alert-type="error"
+              >${this.hass.localize(
+                "ui.panel.config.blueprint.editor.missing_name"
+              )}
+            </ha-alert>`
+          : ""}
+        <ha-textfield
           .value=${this._newName}
           .placeholder=${this.hass.localize(
             `ui.panel.config.blueprint.editor.default_name`
           )}
-          .label=${this.hass.localize(
-            "ui.panel.config.automation.editor.alias"
-          )}
+          .label=${this.hass.localize("ui.panel.config.blueprint.editor.name")}
+          name="name"
           required
           type="string"
           @input=${this._valueChanged}
@@ -143,10 +152,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         ${this._visibleOptionals.includes("description")
           ? html` <ha-textarea
               .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.label"
-              )}
-              .placeholder=${this.hass.localize(
-                "ui.panel.config.automation.editor.description.placeholder"
+                "ui.panel.config.blueprint.editor.description.label"
               )}
               name="description"
               autogrow
@@ -154,55 +160,52 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
               @input=${this._valueChanged}
             ></ha-textarea>`
           : nothing}
-        ${this._visibleOptionals.includes("category")
-          ? html` <ha-category-picker
-              id="category"
-              .hass=${this.hass}
-              scope="blueprint"
-              .value=${this._entryUpdates.category}
-              @value-changed=${this._registryEntryChanged}
-            ></ha-category-picker>`
+        ${this._visibleOptionals.includes("author")
+          ? html` <ha-textfield
+              .label=${this.hass.localize(
+                "ui.panel.config.blueprint.editor.author.label"
+              )}
+              .placeholder=${this.hass.localize(
+                "ui.panel.config.blueprint.editor.author.placeholder"
+              )}
+              name="author"
+              autogrow
+              .value=${this._newAuthor}
+              @input=${this._valueChanged}
+            ></ha-textfield>`
           : nothing}
-        ${this._visibleOptionals.includes("labels")
-          ? html` <ha-labels-picker
-              id="labels"
-              .hass=${this.hass}
-              .value=${this._entryUpdates.labels}
-              @value-changed=${this._registryEntryChanged}
-            ></ha-labels-picker>`
-          : nothing}
-        ${this._visibleOptionals.includes("area")
-          ? html` <ha-area-picker
-              id="area"
-              .hass=${this.hass}
-              .value=${this._entryUpdates.area}
-              @value-changed=${this._registryEntryChanged}
-            ></ha-area-picker>`
+        ${this._visibleOptionals.includes("minimumVersion")
+          ? html` <ha-textfield
+              .label=${this.hass.localize(
+                "ui.panel.config.blueprint.editor.minimum_version.label"
+              )}
+              .placeholder=${this.hass.localize(
+                "ui.panel.config.blueprint.editor.minimum_version.placeholder"
+              )}
+              name="minimumVersion"
+              autogrow
+              .value=${this._newMinimumVersion}
+              @input=${this._valueChanged}
+            ></ha-textfield>`
           : nothing}
 
         <ha-chip-set>
           ${this._renderOptionalChip(
             "description",
             this.hass.localize(
-              "ui.panel.config.automation.editor.dialog.add_description"
+              "ui.panel.config.blueprint.editor.dialog.add_description"
             )
           )}
           ${this._renderOptionalChip(
-            "area",
+            "author",
             this.hass.localize(
-              "ui.panel.config.automation.editor.dialog.add_area"
+              "ui.panel.config.blueprint.editor.dialog.add_author"
             )
           )}
           ${this._renderOptionalChip(
-            "category",
+            "minimumVersion",
             this.hass.localize(
-              "ui.panel.config.automation.editor.dialog.add_category"
-            )
-          )}
-          ${this._renderOptionalChip(
-            "labels",
-            this.hass.localize(
-              "ui.panel.config.automation.editor.dialog.add_labels"
+              "ui.panel.config.blueprint.editor.dialog.add_minimum_version"
             )
           )}
         </ha-chip-set>
@@ -213,9 +216,9 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           </mwc-button>
           <mwc-button @click=${this._save}>
             ${this.hass.localize(
-              this._params.config.alias
-                ? "ui.panel.config.automation.editor.rename"
-                : "ui.panel.config.automation.editor.save"
+              this._params.config.blueprint.name
+                ? "ui.panel.config.blueprint.editor.rename"
+                : "ui.panel.config.blueprint.editor.save"
             )}
           </mwc-button>
         </div>
@@ -229,21 +232,25 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
     this._visibleOptionals = [...this._visibleOptionals, option];
   }
 
-  private _registryEntryChanged(ev) {
-    ev.stopPropagation();
-    const id: string = ev.target.id;
-    const value = ev.detail.value;
-
-    this._entryUpdates = { ...this._entryUpdates, [id]: value };
-  }
-
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const target = ev.target as any;
-    if (target.name === "description") {
-      this._newDescription = target.value;
-    } else {
-      this._newName = target.value;
+    switch (target.name) {
+      case "path":
+        this._newPath = target.value;
+        break;
+      case "name":
+        this._newName = target.value;
+        break;
+      case "description":
+        this._newDescription = target.value;
+        break;
+      case "author":
+        this._newAuthor = target.value;
+        break;
+      case "minimumVersion":
+        this._newMinimumVersion = target.value;
+        break;
     }
   }
 
@@ -253,14 +260,21 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
       return;
     }
 
-    this._params.updateConfig(
-      {
-        ...this._params.config,
-        alias: this._newName,
-        description: this._newDescription,
+    this._params.updateConfig({
+      ...this._params.config,
+      blueprint: {
+        ...this._params.config.blueprint,
+        name: this._newName,
+        description: this._newDescription || undefined,
+        author: this._newAuthor || undefined,
+        homeassistant: this._newMinimumVersion
+          ? {
+              min_version: this._newMinimumVersion,
+            }
+          : undefined,
       },
-      this._entryUpdates
-    );
+    });
+    this._params.updatePath(this._newPath);
 
     this.closeDialog();
   }
@@ -293,7 +307,8 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         ha-category-picker,
         ha-labels-picker,
         ha-area-picker,
-        ha-chip-set {
+        ha-chip-set,
+        ha-textfield {
           margin-top: 16px;
         }
         ha-alert {

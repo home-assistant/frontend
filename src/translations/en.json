@@ -4269,12 +4269,17 @@
             "type_blueprint": "blueprint",
             "type_blueprint_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::blueprint%]",
             "save": "Save",
+            "rename": "Rename",
             "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
             "load_error_unknown": "Error loading blueprint ({err_no}).",
             "move_up": "Move up",
             "move_down": "Move down",
             "edit_ui": "UI Editor",
             "edit_yaml": "YAML Editor",
+            "path": "Path",
+            "name": "Name",
+            "missing_path": "Cannot save blueprint without a path",
+            "missing_name": "Cannot save blueprint without a name",
             "actions": {
               "delete": "Delete",
               "duplicate": "Duplicate"
@@ -4299,6 +4304,23 @@
               "name": "Name",
               "description": "Description",
               "selector": "Selector"
+            },
+            "dialog": {
+              "add_description": "Add Description",
+              "add_author": "Add Author",
+              "add_minimum_version": "Add Minimum Version"
+            },
+            "description": {
+              "label": "Description",
+              "placeholder": "Motion sensor for light"
+            },
+            "author": {
+              "label": "Author",
+              "placeholder": "Linus Torvalds"
+            },
+            "minimum_version": {
+              "label": "Minimum Version",
+              "placeholder": "2025.1.0"
             }
           }
         },

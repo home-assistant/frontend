@@ -1,10 +1,10 @@
 import { customElement, state } from "lit/decorators";
 import { html, nothing } from "lit";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { HaBlueprintGenericEditor } from "./ha-blueprint-generic-editor";
 import type {
   AutomationBlueprint,
   BlueprintConfig,
+  BlueprintDomain,
 } from "../../../data/blueprint";
 import "../automation/manual-automation-editor";
 
@@ -22,6 +22,8 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
     conditions: [],
     actions: [],
   };
+
+  protected _domain: BlueprintDomain = "automation";
 
   protected getDefaultConfig(): BlueprintConfig {
     return HaBlueprintAutomationEditor.defaultConfig;
@@ -53,7 +55,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
     return nothing;
   }
 
-  protected renderEditor(stateObj: HassEntity | undefined) {
+  protected renderEditor() {
     if (!this._config) {
       return nothing;
     }
@@ -63,7 +65,6 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
-        .stateObj=${stateObj}
         .config=${this._config}
         .disabled=${Boolean(this._readOnly)}
         @value-changed=${this._valueChanged}

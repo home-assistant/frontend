@@ -1,7 +1,3 @@
-import type {
-  HassEntityAttributeBase,
-  HassEntityBase,
-} from "home-assistant-js-websocket";
 import {
   mdiAlpha,
   mdiCalendar,
@@ -69,6 +65,7 @@ export interface BlueprintMetaData {
   description?: string;
   source_url?: string;
   author?: string;
+  homeassistant?: { min_version: string };
 }
 
 export interface BlueprintInput {
@@ -99,18 +96,18 @@ export interface BlueprintSubstituteResults {
   script: { substituted_config: ManualScriptConfig };
 }
 
-export interface BlueprintUrlSearchParams {
-  domain?: BlueprintDomain;
-}
-
-export interface BlueprintEntity extends HassEntityBase {
-  attributes: HassEntityAttributeBase & {
-    id?: string;
-  };
+export interface BlueprintGetResult {
+  yaml: string;
 }
 
 export const fetchBlueprints = (hass: HomeAssistant, domain: BlueprintDomain) =>
   hass.callWS<Blueprints>({ type: "blueprint/list", domain });
+
+export const getBlueprint = (
+  hass: HomeAssistant,
+  domain: BlueprintDomain,
+  path: string
+) => hass.callWS<BlueprintGetResult>({ type: "blueprint/get", domain, path });
 
 export const importBlueprint = (hass: HomeAssistant, url: string) =>
   hass.callWS<BlueprintImportResult>({ type: "blueprint/import", url });
@@ -196,24 +193,6 @@ export const getBlueprintEditorInitData = () => {
   initialBlueprintEditorData = undefined;
   return data;
 };
-
-export const saveBlueprintConfig = (
-  hass: HomeAssistant,
-  id: string,
-  config: BlueprintConfig
-) => hass.callApi<void>("POST", `config/blueprint/config/${id}`, config);
-
-export const getBlueprintStateConfig = (
-  hass: HomeAssistant,
-  entity_id: string
-) =>
-  hass.callWS<{ config: BlueprintConfig }>({
-    type: "blueprint/config",
-    entity_id,
-  });
-
-export const fetchBlueprintFileConfig = (hass: HomeAssistant, id: string) =>
-  hass.callApi<BlueprintConfig>("GET", `config/blueprint/config/${id}`);
 
 type BlueprintClipboardBase = {
   input?: string;
