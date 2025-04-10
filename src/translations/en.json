@@ -4970,7 +4970,7 @@
           "disabled": "Disabled",
           "data_table": {
             "icon": "Icon",
-            "name": "Name",
+            "device": "Device",
             "manufacturer": "Manufacturer",
             "model": "Model",
             "area": "Area",
@@ -5017,8 +5017,9 @@
             },
             "headers": {
               "state_icon": "State icon",
-              "name": "Name",
+              "entity": "Entity",
               "entity_id": "Entity ID",
+              "device": "Device",
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
