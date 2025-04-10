@@ -10,10 +10,6 @@ import { createCustomPanelElement } from "../util/custom-panel/create-custom-pan
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 
-import("@polymer/polymer/lib/utils/settings").then(
-  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
-);
-
 declare global {
   interface Window {
     loadES5Adapter: () => Promise<unknown>;
