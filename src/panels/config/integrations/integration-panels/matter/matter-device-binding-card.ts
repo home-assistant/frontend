@@ -18,7 +18,37 @@ import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 import type { MatterNodeBinding } from "../../../../../data/matter";
 
-import { getMatterNodeBinding } from "../../../../../data/matter";
+import {
+  getMatterNodeBinding,
+  setMatterNodeBinding,
+} from "../../../../../data/matter";
+
+const nodeDeviceMap = new Map<string, string>();
+const deviceNodeMap = new Map<string, string>();
+
+function initGlobalNodeDeviceMapping(hass: HomeAssistant) {
+  if (!hass.devices) return;
+
+  for (const device of Object.values(hass.devices)) {
+    if (!device.identifiers) continue;
+
+    for (const identifier of device.identifiers) {
+      if (identifier[0] === "matter") {
+        const nodeId = String(parseInt(identifier[1].split("-")[1], 16));
+        nodeDeviceMap.set(nodeId, device.id);
+        deviceNodeMap.set(device.id, nodeId);
+      }
+    }
+  }
+}
+
+export function getDeviceIdByNodeId(nodeId: string): string | undefined {
+  return nodeDeviceMap.get(nodeId);
+}
+
+export function getNodeIdByDeviceId(deviceId: string): string | undefined {
+  return deviceNodeMap.get(deviceId);
+}
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -54,26 +84,37 @@ export class MatterDeviceBindingCard extends LitElement {
       // remove data
       bindings.splice(index, 1);
       // send to device
-      // const ret = await setMatterNodeBinding(
-      //   this.hass,
-      //   device_id!,
-      //   Number(source_endpoint),
-      //   bindings
-      // );
-      //
-      // if (ret[0].Status === 0) {
-      //   this.bindings![source_endpoint].splice(index, 1);
-      //   this.requestUpdate();
-      // }
+      const ret = await setMatterNodeBinding(
+        this.hass,
+        this.device.id,
+        Number(source_endpoint),
+        bindings
+      );
 
-      this.requestUpdate();
+      if (ret[0].Status === 0) {
+        this.bindings![source_endpoint].splice(index, 1);
+        this.requestUpdate();
+      }
     }
   }
 
-  private _onDialogUpdate = (bindings: Record<string, MatterNodeBinding[]>) => {
-    // console.log("onDialogUpdate", bindings);
-    this.bindings = bindings;
-    this.requestUpdate();
+  private _onDialogUpdate = async (
+    bindings: Record<string, MatterNodeBinding[]>
+  ) => {
+    try {
+      const ret = await setMatterNodeBinding(
+        this.hass,
+        this.device.id,
+        1,
+        bindings[1]
+      );
+      if (ret[0].Status === 0) {
+        this.bindings![1] = bindings[1];
+        this.requestUpdate();
+      }
+    } catch (_err) {
+      alert("set matter binding error!");
+    }
   };
 
   async handleAddClickCallback(_ev: Event): Promise<any> {
@@ -104,6 +145,7 @@ export class MatterDeviceBindingCard extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("hass")) {
       this._fetchBindingForMatterDevice();
+      initGlobalNodeDeviceMapping(this.hass);
     }
   }
 
@@ -123,30 +165,15 @@ export class MatterDeviceBindingCard extends LitElement {
           </ha-icon-button>
         </h1>
         <main class="card-content">
-          <header class="header-row header-title">
-            <span class="header-column">source endpoint</span>
-            <span class="header-columns">
-              <span>target node</span>
-              <span>target endpoint</span>
-            </span>
-            <span style="flex:0.2"></span>
-          </header>
-
           ${this.bindings
             ? Object.entries(this.bindings).map(
                 ([key, value]) => html`
                   ${value.map(
                     (nodeItem, index) => html`
                       <section class="header-row binding-row">
-                        <span class="binding-column">${key}</span>
                         <span class="binding-columns">
                           <span>
                             ${nodeItem.node == null ? "null" : nodeItem.node}
-                          </span>
-                          <span>
-                            ${nodeItem.endpoint == null
-                              ? "null"
-                              : nodeItem.endpoint}
                           </span>
                         </span>
                         <ha-button
@@ -231,7 +258,6 @@ export class MatterDeviceBindingCard extends LitElement {
       flex: 0.5;
       align-items: center;
       gap: 2px;
-      border-bottom: 2px solid #333;
       padding-bottom: 8px;
     }
 

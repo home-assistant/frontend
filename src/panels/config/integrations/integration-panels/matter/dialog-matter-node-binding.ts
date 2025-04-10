@@ -19,6 +19,10 @@ import type { HomeAssistant } from "../../../../../types";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { MatterNodeBindingDialogParams } from "./show-dialog-matter-node-binding";
+import {
+  getDeviceIdByNodeId,
+  getNodeIdByDeviceId,
+} from "./matter-device-binding-card";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -80,19 +84,9 @@ class DialogMatterNodeBinding extends LitElement {
 
   private _bindTargetChanged(event: ItemSelectedEvent): void {
     const index = Number(event.target!.value);
-    const target_identifier = Object.values(
-      this._bindableDevices[index].identifiers
-    )
-      .filter((identifier) => identifier[0] === "matter")
-      .map((value) => value[1]);
-
-    if (target_identifier) {
-      const target_node_id = parseInt(
-        String(target_identifier).split("-")[1],
-        16
-      );
-      this.targetNodeId = target_node_id;
-    }
+    this.targetNodeId = Number(
+      getNodeIdByDeviceId(this._bindableDevices[index].id)
+    );
   }
 
   protected render() {
