@@ -681,8 +681,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         const areaName = area ? computeAreaName(area) : undefined;
 
         const deviceFullName = deviceName
-          ? duplicatedDevicesNames.has(deviceName)
-            ? `${deviceName}${areaName ? ` (${areaName})` : ""}`
+          ? duplicatedDevicesNames.has(deviceName) && areaName
+            ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
 
