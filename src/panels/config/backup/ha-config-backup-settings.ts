@@ -267,35 +267,38 @@ class HaConfigBackupSettings extends LitElement {
                 : nothing}
             </div>
           </ha-card>
-          <ha-card>
-            <div class="card-header">
-              ${this.hass.localize(
-                "ui.panel.config.backup.settings.addon_update_backup.title"
-              )}
-            </div>
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.backup.settings.addon_update_backup.description"
-                )}
-              </p>
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.config.backup.settings.addon_update_backup.local_only"
-                )}
-              </p>
-              ${this._supervisorUpdateConfigError
-                ? html`<ha-alert alert-type="error">
-                    ${this._supervisorUpdateConfigError}
-                  </ha-alert>`
-                : nothing}
-              <ha-backup-config-addon
-                .hass=${this.hass}
-                .supervisorUpdateConfig=${this._supervisorUpdateConfig}
-                @update-config-changed=${this._supervisorUpdateConfigChanged}
-              ></ha-backup-config-addon>
-            </div>
-          </ha-card>
+          ${supervisor
+            ? html` <ha-card>
+                <div class="card-header">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.settings.addon_update_backup.title"
+                  )}
+                </div>
+                <div class="card-content">
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.addon_update_backup.description"
+                    )}
+                  </p>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.addon_update_backup.local_only"
+                    )}
+                  </p>
+                  ${this._supervisorUpdateConfigError
+                    ? html`<ha-alert alert-type="error">
+                        ${this._supervisorUpdateConfigError}
+                      </ha-alert>`
+                    : nothing}
+                  <ha-backup-config-addon
+                    .hass=${this.hass}
+                    .supervisorUpdateConfig=${this._supervisorUpdateConfig}
+                    @update-config-changed=${this
+                      ._supervisorUpdateConfigChanged}
+                  ></ha-backup-config-addon>
+                </div>
+              </ha-card>`
+            : nothing}
           <ha-card>
             <div class="card-header">
               ${this.hass.localize(

@@ -358,14 +358,14 @@ class HaBackupConfigSchedule extends LitElement {
                   .value=${this.supervisorUpdateConfig?.core_backup_before_update?.toString() ||
                   "false"}
                 >
-                  <ha-md-select-option .value=${"false"}>
+                  <ha-md-select-option value="false">
                     <div slot="headline">
                       ${this.hass.localize(
                         "ui.panel.config.backup.schedule.update_preference.skip_backups"
                       )}
                     </div>
                   </ha-md-select-option>
-                  <ha-md-select-option .value=${"true"}>
+                  <ha-md-select-option value="true">
                     <div slot="headline">
                       ${this.hass.localize(
                         "ui.panel.config.backup.schedule.update_preference.backup_before_update"
