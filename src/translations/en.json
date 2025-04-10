@@ -2520,6 +2520,12 @@
             "retention_units": {
               "copies": "backups",
               "days": "days"
+            },
+            "update_preference": {
+              "label": "Backup preference when updating",
+              "supporting_text": "This can be adjusted each time",
+              "skip_backups": "Skip backups",
+              "backup_before_update": "Backup before update"
             }
           },
           "encryption_key": {
@@ -2699,6 +2705,14 @@
             "encryption_key": {
               "title": "Encryption key",
               "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download it as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+            },
+            "addon_update_backup": {
+              "title": "Add-on update backups",
+              "description": "Creates a backup of your add-on and its data. That way you can keep around the previous version of the add-on, so you can always roll back to it if needed.",
+              "local_only": "This backup is only saved on this system.",
+              "retention_description": "Prevent your system from filling up with old versions.",
+              "error_load": "Error loading supervisor update config: {error}",
+              "error_save": "Error saving supervisor update config: {error}"
             }
           },
           "details": {
