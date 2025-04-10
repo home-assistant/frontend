@@ -982,6 +982,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-trailing-space: 4px;
         }
 
+        ha-user-badge {
+          flex-shrink: 0;
+        }
+
         .spacer {
           flex: 1;
           pointer-events: none;
