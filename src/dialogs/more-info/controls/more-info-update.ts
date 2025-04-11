@@ -64,7 +64,8 @@ class MoreInfoUpdate extends LitElement {
     try {
       const config = await getSupervisorUpdateConfig(this.hass);
 
-      if (type === "home_assistant") {
+      // for home assistant and OS updates
+      if (this._isHaOrOsUpdate(type)) {
         this._createBackup = config.core_backup_before_update;
         return;
       }
@@ -83,6 +84,10 @@ class MoreInfoUpdate extends LitElement {
     this._entitySources = await fetchEntitySourcesWithCache(this.hass);
   }
 
+  private _isHaOrOsUpdate(type: UpdateType): boolean {
+    return ["home_assistant", "home_assistant_os"].includes(type);
+  }
+
   private _computeCreateBackupTexts():
     | { title: string; description?: string }
     | undefined {
@@ -97,8 +102,7 @@ class MoreInfoUpdate extends LitElement {
       ? getUpdateType(this.stateObj, this._entitySources)
       : "generic";
 
-    // Automatic or manual for Home Assistant update
-    if (updateType === "home_assistant") {
+    if (this._isHaOrOsUpdate(updateType)) {
       const isBackupConfigValid =
         !!this._backupConfig &&
         !!this._backupConfig.automatic_backups_configured &&
@@ -350,11 +354,12 @@ class MoreInfoUpdate extends LitElement {
         const type = getUpdateType(this.stateObj!, this._entitySources!);
         if (
           isComponentLoaded(this.hass, "hassio") &&
-          ["home_assistant", "addon"].includes(type)
+          ["addon", "home_assistant", "home_assistant_os"].includes(type)
         ) {
           this._fetchUpdateBackupConfig(type);
         }
-        if (type === "home_assistant") {
+
+        if (this._isHaOrOsUpdate(type)) {
           this._fetchBackupConfig();
         }
       });
