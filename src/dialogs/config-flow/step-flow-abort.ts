@@ -55,7 +55,7 @@ class StepFlowAbort extends LitElement {
   private async _handleMissingCreds() {
     // Prompt to enter credentials and restart integration setup
     showAddApplicationCredentialDialog(this.params.dialogParentElement!, {
-      selectedDomain: this.entryId,
+      selectedDomain: this.domain,
       manifest: this.params.manifest,
       applicationCredentialAddedCallback: () => {
         showConfigFlowDialog(this.params.dialogParentElement!, {
