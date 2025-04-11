@@ -38,6 +38,7 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 import "./ha-service-section-icon";
+import { hasTemplate } from "../common/string/has-template";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -590,7 +591,17 @@ export class HaServiceControl extends LitElement {
       return nothing;
     }
 
-    const selector = dataField?.selector ?? { text: undefined };
+    const fieldDataHasTemplate =
+      this._value?.data && hasTemplate(this._value.data[dataField.key]);
+
+    const selector =
+      fieldDataHasTemplate &&
+      typeof this._value!.data![dataField.key] === "string"
+        ? { template: undefined }
+        : fieldDataHasTemplate &&
+            typeof this._value!.data![dataField.key] === "object"
+          ? { object: undefined }
+          : (dataField?.selector ?? { text: undefined });
 
     const showOptional = showOptionalToggle(dataField);
 
