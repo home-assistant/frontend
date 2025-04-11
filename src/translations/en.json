@@ -1560,6 +1560,11 @@
           "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
+        "stop": {
+          "confirm_title": "Stop Home Assistant?",
+          "confirm_description": "This will interrupt all running automations and scripts.",
+          "confirm_action": "Stop"
+        },
         "reboot": {
           "title": "Reboot system",
           "description": "Restarts the system running Home Assistant and all add-ons.",
