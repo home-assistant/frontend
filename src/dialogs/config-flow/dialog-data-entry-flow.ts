@@ -356,6 +356,7 @@ class DataEntryFlowDialog extends LitElement {
         this._processStep(
           this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
         );
+        this._progress = undefined;
       }),
       subscribeDataEntryFlowProgress(this.hass.connection, (ev) => {
         // ha-progress-ring has an issue with 0 so we round up
