@@ -94,7 +94,14 @@ const tryDescribeAction = <T extends ActionType>(
 
     const targets: string[] = [];
     const targetOrData = config.target || config.data;
-    if (targetOrData) {
+    if (typeof targetOrData === "string" && isTemplate(targetOrData)) {
+      targets.push(
+        hass.localize(
+          `${actionTranslationBaseKey}.service.description.target_template`,
+          { name: "target" }
+        )
+      );
+    } else if (targetOrData) {
       for (const [key, name] of Object.entries({
         area_id: "areas",
         device_id: "devices",
