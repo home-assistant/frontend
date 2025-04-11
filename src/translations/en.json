@@ -1294,7 +1294,6 @@
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",
             "automatic_description_none": "No automatic backup yet.",
-            "os_backups_not_supported": "Backups of the OS are not supported.",
             "manual": "Create manual backup before update",
             "manual_description": "Includes Home Assistant settings and history.",
             "addon": "Keep backup of the last version",
