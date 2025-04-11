@@ -130,6 +130,7 @@ export class HuiPictureEntityCardEditor
         .data=${data}
         .schema=${SCHEMA}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       </div>
@@ -167,6 +168,19 @@ export class HuiPictureEntityCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "aspect_ratio":
+        return typeof this._config?.grid_options?.rows === "number"
+          ? this.hass!.localize(
+              `ui.panel.lovelace.editor.card.generic.aspect_ratio_ignored`
+            )
+          : "";
+      default:
+        return "";
     }
   };
 

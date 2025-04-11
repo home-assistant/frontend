@@ -63,6 +63,8 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: PictureGlanceCardConfig;
 
   private _entitiesDialog?: PictureGlanceEntityConfig[];
@@ -199,6 +201,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const ignoreAspectRatio =
+      this.layout === "grid" &&
+      typeof this._config.grid_options?.rows === "number";
+
     return html`
       <ha-card>
         <hui-image
@@ -226,7 +232,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           .cameraImage=${this._config.camera_image}
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
-          .aspectRatio=${this._config.aspect_ratio}
+          .fitMode=${this._config.fit_mode}
+          .aspectRatio=${ignoreAspectRatio
+            ? undefined
+            : this._config.aspect_ratio}
         ></hui-image>
         <div class="box">
           ${this._config.title
