@@ -65,7 +65,7 @@ class MoreInfoUpdate extends LitElement {
       const config = await getSupervisorUpdateConfig(this.hass);
 
       // for home assistant and OS updates
-      if (type.startsWith("home_assistant")) {
+      if (this._isHaOrOsUpdate(type)) {
         this._createBackup = config.core_backup_before_update;
         return;
       }
@@ -84,6 +84,10 @@ class MoreInfoUpdate extends LitElement {
     this._entitySources = await fetchEntitySourcesWithCache(this.hass);
   }
 
+  private _isHaOrOsUpdate(type: UpdateType): boolean {
+    return ["home_assistant", "home_assistant_os"].includes(type);
+  }
+
   private _computeCreateBackupTexts():
     | { title: string; description?: string }
     | undefined {
@@ -98,8 +102,7 @@ class MoreInfoUpdate extends LitElement {
       ? getUpdateType(this.stateObj, this._entitySources)
       : "generic";
 
-    // Automatic or manual for Home Assistant and HA OS update
-    if (updateType.startsWith("home_assistant")) {
+    if (this._isHaOrOsUpdate(updateType)) {
       const isBackupConfigValid =
         !!this._backupConfig &&
         !!this._backupConfig.automatic_backups_configured &&
@@ -356,8 +359,7 @@ class MoreInfoUpdate extends LitElement {
           this._fetchUpdateBackupConfig(type);
         }
 
-        // For Home Assistant and OS updates
-        if (type.startsWith("home_assistant")) {
+        if (this._isHaOrOsUpdate(type)) {
           this._fetchBackupConfig();
         }
       });
