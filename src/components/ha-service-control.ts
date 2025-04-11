@@ -102,6 +102,8 @@ export class HaServiceControl extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
+  private _stickySelector: Record<string, any> = {};
+
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
       this.hass.loadBackendTranslation("services");
@@ -601,7 +603,13 @@ export class HaServiceControl extends LitElement {
         : fieldDataHasTemplate &&
             typeof this._value!.data![dataField.key] === "object"
           ? { object: undefined }
-          : (dataField?.selector ?? { text: undefined });
+          : (this._stickySelector[dataField.key] ??
+            dataField?.selector ?? { text: undefined });
+
+    if (fieldDataHasTemplate) {
+      // Hold this selector type until the field is cleared
+      this._stickySelector[dataField.key] = selector;
+    }
 
     const showOptional = showOptionalToggle(dataField);
 
@@ -704,6 +712,7 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys.delete(key);
       data = { ...this._value?.data };
       delete data[key];
+      delete this._stickySelector[key];
     }
     if (data) {
       fireEvent(this, "value-changed", {
@@ -827,6 +836,10 @@ export class HaServiceControl extends LitElement {
 
   private _serviceDataChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    if (ev.detail.isValid === false) {
+      // Don't clear an object selector that returns invalid YAML
+      return;
+    }
     const key = (ev.currentTarget as any).key;
     const value = ev.detail.value;
     if (
@@ -839,8 +852,13 @@ export class HaServiceControl extends LitElement {
 
     const data = { ...this._value?.data, [key]: value };
 
-    if (value === "" || value === undefined) {
+    if (
+      value === "" ||
+      value === undefined ||
+      (typeof value === "object" && !Object.keys(value).length)
+    ) {
       delete data[key];
+      delete this._stickySelector[key];
     }
 
     fireEvent(this, "value-changed", {
