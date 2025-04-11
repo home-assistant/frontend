@@ -58,6 +58,12 @@ interface RestoreBackupEvent {
   state: RestoreBackupState;
 }
 
+export type ManagerState =
+  | "idle"
+  | "create_backup"
+  | "receive_backup"
+  | "restore_backup";
+
 export type ManagerStateEvent =
   | IdleEvent
   | CreateBackupEvent
