@@ -324,6 +324,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       height: 100%;
       box-sizing: border-box;
     }
+    hui-image {
+      height: 100%;
+    }
     hui-image.clickable {
       cursor: pointer;
     }
