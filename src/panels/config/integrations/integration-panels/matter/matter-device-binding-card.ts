@@ -18,6 +18,7 @@ import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 import type { MatterNodeBinding } from "../../../../../data/matter";
 
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   getMatterNodeBinding,
   setMatterNodeBinding,
@@ -27,6 +28,8 @@ import { MatterDeviceMapper } from "./matter-binding-node-device-mapper";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
+  value?: string;
+  index?: number;
 }
 
 declare global {
@@ -50,29 +53,41 @@ export class MatterDeviceBindingCard extends LitElement {
   @state()
   private deviceMapper?: MatterDeviceMapper;
 
+  private async _deleteBinding(
+    endpoint: string,
+    index: number
+  ): Promise<boolean> {
+    const bindings = this.bindings![endpoint];
+    if (!bindings) return false;
+
+    bindings.splice(index, 1);
+    const ret = await setMatterNodeBinding(
+      this.hass,
+      this.device.id,
+      Number(endpoint),
+      bindings
+    );
+
+    return ret[0].Status === 0;
+  }
+
   async handleDeleteClickCallback(event: Event) {
-    const button = event.target as HTMLElement;
-    const index = Number(button.dataset.index);
-    const source_endpoint = button.dataset.endpoint!;
+    try {
+      const button = event.target as HTMLElement;
+      const index = Number(button.dataset.index);
+      const source_endpoint = button.dataset.endpoint!;
 
-    // const device_id = this.device.id;
-    const bindings = this.bindings![source_endpoint];
-
-    if (bindings) {
-      // remove data
-      bindings.splice(index, 1);
-      // send to device
-      const ret = await setMatterNodeBinding(
-        this.hass,
-        this.device.id,
-        Number(source_endpoint),
-        bindings
-      );
-
-      if (ret[0].Status === 0) {
+      const success = await this._deleteBinding(source_endpoint, index);
+      if (success) {
         this.bindings![source_endpoint].splice(index, 1);
         this.requestUpdate();
+      } else {
+        throw new Error("Failed to delete binding");
       }
+    } catch (_error) {
+      fireEvent(this, "hass-notification", {
+        message: "Failed to delete binding",
+      });
     }
   }
 
@@ -164,12 +179,12 @@ export class MatterDeviceBindingCard extends LitElement {
                     (nodeItem, index) => html`
                       <section class="binding-row">
                         <ha-list-item twoline graphic="icon">
-                          <span
-                            >${this.getDeviceNameByNodeId(nodeItem.node)}
+                          <span>
+                            ${this.getDeviceNameByNodeId(nodeItem.node)}
                           </span>
-                          <span slot="secondary"
-                            >${"node id: " + nodeItem.node}</span
-                          >
+                          <span slot="secondary">
+                            ${"node id: " + nodeItem.node}
+                          </span>
                           <ha-svg-icon
                             .path=${mdiDevices}
                             slot="graphic"
@@ -217,44 +232,9 @@ export class MatterDeviceBindingCard extends LitElement {
       gap: 5px;
     }
 
-    .header-row {
-      display: flex;
-      padding: 2px;
-      height: 30px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .header-title {
-      font-weight: bold;
-      gap: 4px;
-      border-bottom: 2px solid #333;
-      padding-bottom: 8px;
-    }
-
-    .header-column {
-      flex: 0.3;
-      text-align: center;
-    }
-
-    .header-columns {
-      display: flex;
-      flex: 0.5;
-      align-items: anchor-center;
-    }
-
-    .header-columns span {
-      flex: 0.5;
-      text-align: center;
-    }
-
-    .grid-container {
-      display: flex;
-      height: 36px;
-    }
-
     .binding-row {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 2px;
       padding-bottom: 8px;
@@ -266,23 +246,6 @@ export class MatterDeviceBindingCard extends LitElement {
 
     .binding-row ha-button {
       flex: 0.3;
-    }
-
-    .binding-column {
-      text-align: center;
-      flex: 0.3;
-    }
-
-    .binding-columns {
-      display: flex;
-      flex: 0.5;
-      gap: 4px;
-      text-align: center;
-    }
-
-    .binding-columns span {
-      flex: 0.5;
-      text-align: center;
     }
   `;
 }

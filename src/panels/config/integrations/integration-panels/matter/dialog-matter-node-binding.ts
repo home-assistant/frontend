@@ -21,6 +21,8 @@ import { createCloseHeading } from "../../../../../components/ha-dialog";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
+  value?: string;
+  index?: number;
 }
 
 @customElement("dialog-matter-node-binding")
@@ -37,8 +39,6 @@ class DialogMatterNodeBinding extends LitElement {
 
   @state() private deviceMapper?: MatterDeviceMapper;
 
-  @state() private targetNodeId = -1;
-
   public async showDialog(
     params: MatterNodeBindingDialogParams
   ): Promise<void> {
@@ -48,26 +48,41 @@ class DialogMatterNodeBinding extends LitElement {
     this._params = params;
   }
 
-  private _handleAddClick(_event: Event) {
-    // check target node id
-    if (this.targetNodeId === -1) return;
-
-    const nodeBinding: MatterNodeBinding = {
-      node: this.targetNodeId,
+  private _createNodeBinding(nodeId: number): MatterNodeBinding {
+    return {
+      node: nodeId,
       group: null,
       endpoint: 1,
       cluster: null,
       fabricIndex: null,
     };
-    const ishas = this.bindings![1].some(
-      (node) =>
-        node.node === nodeBinding.node && node.endpoint === nodeBinding.endpoint
+  }
+
+  private _isBindingExists(binding: MatterNodeBinding): boolean {
+    return this.bindings![1].some(
+      (node) => node.node === binding.node && node.endpoint === binding.endpoint
     );
-    if (!ishas) {
-      this.bindings![1].push(nodeBinding);
-      this._params?.onUpdate(this.bindings!);
+  }
+
+  private _handleAddClick(_event: Event) {
+    try {
+      const select = this.shadowRoot!.querySelector("ha-select")!;
+      const index = Number(select.value);
+      const device = this._bindableDevices[index];
+      const nodeId = Number(this.deviceMapper!.getNodeIdByDeviceId(device.id));
+
+      const nodeBinding = this._createNodeBinding(nodeId);
+      if (!this._isBindingExists(nodeBinding)) {
+        this.bindings![1].push(nodeBinding);
+        this._params?.onUpdate(this.bindings!);
+      }
+    } catch (_error) {
+      fireEvent(this, "hass-notification", {
+        message: "Failed to add binding",
+      });
+    } finally {
+      this.closeDialog();
     }
-    this.closeDialog();
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -78,13 +93,6 @@ class DialogMatterNodeBinding extends LitElement {
           device.id !== this.device_id
       );
     }
-  }
-
-  private _bindTargetChanged(event: ItemSelectedEvent): void {
-    const index = Number(event.target!.value);
-    this.targetNodeId = Number(
-      this.deviceMapper!.getNodeIdByDeviceId(this._bindableDevices[index].id)
-    );
   }
 
   protected render() {
@@ -99,21 +107,15 @@ class DialogMatterNodeBinding extends LitElement {
         .heading=${createCloseHeading(this.hass, "Binding Target")}
       >
         <section class="binding-controls">
-          <ha-select
-            @selected=${this._bindTargetChanged}
-            @closed=${stopPropagation}
-            fixedMenuPosition
-          >
+          <ha-select @closed=${stopPropagation} fixedMenuPosition>
             ${this._bindableDevices.map(
               (device) => html`
                 <ha-list-item twoline graphic="icon">
                   <span>${device.name_by_user || device.name}</span>
-                  <span slot="secondary"
-                    >${"node id: " +
-                    String(
-                      this.deviceMapper?.getNodeIdByDeviceId(device.id)
-                    )}</span
-                  >
+                  <span slot="secondary">
+                    ${"node id: " +
+                    String(this.deviceMapper?.getNodeIdByDeviceId(device.id))}
+                  </span>
                   <ha-svg-icon .path=${mdiDevices} slot="graphic"></ha-svg-icon>
                 </ha-list-item>
               `
