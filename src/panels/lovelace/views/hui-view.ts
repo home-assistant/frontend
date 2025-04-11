@@ -239,7 +239,7 @@ export class HUIView extends ReactiveElement {
     // Don't ask if the config is the same
     if (!deepEqual(newConfig, oldConfig)) {
       if (force) {
-        this._initializeConfig();
+        this._setConfig(newConfig, true);
       } else {
         fireEvent(this, "strategy-config-changed");
       }
@@ -321,12 +321,10 @@ export class HUIView extends ReactiveElement {
     };
   }
 
-  private async _initializeConfig() {
-    const rawConfig = this.lovelace.config.views[this.index];
-    const isStrategy = isStrategyView(rawConfig);
-
-    const viewConfig = await this._generateConfig(rawConfig);
-
+  private async _setConfig(
+    viewConfig: LovelaceViewConfig,
+    isStrategy: boolean
+  ) {
     // Create a new layout element if necessary.
     let addLayoutElement = false;
 
@@ -353,6 +351,15 @@ export class HUIView extends ReactiveElement {
       }
       this.appendChild(this._layoutElement!);
     }
+  }
+
+  private async _initializeConfig() {
+    const rawConfig = this.lovelace.config.views[this.index];
+
+    const viewConfig = await this._generateConfig(rawConfig);
+    const isStrategy = isStrategyView(viewConfig);
+
+    this._setConfig(viewConfig, isStrategy);
   }
 
   private _createLayoutElement(config: LovelaceViewConfig): void {
