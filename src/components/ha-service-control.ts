@@ -102,7 +102,7 @@ export class HaServiceControl extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  private _stickySelector: Record<string, any> = {};
+  private _stickySelector: Record<string, Selector> = {};
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
@@ -599,12 +599,12 @@ export class HaServiceControl extends LitElement {
     const selector =
       fieldDataHasTemplate &&
       typeof this._value!.data![dataField.key] === "string"
-        ? { template: undefined }
+        ? { template: null }
         : fieldDataHasTemplate &&
             typeof this._value!.data![dataField.key] === "object"
-          ? { object: undefined }
+          ? { object: null }
           : (this._stickySelector[dataField.key] ??
-            dataField?.selector ?? { text: undefined });
+            dataField?.selector ?? { text: null });
 
     if (fieldDataHasTemplate) {
       // Hold this selector type until the field is cleared
