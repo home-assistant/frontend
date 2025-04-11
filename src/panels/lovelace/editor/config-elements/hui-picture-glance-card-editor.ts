@@ -1,11 +1,16 @@
+import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { array, assert, assign, object, optional, string } from "superstruct";
-import { mdiGestureTap } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { ActionConfig } from "../../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureGlanceCardConfig } from "../../cards/types";
@@ -37,68 +42,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  { name: "image", selector: { image: {} } },
-  {
-    name: "image_entity",
-    selector: { entity: { domain: ["image", "person"] } },
-  },
-  { name: "camera_image", selector: { entity: { domain: "camera" } } },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "camera_view",
-        selector: { select: { options: ["auto", "live"] } },
-      },
-      { name: "aspect_ratio", selector: { text: {} } },
-    ],
-  },
-  { name: "entity", selector: { entity: {} } },
-  { name: "theme", selector: { theme: {} } },
-  {
-    name: "interactions",
-    type: "expandable",
-    flatten: true,
-    iconPath: mdiGestureTap,
-    schema: [
-      {
-        name: "tap_action",
-        selector: {
-          ui_action: {
-            default_action: "more-info",
-          },
-        },
-      },
-      {
-        name: "hold_action",
-        selector: {
-          ui_action: {
-            default_action: "more-info",
-          },
-        },
-      },
-      {
-        name: "",
-        type: "optional_actions",
-        flatten: true,
-        schema: [
-          {
-            name: "double_tap_action",
-            selector: {
-              ui_action: {
-                default_action: "none",
-              },
-            },
-          },
-        ],
-      },
-    ],
-  },
-] as const;
-
 @customElement("hui-picture-glance-card-editor")
 export class HuiPictureGlanceCardEditor
   extends LitElement
@@ -109,6 +52,97 @@ export class HuiPictureGlanceCardEditor
   @state() private _config?: PictureGlanceCardConfig;
 
   @state() private _configEntities?: EntityConfig[];
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "title", selector: { text: {} } },
+        { name: "image", selector: { image: {} } },
+        {
+          name: "image_entity",
+          selector: { entity: { domain: ["image", "person"] } },
+        },
+        { name: "camera_image", selector: { entity: { domain: "camera" } } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "camera_view",
+              required: true,
+              selector: {
+                select: {
+                  options: ["auto", "live"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                    ),
+                  })),
+                  mode: "dropdown",
+                },
+              },
+            },
+            {
+              name: "fit_mode",
+              required: true,
+              selector: {
+                select: {
+                  options: ["cover", "contain", "fill"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.generic.fit_mode_options.${value}`
+                    ),
+                  })),
+                  mode: "dropdown",
+                },
+              },
+            },
+            { name: "aspect_ratio", selector: { text: {} } },
+          ],
+        },
+        { name: "entity", selector: { entity: {} } },
+        { name: "theme", selector: { theme: {} } },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+            },
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: [
+                {
+                  name: "double_tap_action",
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ] as const satisfies HaFormSchema[]
+  );
 
   public setConfig(config: PictureGlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -129,13 +163,15 @@ export class HuiPictureGlanceCardEditor
       return nothing;
     }
 
-    const data = { camera_view: "auto", ...this._config };
+    const data = { camera_view: "auto", fit_mode: "cover", ...this._config };
+
+    const schema = this._schema(this.hass.localize);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${SCHEMA}
+        .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -166,7 +202,9 @@ export class HuiPictureGlanceCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "theme":
       case "tap_action":
@@ -188,7 +226,9 @@ export class HuiPictureGlanceCardEditor
     }
   };
 
-  private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "aspect_ratio":
         return typeof this._config?.grid_options?.rows === "number"

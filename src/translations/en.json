@@ -7129,9 +7129,19 @@
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
               "camera_view": "Camera view",
+              "camera_view_options": {
+                "auto": "Auto",
+                "live": "Live"
+              },
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
+              "fit_mode": "Fit mode",
+              "fit_mode_options": {
+                "contain": "Contain",
+                "cover": "Cover",
+                "fill": "Fill"
+              },
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
