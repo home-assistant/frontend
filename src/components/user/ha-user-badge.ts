@@ -50,7 +50,9 @@ class UserBadge extends LitElement {
 
     if (picture) {
       return html`<div
-        style=${styleMap({ backgroundImage: `url(${picture})` })}
+        style=${styleMap({
+          backgroundImage: `url(${this.hass.hassUrl(picture)})`,
+        })}
         class="picture"
       ></div>`;
     }
@@ -82,21 +84,24 @@ class UserBadge extends LitElement {
 
   static styles = css`
     :host {
-      display: contents;
-    }
-    .picture {
+      display: block;
       width: 40px;
       height: 40px;
+    }
+    .picture {
+      width: 100%;
+      height: 100%;
       background-size: cover;
       border-radius: 50%;
     }
     .initials {
-      display: inline-block;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
       box-sizing: border-box;
-      width: 40px;
-      line-height: 40px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
-      text-align: center;
       background-color: var(--light-primary-color);
       text-decoration: none;
       color: var(--text-light-primary-color, var(--primary-text-color));

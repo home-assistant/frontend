@@ -52,7 +52,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             @click=${this._closeDialog}
           ></ha-icon-button>
@@ -98,7 +98,7 @@ class DialogShowBackupEncryptionKey extends LitElement implements HassDialog {
         </div>
         <div slot="actions">
           <ha-button @click=${this._closeDialog}>
-            ${this.hass.localize("ui.dialogs.generic.close")}
+            ${this.hass.localize("ui.common.close")}
           </ha-button>
         </div>
       </ha-md-dialog>

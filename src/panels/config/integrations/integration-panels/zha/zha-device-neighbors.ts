@@ -7,7 +7,7 @@ import type {
   DataTableColumnContainer,
   DataTableRowData,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-code-editor";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices } from "../../../../../data/zha";
@@ -116,10 +116,7 @@ class ZHADeviceNeighbors extends LitElement {
     }
     return html`
       ${!this._devices
-        ? html`<ha-circular-progress
-            size="large"
-            indeterminate
-          ></ha-circular-progress>`
+        ? html`<ha-spinner size="large"></ha-spinner>`
         : html`<ha-data-table
             .hass=${this.hass}
             .columns=${this._columns(this.narrow)}

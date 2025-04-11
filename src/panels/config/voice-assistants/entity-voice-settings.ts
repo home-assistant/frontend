@@ -6,13 +6,13 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type {
-  EntityFilter,
-  FilterFunc,
-} from "../../../common/entity/entity_filter";
+  EntityDomainFilter,
+  EntityDomainFilterFunc,
+} from "../../../common/entity/entity_domain_filter";
 import {
-  generateFilter,
-  isEmptyFilter,
-} from "../../../common/entity/entity_filter";
+  generateEntityDomainFilter,
+  isEmptyEntityDomainFilter,
+} from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-aliases-editor";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
@@ -101,14 +101,14 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private _getEntityFilterFuncs = memoizeOne(
-    (googleFilter: EntityFilter, alexaFilter: EntityFilter) => ({
-      google: generateFilter(
+    (googleFilter: EntityDomainFilter, alexaFilter: EntityDomainFilter) => ({
+      google: generateEntityDomainFilter(
         googleFilter.include_domains,
         googleFilter.include_entities,
         googleFilter.exclude_domains,
         googleFilter.exclude_entities
       ),
-      alexa: generateFilter(
+      alexa: generateEntityDomainFilter(
         alexaFilter.include_domains,
         alexaFilter.include_entities,
         alexaFilter.exclude_domains,
@@ -131,10 +131,12 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     const alexaManual =
       alexaEnabled &&
-      !isEmptyFilter((this._cloudStatus as CloudStatusLoggedIn).alexa_entities);
+      !isEmptyEntityDomainFilter(
+        (this._cloudStatus as CloudStatusLoggedIn).alexa_entities
+      );
     const googleManual =
       googleEnabled &&
-      !isEmptyFilter(
+      !isEmptyEntityDomainFilter(
         (this._cloudStatus as CloudStatusLoggedIn).google_entities
       );
 
@@ -159,8 +161,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     let manFilterFuncs:
       | {
-          google: FilterFunc;
-          alexa: FilterFunc;
+          google: EntityDomainFilterFunc;
+          alexa: EntityDomainFilterFunc;
         }
       | undefined;
 

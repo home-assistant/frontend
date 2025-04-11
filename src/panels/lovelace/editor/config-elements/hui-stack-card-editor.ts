@@ -6,12 +6,11 @@ import {
   mdiListBoxOutline,
   mdiPlus,
 } from "@mdi/js";
-import "@polymer/paper-tabs";
-import "@polymer/paper-tabs/paper-tab";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import {
   any,
   array,
@@ -21,17 +20,17 @@ import {
   optional,
   string,
 } from "superstruct";
-import { keyed } from "lit/directives/keyed";
+import { storage } from "../../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { storage } from "../../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-icon-button-arrow-prev";
 import "../../../../components/ha-icon-button-arrow-next";
+import "../../../../components/ha-icon-button-arrow-prev";
+import "../../../../components/sl-tab-group";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
@@ -85,7 +84,7 @@ export class HuiStackCardEditor
 
   @state() protected _guiModeAvailable? = true;
 
-  protected _keys = new WeakMap<LovelaceCardConfig, string>();
+  protected _keys = new Map<string, string>();
 
   protected _schema: readonly HaFormSchema[] = SCHEMA;
 
@@ -124,24 +123,18 @@ export class HuiStackCardEditor
       ></ha-form>
       <div class="card-config">
         <div class="toolbar">
-          <paper-tabs
-            .selected=${selected}
-            scrollable
-            @iron-activate=${this._handleSelectedCard}
-          >
+          <sl-tab-group @sl-tab-show=${this._handleSelectedCard}>
             ${this._config.cards.map(
-              (_card, i) => html` <paper-tab> ${i + 1} </paper-tab> `
+              (_card, i) =>
+                html`<sl-tab slot="nav" .panel=${i} .active=${i === selected}>
+                  ${i + 1}
+                </sl-tab>`
             )}
-          </paper-tabs>
-          <paper-tabs
-            id="add-card"
-            .selected=${selected === numcards ? "0" : undefined}
-            @iron-activate=${this._handleSelectedCard}
-          >
-            <paper-tab>
-              <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-            </paper-tab>
-          </paper-tabs>
+          </sl-tab-group>
+          <ha-icon-button
+            @click=${this._handleAddCard}
+            .path=${mdiPlus}
+          ></ha-icon-button>
         </div>
 
         <div id="editor">
@@ -203,7 +196,7 @@ export class HuiStackCardEditor
                   ></ha-icon-button>
                 </div>
                 ${keyed(
-                  this._getKey(this._config.cards[selected]),
+                  this._getKey(this._config.cards, selected),
                   html`<hui-card-element-editor
                     .hass=${this.hass}
                     .value=${this._config.cards[selected]}
@@ -225,22 +218,25 @@ export class HuiStackCardEditor
     `;
   }
 
-  private _getKey(card: LovelaceCardConfig) {
-    if (!this._keys.has(card)) {
-      this._keys.set(card, Math.random().toString());
+  private _getKey(cards: LovelaceCardConfig[], index: number): string {
+    const key = `${cards[index].type}${index}${cards.length}`;
+    if (!this._keys.has(key)) {
+      this._keys.set(key, Math.random().toString());
     }
 
-    return this._keys.get(card)!;
+    return this._keys.get(key)!;
+  }
+
+  protected async _handleAddCard() {
+    this._selectedCard = this._config!.cards.length;
+    await this.updateComplete;
+    this.renderRoot.querySelector("sl-tab-group")!.syncIndicator();
   }
 
   protected _handleSelectedCard(ev) {
-    if (ev.target.id === "add-card") {
-      this._selectedCard = this._config!.cards.length;
-      return;
-    }
     this._setMode(true);
     this._guiModeAvailable = true;
-    this._selectedCard = parseInt(ev.detail.selected, 10);
+    this._selectedCard = parseInt(ev.detail.name, 10);
   }
 
   protected _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
@@ -249,10 +245,8 @@ export class HuiStackCardEditor
       return;
     }
     const cards = [...this._config.cards];
-    const key = this._getKey(cards[this._selectedCard]);
     const newCard = ev.detail.config as LovelaceCardConfig;
     cards[this._selectedCard] = newCard;
-    this._keys.set(newCard, key);
     this._config = { ...this._config, cards };
     this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
@@ -266,6 +260,7 @@ export class HuiStackCardEditor
     const config = ev.detail.config;
     const cards = [...this._config.cards, config];
     this._config = { ...this._config, cards };
+    this._keys.clear();
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -289,6 +284,7 @@ export class HuiStackCardEditor
     cards.splice(this._selectedCard, 1);
     this._config = { ...this._config, cards };
     this._selectedCard = Math.max(0, this._selectedCard - 1);
+    this._keys.clear();
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -307,6 +303,7 @@ export class HuiStackCardEditor
       cards,
     };
     this._selectedCard = target;
+    this._keys.clear();
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -342,17 +339,13 @@ export class HuiStackCardEditor
       css`
         .toolbar {
           display: flex;
-          --paper-tabs-selection-bar-color: var(--primary-color);
-          --paper-tab-ink: var(--primary-color);
+          justify-content: space-between;
+          align-items: center;
         }
-        paper-tabs {
-          display: flex;
-          font-size: 14px;
+        sl-tab-group {
           flex-grow: 1;
-        }
-        #add-card {
-          max-width: 32px;
-          padding: 0;
+          min-width: 0;
+          --ha-tab-track-color: var(--card-background-color);
         }
 
         #card-options {

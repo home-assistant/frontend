@@ -212,17 +212,16 @@ export class StateBadge extends LitElement {
       css`
         :host {
           position: relative;
-          display: inline-block;
+          display: inline-flex;
           width: 40px;
           color: var(--paper-item-icon-color, #44739e);
           border-radius: var(--state-badge-border-radius, 50%);
           height: 40px;
-          text-align: center;
           background-size: cover;
-          line-height: 40px;
-          vertical-align: middle;
           box-sizing: border-box;
           --state-inactive-color: initial;
+          align-items: center;
+          justify-content: center;
         }
         :host(.has-image) {
           border-radius: var(

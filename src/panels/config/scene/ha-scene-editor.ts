@@ -1,6 +1,6 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list";
 import { consume } from "@lit-labs/context";
+import "@material/mwc-list/mwc-list";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -21,19 +21,18 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
-import "../../../components/ha-area-picker";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-alert";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -41,8 +40,8 @@ import "../../../components/ha-icon-picker";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
+import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import { computeDeviceName } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import type {
@@ -65,14 +64,15 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../ha-config-section";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
 
 interface DeviceEntities {
   id: string;
@@ -175,7 +175,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
           const device = deviceLookup[deviceId];
           const deviceEntities: string[] = deviceEntityLookup[deviceId] || [];
           outputDevices.push({
-            name: computeDeviceName(
+            name: computeDeviceNameDisplay(
               device,
               this.hass,
               this._deviceEntityLookup[device.id]

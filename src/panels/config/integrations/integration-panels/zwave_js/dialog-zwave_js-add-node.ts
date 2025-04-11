@@ -8,7 +8,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-alert";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
@@ -116,10 +116,8 @@ class DialogZWaveJSAddNode extends LitElement {
     if (params.dsk) {
       this._status = "validate_dsk_enter_pin";
       this._dsk = params.dsk;
-      this._startInclusion(undefined, params.dsk);
-    } else {
-      this._startInclusion();
     }
+    this._startInclusion();
   }
 
   @query("#pin-input") private _pinInput?: HaTextField;
@@ -148,14 +146,11 @@ class DialogZWaveJSAddNode extends LitElement {
       >
         ${this._status === "loading"
           ? html`<div style="display: flex; justify-content: center;">
-              <ha-circular-progress
-                size="large"
-                indeterminate
-              ></ha-circular-progress>
+              <ha-spinner size="large"></ha-spinner>
             </div>`
           : this._status === "waiting_for_device"
             ? html`<div class="flex-container">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
                 <p>
                   ${this.hass.localize(
                     "ui.panel.config.zwave_js.add_node.waiting_for_device"
@@ -340,9 +335,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                 "ui.panel.config.zwave_js.add_node.searching_device"
                               )}
                             </h3>
-                            <ha-circular-progress
-                              indeterminate
-                            ></ha-circular-progress>
+                            <ha-spinner></ha-spinner>
                             <p>
                               ${this.hass.localize(
                                 "ui.panel.config.zwave_js.add_node.follow_device_instructions"
@@ -357,9 +350,7 @@ class DialogZWaveJSAddNode extends LitElement {
                                       "ui.panel.config.zwave_js.add_node.searching_device"
                                     )}
                                   </h2>
-                                  <ha-circular-progress
-                                    indeterminate
-                                  ></ha-circular-progress>
+                                  <ha-spinner></ha-spinner>
                                   <p>
                                     ${this.hass.localize(
                                       "ui.panel.config.zwave_js.add_node.follow_device_instructions"
@@ -411,9 +402,7 @@ class DialogZWaveJSAddNode extends LitElement {
                           : this._status === "interviewing"
                             ? html`
                                 <div class="flex-container">
-                                  <ha-circular-progress
-                                    indeterminate
-                                  ></ha-circular-progress>
+                                  <ha-spinner></ha-spinner>
                                   <div class="status">
                                     <p>
                                       <b
@@ -1006,7 +995,7 @@ class DialogZWaveJSAddNode extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
           margin-inline-end: 20px;

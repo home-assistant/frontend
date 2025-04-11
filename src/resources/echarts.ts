@@ -13,6 +13,7 @@ import {
   GridComponent,
   DataZoomComponent,
   VisualMapComponent,
+  ToolboxComponent,
 } from "echarts/components";
 
 // Features like Universal Transition and Label Layout
@@ -27,6 +28,7 @@ import type {
   BarSeriesOption,
   LineSeriesOption,
   CustomSeriesOption,
+  SankeySeriesOption,
 } from "echarts/charts";
 import type {
   // The component option types are defined with the ComponentOption suffix
@@ -50,6 +52,7 @@ export type ECOption = ComposeOption<
   | GridComponentOption
   | DataZoomComponentOption
   | VisualMapComponentOption
+  | SankeySeriesOption
 >;
 
 // Register the required components
@@ -67,6 +70,7 @@ echarts.use([
   LabelLayout,
   UniversalTransition,
   CanvasRenderer,
+  ToolboxComponent,
 ]);
 
 export default echarts;

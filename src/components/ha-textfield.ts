@@ -149,6 +149,10 @@ export class HaTextField extends TextFieldBase {
         text-align: var(--text-field-text-align, start);
       }
 
+      input[type="color"] {
+        height: 20px;
+      }
+
       /* Edge, hide reveal password icon */
       ::-ms-reveal {
         display: none;
@@ -159,6 +163,10 @@ export class HaTextField extends TextFieldBase {
       :host([no-spinner]) input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
+      }
+
+      input[type="color"]::-webkit-color-swatch-wrapper {
+        padding: 0;
       }
 
       /* Firefox */

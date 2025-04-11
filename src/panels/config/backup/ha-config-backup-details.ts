@@ -14,7 +14,8 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
@@ -146,7 +147,9 @@ class HaConfigBackupDetails extends LitElement {
                 </ha-alert>
               `
             : !this._backup
-              ? html`<ha-circular-progress active></ha-circular-progress>`
+              ? html`<ha-fade-in .delay=${1000}
+                  ><ha-spinner></ha-spinner
+                ></ha-fade-in>`
               : html`
                   <ha-backup-details-summary
                     .backup=${this._backup}
@@ -356,6 +359,9 @@ class HaConfigBackupDetails extends LitElement {
       gap: 24px;
       display: grid;
       margin-bottom: 24px;
+    }
+    ha-spinner {
+      margin: 24px auto;
     }
     .card-content {
       padding: 0 20px;

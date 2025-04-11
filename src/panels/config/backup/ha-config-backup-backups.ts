@@ -27,7 +27,7 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
@@ -428,15 +428,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                     "ui.panel.config.backup.backups.delete_selected"
                   )}
                   .path=${mdiDelete}
-                  id="delete-btn"
                   class="warning"
                   @click=${this._deleteSelected}
                 ></ha-icon-button>
-                <simple-tooltip animation-delay="0" for="delete-btn">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                </simple-tooltip>
               `}
         </div>
 
@@ -462,11 +456,8 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
                 @click=${this._newBackup}
               >
                 ${backupInProgress
-                  ? html`<div slot="icon">
-                      <ha-circular-progress
-                        .size=${"small"}
-                        indeterminate
-                      ></ha-circular-progress>
+                  ? html`<div slot="icon" class="loading">
+                      <ha-spinner .size=${"small"}></ha-spinner>
                     </div>`
                   : html`<ha-svg-icon
                       slot="icon"
@@ -505,7 +496,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   }
 
   private get _needsOnboarding() {
-    return !this.config?.create_backup.password;
+    return !this.config?.automatic_backups_configured;
   }
 
   private async _uploadBackup(ev) {
@@ -619,8 +610,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
-        ha-circular-progress {
-          --md-sys-color-primary: var(--mdc-theme-on-secondary);
+        .loading {
+          display: flex;
+        }
+        ha-spinner {
+          --ha-spinner-indicator-color: var(--mdc-theme-on-secondary);
         }
       `,
     ];

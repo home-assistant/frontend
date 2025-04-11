@@ -20,6 +20,7 @@ const LOAD_ELEMENTS = {
     import("./ha-form-positive_time_period_dict"),
   select: () => import("./ha-form-select"),
   string: () => import("./ha-form-string"),
+  optional_actions: () => import("./ha-form-optional_actions"),
 };
 
 const getValue = (obj, item) =>

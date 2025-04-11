@@ -81,10 +81,8 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
             ${Object.entries(this._params.entry.manufacturer_data).map(
               ([key, value]) => html`
                 <tr>
-                  ${key}
-                </tr>
-                <tr>
-                  ${this.showDataAsHex(value)}
+                  <td><b>${key}</b></td>
+                  <td>${this.showDataAsHex(value)}</td>
                 </tr>
               `
             )}
@@ -97,10 +95,23 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
             ${Object.entries(this._params.entry.service_data).map(
               ([key, value]) => html`
                 <tr>
-                  ${key}
+                  <td><b>${key}</b></td>
+                  <td>${this.showDataAsHex(value)}</td>
                 </tr>
+              `
+            )}
+          </tbody>
+        </table>
+
+        <h4>
+          ${this.hass.localize("ui.panel.config.bluetooth.service_uuids")}
+        </h4>
+        <table width="100%">
+          <tbody>
+            ${this._params.entry.service_uuids.map(
+              (uuid) => html`
                 <tr>
-                  ${this.showDataAsHex(value)}
+                  <td>${uuid}</td>
                 </tr>
               `
             )}

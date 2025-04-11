@@ -22,9 +22,10 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import { showToast } from "../../../util/toast";
 import type { HaSwitch } from "../../../components/ha-switch";
 import { obfuscateUrl } from "../../../util/url";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 
 @customElement("ha-config-url-form")
-class ConfigUrlForm extends LitElement {
+class ConfigUrlForm extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -48,6 +49,15 @@ class ConfigUrlForm extends LitElement {
   @state() private _unmaskedInternalUrl = false;
 
   @state() private _cloudChecked = false;
+
+  protected hassSubscribe() {
+    return [
+      this.hass.connection.subscribeEvents(() => {
+        // update the data when the urls are updated in core
+        this._fetchUrls();
+      }, "core_config_updated"),
+    ];
+  }
 
   protected render() {
     const canEdit = ["storage", "default"].includes(
@@ -361,7 +371,6 @@ class ConfigUrlForm extends LitElement {
           ? this._internal_url || null
           : null,
       });
-      await this._fetchUrls();
     } catch (err: any) {
       this._error = err.message || err;
     } finally {

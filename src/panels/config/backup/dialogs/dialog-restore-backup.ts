@@ -5,7 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-password-field";
 
@@ -30,6 +30,7 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { RestoreBackupDialogParams } from "./show-dialog-restore-backup";
+import { waitForIntegrationSetup } from "../../../../data/integration";
 
 interface FormData {
   encryption_key_type: "config" | "custom";
@@ -139,7 +140,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
           ></ha-icon-button>
@@ -239,7 +240,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
 
   private _renderProgress() {
     return html`<div class="centered">
-      <ha-circular-progress indeterminate></ha-circular-progress>
+      <ha-spinner></ha-spinner>
       <p>
         ${this.hass.connected
           ? this._restoreState()
@@ -280,26 +281,36 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
   }
 
   private _subscribeBackupEvents() {
-    this._unsub = subscribeBackupEvents(this.hass!, (event) => {
-      if (event.manager_state === "idle" && this._state === "in_progress") {
-        this.closeDialog();
+    this._unsub = subscribeBackupEvents(
+      this.hass!,
+      (event) => {
+        if (event.manager_state === "idle" && this._state === "in_progress") {
+          this.closeDialog();
+        }
+        if (event.manager_state !== "restore_backup") {
+          return;
+        }
+        this._state = event.state;
+        if (event.state === "completed") {
+          this.closeDialog();
+        }
+        if (event.state === "failed") {
+          this._error = this.hass.localize(
+            "ui.panel.config.backup.dialogs.restore.restore_failed"
+          );
+        }
+        if (event.state === "in_progress") {
+          this._stage = event.stage;
+        }
+      },
+      async () => {
+        if (isComponentLoaded(this.hass, "backup")) {
+          return true;
+        }
+        return (await waitForIntegrationSetup(this.hass, "backup"))
+          .integration_loaded;
       }
-      if (event.manager_state !== "restore_backup") {
-        return;
-      }
-      this._state = event.state;
-      if (event.state === "completed") {
-        this.closeDialog();
-      }
-      if (event.state === "failed") {
-        this._error = this.hass.localize(
-          "ui.panel.config.backup.dialogs.restore.restore_failed"
-        );
-      }
-      if (event.state === "in_progress") {
-        this._stage = event.stage;
-      }
-    });
+    );
   }
 
   private _unsubscribe() {
@@ -366,7 +377,7 @@ class DialogRestoreBackup extends LitElement implements HassDialog {
           flex-direction: column;
           align-items: center;
         }
-        ha-circular-progress {
+        ha-spinner {
           margin-bottom: 16px;
         }
         ha-alert[alert-type="warning"] {

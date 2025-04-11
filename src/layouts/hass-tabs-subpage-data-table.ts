@@ -1,15 +1,14 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-button/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiTableCog,
   mdiFilterVariant,
   mdiFilterVariantRemove,
   mdiFormatListChecks,
   mdiMenuDown,
+  mdiTableCog,
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
 } from "@mdi/js";
@@ -28,18 +27,17 @@ import type {
   HaDataTable,
   SortingDirection,
 } from "../components/data-table/ha-data-table";
-import "../components/ha-md-button-menu";
+import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
 import "../components/ha-dialog";
 import "../components/ha-dialog-header";
+import "../components/ha-md-button-menu";
 import "../components/ha-md-divider";
-import type { HaMenu } from "../components/ha-menu";
 import "../components/ha-md-menu-item";
 import "../components/search-input-outlined";
+import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import { showDataTableSettingsDialog } from "../components/data-table/show-dialog-data-table-settings";
-import { KeyboardShortcutMixin } from "../mixins/keyboard-shortcut-mixin";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
@@ -186,10 +184,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
-  @query("#group-by-menu") private _groupByMenu!: HaMenu;
-
-  @query("#sort-by-menu") private _sortByMenu!: HaMenu;
-
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
   protected supportedShortcuts(): SupportedShortcuts {
@@ -210,21 +204,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (this.hasUpdated) {
       return;
     }
-    if (this.initialGroupColumn) {
+    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
       this._setGroupColumn(this.initialGroupColumn);
     }
-    if (this.initialSorting) {
+    if (this.initialSorting && this.columns[this.initialSorting.column]) {
       this._sortColumn = this.initialSorting.column;
       this._sortDirection = this.initialSorting.direction;
     }
-  }
-
-  private _toggleGroupBy() {
-    this._groupByMenu.open = !this._groupByMenu.open;
-  }
-
-  private _toggleSortBy() {
-    this._sortByMenu.open = !this._sortByMenu.open;
   }
 
   protected render(): TemplateResult {
@@ -270,37 +256,115 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     const sortByMenu = Object.values(this.columns).find((col) => col.sortable)
       ? html`
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.sort_by", {
-              sortColumn: this._sortColumn
-                ? ` ${this.columns[this._sortColumn]?.title || this.columns[this._sortColumn]?.label}` ||
-                  ""
-                : "",
-            })}
-            id="sort-by-anchor"
-            @click=${this._toggleSortBy}
-          >
-            <ha-svg-icon
-              slot="trailing-icon"
-              .path=${mdiMenuDown}
-            ></ha-svg-icon>
-          </ha-assist-chip>
+          <ha-md-button-menu positioning="popover">
+            <ha-assist-chip
+              slot="trigger"
+              .label=${localize("ui.components.subpage-data-table.sort_by", {
+                sortColumn:
+                  this._sortColumn && this.columns[this._sortColumn]
+                    ? ` ${this.columns[this._sortColumn].title || this.columns[this._sortColumn].label}` ||
+                      ""
+                    : "",
+              })}
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon>
+            </ha-assist-chip>
+            ${Object.entries(this.columns).map(([id, column]) =>
+              column.sortable
+                ? html`
+                    <ha-md-menu-item
+                      .value=${id}
+                      @click=${this._handleSortBy}
+                      @keydown=${this._handleSortBy}
+                      keep-open
+                      .selected=${id === this._sortColumn}
+                      class=${classMap({ selected: id === this._sortColumn })}
+                    >
+                      ${this._sortColumn === id
+                        ? html`
+                            <ha-svg-icon
+                              slot="end"
+                              .path=${this._sortDirection === "desc"
+                                ? mdiArrowDown
+                                : mdiArrowUp}
+                            ></ha-svg-icon>
+                          `
+                        : nothing}
+                      ${column.title || column.label}
+                    </ha-md-menu-item>
+                  `
+                : nothing
+            )}
+          </ha-md-button-menu>
         `
       : nothing;
 
     const groupByMenu = Object.values(this.columns).find((col) => col.groupable)
       ? html`
-          <ha-assist-chip
-            .label=${localize("ui.components.subpage-data-table.group_by", {
-              groupColumn: this._groupColumn
-                ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
-                : "",
-            })}
-            id="group-by-anchor"
-            @click=${this._toggleGroupBy}
-          >
-            <ha-svg-icon slot="trailing-icon" .path=${mdiMenuDown}></ha-svg-icon
-          ></ha-assist-chip>
+          <ha-md-button-menu positioning="popover">
+            <ha-assist-chip
+              .label=${localize("ui.components.subpage-data-table.group_by", {
+                groupColumn:
+                  this._groupColumn && this.columns[this._groupColumn]
+                    ? ` ${this.columns[this._groupColumn].title || this.columns[this._groupColumn].label}`
+                    : "",
+              })}
+              slot="trigger"
+            >
+              <ha-svg-icon
+                slot="trailing-icon"
+                .path=${mdiMenuDown}
+              ></ha-svg-icon
+            ></ha-assist-chip>
+            ${Object.entries(this.columns).map(([id, column]) =>
+              column.groupable
+                ? html`
+                    <ha-md-menu-item
+                      .value=${id}
+                      .clickAction=${this._handleGroupBy}
+                      .selected=${id === this._groupColumn}
+                      class=${classMap({ selected: id === this._groupColumn })}
+                    >
+                      ${column.title || column.label}
+                    </ha-md-menu-item>
+                  `
+                : nothing
+            )}
+            <ha-md-menu-item
+              .value=${""}
+              .clickAction=${this._handleGroupBy}
+              .selected=${!this._groupColumn}
+              class=${classMap({ selected: !this._groupColumn })}
+            >
+              ${localize("ui.components.subpage-data-table.dont_group_by")}
+            </ha-md-menu-item>
+            <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+            <ha-md-menu-item
+              .clickAction=${this._collapseAllGroups}
+              .disabled=${!this._groupColumn}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiUnfoldLessHorizontal}
+              ></ha-svg-icon>
+              ${localize(
+                "ui.components.subpage-data-table.collapse_all_groups"
+              )}
+            </ha-md-menu-item>
+            <ha-md-menu-item
+              .clickAction=${this._expandAllGroups}
+              .disabled=${!this._groupColumn}
+            >
+              <ha-svg-icon
+                slot="start"
+                .path=${mdiUnfoldMoreHorizontal}
+              ></ha-svg-icon>
+              ${localize("ui.components.subpage-data-table.expand_all_groups")}
+            </ha-md-menu-item>
+          </ha-md-button-menu>
         `
       : nothing;
 
@@ -337,7 +401,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                     "ui.components.subpage-data-table.exit_selection_mode"
                   )}
                 ></ha-icon-button>
-                <ha-md-button-menu positioning="absolute">
+                <ha-md-button-menu>
                   <ha-assist-chip
                     .label=${localize(
                       "ui.components.subpage-data-table.select"
@@ -494,79 +558,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
               </ha-data-table>`}
         <div slot="fab"><slot name="fab"></slot></div>
       </hass-tabs-subpage>
-      <ha-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
-        ${Object.entries(this.columns).map(([id, column]) =>
-          column.groupable
-            ? html`
-                <ha-md-menu-item
-                  .value=${id}
-                  .clickAction=${this._handleGroupBy}
-                  .selected=${id === this._groupColumn}
-                  class=${classMap({ selected: id === this._groupColumn })}
-                >
-                  ${column.title || column.label}
-                </ha-md-menu-item>
-              `
-            : nothing
-        )}
-        <ha-md-menu-item
-          .value=${undefined}
-          .clickAction=${this._handleGroupBy}
-          .selected=${this._groupColumn === undefined}
-          class=${classMap({ selected: this._groupColumn === undefined })}
-        >
-          ${localize("ui.components.subpage-data-table.dont_group_by")}
-        </ha-md-menu-item>
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-        <ha-md-menu-item
-          .clickAction=${this._collapseAllGroups}
-          .disabled=${this._groupColumn === undefined}
-        >
-          <ha-svg-icon
-            slot="start"
-            .path=${mdiUnfoldLessHorizontal}
-          ></ha-svg-icon>
-          ${localize("ui.components.subpage-data-table.collapse_all_groups")}
-        </ha-md-menu-item>
-        <ha-md-menu-item
-          .clickAction=${this._expandAllGroups}
-          .disabled=${this._groupColumn === undefined}
-        >
-          <ha-svg-icon
-            slot="start"
-            .path=${mdiUnfoldMoreHorizontal}
-          ></ha-svg-icon>
-          ${localize("ui.components.subpage-data-table.expand_all_groups")}
-        </ha-md-menu-item>
-      </ha-menu>
-      <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
-        ${Object.entries(this.columns).map(([id, column]) =>
-          column.sortable
-            ? html`
-                <ha-md-menu-item
-                  .value=${id}
-                  @click=${this._handleSortBy}
-                  @keydown=${this._handleSortBy}
-                  keep-open
-                  .selected=${id === this._sortColumn}
-                  class=${classMap({ selected: id === this._sortColumn })}
-                >
-                  ${this._sortColumn === id
-                    ? html`
-                        <ha-svg-icon
-                          slot="end"
-                          .path=${this._sortDirection === "desc"
-                            ? mdiArrowDown
-                            : mdiArrowUp}
-                        ></ha-svg-icon>
-                      `
-                    : nothing}
-                  ${column.title || column.label}
-                </ha-md-menu-item>
-              `
-            : nothing
-        )}
-      </ha-menu>
       ${this.showFilters && !showPane
         ? html`<ha-dialog
             open
@@ -922,8 +913,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       flex-direction: column;
     }
 
-    #sort-by-anchor,
-    #group-by-anchor,
     ha-md-button-menu ha-assist-chip {
       --md-assist-chip-trailing-space: 8px;
     }

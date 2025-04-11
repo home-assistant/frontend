@@ -33,6 +33,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-service-icon";
+import "../../../../components/ha-tooltip";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
@@ -202,20 +203,24 @@ export default class HaAutomationActionRow extends LitElement {
               </div>
             `
           : nothing}
-        <ha-expansion-panel leftChevron>
-          <h3 slot="header">
-            ${type === "service" &&
-            "action" in this.action &&
-            this.action.action
-              ? html`<ha-service-icon
+        <ha-expansion-panel left-chevron>
+          ${type === "service" && "action" in this.action && this.action.action
+            ? html`
+                <ha-service-icon
+                  slot="leading-icon"
                   class="action-icon"
                   .hass=${this.hass}
                   .service=${this.action.action}
-                ></ha-service-icon>`
-              : html`<ha-svg-icon
+                ></ha-service-icon>
+              `
+            : html`
+                <ha-svg-icon
+                  slot="leading-icon"
                   class="action-icon"
                   .path=${ACTION_ICONS[type!]}
-                ></ha-svg-icon>`}
+                ></ha-svg-icon>
+              `}
+          <h3 slot="header">
             ${capitalizeFirstLetter(
               describeAction(
                 this.hass,
@@ -231,14 +236,14 @@ export default class HaAutomationActionRow extends LitElement {
 
           ${type !== "condition" &&
           (this.action as NonConditionAction).continue_on_error === true
-            ? html`<div slot="icons">
+            ? html`<ha-tooltip
+                slot="icons"
+                .content=${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.continue_on_error"
+                )}
+              >
                 <ha-svg-icon .path=${mdiAlertCircleCheck}></ha-svg-icon>
-                <simple-tooltip animation-delay="0">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.continue_on_error"
-                  )}
-                </simple-tooltip>
-              </div> `
+              </ha-tooltip>`
             : nothing}
 
           <ha-md-button-menu
@@ -639,9 +644,6 @@ export default class HaAutomationActionRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {
@@ -650,14 +652,27 @@ export default class HaAutomationActionRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
         .warning ul {
           margin: 4px 0;
         }
         ha-md-menu-item > ha-svg-icon {
           --mdc-icon-size: 24px;
+        }
+        ha-tooltip {
+          cursor: default;
         }
       `,
     ];

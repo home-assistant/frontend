@@ -18,7 +18,7 @@ import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-yaml-editor";
@@ -303,6 +303,7 @@ export class HuiDialogEditView extends LitElement {
             `
           : nothing}
         <ha-button
+          class="save"
           slot="primaryAction"
           ?disabled=${!this._config ||
           this._saving ||
@@ -312,11 +313,7 @@ export class HuiDialogEditView extends LitElement {
           @click=${this._save}
         >
           ${this._saving
-            ? html`<ha-circular-progress
-                indeterminate
-                size="small"
-                aria-label="Saving"
-              ></ha-circular-progress>`
+            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
             : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >
@@ -668,6 +665,15 @@ export class HuiDialogEditView extends LitElement {
         }
         ha-alert ha-button {
           display: block;
+        }
+        ha-button.save {
+          position: relative;
+        }
+        .save ha-spinner {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
 
         @media all and (min-width: 600px) {

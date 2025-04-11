@@ -23,7 +23,7 @@ export type Selector =
   | ActionSelector
   | AddonSelector
   | AreaSelector
-  | AreaFilterSelector
+  | AreasDisplaySelector
   | AttributeSelector
   | BooleanSelector
   | ButtonToggleSelector
@@ -92,8 +92,8 @@ export interface AreaSelector {
   } | null;
 }
 
-export interface AreaFilterSelector {
-  area_filter: {} | null;
+export interface AreasDisplaySelector {
+  areas_display: {} | null;
 }
 
 export interface AttributeSelector {
@@ -170,6 +170,7 @@ interface DeviceSelectorFilter {
   integration?: string;
   manufacturer?: string;
   model?: string;
+  model_id?: string;
 }
 
 export interface DeviceSelector {
@@ -343,9 +344,17 @@ export interface AssistPipelineSelector {
   } | null;
 }
 
+interface SelectBoxOptionImage {
+  src: string;
+  src_dark?: string;
+  flip_rtl?: boolean;
+}
+
 export interface SelectOption {
   value: any;
   label: string;
+  description?: string;
+  image?: string | SelectBoxOptionImage;
   disabled?: boolean;
 }
 
@@ -353,11 +362,12 @@ export interface SelectSelector {
   select: {
     multiple?: boolean;
     custom_value?: boolean;
-    mode?: "list" | "dropdown";
+    mode?: "list" | "dropdown" | "box";
     options: readonly string[] | readonly SelectOption[];
     translation_key?: string;
     sort?: boolean;
     reorder?: boolean;
+    box_max_columns?: number;
   } | null;
 }
 
@@ -692,10 +702,13 @@ export const deviceMeetsTargetSelector = (
 };
 
 export const entityMeetsTargetSelector = (
-  entity: HassEntity,
+  entity: HassEntity | undefined,
   targetSelector: TargetSelector,
   entitySources?: EntitySources
 ): boolean => {
+  if (!entity) {
+    return false;
+  }
   if (targetSelector.target?.entity) {
     return ensureArray(targetSelector.target!.entity).some((filterEntity) =>
       filterSelectorEntities(filterEntity, entity, entitySources)
@@ -712,6 +725,7 @@ export const filterSelectorDevices = (
   const {
     manufacturer: filterManufacturer,
     model: filterModel,
+    model_id: filterModelId,
     integration: filterIntegration,
   } = filterDevice;
 
@@ -720,6 +734,10 @@ export const filterSelectorDevices = (
   }
 
   if (filterModel && device.model !== filterModel) {
+    return false;
+  }
+
+  if (filterModelId && device.model_id !== filterModelId) {
     return false;
   }
 

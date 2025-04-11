@@ -7,7 +7,7 @@ import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-icon-button";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
@@ -171,12 +171,11 @@ export class ZHAGroupPage extends LitElement {
                     class="button"
                   >
                     ${this._processingRemove
-                      ? html`<ha-circular-progress
-                          indeterminate
+                      ? html`<ha-spinner
                           .ariaLabel=${this.hass.localize(
                             "ui.panel.config.zha.groups.removing_members"
                           )}
-                        ></ha-circular-progress>`
+                        ></ha-spinner>`
                       : nothing}
                     ${this.hass!.localize(
                       "ui.panel.config.zha.groups.remove_members"
@@ -208,11 +207,10 @@ export class ZHAGroupPage extends LitElement {
               class="button"
             >
               ${this._processingAdd
-                ? html`<ha-circular-progress
-                    active
+                ? html`<ha-spinner
                     size="small"
                     aria-label="Saving"
-                  ></ha-circular-progress>`
+                  ></ha-spinner>`
                 : ""}
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.add_members"

@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { html } from "lit";
 import { customElement, state } from "lit/decorators";
+import type { Connection } from "home-assistant-js-websocket";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
@@ -22,6 +23,7 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
+import { storage } from "../common/decorators/storage";
 
 const useHash = __DEMO__;
 const curPath = () =>
@@ -40,6 +42,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _panelUrl: string;
 
+  @storage({ key: "ha-version", state: false, subscribe: false })
   private _haVersion?: string;
 
   private _hiddenTimeout?: number;
@@ -182,19 +185,25 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected hassReconnected() {
     super.hassReconnected();
+    this._checkUpdate(this.hass!.connection);
+  }
 
+  private _checkUpdate(connection: Connection) {
+    const oldVersion = this._haVersion;
+    const currentVersion = connection.haVersion;
     // If backend has been upgraded, make sure we update frontend
-    if (this.hass!.connection.haVersion !== this._haVersion) {
+    if (currentVersion !== oldVersion) {
+      this._haVersion = currentVersion;
       if (supportsServiceWorker()) {
         navigator.serviceWorker.getRegistration().then((registration) => {
           if (registration) {
             registration.update();
-          } else {
+          } else if (oldVersion) {
             // @ts-ignore Firefox supports forceGet
             location.reload(true);
           }
         });
-      } else {
+      } else if (oldVersion) {
         // @ts-ignore Firefox supports forceGet
         location.reload(true);
       }
@@ -244,7 +253,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       }
 
       const { auth, conn } = result;
-      this._haVersion = conn.haVersion;
+      this._checkUpdate(conn);
       this.initializeHass(auth, conn);
     } catch (_err: any) {
       this._renderInitInfo(true);

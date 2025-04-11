@@ -3,7 +3,7 @@ import {
   mdiAlertCircleOutline,
   mdiDevices,
   mdiPaletteSwatch,
-  mdiSofa,
+  mdiTextureBox,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -211,36 +211,12 @@ export class HaRelatedItems extends LitElement {
                 )}
             </mwc-list>`
         : nothing}
-      ${this._related.device
-        ? html`<h3>
-              ${this.hass.localize("ui.components.related-items.device")}
-            </h3>
-            ${this._related.device.map((relatedDeviceId) => {
-              const device = this.hass.devices[relatedDeviceId];
-              if (!device) {
-                return nothing;
-              }
-              return html`
-                <a href="/config/devices/device/${relatedDeviceId}">
-                  <ha-list-item hasMeta graphic="icon">
-                    <ha-svg-icon
-                      .path=${mdiDevices}
-                      slot="graphic"
-                    ></ha-svg-icon>
-                    ${device.name_by_user || device.name}
-                    <ha-icon-next slot="meta"></ha-icon-next>
-                  </ha-list-item>
-                </a>
-              `;
-            })}            </mwc-list>
-            `
-        : nothing}
       ${this._related.area
         ? html`<h3>
               ${this.hass.localize("ui.components.related-items.area")}
             </h3>
-            <mwc-list
-              >${this._related.area.map((relatedAreaId) => {
+            <mwc-list>
+              ${this._related.area.map((relatedAreaId) => {
                 const area = this.hass.areas[relatedAreaId];
                 if (!area) {
                   return nothing;
@@ -259,17 +235,47 @@ export class HaRelatedItems extends LitElement {
                             })}
                             slot="graphic"
                           ></div>`
-                        : html`<ha-svg-icon
-                            .path=${mdiSofa}
-                            slot="graphic"
-                          ></ha-svg-icon>`}
+                        : area.icon
+                          ? html`<ha-icon
+                              slot="graphic"
+                              .icon=${area.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiTextureBox}
+                            ></ha-svg-icon>`}
                       ${area.name}
                       <ha-icon-next slot="meta"></ha-icon-next>
                     </ha-list-item>
                   </a>
                 `;
-              })}</mwc-list
-            >`
+              })}
+            </mwc-list>`
+        : nothing}
+      ${this._related.device
+        ? html`<h3>
+              ${this.hass.localize("ui.components.related-items.device")}
+            </h3>
+            <mwc-list>
+              ${this._related.device.map((relatedDeviceId) => {
+                const device = this.hass.devices[relatedDeviceId];
+                if (!device) {
+                  return nothing;
+                }
+                return html`
+                  <a href="/config/devices/device/${relatedDeviceId}">
+                    <ha-list-item hasMeta graphic="icon">
+                      <ha-svg-icon
+                        .path=${mdiDevices}
+                        slot="graphic"
+                      ></ha-svg-icon>
+                      ${device.name_by_user || device.name}
+                      <ha-icon-next slot="meta"></ha-icon-next>
+                    </ha-list-item>
+                  </a>
+                `;
+              })}
+            </mwc-list>`
         : nothing}
       ${this._related.entity
         ? html`

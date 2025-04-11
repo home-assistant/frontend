@@ -1,8 +1,9 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
 import memoizeOne from "memoize-one";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -12,7 +13,6 @@ import type { HomeAssistant } from "../../../../types";
 import type { MarkdownCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -45,11 +45,16 @@ export class HuiMarkdownCardEditor
           required: true,
           selector: {
             select: {
-              mode: "dropdown",
+              mode: "box",
               options: ["card", "text-only"].map((style) => ({
                 label: localize(
                   `ui.panel.lovelace.editor.card.markdown.style_options.${style}`
                 ),
+                image: {
+                  src: `/static/images/form/markdown_${style.replace("-", "_")}.svg`,
+                  src_dark: `/static/images/form/markdown_${style.replace("-", "_")}_dark.svg`,
+                  flip_rtl: true,
+                },
                 value: style,
               })),
             },

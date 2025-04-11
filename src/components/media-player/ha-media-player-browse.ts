@@ -4,7 +4,6 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import {
@@ -46,10 +45,11 @@ import "../entity/ha-entity-picker";
 import "../ha-alert";
 import "../ha-button-menu";
 import "../ha-card";
-import "../ha-circular-progress";
+import "../ha-spinner";
 import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
+import "../ha-tooltip";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -325,7 +325,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
 
     if (!this._currentItem) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     const currentItem = this._currentItem;
@@ -603,12 +603,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                 `
               : ""}
           </div>
-          <div class="title">
-            ${child.title}
-            <simple-tooltip fitToVisibleBounds position="top" offset="4"
-              >${child.title}</simple-tooltip
-            >
-          </div>
+          <ha-tooltip distance="-4" .content=${child.title}>
+            <div class="title">${child.title}</div>
+          </ha-tooltip>
         </ha-card>
       </div>
     `;
@@ -876,11 +873,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           direction: ltr;
         }
 
-        ha-circular-progress {
-          --mdc-theme-primary: var(--primary-color);
-          display: flex;
-          justify-content: center;
-          margin: 40px;
+        ha-spinner {
+          margin: 40px auto;
         }
 
         .container {

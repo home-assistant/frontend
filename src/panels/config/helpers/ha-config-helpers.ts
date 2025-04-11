@@ -1,6 +1,5 @@
 import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -52,6 +51,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
   createCategoryRegistryEntry,
@@ -359,12 +359,14 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
-                  <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
-                  <simple-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
+                  <ha-tooltip
+                    placement="left"
+                    .content=${this.hass.localize(
                       "ui.panel.config.entities.picker.status.unmanageable"
                     )}
-                  </simple-tooltip>
+                  >
+                    <ha-svg-icon .path=${mdiPencilOff}></ha-svg-icon>
+                  </ha-tooltip>
                 </div>
               `
             : ""}
@@ -501,7 +503,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         id: e.entity_id,
         entity_id: e.entity_id,
         icon: mdiCancel,
-        name: e.original_name || e.entity_id,
+        name: e.name || e.original_name || e.entity_id,
         editable: true,
         type: e.platform,
         configEntry: undefined,

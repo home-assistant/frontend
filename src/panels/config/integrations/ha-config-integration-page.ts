@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import "@material/mwc-list/mwc-list";
 import {
   mdiAlertCircle,
@@ -400,7 +399,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                ${this._manifest?.quality_scale &&
+                ${this._manifest?.is_built_in &&
+                this._manifest.quality_scale &&
                 Object.keys(QUALITY_SCALE_MAP).includes(
                   this._manifest.quality_scale
                 )
@@ -951,7 +951,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               >
                 <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize(
-                  `component.${item.domain}.config_subentries.${flowType}.title`
+                  `component.${item.domain}.config_subentries.${flowType}.initiate_flow.user`
                 )}</ha-md-menu-item
               >`
           )}
@@ -1060,7 +1060,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     >
       <span slot="headline">${subEntry.title}</span>
       <span slot="supporting-text"
-        >${this._renderDeviceLine(
+        >${this.hass.localize(
+          `component.${configEntry.domain}.config_subentries.${subEntry.subentry_type}.entry_type`
+        )}
+        -
+        ${this._renderDeviceLine(
           configEntry,
           devices,
           services,

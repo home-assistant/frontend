@@ -6,7 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
@@ -245,10 +245,10 @@ export class HuiDialogEditBadge
             ></hui-badge>
             ${this._error
               ? html`
-                  <ha-circular-progress
-                    indeterminate
+                  <ha-spinner
+                    size="small"
                     aria-label="Can't update badge"
-                  ></ha-circular-progress>
+                  ></ha-spinner>
                 `
               : ``}
           </div>
@@ -281,11 +281,10 @@ export class HuiDialogEditBadge
                 >
                   ${this._saving
                     ? html`
-                        <ha-circular-progress
-                          indeterminate
+                        <ha-spinner
                           aria-label="Saving"
                           size="small"
-                        ></ha-circular-progress>
+                        ></ha-spinner>
                       `
                     : this.hass!.localize("ui.common.save")}
                 </mwc-button>
@@ -480,9 +479,9 @@ export class HuiDialogEditBadge
           justify-content: center;
           align-items: center;
         }
-        .element-preview ha-circular-progress {
-          top: 50%;
-          left: 50%;
+        .element-preview ha-spinner {
+          top: calc(50% - 14px);
+          left: calc(50% - 14px);
           position: absolute;
           z-index: 10;
         }

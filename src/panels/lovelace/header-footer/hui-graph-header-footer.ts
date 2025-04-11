@@ -4,7 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -108,10 +108,7 @@ export class HuiGraphHeaderFooter
     if (!this._coordinates) {
       return html`
         <div class="container">
-          <ha-circular-progress
-            indeterminate
-            size="small"
-          ></ha-circular-progress>
+          <ha-spinner size="small"></ha-spinner>
         </div>
       `;
     }
@@ -215,7 +212,7 @@ export class HuiGraphHeaderFooter
   }
 
   static styles = css`
-    ha-circular-progress {
+    ha-spinner {
       position: absolute;
       top: calc(50% - 14px);
     }

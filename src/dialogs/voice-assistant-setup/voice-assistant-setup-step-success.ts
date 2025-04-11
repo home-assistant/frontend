@@ -103,7 +103,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 </ha-select>
                 <ha-button @click=${this._testWakeWord}>
                   <ha-svg-icon slot="icon" .path=${mdiMicrophone}></ha-svg-icon>
-                  Test
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.success.test_wakeword"
+                  )}
                 </ha-button>
               </div>`
             : nothing}
@@ -126,7 +128,9 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 </ha-select>
                 <ha-button @click=${this._openPipeline}>
                   <ha-svg-icon slot="icon" .path=${mdiCog}></ha-svg-icon>
-                  Edit
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.success.edit_pipeline"
+                  )}
                 </ha-button>
               </div>`
             : nothing}
@@ -142,14 +146,20 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
                 ></ha-tts-voice-picker>
                 <ha-button @click=${this._testTts}>
                   <ha-svg-icon slot="icon" .path=${mdiPlay}></ha-svg-icon>
-                  Try
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.satellite_wizard.success.try_tts"
+                  )}
                 </ha-button>
               </div>`
             : nothing}
         </div>
       </div>
       <div class="footer">
-        <ha-button @click=${this._close} unelevated>Done</ha-button>
+        <ha-button @click=${this._close} unelevated
+          >${this.hass.localize(
+            "ui.panel.config.voice_assistants.satellite_wizard.success.done"
+          )}</ha-button
+        >
       </div>`;
   }
 
@@ -246,7 +256,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     if (!this.assistEntityId) {
       return;
     }
-    await assistSatelliteAnnounce(this.hass, this.assistEntityId, message);
+    await assistSatelliteAnnounce(this.hass, this.assistEntityId, {
+      message,
+      preannounce: false,
+    });
   }
 
   private _testWakeWord() {

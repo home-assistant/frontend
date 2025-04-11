@@ -48,6 +48,7 @@ import { loadVirtualizer } from "../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../types";
 import "./ha-domain-integrations";
 import "./ha-integration-list-item";
+import "../../../components/ha-spinner";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
 
@@ -468,7 +469,7 @@ class AddIntegrationDialog extends LitElement {
             </lit-virtualizer>
           </mwc-list>`
         : html`<div class="flex center">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>`} `;
   }
 
@@ -740,7 +741,7 @@ class AddIntegrationDialog extends LitElement {
         justify-content: center;
         align-items: center;
       }
-      ha-circular-progress {
+      ha-spinner {
         margin: 24px 0;
       }
       mwc-list {

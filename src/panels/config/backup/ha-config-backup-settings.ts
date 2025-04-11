@@ -7,20 +7,27 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { debounce } from "../../../common/util/debounce";
 import { nextRender } from "../../../common/util/render-status";
+import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
-import "../../../components/ha-alert";
 import "../../../components/ha-password-field";
 import "../../../components/ha-svg-icon";
 import type { BackupAgent, BackupConfig } from "../../../data/backup";
 import { updateBackupConfig } from "../../../data/backup";
 import type { CloudStatus } from "../../../data/cloud";
+import {
+  getSupervisorUpdateConfig,
+  updateSupervisorUpdateConfig,
+  type SupervisorUpdateConfig,
+} from "../../../data/supervisor/update";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
+import "./components/config/ha-backup-config-addon";
 import "./components/config/ha-backup-config-agents";
 import "./components/config/ha-backup-config-data";
 import type { BackupConfigData } from "./components/config/ha-backup-config-data";
@@ -28,7 +35,6 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
-import { documentationUrl } from "../../../util/documentation-url";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -44,10 +50,18 @@ class HaConfigBackupSettings extends LitElement {
 
   @state() private _config?: BackupConfig;
 
+  @state() private _supervisorUpdateConfig?: SupervisorUpdateConfig;
+
+  @state() private _supervisorUpdateConfigError?: string;
+
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has("config") && !this._config) {
       this._config = this.config;
+    }
+
+    if (!this.hasUpdated && isComponentLoaded(this.hass, "hassio")) {
+      this._getSupervisorUpdateConfig();
     }
   }
 
@@ -56,6 +70,21 @@ class HaConfigBackupSettings extends LitElement {
     this._scrollToSection();
     // Update config the page is displayed (e.g. when coming back from a location detail page)
     this._config = this.config;
+  }
+
+  private async _getSupervisorUpdateConfig() {
+    try {
+      this._supervisorUpdateConfig = await getSupervisorUpdateConfig(this.hass);
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._supervisorUpdateConfigError = this.hass.localize(
+        "ui.panel.config.backup.settings.addon_update_backup.error_load",
+        {
+          error: err?.message || err,
+        }
+      );
+    }
   }
 
   private async _scrollToSection() {
@@ -145,9 +174,17 @@ class HaConfigBackupSettings extends LitElement {
                   "ui.panel.config.backup.settings.schedule.description"
                 )}
               </p>
+              ${this._supervisorUpdateConfigError
+                ? html`<ha-alert alert-type="error">
+                    ${this._supervisorUpdateConfigError}
+                  </ha-alert>`
+                : nothing}
               <ha-backup-config-schedule
                 .hass=${this.hass}
                 .value=${this._config}
+                .supervisor=${supervisor}
+                .supervisorUpdateConfig=${this._supervisorUpdateConfig}
+                @update-config-changed=${this._supervisorUpdateConfigChanged}
                 @value-changed=${this._scheduleConfigChanged}
               ></ha-backup-config-schedule>
             </div>
@@ -230,6 +267,38 @@ class HaConfigBackupSettings extends LitElement {
                 : nothing}
             </div>
           </ha-card>
+          ${supervisor
+            ? html` <ha-card>
+                <div class="card-header">
+                  ${this.hass.localize(
+                    "ui.panel.config.backup.settings.addon_update_backup.title"
+                  )}
+                </div>
+                <div class="card-content">
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.addon_update_backup.description"
+                    )}
+                  </p>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.addon_update_backup.local_only"
+                    )}
+                  </p>
+                  ${this._supervisorUpdateConfigError
+                    ? html`<ha-alert alert-type="error">
+                        ${this._supervisorUpdateConfigError}
+                      </ha-alert>`
+                    : nothing}
+                  <ha-backup-config-addon
+                    .hass=${this.hass}
+                    .supervisorUpdateConfig=${this._supervisorUpdateConfig}
+                    @update-config-changed=${this
+                      ._supervisorUpdateConfigChanged}
+                  ></ha-backup-config-addon>
+                </div>
+              </ha-card>`
+            : nothing}
           <ha-card>
             <div class="card-header">
               ${this.hass.localize(
@@ -260,6 +329,15 @@ class HaConfigBackupSettings extends LitElement {
     }
 
     showLocalBackupLocationDialog(this, {});
+  }
+
+  private async _supervisorUpdateConfigChanged(ev) {
+    const config = ev.detail.value as SupervisorUpdateConfig;
+    this._supervisorUpdateConfig = {
+      ...this._supervisorUpdateConfig!,
+      ...config,
+    };
+    this._debounceSaveSupervisorUpdateConfig();
   }
 
   private _scheduleConfigChanged(ev) {
@@ -328,6 +406,32 @@ class HaConfigBackupSettings extends LitElement {
     this._debounceSave();
   }
 
+  private _debounceSaveSupervisorUpdateConfig = debounce(
+    () => this._saveSupervisorUpdateConfig(),
+    500
+  );
+
+  private async _saveSupervisorUpdateConfig() {
+    if (!this._supervisorUpdateConfig) {
+      return;
+    }
+    try {
+      await updateSupervisorUpdateConfig(
+        this.hass,
+        this._supervisorUpdateConfig
+      );
+    } catch (err: any) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      this._supervisorUpdateConfigError = this.hass.localize(
+        "ui.panel.config.backup.settings.addon_update_backup.error_save",
+        {
+          error: err?.message || err?.toString(),
+        }
+      );
+    }
+  }
+
   private _debounceSave = debounce(() => this._save(), 500);
 
   private async _save() {
@@ -349,6 +453,12 @@ class HaConfigBackupSettings extends LitElement {
   static styles = css`
     ha-card {
       scroll-margin-top: 16px;
+    }
+    p {
+      color: var(--secondary-text-color);
+    }
+    p.error {
+      color: var(--error-color);
     }
     .content {
       padding: 28px 20px 0;

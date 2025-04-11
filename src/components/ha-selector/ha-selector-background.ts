@@ -35,6 +35,14 @@ export class HaBackgroundSelector extends LitElement {
       <div>
         ${this.yamlBackground
           ? html`
+              <div class="value">
+                <img
+                  src=${this.value}
+                  alt=${this.hass.localize(
+                    "ui.components.picture-upload.current_image_alt"
+                  )}
+                />
+              </div>
               <ha-alert alert-type="info">
                 ${this.hass.localize(
                   `ui.components.selectors.background.yaml_info`
@@ -50,7 +58,7 @@ export class HaBackgroundSelector extends LitElement {
               <ha-picture-upload
                 .hass=${this.hass}
                 .value=${this.value?.startsWith(URL_PREFIX) ? this.value : null}
-                .original=${this.selector.background?.original}
+                .original=${!!this.selector.background?.original}
                 .cropOptions=${this.selector.background?.crop}
                 select-media
                 @change=${this._pictureChanged}
@@ -75,6 +83,10 @@ export class HaBackgroundSelector extends LitElement {
       display: block;
       position: relative;
     }
+    ha-picture-upload {
+      background-color: var(--primary-background-color);
+      border-radius: var(--file-upload-image-border-radius);
+    }
     div {
       display: flex;
       flex-direction: column;
@@ -82,6 +94,23 @@ export class HaBackgroundSelector extends LitElement {
     ha-button {
       white-space: nowrap;
       --mdc-theme-primary: var(--primary-color);
+    }
+    .value {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      margin-bottom: 4px;
+      border-radius: var(--file-upload-image-border-radius);
+      transition: opacity 0.3s;
+      opacity: var(--picture-opacity, 1);
+    }
+    img:hover {
+      opacity: 1;
     }
   `;
 }

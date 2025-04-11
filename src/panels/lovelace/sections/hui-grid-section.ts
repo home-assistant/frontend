@@ -7,6 +7,7 @@ import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-ripple";
+import "../../../components/ha-sortable";
 import type { HaSortableOptions } from "../../../components/ha-sortable";
 import type { LovelaceSectionElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -193,7 +194,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   private _cardRemoved(ev) {
     ev.stopPropagation();
-    // Do nothing, it's handle by the "card-added" event from the new parent.
+    // Do nothing, it's handled by the "item-added" event from the new parent.
   }
 
   private _dragStart() {

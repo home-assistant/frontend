@@ -123,7 +123,6 @@ export class HuiEnergyDevicesDetailGraphCard
           })}"
         >
           <ha-chart-base
-            external-hidden
             .hass=${this.hass}
             .data=${this._chartData}
             .options=${this._createOptions(
@@ -193,7 +192,7 @@ export class HuiEnergyDevicesDetailGraphCard
           icon: "circle",
         },
         grid: {
-          top: 45,
+          top: 15,
           bottom: 0,
           left: 1,
           right: 1,
@@ -217,6 +216,16 @@ export class HuiEnergyDevicesDetailGraphCard
 
     const computedStyle = getComputedStyle(this);
 
+    const devices = energyData.prefs.device_consumption;
+
+    const childMap: Record<string, string[]> = {};
+    devices.forEach((d) => {
+      if (d.included_in_stat) {
+        childMap[d.included_in_stat] = childMap[d.included_in_stat] || [];
+        childMap[d.included_in_stat].push(d.stat_consumption);
+      }
+    });
+
     const growthValues = {};
     energyData.prefs.device_consumption.forEach((device) => {
       const value =
@@ -226,11 +235,22 @@ export class HuiEnergyDevicesDetailGraphCard
 
       growthValues[device.stat_consumption] = value;
     });
+    const growthValuesExChildren = {};
+    energyData.prefs.device_consumption.forEach((device) => {
+      growthValuesExChildren[device.stat_consumption] = (
+        childMap[device.stat_consumption] || []
+      ).reduce(
+        (acc, child) => acc - growthValues[child],
+        growthValues[device.stat_consumption]
+      );
+    });
 
     const sorted_devices = energyData.prefs.device_consumption.map(
       (device) => device.stat_consumption
     );
-    sorted_devices.sort((a, b) => growthValues[b] - growthValues[a]);
+    sorted_devices.sort(
+      (a, b) => growthValuesExChildren[b] - growthValuesExChildren[a]
+    );
 
     const datasets: BarSeriesOption[] = [];
 
@@ -255,6 +275,7 @@ export class HuiEnergyDevicesDetailGraphCard
         energyData.statsMetadata,
         energyData.prefs.device_consumption,
         sorted_devices,
+        childMap,
         true
       );
 
@@ -269,25 +290,24 @@ export class HuiEnergyDevicesDetailGraphCard
         );
         datasets.push(untrackedCompareData);
       }
-    } else {
-      // add empty dataset so compare bars are first
-      // `stack: devices` so it doesn't take up space yet
-      const firstId =
-        energyData.prefs.device_consumption[0]?.stat_consumption ?? "untracked";
-      datasets.push({
-        id: "compare-" + firstId,
-        type: "bar",
-        stack: "devices",
-        data: [],
-      });
     }
+
+    // add empty dataset so compare bars are first
+    // `stack: devices` so it doesn't take up space yet
+    datasets.push({
+      id: "compare-placeholder",
+      type: "bar",
+      stack: energyData.statsCompare ? "devicesCompare" : "devices",
+      data: [],
+    });
 
     const processedData = this._processDataSet(
       computedStyle,
       data,
       energyData.statsMetadata,
       energyData.prefs.device_consumption,
-      sorted_devices
+      sorted_devices,
+      childMap
     );
 
     datasets.push(...processedData);
@@ -378,6 +398,7 @@ export class HuiEnergyDevicesDetailGraphCard
     statisticsMetaData: Record<string, StatisticsMetaData>,
     devices: DeviceConsumptionEnergyPreference[],
     sorted_devices: string[],
+    childMap: Record<string, string[]>,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -401,7 +422,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
       const consumptionData: BarSeriesOption["data"] = [];
 
-      // Process gas consumption data.
+      // Process device consumption data.
       if (source.stat_consumption in statistics) {
         const stats = statistics[source.stat_consumption];
 
@@ -416,7 +437,15 @@ export class HuiEnergyDevicesDetailGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const dataPoint = [point.start, point.change];
+          let sumChildren = 0;
+          const children = childMap[source.stat_consumption] || [];
+          children.forEach((c) => {
+            const cStats = statistics[c];
+            sumChildren +=
+              cStats?.find((cStat) => cStat.start === point.start)?.change || 0;
+          });
+
+          const dataPoint = [point.start, point.change - sumChildren];
           if (compare) {
             dataPoint[2] = dataPoint[0];
             dataPoint[0] = compareTransform(new Date(point.start)).getTime();
@@ -426,6 +455,17 @@ export class HuiEnergyDevicesDetailGraphCard
         }
       }
 
+      const name =
+        (source.name ||
+          getStatisticLabel(
+            this.hass,
+            source.stat_consumption,
+            statisticsMetaData[source.stat_consumption]
+          )) +
+        (source.stat_consumption in childMap
+          ? ` (${this.hass.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
+          : "");
+
       data.push({
         type: "bar",
         cursor: "default",
@@ -433,13 +473,7 @@ export class HuiEnergyDevicesDetailGraphCard
         id: compare
           ? `compare-${source.stat_consumption}-${order}`
           : `${source.stat_consumption}-${order}`,
-        name:
-          source.name ||
-          getStatisticLabel(
-            this.hass,
-            source.stat_consumption,
-            statisticsMetaData[source.stat_consumption]
-          ),
+        name,
         itemStyle: {
           borderColor: compare ? color + "7F" : color,
         },
@@ -452,14 +486,15 @@ export class HuiEnergyDevicesDetailGraphCard
     return sorted_devices
       .map(
         (device) =>
-          data.find((d) => {
-            const id = (d.id as string)
-              .replace(/^compare-/, "") // Remove compare- prefix
-              .replace(/-\d+$/, ""); // Remove numeric suffix
-            return id === device;
-          })!
+          data.find((d) => this._getStatIdFromId(d.id as string) === device)!
       )
       .filter(Boolean);
+  }
+
+  private _getStatIdFromId(id: string): string {
+    return id
+      .replace(/^compare-/, "") // Remove compare- prefix
+      .replace(/-\d+$/, ""); // Remove numeric suffix
   }
 
   static styles = css`
