@@ -126,6 +126,8 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
         class=${stream.visible ? "" : "hidden"}
+        .aspectRatio=${this.aspectRatio}
+        .fitMode=${this.fitMode}
       ></ha-hls-player>`;
     }
 
@@ -140,6 +142,8 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
         class=${stream.visible ? "" : "hidden"}
+        .aspectRatio=${this.aspectRatio}
+        .fitMode=${this.fitMode}
       ></ha-web-rtc-player>`;
     }
 
@@ -266,6 +270,16 @@ export class HaCameraStream extends LitElement {
 
     img {
       width: 100%;
+    }
+
+    ha-web-rtc-player {
+      width: 100%;
+      height: 100%;
+    }
+
+    ha-hls-player {
+      width: 100%;
+      height: 100%;
     }
 
     .hidden {

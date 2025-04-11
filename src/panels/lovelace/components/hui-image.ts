@@ -404,6 +404,12 @@ export class HuiImage extends LitElement {
       object-fit: cover;
     }
 
+    ha-camera-stream {
+      display: block;
+      height: 100%;
+      width: 100%;
+    }
+
     .progress-container {
       display: flex;
       justify-content: center;
