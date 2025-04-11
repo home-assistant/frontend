@@ -31,8 +31,8 @@ class StepFlowProgress extends LitElement {
       <div class="content">
         ${this.progress
           ? html`
-              <ha-progress-ring .value=${this.progress} .size=${"large"}
-                >${this.progress}%</ha-progress-ring
+              <ha-progress-ring .value=${this.progress} size="large"
+                >${this.progress}${blankBeforePercent(this.hass.locale)}%</ha-progress-ring
               >
             `
           : html` <ha-spinner size="large"></ha-spinner> `}
