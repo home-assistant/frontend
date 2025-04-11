@@ -1,25 +1,23 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
+import { mdiDevices } from "@mdi/js";
+
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
-import "../../../../../components/ha-button";
 
-import type { MatterNodeBinding } from "../../../../../data/matter";
-
-import { stopPropagation } from "../../../../../common/dom/stop_propagation";
-import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { MatterNodeBindingDialogParams } from "./show-dialog-matter-node-binding";
 import type { MatterDeviceMapper } from "./matter-binding-node-device-mapper";
+import type { MatterNodeBinding } from "../../../../../data/matter";
+
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../../common/dom/stop_propagation";
+import { haStyle, haStyleDialog } from "../../../../../resources/styles";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
@@ -85,7 +83,7 @@ class DialogMatterNodeBinding extends LitElement {
   private _bindTargetChanged(event: ItemSelectedEvent): void {
     const index = Number(event.target!.value);
     this.targetNodeId = Number(
-      this.deviceMapper.getNodeIdByDeviceId(this._bindableDevices[index].id)
+      this.deviceMapper!.getNodeIdByDeviceId(this._bindableDevices[index].id)
     );
   }
 
@@ -98,19 +96,26 @@ class DialogMatterNodeBinding extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, "Matter Node Binding")}
+        .heading=${createCloseHeading(this.hass, "Binding Target")}
       >
         <section class="binding-controls">
           <ha-select
-            label="target"
             @selected=${this._bindTargetChanged}
             @closed=${stopPropagation}
+            fixedMenuPosition
           >
             ${this._bindableDevices.map(
-              (device, idx) => html`
-                <mwc-list-item .value=${String(idx)}>
-                  ${"node:" + device.name} ${"endpoint:" + device.name}
-                </mwc-list-item>
+              (device) => html`
+                <ha-list-item twoline graphic="icon">
+                  <span>${device.name_by_user || device.name}</span>
+                  <span slot="secondary"
+                    >${"node id: " +
+                    String(
+                      this.deviceMapper?.getNodeIdByDeviceId(device.id)
+                    )}</span
+                  >
+                  <ha-svg-icon .path=${mdiDevices} slot="graphic"></ha-svg-icon>
+                </ha-list-item>
               `
             )}
           </ha-select>
@@ -133,13 +138,7 @@ class DialogMatterNodeBinding extends LitElement {
       css`
         .binding-controls {
           display: grid;
-          gap: 4px;
-        }
-
-        .binding-controls ha-select {
-          padding: 8px;
-          min-width: 0;
-          transition: border-color 0.3s ease;
+          gap: 20px;
         }
 
         .binding-controls ha-button {

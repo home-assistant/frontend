@@ -9,7 +9,7 @@ import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-selector/ha-selector";
 
-import { mdiPlusCircle } from "@mdi/js";
+import { mdiDevices, mdiPlusCircle } from "@mdi/js";
 import { showMatterNodeBindingDialog } from "./show-dialog-matter-node-binding";
 
 import type { HaSelect } from "../../../../../components/ha-select";
@@ -128,6 +128,19 @@ export class MatterDeviceBindingCard extends LitElement {
     }
   }
 
+  protected getDeviceNameByNodeId(nodeId: number): string {
+    if (this.deviceMapper) {
+      const deviceId = this.deviceMapper!.getDeviceIdByNodeId(String(nodeId));
+      if (deviceId) {
+        const device = this.hass.devices![deviceId!];
+        if (device) {
+          return device.name_by_user! || device.name!;
+        }
+      }
+    }
+    return String(nodeId);
+  }
+
   protected render(): TemplateResult {
     if (!this.showHidden) {
       return html`<p></p>`;
@@ -149,12 +162,20 @@ export class MatterDeviceBindingCard extends LitElement {
                 ([key, value]) => html`
                   ${value.map(
                     (nodeItem, index) => html`
-                      <section class="header-row binding-row">
-                        <span class="binding-columns">
-                          <span>
-                            ${nodeItem.node == null ? "null" : nodeItem.node}
+                      <section class="binding-row">
+                        <ha-list-item twoline graphic="icon">
+                          <span
+                            >${this.getDeviceNameByNodeId(nodeItem.node)}
                           </span>
-                        </span>
+                          <span slot="secondary"
+                            >${"node id: " + nodeItem.node}</span
+                          >
+                          <ha-svg-icon
+                            .path=${mdiDevices}
+                            slot="graphic"
+                          ></ha-svg-icon>
+                        </ha-list-item>
+
                         <ha-button
                           class="binding-button"
                           data-endpoint=${key}
@@ -234,10 +255,17 @@ export class MatterDeviceBindingCard extends LitElement {
 
     .binding-row {
       display: flex;
-      flex: 0.5;
       align-items: center;
       gap: 2px;
       padding-bottom: 8px;
+    }
+
+    .binding-row ha-list-item {
+      flex: 0.7;
+    }
+
+    .binding-row ha-button {
+      flex: 0.3;
     }
 
     .binding-column {
