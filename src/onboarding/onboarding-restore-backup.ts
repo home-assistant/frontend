@@ -49,8 +49,6 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _failed?: boolean;
 
-  @state() private _cloudLoaded = false;
-
   @state() private _cloudStatus?: CloudStatus;
 
   @storage({
@@ -62,6 +60,8 @@ class OnboardingRestoreBackup extends LitElement {
     key: "onboarding-restore-running",
   })
   private _restoreRunning?: boolean;
+
+  private _loadedIntegrations = new Set<string>();
 
   protected render(): TemplateResult {
     return html`
@@ -134,6 +134,14 @@ class OnboardingRestoreBackup extends LitElement {
   private async _loadBackupInfo() {
     let onboardingInfo: BackupOnboardingConfig;
     try {
+      if (!this._loadedIntegrations.has("backup")) {
+        if ((await waitForIntegration("backup")).integration_loaded) {
+          this._loadedIntegrations.add("backup");
+        } else {
+          this._error = "Backup integration not loaded";
+          return;
+        }
+      }
       onboardingInfo = await fetchBackupOnboardingInfo();
     } catch (err: any) {
       if (this._restoreRunning) {
@@ -178,11 +186,10 @@ class OnboardingRestoreBackup extends LitElement {
 
     if (this.mode === "cloud") {
       try {
-        if (!this._cloudLoaded) {
-          this._cloudLoaded = (
-            await waitForIntegration("cloud")
-          ).integration_loaded;
-          if (!this._cloudLoaded) {
+        if (!this._loadedIntegrations.has("cloud")) {
+          if ((await waitForIntegration("cloud")).integration_loaded) {
+            this._loadedIntegrations.add("cloud");
+          } else {
             this._error = "Cloud integration not loaded";
             return;
           }
