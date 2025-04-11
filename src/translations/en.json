@@ -1543,6 +1543,7 @@
         "upload_in_progress": "A backup upload is currently in progress. The action will automatically proceed once the upload process is complete.",
         "restore_in_progress": "A backup restore is currently in progress. The action will automatically proceed once the restore process is complete.",
         "wait_for_backup": "Wait for the backup creation to finish",
+        "error_backup_state": "An error occured while getting the current backup state. Error: {error}",
         "wait_for_upload": "Wait for backup upload to finish",
         "wait_for_restore": "Wait for backup restore to finish",
         "reload": {

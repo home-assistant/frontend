@@ -4,6 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-alert";
 import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-md-dialog";
@@ -28,6 +29,9 @@ class DialogRestartWait extends LitElement {
   private _title = "";
 
   private _actionOnIdle?: () => Promise<void>;
+
+  @state()
+  private _error?: string;
 
   @state()
   private _backupState?: ManagerState;
@@ -97,8 +101,16 @@ class DialogRestartWait extends LitElement {
           <span slot="title" .title=${this._title}> ${this._title} </span>
         </ha-dialog-header>
         <div slot="content" class="content">
-          <ha-spinner></ha-spinner>
-          ${waitMessage}
+          ${this._error
+            ? html`<ha-alert alert-type="error"
+                >${this.hass.localize("ui.dialogs.restart.error_backup_state", {
+                  error: this._error,
+                })}</ha-alert
+              > `
+            : html`
+                <ha-spinner></ha-spinner>
+                ${waitMessage}
+              `}
         </div>
       </ha-md-dialog>
     `;
@@ -125,10 +137,8 @@ class DialogRestartWait extends LitElement {
           }
         }
       );
-    } catch (err) {
-      // TODO show error to user
-      // eslint-disable-next-line no-console
-      console.error(err);
+    } catch (err: any) {
+      this._error = err.message || err;
     }
   }
 
