@@ -8,6 +8,7 @@ import type { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { blankBeforePercent } from "../../common/translations/blank_before_percent";
 
 @customElement("step-flow-progress")
 class StepFlowProgress extends LitElement {
@@ -32,7 +33,9 @@ class StepFlowProgress extends LitElement {
         ${this.progress
           ? html`
               <ha-progress-ring .value=${this.progress} size="large"
-                >${this.progress}${blankBeforePercent(this.hass.locale)}%</ha-progress-ring
+                >${this.progress}${blankBeforePercent(
+                  this.hass.locale
+                )}%</ha-progress-ring
               >
             `
           : html` <ha-spinner size="large"></ha-spinner> `}
