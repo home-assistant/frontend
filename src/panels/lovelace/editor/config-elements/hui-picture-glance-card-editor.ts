@@ -33,6 +33,7 @@ const cardConfigStruct = assign(
     double_tap_action: optional(actionConfigStruct),
     entities: array(entitiesConfigStruct),
     theme: optional(string()),
+    fit_mode: optional(string()),
   })
 );
 
