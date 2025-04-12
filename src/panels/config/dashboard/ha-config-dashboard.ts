@@ -43,7 +43,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import { isTouch } from "../../../util/is_touch";
+import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
@@ -106,7 +106,7 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
     },
   ];
 
-  if (hass?.enableShortcuts && !isTouch) {
+  if (hass?.enableShortcuts && !isMobileClient) {
     const localizeParam = {
       keyboard_shortcut: html`<a href="#" @click=${openFn}
         >${hass.localize("ui.tips.keyboard_shortcut")}</a
