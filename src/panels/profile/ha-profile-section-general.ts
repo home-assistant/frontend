@@ -11,6 +11,7 @@ import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { isTouch } from "../../util/is_touch";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-advanced-mode-row";
@@ -219,11 +220,14 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-set-suspend-row>
-            <ha-enable-shortcuts-row
-              id="shortcuts"
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-enable-shortcuts-row>
+            ${!isTouch
+              ? html`
+                  <ha-enable-shortcuts-row
+                    .narrow=${this.narrow}
+                    .hass=${this.hass}
+                  ></ha-enable-shortcuts-row>
+                `
+              : ""}
           </ha-card>
         </div>
       </hass-tabs-subpage>
