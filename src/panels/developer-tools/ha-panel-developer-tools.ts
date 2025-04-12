@@ -168,6 +168,7 @@ class PanelDeveloperTools extends LitElement {
           --ha-tab-active-text-color: var(--text-primary-color);
           --ha-tab-track-color: var(--app-header-background-color);
           --ha-tab-indicator-color: var(--text-primary-color);
+          text-transform: var(--ha-tab-text-transform, uppercase);
         }
       `,
     ];
