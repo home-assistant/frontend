@@ -46,7 +46,7 @@ class MoreInfoCamera extends LitElement {
           @click=${this._downloadSnapshot}
           .progress=${this._waiting}
           .disabled=${this.stateObj.state === UNAVAILABLE ||
-            this.stateObj.state === "idle"}
+          this.stateObj.state === "idle"}
         >
           ${this.hass.localize(
             "ui.dialogs.more_info_control.camera.download_snapshot"
