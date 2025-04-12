@@ -8,12 +8,18 @@ export class HaTileInfo extends LitElement {
 
   @property() public secondary?: string | TemplateResult<1>;
 
+  @property({ type: Boolean, reflect: true }) public state_on_top = false;
+
   protected render() {
     return html`
       <div class="info">
-        <span class="primary">${this.primary}</span>
+        <span class="primary"
+          >${this.state_on_top ? this.secondary : this.primary}</span
+        >
         ${this.secondary
-          ? html`<span class="secondary">${this.secondary}</span>`
+          ? html`<span class="secondary"
+              >${this.state_on_top ? this.primary : this.secondary}</span
+            >`
           : nothing}
       </div>
     `;

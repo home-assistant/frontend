@@ -45,6 +45,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(string()),
     icon: optional(string()),
+    state_on_top: optional(boolean()),
     hide_state: optional(boolean()),
     state_content: optional(union([string(), array(string())])),
     color: optional(string()),
@@ -122,6 +123,16 @@ export class HuiTileCardEditor
                     boolean: {},
                   },
                 },
+                ...(!hideState
+                  ? [
+                      {
+                        name: "state_on_top",
+                        selector: {
+                          boolean: {},
+                        },
+                      },
+                    ]
+                  : []),
               ],
             },
             ...(!hideState
@@ -331,6 +342,7 @@ export class HuiTileCardEditor
 
     if (config.hide_state) {
       delete config.state_content;
+      delete config.state_on_top;
     }
 
     if (!config.state_content) {
@@ -403,6 +415,7 @@ export class HuiTileCardEditor
       case "icon_double_tap_action":
       case "show_entity_picture":
       case "hide_state":
+      case "state_on_top":
       case "state_content":
       case "content_layout":
       case "features_position":

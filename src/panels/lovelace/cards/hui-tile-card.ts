@@ -340,6 +340,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               id="info"
               .primary=${name}
               .secondary=${stateDisplay}
+              .state_on_top=${this._config.state_on_top}
             ></ha-tile-info>
           </div>
           ${features.length > 0
