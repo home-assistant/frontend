@@ -98,7 +98,7 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ attribute: "entity-id", reflect: true }) public entityId?:
     | string
-    | null; 
+    | null;
 
   @state() private _currView: View = DEFAULT_VIEW;
 
