@@ -96,7 +96,9 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @state() private _entityId?: string | null;
+  @property({ attribute: "entity-id", reflect: true }) public entityId?:
+    | string
+    | null; 
 
   @state() private _currView: View = DEFAULT_VIEW;
 
@@ -113,8 +115,8 @@ export class MoreInfoDialog extends LitElement {
   @state() private _sensorNumericDeviceClasses?: string[] = [];
 
   public showDialog(params: MoreInfoDialogParams) {
-    this._entityId = params.entityId;
-    if (!this._entityId) {
+    this.entityId = params.entityId;
+    if (!this.entityId) {
       this.closeDialog();
       return;
     }
@@ -126,13 +128,13 @@ export class MoreInfoDialog extends LitElement {
   }
 
   private async _loadEntityRegistryEntry() {
-    if (!this._entityId) {
+    if (!this.entityId) {
       return;
     }
     try {
       this._entry = await getExtendedEntityRegistryEntry(
         this.hass,
-        this._entityId
+        this.entityId
       );
     } catch (_e) {
       this._entry = null;
@@ -140,7 +142,7 @@ export class MoreInfoDialog extends LitElement {
   }
 
   public closeDialog() {
-    this._entityId = undefined;
+    this.entityId = undefined;
     this._entry = undefined;
     this._childView = undefined;
     this._infoEditMode = false;
@@ -174,17 +176,17 @@ export class MoreInfoDialog extends LitElement {
   private _shouldShowHistory(domain: string): boolean {
     return (
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
-      (computeShowHistoryComponent(this.hass, this._entityId!) ||
+      (computeShowHistoryComponent(this.hass, this.entityId!) ||
         computeShowLogBookComponent(
           this.hass,
-          this._entityId!,
+          this.entityId!,
           this._sensorNumericDeviceClasses
         ))
     );
   }
 
   private _getDeviceId(): string | null {
-    const entity = this.hass.entities[this._entityId!] as
+    const entity = this.hass.entities[this.entityId!] as
       | EntityRegistryEntry
       | undefined;
     return entity?.device_id ?? null;
@@ -245,8 +247,8 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToEdit(ev) {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
-    const stateObj = this.hass.states[this._entityId!];
-    const domain = computeDomain(this._entityId!);
+    const stateObj = this.hass.states[this.entityId!];
+    const domain = computeDomain(this.entityId!);
     let idToPassThroughUrl = stateObj.entity_id;
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) || domain === "person") {
       idToPassThroughUrl = stateObj.attributes.id;
@@ -287,10 +289,10 @@ export class MoreInfoDialog extends LitElement {
   }
 
   protected render() {
-    if (!this._entityId) {
+    if (!this.entityId) {
       return nothing;
     }
-    const entityId = this._entityId;
+    const entityId = this.entityId;
     const stateObj = this.hass.states[entityId] as HassEntity | undefined;
 
     const domain = computeDomain(entityId);
@@ -538,7 +540,7 @@ export class MoreInfoDialog extends LitElement {
                     <ha-more-info-info
                       dialogInitialFocus
                       .hass=${this.hass}
-                      .entityId=${this._entityId}
+                      .entityId=${this.entityId}
                       .entry=${this._entry}
                       .editMode=${this._infoEditMode}
                     ></ha-more-info-info>
@@ -547,14 +549,14 @@ export class MoreInfoDialog extends LitElement {
                   ? html`
                       <ha-more-info-history-and-logbook
                         .hass=${this.hass}
-                        .entityId=${this._entityId}
+                        .entityId=${this.entityId}
                       ></ha-more-info-history-and-logbook>
                     `
                   : this._currView === "settings"
                     ? html`
                         <ha-more-info-settings
                           .hass=${this.hass}
-                          .entityId=${this._entityId}
+                          .entityId=${this.entityId}
                           .entry=${this._entry}
                         ></ha-more-info-settings>
                       `
