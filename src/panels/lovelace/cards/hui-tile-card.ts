@@ -260,6 +260,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             <ha-tile-info
               .primary=${entityId}
               secondary=${this.hass.localize("ui.card.tile.not_found")}
+              .state_on_top=${this._config.state_on_top}
             ></ha-tile-info>
           </div>
         </ha-card>
@@ -279,7 +280,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             .hass=${this.hass}
             .content=${this._config.state_content}
             .name=${this._config.name}
-            .state_on_top=${this._config.state_on_top}
           >
           </state-display>
         `;
