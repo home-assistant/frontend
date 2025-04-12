@@ -1046,6 +1046,7 @@ class HUIRoot extends LitElement {
           );
           --ha-tab-active-text-color: var(--app-header-text-color, white);
           --ha-tab-track-color: transparent;
+          text-transform: var(--ha-tab-text-transform, uppercase);
           align-self: flex-end;
           flex-grow: 1;
           min-width: 0;
