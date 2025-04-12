@@ -44,6 +44,8 @@ export class MatterDeviceBindingCard extends LitElement {
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
+  @property({ type: Boolean, reflect: true }) outlined = false;
+
   @state()
   public showHidden = false;
 
@@ -210,6 +212,14 @@ export class MatterDeviceBindingCard extends LitElement {
   }
 
   static styles = css`
+    :host([outlined]) {
+      box-shadow: none;
+      border-width: 1px;
+      border-style: solid;
+      border-color: var(--outline-color);
+      border-radius: var(--ha-card-border-radius, 12px);
+    }
+
     .card-header {
       display: flex;
       align-items: center;

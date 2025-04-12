@@ -824,7 +824,9 @@ export class HaConfigDevicePage extends LitElement {
                 `
               : ""}
           </ha-device-info-card>
-          ${!this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
+          ${!this.narrow
+            ? [matterCard, automationCard, sceneCard, scriptCard]
+            : ""}
         </div>
         <div class="column">
           ${(
@@ -1214,6 +1216,7 @@ export class HaConfigDevicePage extends LitElement {
       );
       return html`
         <matter-device-binding-card
+          outlined
           .hass=${this.hass}
           .device=${device}
         ></matter-device-binding-card>
