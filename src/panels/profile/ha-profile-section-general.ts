@@ -223,6 +223,7 @@ class HaProfileSectionGeneral extends LitElement {
             ${!isTouch
               ? html`
                   <ha-enable-shortcuts-row
+                    id="shortcuts"
                     .narrow=${this.narrow}
                     .hass=${this.hass}
                   ></ha-enable-shortcuts-row>
