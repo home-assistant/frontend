@@ -79,11 +79,16 @@ export class StateBadge extends LitElement {
       </div>`;
     }
 
-    for (const _cls of ["has-image", "has-media-image", "has-no-radius"]) {
-      if (this.classList.contains(_cls)) this.classList.remove(_cls);
-    }
     const cls = this.getClass();
-    if (cls) this.classList.add(cls);
+    if (cls) {
+      cls.forEach((toSet, className) => {
+        if (!toSet) {
+          this.classList.remove(className);
+        } else {
+          this.classList.add(className);
+        }
+      });
+    }
 
     if (!this.icon) {
       return nothing;
@@ -188,20 +193,21 @@ export class StateBadge extends LitElement {
   }
 
   protected getClass() {
-    let cls;
+    const cls = new Map(
+      ["has-no-radius", "has-media-image", "has-image"].map((_cls) => [
+        _cls,
+        false,
+      ])
+    );
     if (this.stateObj) {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
-        cls = "has-no-radius";
+        cls.set("has-no-radius", true);
       } else if (domain === "media_player" || domain === "camera") {
-        cls = "has-media-image";
+        cls.set("has-media-image", true);
       } else if (this.style.backgroundImage !== "") {
-        cls = "has-image";
-      } else {
-        cls = "";
+        cls.set("has-image", true);
       }
-    } else {
-      cls = "";
     }
     return cls;
   }
