@@ -462,23 +462,25 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.automation?.length
               ? html`
                   <div class="items">
-                    ${this._getRelated(this._related).automation.map((automation) => {
-                      const entityState = automation;
-                      return entityState
-                        ? html`<a
-                            href=${ifDefined(
-                              entityState.attributes.id
-                                ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-                                : `/config/automation/show/${entityState.entity_id}`
-                            )}
-                          >
-                            <ha-list-item hasMeta .automation=${entityState}>
-                              ${computeStateName(entityState)}
-                              <ha-icon-next slot="meta"></ha-icon-next>
-                            </ha-list-item>
-                          </a>`
-                        : nothing;
-                    })}
+                    ${this._getRelated(this._related).automation.map(
+                      (automation) => {
+                        const entityState = automation;
+                        return entityState
+                          ? html`<a
+                              href=${ifDefined(
+                                entityState.attributes.id
+                                  ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
+                                  : `/config/automation/show/${entityState.entity_id}`
+                              )}
+                            >
+                              <ha-list-item hasMeta .automation=${entityState}>
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
+                            </a>`
+                          : nothing;
+                      }
+                    )}
                   </div>
                 `
               : html`
