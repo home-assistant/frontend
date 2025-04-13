@@ -95,14 +95,15 @@ class HuiEnergyCarbonGaugeCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    const totalGridConsumption = calculateStatisticsSumGrowth(
-      this._data.stats,
-      types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-    );
+    const totalGridConsumption =
+      calculateStatisticsSumGrowth(
+        this._data.stats,
+        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
+      ) ?? 0;
 
     let value: number | undefined;
 
-    if (this._data.fossilEnergyConsumption && totalGridConsumption) {
+    if (this._data.fossilEnergyConsumption) {
       const highCarbonEnergy = this._data.fossilEnergyConsumption
         ? Object.values(this._data.fossilEnergyConsumption).reduce(
             (sum, a) => sum + a,
@@ -127,7 +128,9 @@ class HuiEnergyCarbonGaugeCard
         totalGridConsumption +
         Math.max(0, totalSolarProduction - totalGridReturned);
 
-      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+      if (totalEnergyConsumed) {
+        value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+      }
     }
 
     return html`

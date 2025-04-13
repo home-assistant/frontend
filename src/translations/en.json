@@ -1225,7 +1225,7 @@
         "filter_placeholder": "Search entities",
         "filter_placeholder_devices": "Search devices",
         "title": "Quick search",
-        "key_c_hint": "Press 'c' on any page to open the command dialog",
+        "key_c_tip": "[%key:ui::tips::key_c_tip%]",
         "nothing_found": "Nothing found!"
       },
       "voice_command": {
@@ -1890,6 +1890,40 @@
           "code_instructions": "Search for the sharing mode in the app of your controller, and activate it. You will get a setup code, enter that below.",
           "setup_code": "Setup code"
         }
+      },
+      "shortcuts": {
+        "title": "Shortcuts",
+        "enable_shortcuts_hint": "For keyboard shortcuts to work, make sure you have them enabled in your {user_profile}.",
+        "enable_shortcuts_hint_user_profile": "user profile",
+        "shortcuts": {
+          "double_click": "Double-click",
+          "scroll_wheel": "Scroll",
+          "drag": "Drag",
+          "ctrl_cmd": "Ctrl/Cmd"
+        },
+        "searching": {
+          "title": "Searching",
+          "on_any_page": "On any page",
+          "on_pages_with_tables": "On pages with tables",
+          "search_command": "search command",
+          "search_entities": "search entities",
+          "search_devices": "search devices",
+          "search_in_table": "to search in tables"
+        },
+        "assist": {
+          "title": "Assist",
+          "open_assist": "open Assist dialog"
+        },
+        "charts": {
+          "title": "Charts",
+          "drag_to_zoom": "to zoom in part of a chart",
+          "scroll_to_zoom": "to zoom in or out",
+          "double_click": "to zoom in on part of the chart"
+        },
+        "other": {
+          "title": "Other",
+          "my_link": "get My Home Assistant link"
+        }
       }
     },
     "weekdays": {
@@ -2486,6 +2520,12 @@
             "retention_units": {
               "copies": "backups",
               "days": "days"
+            },
+            "update_preference": {
+              "label": "Backup preference when updating",
+              "supporting_text": "This can be adjusted each time",
+              "skip_backups": "Skip backups",
+              "backup_before_update": "Backup before update"
             }
           },
           "encryption_key": {
@@ -2665,6 +2705,14 @@
             "encryption_key": {
               "title": "Encryption key",
               "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download it as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+            },
+            "addon_update_backup": {
+              "title": "Add-on update backups",
+              "description": "Creates a backup of your add-on and its data. That way you can keep around the previous version of the add-on, so you can always roll back to it if needed.",
+              "local_only": "This backup is only saved on this system.",
+              "retention_description": "Prevent your system from filling up with old versions.",
+              "error_load": "Error loading supervisor update config: {error}",
+              "error_save": "Error saving supervisor update config: {error}"
             }
           },
           "details": {
@@ -3052,7 +3100,8 @@
             "bug": "Bug reports",
             "help": "Help",
             "license": "License"
-          }
+          },
+          "shortcuts": "Shortcuts"
         },
         "logs": {
           "caption": "Logs",
@@ -3457,7 +3506,11 @@
             },
             "success": {
               "title": "Ready to Assist!",
-              "secondary": "Make any final customizations here. You can always change these in the Voice assistants section of the settings page."
+              "secondary": "Make any final customizations here. You can always change these in the Voice assistants section of the settings page.",
+              "test_wakeword": "Test",
+              "edit_pipeline": "Edit",
+              "try_tts": "Try",
+              "done": "Done"
             }
           }
         },
@@ -4767,7 +4820,7 @@
           },
           "dialog_already_connected": {
             "heading": "Account linked to other Home Assistant",
-            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services and you will need to be physically present to reconnect it.  Nabu Casa support is unable to remotely reconnect a disconnected Home Assistant instance.",
             "other_home_assistant": "Other Home Assistant",
             "instance_name": "Instance name",
             "instance_version": "Instance version",
@@ -4964,8 +5017,9 @@
             },
             "headers": {
               "state_icon": "State icon",
-              "name": "Name",
+              "entity": "Entity",
               "entity_id": "Entity ID",
+              "device": "Device",
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
@@ -6507,8 +6561,9 @@
         "menu": {
           "configure_ui": "Edit dashboard",
           "help": "Help",
-          "search": "Entity search",
+          "search_entities": "Search entities",
           "assist": "Assist",
+          "assist_tooltip": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
           "close": "Close"
@@ -8554,10 +8609,11 @@
       }
     },
     "tips": {
-      "key_c_hint": "Press 'c' on any page to open the command dialog",
-      "key_e_hint": "Press 'e' on any page to open the entity search dialog",
-      "key_m_hint": "Press 'm' on any page to get the My Home Assistant link",
-      "key_a_hint": "Press 'a' on any page to open the Assist dialog"
+      "keyboard_shortcut": "keyboard shortcut",
+      "key_c_tip": "Press {keyboard_shortcut} 'c' on any page to open the command dialog",
+      "key_e_tip": "Press {keyboard_shortcut} 'e' on any page to open the entity search dialog",
+      "key_m_tip": "Press {keyboard_shortcut} 'm' on any page to get the My Home Assistant link",
+      "key_a_tip": "Press {keyboard_shortcut} 'a' on any page to open the Assist dialog"
     }
   },
   "landing-page": {

@@ -11,7 +11,7 @@ import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../components/ha-form/types";
-import { onboardUserStep } from "../data/onboarding";
+import { onboardUserStep, waitForIntegration } from "../data/onboarding";
 import type { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
 import { debounce } from "../common/util/debounce";
@@ -195,6 +195,9 @@ class OnboardingCreateUser extends LitElement {
 
     try {
       const clientId = genClientId();
+
+      // Person integration is used for onboarding, so we wait for it to be set up. It is not critical, so if it fails, we just continue
+      await waitForIntegration("person");
 
       const result = await onboardUserStep({
         client_id: clientId,

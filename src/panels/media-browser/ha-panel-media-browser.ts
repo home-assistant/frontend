@@ -191,6 +191,14 @@ class PanelMediaBrowser extends LitElement {
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
+    if (
+      !this.hasUpdated &&
+      this._entityId !== BROWSER_PLAYER &&
+      !(this._entityId in this.hass.states)
+    ) {
+      this._entityId = BROWSER_PLAYER;
+    }
+
     if (!changedProps.has("route")) {
       return;
     }
