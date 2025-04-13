@@ -251,6 +251,14 @@ export class HuiCardPicker extends LitElement {
     this._loadCards();
   }
 
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    const div = this.parentElement!.shadowRoot!.getElementById("content");
+    if (div) {
+      div.scrollTo({ behavior: "auto", top: 0 });
+    }
+  }
+
   private _loadCards() {
     let cards: Card[] = coreCards.map((card: Card) => ({
       name: this.hass!.localize(
