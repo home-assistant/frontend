@@ -405,11 +405,11 @@ export class HaConfigDevicePage extends LitElement {
 
     this._renderIntegrationInfo(device, integrations, deviceInfo);
 
+    const relatedConfigurations = this._renderRelatedConfigurations(device);
+
     const add_prompt = device.disabled_by
       ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
-
-    const matterCard = this._renderMatterBindingCard(device);
 
     const automationCard = isComponentLoaded(this.hass, "automation")
       ? html`
@@ -824,9 +824,7 @@ export class HaConfigDevicePage extends LitElement {
                 `
               : ""}
           </ha-device-info-card>
-          ${!this.narrow
-            ? [matterCard, automationCard, sceneCard, scriptCard]
-            : ""}
+          ${!this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
         </div>
         <div class="column">
           ${(
@@ -857,15 +855,15 @@ export class HaConfigDevicePage extends LitElement {
                 `
               : ""
           )}
+          ${relatedConfigurations}
+
           <ha-device-via-devices-card
             .hass=${this.hass}
             .deviceId=${this.deviceId}
           ></ha-device-via-devices-card>
         </div>
         <div class="column">
-          ${this.narrow
-            ? [matterCard, automationCard, sceneCard, scriptCard]
-            : ""}
+          ${this.narrow ? [automationCard, sceneCard, scriptCard] : ""}
           ${isComponentLoaded(this.hass, "logbook")
             ? html`
                 <ha-card outlined>
@@ -1207,24 +1205,6 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  private _renderMatterBindingCard(device: DeviceRegistryEntry) {
-    const matter = isComponentLoaded(this.hass, "matter");
-    const isMatterDevice = device.identifiers[0][0] === "matter";
-    if (matter && isMatterDevice) {
-      import(
-        "../integrations/integration-panels/matter/matter-device-binding-card"
-      );
-      return html`
-        <matter-device-binding-card
-          outlined
-          .hass=${this.hass}
-          .device=${device}
-        ></matter-device-binding-card>
-      `;
-    }
-    return nothing;
-  }
-
   private _renderIntegrationInfo(
     device: DeviceRegistryEntry,
     integrations: ConfigEntry[],
@@ -1262,6 +1242,25 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-info-matter>
       `);
     }
+  }
+
+  private _renderRelatedConfigurations(device: DeviceRegistryEntry) {
+    const matter = isComponentLoaded(this.hass, "matter");
+    const isMatterDevice = device.identifiers[0][0] === "matter";
+    if (matter && isMatterDevice) {
+      import(
+        "../integrations/integration-panels/matter/matter-device-binding-card"
+      );
+      return html`
+        <matter-device-binding-card
+          outlined
+          .hass=${this.hass}
+          .device=${device}
+        ></matter-device-binding-card>
+      `;
+    }
+
+    return nothing;
   }
 
   private async _showSettings() {
