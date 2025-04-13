@@ -374,7 +374,7 @@ class ZHAConfigDashboard extends LitElement {
           padding-inline-start: 0;
           padding-inline-end: 0;
 
-          --paper-item-body-two-line-min-height: 55px;
+          --body-two-line-min-height: 55px;
         }
 
         .network-settings ha-settings-row span[slot="heading"] {

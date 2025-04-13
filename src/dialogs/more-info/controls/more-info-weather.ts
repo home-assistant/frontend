@@ -407,7 +407,7 @@ class MoreInfoWeather extends LitElement {
       weatherSVGStyles,
       css`
         ha-svg-icon {
-          color: var(--paper-item-icon-color);
+          color: var(--state-icon-color);
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;

@@ -54,7 +54,7 @@ export class HaSettingsRow extends LitElement {
       flex-basis: var(--layout-flex_-_flex-basis, 0.000000001px);
     }
     .body[three-line] {
-      min-height: var(--paper-item-body-three-line-min-height, 88px);
+      min-height: var(--body-three-line-min-height, 88px);
     }
     :host(:not([wrap-heading])) body > * {
       overflow: hidden;
@@ -75,7 +75,7 @@ export class HaSettingsRow extends LitElement {
       color: var(--secondary-text-color);
     }
     .body[two-line] {
-      min-height: calc(var(--paper-item-body-two-line-min-height, 72px) - 16px);
+      min-height: calc(var(--body-two-line-min-height, 72px) - 16px);
       flex: 1;
     }
     .content {
