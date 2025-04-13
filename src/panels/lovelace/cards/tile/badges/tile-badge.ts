@@ -9,6 +9,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { renderClimateBadge } from "./tile-badge-climate";
 import { renderHumidifierBadge } from "./tile-badge-humidifier";
 import { renderPersonBadge } from "./tile-badge-person";
+import { renderLightBadge } from "./tile-badge-light";
 import "../../../../../components/tile/ha-tile-badge";
 import "../../../../../components/ha-svg-icon";
 
@@ -41,6 +42,8 @@ export const renderTileBadge: RenderBadgeFunction = (stateObj, hass) => {
       return renderClimateBadge(stateObj, hass);
     case "humidifier":
       return renderHumidifierBadge(stateObj, hass);
+    case "light":
+      return renderLightBadge(stateObj, hass);
     default:
       return nothing;
   }
