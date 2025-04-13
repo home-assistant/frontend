@@ -208,7 +208,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
-            .fitZones=${this._config.fit_zones}
+            .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
             interactive-zones
