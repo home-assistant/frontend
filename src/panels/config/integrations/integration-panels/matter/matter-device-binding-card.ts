@@ -1,3 +1,4 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,26 +12,54 @@ import "../../../../../components/ha-selector/ha-selector";
 
 import { mdiDevices, mdiPlusCircle } from "@mdi/js";
 import { showMatterNodeBindingDialog } from "./show-dialog-matter-node-binding";
-
-import type { HaSelect } from "../../../../../components/ha-select";
-import type { HomeAssistant } from "../../../../../types";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-
-import type { MatterNodeBinding } from "../../../../../data/matter";
-
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   getMatterNodeBinding,
   setMatterNodeBinding,
 } from "../../../../../data/matter";
-
 import { MatterDeviceMapper } from "./matter-binding-node-device-mapper";
+
+import type { HaSelect } from "../../../../../components/ha-select";
+import type { HomeAssistant } from "../../../../../types";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { EntityRegistryDisplayEntry } from "../../../../../data/entity_registry";
+import type { MatterNodeBinding } from "../../../../../data/matter";
 
 export interface ItemSelectedEvent {
   target?: HaSelect;
   value?: string;
   index?: number;
 }
+
+export const getDeviceControlsState = (
+  hass: HomeAssistant,
+  device: DeviceRegistryEntry
+): HassEntity | undefined => {
+  if (!device) return undefined;
+
+  // Helper function to find the first matching entity
+  const findEntity = (
+    predicate: (entity: EntityRegistryDisplayEntry) => boolean
+  ): HassEntity | undefined => {
+    const entity = Object.values(hass.entities).find(predicate);
+    return entity ? hass.states[entity.entity_id] : undefined;
+  };
+
+  // Try to find a control entity (no category)
+  const controlState = findEntity(
+    (entity: EntityRegistryDisplayEntry) =>
+      entity.device_id === device.id && entity.entity_category === undefined
+  );
+  if (controlState) return controlState;
+
+  // Fallback to config "Identify" entity
+  return findEntity(
+    (entity: EntityRegistryDisplayEntry) =>
+      entity.device_id === device.id &&
+      entity.entity_category === "config" &&
+      entity.name === "Identify"
+  );
+};
 
 declare global {
   interface HTMLElementEventMap {
@@ -145,17 +174,17 @@ export class MatterDeviceBindingCard extends LitElement {
     }
   }
 
-  protected getDeviceNameByNodeId(nodeId: number): string {
+  protected getDeviceByNodeId(nodeId: number) {
     if (this.deviceMapper) {
       const deviceId = this.deviceMapper!.getDeviceIdByNodeId(String(nodeId));
       if (deviceId) {
         const device = this.hass.devices![deviceId!];
         if (device) {
-          return device.name_by_user! || device.name!;
+          return device;
         }
       }
     }
-    return String(nodeId);
+    return undefined;
   }
 
   protected render(): TemplateResult {
@@ -182,15 +211,43 @@ export class MatterDeviceBindingCard extends LitElement {
                       <section class="binding-row">
                         <ha-list-item twoline graphic="icon">
                           <span>
-                            ${this.getDeviceNameByNodeId(nodeItem.node)}
+                            ${(() => {
+                              const device = this.getDeviceByNodeId(
+                                nodeItem.node
+                              );
+                              return device
+                                ? device.name_by_user || device.name
+                                : "undefined";
+                            })()}
                           </span>
                           <span slot="secondary">
                             ${"node id: " + nodeItem.node}
                           </span>
-                          <ha-svg-icon
-                            .path=${mdiDevices}
-                            slot="graphic"
-                          ></ha-svg-icon>
+
+                          ${(() => {
+                            const device = this.getDeviceByNodeId(
+                              nodeItem.node
+                            );
+                            const device_state = getDeviceControlsState(
+                              this.hass,
+                              device!
+                            );
+                            return device_state
+                              ? html`
+                                  <ha-state-icon
+                                    slot="graphic"
+                                    .hass=${this.hass}
+                                    .stateObj=${device_state}
+                                    )}
+                                  ></ha-state-icon>
+                                `
+                              : html`
+                                  <ha-svg-icon
+                                    slot="graphic"
+                                    .path=${mdiDevices}
+                                  ></ha-svg-icon>
+                                `;
+                          })()}
                         </ha-list-item>
 
                         <ha-button
