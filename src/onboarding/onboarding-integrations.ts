@@ -35,16 +35,20 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _entries: ConfigEntry[] = [];
 
-  @state() private _discoveredDomains?: Set<string>;
+  @state() private _discoveredDomains = new Set<string>();
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
-      subscribeConfigFlowInProgress(this.hass, (flows) => {
-        this._discoveredDomains = new Set(
-          flows
-            .filter((flow) => !HIDDEN_DOMAINS.has(flow.handler))
-            .map((flow) => flow.handler)
-        );
+      subscribeConfigFlowInProgress(this.hass, (messages) => {
+        messages.forEach((message) => {
+          if (
+            message.type === "removed" ||
+            HIDDEN_DOMAINS.has(message.flow.handler)
+          ) {
+            return;
+          }
+          this._discoveredDomains.add(message.flow.handler);
+        });
         this.hass.loadBackendTranslation(
           "title",
           Array.from(this._discoveredDomains)
@@ -93,7 +97,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discoveredDomains) {
+    if (!this._discoveredDomains.size) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.

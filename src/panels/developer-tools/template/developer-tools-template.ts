@@ -320,11 +320,11 @@ ${type === "object"
         ha-alert {
           margin-bottom: 8px;
           display: block;
-          user-select: text;
         }
 
         .rendered {
-          @apply --paper-font-code1;
+          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+          -webkit-font-smoothing: antialiased;
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
@@ -332,12 +332,15 @@ ${type === "object"
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
-          user-select: text;
         }
 
         p,
         ul {
           margin-block-end: 0;
+        }
+
+        .render-pane .card-content {
+          user-select: text;
         }
 
         .content.horizontal .render-pane .card-content {

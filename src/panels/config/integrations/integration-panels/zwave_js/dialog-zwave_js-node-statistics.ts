@@ -6,15 +6,13 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-help-tooltip";
 import "../../../../../components/ha-svg-icon";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import {
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../../../data/device_registry";
 import type {
   ZWaveJSNodeStatisticsUpdatedMessage,
   ZWaveJSRouteStatistics,
@@ -419,7 +417,10 @@ class DialogZWaveJSNodeStatistics extends LitElement {
       (devices: DeviceRegistryEntry[]) => {
         const devicesIdToName = {};
         devices.forEach((device) => {
-          devicesIdToName[device.id] = computeDeviceName(device, this.hass);
+          devicesIdToName[device.id] = computeDeviceNameDisplay(
+            device,
+            this.hass
+          );
         });
         this._deviceIDsToName = devicesIdToName;
       }

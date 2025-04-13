@@ -32,15 +32,6 @@ export const AREA_STRATEGY_GROUP_ICONS = {
   others: "mdi:shape",
 };
 
-// Todo be replace by translation when validated
-export const AREA_STRATEGY_GROUP_LABELS = {
-  lights: "Lights",
-  climate: "Climate",
-  media_players: "Entertainment",
-  security: "Security",
-  others: "Others",
-};
-
 export type AreaStrategyGroup = (typeof AREA_STRATEGY_GROUPS)[number];
 
 type AreaEntitiesByGroup = Record<AreaStrategyGroup, string[]>;
@@ -210,8 +201,18 @@ export const computeAreaTileCardConfig =
     const additionalCardConfig: Partial<TileCardConfig> = {};
 
     const domain = computeDomain(entity);
+
     if (domain === "camera") {
-      additionalCardConfig.show_entity_picture = true;
+      return {
+        type: "picture-entity",
+        entity: entity,
+        show_state: false,
+        show_name: false,
+        grid_options: {
+          columns: 6,
+          rows: 2,
+        },
+      };
     }
 
     let feature: LovelaceCardFeatureConfig | undefined;

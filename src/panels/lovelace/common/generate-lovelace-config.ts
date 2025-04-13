@@ -50,7 +50,7 @@ const HIDE_DOMAIN = new Set([
   ...ASSIST_ENTITIES,
 ]);
 
-const HIDE_PLATFORM = new Set(["mobile_app"]);
+const HIDE_PLATFORM = new Set(["backup", "mobile_app"]);
 
 interface SplittedByAreaDevice {
   areasWithEntities: Record<string, HassEntity[]>;

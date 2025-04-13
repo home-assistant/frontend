@@ -702,10 +702,13 @@ export const deviceMeetsTargetSelector = (
 };
 
 export const entityMeetsTargetSelector = (
-  entity: HassEntity,
+  entity: HassEntity | undefined,
   targetSelector: TargetSelector,
   entitySources?: EntitySources
 ): boolean => {
+  if (!entity) {
+    return false;
+  }
   if (targetSelector.target?.entity) {
     return ensureArray(targetSelector.target!.entity).some((filterEntity) =>
       filterSelectorEntities(filterEntity, entity, entitySources)

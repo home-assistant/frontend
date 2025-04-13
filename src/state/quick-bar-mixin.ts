@@ -187,7 +187,15 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     }
 
     private _canOverrideAlphanumericInput(e: KeyboardEvent) {
-      const el = e.composedPath()[0] as Element;
+      const composedPath = e.composedPath();
+
+      if (
+        composedPath.some((el) => "tagName" in el && el.tagName === "HA-MENU")
+      ) {
+        return false;
+      }
+
+      const el = composedPath[0] as Element;
 
       if (el.tagName === "TEXTAREA") {
         return false;

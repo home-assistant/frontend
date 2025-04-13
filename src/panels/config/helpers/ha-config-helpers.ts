@@ -503,7 +503,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         id: e.entity_id,
         entity_id: e.entity_id,
         icon: mdiCancel,
-        name: e.original_name || e.entity_id,
+        name: e.name || e.original_name || e.entity_id,
         editable: true,
         type: e.platform,
         configEntry: undefined,
