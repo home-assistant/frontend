@@ -128,3 +128,11 @@ export const forgotPasswordHaCloud = async (email: string) =>
       body: JSON.stringify({ email }),
     })
   );
+
+export const waitForIntegration = (domain: string) =>
+  handleFetchPromise<{ integration_loaded: boolean }>(
+    fetch("/api/onboarding/integration/wait", {
+      method: "POST",
+      body: JSON.stringify({ domain }),
+    })
+  );
