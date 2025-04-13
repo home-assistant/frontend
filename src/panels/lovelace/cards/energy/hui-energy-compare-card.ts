@@ -105,15 +105,15 @@ export class HuiEnergyCompareCard
           ${formatDate(this._endCompare, this.hass.locale, this.hass.config)}`
                 : ""}</b
             >
-            (<button class="link" @click=${this._changeCompareMode}>
-              ${this._compareMode === CompareMode.PREVIOUS
+            <button class="link" @click=${this._changeCompareMode}>
+              (${this._compareMode === CompareMode.PREVIOUS
                 ? this.hass.localize(
                     "ui.panel.energy.compare.compare_previous_year"
                   )
                 : this.hass.localize(
                     "ui.panel.energy.compare.compare_previous_period"
-                  )}</button
-            >)`,
+                  )})
+            </button>`,
         })}
       </ha-alert>
     `;
