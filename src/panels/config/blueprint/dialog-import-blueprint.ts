@@ -281,7 +281,7 @@ class DialogImportBlueprint extends LitElement {
         --mdc-dialog-max-width: 90vw;
       }
       ha-expansion-panel {
-        --expansion-panel-content-padding: 0;
+        --expansion-panel-content-padding: 0px;
       }
     `,
   ];
