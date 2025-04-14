@@ -10,7 +10,6 @@ import "../../components/ha-icon-button";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
 import "../../components/ha-spinner";
-import { fetchBackupInfo } from "../../data/backup";
 import {
   subscribeBackupEvents,
   type ManagerState,
@@ -36,7 +35,7 @@ class DialogRestartWait extends LitElement {
   @state()
   private _backupState?: ManagerState;
 
-  private _backupEventsSubscription?: UnsubscribeFunc;
+  private _backupEventsSubscription?: Promise<UnsubscribeFunc>;
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
@@ -54,7 +53,9 @@ class DialogRestartWait extends LitElement {
     this._open = false;
 
     if (this._backupEventsSubscription) {
-      this._backupEventsSubscription();
+      this._backupEventsSubscription.then((unsub) => {
+        unsub();
+      });
       this._backupEventsSubscription = undefined;
     }
 
@@ -118,16 +119,7 @@ class DialogRestartWait extends LitElement {
 
   private async _loadBackupState() {
     try {
-      const { state: backupState } = await fetchBackupInfo(this.hass);
-      this._backupState = backupState;
-
-      if (this._backupState === "idle") {
-        this.closeDialog();
-        await this._actionOnIdle?.();
-        return;
-      }
-
-      this._backupEventsSubscription = await subscribeBackupEvents(
+      this._backupEventsSubscription = subscribeBackupEvents(
         this.hass,
         async (event) => {
           this._backupState = event.manager_state;
