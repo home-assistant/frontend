@@ -7,6 +7,7 @@ import "../../../../components/ha-card";
 import type { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { createSearchParam } from "../../../../common/url/search-params";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
@@ -102,8 +103,15 @@ export class HaDeviceCard extends LitElement {
           ${this._getAddresses().map(
             ([type, value]) => html`
               <div class="extra-info">
-                ${type === "mac" ? "MAC" : titleCase(type)}:
-                ${value.toUpperCase()}
+                ${type === "bluetooth"
+                  ? html`<a
+                      href="/config/bluetooth/advertisement-monitor?${createSearchParam(
+                        { address: value }
+                      )}"
+                      >${titleCase(type)} ${value.toUpperCase()}</a
+                    >`
+                  : html`${type === "mac" ? "MAC" : titleCase(type)}:
+                    ${value.toUpperCase()}`}
               </div>
             `
           )}
