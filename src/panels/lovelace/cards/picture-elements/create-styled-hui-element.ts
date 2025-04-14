@@ -4,6 +4,8 @@ import type {
   LovelaceElementConfig,
 } from "../../elements/types";
 
+const CONFIG_STYLE_PROPS = ["left", "top"];
+
 export function createStyledHuiElement(
   elementConfig: LovelaceElementConfig
 ): LovelaceElement {
@@ -17,6 +19,12 @@ export function createStyledHuiElement(
     Object.keys(elementConfig.style).forEach((prop) => {
       element.style.setProperty(prop, elementConfig.style![prop]);
     });
+  }
+
+  for (const prop of CONFIG_STYLE_PROPS) {
+    if (elementConfig[prop]) {
+      element.style.setProperty(prop, `${elementConfig[prop]}%`);
+    }
   }
 
   return element;

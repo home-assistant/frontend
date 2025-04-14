@@ -6,6 +6,7 @@ import {
   assert,
   boolean,
   literal,
+  number,
   object,
   optional,
   string,
@@ -25,6 +26,8 @@ const stateIconElementConfigStruct = object({
   state_color: optional(boolean()),
   style: optional(any()),
   title: optional(string()),
+  left: optional(number()),
+  top: optional(number()),
   tap_action: optional(actionConfigStruct),
   hold_action: optional(actionConfigStruct),
   double_tap_action: optional(actionConfigStruct),
@@ -74,6 +77,8 @@ const SCHEMA = [
       },
     ],
   },
+  { name: "left", selector: { number: { min: 0, max: 100 } } },
+  { name: "top", selector: { number: { min: 0, max: 100 } } },
   { name: "style", selector: { object: {} } },
 ] as const;
 

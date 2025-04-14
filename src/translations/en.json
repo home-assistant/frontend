@@ -7357,6 +7357,8 @@
           },
           "elements": {
             "style": "Style",
+            "left": "[%key:ui::panel::page-demo::config::arsaboo::names::left%]",
+            "top": "[%key:ui::panel::lovelace::editor::edit_view_header::settings::badges_position_options::top%]",
             "prefix": "Prefix",
             "suffix": "Suffix",
             "state_image": "State image",
