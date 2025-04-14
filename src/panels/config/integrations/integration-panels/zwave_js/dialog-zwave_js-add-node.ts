@@ -166,7 +166,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
         headerText,
         headerHtml: html`
           <ha-fade-in slot="title" .delay=${1000}>
-            <span id="dialog-light-color-favorite-title">${headerText}</span>
+            <span>${headerText}</span>
           </ha-fade-in>
         `,
       };
@@ -240,9 +240,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
               .path=${icon}
             ></ha-icon-button>`
           : nothing}
-        <span slot="title" id="dialog-light-color-favorite-title"
-          >${headerText}</span
-        >
+        <span slot="title">${headerText}</span>
       `,
     };
   }
