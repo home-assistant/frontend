@@ -148,6 +148,10 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
     };
 
     element.actionHandler.end = (ev: Event) => {
+      // Only allow mouseup event if it's the right mouse button
+      if (ev.type === "mouseup" && (ev as MouseEvent).button !== 2) {
+        return;
+      }
       // Don't respond when moved or scrolled while touch
       if (
         ev.type === "touchcancel" ||
@@ -165,7 +169,11 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
         this._stopAnimation();
         this.timer = undefined;
       }
-      if (options.hasHold && this.held) {
+      if (
+        options.hasHold &&
+        (this.held ||
+          (ev.type === "mouseup" && (ev as MouseEvent).button === 2))
+      ) {
         fireEvent(target, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
         if (
@@ -202,6 +210,7 @@ class ActionHandler extends HTMLElement implements ActionHandlerType {
     element.addEventListener("mousedown", element.actionHandler.start, {
       passive: true,
     });
+    element.addEventListener("mouseup", element.actionHandler.end);
     element.addEventListener("click", element.actionHandler.end);
 
     element.addEventListener("keydown", element.actionHandler.handleKeyDown);
