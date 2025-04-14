@@ -14,6 +14,7 @@ export class HaComboBoxItem extends HaMdListItem {
       }
       md-item {
         gap: 8px;
+        border-bottom: 1px solid var(--divider-color);
       }
       [slot="start"] {
         --paper-item-icon-color: var(--secondary-text-color);
@@ -22,6 +23,14 @@ export class HaComboBoxItem extends HaMdListItem {
       [slot="headline"],
       [slot="supporting-text"] {
         white-space: nowrap;
+      }
+      [slot="headline"] {
+        line-height: 22px;
+        font-size: 14px;
+      }
+      [slot="supporting-text"] {
+        line-height: 18px;
+        font-size: 12px;
       }
     `,
   ];

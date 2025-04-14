@@ -166,10 +166,10 @@ export class HaEntityPicker extends LitElement {
         ? html`<div
             slot="trailing-supporting-text"
             style=${styleMap({
-              fontFamily: "var(--code-font-family, monospace)",
-              fontSize: "11px",
+              fontSize: "12px",
+              fontWeight: "400",
+              lineHeight: "18px",
               alignSelf: "flex-end",
-              marginBottom: "2px",
               maxWidth: "30%",
               textOverflow: "ellipsis",
               overflow: "hidden",
@@ -302,6 +302,11 @@ export class HaEntityPicker extends LitElement {
             .filter(Boolean)
             .join(isRTL ? " < " : " > ");
 
+          const translatedDomain = domainToName(
+            this.hass.localize,
+            computeDomain(entityId)
+          );
+
           return {
             ...hass!.states[entityId],
             primary: primary,
@@ -309,7 +314,7 @@ export class HaEntityPicker extends LitElement {
               secondary ||
               this.hass.localize("ui.components.device-picker.no_area"),
             label: friendlyName,
-            domain: computeDomain(entityId),
+            domain: translatedDomain,
             sortingLabel: [deviceName, entityName].filter(Boolean).join("-"),
             strings: [
               entityId,
