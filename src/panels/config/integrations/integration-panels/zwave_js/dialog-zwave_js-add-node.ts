@@ -1,7 +1,7 @@
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
 import "@shoelace-style/shoelace/dist/components/animation/animation";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -140,23 +140,38 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
     // Prevent accidentally closing the dialog in certain stages
     const preventClose = !!this._step && this._shouldPreventClose(this._step);
 
+    const { headerText, headerHtml } = this._renderHeader();
+
     return html`
       <ha-dialog
         .open=${this._open}
         @closed=${this._dialogClosed}
         .scrimClickAction=${preventClose ? "" : "close"}
         .escapeKeyAction=${preventClose ? "" : "close"}
-        .heading=${"-"}
+        .heading=${headerText}
       >
-        <ha-dialog-header slot="heading">
-          ${this._renderHeader()}
-        </ha-dialog-header>
+        <ha-dialog-header slot="heading"> ${headerHtml} </ha-dialog-header>
         ${this._renderStep()}
       </ha-dialog>
     `;
   }
 
-  private _renderHeader() {
+  private _renderHeader(): { headerText: string; headerHtml: TemplateResult } {
+    let headerText = this.hass.localize(
+      `ui.panel.config.zwave_js.add_node.title`
+    );
+
+    if (this._step === "loading") {
+      return {
+        headerText,
+        headerHtml: html`
+          <ha-fade-in slot="title" .delay=${1000}>
+            <span id="dialog-light-color-favorite-title">${headerText}</span>
+          </ha-fade-in>
+        `,
+      };
+    }
+
     let icon: string | undefined;
     if (
       (this._step && closeButtonStages.includes(this._step)) ||
@@ -210,33 +225,26 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
         break;
     }
 
-    if (this._step === "loading") {
-      return html`
-        <ha-fade-in slot="title" .delay=${1000}>
-          <span id="dialog-light-color-favorite-title"
-            >${this.hass.localize(
-              `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
-            )}</span
-          >
-        </ha-fade-in>
-      `;
-    }
+    headerText = this.hass.localize(
+      `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
+    );
 
-    return html`
-      ${icon
-        ? html`<ha-icon-button
-            slot="navigationIcon"
-            @click=${this._handleCloseOrBack}
-            .label=${this.hass.localize("ui.common.close")}
-            .path=${icon}
-          ></ha-icon-button>`
-        : nothing}
-      <span slot="title" id="dialog-light-color-favorite-title"
-        >${this.hass.localize(
-          `ui.panel.config.zwave_js.add_node.${titleTranslationKey}`
-        )}</span
-      >
-    `;
+    return {
+      headerText,
+      headerHtml: html`
+        ${icon
+          ? html`<ha-icon-button
+              slot="navigationIcon"
+              @click=${this._handleCloseOrBack}
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${icon}
+            ></ha-icon-button>`
+          : nothing}
+        <span slot="title" id="dialog-light-color-favorite-title"
+          >${headerText}</span
+        >
+      `,
+    };
   }
 
   private _renderStep() {
