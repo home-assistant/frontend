@@ -13,11 +13,11 @@ import { stopPropagation } from "../common/dom/stop_propagation";
 import { addExternalBarCodeListener } from "../external_app/external_app_entrypoint";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
+import "./ha-button";
 import "./ha-button-menu";
 import "./ha-list-item";
-import "./ha-textfield";
-import "./ha-button";
 import "./ha-spinner";
+import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
 prepareZXingModule({
@@ -303,10 +303,10 @@ class HaQrScanner extends LitElement {
   }
 
   private _notifyExternalScanner(message: string) {
-    if (!this.hass.auth.external) {
+    if (!this._nativeBarcodeScanner) {
       return;
     }
-    this.hass.auth.external.fireMessage({
+    this.hass.auth.external!.fireMessage({
       type: "bar_code/notify",
       payload: {
         message,
@@ -325,8 +325,11 @@ class HaQrScanner extends LitElement {
   }
 
   private _reportWarning(message: string) {
-    this._warning = message;
-    this._notifyExternalScanner(message);
+    if (this._nativeBarcodeScanner) {
+      this._notifyExternalScanner(message);
+    } else {
+      this._warning = message;
+    }
   }
 
   private async _retry() {
