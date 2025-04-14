@@ -71,8 +71,11 @@ class HaBackupConfigAddon extends LitElement {
             .value=${this.supervisorUpdateConfig?.add_on_backup_retain_copies?.toString() ||
             "1"}
             type="number"
-            .min=${MIN_RETENTION_VALUE.toString()}
+            min=${MIN_RETENTION_VALUE.toString()}
             step="1"
+            .suffixText=${this.hass.localize(
+              "ui.panel.config.backup.schedule.retention_units.copies"
+            )}
           >
           </ha-md-textfield>
         </ha-md-list-item>
@@ -115,11 +118,17 @@ class HaBackupConfigAddon extends LitElement {
     ha-md-select {
       min-width: 210px;
     }
+    ha-md-textfield {
+      width: 210px;
+    }
     @media all and (max-width: 450px) {
       ha-md-select {
         min-width: 160px;
         width: 160px;
         --md-filled-field-content-space: 0;
+      }
+      ha-md-textfield {
+        width: 160px;
       }
     }
   `;
