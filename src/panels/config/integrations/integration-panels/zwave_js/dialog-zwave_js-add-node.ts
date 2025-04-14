@@ -15,6 +15,7 @@ import type {
 } from "../../../../../data/zwave_js";
 import {
   cancelSecureBootstrapS2,
+  fetchZwaveNetworkStatus,
   InclusionStrategy,
   lookupZwaveDevice,
   MINIMUM_QR_STRING_LENGTH,
@@ -50,6 +51,7 @@ import "../../../../../components/ha-qr-scanner";
 import "../../../../../components/ha-spinner";
 
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { navigate } from "../../../../../common/navigate";
 import { slugify } from "../../../../../common/string/slugify";
 import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import {
@@ -66,7 +68,6 @@ import "./add-node/zwave-js-add-node-loading";
 import "./add-node/zwave-js-add-node-searching-devices";
 import "./add-node/zwave-js-add-node-select-method";
 import "./add-node/zwave-js-add-node-select-security-strategy";
-import { navigate } from "../../../../../common/navigate";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
@@ -81,7 +82,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
 
   @state() private _entryId?: string;
 
-  @state() private _controllerSupportsLongRange = false;
+  @state() private _controllerSupportsLongRange? = false;
 
   @state() private _supportsSmartStart?: boolean;
 
@@ -376,7 +377,11 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
       `;
     }
 
-    if (["interviewing", "waiting_for_device", "rename_device"].includes(this._step ?? "")) {
+    if (
+      ["interviewing", "waiting_for_device", "rename_device"].includes(
+        this._step ?? ""
+      )
+    ) {
       return html`
         <zwave-js-add-node-loading
           .description=${this.hass.localize(
@@ -467,7 +472,21 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
     this._onStop = params?.onStop;
     this._entryId = params.entry_id;
     this._controllerSupportsLongRange = params.longRangeSupported;
+
     this._step = "loading";
+
+    if (this._controllerSupportsLongRange === undefined) {
+      try {
+        const zwaveNetwork = await fetchZwaveNetworkStatus(this.hass, {
+          entry_id: this._entryId,
+        });
+        this._controllerSupportsLongRange =
+          zwaveNetwork?.controller?.supports_long_range;
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
+    }
 
     if (params.dsk) {
       this._open = true;

@@ -10,7 +10,6 @@ import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isComponentLoaded } from "../config/is_component_loaded";
 import { navigate } from "../navigate";
-import { fetchZwaveNetworkStatus } from "../../data/zwave_js";
 
 export const PROTOCOL_INTEGRATIONS = ["zha", "zwave_js", "matter"] as const;
 
@@ -78,22 +77,8 @@ export const protocolIntegrationPicked = async (
       return;
     }
 
-    const entryId = options?.config_entry || entries![0].entry_id;
-    let longRangeSupported = false;
-
-    try {
-      const zwaveNetwork = await fetchZwaveNetworkStatus(hass, {
-        entry_id: entryId,
-      });
-      longRangeSupported = zwaveNetwork?.controller?.supports_long_range;
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
-    }
-
     showZWaveJSAddNodeDialog(element, {
       entry_id: options?.config_entry || entries![0].entry_id,
-      longRangeSupported,
     });
   } else if (domain === "zha") {
     const entries = options?.config_entry
