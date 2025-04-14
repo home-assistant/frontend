@@ -121,7 +121,7 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
   static override styles = [
     css`
       mwc-tab-bar {
-        text-transform: uppercase;
+        --mdc-typography-button-text-transform: none;
         margin-bottom: 16px;
         border-bottom: 1px solid var(--divider-color);
       }
