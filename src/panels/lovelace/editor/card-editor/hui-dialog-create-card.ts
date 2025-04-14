@@ -228,6 +228,9 @@ export class HuiCreateDialogCard
             height: calc(100vh - 158px);
           }
         }
+        mwc-tab-bar {
+          --mdc-typography-button-text-transform: none;
+        }
       `,
     ];
   }
