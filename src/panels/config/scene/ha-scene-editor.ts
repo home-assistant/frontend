@@ -98,8 +98,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @property({ attribute: false }) public showAdvanced = false;
-
   @state() private _dirty = false;
 
   @state() private _errors?: string;
@@ -486,88 +484,86 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                 : nothing}
             </ha-config-section>
 
-            ${this.showAdvanced
-              ? html` <ha-config-section vertical .isWide=${this.isWide}>
-                  <div slot="header">
+            <ha-config-section vertical .isWide=${this.isWide}>
+              <div slot="header">
+                ${this.hass.localize(
+                  "ui.panel.config.scene.editor.entities.header"
+                )}
+              </div>
+              ${this._mode === "live" || entities.length === 0
+                ? html`<div slot="introduction">
                     ${this.hass.localize(
-                      "ui.panel.config.scene.editor.entities.header"
+                      `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
                     )}
-                  </div>
-                  ${this._mode === "live" || entities.length === 0
-                    ? html`<div slot="introduction">
-                        ${this.hass.localize(
-                          `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
-                        )}
-                      </div>`
-                    : nothing}
-                  ${entities.length
-                    ? html`
-                        <ha-card outlined class="entities">
-                          <mwc-list>
-                            ${entities.map((entityId) => {
-                              const entityStateObj = this.hass.states[entityId];
-                              if (!entityStateObj) {
-                                return nothing;
-                              }
-                              return html`
-                                <ha-list-item
-                                  class="entity"
-                                  hasMeta
-                                  .graphic=${this._mode === "live"
-                                    ? "icon"
-                                    : undefined}
+                  </div>`
+                : nothing}
+              ${entities.length
+                ? html`
+                    <ha-card outlined class="entities">
+                      <mwc-list>
+                        ${entities.map((entityId) => {
+                          const entityStateObj = this.hass.states[entityId];
+                          if (!entityStateObj) {
+                            return nothing;
+                          }
+                          return html`
+                            <ha-list-item
+                              class="entity"
+                              hasMeta
+                              .graphic=${this._mode === "live"
+                                ? "icon"
+                                : undefined}
+                              .entityId=${entityId}
+                              @click=${this._mode === "live"
+                                ? this._showMoreInfo
+                                : undefined}
+                              .noninteractive=${this._mode === "review"}
+                            >
+                              ${this._mode === "live"
+                                ? html` <state-badge
+                                    .hass=${this.hass}
+                                    .stateObj=${entityStateObj}
+                                    slot="graphic"
+                                  ></state-badge>`
+                                : nothing}
+                              ${computeStateName(entityStateObj)}
+                              <div slot="meta">
+                                <ha-icon-button
+                                  .path=${mdiDelete}
                                   .entityId=${entityId}
-                                  @click=${this._mode === "live"
-                                    ? this._showMoreInfo
-                                    : undefined}
-                                  .noninteractive=${this._mode === "review"}
-                                >
-                                  ${this._mode === "live"
-                                    ? html` <state-badge
-                                        .hass=${this.hass}
-                                        .stateObj=${entityStateObj}
-                                        slot="graphic"
-                                      ></state-badge>`
-                                    : nothing}
-                                  ${computeStateName(entityStateObj)}
-                                  <div slot="meta">
-                                    <ha-icon-button
-                                      .path=${mdiDelete}
-                                      .entityId=${entityId}
-                                      .label=${this.hass.localize(
-                                        "ui.panel.config.scene.editor.entities.delete"
-                                      )}
-                                      @click=${this._deleteEntity}
-                                    ></ha-icon-button>
-                                  </div>
-                                </ha-list-item>
-                              `;
-                            })}
-                          </mwc-list>
-                        </ha-card>
-                      `
-                    : ""}
-                  ${this._mode === "live"
-                    ? html` <ha-card
-                        outlined
-                        header=${this.hass.localize(
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.scene.editor.entities.delete"
+                                  )}
+                                  @click=${this._deleteEntity}
+                                ></ha-icon-button>
+                              </div>
+                            </ha-list-item>
+                          `;
+                        })}
+                      </mwc-list>
+                    </ha-card>
+                  `
+                : ""}
+              ${this._mode === "live"
+                ? html` <ha-card
+                    outlined
+                    header=${this.hass.localize(
+                      "ui.panel.config.scene.editor.entities.add"
+                    )}
+                  >
+                    <div class="card-content">
+                      <ha-entity-picker
+                        @value-changed=${this._entityPicked}
+                        .excludeDomains=${SCENE_IGNORED_DOMAINS}
+                        .hass=${this.hass}
+                        label=${this.hass.localize(
                           "ui.panel.config.scene.editor.entities.add"
                         )}
-                      >
-                        <div class="card-content">
-                          <ha-entity-picker
-                            @value-changed=${this._entityPicked}
-                            .excludeDomains=${SCENE_IGNORED_DOMAINS}
-                            .hass=${this.hass}
-                            label=${this.hass.localize(
-                              "ui.panel.config.scene.editor.entities.add"
-                            )}
-                          ></ha-entity-picker>
-                        </div>
-                      </ha-card>`
-                    : nothing}
-                </ha-config-section>`
-              : nothing}
+                      ></ha-entity-picker>
+                    </div>
+                  </ha-card>`
+                : nothing}
+            </ha-config-section>
           `
         : nothing}
     </div>`;
