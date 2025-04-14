@@ -1601,7 +1601,8 @@
         "required_error_msg": "This field is required",
         "generic": {
           "name": "Name",
-          "icon": "Icon"
+          "icon": "Icon",
+          "advanced_settings": "Advanced settings"
         },
         "input_datetime": {
           "date": "Date",
@@ -1655,8 +1656,7 @@
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
           "end": "End",
-          "data": "Additional data",
-          "advanced_settings": "Advanced settings"
+          "data": "Additional data"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
