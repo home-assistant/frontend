@@ -22,7 +22,7 @@ export function createStyledHuiElement(
   }
 
   for (const prop of CONFIG_STYLE_PROPS) {
-    if (elementConfig[prop]) {
+    if (typeof elementConfig[prop] === "number") {
       element.style.setProperty(prop, `${elementConfig[prop]}%`);
     }
   }
