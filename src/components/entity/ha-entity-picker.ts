@@ -4,15 +4,18 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityContext } from "../../common/entity/get_entity_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
+import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import type { HelperDomain } from "../../panels/config/helpers/const";
 import { isHelperDomain } from "../../panels/config/helpers/const";
@@ -20,16 +23,18 @@ import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import "../ha-combo-box-item";
 import "../ha-icon-button";
 import "../ha-list-item";
 import "../ha-svg-icon";
 import "./state-badge";
-import { computeStateName } from "../../common/entity/compute_state_name";
 
 interface HassEntityWithCachedName extends HassEntity, ScorableTextItem {
   label: string;
   primary: string;
   secondary?: string;
+  domain?: string;
+  showEntityId?: boolean;
 }
 
 export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
@@ -135,19 +140,46 @@ export class HaEntityPicker extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (
     item
   ) => html`
-    <ha-list-item graphic="avatar" .twoline=${!!item.secondary}>
-      ${item.state
-        ? html`<state-badge
-            slot="graphic"
-            .stateObj=${item}
-            .hass=${this.hass}
-          ></state-badge>`
-        : ""}
-      <span>${item.primary}</span>
+    <ha-combo-box-item type="button">
+      ${html`
+        <state-badge
+          slot="start"
+          .stateObj=${item}
+          .hass=${this.hass}
+        ></state-badge>
+      `}
+      <span slot="headline">${item.primary} </span>
       ${item.secondary
-        ? html`<span slot="secondary">${item.secondary}</span>`
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
         : nothing}
-    </ha-list-item>
+      ${item.entity_id && item.showEntityId
+        ? html`<span
+            slot="supporting-text"
+            style=${styleMap({
+              fontFamily: "var(--code-font-family, monospace)",
+              fontSize: "11px",
+            })}
+            >${item.entity_id}</span
+          >`
+        : nothing}
+      ${item.domain && !item.showEntityId
+        ? html`<div
+            slot="trailing-supporting-text"
+            style=${styleMap({
+              fontFamily: "var(--code-font-family, monospace)",
+              fontSize: "11px",
+              alignSelf: "flex-end",
+              marginBottom: "2px",
+              maxWidth: "30%",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            })}
+          >
+            ${item.domain}
+          </div>`
+        : nothing}
+    </ha-combo-box-item>
   `;
 
   private _getStates = memoizeOne(
@@ -252,6 +284,8 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
+      const isRTL = computeRTL(this.hass);
+
       states = entityIds
         .map((entityId) => {
           const stateObj = hass!.states[entityId];
@@ -266,7 +300,7 @@ export class HaEntityPicker extends LitElement {
           const primary = entityName || deviceName || entityId;
           const secondary = [areaName, entityName ? deviceName : undefined]
             .filter(Boolean)
-            .join(" ⸱ ");
+            .join(isRTL ? " < " : " > ");
 
           return {
             ...hass!.states[entityId],
@@ -275,6 +309,7 @@ export class HaEntityPicker extends LitElement {
               secondary ||
               this.hass.localize("ui.components.device-picker.no_area"),
             label: friendlyName,
+            domain: computeDomain(entityId),
             sortingLabel: [deviceName, entityName].filter(Boolean).join("-"),
             strings: [
               entityId,
@@ -283,6 +318,7 @@ export class HaEntityPicker extends LitElement {
               areaName,
               friendlyName,
             ].filter((v): v is string => Boolean(v)),
+            showEntityId: hass.userData?.showEntityIdPicker,
           };
         })
         .sort((entityA, entityB) =>
