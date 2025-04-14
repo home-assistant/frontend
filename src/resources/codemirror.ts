@@ -59,6 +59,10 @@ export const haTheme = EditorView.theme({
     maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
+  "&.cm-editor": {
+    "--indent-marker-active-bg-color": "var(--divider-color)",
+  },
+
   "&.cm-editor.cm-focused": {
     outline: "none",
   },
