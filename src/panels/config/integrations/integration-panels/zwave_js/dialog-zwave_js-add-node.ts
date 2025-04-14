@@ -5,7 +5,6 @@ import memoizeOne from "memoize-one";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type {
   SecurityClass,
@@ -62,14 +61,17 @@ import "./add-node/zwave-js-add-node-added-insecure";
 import "./add-node/zwave-js-add-node-grant-security-classes";
 import { slugify } from "../../../../../common/string/slugify";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
-import { updateEntityRegistryEntry } from "../../../../../data/entity_registry";
+import {
+  subscribeEntityRegistry,
+  updateEntityRegistryEntry,
+} from "../../../../../data/entity_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
-import { fullEntitiesContext } from "../../../../../data/context";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
 @customElement("dialog-zwave_js-add-node")
-class DialogZWaveJSAddNode extends LitElement {
+class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
   // #region variables
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -117,10 +119,17 @@ class DialogZWaveJSAddNode extends LitElement {
 
   private _newDeviceSubscription?: Promise<UnsubscribeFunc | undefined>;
 
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  _entities!: EntityRegistryEntry[];
+  @state() private _entities: EntityRegistryEntry[] = [];
 
   // #endregion
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entities) => {
+        this._entities = entities;
+      }),
+    ];
+  }
 
   protected render() {
     if (!this._entryId) {
