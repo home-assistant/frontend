@@ -92,7 +92,7 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
       HuiTypedElementEditor.styles,
       css`
         mwc-tab-bar {
-          text-transform: uppercase;
+          --mdc-typography-button-text-transform: none;
           margin-bottom: 16px;
           border-bottom: 1px solid var(--divider-color);
         }
