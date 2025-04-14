@@ -18,19 +18,17 @@ export class HaComboBoxItem extends HaMdListItem {
       }
       [slot="start"] {
         --paper-item-icon-color: var(--secondary-text-color);
-        width: 40px;
-      }
-      [slot="headline"],
-      [slot="supporting-text"] {
-        white-space: nowrap;
+        min-width: 40px;
       }
       [slot="headline"] {
         line-height: 22px;
         font-size: 14px;
+        white-space: nowrap;
       }
       [slot="supporting-text"] {
         line-height: 18px;
         font-size: 12px;
+        white-space: nowrap;
       }
     `,
   ];

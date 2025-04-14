@@ -137,6 +137,11 @@ export class HaEntityPicker extends LitElement {
 
   private _states: HassEntityWithCachedName[] = [];
 
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    this.hass.loadBackendTranslation("title");
+  }
+
   private _rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (
     item
   ) => html`
