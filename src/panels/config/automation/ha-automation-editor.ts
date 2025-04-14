@@ -690,7 +690,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       message: this.hass.localize(
         "ui.panel.config.automation.editor.paste_toast_message"
       ),
-      duration: -1,
+      duration: 4000,
       action: {
         text: this.hass.localize("ui.common.undo"),
         action: () => {
@@ -1087,6 +1087,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       });
       return;
     }
+
+    // reset the pasted config as soon as the user saves
+    this._resetPastedConfig();
 
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {

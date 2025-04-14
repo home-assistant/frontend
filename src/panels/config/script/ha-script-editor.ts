@@ -630,7 +630,7 @@ export class HaScriptEditor extends SubscribeMixin(
       message: this.hass.localize(
         "ui.panel.config.script.editor.paste_toast_message"
       ),
-      duration: -1,
+      duration: 4000,
       action: {
         text: this.hass.localize("ui.common.undo"),
         action: () => {
@@ -1049,6 +1049,9 @@ export class HaScriptEditor extends SubscribeMixin(
       });
       return;
     }
+
+    // reset the pasted config as soon as the user saves
+    this._resetPastedConfig();
 
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
