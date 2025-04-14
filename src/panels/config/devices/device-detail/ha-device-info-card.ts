@@ -104,12 +104,13 @@ export class HaDeviceCard extends LitElement {
             ([type, value]) => html`
               <div class="extra-info">
                 ${type === "bluetooth"
-                  ? html`<a
-                      href="/config/bluetooth/advertisement-monitor?${createSearchParam(
-                        { address: value }
-                      )}"
-                      >${titleCase(type)} ${value.toUpperCase()}</a
-                    >`
+                  ? html`${titleCase(type)}
+                      <a
+                        href="/config/bluetooth/advertisement-monitor?${createSearchParam(
+                          { address: value }
+                        )}"
+                        >${value.toUpperCase()}</a
+                      >`
                   : html`${type === "mac" ? "MAC" : titleCase(type)}:
                     ${value.toUpperCase()}`}
               </div>
