@@ -1,15 +1,17 @@
-import "@shoelace-style/shoelace/dist/components/animation/animation";
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
+import "@shoelace-style/shoelace/dist/components/animation/animation";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { HaDialog } from "../../../../../components/ha-dialog";
+import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import type {
-  SecurityClass,
   QRProvisioningInformation,
   RequestedGrant,
+  SecurityClass,
 } from "../../../../../data/zwave_js";
 import {
   cancelSecureBootstrapS2,
@@ -30,7 +32,6 @@ import {
   zwaveValidateDskAndEnterPin,
 } from "../../../../../data/zwave_js";
 import type { HomeAssistant } from "../../../../../types";
-import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 import {
   backButtonStages,
   closeButtonStages,
@@ -38,35 +39,34 @@ import {
   type ZWaveJSAddNodeSmartStartOptions,
   type ZWaveJSAddNodeStage,
 } from "./add-node/data";
-import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
-import { navigate } from "../../../../../common/navigate";
-import type { HaDialog } from "../../../../../components/ha-dialog";
+import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-fade-in";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-button";
 import "../../../../../components/ha-qr-scanner";
+import "../../../../../components/ha-spinner";
 
-import "./add-node/zwave-js-add-node-select-method";
-import "./add-node/zwave-js-add-node-searching-devices";
-import "./add-node/zwave-js-add-node-select-security-strategy";
-import "./add-node/zwave-js-add-node-failed";
-import "./add-node/zwave-js-add-node-configure-device";
-import "./add-node/zwave-js-add-node-code-input";
-import "./add-node/zwave-js-add-node-loading";
-import "./add-node/zwave-js-add-node-added-insecure";
-import "./add-node/zwave-js-add-node-grant-security-classes";
-import { slugify } from "../../../../../common/string/slugify";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { slugify } from "../../../../../common/string/slugify";
+import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import "./add-node/zwave-js-add-node-added-insecure";
+import "./add-node/zwave-js-add-node-code-input";
+import "./add-node/zwave-js-add-node-configure-device";
+import "./add-node/zwave-js-add-node-failed";
+import "./add-node/zwave-js-add-node-grant-security-classes";
+import "./add-node/zwave-js-add-node-loading";
+import "./add-node/zwave-js-add-node-searching-devices";
+import "./add-node/zwave-js-add-node-select-method";
+import "./add-node/zwave-js-add-node-select-security-strategy";
+import { navigate } from "../../../../../common/navigate";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 
@@ -195,6 +195,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
         titleTranslationKey = "validate_dsk_pin.title";
         break;
       case "configure_device":
+      case "rename_device":
         titleTranslationKey = "configure_device.title";
         break;
       case "added_insecure":
@@ -375,11 +376,11 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
       `;
     }
 
-    if (this._step === "interviewing" || this._step === "waiting_for_device") {
+    if (["interviewing", "waiting_for_device", "rename_device"].includes(this._step ?? "")) {
       return html`
         <zwave-js-add-node-loading
           .description=${this.hass.localize(
-            "ui.panel.config.zwave_js.add_node.getting_device_information"
+            `ui.panel.config.zwave_js.add_node.${this._step !== "rename_device" ? "getting_device_information" : "saving_device"}`
           )}
         ></zwave-js-add-node-loading>
       `;
@@ -836,6 +837,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
         this._step = "failed";
       }
     } else {
+      this._step = "rename_device";
       const nameChanged = this._device.name !== this._deviceOptions?.name;
       if (nameChanged || this._deviceOptions?.area) {
         const oldDeviceName = this._device.name;
@@ -864,13 +866,14 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
 
                   if (name && name.includes(oldDeviceName)) {
                     newName = name.replace(oldDeviceName, newDeviceName);
-                    newEntityId = entity.entity_id.replace(
-                      oldDeviceEntityId,
-                      newDeviceEntityId
-                    );
                   }
 
-                  if (!newName && !newEntityId) {
+                  newEntityId = entity.entity_id.replace(
+                    oldDeviceEntityId,
+                    newDeviceEntityId
+                  );
+
+                  if (!newName && newEntityId === entity.entity_id) {
                     return undefined;
                   }
 
@@ -879,7 +882,6 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
                     entity.entity_id,
                     {
                       name: newName || name,
-                      disabled_by: entity.disabled_by,
                       new_entity_id: newEntityId || entity.entity_id,
                     }
                   );
@@ -891,6 +893,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
             "ui.panel.config.zwave_js.add_node.configure_device.save_device_failed"
           );
           this._step = "failed";
+          return;
         }
       }
 
@@ -905,12 +908,14 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
   }
 
   private _navigateToDevice() {
-    if (this._device?.id) {
+    const deviceId = this._device?.id;
+
+    if (deviceId) {
       setTimeout(() => {
         // delay to ensure the node is added after smart start
         // in this case we don't have a subscription to the node's "node added" event
         // and it is near simultaneous with "device registered" event
-        navigate(`/config/devices/device/${this._device!.id}`);
+        navigate(`/config/devices/device/${deviceId}`);
       }, 1000);
     } else {
       this.closeDialog();

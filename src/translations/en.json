@@ -5875,6 +5875,7 @@
             "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
             "getting_device_information": "Getting device information",
+            "saving_device": "Saving device",
             "check_logs": "Please check the logs for more information.",
             "timeout_error": "No device found after {minutes} minutes. Please check the device and try again.",
             "select_method": {

@@ -18,6 +18,7 @@ export const closeButtonStages: Partial<ZWaveJSAddNodeStage>[] = [
   "validate_dsk_enter_pin",
   "added_insecure",
   "grant_security_classes",
+  "rename_device",
 ];
 
 export type ZWaveJSAddNodeStage =
@@ -37,7 +38,8 @@ export type ZWaveJSAddNodeStage =
   | "added_insecure"
   | "validate_dsk_enter_pin"
   | "grant_security_classes"
-  | "waiting_for_device";
+  | "waiting_for_device"
+  | "rename_device";
 
 export interface ZWaveJSAddNodeSmartStartOptions {
   name: string;
