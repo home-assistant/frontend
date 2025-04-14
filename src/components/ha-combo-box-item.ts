@@ -9,16 +9,12 @@ export class HaComboBoxItem extends HaMdListItem {
     css`
       :host {
         --md-list-item-two-line-container-height: 64px;
-        --md-list-item-leading-space: 12px;
-        --md-list-item-trailing-space: 12px;
       }
       md-item {
-        gap: 8px;
         border-bottom: 1px solid var(--divider-color);
       }
       [slot="start"] {
         --paper-item-icon-color: var(--secondary-text-color);
-        min-width: 40px;
       }
       [slot="headline"] {
         line-height: 22px;
@@ -29,6 +25,10 @@ export class HaComboBoxItem extends HaMdListItem {
         line-height: 18px;
         font-size: 12px;
         white-space: nowrap;
+      }
+      ::slotted(state-badge) {
+        width: 32px;
+        height: 32px;
       }
     `,
   ];

@@ -145,14 +145,12 @@ export class HaEntityPicker extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<HassEntityWithCachedName> = (
     item
   ) => html`
-    <ha-combo-box-item type="button">
-      ${html`
-        <state-badge
-          slot="start"
-          .stateObj=${item}
-          .hass=${this.hass}
-        ></state-badge>
-      `}
+    <ha-combo-box-item type="button" compact>
+      <state-badge
+        slot="start"
+        .stateObj=${item}
+        .hass=${this.hass}
+      ></state-badge>
       <span slot="headline">${item.primary} </span>
       ${item.secondary
         ? html`<span slot="supporting-text">${item.secondary}</span>`
