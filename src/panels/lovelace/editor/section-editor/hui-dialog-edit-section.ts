@@ -276,7 +276,7 @@ export class HuiDialogEditSection
         }
         mwc-tab-bar {
           color: var(--primary-text-color);
-          text-transform: uppercase;
+          --mdc-typography-button-text-transform: none;
           padding: 0 20px;
         }
         @media all and (min-width: 600px) {
