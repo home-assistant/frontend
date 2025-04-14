@@ -58,6 +58,8 @@ export class HuiCardPicker extends LitElement {
 
   @state() private _filter = "";
 
+  private _prevFilter = "";
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
@@ -253,9 +255,12 @@ export class HuiCardPicker extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    const div = this.parentElement!.shadowRoot!.getElementById("content");
-    if (div) {
-      div.scrollTo({ behavior: "auto", top: 0 });
+    if (this._prevFilter !== this._filter) {
+      this._prevFilter = this._filter;
+      const div = this.parentElement!.shadowRoot!.getElementById("content");
+      if (div) {
+        div.scrollTo({ behavior: "auto", top: 0 });
+      }
     }
   }
 
