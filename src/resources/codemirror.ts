@@ -64,7 +64,7 @@ export const haTheme = EditorView.theme({
   },
 
   "&.cm-focused .cm-cursor": {
-    borderLeftColor: "var(--secondary-text-color)",
+    borderLeftColor: "var(--primary-color)",
   },
 
   ".cm-selectionBackground, ::selection": {
