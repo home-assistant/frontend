@@ -66,7 +66,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    window.addEventListener("location-changed", this._locationChanged);
     if (this.hass) {
       this._unsub_advertisements = subscribeBluetoothAdvertisements(
         this.hass.connection,
@@ -98,7 +97,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChanged);
     if (this._unsub_advertisements) {
       this._unsub_advertisements();
       this._unsub_advertisements = undefined;
@@ -116,14 +114,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
       return;
     }
 
-    this._applyURLParams();
-  }
-
-  private _locationChanged = () => {
-    this._applyURLParams();
-  };
-
-  private _applyURLParams() {
     const searchParams = extractSearchParamsObject();
     const address = searchParams.address;
     if (address) {
