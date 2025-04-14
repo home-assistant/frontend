@@ -182,7 +182,7 @@ export class HaTextField extends TextFieldBase {
       }
 
       .mdc-floating-label {
-        padding-inline-end: 30px;
+        padding-inline-end: 16px;
         padding-inline-start: initial;
         inset-inline-start: 16px !important;
         inset-inline-end: initial !important;
