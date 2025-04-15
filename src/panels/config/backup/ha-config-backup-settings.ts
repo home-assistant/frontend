@@ -35,6 +35,7 @@ import "./components/config/ha-backup-config-encryption-key";
 import "./components/config/ha-backup-config-schedule";
 import type { BackupConfigSchedule } from "./components/config/ha-backup-config-schedule";
 import { showLocalBackupLocationDialog } from "./dialogs/show-dialog-local-backup-location";
+import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("ha-config-backup-settings")
 class HaConfigBackupSettings extends LitElement {
@@ -243,6 +244,46 @@ class HaConfigBackupSettings extends LitElement {
                   `
                 : nothing}
             </div>
+            ${!this.cloudStatus.logged_in
+              ? html`<ha-card class="cloud-info">
+                  <div class="cloud-header">
+                    <img
+                      .src=${brandsUrl({
+                        domain: "cloud",
+                        type: "icon",
+                        useFallback: true,
+                        darkOptimized: this.hass.themes?.darkMode,
+                      })}
+                      crossorigin="anonymous"
+                      referrerpolicy="no-referrer"
+                      alt="Nabu Casa logo"
+                      slot="start"
+                    />
+                    <span>Home Assistant Cloud backup</span>
+                  </div>
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.locations.ha_cloud_description"
+                    )}
+                  </div>
+                  <div class="card-actions">
+                    <a href="/config/cloud/login">
+                      <ha-button>
+                        ${this.hass.localize(
+                          "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                        )}
+                      </ha-button>
+                    </a>
+                    <a href="/config/cloud/register">
+                      <ha-button unelevated>
+                        ${this.hass.localize(
+                          "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                        )}
+                      </ha-button>
+                    </a>
+                  </div>
+                </ha-card>`
+              : nothing}
             <div class="card-actions">
               <a
                 href=${documentationUrl(this.hass, "/integrations/#backup")}
@@ -480,6 +521,26 @@ class HaConfigBackupSettings extends LitElement {
     }
     a {
       text-decoration: none;
+    }
+    .cloud-info {
+      margin: 0 16px 16px;
+    }
+    .cloud-info .cloud-header {
+      display: flex;
+      gap: 16px;
+      font-size: 22px;
+      align-items: center;
+      padding: 16px;
+    }
+    .cloud-info .cloud-header img {
+      width: 48px;
+    }
+    .cloud-info .card-content {
+      padding-bottom: 16px;
+    }
+    .cloud-info .card-actions {
+      display: flex;
+      justify-content: space-between;
     }
   `;
 }
