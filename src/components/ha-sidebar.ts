@@ -901,6 +901,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           --md-list-item-leading-icon-size: 24px;
         }
         :host([expanded]) ha-md-list-item {
+          width: 248px;
           width: calc(248px - env(safe-area-inset-left));
         }
 
