@@ -77,6 +77,7 @@ const SCHEMA = [
       },
     ],
   },
+  { name: "style", selector: { object: {} } },
   {
     name: "left",
     selector: {
@@ -89,7 +90,6 @@ const SCHEMA = [
       number: { min: 0, max: 100, unit_of_measurement: "%", step: 0.1 },
     },
   },
-  { name: "style", selector: { object: {} } },
 ] as const;
 
 @customElement("hui-state-icon-element-editor")
