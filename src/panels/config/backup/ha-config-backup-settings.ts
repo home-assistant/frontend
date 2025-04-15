@@ -259,7 +259,14 @@ class HaConfigBackupSettings extends LitElement {
                       alt="Nabu Casa logo"
                       slot="start"
                     />
-                    <span>Home Assistant Cloud backup</span>
+                    <span
+                      >${this.hass.localize(
+                        "ui.panel.config.backup.settings.locations.ha_cloud_backup",
+                        {
+                          home_assistant_cloud: "Home Assistant Cloud",
+                        }
+                      )}</span
+                    >
                   </div>
                   <div class="card-content">
                     ${this.hass.localize(
