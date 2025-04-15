@@ -9,10 +9,6 @@ import {
 const mainStyles = css`
   /*
     Home Assistant default styles.
-
-    In Polymer 2.0, default styles should to be set on the html selector.
-    (Setting all default styles only on body breaks shadyCSS polyfill.)
-    See: https://github.com/home-assistant/home-assistant-polymer/pull/901
   */
   html {
     font-size: 14px;
@@ -213,221 +209,74 @@ const mainStyles = css`
     --material-caption-font-size: 0.75rem;
     --material-button-font-size: 0.875rem;
 
-    /* Paper shadow */
-    --shadow-transition: {
-      transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    };
-
-    --shadow-none: {
-      box-shadow: none;
-    };
-
-    /* from http://codepen.io/shyndman/pen/c5394ddf2e8b2a5c9185904b57421cdb */
-
-    --shadow-elevation-2dp: {
-      box-shadow:
-        0 2px 2px 0 rgba(0, 0, 0, 0.14),
-        0 1px 5px 0 rgba(0, 0, 0, 0.12),
-        0 3px 1px -2px rgba(0, 0, 0, 0.2);
-    };
-
-    --shadow-elevation-3dp: {
-      box-shadow:
-        0 3px 4px 0 rgba(0, 0, 0, 0.14),
-        0 1px 8px 0 rgba(0, 0, 0, 0.12),
-        0 3px 3px -2px rgba(0, 0, 0, 0.4);
-    };
-
-    --shadow-elevation-4dp: {
-      box-shadow:
-        0 4px 5px 0 rgba(0, 0, 0, 0.14),
-        0 1px 10px 0 rgba(0, 0, 0, 0.12),
-        0 2px 4px -1px rgba(0, 0, 0, 0.4);
-    };
-
-    --shadow-elevation-6dp: {
-      box-shadow:
-        0 6px 10px 0 rgba(0, 0, 0, 0.14),
-        0 1px 18px 0 rgba(0, 0, 0, 0.12),
-        0 3px 5px -1px rgba(0, 0, 0, 0.4);
-    };
-
-    --shadow-elevation-8dp: {
-      box-shadow:
-        0 8px 10px 1px rgba(0, 0, 0, 0.14),
-        0 3px 14px 2px rgba(0, 0, 0, 0.12),
-        0 5px 5px -3px rgba(0, 0, 0, 0.4);
-    };
-
-    --shadow-elevation-12dp: {
-      box-shadow:
-        0 12px 16px 1px rgba(0, 0, 0, 0.14),
-        0 4px 22px 3px rgba(0, 0, 0, 0.12),
-        0 6px 7px -4px rgba(0, 0, 0, 0.4);
-    };
-
-    --shadow-elevation-16dp: {
-      box-shadow:
-        0 16px 24px 2px rgba(0, 0, 0, 0.14),
-        0 6px 30px 5px rgba(0, 0, 0, 0.12),
-        0 8px 10px -5px rgba(0, 0, 0, 0.4);
-    };
-
-    --shadow-elevation-24dp: {
-      box-shadow:
-        0 24px 38px 3px rgba(0, 0, 0, 0.14),
-        0 9px 46px 8px rgba(0, 0, 0, 0.12),
-        0 11px 15px -7px rgba(0, 0, 0, 0.4);
-    };
-
     /* Paper typography Styles */
-    --paper-font-common-base: {
-      font-family: "Roboto", "Noto", sans-serif;
-      -webkit-font-smoothing: antialiased;
-    };
+    --paper-font-common-base_-_font-family: Roboto, Noto, sans-serif;
+    --paper-font-common-base_-_-webkit-font-smoothing: antialiased;
+    --paper-font-common-code_-_font-family:
+      "Roboto Mono", Consolas, Menlo, monospace;
+    --paper-font-common-code_-_-webkit-font-smoothing: antialiased;
+    --paper-font-common-nowrap_-_white-space: nowrap;
+    --paper-font-common-nowrap_-_overflow: hidden;
+    --paper-font-common-nowrap_-_text-overflow: ellipsis;
 
-    --paper-font-common-code: {
-      font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
-      -webkit-font-smoothing: antialiased;
-    };
+    --paper-font-display1_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-display1_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-display1_-_font-size: 34px;
+    --paper-font-display1_-_font-weight: 400;
+    --paper-font-display1_-_letter-spacing: -0.01em;
+    --paper-font-display1_-_line-height: 40px;
 
-    --paper-font-common-expensive-kerning: {
-      text-rendering: optimizeLegibility;
-    };
+    --paper-font-headline_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-headline_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-headline_-_font-size: 24px;
+    --paper-font-headline_-_font-weight: 400;
+    --paper-font-headline_-_letter-spacing: -0.012em;
+    --paper-font-headline_-_line-height: 32px;
 
-    --paper-font-common-nowrap: {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    };
+    --paper-font-title_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-title_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-title_-_white-space: var(
+      --paper-font-common-nowrap_-_white-space
+    );
+    --paper-font-title_-_overflow: var(--paper-font-common-nowrap_-_overflow);
+    --paper-font-title_-_text-overflow: var(
+      --paper-font-common-nowrap_-_text-overflow
+    );
+    --paper-font-title_-_font-size: 20px;
+    --paper-font-title_-_font-weight: 500;
+    --paper-font-title_-_line-height: 28px;
 
-    /* Material Font Styles */
+    --paper-font-subhead_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-subhead_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-subhead_-_font-size: 16px;
+    --paper-font-subhead_-_font-weight: 400;
+    --paper-font-subhead_-_line-height: 24px;
 
-    --paper-font-display4: {
-      @apply --paper-font-common-base;
-      @apply --paper-font-common-nowrap;
-
-      font-size: 112px;
-      font-weight: 300;
-      letter-spacing: -0.044em;
-      line-height: 120px;
-    };
-
-    --paper-font-display3: {
-      @apply --paper-font-common-base;
-      @apply --paper-font-common-nowrap;
-
-      font-size: 56px;
-      font-weight: 400;
-      letter-spacing: -0.026em;
-      line-height: 60px;
-    };
-
-    --paper-font-display2: {
-      @apply --paper-font-common-base;
-
-      font-size: 45px;
-      font-weight: 400;
-      letter-spacing: -0.018em;
-      line-height: 48px;
-    };
-
-    --paper-font-display1: {
-      @apply --paper-font-common-base;
-
-      font-size: 34px;
-      font-weight: 400;
-      letter-spacing: -0.01em;
-      line-height: 40px;
-    };
-
-    --paper-font-headline: {
-      @apply --paper-font-common-base;
-
-      font-size: 24px;
-      font-weight: 400;
-      letter-spacing: -0.012em;
-      line-height: 32px;
-    };
-
-    --paper-font-title: {
-      @apply --paper-font-common-base;
-      @apply --paper-font-common-nowrap;
-
-      font-size: 20px;
-      font-weight: 500;
-      line-height: 28px;
-    };
-
-    --paper-font-subhead: {
-      @apply --paper-font-common-base;
-
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
-    };
-
-    --paper-font-body2: {
-      @apply --paper-font-common-base;
-
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 24px;
-    };
-
-    --paper-font-body1: {
-      @apply --paper-font-common-base;
-
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
-    };
-
-    --paper-font-caption: {
-      @apply --paper-font-common-base;
-      @apply --paper-font-common-nowrap;
-
-      font-size: 12px;
-      font-weight: 400;
-      letter-spacing: 0.011em;
-      line-height: 20px;
-    };
-
-    --paper-font-menu: {
-      @apply --paper-font-common-base;
-      @apply --paper-font-common-nowrap;
-
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 24px;
-    };
-
-    --paper-font-button: {
-      @apply --paper-font-common-base;
-      @apply --paper-font-common-nowrap;
-
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.018em;
-      line-height: 24px;
-      text-transform: uppercase;
-    };
-
-    --paper-font-code2: {
-      @apply --paper-font-common-code;
-
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 20px;
-    };
-
-    --paper-font-code1: {
-      @apply --paper-font-common-code;
-
-      font-size: 14px;
-      font-weight: 500;
-      line-height: 20px;
-    };
+    --paper-font-body1_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-body1_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-body1_-_font-size: 14px;
+    --paper-font-body1_-_font-weight: 400;
+    --paper-font-body1_-_line-height: 20px;
 
     direction: ltr;
     --direction: ltr;

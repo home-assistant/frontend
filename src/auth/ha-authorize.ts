@@ -265,7 +265,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       );
     }
 
-    if (window.innerWidth > 450) {
+    if (
+      window.innerWidth > 450 &&
+      !matchMedia("(prefers-reduced-motion)").matches
+    ) {
       import("../resources/particles");
     }
 

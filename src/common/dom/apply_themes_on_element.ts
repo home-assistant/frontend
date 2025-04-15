@@ -134,10 +134,7 @@ export const applyThemesOnElement = (
   element.__themes = { cacheKey, keys: newTheme?.keys };
 
   // Set and/or reset styles
-  if (element.updateStyles) {
-    // Use updateStyles() method of Polymer elements
-    element.updateStyles(styles);
-  } else if (window.ShadyCSS) {
+  if (window.ShadyCSS) {
     // Use ShadyCSS if available
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
   } else {

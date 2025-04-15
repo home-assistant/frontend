@@ -1609,7 +1609,8 @@
         "required_error_msg": "This field is required",
         "generic": {
           "name": "Name",
-          "icon": "Icon"
+          "icon": "Icon",
+          "advanced_settings": "Advanced settings"
         },
         "input_datetime": {
           "date": "Date",
@@ -1663,8 +1664,7 @@
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
           "end": "End",
-          "data": "Additional data",
-          "advanced_settings": "Advanced settings"
+          "data": "Additional data"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -2528,6 +2528,12 @@
             "retention_units": {
               "copies": "backups",
               "days": "days"
+            },
+            "update_preference": {
+              "label": "Backup preference when updating",
+              "supporting_text": "This can be adjusted each time",
+              "skip_backups": "Skip backups",
+              "backup_before_update": "Backup before update"
             }
           },
           "encryption_key": {
@@ -2707,6 +2713,14 @@
             "encryption_key": {
               "title": "Encryption key",
               "description": "Keep this encryption key in a safe place, as you will need it to access your backup, allowing it to be restored. Download it as an emergency kit file and store it somewhere safe. Encryption keeps your backups private and secure."
+            },
+            "addon_update_backup": {
+              "title": "Add-on update backups",
+              "description": "Creates a backup of your add-on and its data. That way you can keep around the previous version of the add-on, so you can always roll back to it if needed.",
+              "local_only": "This backup is only saved on this system.",
+              "retention_description": "Prevent your system from filling up with old versions.",
+              "error_load": "Error loading supervisor update config: {error}",
+              "error_save": "Error saving supervisor update config: {error}"
             }
           },
           "details": {
@@ -4814,7 +4828,7 @@
           },
           "dialog_already_connected": {
             "heading": "Account linked to other Home Assistant",
-            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services.",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services and you will need to be physically present to reconnect it.  Nabu Casa support is unable to remotely reconnect a disconnected Home Assistant instance.",
             "other_home_assistant": "Other Home Assistant",
             "instance_name": "Instance name",
             "instance_version": "Instance version",
@@ -5011,8 +5025,9 @@
             },
             "headers": {
               "state_icon": "State icon",
-              "name": "Name",
+              "entity": "Entity",
               "entity_id": "Entity ID",
+              "device": "Device",
               "integration": "Integration",
               "area": "Area",
               "disabled_by": "Disabled by",
