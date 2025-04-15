@@ -13,7 +13,10 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { StateIconElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
@@ -33,7 +36,7 @@ const stateIconElementConfigStruct = object({
   double_tap_action: optional(actionConfigStruct),
 });
 
-const SCHEMA = [
+const SCHEMA: HaFormSchema[] = [
   { name: "entity", required: true, selector: { entity: {} } },
   { name: "icon", selector: { icon: {} } },
   { name: "title", selector: { text: {} } },
@@ -77,8 +80,18 @@ const SCHEMA = [
       },
     ],
   },
-  { name: "left", selector: { number: { min: 0, max: 100 } } },
-  { name: "top", selector: { number: { min: 0, max: 100 } } },
+  {
+    name: "left",
+    selector: {
+      number: { min: 0, max: 100, unit_of_measurement: "%", step: 0.1 },
+    },
+  },
+  {
+    name: "top",
+    selector: {
+      number: { min: 0, max: 100, unit_of_measurement: "%", step: 0.1 },
+    },
+  },
   { name: "style", selector: { object: {} } },
 ] as const;
 
