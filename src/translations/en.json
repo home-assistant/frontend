@@ -6388,6 +6388,7 @@
           "areas": {
             "groups": {
               "lights": "Lights",
+              "openings": "Openings",
               "climate": "Climate",
               "media_players": "Entertainment",
               "security": "Security",

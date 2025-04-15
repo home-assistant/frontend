@@ -76,7 +76,7 @@ export class AreaViewStrategy extends ReactiveElement {
 
     const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
-    const { lights, climate, media_players, security, others } =
+    const { lights, climate, openings, media_players, security, others } =
       groupedEntities;
 
     if (lights.length > 0) {
@@ -88,6 +88,19 @@ export class AreaViewStrategy extends ReactiveElement {
             AREA_STRATEGY_GROUP_ICONS.lights
           ),
           ...lights.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (openings.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.openings"),
+            AREA_STRATEGY_GROUP_ICONS.openings
+          ),
+          ...openings.map(computeTileCard),
         ],
       });
     }

@@ -19,6 +19,7 @@ import type { TileCardConfig } from "../../../cards/types";
 export const AREA_STRATEGY_GROUPS = [
   "lights",
   "climate",
+  "openings",
   "media_players",
   "security",
   "others",
@@ -27,6 +28,7 @@ export const AREA_STRATEGY_GROUPS = [
 export const AREA_STRATEGY_GROUP_ICONS = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
+  openings: "mdi:blinds-horizontal",
   media_players: "mdi:multimedia",
   security: "mdi:security",
   others: "mdi:shape",
@@ -60,22 +62,20 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
     ],
-    climate: [
+    openings: [
       generateEntityFilter(hass, {
         domain: "cover",
         area: area,
-        device_class: [
-          "shutter",
-          "awning",
-          "blind",
-          "curtain",
-          "shade",
-          "shutter",
-          "window",
-          "none",
-        ],
         entity_category: "none",
       }),
+      generateEntityFilter(hass, {
+        domain: "binary_sensor",
+        area: area,
+        device_class: ["door", "garage_door", "window"],
+        entity_category: "none",
+      }),
+    ],
+    climate: [
       generateEntityFilter(hass, {
         domain: "climate",
         area: area,
@@ -94,12 +94,6 @@ export const getAreaGroupedEntities = (
       generateEntityFilter(hass, {
         domain: "fan",
         area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        area: area,
-        device_class: "window",
         entity_category: "none",
       }),
     ],
@@ -122,19 +116,7 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
-        domain: "cover",
-        device_class: ["door", "garage", "gate"],
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
         domain: "camera",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        device_class: ["door", "garage_door"],
         area: area,
         entity_category: "none",
       }),
@@ -156,7 +138,7 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
-        domain: "switch",
+        domain: ["switch", "select"],
         area: area,
         entity_category: "none",
       }),
