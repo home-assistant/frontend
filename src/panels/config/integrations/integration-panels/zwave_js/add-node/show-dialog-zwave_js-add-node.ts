@@ -1,4 +1,4 @@
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
 
 export interface ZWaveJSAddNodeDialogParams {
   entry_id: string;

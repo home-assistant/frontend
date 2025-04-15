@@ -5,14 +5,14 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { HaDialog } from "../../../../../components/ha-dialog";
-import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
+import { fireEvent } from "../../../../../../common/dom/fire_event";
+import type { HaDialog } from "../../../../../../components/ha-dialog";
+import { updateDeviceRegistryEntry } from "../../../../../../data/device_registry";
 import type {
   QRProvisioningInformation,
   RequestedGrant,
   SecurityClass,
-} from "../../../../../data/zwave_js";
+} from "../../../../../../data/zwave_js";
 import {
   cancelSecureBootstrapS2,
   fetchZwaveNetworkStatus,
@@ -31,43 +31,43 @@ import {
   zwaveSupportsFeature,
   zwaveTryParseDskFromQrCode,
   zwaveValidateDskAndEnterPin,
-} from "../../../../../data/zwave_js";
-import type { HomeAssistant } from "../../../../../types";
+} from "../../../../../../data/zwave_js";
+import type { HomeAssistant } from "../../../../../../types";
 import {
   backButtonStages,
   closeButtonStages,
   type ZWaveJSAddNodeDevice,
   type ZWaveJSAddNodeSmartStartOptions,
   type ZWaveJSAddNodeStage,
-} from "./add-node/data";
+} from "./data";
 import type { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dialog";
-import "../../../../../components/ha-dialog-header";
-import "../../../../../components/ha-fade-in";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-qr-scanner";
-import "../../../../../components/ha-spinner";
+import "../../../../../../components/ha-button";
+import "../../../../../../components/ha-dialog";
+import "../../../../../../components/ha-dialog-header";
+import "../../../../../../components/ha-fade-in";
+import "../../../../../../components/ha-icon-button";
+import "../../../../../../components/ha-qr-scanner";
+import "../../../../../../components/ha-spinner";
 
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
-import { navigate } from "../../../../../common/navigate";
-import { slugify } from "../../../../../common/string/slugify";
-import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
+import { computeStateName } from "../../../../../../common/entity/compute_state_name";
+import { navigate } from "../../../../../../common/navigate";
+import { slugify } from "../../../../../../common/string/slugify";
+import type { EntityRegistryEntry } from "../../../../../../data/entity_registry";
 import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
-} from "../../../../../data/entity_registry";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
-import "./add-node/zwave-js-add-node-added-insecure";
-import "./add-node/zwave-js-add-node-code-input";
-import "./add-node/zwave-js-add-node-configure-device";
-import "./add-node/zwave-js-add-node-failed";
-import "./add-node/zwave-js-add-node-grant-security-classes";
-import "./add-node/zwave-js-add-node-loading";
-import "./add-node/zwave-js-add-node-searching-devices";
-import "./add-node/zwave-js-add-node-select-method";
-import "./add-node/zwave-js-add-node-select-security-strategy";
+} from "../../../../../../data/entity_registry";
+import { SubscribeMixin } from "../../../../../../mixins/subscribe-mixin";
+import "./zwave-js-add-node-added-insecure";
+import "./zwave-js-add-node-code-input";
+import "./zwave-js-add-node-configure-device";
+import "./zwave-js-add-node-failed";
+import "./zwave-js-add-node-grant-security-classes";
+import "./zwave-js-add-node-loading";
+import "./zwave-js-add-node-searching-devices";
+import "./zwave-js-add-node-select-method";
+import "./zwave-js-add-node-select-security-strategy";
 
 const INCLUSION_TIMEOUT_MINUTES = 5;
 

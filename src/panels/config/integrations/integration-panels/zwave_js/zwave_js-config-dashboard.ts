@@ -49,7 +49,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
