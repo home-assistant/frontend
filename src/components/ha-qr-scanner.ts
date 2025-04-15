@@ -97,7 +97,10 @@ class HaQrScanner extends LitElement {
     }
 
     return html`${this._error || this._warning
-      ? html`<ha-alert .alertType=${this._error ? "error" : "warning"}>
+      ? html`<ha-alert
+          .alertType=${this._error ? "error" : "warning"}
+          class=${this._error ? "" : "warning"}
+        >
           ${this._error || this._warning}
           ${this._error
             ? html` <ha-button @click=${this._retry} slot="action">
@@ -208,7 +211,7 @@ class HaQrScanner extends LitElement {
     if (err.endsWith("No QR code found")) {
       this._qrNotFoundCount++;
       if (this._qrNotFoundCount >= 250) {
-        this._reportError(err);
+        this._reportWarning(err);
       }
       return;
     }
@@ -346,6 +349,9 @@ class HaQrScanner extends LitElement {
   }
 
   static styles = css`
+    :root {
+      position: relative;
+    }
     canvas {
       width: 100%;
       border-radius: 16px;
@@ -383,7 +389,13 @@ class HaQrScanner extends LitElement {
     }
     ha-alert {
       display: block;
-      margin-bottom: 8px;
+    }
+    ha-alert.warning {
+      position: absolute;
+      z-index: 1;
+      background-color: var(--primary-background-color);
+      top: 0;
+      width: calc(100% - 48px);
     }
   `;
 }
