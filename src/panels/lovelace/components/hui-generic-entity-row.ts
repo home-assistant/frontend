@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -152,19 +153,12 @@ export class HuiGenericEntityRow extends LitElement {
             </div>`
           : nothing}
         ${(this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain))
-          ? html`<div
-              class="text-content value ${classMap({
-                pointer,
-              })}"
-              @action=${this._handleAction}
-              .actionHandler=${actionHandler({
-                hasHold: hasAction(this.config!.hold_action),
-                hasDoubleClick: hasAction(this.config!.double_tap_action),
-              })}
-            >
-              <div class="state"><slot></slot></div>
-            </div>`
-          : html`<slot></slot>`}
+          ? html`
+              <div class="text-content value">
+                <div class="state"><slot></slot></div>
+              </div>
+            `
+          : html`<slot @action=${stopPropagation}></slot>`}
       </div>
     `;
   }
