@@ -13,10 +13,7 @@ import {
 } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-form/ha-form";
-import type {
-  HaFormSchema,
-  SchemaUnion,
-} from "../../../../../components/ha-form/types";
+import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { StateIconElementConfig } from "../../../elements/types";
 import type { LovelacePictureElementEditor } from "../../../types";
@@ -36,7 +33,7 @@ const stateIconElementConfigStruct = object({
   double_tap_action: optional(actionConfigStruct),
 });
 
-const SCHEMA: HaFormSchema[] = [
+const SCHEMA = [
   { name: "entity", required: true, selector: { entity: {} } },
   { name: "icon", selector: { icon: {} } },
   { name: "title", selector: { text: {} } },
