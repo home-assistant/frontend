@@ -157,7 +157,7 @@
     "@babel/preset-env": "7.26.9",
     "@babel/preset-typescript": "7.27.0",
     "@bundle-stats/plugin-webpack-filter": "4.19.1",
-    "@lokalise/node-api": "14.2.1",
+    "@lokalise/node-api": "14.3.0",
     "@octokit/auth-oauth-device": "7.1.5",
     "@octokit/plugin-retry": "7.2.1",
     "@octokit/rest": "21.1.1",
