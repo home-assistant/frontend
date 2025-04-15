@@ -19,7 +19,7 @@ import type { TileCardConfig } from "../../../cards/types";
 export const AREA_STRATEGY_GROUPS = [
   "lights",
   "climate",
-  "openings",
+  "covers",
   "media_players",
   "security",
   "others",
@@ -28,7 +28,7 @@ export const AREA_STRATEGY_GROUPS = [
 export const AREA_STRATEGY_GROUP_ICONS = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
-  openings: "mdi:blinds-horizontal",
+  covers: "mdi:blinds-horizontal",
   media_players: "mdi:multimedia",
   security: "mdi:security",
   others: "mdi:shape",
@@ -62,7 +62,7 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
     ],
-    openings: [
+    covers: [
       generateEntityFilter(hass, {
         domain: "cover",
         area: area,
@@ -138,7 +138,7 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
-        domain: ["switch", "select"],
+        domain: ["switch", "select", "input_boolean", "input_select"],
         area: area,
         entity_category: "none",
       }),
