@@ -205,7 +205,7 @@
     "gulp-rename": "2.0.0",
     "html-minifier-terser": "7.2.0",
     "husky": "9.1.7",
-    "jsdom": "26.0.0",
+    "jsdom": "26.1.0",
     "jszip": "3.10.1",
     "lint-staged": "15.5.1",
     "lit-analyzer": "2.0.3",
