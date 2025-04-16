@@ -80,7 +80,7 @@ export class DHCPConfigPanel extends LitElement {
   private _dataWithIds = memoizeOne((data) =>
     data.map((row) => ({
       ...row,
-      id: row.address,
+      id: row.mac_address,
     }))
   );
 
