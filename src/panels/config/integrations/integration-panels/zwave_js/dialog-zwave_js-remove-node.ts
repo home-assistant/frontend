@@ -4,16 +4,16 @@ import {
   mdiCloseCircle,
   mdiVectorSquareRemove,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-alert";
-import "../../../../../components/ha-dialog-header";
-import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-dialog-header";
+import "../../../../../components/ha-spinner";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
@@ -206,7 +206,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       });
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(err)
+      console.error(err);
     }
   }
 
