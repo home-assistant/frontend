@@ -303,7 +303,7 @@ export class HaEntityPicker extends LitElement {
           const primary = entityName || deviceName || entityId;
           const secondary = [areaName, entityName ? deviceName : undefined]
             .filter(Boolean)
-            .join(isRTL ? " < " : " > ");
+            .join(isRTL ? " ◂ " : " ▸ ");
 
           const translatedDomain = domainToName(
             this.hass.localize,
