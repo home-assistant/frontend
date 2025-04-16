@@ -5943,7 +5943,7 @@
             "cancel_exclusion": "Cancel exclusion",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
             "removing_device": "Removing device",
-            "exclusion_failed": "The device could not be removed. Please check the logs for more information.",
+            "exclusion_failed": "An error occurred during exclusion. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {

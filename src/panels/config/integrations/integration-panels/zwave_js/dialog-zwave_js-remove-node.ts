@@ -199,11 +199,15 @@ class DialogZWaveJSRemoveNode extends LitElement {
   }
 
   private _stopExclusion(): void {
-    // TODO handle errors
-    this.hass.callWS({
-      type: "zwave_js/stop_exclusion",
-      entry_id: this.entry_id,
-    });
+    try {
+      this.hass.callWS({
+        type: "zwave_js/stop_exclusion",
+        entry_id: this.entry_id,
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err)
+    }
   }
 
   private _unsubscribe = () => {
@@ -258,6 +262,9 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
         ha-svg-icon.failed {
           color: var(--error-color);
+        }
+        ha-alert {
+          width: 100%;
         }
       `,
     ];
