@@ -11,7 +11,121 @@ const mainStyles = css`
     Home Assistant default styles.
   */
   html {
+    /* typography */
+    --ha-font-family-body: Roboto, Noto, sans-serif;
+    --ha-font-family-heading: var(--ha-font-family-body);
+    --ha-font-family-code: "Roboto Mono", Consolas, Menlo, monospace;
+    --ha-font-family-longform: ui-sans-serif, system-ui, sans-serif;
+
     font-size: 14px;
+    --ha-font-size-scale: 1;
+    --ha-font-size-2xs: calc(0.786rem * var(--ha-font-size-scale)); /* ~11px */
+    --ha-font-size-xs: calc(0.857rem * var(--ha-font-size-scale)); /* ~12px */
+    --ha-font-size-s: calc(1rem * var(--ha-font-size-scale)); /* 14px */
+    --ha-font-size-m: calc(1.143rem * var(--ha-font-size-scale)); /* ~16px */
+    --ha-font-size-l: calc(1.429rem * var(--ha-font-size-scale)); /* ~20px */
+    --ha-font-size-xl: calc(1.857rem * var(--ha-font-size-scale)); /* ~26px */
+    --ha-font-size-2xl: calc(2.286rem * var(--ha-font-size-scale)); /* ~32px */
+    --ha-font-size-3xl: calc(2.929rem * var(--ha-font-size-scale)); /* ~41px */
+    --ha-font-size-4xl: calc(3.714rem * var(--ha-font-size-scale)); /* ~52px */
+
+    --ha-font-weight-light: 300;
+    --ha-font-weight-normal: 400;
+    --ha-font-weight-semibold: 500;
+    --ha-font-weight-bold: 600;
+
+    --ha-font-weight-body: var(--ha-font-weight-normal);
+    --ha-font-weight-heading: var(--ha-font-weight-bold);
+    --ha-font-weight-action: var(--ha-font-weight-semibold);
+
+    --ha-line-height-condensed: 1.2;
+    --ha-line-height-normal: 1.6;
+    --ha-line-height-expanded: 2;
+
+    /* support existing typography */
+    --code-font-family: var(--ha-font-family-code);
+
+    /* Vaadin typography */
+    --material-h6-font-size: var(--ha-font-size-m);
+    --material-small-font-size: var(--ha-font-size-xs);
+    --material-caption-font-size: var(--ha-font-size-2xs);
+    --material-button-font-size: var(--ha-font-size-xs);
+
+    /* Paper typography Styles */
+    --paper-font-common-base_-_font-family: var(--ha-font-family-body);
+    --paper-font-common-base_-_-webkit-font-smoothing: antialiased;
+    --paper-font-common-code_-_font-family: var(--ha-font-family-code);
+    --paper-font-common-code_-_-webkit-font-smoothing: antialiased;
+    --paper-font-common-nowrap_-_white-space: nowrap;
+    --paper-font-common-nowrap_-_overflow: hidden;
+    --paper-font-common-nowrap_-_text-overflow: ellipsis;
+
+    --paper-font-display1_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-display1_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-display1_-_font-size: var(--ha-font-size-2xl);
+    --paper-font-display1_-_font-weight: var(--ha-font-weight-normal);
+    --paper-font-display1_-_letter-spacing: -0.01em;
+    --paper-font-display1_-_line-height: var(--ha-line-height-condensed);
+
+    --paper-font-headline_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-headline_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-headline_-_font-size: var(--ha-font-size-xl);
+    --paper-font-headline_-_font-weight: var(--ha-font-weight-normal);
+    --paper-font-headline_-_letter-spacing: -0.012em;
+    --paper-font-headline_-_line-height: var(--ha-line-height-condensed);
+
+    --paper-font-title_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-title_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-title_-_white-space: var(
+      --paper-font-common-nowrap_-_white-space
+    );
+    --paper-font-title_-_overflow: var(--paper-font-common-nowrap_-_overflow);
+    --paper-font-title_-_text-overflow: var(
+      --paper-font-common-nowrap_-_text-overflow
+    );
+    --paper-font-title_-_font-size: var(--ha-font-size-l);
+    --paper-font-title_-_font-weight: var(--ha-font-weight-semibold);
+    --paper-font-title_-_line-height: var(--ha-line-height-normal);
+
+    --paper-font-subhead_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-subhead_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-subhead_-_font-size: var(--ha-font-size-m);
+    --paper-font-subhead_-_font-weight: var(--ha-font-weight-normal);
+    --paper-font-subhead_-_line-height: var(--ha-line-height-normal);
+
+    --paper-font-body1_-_font-family: var(
+      --paper-font-common-base_-_font-family
+    );
+    --paper-font-body1_-_-webkit-font-smoothing: var(
+      --paper-font-common-base_-_-webkit-font-smoothing
+    );
+    --paper-font-body1_-_font-size: var(--ha-font-size-s);
+    --paper-font-body1_-_font-weight: var(--ha-font-weight-normal);
+    --paper-font-body1_-_line-height: var(--ha-line-height-normal);
+
+    /* component specific */
+    /* ha-tooltip */
+    --ha-tooltip-font-family: var(--ha-font-family-body);
+    --ha-tooltip-font-size: var(--ha-font-size-xs);
+    --ha-tooltip-font-weight: var(--ha-font-weight-normal);
+    --ha-tooltip-line-height: var(--ha-line-height-condensed);
+
     height: 100vh;
 
     /* text */
@@ -202,81 +316,6 @@ const mainStyles = css`
     --input-label-ink-color: rgba(0, 0, 0, 0.6);
     --input-disabled-ink-color: rgba(0, 0, 0, 0.37);
     --input-dropdown-icon-color: rgba(0, 0, 0, 0.54);
-
-    /* Vaadin typography */
-    --material-h6-font-size: 1.25rem;
-    --material-small-font-size: 0.875rem;
-    --material-caption-font-size: 0.75rem;
-    --material-button-font-size: 0.875rem;
-
-    /* Paper typography Styles */
-    --paper-font-common-base_-_font-family: Roboto, Noto, sans-serif;
-    --paper-font-common-base_-_-webkit-font-smoothing: antialiased;
-    --paper-font-common-code_-_font-family:
-      "Roboto Mono", Consolas, Menlo, monospace;
-    --paper-font-common-code_-_-webkit-font-smoothing: antialiased;
-    --paper-font-common-nowrap_-_white-space: nowrap;
-    --paper-font-common-nowrap_-_overflow: hidden;
-    --paper-font-common-nowrap_-_text-overflow: ellipsis;
-
-    --paper-font-display1_-_font-family: var(
-      --paper-font-common-base_-_font-family
-    );
-    --paper-font-display1_-_-webkit-font-smoothing: var(
-      --paper-font-common-base_-_-webkit-font-smoothing
-    );
-    --paper-font-display1_-_font-size: 34px;
-    --paper-font-display1_-_font-weight: 400;
-    --paper-font-display1_-_letter-spacing: -0.01em;
-    --paper-font-display1_-_line-height: 40px;
-
-    --paper-font-headline_-_font-family: var(
-      --paper-font-common-base_-_font-family
-    );
-    --paper-font-headline_-_-webkit-font-smoothing: var(
-      --paper-font-common-base_-_-webkit-font-smoothing
-    );
-    --paper-font-headline_-_font-size: 24px;
-    --paper-font-headline_-_font-weight: 400;
-    --paper-font-headline_-_letter-spacing: -0.012em;
-    --paper-font-headline_-_line-height: 32px;
-
-    --paper-font-title_-_font-family: var(
-      --paper-font-common-base_-_font-family
-    );
-    --paper-font-title_-_-webkit-font-smoothing: var(
-      --paper-font-common-base_-_-webkit-font-smoothing
-    );
-    --paper-font-title_-_white-space: var(
-      --paper-font-common-nowrap_-_white-space
-    );
-    --paper-font-title_-_overflow: var(--paper-font-common-nowrap_-_overflow);
-    --paper-font-title_-_text-overflow: var(
-      --paper-font-common-nowrap_-_text-overflow
-    );
-    --paper-font-title_-_font-size: 20px;
-    --paper-font-title_-_font-weight: 500;
-    --paper-font-title_-_line-height: 28px;
-
-    --paper-font-subhead_-_font-family: var(
-      --paper-font-common-base_-_font-family
-    );
-    --paper-font-subhead_-_-webkit-font-smoothing: var(
-      --paper-font-common-base_-_-webkit-font-smoothing
-    );
-    --paper-font-subhead_-_font-size: 16px;
-    --paper-font-subhead_-_font-weight: 400;
-    --paper-font-subhead_-_line-height: 24px;
-
-    --paper-font-body1_-_font-family: var(
-      --paper-font-common-base_-_font-family
-    );
-    --paper-font-body1_-_-webkit-font-smoothing: var(
-      --paper-font-common-base_-_-webkit-font-smoothing
-    );
-    --paper-font-body1_-_font-size: 14px;
-    --paper-font-body1_-_font-weight: 400;
-    --paper-font-body1_-_line-height: 20px;
 
     direction: ltr;
     --direction: ltr;
