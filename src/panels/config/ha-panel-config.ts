@@ -555,6 +555,11 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
             "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
           ),
       },
+      dhcp: {
+        tag: "dhcp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/dhcp/dhcp-config-panel"),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>

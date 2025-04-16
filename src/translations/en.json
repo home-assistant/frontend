@@ -5474,6 +5474,12 @@
           "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
+        "dhcp": {
+          "title": "DHCP discovery",
+          "mac_address": "MAC Address",
+          "hostname": "Hostname",
+          "ip_address": "IP Address"
+        },
         "thread": {
           "other_networks": "Other networks",
           "my_network": "Preferred network",
