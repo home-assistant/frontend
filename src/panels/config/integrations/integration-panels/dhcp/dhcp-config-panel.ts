@@ -1,10 +1,11 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
@@ -19,6 +20,8 @@ export class DHCPConfigPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public mac_address?: string;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -82,6 +85,20 @@ export class DHCPConfigPanel extends LitElement {
     }))
   );
 
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
+
+    const searchParams = extractSearchParamsObject();
+    const mac_address = searchParams.mac_address;
+    if (mac_address) {
+      this.mac_address = mac_address;
+    }
+  }
+
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage-data-table
@@ -90,7 +107,7 @@ export class DHCPConfigPanel extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithIds(this._data)}
-        clickable
+        filter=${this.mac_address || ""}
       ></hass-tabs-subpage-data-table>
     `;
   }
