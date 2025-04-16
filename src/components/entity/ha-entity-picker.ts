@@ -497,32 +497,32 @@ export class HaEntityPicker extends LitElement {
     const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.trim().toLowerCase() as string;
 
-    const index = this._fuseIndex(this.items);
-
     const minLength = 2;
 
-    const options: IFuseOptions<EntityPickerItem> = {
-      isCaseSensitive: false,
-      threshold: 0.3,
-      ignoreDiacritics: true,
-      minMatchCharLength: minLength,
-    };
+    const searchTerms = (filterString.split(" ") ?? []).filter(
+      (term) => term.length >= minLength
+    );
 
-    const fuse = new Fuse(this.items, options, index);
+    if (searchTerms.length > 0) {
+      const index = this._fuseIndex(this.items);
 
-    const searchString = (
-      filterString.match(/("[^"]*?"|[^"\s]+)+(?=\s*|\s*$)/g) ?? []
-    ).filter((term) => term.length >= minLength);
+      const options: IFuseOptions<EntityPickerItem> = {
+        isCaseSensitive: false,
+        threshold: 0.3,
+        ignoreDiacritics: true,
+        minMatchCharLength: minLength,
+      };
 
-    const results = fuse.search({
-      $and: searchString.map((term) => ({
-        $or: this._fuseKeys.map((key) => ({ [key]: term })),
-      })),
-    });
-
-    target.filteredItems = searchString.length
-      ? results.map((result) => result.item)
-      : this.items;
+      const fuse = new Fuse(this.items, options, index);
+      const results = fuse.search({
+        $and: searchTerms.map((term) => ({
+          $or: this._fuseKeys.map((key) => ({ [key]: term })),
+        })),
+      });
+      target.filteredItems = results.map((result) => result.item);
+    } else {
+      target.filteredItems = this.items;
+    }
   }
 
   private _setValue(value: string | undefined) {
