@@ -303,6 +303,7 @@ export class HuiDialogEditView extends LitElement {
             `
           : nothing}
         <ha-button
+          class="save"
           slot="primaryAction"
           ?disabled=${!this._config ||
           this._saving ||
@@ -664,6 +665,15 @@ export class HuiDialogEditView extends LitElement {
         }
         ha-alert ha-button {
           display: block;
+        }
+        ha-button.save {
+          position: relative;
+        }
+        .save ha-spinner {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
 
         @media all and (min-width: 600px) {

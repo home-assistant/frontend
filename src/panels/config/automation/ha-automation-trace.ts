@@ -43,7 +43,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
-const TABS = ["details", "automation_config", "timeline", "logbook"] as const;
+const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {

@@ -161,7 +161,7 @@ const createRspackConfig = ({
       }),
       new rspack.NormalModuleReplacementPlugin(
         new RegExp(bundle.emptyPackages({ isHassioBuild }).join("|")),
-        path.resolve(paths.polymer_dir, "src/util/empty.js")
+        path.resolve(paths.root_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&

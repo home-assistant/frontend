@@ -5,6 +5,7 @@ import {
   mdiConsoleLine,
   mdiDevices,
   mdiEarth,
+  mdiKeyboard,
   mdiMagnify,
   mdiReload,
   mdiServerNetwork,
@@ -31,6 +32,7 @@ import "../../components/ha-label";
 import "../../components/ha-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
+import "../../components/ha-tip";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -41,6 +43,7 @@ import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
+import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -735,10 +738,20 @@ export class QuickBar extends LitElement {
       }
     }
 
+    const additionalItems = [
+      {
+        path: "",
+        primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
+        action: () => showShortcutsDialog(this),
+        iconPath: mdiKeyboard,
+      },
+    ];
+
     return this._finalizeNavigationCommands([
       ...panelItems,
       ...sectionItems,
       ...supervisorItems,
+      ...additionalItems,
     ]);
   }
 
@@ -815,12 +828,12 @@ export class QuickBar extends LitElement {
       const categoryKey: CommandItem["categoryKey"] = "navigation";
 
       const navItem = {
-        ...item,
         iconPath: mdiEarth,
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
         action: () => navigate(item.path),
+        ...item,
       };
 
       return {
