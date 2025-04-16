@@ -12,11 +12,12 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import type { DHCPDiscoveryData } from "../../../../../data/dhcp";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 
 import { subscribeDHCPDiscovery } from "../../../../../data/dhcp";
 
 @customElement("dhcp-config-panel")
-export class DHCPConfigPanel extends LitElement {
+export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -29,23 +30,12 @@ export class DHCPConfigPanel extends LitElement {
 
   @state() private _data: DHCPDiscoveryData[] = [];
 
-  private _unsub?: UnsubscribeFunc;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass) {
-      this._unsub = subscribeDHCPDiscovery(this.hass.connection, (data) => {
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDHCPDiscovery(this.hass.connection, (data) => {
         this._data = data;
-      });
-    }
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsub) {
-      this._unsub();
-      this._unsub = undefined;
-    }
+      }),
+    ];
   }
 
   private _columns = memoizeOne(
@@ -94,7 +84,7 @@ export class DHCPConfigPanel extends LitElement {
     const searchParams = extractSearchParamsObject();
     const mac_address = searchParams.mac_address;
     if (mac_address) {
-      this.mac_address = mac_address;
+      this.mac_address = mac_address.toUpperCase();
     }
   }
 
