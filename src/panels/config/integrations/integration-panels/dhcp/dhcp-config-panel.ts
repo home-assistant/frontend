@@ -60,7 +60,6 @@ export class DHCPConfigPanel extends LitElement {
           hideable: false,
           moveable: false,
           direction: "asc",
-          flex: 2,
         },
         hostname: {
           title: localize("ui.panel.config.dhcp.hostname"),
