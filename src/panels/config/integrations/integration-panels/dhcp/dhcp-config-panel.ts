@@ -82,9 +82,9 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
     }
 
     const searchParams = extractSearchParamsObject();
-    const mac_address = searchParams.mac_address;
-    if (mac_address) {
-      this.macAddress = mac_address.toUpperCase();
+    const macAddress = searchParams.mac_address;
+    if (macAddress) {
+      this.macAddress = macAddress.toUpperCase();
     }
   }
 
@@ -96,7 +96,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithIds(this._data)}
-        filter=${this.mac_address || ""}
+        filter=${this.macAddress || ""}
       ></hass-tabs-subpage-data-table>
     `;
   }
