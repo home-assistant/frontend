@@ -5660,7 +5660,6 @@
             "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
-            "reconfigure_server": "Re-configure server",
             "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
@@ -5681,7 +5680,9 @@
               "backup_failed": "Failed to download backup",
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
-              "downloading": "Downloading backup"
+              "downloading": "Downloading backup",
+              "restoring": "Restoring backup",
+              "migrate": "Migrate controller"
             },
             "statistics": {
               "title": "Controller statistics",
