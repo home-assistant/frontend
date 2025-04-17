@@ -795,7 +795,7 @@ class ErrorLogCard extends LitElement {
 
     .error-log {
       position: relative;
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
       clear: both;
       text-align: start;
       padding-top: 16px;
