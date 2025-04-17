@@ -49,7 +49,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
@@ -101,7 +101,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         const inclusion_state = this._network?.controller.inclusion_state;
         // show dialog if inclusion/exclusion is already in progress
         if (inclusion_state === InclusionState.Including) {
-          this._addNodeClicked();
+          this._openInclusionDialog(undefined, true);
         } else if (inclusion_state === InclusionState.Excluding) {
           this._removeNodeClicked();
         }
@@ -743,7 +743,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     input.value = "";
   }
 
-  private _openInclusionDialog(dsk?: string) {
+  private _openInclusionDialog(dsk?: string, inclusionOngoing = false) {
     if (!this._dialogOpen) {
       // Unsubscribe from S2 inclusion before opening dialog
       if (this._s2InclusionUnsubscribe) {
@@ -755,6 +755,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         entry_id: this.configEntryId!,
         dsk,
         onStop: this._handleInclusionDialogClosed,
+        longRangeSupported: !!this._network?.controller?.supports_long_range,
+        inclusionOngoing,
       });
       this._dialogOpen = true;
     }
