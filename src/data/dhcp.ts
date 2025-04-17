@@ -42,12 +42,12 @@ const subscribeDHCPDiscoveryUpdates = (
         }
       }
       if (event.change) {
-        for (const device_data of event.change) {
+        for (const deviceData of event.change) {
           const index = data.findIndex(
-            (d) => d.mac_address === device_data.mac_address
+            (d) => d.mac_address === deviceData.mac_address
           );
           if (index !== -1) {
-            data[index] = device_data;
+            data[index] = deviceData;
           }
         }
       }
