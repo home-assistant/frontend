@@ -154,3 +154,9 @@ export const subscribeLogInfo = (
     conn,
     onChange
   );
+
+export const waitForIntegrationSetup = (hass: HomeAssistant, domain: string) =>
+  hass.callWS<{ integration_loaded: boolean }>({
+    type: "integration/wait",
+    domain,
+  });

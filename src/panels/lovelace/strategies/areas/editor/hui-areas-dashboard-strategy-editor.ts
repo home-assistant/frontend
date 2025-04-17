@@ -12,7 +12,6 @@ import type { AreaStrategyGroup } from "../helpers/areas-strategy-helper";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUPS,
-  AREA_STRATEGY_GROUP_LABELS,
   getAreaGroupedEntities,
 } from "../helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../../types";
@@ -57,7 +56,9 @@ export class HuiAreasDashboardStrategyEditor
 
           return html`
             <ha-expansion-panel
-              header=${AREA_STRATEGY_GROUP_LABELS[group]}
+              header=${this.hass!.localize(
+                `ui.panel.lovelace.strategy.areas.groups.${group}`
+              )}
               expanded
               outlined
             >
@@ -79,7 +80,9 @@ export class HuiAreasDashboardStrategyEditor
                   `
                 : html`
                     <p>
-                      No entities in this section, it will not be displayed.
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.strategy.areas.no_entities"
+                      )}
                     </p>
                   `}
             </ha-expansion-panel>
