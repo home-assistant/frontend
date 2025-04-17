@@ -84,7 +84,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
     const searchParams = extractSearchParamsObject();
     const mac_address = searchParams.mac_address;
     if (mac_address) {
-      this.mac_address = mac_address.toUpperCase();
+      this.macAddress = mac_address.toUpperCase();
     }
   }
 
