@@ -22,7 +22,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public macAddress?: string;
+  @state() private _macAddress?: string;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -84,7 +84,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
     const searchParams = extractSearchParamsObject();
     const macAddress = searchParams.mac_address;
     if (macAddress) {
-      this.macAddress = macAddress.toUpperCase();
+      this._macAddress = macAddress.toUpperCase();
     }
   }
 
@@ -96,7 +96,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithIds(this._data)}
-        filter=${this.macAddress || ""}
+        filter=${this._macAddress || ""}
       ></hass-tabs-subpage-data-table>
     `;
   }
