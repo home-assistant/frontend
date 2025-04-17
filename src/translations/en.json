@@ -5674,7 +5674,7 @@
               "restore_failed": "Failed to restore backup",
               "downloading": "Downloading backup",
               "restoring": "Restoring backup",
-              "migrate": "Migrate radio"
+              "migrate": "Migrate controller"
             },
             "statistics": {
               "title": "Controller statistics",
