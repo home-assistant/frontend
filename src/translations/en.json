@@ -7845,6 +7845,10 @@
           "description": "Unlocks advanced features.",
           "link_promo": "Learn more"
         },
+        "entity_id_picker": {
+          "title": "Display entity IDs in picker",
+          "description": "Shows the full entity IDs when selecting entities with a picker."
+        },
         "refresh_tokens": {
           "header": "Refresh tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically deleted when you log out. Unused refresh tokens will be automatically deleted after 90 days. The following refresh tokens are currently active for your account.",

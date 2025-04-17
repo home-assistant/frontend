@@ -19,20 +19,22 @@ class EntityIdPickerRow extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
-        <span slot="heading"> Display entity IDs in picker </span>
+        <span slot="heading">
+          ${this.hass.localize("ui.panel.profile.entity_id_picker.title")}</span
+        >
         <span slot="description">
-          Shows the full entity IDs when selecting items
+          ${this.hass.localize("ui.panel.profile.entity_id_picker.description")}
         </span>
         <ha-switch
           .checked=${this.coreUserData && this.coreUserData.showEntityIdPicker}
           .disabled=${this.coreUserData === undefined}
-          @change=${this._advancedToggled}
+          @change=${this._toggled}
         ></ha-switch>
       </ha-settings-row>
     `;
   }
 
-  private async _advancedToggled(ev) {
+  private async _toggled(ev) {
     getOptimisticFrontendUserDataCollection(this.hass.connection, "core").save({
       ...this.coreUserData,
       showEntityIdPicker: ev.currentTarget.checked,
