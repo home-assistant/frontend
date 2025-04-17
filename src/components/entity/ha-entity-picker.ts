@@ -57,6 +57,22 @@ export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const CREATE_ID = "___create-new-entity___";
 
+const DOMAIN_STYLE = styleMap({
+  fontSize: "12px",
+  fontWeight: "400",
+  lineHeight: "18px",
+  alignSelf: "flex-end",
+  maxWidth: "30%",
+  textOverflow: "ellipsis",
+  overflow: "hidden",
+  whiteSpace: "nowrap",
+});
+
+const ENTITY_ID_STYLE = styleMap({
+  fontFamily: "var(--code-font-family, monospace)",
+  fontSize: "11px",
+});
+
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -178,29 +194,12 @@ export class HaEntityPicker extends LitElement {
         ? html`<span slot="supporting-text">${item.secondary}</span>`
         : nothing}
       ${item.entity_id && item.show_entity_id
-        ? html`<span
-            slot="supporting-text"
-            style=${styleMap({
-              fontFamily: "var(--code-font-family, monospace)",
-              fontSize: "11px",
-            })}
+        ? html`<span slot="supporting-text" style=${ENTITY_ID_STYLE}
             >${item.entity_id}</span
           >`
         : nothing}
       ${item.translated_domain && !item.show_entity_id
-        ? html`<div
-            slot="trailing-supporting-text"
-            style=${styleMap({
-              fontSize: "12px",
-              fontWeight: "400",
-              lineHeight: "18px",
-              alignSelf: "flex-end",
-              maxWidth: "30%",
-              textOverflow: "ellipsis",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
-            })}
-          >
+        ? html`<div slot="trailing-supporting-text" style=${DOMAIN_STYLE}>
             ${item.translated_domain}
           </div>`
         : nothing}
