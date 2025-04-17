@@ -158,8 +158,11 @@ export class HaEntityPicker extends LitElement {
     this.hass.loadBackendTranslation("title");
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<EntityPickerItem> = (item) => html`
-    <ha-combo-box-item type="button" compact>
+  private _rowRenderer: ComboBoxLitRenderer<EntityPickerItem> = (
+    item,
+    { index }
+  ) => html`
+    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
       ${item.icon_path
         ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
         : html`
