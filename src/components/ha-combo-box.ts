@@ -16,8 +16,8 @@ import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
+import "./ha-combo-box-item";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -216,10 +216,11 @@ export class HaComboBox extends LitElement {
 
   private _defaultRowRenderer: ComboBoxLitRenderer<
     string | Record<string, any>
-  > = (item) =>
-    html`<ha-list-item>
+  > = (item) => html`
+    <ha-combo-box-item type="button">
       ${this.itemLabelPath ? item[this.itemLabelPath] : item}
-    </ha-list-item>`;
+    </ha-combo-box-item>
+  `;
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
