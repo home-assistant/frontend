@@ -2708,7 +2708,9 @@
               "no_location": "No location selected",
               "no_location_description": "You have to select at least one location to create a backup.",
               "more_locations": "Explore more locations",
-              "manage_network_storage": "Manage network storage"
+              "manage_network_storage": "Manage network storage",
+              "ha_cloud_backup": "{home_assistant_cloud} backup",
+              "ha_cloud_description": "Stores an encrypted backup offsite. Ideal if your local backup can not be used to restore your system. Thats why it stores one backup with a maximum size of 5 GB. The oldest backups are automatically deleted."
             },
             "encryption_key": {
               "title": "Encryption key",
@@ -5679,8 +5681,7 @@
               "backup_failed": "Failed to download backup",
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
-              "downloading": "Downloading backup",
-              "restoring": "Restoring backup"
+              "downloading": "Downloading backup"
             },
             "statistics": {
               "title": "Controller statistics",
@@ -6005,9 +6006,9 @@
             "introduction": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
-            "exclusion_failed": "The device could not be removed. Please check the logs for more information.",
+            "removing_device": "Removing device",
+            "exclusion_failed": "An error occurred during exclusion. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
@@ -6452,6 +6453,7 @@
           "areas": {
             "groups": {
               "lights": "Lights",
+              "covers": "Covers",
               "climate": "Climate",
               "media_players": "Entertainment",
               "security": "Security",
@@ -6616,6 +6618,7 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
+          "unnamed_view": "Unnamed view",
           "delete_title": "Delete view",
           "delete_named_view_only": "''{name}'' view will be deleted.",
           "delete_unnamed_view_only": "This view will be deleted.",

@@ -253,8 +253,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ${this._renderHeader()}
       ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
-      ${this._renderNotifications()}
-      ${this._renderUserItem(selectedPanel)}
+      <ha-md-list>
+        ${this._renderNotifications()}
+        ${this._renderUserItem(selectedPanel)}
+      </ha-md-list>
       <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
@@ -900,6 +902,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
+          width: calc(248px - env(safe-area-inset-left));
         }
 
         ha-md-list-item.selected {
@@ -923,6 +926,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-icon[slot="start"],
         ha-svg-icon[slot="start"] {
+          width: 24px;
           flex-shrink: 0;
           color: var(--sidebar-icon-color);
         }
