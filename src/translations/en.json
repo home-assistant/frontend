@@ -6386,6 +6386,7 @@
             "helpers": "[%key:ui::panel::config::helpers::caption%]"
           },
           "areas": {
+            "no_entities": "No entities in this area.",
             "groups": {
               "lights": "Lights",
               "climate": "Climate",
