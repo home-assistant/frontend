@@ -5673,8 +5673,7 @@
               "backup_failed": "Failed to download backup",
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
-              "downloading": "Downloading backup",
-              "restoring": "Restoring backup"
+              "downloading": "Downloading backup"
             },
             "statistics": {
               "title": "Controller statistics",
