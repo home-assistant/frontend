@@ -3,7 +3,15 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { array, assert, assign, object, optional, string } from "superstruct";
+import {
+  array,
+  assert,
+  assign,
+  enums,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -31,14 +39,14 @@ const cardConfigStruct = assign(
     image: optional(string()),
     image_entity: optional(string()),
     camera_image: optional(string()),
-    camera_view: optional(string()),
+    camera_view: optional(enums(["auto", "live"])),
     aspect_ratio: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
     entities: array(entitiesConfigStruct),
     theme: optional(string()),
-    fit_mode: optional(string()),
+    fit_mode: optional(enums(["cover", "contain", "fill"])),
   })
 );
 

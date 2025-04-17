@@ -3,7 +3,15 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  enums,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -27,7 +35,7 @@ const cardConfigStruct = assign(
     image: optional(string()),
     name: optional(string()),
     camera_image: optional(string()),
-    camera_view: optional(string()),
+    camera_view: optional(enums(["auto", "live"])),
     aspect_ratio: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -35,7 +43,7 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     theme: optional(string()),
-    fit_mode: optional(string()),
+    fit_mode: optional(enums(["cover", "contain", "fill"])),
   })
 );
 
