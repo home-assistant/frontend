@@ -22,7 +22,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public mac_address?: string;
+  @property({ attribute: false }) public macAddress?: string;
 
   @property({ type: Boolean }) public narrow = false;
 
