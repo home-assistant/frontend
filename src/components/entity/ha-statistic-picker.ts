@@ -1,23 +1,23 @@
-import "@material/mwc-list/mwc-list-item";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stringCompare } from "../../common/string/compare";
+import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
+import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import type { StatisticsMetaData } from "../../data/recorder";
 import { getStatisticIds, getStatisticLabel } from "../../data/recorder";
-import type { ValueChangedEvent, HomeAssistant } from "../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import "../ha-combo-box-item";
 import "../ha-svg-icon";
 import "./state-badge";
-import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 
 interface StatisticItem extends ScorableTextItem {
   id: string;
@@ -99,16 +99,18 @@ export class HaStatisticPicker extends LitElement {
   @state() private _filteredItems?: StatisticItem[] = undefined;
 
   private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (item) =>
-    html`<mwc-list-item graphic="avatar" twoline>
+    html`<ha-combo-box-item type="button">
       ${item.state
-        ? html`<state-badge
-            slot="graphic"
-            .stateObj=${item.state}
-            .hass=${this.hass}
-          ></state-badge>`
-        : ""}
-      <span>${item.name}</span>
-      <span slot="secondary"
+        ? html`
+            <state-badge
+              slot="start"
+              .stateObj=${item.state}
+              .hass=${this.hass}
+            ></state-badge>
+          `
+        : html`<span slot="start" style="width: 32px"></span>`}
+      <span slot="headline">${item.name}</span>
+      <span slot="supporting-text"
         >${item.id === "" || item.id === "__missing"
           ? html`<a
               target="_blank"
@@ -120,7 +122,7 @@ export class HaStatisticPicker extends LitElement {
             >`
           : item.id}</span
       >
-    </mwc-list-item>`;
+    </ha-combo-box-item>`;
 
   private _getStatistics = memoizeOne(
     (

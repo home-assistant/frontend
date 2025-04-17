@@ -11,6 +11,7 @@ export class HaComboBoxItem extends HaMdListItem {
     ...super.styles,
     css`
       :host {
+        --md-list-item-one-line-container-height: 48px;
         --md-list-item-two-line-container-height: 64px;
       }
       :host([border-top]) md-item {
@@ -29,7 +30,8 @@ export class HaComboBoxItem extends HaMdListItem {
         font-size: 12px;
         white-space: nowrap;
       }
-      ::slotted(state-badge) {
+      ::slotted(state-badge),
+      ::slotted(img) {
         width: 32px;
         height: 32px;
       }

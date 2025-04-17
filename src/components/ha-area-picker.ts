@@ -4,7 +4,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -24,22 +23,21 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-combo-box-item";
 import "./ha-icon-button";
 import "./ha-list-item";
 import "./ha-svg-icon";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
 
-const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) =>
-  html`<ha-list-item
-    graphic="icon"
-    class=${classMap({ "add-new": item.area_id === ADD_NEW_ID })}
-  >
+const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) => html`
+  <ha-combo-box-item type="button">
     ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : html`<ha-svg-icon slot="graphic" .path=${mdiTextureBox}></ha-svg-icon>`}
+      ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+      : html`<ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>`}
     ${item.name}
-  </ha-list-item>`;
+  </ha-combo-box-item>
+`;
 
 const ADD_NEW_ID = "___ADD_NEW___";
 const NO_ITEMS_ID = "___NO_ITEMS___";
