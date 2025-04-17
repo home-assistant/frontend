@@ -49,7 +49,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
@@ -101,7 +101,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         const inclusion_state = this._network?.controller.inclusion_state;
         // show dialog if inclusion/exclusion is already in progress
         if (inclusion_state === InclusionState.Including) {
-          this._addNodeClicked();
+          this._openInclusionDialog(undefined, true);
         } else if (inclusion_state === InclusionState.Excluding) {
           this._removeNodeClicked();
         }
@@ -419,11 +419,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       "ui.panel.config.zwave_js.common.rebuild_network_routes"
                     )}
                   </ha-button>
-                  <ha-button @click=${this._openOptionFlow}>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.reconfigure_server"
-                    )}
-                  </ha-button>
                 </div>
               </ha-card>
               <ha-card>
@@ -508,7 +503,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               @change=${this._handleRestoreFileSelected}
                               style="display: none"
                             />
-                          </div>`}
+                          </div>
+                          <ha-button
+                            @click=${this._openOptionFlow}
+                            class="warning migrate-button"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
+                            )}
+                          </ha-button>`}
                 </div>
               </ha-card>
             `
@@ -743,7 +746,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     input.value = "";
   }
 
-  private _openInclusionDialog(dsk?: string) {
+  private _openInclusionDialog(dsk?: string, inclusionOngoing = false) {
     if (!this._dialogOpen) {
       // Unsubscribe from S2 inclusion before opening dialog
       if (this._s2InclusionUnsubscribe) {
@@ -755,6 +758,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         entry_id: this.configEntryId!,
         dsk,
         onStop: this._handleInclusionDialogClosed,
+        longRangeSupported: !!this._network?.controller?.supports_long_range,
+        inclusionOngoing,
       });
       this._dialogOpen = true;
     }
@@ -961,6 +966,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .button-content {
           pointer-events: none;
+        }
+
+        .migrate-button {
+          margin-left: auto;
         }
       `,
     ];
