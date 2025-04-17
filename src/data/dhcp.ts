@@ -52,9 +52,9 @@ const subscribeDHCPDiscoveryUpdates = (
         }
       }
       if (event.remove) {
-        for (const device_data of event.remove) {
+        for (const deviceData of event.remove) {
           const index = data.findIndex(
-            (d) => d.mac_address === device_data.mac_address
+            (d) => d.mac_address === deviceData.mac_address
           );
           if (index !== -1) {
             data.splice(index, 1);
