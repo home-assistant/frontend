@@ -167,7 +167,7 @@ export class HaEntityPicker extends LitElement {
 
   private _initialItems = false;
 
-  private items: EntityPickerItem[] = [];
+  private _items: EntityPickerItem[] = [];
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -406,7 +406,7 @@ export class HaEntityPicker extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this._initialItems || (changedProps.has("_opened") && this._opened)) {
-      this.items = this._getItems(
+      this._items = this._getItems(
         this._opened,
         this.hass,
         this.includeDomains,
@@ -419,7 +419,7 @@ export class HaEntityPicker extends LitElement {
         this.createDomains
       );
       if (this._initialItems) {
-        this.comboBox.filteredItems = this.items;
+        this.comboBox.filteredItems = this._items;
       }
       this._initialItems = true;
     }
@@ -441,7 +441,7 @@ export class HaEntityPicker extends LitElement {
           : this.label}
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomEntity}
-        .filteredItems=${this.items}
+        .filteredItems=${this._items}
         .renderer=${this._rowRenderer}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -506,7 +506,7 @@ export class HaEntityPicker extends LitElement {
     );
 
     if (searchTerms.length > 0) {
-      const index = this._fuseIndex(this.items);
+      const index = this._fuseIndex(this._items);
 
       const options: IFuseOptions<EntityPickerItem> = {
         isCaseSensitive: false,
@@ -515,7 +515,7 @@ export class HaEntityPicker extends LitElement {
         minMatchCharLength: minLength,
       };
 
-      const fuse = new Fuse(this.items, options, index);
+      const fuse = new Fuse(this._items, options, index);
       const results = fuse.search({
         $and: searchTerms.map((term) => ({
           $or: this._fuseKeys.map((key) => ({ [key]: term })),
@@ -523,7 +523,7 @@ export class HaEntityPicker extends LitElement {
       });
       target.filteredItems = results.map((result) => result.item);
     } else {
-      target.filteredItems = this.items;
+      target.filteredItems = this._items;
     }
   }
 
