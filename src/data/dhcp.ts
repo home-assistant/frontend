@@ -30,14 +30,14 @@ const subscribeDHCPDiscoveryUpdates = (
     (event) => {
       const data = [...(store.state || [])];
       if (event.add) {
-        for (const device_data of event.add) {
+        for (const deviceData of event.add) {
           const index = data.findIndex(
-            (d) => d.mac_address === device_data.mac_address
+            (d) => d.mac_address === deviceData.mac_address
           );
           if (index === -1) {
-            data.push(device_data);
+            data.push(deviceData);
           } else {
-            data[index] = device_data;
+            data[index] = deviceData;
           }
         }
       }
