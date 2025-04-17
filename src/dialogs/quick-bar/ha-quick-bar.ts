@@ -42,8 +42,8 @@ import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
+import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -425,10 +425,12 @@ export class QuickBar extends LitElement {
   }
 
   private _addSpinnerToCommandItem(index: number): void {
+    const div = document.createElement("div");
+    div.slot = "meta";
     const spinner = document.createElement("ha-spinner");
     spinner.size = "small";
-    spinner.slot = "meta";
-    this._getItemAtIndex(index)?.appendChild(spinner);
+    div.appendChild(spinner);
+    this._getItemAtIndex(index)?.appendChild(div);
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
