@@ -343,7 +343,8 @@ class HUIRoot extends LitElement {
                     .icon=${view.icon}
                   ></ha-icon>
                 `
-              : view.title || "Unnamed view"}
+              : view.title ||
+                this.hass.localize("ui.panel.lovelace.views.unnamed_view")}
             ${this._editMode
               ? html`
                   <ha-icon-button

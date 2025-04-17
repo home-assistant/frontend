@@ -19,6 +19,7 @@ import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import { isMobileClient } from "../../../util/is_mobile";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -129,7 +130,7 @@ class HaPanelDevState extends LitElement {
               allow-custom-entity
               item-label-path="entity_id"
             ></ha-entity-picker>
-            ${this.hass.enableShortcuts
+            ${this.hass.enableShortcuts && !isMobileClient
               ? html`<ha-tip .hass=${this.hass}
                   >${this.hass.localize("ui.tips.key_e_tip", {
                     keyboard_shortcut: html`<a

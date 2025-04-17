@@ -403,7 +403,7 @@ export class DialogHelperDetail extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-scroll-divider-color: transparent;
-          --mdc-dialog-max-height: 60vh;
+          --mdc-dialog-max-height: 90vh;
         }
         @media all and (min-width: 550px) {
           ha-dialog {

@@ -17,6 +17,15 @@ export interface DataEntryFlowProgressedEvent {
   };
 }
 
+export interface DataEntryFlowProgressEvent {
+  type: "data_entry_flow_progress_update";
+  data: {
+    handler: string;
+    flow_id: string;
+    progress: number;
+  };
+}
+
 export interface DataEntryFlowProgress {
   flow_id: string;
   handler: string;
@@ -107,4 +116,13 @@ export const subscribeDataEntryFlowProgressed = (
   conn.subscribeEvents<DataEntryFlowProgressedEvent>(
     callback,
     "data_entry_flow_progressed"
+  );
+
+export const subscribeDataEntryFlowProgress = (
+  conn: Connection,
+  callback: (ev: DataEntryFlowProgressEvent) => void
+) =>
+  conn.subscribeEvents<DataEntryFlowProgressEvent>(
+    callback,
+    "data_entry_flow_progress_update"
   );
