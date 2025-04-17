@@ -40,7 +40,7 @@ jobs:
       - name: Deploy preview to Netlify
         id: deploy
         run: |
-          npx install netlify-cli -g
+          npx netlify-cli
           netlify deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
             --json > deploy_output.json
         env:

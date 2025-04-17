@@ -42,7 +42,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx install netlify-cli -g
+          npx netlify-cli
           netlify deploy --dir=cast/dist --alias dev
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
@@ -78,7 +78,7 @@ jobs:
       - name: Deploy to Netlify
         id: deploy
         run: |
-          npx install netlify-cli -g
+          npx netlify-cli
           netlify deploy --dir=cast/dist --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
