@@ -123,17 +123,18 @@ export class MatterDeviceBindingCard extends LitElement {
   }
 
   private _onDialogUpdate = async (
+    source_endpoint: number,
     bindings: Record<string, MatterNodeBinding[]>
   ) => {
     try {
       const ret = await setMatterNodeBinding(
         this.hass,
         this.device.id,
-        1,
-        bindings[1]
+        source_endpoint,
+        bindings[source_endpoint]
       );
       if (ret[0].Status === 0) {
-        this.bindings![1] = bindings[1];
+        this.bindings![source_endpoint] = bindings[source_endpoint];
         this.requestUpdate();
       }
     } catch (_err) {
@@ -152,8 +153,12 @@ export class MatterDeviceBindingCard extends LitElement {
 
   private async _fetchBindingForMatterDevice(): Promise<void> {
     if (this.hass) {
-      this.bindings = await getMatterNodeBinding(this.hass, this.device.id!);
-      if (Object.values(this.bindings).some((value) => Array.isArray(value))) {
+      try {
+        this.bindings = await getMatterNodeBinding(this.hass, this.device.id!);
+      } catch (_err) {
+        alert(_err);
+      }
+      if (Object.values(this.bindings!).some((value) => Array.isArray(value))) {
         this.showHidden = true;
       }
     }
@@ -204,63 +209,71 @@ export class MatterDeviceBindingCard extends LitElement {
         </h1>
         <main class="card-content">
           ${this.bindings
-            ? Object.entries(this.bindings).map(
-                ([key, value]) => html`
-                  ${value.map(
-                    (nodeItem, index) => html`
-                      <section class="binding-row">
-                        <ha-list-item twoline graphic="icon">
-                          <span>
-                            ${(() => {
-                              const device = this.getDeviceByNodeId(
-                                nodeItem.node
-                              );
-                              return device
-                                ? device.name_by_user || device.name
-                                : "undefined";
-                            })()}
-                          </span>
-                          <span slot="secondary">
-                            ${"node id: " + nodeItem.node}
-                          </span>
+            ? Object.entries(this.bindings).map(([key, value]) =>
+                value.length > 0
+                  ? html`
+                      <div class="sub-card">
+                        <div class="sub-card-header">
+                          <div>endpoint:</div>
+                          <div>${key}</div>
+                        </div>
+                        ${value.map(
+                          (nodeItem, index) => html`
+                            <section class="binding-row">
+                              <ha-list-item twoline graphic="icon">
+                                <span>
+                                  ${(() => {
+                                    const device = this.getDeviceByNodeId(
+                                      nodeItem.node
+                                    );
+                                    return device
+                                      ? device.name_by_user || device.name
+                                      : "undefined";
+                                  })()}
+                                </span>
+                                <span slot="secondary">
+                                  ${"node id: " + nodeItem.node}
+                                </span>
 
-                          ${(() => {
-                            const device = this.getDeviceByNodeId(
-                              nodeItem.node
-                            );
-                            const device_state = getDeviceControlsState(
-                              this.hass,
-                              device!
-                            );
-                            return device_state
-                              ? html`
-                                  <ha-state-icon
-                                    slot="graphic"
-                                    .hass=${this.hass}
-                                    .stateObj=${device_state}
-                                    )}
-                                  ></ha-state-icon>
-                                `
-                              : html`
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiDevices}
-                                  ></ha-svg-icon>
-                                `;
-                          })()}
-                        </ha-list-item>
+                                ${(() => {
+                                  const device = this.getDeviceByNodeId(
+                                    nodeItem.node
+                                  );
+                                  const device_state = getDeviceControlsState(
+                                    this.hass,
+                                    device!
+                                  );
+                                  return device_state
+                                    ? html`
+                                        <ha-state-icon
+                                          slot="graphic"
+                                          .hass=${this.hass}
+                                          .stateObj=${device_state}
+                                          )}
+                                        ></ha-state-icon>
+                                      `
+                                    : html`
+                                        <ha-svg-icon
+                                          slot="graphic"
+                                          .path=${mdiDevices}
+                                        ></ha-svg-icon>
+                                      `;
+                                })()}
+                              </ha-list-item>
 
-                        <ha-button
-                          class="binding-button"
-                          data-endpoint=${key}
-                          data-index=${index}
-                          label="delete"
-                          @click=${this.handleDeleteClickCallback}
-                        ></ha-button>
-                      </section>
+                              <ha-button
+                                class="binding-button"
+                                data-endpoint=${key}
+                                data-index=${index}
+                                label="delete"
+                                @click=${this.handleDeleteClickCallback}
+                              ></ha-button>
+                            </section>
+                          `
+                        )}
+                      </div>
                     `
-                  )}
-                `
+                  : nothing
               )
             : nothing}
         </main>
@@ -284,6 +297,14 @@ export class MatterDeviceBindingCard extends LitElement {
       padding-bottom: 12px;
     }
 
+    .sub-card-header {
+      display: flex;
+      font-size: 20px;
+      padding: 10px;
+      gap: 20px;
+      align-items: center;
+    }
+
     .card-header ha-icon-button {
       margin-right: -8px;
       margin-inline-end: -8px;
@@ -291,6 +312,14 @@ export class MatterDeviceBindingCard extends LitElement {
       color: var(--primary-color);
       height: auto;
       direction: var(--direction);
+    }
+
+    .sub-card {
+      box-shadow: none;
+      border-width: 1px;
+      border-style: solid;
+      border-color: var(--outline-color);
+      border-radius: var(--ha-card-border-radius, 12px);
     }
 
     .card-content {

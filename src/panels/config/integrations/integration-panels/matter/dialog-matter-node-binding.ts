@@ -50,9 +50,9 @@ class DialogMatterNodeBinding extends LitElement {
     this._params = params;
   }
 
-  private _createNodeBinding(nodeId: number): MatterNodeBinding {
+  private _createNodeBinding(targetNodeId: number): MatterNodeBinding {
     return {
-      node: nodeId,
+      node: targetNodeId,
       group: null,
       endpoint: 1,
       cluster: null,
@@ -60,23 +60,31 @@ class DialogMatterNodeBinding extends LitElement {
     };
   }
 
-  private _isBindingExists(binding: MatterNodeBinding): boolean {
-    return this.bindings![1].some(
+  private _isBindingExists(
+    sourceEndpoint: string,
+    binding: MatterNodeBinding
+  ): boolean {
+    return this.bindings![sourceEndpoint].some(
       (node) => node.node === binding.node && node.endpoint === binding.endpoint
     );
   }
 
   private _handleAddClick(_event: Event) {
     try {
-      const select = this.shadowRoot!.querySelector("ha-select")!;
-      const index = Number(select.value);
-      const device = this._bindableDevices[index];
-      const nodeId = Number(this.deviceMapper!.getNodeIdByDeviceId(device.id));
+      const sourceSelect: HaSelect = this.shadowRoot!.querySelector(
+        ".binding-controls ha-select:nth-child(2)"
+      )!;
+      const source_endpoint = sourceSelect.value;
 
-      const nodeBinding = this._createNodeBinding(nodeId);
-      if (!this._isBindingExists(nodeBinding)) {
-        this.bindings![1].push(nodeBinding);
-        this._params?.onUpdate(this.bindings!);
+      const targetSelect: HaSelect = this.shadowRoot!.querySelector(
+        ".binding-controls ha-select:nth-child(4)"
+      )!;
+      const targetNode = targetSelect.value;
+      const nodeBinding = this._createNodeBinding(Number(targetNode));
+
+      if (!this._isBindingExists(source_endpoint, nodeBinding)) {
+        this.bindings![source_endpoint].push(nodeBinding);
+        this._params?.onUpdate(Number(source_endpoint), this.bindings!);
       }
     } catch (_error) {
       fireEvent(this, "hass-notification", {
@@ -106,13 +114,30 @@ class DialogMatterNodeBinding extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, "Target")}
+        .heading=${createCloseHeading(this.hass, "")}
       >
         <section class="binding-controls">
+          <div>Source Endpoint</div>
+          <ha-select @closed=${stopPropagation} fixedMenuPosition>
+            ${Object.entries(this.bindings!).map(
+              ([key]) => html`
+                <ha-list-item .value=${key}>
+                  <span>${"endpoint: " + key}</span>
+                </ha-list-item>
+              `
+            )}
+          </ha-select>
+          <div>Target</div>
           <ha-select @closed=${stopPropagation} fixedMenuPosition>
             ${this._bindableDevices.map(
               (device) => html`
-                <ha-list-item twoline graphic="icon">
+                <ha-list-item
+                  twoline
+                  graphic="icon"
+                  .value=${String(
+                    this.deviceMapper?.getNodeIdByDeviceId(device.id)
+                  )}
+                >
                   <span>${device.name_by_user || device.name}</span>
                   <span slot="secondary">
                     ${"node id: " +
@@ -127,9 +152,11 @@ class DialogMatterNodeBinding extends LitElement {
               `
             )}
           </ha-select>
-
-          <ha-button @click=${this._handleAddClick}> binding </ha-button>
         </section>
+
+        <ha-button slot="secondaryAction" @click=${this._handleAddClick}>
+          binding
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -147,6 +174,7 @@ class DialogMatterNodeBinding extends LitElement {
         .binding-controls {
           display: grid;
           gap: 20px;
+          font-size: 20px;
         }
 
         .binding-controls ha-button {
