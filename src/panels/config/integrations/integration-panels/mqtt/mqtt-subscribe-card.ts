@@ -209,7 +209,7 @@ class MqttSubscribeCard extends LitElement {
       color: var(--secondary-text-color);
     }
     pre {
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
     }
     .panel-dev-mqtt-subscribe-fields {
       display: flex;

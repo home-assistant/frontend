@@ -44,7 +44,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     pre {
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
       white-space: break-spaces;
       user-select: text;
     }

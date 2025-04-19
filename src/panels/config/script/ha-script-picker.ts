@@ -1285,7 +1285,7 @@ ${rejected
           text-decoration: none;
         }
         .empty {
-          --paper-font-headline_-_font-size: 28px;
+          --ha-font-size-xl: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
         }

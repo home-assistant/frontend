@@ -237,7 +237,7 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
-          font-family: var(--code-font-family, monospace);
+          font-family: var(--ha-font-family-code);
         }
         ha-alert {
           display: block;
