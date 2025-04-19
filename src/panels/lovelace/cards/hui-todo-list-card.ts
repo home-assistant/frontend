@@ -10,7 +10,14 @@ import {
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
-import { endOfDay, isSameDay } from "date-fns";
+import {
+  addDays,
+  addMonths,
+  addWeeks,
+  addYears,
+  endOfDay,
+  isSameDay,
+} from "date-fns";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValueMap, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -159,22 +166,54 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _getCheckedItems = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
-        ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.Completed),
-            sort
-          )
+        ? this._sortItems(this._filterItems(items, this._config?.period), sort)
         : []
   );
 
   private _getUncheckedItems = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
-        ? this._sortItems(
-            items.filter((item) => item.status === TodoItemStatus.NeedsAction),
-            sort
-          )
+        ? this._sortItems(this._filterItems(items, this._config?.period), sort)
         : []
   );
+
+  private _filterItems(
+    items: TodoItem[],
+    period?: {
+      calendar?: { period: string; offset: number };
+    }
+  ): TodoItem[] {
+    const filteredItems = items.filter(
+      (item) => item.status === TodoItemStatus.NeedsAction
+    );
+
+    if (!period || !period.calendar || !period.calendar.period)
+      return filteredItems;
+
+    const endDate = this._addPeriod(new Date(), period.calendar);
+
+    return filteredItems.filter((item) => {
+      const dueDate = this._getDueDate(item);
+      return dueDate && dueDate <= endDate;
+    });
+  }
+
+  private _addPeriod(
+    date: Date,
+    calendar: { period: string; offset: number }
+  ): Date {
+    switch (calendar.period) {
+      case "day":
+        return addDays(date, calendar.offset);
+      case "week":
+        return addWeeks(date, calendar.offset);
+      case "month":
+        return addMonths(date, calendar.offset);
+      case "year":
+      default:
+        return addYears(date, calendar.offset);
+    }
+  }
 
   public willUpdate(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
