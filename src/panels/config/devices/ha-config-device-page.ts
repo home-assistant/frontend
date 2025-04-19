@@ -161,25 +161,41 @@ export class HaConfigDevicePage extends LitElement {
     }
   );
 
+  private _getEntitiesSorted = (entities) =>
+    entities
+      .map((entity) => ({
+        ...entity,
+        stateName: this._computeEntityName(entity),
+      }))
+      .sort((ent1, ent2) =>
+        stringCompare(
+          ent1.stateName || `zzz${ent1.entity_id}`,
+          ent2.stateName || `zzz${ent2.entity_id}`,
+          this.hass.locale.language
+        )
+      );
+
   private _entities = memoizeOne(
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
     ): EntityRegistryStateEntry[] =>
-      entities
-        .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => ({
-          ...entity,
-          stateName: this._computeEntityName(entity),
-        }))
-        .sort((ent1, ent2) =>
-          stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`,
-            this.hass.locale.language
-          )
-        )
+      this._getEntitiesSorted(
+        entities.filter((entity) => entity.device_id === deviceId)
+      )
   );
+
+  private _getRelated = memoizeOne((related?: RelatedResult) => ({
+    automation: this._getEntitiesSorted(
+      (related?.automation ?? []).map((entityId) => this.hass.states[entityId])
+    ),
+    scene: this._getEntitiesSorted(
+      (related?.scene ?? []).map((entityId) => this.hass.states[entityId])
+    ),
+    script: this._getEntitiesSorted(
+      (related?.script ?? []).map((entityId) => this.hass.states[entityId])
+    ),
+  }));
 
   private _deviceIdInList = memoizeOne((deviceId: string) => [deviceId]);
 
@@ -446,23 +462,25 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.automation?.length
               ? html`
                   <div class="items">
-                    ${this._related.automation.map((automation) => {
-                      const entityState = this.hass.states[automation];
-                      return entityState
-                        ? html`<a
-                            href=${ifDefined(
-                              entityState.attributes.id
-                                ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-                                : `/config/automation/show/${entityState.entity_id}`
-                            )}
-                          >
-                            <ha-list-item hasMeta .automation=${entityState}>
-                              ${computeStateName(entityState)}
-                              <ha-icon-next slot="meta"></ha-icon-next>
-                            </ha-list-item>
-                          </a>`
-                        : nothing;
-                    })}
+                    ${this._getRelated(this._related).automation.map(
+                      (automation) => {
+                        const entityState = automation;
+                        return entityState
+                          ? html`<a
+                              href=${ifDefined(
+                                entityState.attributes.id
+                                  ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
+                                  : `/config/automation/show/${entityState.entity_id}`
+                              )}
+                            >
+                              <ha-list-item hasMeta .automation=${entityState}>
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
+                            </a>`
+                          : nothing;
+                      }
+                    )}
                   </div>
                 `
               : html`
@@ -523,8 +541,8 @@ export class HaConfigDevicePage extends LitElement {
               ${this._related?.scene?.length
                 ? html`
                     <div class="items">
-                      ${this._related.scene.map((scene) => {
-                        const entityState = this.hass.states[scene];
+                      ${this._getRelated(this._related).scene.map((scene) => {
+                        const entityState = scene;
                         return entityState && entityState.attributes.id
                           ? html`
                               <a
@@ -611,10 +629,10 @@ export class HaConfigDevicePage extends LitElement {
             ${this._related?.script?.length
               ? html`
                   <div class="items">
-                    ${this._related.script.map((script) => {
-                      const entityState = this.hass.states[script];
+                    ${this._getRelated(this._related).script.map((script) => {
+                      const entityState = script;
                       const entry = this._entityReg.find(
-                        (e) => e.entity_id === script
+                        (e) => e.entity_id === script.entity_id
                       );
                       let url = `/config/script/show/${entityState.entity_id}`;
                       if (entry) {
