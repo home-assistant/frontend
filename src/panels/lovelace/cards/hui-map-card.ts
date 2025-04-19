@@ -45,6 +45,8 @@ export const DEFAULT_ZOOM = 14;
 interface MapEntityConfig extends EntityConfig {
   label_mode?: "state" | "attribute" | "name";
   attribute?: string;
+  prefix?: string;
+  suffix?: string;
   focus?: boolean;
 }
 
@@ -52,6 +54,8 @@ interface GeoEntity {
   entity_id: string;
   label_mode?: "state" | "attribute" | "name" | "icon";
   attribute?: string;
+  prefix?: string;
+  suffix?: string;
   focus: boolean;
 }
 
@@ -425,6 +429,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           entity_id: stateObj.entity_id,
           label_mode: sourceObj?.label_mode ?? allSource?.label_mode,
           attribute: sourceObj?.attribute ?? allSource?.attribute,
+          prefix: sourceObj?.prefix ?? allSource?.prefix,
+          suffix: sourceObj?.suffix ?? allSource?.suffix,
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
@@ -441,6 +447,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         color: this._getColor(entityConf.entity),
         label_mode: entityConf.label_mode,
         attribute: entityConf.attribute,
+        prefix: entityConf.prefix,
+        suffix: entityConf.suffix,
         focus: entityConf.focus,
         name: entityConf.name,
       })),
