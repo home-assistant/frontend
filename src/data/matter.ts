@@ -40,6 +40,14 @@ export interface MatterNodeDiagnostics {
   active_fabric_index: number;
 }
 
+export interface MatterNodeBinding {
+  node: number;
+  group: number | null;
+  endpoint: number;
+  cluster: number | null;
+  fabricIndex: number | null;
+}
+
 export type MatterPingResult = Record<string, boolean>;
 
 export interface MatterCommissioningParameters {
@@ -160,6 +168,28 @@ export const getMatterNodeDiagnostics = (
   hass.callWS({
     type: "matter/node_diagnostics",
     device_id,
+  });
+
+export const getMatterNodeBinding = (
+  hass: HomeAssistant,
+  device_id: string
+): Promise<{}> =>
+  hass.callWS({
+    type: "matter/get_node_binding",
+    device_id,
+  });
+
+export const setMatterNodeBinding = (
+  hass: HomeAssistant,
+  device_id: string,
+  endpoint: number,
+  bindings: MatterNodeBinding[]
+): Promise<void> =>
+  hass.callWS({
+    type: "matter/set_node_binding",
+    device_id,
+    endpoint,
+    bindings,
   });
 
 export const pingMatterNode = (

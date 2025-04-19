@@ -405,6 +405,8 @@ export class HaConfigDevicePage extends LitElement {
 
     this._renderIntegrationInfo(device, integrations, deviceInfo);
 
+    const relatedConfigurations = this._renderRelatedConfigurations(device);
+
     const add_prompt = device.disabled_by
       ? this.hass.localize("ui.panel.config.devices.add_prompt_disabled")
       : this.hass.localize("ui.panel.config.devices.add_prompt_enabled");
@@ -853,6 +855,8 @@ export class HaConfigDevicePage extends LitElement {
                 `
               : ""
           )}
+          ${relatedConfigurations}
+
           <ha-device-via-devices-card
             .hass=${this.hass}
             .deviceId=${this.deviceId}
@@ -1238,6 +1242,25 @@ export class HaConfigDevicePage extends LitElement {
         ></ha-device-info-matter>
       `);
     }
+  }
+
+  private _renderRelatedConfigurations(device: DeviceRegistryEntry) {
+    const matter = isComponentLoaded(this.hass, "matter");
+    const isMatterDevice = device.identifiers[0][0] === "matter";
+    if (matter && isMatterDevice) {
+      import(
+        "../integrations/integration-panels/matter/matter-device-binding-card"
+      );
+      return html`
+        <matter-device-binding-card
+          outlined
+          .hass=${this.hass}
+          .device=${device}
+        ></matter-device-binding-card>
+      `;
+    }
+
+    return nothing;
   }
 
   private async _showSettings() {
