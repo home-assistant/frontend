@@ -7585,10 +7585,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"element-internals-polyfill@npm:3.0.1":
-  version: 3.0.1
-  resolution: "element-internals-polyfill@npm:3.0.1"
-  checksum: 10/46508bca2c1531e9417de549bdbea796601549032d9ab1549db6e7a7b74f9105b1d7c8de911bed3eec87f01950a3bf75d41602123c7f22d46f5eae7e858c030e
+"element-internals-polyfill@npm:3.0.2":
+  version: 3.0.2
+  resolution: "element-internals-polyfill@npm:3.0.2"
+  checksum: 10/5e57afc9c638c3b74d240ef833d44894e87881c0e24448d1486911f33e9dc9a2a7f85dfd459cd6cec518ab33ee9c86a25f341bfc96971f61a1d495645042707a
   languageName: node
   linkType: hard
 
@@ -9506,7 +9506,7 @@ __metadata:
     del: "npm:8.0.0"
     dialog-polyfill: "npm:0.5.6"
     echarts: "npm:5.6.0"
-    element-internals-polyfill: "npm:3.0.1"
+    element-internals-polyfill: "npm:3.0.2"
     eslint: "npm:9.24.0"
     eslint-config-airbnb-base: "npm:15.0.0"
     eslint-config-prettier: "npm:10.1.2"
