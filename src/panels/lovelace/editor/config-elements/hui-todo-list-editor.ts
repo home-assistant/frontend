@@ -25,6 +25,10 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     hide_completed: optional(boolean()),
     hide_create: optional(boolean()),
+    empty_list_text: optional(string()),
+    show_empty_text: optional(boolean()),
+    disable_item_editing: optional(boolean()),
+    toggle_on_item_label_click: optional(boolean()),
     display_order: optional(string()),
   })
 );
@@ -51,6 +55,10 @@ export class HuiTodoListEditor
         { name: "theme", selector: { theme: {} } },
         { name: "hide_completed", selector: { boolean: {} } },
         { name: "hide_create", selector: { boolean: {} } },
+        { name: "empty_list_text", selector: { text: {} } },
+        { name: "show_empty_text", selector: { boolean: {} } },
+        { name: "disable_item_editing", selector: { boolean: {} } },
+        { name: "toggle_on_item_label_click", selector: { boolean: {} } },
         {
           name: "display_order",
           selector: {
@@ -69,6 +77,9 @@ export class HuiTodoListEditor
 
   private _data = memoizeOne((config) => ({
     display_order: "none",
+    show_empty_text: true,
+    disable_item_editing: false,
+    toggle_on_item_label_click: false,
     ...config,
   }));
 
@@ -133,6 +144,16 @@ export class HuiTodoListEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`
         );
+      case "hide_create":
+        return "Hide Create Input";
+      case "empty_list_text":
+        return "Empty List Text (Optional)";
+      case "show_empty_text":
+        return "Show Empty List Text";
+      case "disable_item_editing":
+        return "Disable Item Editing";
+      case "toggle_on_item_label_click":
+        return "Toggle Checkbox on Item Label Click";
       default:
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
