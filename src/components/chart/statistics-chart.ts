@@ -563,7 +563,7 @@ export class StatisticsChart extends LitElement {
             drawBands
           ) {
             const top = stat[bandTop] || 0;
-            val.push(Math.abs(top - ((hasMin ? stat.min : stat.mean) || 0)));
+            val.push(Math.abs(top - (stat[bandBottom] || 0)));
             val.push(top);
           } else {
             val.push(stat[type] ?? null);
