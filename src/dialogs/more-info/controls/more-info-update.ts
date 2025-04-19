@@ -138,6 +138,7 @@ class MoreInfoUpdate extends LitElement {
                   lastAutomaticBackupDate,
                   this.hass.locale,
                   now,
+                  undefined,
                   true
                 ),
               }
