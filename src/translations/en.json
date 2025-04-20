@@ -9236,7 +9236,6 @@
               "documentation": "[%key:ui::panel::config::logs::detail::documentation%]",
               "issues": "[%key:ui::panel::config::logs::detail::issues%]",
               "first_occurred": "[%key:ui::panel::config::logs::detail::first_occurred%]",
-              "number_of_occurrences": "[%key:ui::panel::config::logs::detail::number_of_occurrences%]",
               "last_logged": "[%key:ui::panel::config::logs::detail::last_logged%]"
             }
           }
