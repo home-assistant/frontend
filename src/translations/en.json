@@ -3154,7 +3154,7 @@
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
-            "occurrences": "occurrences",
+            "number_of_occurrences": "{count} {count, plural,\n one {occurrence}\n other {occurrences}\n}",
             "last_logged": "Last logged"
           }
         },
@@ -9236,7 +9236,7 @@
               "documentation": "[%key:ui::panel::config::logs::detail::documentation%]",
               "issues": "[%key:ui::panel::config::logs::detail::issues%]",
               "first_occurred": "[%key:ui::panel::config::logs::detail::first_occurred%]",
-              "occurrences": "[%key:ui::panel::config::logs::detail::occurrences%]",
+              "number_of_occurrences": "[%key:ui::panel::config::logs::detail::number_of_occurrences%]",
               "last_logged": "[%key:ui::panel::config::logs::detail::last_logged%]"
             }
           }
