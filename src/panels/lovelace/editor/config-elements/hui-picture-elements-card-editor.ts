@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,7 +12,6 @@ import {
   string,
   type,
 } from "superstruct";
-import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";

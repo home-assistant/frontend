@@ -1,8 +1,8 @@
-import memoizeOne from "memoize-one";
+import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiGestureTap } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import {
   array,
   assert,
