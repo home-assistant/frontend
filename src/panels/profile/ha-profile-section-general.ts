@@ -16,6 +16,7 @@ import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
+import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
 import "./ha-pick-dashboard-row";
 import "./ha-pick-first-weekday-row";
@@ -154,6 +155,15 @@ class HaProfileSectionGeneral extends LitElement {
                     .narrow=${this.narrow}
                     .coreUserData=${this._coreUserData}
                   ></ha-advanced-mode-row>
+                `
+              : ""}
+            ${this.hass.user!.is_admin
+              ? html`
+                  <ha-entity-id-picker-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .coreUserData=${this._coreUserData}
+                  ></ha-entity-id-picker-row>
                 `
               : ""}
           </ha-card>

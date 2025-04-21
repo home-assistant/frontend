@@ -1106,7 +1106,15 @@
         "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
         "not_supported": "Your browser doesn't support QR scanning.",
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
-        "enter_qr_code": "Enter QR code value"
+        "enter_qr_code": "Enter QR code value",
+        "retry": "Retry",
+        "wrong_code": "Wrong barcode scanned! {format}: {rawValue}, we need a QR code.",
+        "no_camera_found": "No camera found",
+        "app": {
+          "title": "Scan QR code",
+          "description": "Find the code on your device",
+          "alternativeOptionLabel": "More options"
+        }
       },
       "climate-control": {
         "temperature_up": "Increase temperature",
@@ -5652,7 +5660,6 @@
             "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
-            "reconfigure_server": "Re-configure server",
             "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
@@ -5674,7 +5681,8 @@
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
               "downloading": "Downloading backup",
-              "restoring": "Restoring backup"
+              "restoring": "Restoring backup",
+              "migrate": "Migrate controller"
             },
             "statistics": {
               "title": "Controller statistics",
@@ -5877,33 +5885,91 @@
           },
           "add_node": {
             "title": "Add a Z-Wave device",
-            "searching_device": "Searching for devices…",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+            "searching_devices": "Searching for devices",
+            "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometimes called \"inclusion mode\")",
+            "security_options": "Advanced security options",
             "choose_inclusion_strategy": "How do you want to add your device",
-            "qr_code": "QR Code",
-            "qr_code_paragraph": "If your device supports SmartStart you can scan the QR code for easy pairing.",
-            "scan_qr_code": "Scan QR code",
+            "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
+            "getting_device_information": "Getting device information",
+            "saving_device": "Saving device",
             "check_logs": "Please check the logs for more information.",
-            "inclusion_finished": "The device has been added.",
-            "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
-            "view_device": "View Device",
-            "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
-            "waiting_for_device": "Communicating with the device. Please wait.",
-            "adding_insecurely": "The device is being added insecurely",
-            "added_insecurely": "The device was added insecurely",
-            "added_insecurely_text": "There was an error during secure inclusion. You can try again by excluding the device and adding it again.",
-            "low_security_reason": {
-              "0": "Security bootstrapping was canceled by the user.",
-              "1": "The required security keys were not configured in the driver.",
-              "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
-              "3": "An expected message was not received within the corresponding timeout.",
-              "4": "There was no possible match in encryption parameters between the controller and the node.",
-              "5": "Security bootstrapping was canceled by the included node.",
-              "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
-              "7": "There was a mismatch in security keys between the controller and the node.",
-              "8": "Unknown error occurred."
+            "timeout_error": "No device found after {minutes} minutes. Please check the device and try again.",
+            "select_method": {
+              "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
+              "qr_code_webcam": "Scan QR code using webcam",
+              "qr_code_webcam_description": "Find and scan the code on your device.",
+              "qr_code_manual": "Enter QR code manually",
+              "qr_code_manual_description": "You can scan the QR code with another QR scanner and paste the code.",
+              "search_device": "Search for device",
+              "search_device_description": "Use this option to manually include a device that does not have a SmartStart QR code."
+            },
+            "qr": {
+              "manual": {
+                "title": "Enter QR code manually",
+                "text": "You can scan the QR code with another QR scanner and paste the code here.",
+                "placeholder": "Code"
+              },
+              "scan_code": "Scan QR code",
+              "other_add_options": "Other add options",
+              "invalid_code": "Invalid QR code ({code})",
+              "unsupported_code": "This QR code is not supported \"{code}\""
+            },
+            "specific_device": {
+              "title": "Searching for device",
+              "turn_on_device": "Turn on the device",
+              "turn_on_device_description": "If your device is already turned on, you might need to turn it off and on again. Consult your device manual if you are unsure.",
+              "add_another_z_wave_device": "Add another Z-Wave device",
+              "close_description": "Feel free to close this screen, as this process will continue in the background."
+            },
+            "select_strategy": {
+              "title": "Choose security strategy",
+              "default_label": "Secure if possible",
+              "default_description": "Requires user interaction during inclusion. Fast and secure with S2 when supported. Allows manually selecting which security keys to grant. Fallback to legacy S0 or no encryption when necessary.",
+              "s0_label": "Legacy Secure",
+              "s0_description": "Uses the older S0 security that is secure, but slow due to a lot of overhead. Allows securely including S2 capable devices which fail to be included with S2.",
+              "insecure_label": "Insecure",
+              "insecure_description": "Do not use encryption.",
+              "inclusion_strategy": "Inclusion strategy: {strategy}"
+            },
+            "configure_device": {
+              "title": "Add device",
+              "device_name": "Name",
+              "device_area": "Area",
+              "choose_network_type": "Choose network type",
+              "long_range_label": "Direct long range",
+              "long_range_description": "Direct connection to Home Assistant for extended coverage, without a mesh network.",
+              "mesh_label": "Mesh network",
+              "mesh_description": "Devices relay signals to each other, enhancing coverage and reliability.",
+              "add_device": "Add device",
+              "save_device_failed": "Saving new device info failed"
+            },
+            "validate_dsk_pin": {
+              "title": "Verify key",
+              "text": "Find the key on your device or manual and enter the 5-digit PIN.",
+              "placeholder": "PIN"
+            },
+            "added_insecure": {
+              "title": "Device added insecurely",
+              "text": "The device {name} has been added to your Z-Wave network.",
+              "added_insecurely_text": "{deviceName} has been added without secure inclusion. You can still use your device.",
+              "try_again_text": "You can try again by removing the device and adding it again.",
+              "view_device": "View device",
+              "low_security_reason": {
+                "0": "Security bootstrapping was canceled by the user.",
+                "1": "The required security keys were not configured in the driver.",
+                "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
+                "3": "An expected message was not received within the corresponding timeout.",
+                "4": "There was no possible match in encryption parameters between the controller and the node.",
+                "5": "Security bootstrapping was canceled by the included node.",
+                "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
+                "7": "There was a mismatch in security keys between the controller and the node.",
+                "8": "Unknown error occurred."
+              }
+            },
+            "grant_security_classes": {
+              "title": "Security classes",
+              "description": "The device has requested the following security classes"
             }
           },
           "provisioned": {
@@ -5941,9 +6007,9 @@
             "introduction": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
-            "exclusion_failed": "The device could not be removed. Please check the logs for more information.",
+            "removing_device": "Removing device",
+            "exclusion_failed": "An error occurred during exclusion. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
@@ -6386,8 +6452,10 @@
             "helpers": "[%key:ui::panel::config::helpers::caption%]"
           },
           "areas": {
+            "no_entities": "No entities in this area.",
             "groups": {
               "lights": "Lights",
+              "covers": "Covers",
               "climate": "Climate",
               "media_players": "Entertainment",
               "security": "Security",
@@ -6552,6 +6620,7 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
+          "unnamed_view": "Unnamed view",
           "delete_title": "Delete view",
           "delete_named_view_only": "''{name}'' view will be deleted.",
           "delete_unnamed_view_only": "This view will be deleted.",
@@ -7126,6 +7195,7 @@
             "generic": {
               "alt_text": "Alternative text",
               "aspect_ratio": "Aspect ratio",
+              "aspect_ratio_ignored": "Will be ignored because the card is resized.",
               "attribute": "Attribute",
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
@@ -7137,6 +7207,12 @@
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
+              "fit_mode": "Fit mode",
+              "fit_mode_options": {
+                "contain": "Contain",
+                "cover": "Cover",
+                "fill": "Fill"
+              },
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
@@ -7850,6 +7926,10 @@
           "title": "Advanced mode",
           "description": "Unlocks advanced features.",
           "link_promo": "Learn more"
+        },
+        "entity_id_picker": {
+          "title": "Display entity IDs in picker",
+          "description": "Shows the full entity IDs when selecting entities with a picker."
         },
         "refresh_tokens": {
           "header": "Refresh tokens",

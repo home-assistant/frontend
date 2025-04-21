@@ -3,7 +3,6 @@ import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -26,8 +25,8 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-combo-box-item";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-svg-icon";
 
 type ScorableLabelItem = ScorableTextItem & LabelRegistryEntry;
@@ -36,16 +35,14 @@ const ADD_NEW_ID = "___ADD_NEW___";
 const NO_LABELS_ID = "___NO_LABELS___";
 const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
-const rowRenderer: ComboBoxLitRenderer<LabelRegistryEntry> = (item) =>
-  html`<ha-list-item
-    graphic="icon"
-    class=${classMap({ "add-new": item.label_id === ADD_NEW_ID })}
-  >
+const rowRenderer: ComboBoxLitRenderer<LabelRegistryEntry> = (item) => html`
+  <ha-combo-box-item type="button">
     ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+      ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
       : nothing}
     ${item.name}
-  </ha-list-item>`;
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-label-picker")
 export class HaLabelPicker extends SubscribeMixin(LitElement) {

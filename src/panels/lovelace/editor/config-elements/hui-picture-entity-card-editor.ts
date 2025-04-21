@@ -3,12 +3,23 @@ import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  assert,
+  assign,
+  boolean,
+  enums,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import { STUB_IMAGE } from "../../cards/hui-picture-entity-card";
 import type { PictureEntityCardConfig } from "../../cards/types";
@@ -24,7 +35,7 @@ const cardConfigStruct = assign(
     image: optional(string()),
     name: optional(string()),
     camera_image: optional(string()),
-    camera_view: optional(string()),
+    camera_view: optional(enums(["auto", "live"])),
     aspect_ratio: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -32,7 +43,7 @@ const cardConfigStruct = assign(
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     theme: optional(string()),
-    fit_mode: optional(string()),
+    fit_mode: optional(enums(["cover", "contain", "fill"])),
   })
 );
 
@@ -63,22 +74,31 @@ export class HuiPictureEntityCardEditor
           schema: [
             {
               name: "camera_view",
+              required: true,
               selector: {
                 select: {
-                  options: [
-                    {
-                      value: "auto",
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.generic.camera_view_options.auto`
-                      ),
-                    },
-                    {
-                      value: "live",
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.generic.camera_view_options.live`
-                      ),
-                    },
-                  ],
+                  options: ["auto", "live"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                    ),
+                  })),
+                  mode: "dropdown",
+                },
+              },
+            },
+            {
+              name: "fit_mode",
+              required: true,
+              selector: {
+                select: {
+                  options: ["cover", "contain", "fill"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.generic.fit_mode_options.${value}`
+                    ),
+                  })),
+                  mode: "dropdown",
                 },
               },
             },
@@ -131,7 +151,7 @@ export class HuiPictureEntityCardEditor
             },
           ],
         },
-      ] as const
+      ] as const satisfies HaFormSchema[]
   );
 
   protected render() {
@@ -143,15 +163,19 @@ export class HuiPictureEntityCardEditor
       show_state: true,
       show_name: true,
       camera_view: "auto",
+      fit_mode: "cover",
       ...this._config,
     };
+
+    const schema = this._schema(this.hass.localize);
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       </div>
@@ -191,6 +215,21 @@ export class HuiPictureEntityCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "aspect_ratio":
+        return typeof this._config?.grid_options?.rows === "number"
+          ? this.hass!.localize(
+              `ui.panel.lovelace.editor.card.generic.aspect_ratio_ignored`
+            )
+          : "";
+      default:
+        return "";
     }
   };
 

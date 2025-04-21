@@ -2,12 +2,23 @@ import memoizeOne from "memoize-one";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, assign, object, optional, string } from "superstruct";
 import { mdiGestureTap } from "@mdi/js";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  array,
+  assert,
+  assign,
+  enums,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { ActionConfig } from "../../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureGlanceCardConfig } from "../../cards/types";
@@ -28,13 +39,14 @@ const cardConfigStruct = assign(
     image: optional(string()),
     image_entity: optional(string()),
     camera_image: optional(string()),
-    camera_view: optional(string()),
+    camera_view: optional(enums(["auto", "live"])),
     aspect_ratio: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
     entities: array(entitiesConfigStruct),
     theme: optional(string()),
+    fit_mode: optional(enums(["cover", "contain", "fill"])),
   })
 );
 
@@ -48,12 +60,6 @@ export class HuiPictureGlanceCardEditor
   @state() private _config?: PictureGlanceCardConfig;
 
   @state() private _configEntities?: EntityConfig[];
-
-  public setConfig(config: PictureGlanceCardConfig): void {
-    assert(config, cardConfigStruct);
-    this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
-  }
 
   private _schema = memoizeOne(
     (localize: LocalizeFunc) =>
@@ -71,22 +77,31 @@ export class HuiPictureGlanceCardEditor
           schema: [
             {
               name: "camera_view",
+              required: true,
               selector: {
                 select: {
-                  options: [
-                    {
-                      value: "auto",
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.generic.camera_view_options.auto`
-                      ),
-                    },
-                    {
-                      value: "live",
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.generic.camera_view_options.live`
-                      ),
-                    },
-                  ],
+                  options: ["auto", "live"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                    ),
+                  })),
+                  mode: "dropdown",
+                },
+              },
+            },
+            {
+              name: "fit_mode",
+              required: true,
+              selector: {
+                select: {
+                  options: ["cover", "contain", "fill"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.generic.fit_mode_options.${value}`
+                    ),
+                  })),
+                  mode: "dropdown",
                 },
               },
             },
@@ -134,8 +149,14 @@ export class HuiPictureGlanceCardEditor
             },
           ],
         },
-      ] as const
+      ] as const satisfies HaFormSchema[]
   );
+
+  public setConfig(config: PictureGlanceCardConfig): void {
+    assert(config, cardConfigStruct);
+    this._config = config;
+    this._configEntities = processEditorEntities(config.entities);
+  }
 
   get _tap_action(): ActionConfig {
     return this._config!.tap_action || { action: "toggle" };
@@ -150,7 +171,7 @@ export class HuiPictureGlanceCardEditor
       return nothing;
     }
 
-    const data = { camera_view: "auto", ...this._config };
+    const data = { camera_view: "auto", fit_mode: "cover", ...this._config };
 
     return html`
       <ha-form
@@ -158,6 +179,7 @@ export class HuiPictureGlanceCardEditor
         .data=${data}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <div class="card-config">
@@ -207,6 +229,21 @@ export class HuiPictureGlanceCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "aspect_ratio":
+        return typeof this._config?.grid_options?.rows === "number"
+          ? this.hass!.localize(
+              `ui.panel.lovelace.editor.card.generic.aspect_ratio_ignored`
+            )
+          : "";
+      default:
+        return "";
     }
   };
 
