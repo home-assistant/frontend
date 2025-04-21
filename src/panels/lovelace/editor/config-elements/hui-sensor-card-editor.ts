@@ -84,20 +84,12 @@ export class HuiSensorCardEditor
               name: "graph",
               selector: {
                 select: {
-                  options: [
-                    {
-                      value: "none",
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.sensor.graph_options.none`
-                      ),
-                    },
-                    {
-                      value: "line",
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.sensor.graph_options.line`
-                      ),
-                    },
-                  ],
+                  options: ["none", "line"].map((value) => ({
+                    value,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.sensor.graph_options.${value}`
+                    ),
+                  })),
                 },
               },
             },
