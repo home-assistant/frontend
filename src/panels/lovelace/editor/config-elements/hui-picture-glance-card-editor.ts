@@ -1,8 +1,10 @@
+import memoizeOne from "memoize-one";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { array, assert, assign, object, optional, string } from "superstruct";
 import { mdiGestureTap } from "@mdi/js";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -36,68 +38,6 @@ const cardConfigStruct = assign(
   })
 );
 
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  { name: "image", selector: { image: {} } },
-  {
-    name: "image_entity",
-    selector: { entity: { domain: ["image", "person"] } },
-  },
-  { name: "camera_image", selector: { entity: { domain: "camera" } } },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "camera_view",
-        selector: { select: { options: ["auto", "live"] } },
-      },
-      { name: "aspect_ratio", selector: { text: {} } },
-    ],
-  },
-  { name: "entity", selector: { entity: {} } },
-  { name: "theme", selector: { theme: {} } },
-  {
-    name: "interactions",
-    type: "expandable",
-    flatten: true,
-    iconPath: mdiGestureTap,
-    schema: [
-      {
-        name: "tap_action",
-        selector: {
-          ui_action: {
-            default_action: "more-info",
-          },
-        },
-      },
-      {
-        name: "hold_action",
-        selector: {
-          ui_action: {
-            default_action: "more-info",
-          },
-        },
-      },
-      {
-        name: "",
-        type: "optional_actions",
-        flatten: true,
-        schema: [
-          {
-            name: "double_tap_action",
-            selector: {
-              ui_action: {
-                default_action: "none",
-              },
-            },
-          },
-        ],
-      },
-    ],
-  },
-] as const;
-
 @customElement("hui-picture-glance-card-editor")
 export class HuiPictureGlanceCardEditor
   extends LitElement
@@ -114,6 +54,88 @@ export class HuiPictureGlanceCardEditor
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
   }
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc) =>
+      [
+        { name: "title", selector: { text: {} } },
+        { name: "image", selector: { image: {} } },
+        {
+          name: "image_entity",
+          selector: { entity: { domain: ["image", "person"] } },
+        },
+        { name: "camera_image", selector: { entity: { domain: "camera" } } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "camera_view",
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "auto",
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.generic.camera_view_options.auto`
+                      ),
+                    },
+                    {
+                      value: "live",
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.generic.camera_view_options.live`
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+            { name: "aspect_ratio", selector: { text: {} } },
+          ],
+        },
+        { name: "entity", selector: { entity: {} } },
+        { name: "theme", selector: { theme: {} } },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+            },
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: [
+                {
+                  name: "double_tap_action",
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ] as const
+  );
 
   get _tap_action(): ActionConfig {
     return this._config!.tap_action || { action: "toggle" };
@@ -134,7 +156,7 @@ export class HuiPictureGlanceCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${SCHEMA}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -164,7 +186,9 @@ export class HuiPictureGlanceCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "theme":
       case "tap_action":

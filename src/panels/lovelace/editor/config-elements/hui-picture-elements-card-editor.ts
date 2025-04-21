@@ -84,7 +84,24 @@ export class HuiPictureElementsCardEditor
             },
             {
               name: "camera_view",
-              selector: { select: { options: ["auto", "live"] } },
+              selector: {
+                select: {
+                  options: [
+                    {
+                      value: "auto",
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.generic.camera_view_options.auto`
+                      ),
+                    },
+                    {
+                      value: "live",
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.generic.camera_view_options.live`
+                      ),
+                    },
+                  ],
+                },
+              },
             },
             { name: "theme", selector: { theme: {} } },
             { name: "state_filter", selector: { object: {} } },
