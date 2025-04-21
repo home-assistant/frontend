@@ -7367,6 +7367,10 @@
               "name": "Sensor",
               "show_more_detail": "Show more detail",
               "graph_type": "Graph type",
+              "graph_options": {
+                "none": "None",
+                "line": "Line"
+              },
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
