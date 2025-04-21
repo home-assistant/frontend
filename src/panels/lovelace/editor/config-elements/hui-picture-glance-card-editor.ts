@@ -173,13 +173,11 @@ export class HuiPictureGlanceCardEditor
 
     const data = { camera_view: "auto", fit_mode: "cover", ...this._config };
 
-    const schema = this._schema(this.hass.localize);
-
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
