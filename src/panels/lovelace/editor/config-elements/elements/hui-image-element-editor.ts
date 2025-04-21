@@ -93,20 +93,13 @@ export class HuiImageElementEditor
           name: "camera_view",
           selector: {
             select: {
-              options: [
-                {
-                  value: "auto",
-                  label: localize(
-                    `ui.panel.lovelace.editor.card.generic.camera_view_options.auto`
-                  ),
-                },
-                {
-                  value: "live",
-                  label: localize(
-                    `ui.panel.lovelace.editor.card.generic.camera_view_options.live`
-                  ),
-                },
-              ],
+              options: ["auto", "live"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                ),
+              })),
+              mode: "dropdown",
             },
           },
         },
