@@ -8838,6 +8838,12 @@
       },
       "logs": {
         "get_logs": "Failed to get add-on logs, {error}"
+      },
+      "system_managed": {
+        "title": "System managed",
+        "description": "This addon is managed by Home Assistant core. You should not change settings or options for this addon. If you do, Home Assistant may not be able to manage the addon correctly.",
+        "show_addon": "Show add-on",
+        "managed_by": "Managed by"
       }
     },
     "common": {
@@ -8861,6 +8867,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "back": "[%key:ui::common::back%]",
       "menu": "[%key:ui::common::menu%]",
       "show": "[%key:ui::panel::config::updates::show%]",
       "show_more": "Show more information about this",

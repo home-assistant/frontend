@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import {
   mdiCheckCircle,
   mdiChip,
-  mdiPlayCircle,
   mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
   mdiDocker,
@@ -19,27 +18,29 @@ import {
   mdiNumeric6,
   mdiNumeric7,
   mdiNumeric8,
+  mdiPlayCircle,
   mdiPound,
   mdiShield,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
+import { capitalizeFirstLetter } from "../../../../src/common/string/capitalize-first-letter";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/chips/ha-assist-chip";
+import "../../../../src/components/chips/ha-chip-set";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/chips/ha-chip-set";
-import "../../../../src/components/chips/ha-assist-chip";
+import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import "../../../../src/components/ha-formfield";
 import type { HaSwitch } from "../../../../src/components/ha-switch";
 import type {
   AddonCapability,
@@ -81,10 +82,10 @@ import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { showSystemManagedDialog } from "../../dialogs/system-managed/show-dialog-system-managed";
 import { hassioStyle } from "../../resources/hassio-style";
 import "../../update-available/update-available-card";
 import { addonArchIsSupported, extractChangelog } from "../../util/addon";
-import { capitalizeFirstLetter } from "../../../../src/common/string/capitalize-first-letter";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -456,6 +457,23 @@ class HassioAddonInfo extends LitElement {
                   </ha-assist-chip>
                 `
               : ""}
+            ${"system_managed" in this.addon && this.addon.system_managed
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showSystemManagedDialog}
+                    id="system_managed"
+                    .label=${capitalizeFirstLetter(
+                      this.supervisor.localize("addon.system_managed.title")
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing}
           </ha-chip-set>
 
           <div class="description light-color">
@@ -819,6 +837,14 @@ class HassioAddonInfo extends LitElement {
           : this.supervisor.localize(
               `addon.dashboard.capability.${id}.description`
             ),
+    });
+  }
+
+  private _showSystemManagedDialog() {
+    showSystemManagedDialog(this, {
+      addon: this.addon as HassioAddonDetails,
+      closeable: true,
+      supervisor: this.supervisor,
     });
   }
 
