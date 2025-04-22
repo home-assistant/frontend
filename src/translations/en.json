@@ -4624,7 +4624,7 @@
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
               "introduction_review": "To add the devices that you want to be included in your scene switch to the Live Edit mode.",
               "add": "Add a device",
-              "delete": "Delete device"
+              "delete": "Remove device"
             },
             "entities": {
               "header": "Entities",
@@ -4632,7 +4632,7 @@
               "introduction_review": "To add individual entities to your scene switch to the Live Edit mode.",
               "without_device": "Entities",
               "add": "Add an entity",
-              "delete": "Delete entity"
+              "delete": "Remove entity"
             }
           }
         },
