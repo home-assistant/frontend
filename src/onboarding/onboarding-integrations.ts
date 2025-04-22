@@ -16,7 +16,6 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./integration-badge";
 import { onBoardingStyles } from "./styles";
-import "../components/ha-spinner";
 
 const HIDDEN_DOMAINS = new Set([
   "google_translate",
