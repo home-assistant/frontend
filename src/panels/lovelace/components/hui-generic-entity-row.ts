@@ -4,7 +4,6 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -62,30 +61,43 @@ export class HuiGenericEntityRow extends LitElement {
     const name = this.config.name ?? computeStateName(stateObj);
 
     return html`
-      <div
-        class="row ${classMap({ pointer })}"
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this.config!.hold_action),
-          hasDoubleClick: hasAction(this.config!.double_tap_action),
-        })}
-        tabindex=${ifDefined(
-          !this.config.tap_action || hasAction(this.config.tap_action)
-            ? "0"
-            : undefined
-        )}
-      >
+      <div class="row">
         <state-badge
+          class=${classMap({ pointer })}
           .hass=${this.hass}
           .stateObj=${stateObj}
           .overrideIcon=${this.config.icon}
           .overrideImage=${this.config.image}
           .stateColor=${this.config.state_color}
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this.config!.hold_action),
+            hasDoubleClick: hasAction(this.config!.double_tap_action),
+          })}
+          tabindex=${ifDefined(
+            (!this.config.tap_action || hasAction(this.config.tap_action)) &&
+              this.hideName // the icon must be focusable for keyboard action if the name is not displayed
+              ? "0"
+              : undefined
+          )}
         ></state-badge>
         ${!this.hideName
           ? html`<div
-              class="info ${classMap({ "text-content": !hasSecondary })}"
+              class="info ${classMap({
+                "text-content": !hasSecondary,
+                pointer,
+              })}"
               .title=${name}
+              @action=${this._handleAction}
+              .actionHandler=${actionHandler({
+                hasHold: hasAction(this.config!.hold_action),
+                hasDoubleClick: hasAction(this.config!.double_tap_action),
+              })}
+              tabindex=${ifDefined(
+                !this.config.tap_action || hasAction(this.config.tap_action)
+                  ? "0"
+                  : undefined
+              )}
             >
               ${this.config.name || computeStateName(stateObj)}
               ${hasSecondary
@@ -158,7 +170,7 @@ export class HuiGenericEntityRow extends LitElement {
                 <div class="state"><slot></slot></div>
               </div>
             `
-          : html`<slot @action=${stopPropagation}></slot>`}
+          : html`<slot></slot>`}
       </div>
     `;
   }
@@ -190,7 +202,8 @@ export class HuiGenericEntityRow extends LitElement {
       outline: none;
       transition: background-color 180ms ease-in-out;
     }
-    .row:focus-visible {
+    .row:has(state-badge:focus-visible),
+    .row:has(.info:focus-visible) {
       background-color: var(--primary-background-color);
     }
     .info {
@@ -199,6 +212,7 @@ export class HuiGenericEntityRow extends LitElement {
       padding-inline-start: 16px;
       padding-inline-end: 8px;
       flex: 1 1 30%;
+      outline: none;
     }
     .info,
     .info > * {
