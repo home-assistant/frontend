@@ -16,6 +16,7 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./integration-badge";
 import { onBoardingStyles } from "./styles";
+import "../components/ha-spinner";
 
 const HIDDEN_DOMAINS = new Set([
   "google_translate",
@@ -35,24 +36,27 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _entries: ConfigEntry[] = [];
 
-  @state() private _discoveredDomains?: Set<string> = undefined;
+  @state() private _discoveredDomains: Set<string> = new Set<string>();
+
+  @state() private _discoveredDomainsReceived = false;
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
       subscribeConfigFlowInProgress(this.hass, (messages) => {
-        this._discoveredDomains = new Set(
-          messages
-            .filter(
-              (message) =>
-                message.type !== "removed" &&
-                !HIDDEN_DOMAINS.has(message.flow.handler)
-            )
-            .map((message) => message.flow.handler)
-        );
+        messages.forEach((message) => {
+          if (
+            message.type === "removed" ||
+            HIDDEN_DOMAINS.has(message.flow.handler)
+          ) {
+            return;
+          }
+          this._discoveredDomains.add(message.flow.handler);
+        });
         this.hass.loadBackendTranslation(
           "title",
           Array.from(this._discoveredDomains)
         );
+        this._discoveredDomainsReceived = true;
       }),
       subscribeConfigEntries(
         this.hass,
@@ -97,7 +101,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discoveredDomains) {
+    if (!this._discoveredDomainsReceived) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
