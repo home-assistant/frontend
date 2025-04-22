@@ -6319,6 +6319,7 @@
             "disabled": "Disabled",
             "ip": "IP address",
             "netmask": "Netmask",
+            "prefix": "Subnet prefix",
             "add_address": "Add address",
             "gateway": "Gateway address",
             "dns_server": "DNS Server",

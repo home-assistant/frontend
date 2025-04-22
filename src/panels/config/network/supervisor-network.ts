@@ -380,7 +380,7 @@ export class HassioNetwork extends LitElement {
           ? html`
               ${this._interface![version].address.map(
                 (address: string, index: number) => {
-                  const { ip, mask } = parseAddress(address);
+                  const { ip, mask, prefix } = parseAddress(address);
                   return html`
                     <div class="address-row">
                       <ha-textfield
@@ -395,18 +395,35 @@ export class HassioNetwork extends LitElement {
                         .disabled=${disableInputs}
                       >
                       </ha-textfield>
-                      <ha-textfield
-                        id="netmask"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.network.supervisor.netmask"
-                        )}
-                        .version=${version}
-                        .value=${mask}
-                        .index=${index}
-                        @change=${this._handleInputValueChanged}
-                        .disabled=${disableInputs}
-                      >
-                      </ha-textfield>
+                      ${version === "ipv6"
+                        ? html`
+                            <ha-textfield
+                              id="prefix"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.network.supervisor.prefix"
+                              )}
+                              .version=${version}
+                              .value=${prefix || ""}
+                              .index=${index}
+                              @change=${this._handleInputValueChanged}
+                              .disabled=${disableInputs}
+                            >
+                            </ha-textfield>
+                          `
+                        : html`
+                            <ha-textfield
+                              id="netmask"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.network.supervisor.netmask"
+                              )}
+                              .version=${version}
+                              .value=${mask || ""}
+                              .index=${index}
+                              @change=${this._handleInputValueChanged}
+                              .disabled=${disableInputs}
+                            >
+                            </ha-textfield>
+                          `}
                       ${this._interface![version].address.length > 1 &&
                       !disableInputs
                         ? html`
@@ -666,6 +683,11 @@ export class HassioNetwork extends LitElement {
       const index = (ev.target as any).index as number;
       const { ip } = parseAddress(this._interface![version]!.address![index]);
       this._interface[version]!.address![index] = formatAddress(ip, value);
+      this.requestUpdate("_interface");
+    } else if (id === "prefix") {
+      const index = (ev.target as any).index as number;
+      const { ip } = parseAddress(this._interface![version]!.address![index]);
+      this._interface[version]!.address![index] = `${ip}/${value}`;
       this.requestUpdate("_interface");
     } else if (id === "nameserver") {
       const index = (ev.target as any).index as number;
