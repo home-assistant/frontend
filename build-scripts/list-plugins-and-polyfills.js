@@ -16,6 +16,7 @@ const detailsClose = "</details>\n";
 
 const dummyAPI = {
   version: babelVersion,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   assertVersion: () => {},
   caller: (callback) =>
     callback({

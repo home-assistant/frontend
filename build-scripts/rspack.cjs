@@ -115,16 +115,16 @@ const createRspackConfig = ({
         // external chunks are broken for:
         chunks: !isProdBuild
           ? // improve incremental build speed, but blows up bundle size
-          new RegExp(
-            `^(?!(${Object.keys(entry).join("|")}|.*work(?:er|let))$)`
-          )
+            new RegExp(
+              `^(?!(${Object.keys(entry).join("|")}|.*work(?:er|let))$)`
+            )
           : // - ESM output: https://github.com/webpack/webpack/issues/17014
-          // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
-          (chunk) =>
-            !chunk.canBeInitial() &&
-            !new RegExp(
-              `^.+-work${latestBuild ? "(?:let|er)" : "let"}$`
-            ).test(chunk.name),
+            // - Worklets use `importScripts`: https://github.com/webpack/webpack/issues/11543
+            (chunk) =>
+              !chunk.canBeInitial() &&
+              !new RegExp(
+                `^.+-work${latestBuild ? "(?:let|er)" : "let"}$`
+              ).test(chunk.name),
       },
     },
     plugins: [
@@ -175,23 +175,23 @@ const createRspackConfig = ({
       ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
-      new StatsWriterPlugin({
-        filename: path.relative(
-          outputPath,
-          path.join(paths.build_dir, "stats", `${name}.json`)
-        ),
-        stats: { assets: true, chunks: true, modules: true },
-        transform: (stats) => JSON.stringify(filterStats(stats)),
-      }),
+        new StatsWriterPlugin({
+          filename: path.relative(
+            outputPath,
+            path.join(paths.build_dir, "stats", `${name}.json`)
+          ),
+          stats: { assets: true, chunks: true, modules: true },
+          transform: (stats) => JSON.stringify(filterStats(stats)),
+        }),
       isProdBuild &&
-      isStatsBuild &&
-      new RsdoctorRspackPlugin({
-        reportDir: path.join(paths.build_dir, "rsdoctor"),
-        features: ["plugins", "bundle"],
-        supports: {
-          generateTileGraph: true,
-        },
-      }),
+        isStatsBuild &&
+        new RsdoctorRspackPlugin({
+          reportDir: path.join(paths.build_dir, "rsdoctor"),
+          features: ["plugins", "bundle"],
+          supports: {
+            generateTileGraph: true,
+          },
+        }),
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
@@ -242,18 +242,18 @@ const createRspackConfig = ({
           `devtool${v}ModuleFilenameTemplate`,
           !isTestBuild && isProdBuild
             ? (info) => {
-              if (
-                !path.isAbsolute(info.absoluteResourcePath) ||
-                !existsSync(info.resourcePath) ||
-                info.resourcePath.startsWith("./node_modules")
-              ) {
-                // Source URLs are unknown for dependencies, so we use a relative URL with a
-                // non - existent top directory.  This results in a clean source tree in browser
-                // dev tools, and they stay happy getting 404s with valid requests.
-                return `/unknown${path.resolve("/", info.resourcePath)}`;
+                if (
+                  !path.isAbsolute(info.absoluteResourcePath) ||
+                  !existsSync(info.resourcePath) ||
+                  info.resourcePath.startsWith("./node_modules")
+                ) {
+                  // Source URLs are unknown for dependencies, so we use a relative URL with a
+                  // non - existent top directory.  This results in a clean source tree in browser
+                  // dev tools, and they stay happy getting 404s with valid requests.
+                  return `/unknown${path.resolve("/", info.resourcePath)}`;
+                }
+                return new URL(info.resourcePath, bundle.sourceMapURL()).href;
               }
-              return new URL(info.resourcePath, bundle.sourceMapURL()).href;
-            }
             : undefined,
         ])
       ),
