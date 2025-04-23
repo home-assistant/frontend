@@ -32,11 +32,7 @@ export class HaFuse<T> extends Fuse<T> {
       ...options,
     };
     super(list, mergedOptions, index);
-    this._options = mergedOptions;
   }
-
-  // Fuse.js does not export the _options property, so we need to declare it here
-  public _options: IFuseOptions<T>;
 
   /**
    * Performs a multi-term search across the indexed data.
@@ -56,7 +52,8 @@ export class HaFuse<T> extends Fuse<T> {
   ): FuseResult<T>[] | null {
     const terms = search.split(" ");
 
-    const { minMatchCharLength } = this._options;
+    // @ts-expect-error options is not part of the Fuse type
+    const { minMatchCharLength } = this.options as IFuseOptions<T>;
 
     const filteredTerms = minMatchCharLength
       ? terms.filter((term) => term.length >= minMatchCharLength)
