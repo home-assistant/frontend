@@ -1,7 +1,6 @@
-import "@material/mwc-list/mwc-list";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { mdiDeleteOutline, mdiPlus, mdiMenuDown, mdiWifi } from "@mdi/js";
+import { mdiDeleteOutline, mdiMenuDown, mdiPlus, mdiWifi } from "@mdi/js";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -9,14 +8,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
-import "../../../components/ha-list-item";
 import type { HaRadio } from "../../../components/ha-radio";
+import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -154,7 +154,7 @@ export class HassioNetwork extends LitElement {
                 </ha-button>
                 ${this._accessPoints.length
                   ? html`
-                      <mwc-list>
+                      <ha-list>
                         ${this._accessPoints.map(
                           (ap) => html`
                             <ha-list-item
@@ -175,7 +175,7 @@ export class HassioNetwork extends LitElement {
                             </ha-list-item>
                           `
                         )}
-                      </mwc-list>
+                      </ha-list>
                     `
                   : nothing}
                 ${this._wifiConfiguration

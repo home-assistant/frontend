@@ -1,13 +1,16 @@
 import { FormfieldBase } from "@material/mwc-formfield/mwc-formfield-base";
 import { styles } from "@material/mwc-formfield/mwc-formfield.css";
 import { css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAssignedElements } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-formfield")
 export class HaFormfield extends FormfieldBase {
   @property({ type: Boolean, reflect: true }) public disabled = false;
+
+  @queryAssignedElements({ slot: "", flatten: true, selector: "*" })
+  protected slottedInputs!: HTMLElement[] | null;
 
   protected override render() {
     const classes = {

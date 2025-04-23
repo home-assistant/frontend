@@ -12,7 +12,6 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";

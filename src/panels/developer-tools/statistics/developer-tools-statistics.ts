@@ -31,7 +31,7 @@ import type {
 import { showDataTableSettingsDialog } from "../../../components/data-table/show-dialog-data-table-settings";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-dialog";
-import type { HaMenu } from "../../../components/ha-menu";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/search-input-outlined";
 import type {
@@ -108,9 +108,9 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-data-table", true) private _dataTable!: HaDataTable;
 
-  @query("#group-by-menu") private _groupByMenu!: HaMenu;
+  @query("#group-by-menu") private _groupByMenu!: HaMdMenu;
 
-  @query("#sort-by-menu") private _sortByMenu!: HaMenu;
+  @query("#sort-by-menu") private _sortByMenu!: HaMdMenu;
 
   @query("search-input-outlined") private _searchInput!: HTMLElement;
 
@@ -445,7 +445,11 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                 </div>`}
         </ha-data-table>
       </div>
-      <ha-menu anchor="group-by-anchor" id="group-by-menu" positioning="fixed">
+      <ha-md-menu
+        anchor="group-by-anchor"
+        id="group-by-menu"
+        positioning="fixed"
+      >
         ${Object.entries(columns).map(([id, column]) =>
           column.groupable
             ? html`
@@ -489,8 +493,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           ></ha-svg-icon>
           ${localize("ui.components.subpage-data-table.expand_all_groups")}
         </ha-md-menu-item>
-      </ha-menu>
-      <ha-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
+      </ha-md-menu>
+      <ha-md-menu anchor="sort-by-anchor" id="sort-by-menu" positioning="fixed">
         ${Object.entries(columns).map(([id, column]) =>
           column.sortable
             ? html`
@@ -516,7 +520,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
               `
             : nothing
         )}
-      </ha-menu>
+      </ha-md-menu>
     `;
   }
 

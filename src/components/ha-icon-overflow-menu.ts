@@ -7,7 +7,6 @@ import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-md-button-menu";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 import "./ha-md-menu-item";

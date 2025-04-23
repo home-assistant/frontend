@@ -1,10 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
+import "../../components/ha-list-item";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-select";
@@ -68,15 +69,15 @@ export class HaPickThemeRow extends LitElement {
           @selected=${this._handleThemeSelection}
           naturalMenuWidth
         >
-          <mwc-list-item .value=${USE_DEFAULT_THEME}>
+          <ha-list-item .value=${USE_DEFAULT_THEME}>
             ${this.hass.localize("ui.panel.profile.themes.use_default")}
-          </mwc-list-item>
-          <mwc-list-item .value=${HOME_ASSISTANT_THEME}>
+          </ha-list-item>
+          <ha-list-item .value=${HOME_ASSISTANT_THEME}>
             Home Assistant
-          </mwc-list-item>
+          </ha-list-item>
           ${this._themeNames.map(
             (theme) => html`
-              <mwc-list-item .value=${theme}>${theme}</mwc-list-item>
+              <ha-list-item .value=${theme}>${theme}</ha-list-item>
             `
           )}
         </ha-select>

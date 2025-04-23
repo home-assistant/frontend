@@ -1,6 +1,4 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -16,6 +14,7 @@ import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
@@ -178,7 +177,7 @@ class HassioAddonConfig extends LitElement {
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <mwc-list-item .disabled=${!this._canShowSchema || this.disabled}>
+              <ha-list-item .disabled=${!this._canShowSchema || this.disabled}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
                       "addon.configuration.options.edit_in_ui"
@@ -186,13 +185,13 @@ class HassioAddonConfig extends LitElement {
                   : this.supervisor.localize(
                       "addon.configuration.options.edit_in_yaml"
                     )}
-              </mwc-list-item>
-              <mwc-list-item
+              </ha-list-item>
+              <ha-list-item
                 class=${!this.disabled ? "warning" : ""}
                 .disabled=${this.disabled}
               >
                 ${this.supervisor.localize("common.reset_defaults")}
-              </mwc-list-item>
+              </ha-list-item>
             </ha-button-menu>
           </div>
         </div>
@@ -419,7 +418,7 @@ class HassioAddonConfig extends LitElement {
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        mwc-list-item[disabled] {
+        ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .header {

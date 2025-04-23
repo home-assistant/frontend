@@ -1,9 +1,9 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
@@ -70,9 +70,9 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
                 (option) => html`
-                  <mwc-list-item .value=${option}>
+                  <ha-list-item .value=${option}>
                     ${this.hass!.formatEntityState(stateObj, option)}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               )
             : ""}

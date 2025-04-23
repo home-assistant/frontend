@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiChevronRight,
@@ -724,7 +724,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                    <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -742,7 +742,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -760,7 +760,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${areaItems}</ha-menu>
+                    <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }

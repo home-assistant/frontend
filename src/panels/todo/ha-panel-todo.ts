@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-list";
 import {
   mdiChevronDown,
   mdiCommentProcessingOutline,
@@ -26,6 +25,7 @@ import {
 import "../../components/ha-button";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button";
+import "../../components/ha-list";
 import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
@@ -209,7 +209,7 @@ class PanelTodo extends LitElement {
               </ha-button-menu>`
             : this.hass.localize("panel.todo")}
         </div>
-        <mwc-list slot="pane" activatable>${listItems}</mwc-list>
+        <ha-list slot="pane" activatable>${listItems}</ha-list>
         ${showPane && this.hass.user?.is_admin
           ? html`<ha-list-item
               graphic="icon"
