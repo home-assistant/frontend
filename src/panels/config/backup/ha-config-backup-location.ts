@@ -1,33 +1,52 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-switch";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fade-in";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-switch";
 import type {
   BackupAgent,
   BackupAgentConfig,
   BackupConfig,
+  Retention,
 } from "../../../data/backup";
 import {
   CLOUD_AGENT,
   computeBackupAgentName,
   fetchBackupAgentsInfo,
+  isLocalAgent,
   updateBackupConfig,
 } from "../../../data/backup";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
-import "./components/ha-backup-data-picker";
 import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { RetentionPreset } from "./components/config/ha-backup-config-retention";
+import "./components/ha-backup-data-picker";
+
+const RETENTION_PRESETS: Record<
+  Exclude<RetentionPreset, RetentionPreset.CUSTOM>,
+  Retention | null
+> = {
+  shared: null,
+  copies_3: { days: 3, copies: null },
+  forever: { days: null, copies: null },
+};
+
+const RETENTION_PRESETS_OPTIONS = [
+  RetentionPreset.SHARED,
+  RetentionPreset.FOREVER,
+  RetentionPreset.CUSTOM,
+] as const satisfies RetentionPreset[];
 
 @customElement("ha-config-backup-location")
 class HaConfigBackupDetails extends LitElement {
@@ -62,18 +81,23 @@ class HaConfigBackupDetails extends LitElement {
 
     const encrypted = this._isEncryptionTurnedOn();
 
+    const data = this._getData(this.agentId, this.config);
+
+    const agentName =
+      (this._agent &&
+        computeBackupAgentName(
+          this.hass.localize,
+          this.agentId,
+          this.agents
+        )) ||
+      this.hass.localize("ui.panel.config.backup.location.header");
+
     return html`
       <hass-subpage
         back-path="/config/backup/settings"
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .header=${(this._agent &&
-          computeBackupAgentName(
-            this.hass.localize,
-            this.agentId,
-            this.agents
-          )) ||
-        this.hass.localize("ui.panel.config.backup.location.header")}
+        .header=${agentName}
       >
         <div class="content">
           ${this._error &&
@@ -97,14 +121,14 @@ class HaConfigBackupDetails extends LitElement {
                   ><ha-spinner></ha-spinner
                 ></ha-fade-in>`
               : html`
-                  ${CLOUD_AGENT === this.agentId
-                    ? html`
-                        <ha-card>
-                          <div class="card-header">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.location.configuration.title"
-                            )}
-                          </div>
+                  <ha-card>
+                    <div class="card-header">
+                      ${this.hass.localize(
+                        "ui.panel.config.backup.location.configuration.title"
+                      )}
+                    </div>
+                    ${CLOUD_AGENT === this.agentId
+                      ? html`
                           <div class="card-content">
                             <p>
                               ${this.hass.localize(
@@ -112,9 +136,24 @@ class HaConfigBackupDetails extends LitElement {
                               )}
                             </p>
                           </div>
-                        </ha-card>
-                      `
-                    : nothing}
+                        `
+                      : html`<ha-backup-config-retention
+                          .headline=${this.hass.localize(
+                            `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
+                            { location: agentName }
+                          )}
+                          .hass=${this.hass}
+                          .value=${data?.retention.value ?? 3}
+                          .type=${data?.retention.type ?? "copies"}
+                          .presetOptions=${RETENTION_PRESETS_OPTIONS}
+                          .preset=${data?.retention.preset}
+                          @value-changed=${this._retentionValueChanged}
+                          @backup-retention-type-changed=${this
+                            ._retentionTypeChanged}
+                          @backup-retention-preset-changed=${this
+                            ._retentionPresetChanged}
+                        ></ha-backup-config-retention>`}
+                  </ha-card>
                   <ha-card>
                     <div class="card-header">
                       ${this.hass.localize(
@@ -222,6 +261,45 @@ class HaConfigBackupDetails extends LitElement {
     `;
   }
 
+  private _getData = memoizeOne((agentId: string, config?: BackupConfig) => {
+    const agent = this._getAgent(agentId, config);
+    if (!agent) {
+      return undefined;
+    }
+
+    let preset = RetentionPreset.SHARED;
+
+    if (
+      agent.retention &&
+      agent.retention.copies === null &&
+      agent.retention.days === null
+    ) {
+      preset = RetentionPreset.FOREVER;
+    } else if (
+      (agent.retention?.copies != null &&
+        agent.retention?.copies !== this.config?.retention?.copies) ||
+      (agent.retention?.days != null &&
+        agent.retention?.days !== this.config?.retention?.days)
+    ) {
+      preset = RetentionPreset.CUSTOM;
+    }
+
+    return {
+      retention: {
+        type:
+          agent.retention?.days != null
+            ? "days"
+            : ("copies" as "days" | "copies"),
+        value: agent.retention?.days ?? agent.retention?.copies ?? 3,
+        preset,
+      },
+    };
+  });
+
+  private _getAgent = memoizeOne(
+    (agentId: string, config?: BackupConfig) => config?.agents[agentId]
+  );
+
   private _isEncryptionTurnedOn() {
     const agentConfig = this.config?.agents[this.agentId] as
       | BackupAgentConfig
@@ -248,18 +326,72 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private async _updateAgentEncryption(value: boolean) {
-    const agentsConfig = {
-      ...this.config?.agents,
-      [this.agentId]: {
-        ...this.config?.agents[this.agentId],
-        protected: value,
-      },
-    };
-    await updateBackupConfig(this.hass, {
-      agents: agentsConfig,
+  private async _updateAgentConfig(config: Partial<BackupAgentConfig>) {
+    try {
+      const agents = this.config?.agents || {};
+      agents[this.agentId] = {
+        ...(agents[this.agentId] || {}),
+        ...config,
+      };
+
+      await updateBackupConfig(this.hass, {
+        agents,
+      });
+      fireEvent(this, "ha-refresh-backup-config");
+    } catch (err: any) {
+      this._error = this.hass.localize(
+        "ui.panel.config.backup.location.save_error",
+        { error: err.message }
+      );
+    }
+  }
+
+  private async _retentionPresetChanged(ev: CustomEvent) {
+    let value = ev.detail.value as RetentionPreset;
+
+    // custom needs to have a type of days or copies, set it to default copies 3
+    if (value === RetentionPreset.CUSTOM) {
+      value = RetentionPreset.COPIES_3;
+    }
+
+    const retention = RETENTION_PRESETS[value] || null;
+    this._updateAgentConfig({
+      retention,
     });
-    fireEvent(this, "ha-refresh-backup-config");
+  }
+
+  private _retentionValueChanged(ev: CustomEvent) {
+    const value = ev.detail.value as number;
+    const data = this._getData(this.agentId, this.config);
+    const type = data?.retention.type;
+    this._setRetentionValue(value, type as "days" | "copies");
+  }
+
+  private _retentionTypeChanged(ev: CustomEvent) {
+    const type = ev.detail.value as "days" | "copies";
+    const data = this._getData(this.agentId, this.config);
+    const value = data?.retention.value || 3;
+    this._setRetentionValue(value, type);
+  }
+
+  private _setRetentionValue(value: number, type: "days" | "copies") {
+    const retention: BackupAgentConfig["retention"] = {
+      days: value,
+      copies: null,
+    };
+    if (type === "copies") {
+      retention.copies = value;
+      retention.days = null;
+    }
+    this._updateAgentConfig({
+      retention,
+    });
+  }
+
+  private async _updateAgentEncryption(value: boolean) {
+    this._updateAgentConfig({
+      protected: value,
+    });
   }
 
   private _turnOnEncryption() {
@@ -363,6 +495,10 @@ class HaConfigBackupDetails extends LitElement {
     }
     ha-spinner {
       margin: 24px auto;
+    }
+    ha-backup-config-retention {
+      display: block;
+      padding: 16px;
     }
   `;
 }
