@@ -61,6 +61,8 @@ class HassioAddonConfig extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _configHasChanged = false;
 
   @state() private _valid = true;
@@ -176,7 +178,7 @@ class HassioAddonConfig extends LitElement {
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <mwc-list-item .disabled=${!this._canShowSchema}>
+              <mwc-list-item .disabled=${!this._canShowSchema || this.disabled}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
                       "addon.configuration.options.edit_in_ui"
@@ -185,7 +187,10 @@ class HassioAddonConfig extends LitElement {
                       "addon.configuration.options.edit_in_yaml"
                     )}
               </mwc-list-item>
-              <mwc-list-item class="warning">
+              <mwc-list-item
+                class=${!this.disabled ? "warning" : ""}
+                .disabled=${this.disabled}
+              >
                 ${this.supervisor.localize("common.reset_defaults")}
               </mwc-list-item>
             </ha-button-menu>
@@ -195,6 +200,7 @@ class HassioAddonConfig extends LitElement {
         <div class="card-content">
           ${showForm
             ? html`<ha-form
+                .disabled=${this.disabled}
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .computeLabel=${this.computeLabel}
@@ -208,7 +214,7 @@ class HassioAddonConfig extends LitElement {
                       )
                 )}
               ></ha-form>`
-            : html` <ha-yaml-editor
+            : html`<ha-yaml-editor
                 @value-changed=${this._configChanged}
                 .yamlSchema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
@@ -244,7 +250,9 @@ class HassioAddonConfig extends LitElement {
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged || !this._valid}
+            .disabled=${this.disabled ||
+            !this._configHasChanged ||
+            !this._valid}
           >
             ${this.supervisor.localize("common.save")}
           </ha-progress-button>
@@ -346,6 +354,10 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
+    if (this.disabled || !this._configHasChanged || !this._valid) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     const options: Record<string, unknown> = this._yamlMode
       ? this._editor?.value

@@ -28,6 +28,8 @@ class HassioAddonNetwork extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _showOptional = false;
 
   @state() private _configHasChanged = false;
@@ -65,9 +67,10 @@ class HassioAddonNetwork extends LitElement {
           </p>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+            : nothing}
 
           <ha-form
+            .disabled=${this.disabled}
             .data=${this._config}
             @value-changed=${this._configChanged}
             .computeLabel=${this._computeLabel}
@@ -92,14 +95,18 @@ class HassioAddonNetwork extends LitElement {
               >
               </ha-switch>
             </ha-formfield>`
-          : ""}
+          : nothing}
         <div class="card-actions">
-          <ha-progress-button class="warning" @click=${this._resetTapped}>
+          <ha-progress-button
+            class="warning"
+            .disabled=${this.disabled}
+            @click=${this._resetTapped}
+          >
             ${this.supervisor.localize("common.reset_defaults")}
           </ha-progress-button>
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged}
+            .disabled=${!this._configHasChanged || this.disabled}
           >
             ${this.supervisor.localize("common.save")}
           </ha-progress-button>
@@ -155,6 +162,10 @@ class HassioAddonNetwork extends LitElement {
   }
 
   private async _resetTapped(ev: CustomEvent): Promise<void> {
+    if (this.disabled) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     const data: HassioAddonSetOptionParams = {
       network: null,
@@ -186,6 +197,10 @@ class HassioAddonNetwork extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
+    if (!this._configHasChanged || this.disabled) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
 
     this._error = undefined;

@@ -4,10 +4,7 @@ import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface SystemManagedDialogParams {
   addon: HassioAddonDetails;
-  backPath?: string;
-  closeable?: boolean;
   supervisor: Supervisor;
-  dismiss?: () => void;
 }
 
 export const showSystemManagedDialog = (

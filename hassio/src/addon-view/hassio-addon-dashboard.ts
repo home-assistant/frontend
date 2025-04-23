@@ -8,7 +8,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { storage } from "../../../src/common/decorators/storage";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
@@ -32,7 +31,6 @@ import "../../../src/layouts/hass-tabs-subpage";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import type { HomeAssistant, Route } from "../../../src/types";
-import { showSystemManagedDialog } from "../dialogs/system-managed/show-dialog-system-managed";
 import { hassioStyle } from "../resources/hassio-style";
 import "./config/hassio-addon-audio";
 import "./config/hassio-addon-config";
@@ -54,13 +52,8 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @storage({
-    storage: "sessionStorage",
-    key: `hassio-addon-system-managed-info-dismissed`,
-    state: true,
-    subscribe: false,
-  })
-  private _dismissedAddons: string[] = [];
+  @state()
+  private _controlEnabled = false;
 
   @state() private _error?: string;
 
@@ -144,9 +137,15 @@ class HassioAddonDashboard extends LitElement {
           .hass=${this.hass}
           .supervisor=${this.supervisor}
           .addon=${this.addon}
+          .controlEnabled=${this._controlEnabled}
+          @system-managed-take-control=${this._enableControl}
         ></hassio-addon-router>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _enableControl() {
+    this._controlEnabled = true;
   }
 
   static get styles(): CSSResultGroup {
@@ -280,28 +279,7 @@ class HassioAddonDashboard extends LitElement {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
         fireEvent(this, "supervisor-update", { addon: addonsInfo });
       }
-      this.addon = (await fetchAddonInfo(
-        this.hass,
-        this.supervisor,
-        addon
-      )) as HassioAddonDetails;
-
-      if (
-        this.addon.system_managed &&
-        !this._dismissedAddons.includes(this.addon.slug)
-      ) {
-        showSystemManagedDialog(this, {
-          addon: this.addon,
-          backPath: this._backPath,
-          supervisor: this.supervisor,
-          dismiss: () => {
-            this._dismissedAddons = [
-              ...this._dismissedAddons,
-              this.addon!.slug,
-            ];
-          },
-        });
-      }
+      this.addon = await fetchAddonInfo(this.hass, this.supervisor, addon);
     } catch (err: any) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;

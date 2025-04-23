@@ -3,8 +3,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { atLeastVersion } from "../../../../src/common/config/version";
-import { navigate } from "../../../../src/common/navigate";
-import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-dialog-header";
 import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-icon-next";
@@ -33,12 +31,6 @@ class HassioSystemManagedDialog extends LitElement {
 
   @state() private _addon?: HassioAddonDetails;
 
-  @state() private _backPath?: string;
-
-  @state() private _dismiss?: () => void;
-
-  @state() private _closeable = false;
-
   @state() private _open = false;
 
   @state() private _configEntry?: ConfigEntry;
@@ -49,20 +41,14 @@ class HassioSystemManagedDialog extends LitElement {
     dialogParams: SystemManagedDialogParams
   ): Promise<void> {
     this._addon = dialogParams.addon;
-    this._backPath = dialogParams.backPath;
     this._supervisor = dialogParams.supervisor;
-    this._dismiss = dialogParams.dismiss;
-    this._closeable = dialogParams.closeable ?? false;
     this._open = true;
     this._loadConfigEntry();
   }
 
   private _dialogClosed() {
     this._addon = undefined;
-    this._backPath = undefined;
     this._supervisor = undefined;
-    this._dismiss = undefined;
-    this._closeable = false;
     this._configEntry = undefined;
     this._open = false;
   }
@@ -83,21 +69,13 @@ class HassioSystemManagedDialog extends LitElement {
         : undefined;
 
     return html`
-      <ha-md-dialog
-        open
-        .disableCancelAction=${!this._closeable}
-        @closed=${this._dialogClosed}
-      >
+      <ha-md-dialog open @closed=${this._dialogClosed}>
         <ha-dialog-header slot="headline">
-          ${this._closeable
-            ? html`
-                <ha-icon-button
-                  slot="navigationIcon"
-                  .path=${mdiClose}
-                  @click=${this.closeDialog}
-                ></ha-icon-button>
-              `
-            : nothing}
+          <ha-icon-button
+            slot="navigationIcon"
+            .path=${mdiClose}
+            @click=${this.closeDialog}
+          ></ha-icon-button>
           <span slot="title">${this._addon?.name}</span>
         </ha-dialog-header>
         <div slot="content">
@@ -111,6 +89,7 @@ class HassioSystemManagedDialog extends LitElement {
               ? html`<img src=${addonImage} alt=${this._addon.name} />`
               : html`<ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>`}
           </div>
+          ${this._supervisor.localize("addon.system_managed.title")}.<br />
           ${this._supervisor.localize("addon.system_managed.description")}
           ${this._configEntry
             ? html`
@@ -145,22 +124,6 @@ class HassioSystemManagedDialog extends LitElement {
               `
             : nothing}
         </div>
-        ${this._dismiss || this._backPath
-          ? html` <div slot="actions" class="actions">
-              ${this._backPath
-                ? html`<ha-button @click=${this._navigateBack}>
-                    ${this._supervisor.localize("common.back")}
-                  </ha-button>`
-                : nothing}
-              ${this._dismiss
-                ? html`<ha-button @click=${this._showAddon}>
-                    ${this._supervisor.localize(
-                      "addon.system_managed.show_addon"
-                    )}
-                  </ha-button>`
-                : nothing}
-            </div>`
-          : nothing}
       </ha-md-dialog>
     `;
   }
@@ -186,19 +149,6 @@ class HassioSystemManagedDialog extends LitElement {
         console.error(err);
       }
     }
-  }
-
-  private _navigateBack() {
-    if (!this._backPath) {
-      return;
-    }
-    navigate(this._backPath);
-    this._dialogClosed();
-  }
-
-  private _showAddon() {
-    this.closeDialog();
-    this._dismiss?.();
   }
 
   static get styles(): CSSResultGroup {
