@@ -32,10 +32,10 @@ export class HaFuse<T> extends Fuse<T> {
       ...options,
     };
     super(list, mergedOptions, index);
-    this._minMatchCharLength = mergedOptions.minMatchCharLength!;
+    this._minMatchCharLength = mergedOptions.minMatchCharLength;
   }
 
-  private _minMatchCharLength = DEFAULT_OPTIONS.minMatchCharLength!;
+  private _minMatchCharLength: IFuseOptions<any>["minMatchCharLength"];
 
   /**
    * Performs a multi-term search across the indexed data.
@@ -53,11 +53,15 @@ export class HaFuse<T> extends Fuse<T> {
     search: string,
     options?: FuseSearchOptions
   ): FuseResult<T>[] | null {
-    const terms = (search.split(" ") ?? []).filter(
-      (term) => term.length >= this._minMatchCharLength
-    );
+    const terms = search.split(" ");
 
-    if (terms.length === 0) {
+    const minMatchCharLength = this._minMatchCharLength ?? 0;
+
+    const filteredTerms = minMatchCharLength
+      ? terms.filter((term) => term.length >= minMatchCharLength)
+      : terms;
+
+    if (filteredTerms.length === 0) {
       // If no valid terms are found, return null to indicate no search was performed
       return null;
     }
@@ -66,7 +70,7 @@ export class HaFuse<T> extends Fuse<T> {
     const keys = index.keys as unknown as FuseKey[]; // Fuse type for key is not correct
 
     const expression: Expression = {
-      $and: terms.map((term) => ({
+      $and: filteredTerms.map((term) => ({
         $or: keys.map((key) => ({ $path: key.path, $val: term })),
       })),
     };

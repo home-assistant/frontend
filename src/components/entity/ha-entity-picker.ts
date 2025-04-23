@@ -497,6 +497,8 @@ export class HaEntityPicker extends LitElement {
   );
 
   private _filterChanged(ev: CustomEvent): void {
+    if (!this._opened) return;
+
     const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.trim().toLowerCase() as string;
 

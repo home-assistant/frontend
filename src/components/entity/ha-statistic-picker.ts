@@ -365,7 +365,10 @@ export class HaStatisticPicker extends LitElement {
       this._getStatisticIds();
     }
 
-    if (!this._initialItems || (changedProps.has("_opened") && this._opened)) {
+    if (
+      this.statisticIds &&
+      (!this._initialItems || (changedProps.has("_opened") && this._opened))
+    ) {
       this._items = this._getItems(
         this._opened,
         this.hass,
@@ -449,6 +452,8 @@ export class HaStatisticPicker extends LitElement {
   );
 
   private _filterChanged(ev: CustomEvent): void {
+    if (!this._opened) return;
+
     const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.trim().toLowerCase() as string;
 
@@ -456,6 +461,7 @@ export class HaStatisticPicker extends LitElement {
     const fuse = new HaFuse(this._items, {}, index);
 
     const results = fuse.multiTermsSearch(filterString);
+
     if (results) {
       target.filteredItems = results.map((result) => result.item);
     } else {
