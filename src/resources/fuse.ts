@@ -32,10 +32,11 @@ export class HaFuse<T> extends Fuse<T> {
       ...options,
     };
     super(list, mergedOptions, index);
-    this._minMatchCharLength = mergedOptions.minMatchCharLength;
+    this._options = mergedOptions;
   }
 
-  private _minMatchCharLength: IFuseOptions<any>["minMatchCharLength"];
+  // Fuse.js does not export the _options property, so we need to declare it here
+  public _options: IFuseOptions<T>;
 
   /**
    * Performs a multi-term search across the indexed data.
@@ -55,7 +56,7 @@ export class HaFuse<T> extends Fuse<T> {
   ): FuseResult<T>[] | null {
     const terms = search.split(" ");
 
-    const minMatchCharLength = this._minMatchCharLength ?? 0;
+    const { minMatchCharLength } = this._options;
 
     const filteredTerms = minMatchCharLength
       ? terms.filter((term) => term.length >= minMatchCharLength)
