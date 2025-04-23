@@ -14,7 +14,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
 const MIN_VALUE = 1;
-const MAX_VALUE = 50;
+const MAX_VALUE = 9999; // because of input width
 
 export enum RetentionPreset {
   SHARED = "shared",
