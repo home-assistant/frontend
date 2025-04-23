@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import type { ConfigEntry } from "../../data/config_entries";
 import { domainToName } from "../../data/integration";
 import {
@@ -197,13 +197,7 @@ export const showSubConfigFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}
-        <p>
-          ${hass.localize(
-            "ui.panel.config.integrations.config_flow.created_config",
-            { name: step.title }
-          )}
-        </p>
+          : nothing}
       `;
     },
 

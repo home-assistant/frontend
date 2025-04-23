@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -191,13 +191,7 @@ export const showConfigFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}
-        <p>
-          ${hass.localize(
-            "ui.panel.config.integrations.config_flow.created_config",
-            { name: step.title }
-          )}
-        </p>
+          : nothing}
       `;
     },
 
