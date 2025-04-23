@@ -6792,6 +6792,12 @@
               "badges_position_options": {
                 "top": "Top",
                 "bottom": "Bottom"
+              },
+              "badges_wrap": "Badges behaviour",
+              "badges_wrap_options": {
+                "wrap": "Wrap",
+                "scroll": "Scroll",
+                "scroll_description": "Touchscreen-friendly"
               }
             }
           },
