@@ -12,6 +12,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import type { ZeroconfDiscoveryData } from "../../../../../data/zeroconf";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { storage } from "../../../../../common/decorators/storage";
 
 import { subscribeZeroconfDiscovery } from "../../../../../data/zeroconf";
 
@@ -26,6 +27,20 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _data: ZeroconfDiscoveryData[] = [];
+
+  @storage({
+    key: "zeroconf-discovery-table-grouping",
+    state: false,
+    subscribe: false,
+  })
+  private _activeGrouping?: string = "type";
+
+  @storage({
+    key: "zeroconf-discovery-table-collapsed",
+    state: false,
+    subscribe: false,
+  })
+  private _activeCollapsed: string[] = [];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -47,26 +62,25 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
           hideable: false,
           moveable: false,
           direction: "asc",
+          template: (data) =>
+            html`${data.name.slice(0, -data.type.length - 1)}`,
         },
         type: {
           title: localize("ui.panel.config.zeroconf.type"),
           filterable: true,
           sortable: true,
-        },
-        port: {
-          title: localize("ui.panel.config.zeroconf.port"),
-          filterable: true,
-          sortable: true,
+          groupable: true,
         },
         ip_addresses: {
           title: localize("ui.panel.config.zeroconf.ip_addresses"),
           filterable: true,
           sortable: false,
+          template: (data) => html`${data.ip_addresses.join(", ")}`,
         },
-        properties: {
-          title: localize("ui.panel.config.zeroconf.properties"),
+        port: {
+          title: localize("ui.panel.config.zeroconf.port"),
           filterable: true,
-          sortable: false,
+          sortable: true,
         },
       };
 
@@ -88,9 +102,21 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
         .data=${this._dataWithIds(this._data)}
       ></hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _handleGroupingChanged(ev: CustomEvent) {
+    this._activeGrouping = ev.detail.value;
+  }
+
+  private _handleCollapseChanged(ev: CustomEvent) {
+    this._activeCollapsed = ev.detail.value;
   }
 
   static styles: CSSResultGroup = haStyle;
