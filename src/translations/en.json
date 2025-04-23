@@ -8840,7 +8840,7 @@
         "get_logs": "Failed to get add-on logs, {error}"
       },
       "system_managed": {
-        "badge": "System managed",
+        "badge": "System-managed",
         "title": "This add-on is managed by Home Assistant",
         "description": "Manually modifying this configuration may cause the add-on or integration to stop working properly.",
         "managed_by": "Managed by",
