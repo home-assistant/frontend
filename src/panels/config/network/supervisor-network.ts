@@ -812,6 +812,10 @@ export class HassioNetwork extends LitElement {
         .address-row ha-textfield {
           flex: 1;
         }
+        .address-row #prefix {
+          flex: none;
+          width: 95px;
+        }
         .address-row ha-icon-button {
           --mdc-icon-button-size: 36px;
           margin-top: 16px;
