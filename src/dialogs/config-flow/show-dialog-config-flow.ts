@@ -81,7 +81,8 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldLabel(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`
+          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`,
+          step.description_placeholders
         );
       }
 
@@ -89,7 +90,8 @@ export const showConfigFlowDialog = (
 
       return (
         hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}`
+          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}`,
+          step.description_placeholders
         ) || field.name
       );
     },
@@ -97,7 +99,8 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldHelper(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${field.name}.description`
+          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${field.name}.description`,
+          step.description_placeholders
         );
       }
 
