@@ -560,6 +560,13 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         load: () =>
           import("./integrations/integration-panels/dhcp/dhcp-config-panel"),
       },
+      zeroconf: {
+        tag: "zeroconf-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/zeroconf/zeroconf-config-panel"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>

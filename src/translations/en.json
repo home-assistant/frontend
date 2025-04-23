@@ -5529,6 +5529,13 @@
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials"
         },
+        "zeroconf": {
+          "name": "Name",
+          "type": "Type",
+          "port": "Port",
+          "ip_addresses": "IP Addresses",
+          "properties": "Properties"
+        },
         "zha": {
           "common": {
             "clusters": "Clusters",
