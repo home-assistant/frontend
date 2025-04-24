@@ -13,30 +13,16 @@ const mainStyles = css`
   html {
     /* typography */
     --ha-font-family-body: Roboto, Noto, sans-serif;
-    --ha-font-family-heading: var(--ha-font-family-body);
     --ha-font-family-code: monospace;
     --ha-font-family-longform: ui-sans-serif, system-ui, sans-serif;
 
     font-size: 14px;
     --ha-font-size-scale: 1;
-    --ha-font-size-xs: 10px;
-    --ha-font-size-s: 12px;
-    --ha-font-size-m: 14px;
-    --ha-font-size-l: 16px;
-    --ha-font-size-xl: 20px;
-    --ha-font-size-2xl: 24px;
-    --ha-font-size-3xl: 28px;
-    --ha-font-size-4xl: 32px;
-    --ha-font-size-5xl: 40px;
 
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;
     --ha-font-weight-semibold: 500;
     --ha-font-weight-bold: 600;
-
-    --ha-font-weight-body: var(--ha-font-weight-normal);
-    --ha-font-weight-heading: var(--ha-font-weight-bold);
-    --ha-font-weight-action: var(--ha-font-weight-semibold);
 
     --ha-line-height-condensed: 1.2;
     --ha-line-height-normal: 1.6;
@@ -46,19 +32,6 @@ const mainStyles = css`
     --ha-title-h2-white-space: nowrap;
     --ha-title-h2-overflow: hidden;
     --ha-title-h2-text-overflow: ellipsis;
-
-    /* Vaadin typography */
-    --material-h6-font-size: var(--ha-font-size-m);
-    --material-small-font-size: var(--ha-font-size-xs);
-    --material-caption-font-size: var(--ha-font-size-2xs);
-    --material-button-font-size: var(--ha-font-size-xs);
-
-    /* component specific */
-    /* ha-tooltip */
-    --ha-tooltip-font-family: var(--ha-font-family-body);
-    --ha-tooltip-font-size: var(--ha-font-size-s);
-    --ha-tooltip-font-weight: var(--ha-font-weight-normal);
-    --ha-tooltip-line-height: var(--ha-line-height-condensed);
 
     height: 100vh;
 
@@ -95,10 +68,6 @@ const mainStyles = css`
     --header-height: 56px;
 
     /* for label-badge */
-    --label-badge-red: var(--error-color);
-    --label-badge-blue: var(--info-color);
-    --label-badge-green: var(--success-color);
-    --label-badge-yellow: var(--warning-color);
     --label-badge-grey: #9e9e9e;
 
     /* states icon */
@@ -162,80 +131,8 @@ const mainStyles = css`
     --black-color: #000000;
     --white-color: #ffffff;
 
-    /* state color */
-    --state-active-color: var(--amber-color);
-    --state-inactive-color: var(--grey-color);
-    --state-unavailable-color: var(--disabled-color);
-
-    /* state domain colors */
-    --state-alarm_control_panel-armed_away-color: var(--green-color);
-    --state-alarm_control_panel-armed_custom_bypass-color: var(--green-color);
-    --state-alarm_control_panel-armed_home-color: var(--green-color);
-    --state-alarm_control_panel-armed_night-color: var(--green-color);
-    --state-alarm_control_panel-armed_vacation-color: var(--green-color);
-    --state-alarm_control_panel-arming-color: var(--orange-color);
-    --state-alarm_control_panel-disarming-color: var(--orange-color);
-    --state-alarm_control_panel-pending-color: var(--orange-color);
-    --state-alarm_control_panel-triggered-color: var(--red-color);
-    --state-alert-off-color: var(--orange-color);
-    --state-alert-on-color: var(--red-color);
-    --state-binary_sensor-active-color: var(--amber-color);
-    --state-binary_sensor-battery-on-color: var(--red-color);
-    --state-binary_sensor-carbon_monoxide-on-color: var(--red-color);
-    --state-binary_sensor-gas-on-color: var(--red-color);
-    --state-binary_sensor-heat-on-color: var(--red-color);
-    --state-binary_sensor-lock-on-color: var(--red-color);
-    --state-binary_sensor-moisture-on-color: var(--red-color);
-    --state-binary_sensor-problem-on-color: var(--red-color);
-    --state-binary_sensor-safety-on-color: var(--red-color);
-    --state-binary_sensor-smoke-on-color: var(--red-color);
-    --state-binary_sensor-sound-on-color: var(--red-color);
-    --state-binary_sensor-tamper-on-color: var(--red-color);
-    --state-climate-auto-color: var(--green-color);
-    --state-climate-cool-color: var(--blue-color);
-    --state-climate-dry-color: var(--orange-color);
-    --state-climate-fan_only-color: var(--cyan-color);
-    --state-climate-heat-color: var(--deep-orange-color);
-    --state-climate-heat-cool-color: var(--amber-color);
-    --state-cover-active-color: var(--purple-color);
-    --state-device_tracker-active-color: var(--blue-color);
-    --state-device_tracker-home-color: var(--green-color);
-    --state-fan-active-color: var(--cyan-color);
-    --state-humidifier-on-color: var(--blue-color);
-    --state-lawn_mower-error-color: var(--red-color);
-    --state-lawn_mower-mowing-color: var(--teal-color);
-    --state-light-active-color: var(--amber-color);
-    --state-lock-jammed-color: var(--red-color);
-    --state-lock-locked-color: var(--green-color);
-    --state-lock-locking-color: var(--orange-color);
-    --state-lock-unlocked-color: var(--red-color);
-    --state-lock-unlocking-color: var(--orange-color);
-    --state-lock-open-color: var(--red-color);
-    --state-lock-opening-color: var(--orange-color);
-    --state-media_player-active-color: var(--light-blue-color);
-    --state-person-active-color: var(--blue-color);
-    --state-person-home-color: var(--green-color);
-    --state-plant-active-color: var(--red-color);
-    --state-siren-active-color: var(--red-color);
-    --state-sun-above_horizon-color: var(--amber-color);
-    --state-sun-below_horizon-color: var(--indigo-color);
-    --state-switch-active-color: var(--amber-color);
-    --state-update-active-color: var(--orange-color);
-    --state-vacuum-active-color: var(--teal-color);
-    --state-valve-active-color: var(--blue-color);
-    --state-sensor-battery-high-color: var(--green-color);
-    --state-sensor-battery-low-color: var(--red-color);
-    --state-sensor-battery-medium-color: var(--orange-color);
-    --state-water_heater-eco-color: var(--green-color);
-    --state-water_heater-electric-color: var(--orange-color);
-    --state-water_heater-gas-color: var(--orange-color);
-    --state-water_heater-heat_pump-color: var(--orange-color);
-    --state-water_heater-high_demand-color: var(--deep-orange-color);
-    --state-water_heater-performance-color: var(--deep-orange-color);
-
     /* history colors */
     --history-unavailable-color: transparent;
-    --history-unknown-color: var(--dark-grey-color);
 
     /* input components */
     --input-idle-line-color: rgba(0, 0, 0, 0.42);
