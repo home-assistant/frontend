@@ -9,7 +9,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
-import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";

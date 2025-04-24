@@ -4,7 +4,6 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_INPUT_ROW } from "../../../common/const";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -17,6 +16,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("hui-generic-entity-row")
 export class HuiGenericEntityRow extends LitElement {
@@ -158,7 +158,12 @@ export class HuiGenericEntityRow extends LitElement {
                 <div class="state"><slot></slot></div>
               </div>
             `
-          : html`<slot @action=${stopPropagation}></slot>`}
+          : html`<slot
+              @touchcancel=${stopPropagation}
+              @touchend=${stopPropagation}
+              @keydown=${stopPropagation}
+              @click=${stopPropagation}
+            ></slot>`}
       </div>
     `;
   }

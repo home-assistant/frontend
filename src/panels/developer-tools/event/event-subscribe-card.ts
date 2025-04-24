@@ -175,7 +175,7 @@ class EventSubscribeCard extends LitElement {
       margin-bottom: 0;
     }
     pre {
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
     }
     ha-card {
       margin-bottom: 5px;

@@ -7,6 +7,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-list-item";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
 import {
   bindDeviceToGroup,
@@ -18,7 +19,6 @@ import type { HomeAssistant } from "../../../../../types";
 import type { ItemSelectedEvent } from "./types";
 import "./zha-clusters-data-table";
 import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
-import "@material/mwc-list/mwc-list-item";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
@@ -70,8 +70,8 @@ export class ZHAGroupBindingControl extends LitElement {
             >
               ${this.groups.map(
                 (group, idx) =>
-                  html`<mwc-list-item .value=${String(idx)}
-                    >${group.name}</mwc-list-item
+                  html`<ha-list-item .value=${String(idx)}
+                    >${group.name}</ha-list-item
                   > `
               )}
             </ha-select>

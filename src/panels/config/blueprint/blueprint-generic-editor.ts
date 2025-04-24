@@ -271,7 +271,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           margin-bottom: 16px;
         }
         ha-settings-row {
-          --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
         }

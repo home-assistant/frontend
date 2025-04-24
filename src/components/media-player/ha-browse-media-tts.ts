@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -48,7 +47,7 @@ class BrowseMediaTTS extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _message!: string;
+  private _message?: string;
 
   protected render() {
     return html`<ha-card>
