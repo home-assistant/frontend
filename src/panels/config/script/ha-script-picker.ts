@@ -1286,9 +1286,11 @@ ${rejected
           text-decoration: none;
         }
         .empty {
-          --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty h1 {
+          font-size: var(--ha-font-size-3xl);
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

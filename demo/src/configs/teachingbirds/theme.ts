@@ -1,8 +1,6 @@
 export const demoThemeTeachingbirds = () => ({
-  "paper-card-header-color": "var(--paper-item-icon-color)",
   "paper-listbox-background-color": "#202020",
   "paper-grey-50": "var(--primary-text-color)",
-  "paper-item-icon-color": "#d3d3d3",
   "divider-color": "rgba(255, 255, 255, 0.12)",
   "primary-color": "#389638",
   "light-primary-color": "#6f956f",
@@ -13,7 +11,7 @@ export const demoThemeTeachingbirds = () => ({
   "card-background-color": "#4e4e4e",
   "label-badge-text-color": "var(--text-primary-color)",
   "primary-background-color": "#303030",
-  "sidebar-icon-color": "var(--paper-item-icon-color)",
+  "sidebar-icon-color": "#d3d3d3",
   "secondary-background-color": "#2b2b2b",
   "paper-item-icon-active-color": "#d8bf50",
   "switch-checked-color": "var(--primary-color)",
