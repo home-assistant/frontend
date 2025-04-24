@@ -1,6 +1,6 @@
 import { mdiChartLine } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import Fuse, { type IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
@@ -16,15 +16,16 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityContext } from "../../common/entity/get_entity_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { domainToName } from "../../data/integration";
 import type { StatisticsMetaData } from "../../data/recorder";
 import { getStatisticIds, getStatisticLabel } from "../../data/recorder";
+import { HaFuse } from "../../resources/fuse";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box-item";
 import "../ha-svg-icon";
 import "./state-badge";
-import { domainToName } from "../../data/integration";
 
 type StatisticItemType = "entity" | "external" | "no_state";
 
@@ -364,7 +365,10 @@ export class HaStatisticPicker extends LitElement {
       this._getStatisticIds();
     }
 
-    if (!this._initialItems || (changedProps.has("_opened") && this._opened)) {
+    if (
+      this.statisticIds &&
+      (!this._initialItems || (changedProps.has("_opened") && this._opened))
+    ) {
       this._items = this._getItems(
         this._opened,
         this.hass,
@@ -433,45 +437,32 @@ export class HaStatisticPicker extends LitElement {
     this._opened = ev.detail.value;
   }
 
-  private _fuseKeys = [
-    "label",
-    "entity_name",
-    "device_name",
-    "area_name",
-    "friendly_name", // for backwards compatibility
-    "id", // for technical search
-  ];
-
   private _fuseIndex = memoizeOne((states: StatisticItem[]) =>
-    Fuse.createIndex(this._fuseKeys, states)
+    Fuse.createIndex(
+      [
+        "label",
+        "entity_name",
+        "device_name",
+        "area_name",
+        "friendly_name", // for backwards compatibility
+        "id", // for technical search
+      ],
+      states
+    )
   );
 
   private _filterChanged(ev: CustomEvent): void {
+    if (!this._opened) return;
+
     const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.trim().toLowerCase() as string;
 
-    const minLength = 2;
+    const index = this._fuseIndex(this._items);
+    const fuse = new HaFuse(this._items, {}, index);
 
-    const searchTerms = (filterString.split(" ") ?? []).filter(
-      (term) => term.length >= minLength
-    );
+    const results = fuse.multiTermsSearch(filterString);
 
-    if (searchTerms.length > 0) {
-      const index = this._fuseIndex(this._items);
-
-      const options: IFuseOptions<StatisticItem> = {
-        isCaseSensitive: false,
-        threshold: 0.3,
-        ignoreDiacritics: true,
-        minMatchCharLength: minLength,
-      };
-
-      const fuse = new Fuse(this._items, options, index);
-      const results = fuse.search({
-        $and: searchTerms.map((term) => ({
-          $or: this._fuseKeys.map((key) => ({ [key]: term })),
-        })),
-      });
+    if (results) {
       target.filteredItems = results.map((result) => result.item);
     } else {
       target.filteredItems = this._items;
