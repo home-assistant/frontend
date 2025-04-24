@@ -71,13 +71,13 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         },
         type: {
           title: localize("ui.panel.config.zeroconf.type"),
-          showNarrow: true,
           filterable: true,
           sortable: true,
           groupable: true,
         },
         ip_addresses: {
           title: localize("ui.panel.config.zeroconf.ip_addresses"),
+          showNarrow: true,
           filterable: true,
           sortable: false,
           template: (data) => html`${data.ip_addresses.join(", ")}`,
