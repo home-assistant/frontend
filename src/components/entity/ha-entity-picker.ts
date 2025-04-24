@@ -1,6 +1,5 @@
 import { mdiMagnify, mdiPlus } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -21,6 +20,7 @@ import { domainToName } from "../../data/integration";
 import type { HelperDomain } from "../../panels/config/helpers/const";
 import { isHelperDomain } from "../../panels/config/helpers/const";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
+import { HaFuse } from "../../resources/fuse";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
@@ -482,45 +482,31 @@ export class HaEntityPicker extends LitElement {
     }
   }
 
-  private _fuseKeys = [
-    "entity_name",
-    "device_name",
-    "area_name",
-    "translated_domain",
-    "friendly_name", // for backwards compatibility
-    "entity_id", // for technical search
-  ];
-
   private _fuseIndex = memoizeOne((states: EntityPickerItem[]) =>
-    Fuse.createIndex(this._fuseKeys, states)
+    Fuse.createIndex(
+      [
+        "entity_name",
+        "device_name",
+        "area_name",
+        "translated_domain",
+        "friendly_name", // for backwards compatibility
+        "entity_id", // for technical search
+      ],
+      states
+    )
   );
 
   private _filterChanged(ev: CustomEvent): void {
+    if (!this._opened) return;
+
     const target = ev.target as HaComboBox;
     const filterString = ev.detail.value.trim().toLowerCase() as string;
 
-    const minLength = 2;
+    const index = this._fuseIndex(this._items);
+    const fuse = new HaFuse(this._items, {}, index);
 
-    const searchTerms = (filterString.split(" ") ?? []).filter(
-      (term) => term.length >= minLength
-    );
-
-    if (searchTerms.length > 0) {
-      const index = this._fuseIndex(this._items);
-
-      const options: IFuseOptions<EntityPickerItem> = {
-        isCaseSensitive: false,
-        threshold: 0.3,
-        ignoreDiacritics: true,
-        minMatchCharLength: minLength,
-      };
-
-      const fuse = new Fuse(this._items, options, index);
-      const results = fuse.search({
-        $and: searchTerms.map((term) => ({
-          $or: this._fuseKeys.map((key) => ({ [key]: term })),
-        })),
-      });
+    const results = fuse.multiTermsSearch(filterString);
+    if (results) {
       target.filteredItems = results.map((result) => result.item);
     } else {
       target.filteredItems = this._items;
