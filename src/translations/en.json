@@ -6342,6 +6342,11 @@
               "failed_to_set_hostname": "Setting hostname failed"
             }
           },
+          "discovery": {
+            "zeroconf": "Zeroconf",
+            "zeroconf_info": "The Zeroconf browser displays devices discovered by Home Assistant using mDNS.",
+            "zeroconf_browser": "View Zeroconf Browser"
+          },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
           "ip_information": "IP Information",

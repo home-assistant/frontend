@@ -5,6 +5,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./ha-config-network";
+import "./ha-config-network-discovery";
 import "./ha-config-url-form";
 import "./supervisor-hostname";
 import "./supervisor-network";
@@ -35,6 +36,11 @@ class HaConfigSectionNetwork extends LitElement {
             : ""}
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
+          ${isComponentLoaded(this.hass, "zeroconf")
+            ? html`<ha-config-network-discovery
+                .hass=${this.hass}
+              ></ha-config-network-discovery>`
+            : ""}
         </div>
       </hass-subpage>
     `;
