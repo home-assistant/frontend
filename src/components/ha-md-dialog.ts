@@ -1,4 +1,5 @@
-import { MdDialog } from "@material/web/dialog/dialog";
+import { Dialog } from "@material/web/dialog/internal/dialog";
+import { styles } from "@material/web/dialog/internal/dialog-styles";
 import {
   type DialogAnimation,
   DIALOG_DEFAULT_CLOSE_ANIMATION,
@@ -8,10 +9,10 @@ import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 // workaround to be able to overlay a dialog with another dialog
-MdDialog.addInitializer(async (instance) => {
+Dialog.addInitializer(async (instance) => {
   await instance.updateComplete;
 
-  const dialogInstance = instance as MdDialog;
+  const dialogInstance = instance as HaMdDialog;
 
   // @ts-expect-error dialog is private
   dialogInstance.dialog.prepend(dialogInstance.scrim);
@@ -49,7 +50,7 @@ let DIALOG_POLYFILL: Promise<typeof import("dialog-polyfill")>;
  *
  */
 @customElement("ha-md-dialog")
-export class HaMdDialog extends MdDialog {
+export class HaMdDialog extends Dialog {
   /**
    * When true the dialog will not close when the user presses the esc key or press out of the dialog.
    */
@@ -146,7 +147,7 @@ export class HaMdDialog extends MdDialog {
   }
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --md-dialog-container-color: var(--card-background-color);

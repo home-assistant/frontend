@@ -1,6 +1,5 @@
 import "@lit-labs/virtualizer";
 import "@material/mwc-button";
-import "@material/mwc-list";
 import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -15,6 +14,7 @@ import "../../../components/search-input";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle } from "../../../resources/styles";
@@ -85,7 +85,7 @@ class DialogExposeEntity extends LitElement {
             @value-changed=${this._filterChanged}
           ></search-input>
         </ha-dialog-header>
-        <mwc-list multi>
+        <ha-list multi>
           <lit-virtualizer
             scroller
             class="ha-scrollbar"
@@ -94,7 +94,7 @@ class DialogExposeEntity extends LitElement {
             .renderItem=${this._renderItem}
           >
           </lit-virtualizer>
-        </mwc-list>
+        </ha-list>
         <mwc-button
           slot="primaryAction"
           @click=${this._expose}
@@ -181,7 +181,7 @@ class DialogExposeEntity extends LitElement {
           --mdc-dialog-min-width: 500px;
           --mdc-dialog-max-width: 600px;
         }
-        mwc-list {
+        ha-list {
           position: relative;
         }
         lit-virtualizer {

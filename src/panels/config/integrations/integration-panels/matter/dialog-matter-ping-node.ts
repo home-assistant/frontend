@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
@@ -6,14 +5,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-spinner";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
-import type { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
 import { showToast } from "../../../../../util/toast";
+import type { MatterPingNodeDialogParams } from "./show-dialog-matter-ping-node";
 
 @customElement("dialog-matter-ping-node")
 class DialogMatterPingNode extends LitElement {
@@ -82,7 +82,7 @@ class DialogMatterPingNode extends LitElement {
                     "ui.panel.config.matter.ping_node.ping_complete"
                   )}
                 </h2>
-                <mwc-list>
+                <ha-list>
                   ${this._pingResultEntries.map(
                     ([ip, success]) =>
                       html`<ha-list-item
@@ -97,7 +97,7 @@ class DialogMatterPingNode extends LitElement {
                         ></ha-svg-icon>
                       </ha-list-item>`
                   )}
-                </mwc-list>
+                </ha-list>
                 <mwc-button slot="primaryAction" @click=${this.closeDialog}>
                   ${this.hass.localize("ui.common.close")}
                 </mwc-button>
@@ -194,7 +194,7 @@ class DialogMatterPingNode extends LitElement {
           padding: 8px;
         }
 
-        mwc-list {
+        ha-list {
           --mdc-list-side-padding: 0;
         }
 

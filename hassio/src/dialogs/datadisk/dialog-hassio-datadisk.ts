@@ -1,12 +1,12 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-spinner";
-import "../../../../src/components/ha-select";
 import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-list-item";
+import "../../../../src/components/ha-select";
+import "../../../../src/components/ha-spinner";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -95,8 +95,8 @@ class HassioDatadiskDialog extends LitElement {
                     >
                       ${this.devices.map(
                         (device) =>
-                          html`<mwc-list-item .value=${device}
-                            >${device}</mwc-list-item
+                          html`<ha-list-item .value=${device}
+                            >${device}</ha-list-item
                           >`
                       )}
                     </ha-select>

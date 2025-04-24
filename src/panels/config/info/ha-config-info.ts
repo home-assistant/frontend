@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
   mdiFileDocument,
@@ -15,18 +14,20 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-logo-svg";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
 import { fetchHassioInfo } from "../../../data/hassio/supervisor";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../../../components/ha-icon-next";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -173,7 +174,7 @@ class HaConfigInfo extends LitElement {
           </ha-card>
 
           <ha-card outlined class="pages">
-            <mwc-list>
+            <ha-list>
               <ha-list-item graphic="avatar" @click=${this._showShortcuts}>
                 <div
                   slot="graphic"
@@ -214,7 +215,7 @@ class HaConfigInfo extends LitElement {
                   </ha-clickable-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-list>
             ${customUiList.length
               ? html`
                   <div class="custom-ui">
@@ -353,7 +354,7 @@ class HaConfigInfo extends LitElement {
           padding: 4px 0;
         }
 
-        mwc-list {
+        ha-list {
           --mdc-list-side-padding: 16px;
           --mdc-list-vertical-padding: 0;
         }

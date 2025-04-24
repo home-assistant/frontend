@@ -18,11 +18,18 @@ import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import {
+  fetchConfig,
+  isStrategyDashboard,
+  saveConfig,
+  type LovelaceConfig,
+} from "../../../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import {
@@ -32,6 +39,7 @@ import {
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../components/hui-entity-editor";
+import type { Lovelace } from "../../types";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";
 import { getViewType } from "../../views/get-view-type";
@@ -41,19 +49,12 @@ import {
   moveViewToDashboard,
   replaceView,
 } from "../config-util";
+import { showSelectDashboardDialog } from "../select-dashboard/show-select-dashboard-dialog";
 import type { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
 import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
-import { showSelectDashboardDialog } from "../select-dashboard/show-select-dashboard-dialog";
-import {
-  fetchConfig,
-  isStrategyDashboard,
-  saveConfig,
-  type LovelaceConfig,
-} from "../../../../data/lovelace/config/types";
-import type { Lovelace } from "../../types";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 

@@ -282,7 +282,7 @@ class HuiEnergySankeyCard
 
       const entityAreaId =
         entity?.area_id ??
-        (entity.device_id && this.hass.devices[entity.device_id]?.area_id);
+        (entity?.device_id && this.hass.devices[entity.device_id]?.area_id);
       if (entityAreaId && entityAreaId in this.hass.areas) {
         const area = this.hass.areas[entityAreaId];
 

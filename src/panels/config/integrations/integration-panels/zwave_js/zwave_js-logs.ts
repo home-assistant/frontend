@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiDownload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultArray } from "lit";
@@ -6,6 +5,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import type { ZWaveJSLogConfig } from "../../../../../data/zwave_js";
 import {
@@ -85,12 +85,12 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                       .value=${this._logConfig.level}
                       @selected=${this._dropdownSelected}
                     >
-                      <mwc-list-item value="error">Error</mwc-list-item>
-                      <mwc-list-item value="warn">Warn</mwc-list-item>
-                      <mwc-list-item value="info">Info</mwc-list-item>
-                      <mwc-list-item value="verbose">Verbose</mwc-list-item>
-                      <mwc-list-item value="debug">Debug</mwc-list-item>
-                      <mwc-list-item value="silly">Silly</mwc-list-item>
+                      <ha-list-item value="error">Error</ha-list-item>
+                      <ha-list-item value="warn">Warn</ha-list-item>
+                      <ha-list-item value="info">Info</ha-list-item>
+                      <ha-list-item value="verbose">Verbose</ha-list-item>
+                      <ha-list-item value="debug">Debug</ha-list-item>
+                      <ha-list-item value="silly">Silly</ha-list-item>
                     </ha-select>
                   `
                 : ""}

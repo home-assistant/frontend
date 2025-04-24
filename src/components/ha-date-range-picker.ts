@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiCalendar } from "@mdi/js";
 import { isThisYear } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
@@ -10,6 +10,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { shiftDateRange } from "../common/datetime/calc_date";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import {
   formatShortDateTime,
@@ -23,9 +25,9 @@ import "./date-range-picker";
 import "./ha-icon-button";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
+import "./ha-list";
+import "./ha-list-item";
 import "./ha-textarea";
-import { calcDateRange } from "../common/datetime/calc_date_range";
-import type { DateRange } from "../common/datetime/calc_date_range";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
 
@@ -187,11 +189,11 @@ export class HaDateRangePicker extends LitElement {
         </div>
         ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @action=${this._setDateRange} activatable>
+              <ha-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges || this._ranges!).map(
-                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
+                  (name) => html`<ha-list-item>${name}</ha-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             </div>`
           : nothing}
         <div slot="footer" class="date-range-footer">
