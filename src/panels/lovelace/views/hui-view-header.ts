@@ -257,7 +257,12 @@ export class HuiViewHeader extends LitElement {
             : nothing}
           ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
-                <div class="badges ${badgesPosition} ${badgesWrap}">
+                <div
+                  class="badges ${badgesPosition} ${badgesWrap} ${this
+                    ._dragScrollController.scrolling
+                    ? "dragging"
+                    : ""}"
+                >
                   <hui-view-badges
                     .badges=${this.badges}
                     .hass=${this.hass}
@@ -475,6 +480,10 @@ export class HuiViewHeader extends LitElement {
 
     .add:focus {
       border-style: solid;
+    }
+
+    .dragging {
+      pointer-events: none;
     }
   `;
 }

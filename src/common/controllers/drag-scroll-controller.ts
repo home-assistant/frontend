@@ -16,7 +16,7 @@ export class DragScrollController implements ReactiveController {
 
   public scrolled = false;
 
-  public mouseReleasedAt?: number;
+  public scrolling = false;
 
   public scrollStartX = 0;
 
@@ -72,9 +72,8 @@ export class DragScrollController implements ReactiveController {
 
   private _mouseUp = () => {
     this.mouseIsDown = false;
-    if (this.scrolled) {
-      this.mouseReleasedAt = new Date().getTime();
-    }
+    this.scrolling = false;
+    this._host.requestUpdate();
     window.removeEventListener("mousemove", this._mouseMove);
   };
 
@@ -94,6 +93,8 @@ export class DragScrollController implements ReactiveController {
 
     if (!this.scrolled) {
       this.scrolled = Math.abs(scroll) > 1;
+      this.scrolling = this.scrolled;
+      this._host.requestUpdate();
     }
 
     scrollContainer.scrollLeft = this.scrollLeft - scroll;

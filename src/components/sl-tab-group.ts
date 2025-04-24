@@ -26,10 +26,7 @@ export class HaSlTabGroup extends TabGroup {
 
   // @ts-ignore
   protected override handleClick(event: MouseEvent) {
-    if (
-      this._dragScrollController.mouseReleasedAt &&
-      new Date().getTime() - this._dragScrollController.mouseReleasedAt < 100
-    ) {
+    if (this._dragScrollController.scrolled) {
       return;
     }
     // @ts-ignore
