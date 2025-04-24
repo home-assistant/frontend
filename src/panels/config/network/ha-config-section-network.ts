@@ -55,7 +55,8 @@ class HaConfigSectionNetwork extends LitElement {
     supervisor-hostname,
     supervisor-network,
     ha-config-url-form,
-    ha-config-network {
+    ha-config-network,
+    ha-config-network-discovery {
       display: block;
       margin: 0 auto;
       margin-bottom: 24px;

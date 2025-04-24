@@ -6343,8 +6343,8 @@
             }
           },
           "discovery": {
-            "zeroconf": "Zeroconf",
-            "zeroconf_info": "The Zeroconf browser displays devices discovered by Home Assistant using mDNS.",
+            "zeroconf": "Zeroconf Browser",
+            "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
             "zeroconf_browser": "View Zeroconf Browser"
           },
           "network_adapter": "Network adapter",
