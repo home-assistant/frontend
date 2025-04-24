@@ -671,30 +671,30 @@ export class HassioNetwork extends LitElement {
     if (id === "address") {
       const index = (ev.target as any).index as number;
       const { mask: oldMask } = parseAddress(
-        this._interface![version]!.address![index]
+        this._interface[version].address![index]
       );
       const { mask } = parseAddress(value);
-      this._interface[version]!.address![index] = formatAddress(
+      this._interface[version].address![index] = formatAddress(
         value,
         mask || oldMask || ""
       );
       this.requestUpdate("_interface");
     } else if (id === "netmask") {
       const index = (ev.target as any).index as number;
-      const { ip } = parseAddress(this._interface![version]!.address![index]);
-      this._interface[version]!.address![index] = formatAddress(ip, value);
+      const { ip } = parseAddress(this._interface[version].address![index]);
+      this._interface[version].address![index] = formatAddress(ip, value);
       this.requestUpdate("_interface");
     } else if (id === "prefix") {
       const index = (ev.target as any).index as number;
-      const { ip } = parseAddress(this._interface![version]!.address![index]);
-      this._interface[version]!.address![index] = `${ip}/${value}`;
+      const { ip } = parseAddress(this._interface[version].address![index]);
+      this._interface[version].address![index] = `${ip}/${value}`;
       this.requestUpdate("_interface");
     } else if (id === "nameserver") {
       const index = (ev.target as any).index as number;
-      this._interface[version]!.nameservers![index] = value;
+      this._interface[version].nameservers![index] = value;
       this.requestUpdate("_interface");
     } else {
-      this._interface[version]![id] = value;
+      this._interface[version][id] = value;
     }
   }
 
