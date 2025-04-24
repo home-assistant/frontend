@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
+import type { RowClickedEvent, DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
@@ -13,8 +13,9 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import type { ZeroconfDiscoveryData } from "../../../../../data/zeroconf";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { storage } from "../../../../../common/decorators/storage";
-
+import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { subscribeZeroconfDiscovery } from "../../../../../data/zeroconf";
+import { showZeroconfDiscoveryInfoDialog } from "./show-dialog-zeroconf-discovery-info";
 
 @customElement("zeroconf-config-panel")
 export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
@@ -91,7 +92,7 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
   private _dataWithIds = memoizeOne((data) =>
     data.map((row) => ({
       ...row,
-      id: row.mac_address,
+      id: row.name,
     }))
   );
 
@@ -107,8 +108,17 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         .data=${this._dataWithIds(this._data)}
+        @row-click=${this._handleRowClicked}
+        clickable
       ></hass-tabs-subpage-data-table>
     `;
+  }
+
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const entry = this._data.find((ent) => ent.name === ev.detail.id);
+    showZeroconfDiscoveryInfoDialog(this, {
+      entry: entry!,
+    });
   }
 
   private _handleGroupingChanged(ev: CustomEvent) {

@@ -5534,7 +5534,9 @@
           "type": "Type",
           "port": "Port",
           "ip_addresses": "IP Addresses",
-          "properties": "Properties"
+          "properties": "Properties",
+          "discovery_information": "Discovery information",
+          "copy_to_clipboard": "Copy to clipboard"
         },
         "zha": {
           "common": {
