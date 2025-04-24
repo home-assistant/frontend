@@ -2186,12 +2186,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit/context@npm:1.1.4":
-  version: 1.1.4
-  resolution: "@lit/context@npm:1.1.4"
+"@lit/context@npm:1.1.5":
+  version: 1.1.5
+  resolution: "@lit/context@npm:1.1.5"
   dependencies:
-    "@lit/reactive-element": "npm:^1.6.2 || ^2.0.0"
-  checksum: 10/9c8dea816c423fab05bf2f7fa644468d7c9842af44ebc5aa61edc78b926f63832413d33d6b913c3b8420edddc6e37d1188efadd7f7328e90c7fc2d727ce98a8c
+    "@lit/reactive-element": "npm:^1.6.2 || ^2.1.0"
+  checksum: 10/2e1d7558358ac5e3a4e39f8d97e3b495f9441b62dbff4e9ba955596fc2d382a8414ae9dde5041f51822ea6a62628c102a131e5b28aa11a9186a43393d3e3e3e6
   languageName: node
   linkType: hard
 
@@ -9363,7 +9363,7 @@ __metadata:
     "@lit-labs/motion": "npm:1.0.8"
     "@lit-labs/observers": "npm:2.0.5"
     "@lit-labs/virtualizer": "npm:2.1.0"
-    "@lit/context": "npm:1.1.4"
+    "@lit/context": "npm:1.1.5"
     "@lokalise/node-api": "npm:14.4.0"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
