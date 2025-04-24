@@ -1067,12 +1067,44 @@ ${rejected
     if (!entry) {
       return;
     }
-    await triggerScript(this.hass, entry.unique_id);
-    showToast(this, {
-      message: this.hass.localize("ui.notification_toast.triggered", {
-        name: computeStateName(script),
-      }),
-    });
+    try {
+      const config = await fetchScriptFileConfig(this.hass, entry.unique_id);
+
+      if (!config.fields) {
+        await triggerScript(this.hass, entry.unique_id);
+        showToast(this, {
+          message: this.hass.localize("ui.notification_toast.triggered", {
+            name: computeStateName(script),
+          }),
+        });
+      } else {
+        this._showInfo(script);
+      }
+    } catch (err: any) {
+      if (err.status_code === 404) {
+        const response = await getScriptStateConfig(
+          this.hass,
+          script.entity_id
+        );
+        if (!response.config.fields) {
+          await triggerScript(this.hass, entry.unique_id);
+          showToast(this, {
+            message: this.hass.localize("ui.notification_toast.triggered", {
+              name: computeStateName(script),
+            }),
+          });
+        } else {
+          this._showInfo(script);
+        }
+        return;
+      }
+      await showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.script.editor.load_error_unknown",
+          { err_no: err.status_code }
+        ),
+      });
+    }
   };
 
   private _showInfo(script: any) {
