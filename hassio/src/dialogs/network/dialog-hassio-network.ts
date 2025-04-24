@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
@@ -10,14 +9,16 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-password-field";
 import "../../../../src/components/ha-radio";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-textfield";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -169,12 +170,12 @@ export class DialogHassioNetwork
                 this._accessPoints.accesspoints &&
                 this._accessPoints.accesspoints.length !== 0
                   ? html`
-                      <mwc-list>
+                      <ha-list>
                         ${this._accessPoints.accesspoints
                           .filter((ap) => ap.ssid)
                           .map(
                             (ap) => html`
-                              <mwc-list-item
+                              <ha-list-item
                                 twoline
                                 @click=${this._selectAP}
                                 .activated=${ap.ssid ===
@@ -189,10 +190,10 @@ export class DialogHassioNetwork
                                   )}:
                                   ${ap.signal}
                                 </span>
-                              </mwc-list-item>
+                              </ha-list-item>
                             `
                           )}
-                      </mwc-list>
+                      </ha-list>
                     `
                   : ""}
                 ${this._wifiConfiguration
@@ -634,7 +635,7 @@ export class DialogHassioNetwork
         ha-textfield {
           padding: 0 14px;
         }
-        mwc-list-item {
+        ha-list-item {
           --mdc-list-side-padding: 10px;
         }
       `,

@@ -159,9 +159,11 @@ class DialogSystemLogDetail extends LitElement {
                     this.hass!.locale,
                     this.hass!.config
                   )}
-                  (${item.count}
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.occurrences"
+                  (${this.hass.localize(
+                    "ui.panel.config.logs.detail.number_of_occurrences",
+                    {
+                      count: item.count,
+                    }
                   )}) <br />
                 `
               : ""}

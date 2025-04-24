@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAlertCircle,
   mdiBookshelf,

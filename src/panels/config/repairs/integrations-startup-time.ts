@@ -1,9 +1,9 @@
-import "@material/mwc-list/mwc-list";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-list";
 import type {
   IntegrationManifest,
   IntegrationSetup,
@@ -39,7 +39,7 @@ class IntegrationsStartupTime extends LitElement {
     }
 
     return html`
-      <mwc-list>
+      <ha-list>
         ${this._setups?.map((setup) => {
           const manifest = this._manifests && this._manifests[setup.domain];
           const docLink = manifest
@@ -80,7 +80,7 @@ class IntegrationsStartupTime extends LitElement {
             </ha-clickable-list-item>
           `;
         })}
-      </mwc-list>
+      </ha-list>
     `;
   }
 

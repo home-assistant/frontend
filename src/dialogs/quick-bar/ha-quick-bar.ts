@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
@@ -29,6 +28,7 @@ import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
+import "../../components/ha-list";
 import "../../components/ha-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
@@ -42,8 +42,8 @@ import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
-import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
+import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -248,7 +248,7 @@ export class QuickBar extends LitElement {
                 </div>
               `
             : html`
-                <mwc-list>
+                <ha-list>
                   ${this._opened
                     ? html`<lit-virtualizer
                         tabindex="-1"
@@ -270,7 +270,7 @@ export class QuickBar extends LitElement {
                       >
                       </lit-virtualizer>`
                     : ""}
-                </mwc-list>
+                </ha-list>
               `}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
@@ -425,10 +425,12 @@ export class QuickBar extends LitElement {
   }
 
   private _addSpinnerToCommandItem(index: number): void {
+    const div = document.createElement("div");
+    div.slot = "meta";
     const spinner = document.createElement("ha-spinner");
     spinner.size = "small";
-    spinner.slot = "meta";
-    this._getItemAtIndex(index)?.appendChild(spinner);
+    div.appendChild(spinner);
+    this._getItemAtIndex(index)?.appendChild(div);
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
@@ -854,7 +856,7 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
-        mwc-list {
+        ha-list {
           position: relative;
           --mdc-list-vertical-padding: 0;
         }

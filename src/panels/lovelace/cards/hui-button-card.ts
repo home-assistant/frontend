@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type {
   HassConfig,
   HassEntities,
@@ -93,7 +93,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     },
     watch: ["_config"],
   })
-  _stateObj?: HassEntity;
+  private _stateObj?: HassEntity;
 
   @state()
   @consume({ context: themesContext, subscribe: true })

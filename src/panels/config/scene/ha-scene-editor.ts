@@ -1,5 +1,5 @@
-import { consume } from "@lit-labs/context";
-import "@material/mwc-list/mwc-list";
+import { consume } from "@lit/context";
+
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiCog,
@@ -37,6 +37,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
@@ -427,7 +428,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                         @click=${this._deleteDevice}
                       ></ha-icon-button>
                     </h1>
-                    <mwc-list>
+                    <ha-list>
                       ${device.entities.map((entityId) => {
                         const entityStateObj = this.hass.states[entityId];
                         if (!entityStateObj) {
@@ -458,7 +459,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                           </ha-list-item>
                         `;
                       })}
-                    </mwc-list>
+                    </ha-list>
                   </ha-card>
                 `
               )}
@@ -500,7 +501,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
               ${entities.length
                 ? html`
                     <ha-card outlined class="entities">
-                      <mwc-list>
+                      <ha-list>
                         ${entities.map((entityId) => {
                           const entityStateObj = this.hass.states[entityId];
                           if (!entityStateObj) {
@@ -540,7 +541,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                             </ha-list-item>
                           `;
                         })}
-                      </mwc-list>
+                      </ha-list>
                     </ha-card>
                   `
                 : ""}
