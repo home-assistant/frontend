@@ -43,6 +43,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     entity: optional(string()),
+    entity_2: optional(string()),
     name: optional(string()),
     icon: optional(string()),
     hide_state: optional(boolean()),
@@ -83,6 +84,7 @@ export class HuiTileCardEditor
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
+        { name: "entity_2", selector: { entity: {} } },
         {
           name: "content",
           flatten: true,
