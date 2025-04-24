@@ -4348,7 +4348,8 @@
               "title": "Pasted automation",
               "text": "How do you want to paste your automation?"
             },
-            "paste_toast_message": "Pasted automation from clipboard"
+            "paste_toast_message": "Pasted automation from clipboard",
+            "paste_invalid_config": "Pasted automation is not editable in the visual editor"
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
@@ -4586,7 +4587,8 @@
               "title": "Pasted script",
               "text": "How do you want to paste your script?"
             },
-            "paste_toast_message": "Pasted script from clipboard"
+            "paste_toast_message": "Pasted script from clipboard",
+            "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
             "edit_script": "Edit script"

@@ -22,6 +22,16 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import {
+  any,
+  array,
+  enums,
+  number,
+  object,
+  optional,
+  string,
+  assert,
+} from "superstruct";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -46,6 +56,7 @@ import {
 } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
+  MODES,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
@@ -75,6 +86,17 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
+import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
+
+const scriptConfigStruct = object({
+  alias: optional(string()),
+  description: optional(string()),
+  sequence: optional(array(any())),
+  icon: optional(string()),
+  mode: optional(enums([typeof MODES])),
+  max: optional(number()),
+  fields: optional(object()),
+});
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -537,11 +559,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private _handlePaste = async (ev: ClipboardEvent) => {
     // Ignore events on inputs/textareas
-    const target = ev.composedPath()[0];
-    if (
-      target instanceof HTMLElement &&
-      (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
-    ) {
+    if (!canOverrideAlphanumericInput(ev.composedPath())) {
       return;
     }
 
@@ -557,6 +575,19 @@ export class HaScriptEditor extends SubscribeMixin(
       try {
         normalized = this._normalizeConfig(loaded);
       } catch (_err: any) {
+        return;
+      }
+
+      try {
+        assert(normalized, scriptConfigStruct);
+      } catch (_err: any) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.config.script.editor.paste_invalid_config"
+          ),
+          duration: 4000,
+          dismissable: true,
+        });
         return;
       }
 
@@ -719,7 +750,9 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private _valueChanged(ev) {
     // reset the pasted config as soon as the user starts editing
-    this._resetPastedConfig();
+    if (this._previousConfig) {
+      this._resetPastedConfig();
+    }
 
     this._config = ev.detail.value;
     this._errors = undefined;
@@ -1051,7 +1084,9 @@ export class HaScriptEditor extends SubscribeMixin(
     }
 
     // reset the pasted config as soon as the user saves
-    this._resetPastedConfig();
+    if (this._previousConfig) {
+      this._resetPastedConfig();
+    }
 
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();

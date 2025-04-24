@@ -24,6 +24,16 @@ import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { load } from "js-yaml";
+import {
+  any,
+  array,
+  object,
+  optional,
+  string,
+  assert,
+  union,
+  assign,
+} from "superstruct";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -83,6 +93,7 @@ import {
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
+import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -100,6 +111,23 @@ declare global {
     duplicate: undefined;
   }
 }
+
+const baseConfigStruct = object({
+  alias: optional(string()),
+  description: optional(string()),
+  triggers: optional(array(any())),
+  conditions: optional(array(any())),
+  actions: optional(array(any())),
+  mode: optional(string()),
+  max_exceeded: optional(string()),
+  id: optional(string()),
+});
+
+const automationConfigStruct = union([
+  assign(baseConfigStruct, object({ triggers: array(any()) })),
+  assign(baseConfigStruct, object({ conditions: array(any()) })),
+  assign(baseConfigStruct, object({ actions: array(any()) })),
+]);
 
 export class HaAutomationEditor extends PreventUnsavedMixin(
   KeyboardShortcutMixin(LitElement)
@@ -597,12 +625,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   }
 
   private _handlePaste = async (ev: ClipboardEvent) => {
-    // Ignore events on inputs/textareas
-    const target = ev.composedPath()[0];
-    if (
-      target instanceof HTMLElement &&
-      (target.tagName === "INPUT" || target.tagName === "TEXTAREA")
-    ) {
+    if (!canOverrideAlphanumericInput(ev.composedPath())) {
       return;
     }
 
@@ -618,6 +641,19 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       try {
         normalized = normalizeAutomationConfig(loaded);
       } catch (_err: any) {
+        return;
+      }
+
+      try {
+        assert(normalized, automationConfigStruct);
+      } catch (_err: any) {
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.config.automation.editor.paste_invalid_config"
+          ),
+          duration: 4000,
+          dismissable: true,
+        });
         return;
       }
 
@@ -782,7 +818,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     ev.stopPropagation();
 
     // reset the pasted config as soon as the user starts editing
-    this._resetPastedConfig();
+    if (this._previousConfig) {
+      this._resetPastedConfig();
+    }
 
     this._config = ev.detail.value;
     if (this._readOnly) {
@@ -1095,7 +1133,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     }
 
     // reset the pasted config as soon as the user saves
-    this._resetPastedConfig();
+    if (this._previousConfig) {
+      this._resetPastedConfig();
+    }
 
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
