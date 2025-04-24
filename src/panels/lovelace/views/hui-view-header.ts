@@ -20,6 +20,7 @@ import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
@@ -50,6 +51,10 @@ export class HuiViewHeader extends LitElement {
   private _badgeVisibilityChanged = () => {
     this._checkHidden();
   };
+
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".scroll",
+  });
 
   connectedCallback(): void {
     super.connectedCallback();
