@@ -1548,6 +1548,13 @@
       "restart": {
         "heading": "Restart Home Assistant",
         "advanced_options": "Advanced options",
+        "backup_in_progress": "A backup is currently being created. The action will automatically proceed once the backup process is complete.",
+        "upload_in_progress": "A backup upload is currently in progress. The action will automatically proceed once the upload process is complete.",
+        "restore_in_progress": "A backup restore is currently in progress. The action will automatically proceed once the restore process is complete.",
+        "wait_for_backup": "Wait for the backup creation to finish",
+        "error_backup_state": "An error occured while getting the current backup state. Error: {error}",
+        "wait_for_upload": "Wait for backup upload to finish",
+        "wait_for_restore": "Wait for backup restore to finish",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -1560,6 +1567,7 @@
           "confirm_title": "Restart Home Assistant?",
           "confirm_description": "This will interrupt all running automations and scripts.",
           "confirm_action": "Restart",
+          "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
@@ -1573,7 +1581,8 @@
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
-          "rebooting": "Rebooting system",
+          "action_toast": "Rebooting system",
+          "confirm_action_backup": "Wait and reboot",
           "failed": "Failed to reboot system"
         },
         "shutdown": {
@@ -1582,7 +1591,8 @@
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
-          "shutting_down": "Shutting down system",
+          "confirm_action_backup": "Wait and shut down",
+          "action_toast": "Shutting down system",
           "failed": "Failed to shut down system"
         },
         "restart-safe-mode": {
@@ -1591,6 +1601,7 @@
           "confirm_title": "Restart Home Assistant in safe mode?",
           "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_action": "Restart",
+          "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
         }
       },
