@@ -13,11 +13,12 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-logo-svg";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
@@ -174,10 +175,10 @@ class HaConfigInfo extends LitElement {
           </ha-card>
 
           <ha-card outlined class="pages">
-            <ha-list>
-              <ha-list-item graphic="avatar" @click=${this._showShortcuts}>
+            <ha-md-list>
+              <ha-md-list-item type="button" @click=${this._showShortcuts}>
                 <div
-                  slot="graphic"
+                  slot="start"
                   class="icon-background"
                   style="background-color: #9e4dd1;"
                 >
@@ -186,18 +187,18 @@ class HaConfigInfo extends LitElement {
                 <span
                   >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
                 >
-              </ha-list-item>
+              </ha-md-list-item>
 
               ${PAGES.map(
                 (page) => html`
-                  <ha-clickable-list-item
-                    graphic="avatar"
-                    open-new-tab
-                    href=${documentationUrl(this.hass, page.path)}
-                    hasMeta
+                  <ha-md-list-item
+                    type="link"
+                    .href=${documentationUrl(this.hass, page.path)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <div
-                      slot="graphic"
+                      slot="start"
                       class="icon-background"
                       .style="background-color: ${page.iconColor}"
                     >
@@ -208,14 +209,11 @@ class HaConfigInfo extends LitElement {
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
-                    <ha-svg-icon
-                      slot="meta"
-                      .path=${mdiOpenInNew}
-                    ></ha-svg-icon>
-                  </ha-clickable-list-item>
+                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-md-list-item>
                 `
               )}
-            </ha-list>
+            </ha-md-list>
             ${customUiList.length
               ? html`
                   <div class="custom-ui">
@@ -352,16 +350,6 @@ class HaConfigInfo extends LitElement {
         .pages {
           margin-bottom: max(24px, env(safe-area-inset-bottom));
           padding: 4px 0;
-        }
-
-        ha-list {
-          --mdc-list-side-padding: 16px;
-          --mdc-list-vertical-padding: 0;
-        }
-
-        ha-clickable-list-item,
-        ha-list-item {
-          height: 64px;
         }
 
         .icon-background ha-svg-icon {
