@@ -97,7 +97,7 @@ export class HaControlSelectMenu extends SelectBase {
     return html`<ha-menu
       innerRole="listbox"
       wrapFocus
-      class=" ${classMap(classes)}"
+      class=${classMap(classes)}
       activatable
       .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
       .open=${this.menuOpen}

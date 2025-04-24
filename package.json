@@ -65,10 +65,10 @@
     "@material/mwc-drawer": "0.27.0",
     "@material/mwc-fab": "0.27.0",
     "@material/mwc-floating-label": "0.27.0",
-    "@material/mwc-formfield": "0.27.0",
+    "@material/mwc-formfield": "patch:@material/mwc-formfield@npm%3A0.27.0#~/.yarn/patches/@material-mwc-formfield-npm-0.27.0-9528cb60f6.patch",
     "@material/mwc-icon-button": "0.27.0",
     "@material/mwc-linear-progress": "0.27.0",
-    "@material/mwc-list": "0.27.0",
+    "@material/mwc-list": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
     "@material/mwc-menu": "0.27.0",
     "@material/mwc-radio": "0.27.0",
     "@material/mwc-select": "0.27.0",
@@ -235,7 +235,8 @@
     "@lit/reactive-element": "2.1.0",
     "@fullcalendar/daygrid": "6.1.17",
     "globals": "16.0.0",
-    "tslib": "2.8.1"
+    "tslib": "2.8.1",
+    "@material/mwc-list@^0.27.0": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch"
   },
   "packageManager": "yarn@4.9.1"
 }

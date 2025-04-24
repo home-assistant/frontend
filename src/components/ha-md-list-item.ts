@@ -3,7 +3,7 @@ import { styles } from "@material/web/list/internal/listitem/list-item-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
-export const haStyles = [
+export const haMdListStyles = [
   styles,
   css`
     :host {
@@ -23,7 +23,7 @@ export const haStyles = [
 
 @customElement("ha-md-list-item")
 export class HaMdListItem extends ListItemEl {
-  static override styles = haStyles;
+  static override styles = haMdListStyles;
 }
 
 declare global {

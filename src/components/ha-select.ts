@@ -36,10 +36,10 @@ export class HaSelect extends SelectBase {
 
   protected override renderMenu() {
     const classes = this.getMenuClasses();
-    return html` <ha-menu
+    return html`<ha-menu
       innerRole="listbox"
       wrapFocus
-      class=" ${classMap(classes)}"
+      class=${classMap(classes)}
       activatable
       .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
       .open=${this.menuOpen}
