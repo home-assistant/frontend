@@ -8932,6 +8932,13 @@
       },
       "logs": {
         "get_logs": "Failed to get add-on logs, {error}"
+      },
+      "system_managed": {
+        "badge": "System-managed",
+        "title": "This add-on is managed by Home Assistant",
+        "description": "Manually modifying this configuration may cause the add-on or integration to stop working properly.",
+        "managed_by": "Managed by",
+        "take_control": "Take control"
       }
     },
     "common": {
@@ -8955,6 +8962,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "back": "[%key:ui::common::back%]",
       "menu": "[%key:ui::common::menu%]",
       "show": "[%key:ui::panel::config::updates::show%]",
       "show_more": "Show more information about this",
