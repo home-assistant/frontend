@@ -54,7 +54,7 @@ class ConfigNetworkDiscovery extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-              
+
         .card-actions {
           display: flex;
           flex-direction: row-reverse;
