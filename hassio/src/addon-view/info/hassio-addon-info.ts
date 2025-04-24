@@ -473,7 +473,7 @@ class HassioAddonInfo extends LitElement {
                   </ha-assist-chip>
                 `
               : nothing}
-            ${"system_managed" in this.addon && this.addon.system_managed
+            ${systemManaged
               ? html`
                   <ha-assist-chip
                     filled
