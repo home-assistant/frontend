@@ -1,4 +1,5 @@
 import { FilledSelect } from "@material/web/select/internal/filled-select";
+import { styles as sharedStyles } from "@material/web/select/internal/shared-styles";
 import { styles } from "@material/web/select/internal/filled-select-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
@@ -6,6 +7,7 @@ import { customElement } from "lit/decorators";
 @customElement("ha-md-select")
 export class HaMdSelect extends FilledSelect {
   static override styles = [
+    sharedStyles,
     styles,
     css`
       :host {
