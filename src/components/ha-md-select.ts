@@ -1,11 +1,12 @@
-import { MdFilledSelect } from "@material/web/select/filled-select";
+import { FilledSelect } from "@material/web/select/internal/filled-select";
+import { styles } from "@material/web/select/internal/filled-select-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-md-select")
-export class HaMdSelect extends MdFilledSelect {
+export class HaMdSelect extends FilledSelect {
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --ha-icon-display: block;

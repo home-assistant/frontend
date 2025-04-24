@@ -1,4 +1,5 @@
-import { MdMenu } from "@material/web/menu/menu";
+import { Menu } from "@material/web/menu/internal/menu";
+import { styles } from "@material/web/menu/internal/menu-styles";
 import type { CloseMenuEvent } from "@material/web/menu/menu";
 import {
   CloseReason,
@@ -9,7 +10,7 @@ import { customElement } from "lit/decorators";
 import type { HaMdMenuItem } from "./ha-md-menu-item";
 
 @customElement("ha-md-menu")
-export class HaMdMenu extends MdMenu {
+export class HaMdMenu extends Menu {
   connectedCallback(): void {
     super.connectedCallback();
     this.addEventListener("close-menu", this._handleCloseMenu);
@@ -26,7 +27,7 @@ export class HaMdMenu extends MdMenu {
   }
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --md-sys-color-surface-container: var(--card-background-color);
