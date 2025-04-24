@@ -300,7 +300,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     .light-button {
-      color: var(--paper-item-icon-color, #44739e);
+      color: var(--state-icon-color);
       width: 60%;
       height: auto;
       position: absolute;

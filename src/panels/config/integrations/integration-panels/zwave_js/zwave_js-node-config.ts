@@ -602,7 +602,6 @@ class ZWaveJSNodeConfig extends LitElement {
         ha-settings-row {
           --settings-row-prefix-display: contents;
           --settings-row-content-width: 100%;
-          --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
           padding: 4px 16px;
         }
