@@ -295,7 +295,7 @@ export class ZHAGroupPage extends LitElement {
         .header {
           font-family: var(--ha-font-family-body);
           -webkit-font-smoothing: var(--ha-font-smoothing);
-          font-size: var(--ha-font-size-2xl);
+          font-size: var(--ha-font-size-4xl);
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
           opacity: var(--dark-primary-opacity);

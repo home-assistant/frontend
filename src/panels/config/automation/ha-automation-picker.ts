@@ -1450,9 +1450,11 @@ ${rejected
           --data-table-row-height: 72px;
         }
         .empty {
-          --ha-font-size-xl: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty h1 {
+          font-size: var(--ha-font-size-3xl);
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

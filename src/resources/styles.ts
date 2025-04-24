@@ -18,7 +18,7 @@ export const haStyle = css`
   :host {
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
-    font-size: var(--ha-font-size-s);
+    font-size: var(--ha-font-size-m);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-normal);
   }
@@ -39,7 +39,7 @@ export const haStyle = css`
     white-space: var(--paper-font-headline_-_white-space);
     overflow: var(--paper-font-headline_-_overflow);
     text-overflow: var(--paper-font-headline_-_text-overflow);
-    font-size: var(--ha-font-size-xl);
+    font-size: var(--ha-font-size-2xl);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-condensed);
   }
@@ -50,7 +50,7 @@ export const haStyle = css`
     white-space: var(--ha-title-h2-white-space);
     overflow: var(--ha-title-h2-overflow);
     text-overflow: var(--ha-title-h2-text-overflow);
-    font-size: var(--ha-font-size-l);
+    font-size: var(--ha-font-size-xl);
     font-weight: var(--ha-font-weight-semibold);
     line-height: var(--ha-line-height-normal);
   }
@@ -61,7 +61,7 @@ export const haStyle = css`
     white-space: var(--paper-font-subhead_-_white-space);
     overflow: var(--paper-font-subhead_-_overflow);
     text-overflow: var(--paper-font-subhead_-_text-overflow);
-    font-size: var(--ha-font-size-m);
+    font-size: var(--ha-font-size-l);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-normal);
   }

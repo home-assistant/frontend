@@ -19,15 +19,15 @@ const mainStyles = css`
 
     font-size: 14px;
     --ha-font-size-scale: 1;
-    --ha-font-size-2xs: calc(0.786rem * var(--ha-font-size-scale)); /* ~11px */
-    --ha-font-size-xs: calc(0.857rem * var(--ha-font-size-scale)); /* ~12px */
-    --ha-font-size-s: calc(1rem * var(--ha-font-size-scale)); /* 14px */
-    --ha-font-size-m: calc(1.143rem * var(--ha-font-size-scale)); /* ~16px */
-    --ha-font-size-l: calc(1.429rem * var(--ha-font-size-scale)); /* ~20px */
-    --ha-font-size-xl: calc(1.857rem * var(--ha-font-size-scale)); /* ~26px */
-    --ha-font-size-2xl: calc(2.286rem * var(--ha-font-size-scale)); /* ~32px */
-    --ha-font-size-3xl: calc(2.929rem * var(--ha-font-size-scale)); /* ~41px */
-    --ha-font-size-4xl: calc(3.714rem * var(--ha-font-size-scale)); /* ~52px */
+    --ha-font-size-xs: 10px;
+    --ha-font-size-s: 12px;
+    --ha-font-size-m: 14px;
+    --ha-font-size-l: 16px;
+    --ha-font-size-xl: 20px;
+    --ha-font-size-2xl: 24px;
+    --ha-font-size-3xl: 28px;
+    --ha-font-size-4xl: 32px;
+    --ha-font-size-5xl: 40px;
 
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;
@@ -56,7 +56,7 @@ const mainStyles = css`
     /* component specific */
     /* ha-tooltip */
     --ha-tooltip-font-family: var(--ha-font-family-body);
-    --ha-tooltip-font-size: var(--ha-font-size-xs);
+    --ha-tooltip-font-size: var(--ha-font-size-s);
     --ha-tooltip-font-weight: var(--ha-font-weight-normal);
     --ha-tooltip-line-height: var(--ha-line-height-condensed);
 
