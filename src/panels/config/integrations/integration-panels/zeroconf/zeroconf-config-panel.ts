@@ -71,6 +71,7 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         },
         type: {
           title: localize("ui.panel.config.zeroconf.type"),
+          showNarrow: true,
           filterable: true,
           sortable: true,
           groupable: true,
