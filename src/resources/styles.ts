@@ -34,7 +34,7 @@ export const haStyle = css`
   }
 
   h1 {
-    font-family: var(--ha-font-family-body);
+    font-family: var(--ha-font-family-heading);
     -webkit-font-smoothing: var(--ha-font-smoothing);
     white-space: var(--paper-font-headline_-_white-space);
     overflow: var(--paper-font-headline_-_overflow);

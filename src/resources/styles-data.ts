@@ -79,13 +79,6 @@ export const derivedStyles = {
   "material-caption-font-size": "var(--ha-font-size-2xs)",
   "material-button-font-size": "var(--ha-font-size-xs)",
 
-  /* component specific */
-  /* ha-tooltip */
-  "ha-tooltip-font-family": "var(--ha-font-family-body)",
-  "ha-tooltip-font-size": "var(--ha-font-size-s)",
-  "ha-tooltip-font-weight": "var(--ha-font-weight-normal)",
-  "ha-tooltip-line-height": "var(--ha-line-height-condensed)",
-
   /* for label-badge */
   "label-badge-red": "var(--error-color)",
   "label-badge-blue": "var(--info-color)",

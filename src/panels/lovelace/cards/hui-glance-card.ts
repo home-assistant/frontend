@@ -199,7 +199,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       text-overflow: ellipsis;
     }
     .name {
-      min-height: var(--ha-line-height-normal, 20px);
+      min-height: var(--ha-line-height-normal);
     }
     .warning {
       cursor: default;
