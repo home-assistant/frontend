@@ -1,3 +1,4 @@
+import { consume } from "@lit-labs/context";
 import "@material/mwc-button";
 import {
   mdiCog,
@@ -22,17 +23,19 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type {
@@ -52,6 +55,7 @@ import {
 } from "../../../data/automation";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
@@ -61,11 +65,14 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import {
@@ -74,11 +81,6 @@ import {
 } from "./automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -184,7 +186,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
-      return nothing;
+      return html`
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="large"></ha-spinner>
+        </ha-fade-in>
+      `;
     }
 
     const stateObj = this._entityId
@@ -1063,6 +1069,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     return [
       haStyle,
       css`
+        ha-fade-in {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
         .content {
           padding-bottom: 20px;
         }
