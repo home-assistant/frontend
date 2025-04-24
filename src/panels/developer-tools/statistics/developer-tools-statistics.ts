@@ -21,6 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/chips/ha-assist-chip";
+import "../../../components/ha-md-divider";
 import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -365,7 +366,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
                       )}
                     </div>
                   </ha-md-menu-item>
-                  <md-divider role="separator" tabindex="-1"></md-divider>
+                  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
                   <ha-md-menu-item
                     .value=${undefined}
                     @click=${this._disableSelectMode}
@@ -472,7 +473,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         >
           ${localize("ui.components.subpage-data-table.dont_group_by")}
         </ha-md-menu-item>
-        <md-divider role="separator" tabindex="-1"></md-divider>
+        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
         <ha-md-menu-item
           @click=${this._collapseAllGroups}
           .disabled=${this._groupColumn === undefined}

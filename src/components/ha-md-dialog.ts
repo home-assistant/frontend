@@ -1,4 +1,5 @@
 import { Dialog } from "@material/web/dialog/internal/dialog";
+import { styles } from "@material/web/dialog/internal/dialog-styles";
 import {
   type DialogAnimation,
   DIALOG_DEFAULT_CLOSE_ANIMATION,
