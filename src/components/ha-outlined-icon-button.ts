@@ -1,5 +1,6 @@
 import { IconButton } from "@material/web/iconbutton/internal/icon-button";
 import { styles } from "@material/web/iconbutton/internal/outlined-styles";
+import { styles as sharedStyles } from "@material/web/iconbutton/internal/shared-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
@@ -11,6 +12,7 @@ export class HaOutlinedIconButton extends IconButton {
         border-radius: var(--_container-shape);
       }
     `,
+    sharedStyles,
     styles,
     css`
       :host {
