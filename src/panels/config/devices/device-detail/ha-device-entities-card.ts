@@ -275,7 +275,6 @@ export class HaDeviceEntitiesCard extends LitElement {
       min-height: 40px;
       padding: 0 16px;
       cursor: pointer;
-      --paper-item-icon-width: 48px;
     }
     .name {
       font-size: 14px;

@@ -36,9 +36,6 @@ export const haStyle = css`
   h1 {
     font-family: var(--ha-font-family-heading);
     -webkit-font-smoothing: var(--ha-font-smoothing);
-    white-space: var(--paper-font-headline_-_white-space);
-    overflow: var(--paper-font-headline_-_overflow);
-    text-overflow: var(--paper-font-headline_-_text-overflow);
     font-size: var(--ha-font-size-2xl);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-condensed);
@@ -47,9 +44,9 @@ export const haStyle = css`
   h2 {
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
-    white-space: var(--ha-title-h2-white-space);
-    overflow: var(--ha-title-h2-overflow);
-    text-overflow: var(--ha-title-h2-text-overflow);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: var(--ha-font-size-xl);
     font-weight: var(--ha-font-weight-semibold);
     line-height: var(--ha-line-height-normal);
@@ -58,9 +55,6 @@ export const haStyle = css`
   h3 {
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
-    white-space: var(--paper-font-subhead_-_white-space);
-    overflow: var(--paper-font-subhead_-_overflow);
-    text-overflow: var(--paper-font-subhead_-_text-overflow);
     font-size: var(--ha-font-size-l);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-normal);

@@ -29,9 +29,6 @@ const mainStyles = css`
     --ha-line-height-expanded: 2;
 
     --ha-font-smoothing: antialiased;
-    --ha-title-h2-white-space: nowrap;
-    --ha-title-h2-overflow: hidden;
-    --ha-title-h2-text-overflow: ellipsis;
 
     height: 100vh;
 
