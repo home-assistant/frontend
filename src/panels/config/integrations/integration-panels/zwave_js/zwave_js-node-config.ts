@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -17,6 +17,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
@@ -354,7 +355,7 @@ class ZWaveJSNodeConfig extends LitElement {
         >
           ${Object.entries(item.metadata.states).map(
             ([key, entityState]) => html`
-              <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
+              <ha-list-item .value=${key}>${entityState}</ha-list-item>
             `
           )}
         </ha-select>

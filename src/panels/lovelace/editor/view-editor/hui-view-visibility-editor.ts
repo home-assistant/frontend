@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";

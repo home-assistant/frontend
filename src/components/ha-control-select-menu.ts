@@ -12,6 +12,7 @@ import type { HaIcon } from "./ha-icon";
 import "./ha-ripple";
 import "./ha-svg-icon";
 import type { HaSvgIcon } from "./ha-svg-icon";
+import "./ha-menu";
 
 @customElement("ha-control-select-menu")
 export class HaControlSelectMenu extends SelectBase {
@@ -89,6 +90,27 @@ export class HaControlSelectMenu extends SelectBase {
         ${this.renderMenu()}
       </div>
     `;
+  }
+
+  protected override renderMenu() {
+    const classes = this.getMenuClasses();
+    return html`<ha-menu
+      innerRole="listbox"
+      wrapFocus
+      class=${classMap(classes)}
+      activatable
+      .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
+      .open=${this.menuOpen}
+      .anchor=${this.anchorElement}
+      .fixed=${this.fixedMenuPosition}
+      @selected=${this.onSelected}
+      @opened=${this.onOpened}
+      @closed=${this.onClosed}
+      @items-updated=${this.onItemsUpdated}
+      @keydown=${this.handleTypeahead}
+    >
+      ${this.renderMenuContent()}
+    </ha-menu>`;
   }
 
   private _renderArrow() {
@@ -239,13 +261,6 @@ export class HaControlSelectMenu extends SelectBase {
       .select-disabled .select-anchor {
         cursor: not-allowed;
         color: var(--disabled-color);
-      }
-
-      mwc-menu {
-        --mdc-shape-medium: 8px;
-      }
-      mwc-list {
-        --mdc-list-vertical-padding: 0;
       }
     `,
   ];

@@ -2,16 +2,17 @@ import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
-import { formatTime } from "../../../../../common/datetime/format_time";
 import type { MQTTMessage } from "../../../../../data/mqtt";
 import { subscribeMQTTTopic } from "../../../../../data/mqtt";
 import type { HomeAssistant } from "../../../../../types";
-import "@material/mwc-list/mwc-list-item";
+
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 
 const qosLevel = ["0", "1", "2"];
@@ -93,8 +94,7 @@ class MqttSubscribeCard extends LitElement {
               .value=${this._qos}
               @selected=${this._handleQos}
               >${qosLevel.map(
-                (qos) =>
-                  html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                (qos) => html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
               )}
             </ha-select>
             <mwc-button

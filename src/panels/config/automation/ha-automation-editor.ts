@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import "@material/mwc-button";
 import {
   mdiCog,
@@ -135,7 +135,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
   @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaAutomationEditor, value) {
       return value.find(({ entity_id }) => entity_id === this._entityId);
     },

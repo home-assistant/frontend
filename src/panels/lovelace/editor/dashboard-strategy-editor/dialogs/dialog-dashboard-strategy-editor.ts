@@ -15,6 +15,7 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
