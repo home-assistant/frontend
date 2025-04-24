@@ -19,7 +19,7 @@ export class HaMdButtonMenu extends LitElement {
   @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
     false;
 
-  @query("ha-menu", true) private _menu!: HaMdMenu;
+  @query("ha-md-menu", true) private _menu!: HaMdMenu;
 
   public get items() {
     return this._menu.items;
