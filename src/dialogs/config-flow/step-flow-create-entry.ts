@@ -4,22 +4,20 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
-import {
-  computeDeviceName,
-  updateDeviceRegistryEntry,
-} from "../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { navigate } from "../../common/navigate";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -124,7 +122,8 @@ class StepFlowCreateEntry extends LitElement {
                   (device) => html`
                     <div class="device">
                       <div>
-                        <b>${computeDeviceName(device, this.hass)}</b><br />
+                        <b>${computeDeviceNameDisplay(device, this.hass)}</b
+                        ><br />
                         ${!device.model && !device.manufacturer
                           ? html`&nbsp;`
                           : html`${device.model}

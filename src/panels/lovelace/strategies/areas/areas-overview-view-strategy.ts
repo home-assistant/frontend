@@ -83,7 +83,9 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
               : [
                   {
                     type: "markdown",
-                    content: "No entities in this area.",
+                    content: hass.localize(
+                      "ui.panel.lovelace.strategy.areas.no_entities"
+                    ),
                   },
                 ]),
           ],
@@ -95,7 +97,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
 
     return {
       type: "sections",
-      max_columns: 2,
+      max_columns: 3,
       sections: areaSections,
     };
   }

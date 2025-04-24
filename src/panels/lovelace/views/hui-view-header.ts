@@ -23,6 +23,7 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
+export const DEFAULT_VIEW_HEADER_BADGES_WRAP = "wrap";
 
 @customElement("hui-view-header")
 export class HuiViewHeader extends LitElement {
@@ -188,6 +189,8 @@ export class HuiViewHeader extends LitElement {
     const layout = this.config?.layout ?? DEFAULT_VIEW_HEADER_LAYOUT;
     const badgesPosition =
       this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
+    const badgesWrap =
+      this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
@@ -211,6 +214,7 @@ export class HuiViewHeader extends LitElement {
           class="layout ${classMap({
             [layout]: true,
             [`badges-${badgesPosition}`]: true,
+            [`badges-${badgesWrap}`]: true,
             "has-heading": hasHeading,
             "has-badges": hasBadges,
           })}"
@@ -248,7 +252,7 @@ export class HuiViewHeader extends LitElement {
             : nothing}
           ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
-                <div class="badges ${badgesPosition}">
+                <div class="badges ${badgesPosition} ${badgesWrap}">
                   <hui-view-badges
                     .badges=${this.badges}
                     .hass=${this.hass}
@@ -334,6 +338,21 @@ export class HuiViewHeader extends LitElement {
       display: flex;
     }
 
+    .container:not(.edit-mode) .badges.scroll {
+      overflow: auto;
+      max-width: calc(100% - 16px);
+      scrollbar-color: var(--scrollbar-thumb-color) transparent;
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        black 16px,
+        black calc(100% - 16px),
+        transparent 100%
+      );
+      padding-left: 16px;
+    }
+
     hui-view-badges {
       width: 100%;
       display: flex;
@@ -366,10 +385,31 @@ export class HuiViewHeader extends LitElement {
       --badges-aligmnent: center;
     }
 
+    .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {
+      --badges-wrap: nowrap;
+      --badges-aligmnent: flex-start;
+      --badges-padding-right: 16px;
+    }
+
+    .container:not(.edit-mode) .layout.center.badges-scroll hui-view-badges {
+      --badges-aligmnent: space-around;
+    }
+
     @media (min-width: 768px) {
       .layout.responsive.has-heading {
         flex-direction: row;
         align-items: flex-end;
+      }
+      .layout.responsive.has-heading .badges.scroll {
+        mask-image: none;
+        padding: 0;
+      }
+      .container:not(.edit-mode)
+        .layout.responsive.badges-scroll.has-heading
+        hui-view-badges {
+        --badges-wrap: wrap;
+        --badges-aligmnent: flex-end;
+        --badges-padding-right: 0;
       }
       .layout.responsive.has-heading hui-view-badges {
         --badges-aligmnent: flex-end;

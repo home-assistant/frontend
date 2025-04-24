@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiAlertCircle,
@@ -503,7 +503,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         id: e.entity_id,
         entity_id: e.entity_id,
         icon: mdiCancel,
-        name: e.original_name || e.entity_id,
+        name: e.name || e.original_name || e.entity_id,
         editable: true,
         type: e.platform,
         configEntry: undefined,
@@ -796,7 +796,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                    <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -814,7 +814,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }

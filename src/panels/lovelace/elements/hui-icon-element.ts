@@ -31,7 +31,11 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
       throw Error("Icon required");
     }
 
-    this._config = { hold_action: { action: "more-info" }, ...config };
+    this._config = {
+      tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected render() {

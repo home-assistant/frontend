@@ -487,6 +487,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
   };
 
-// Load selected translation into memory immediately so it is ready when Polymer
+// Load selected translation into memory immediately so it is ready when the app
 // initializes.
 getTranslation(null, getLocalLanguage());

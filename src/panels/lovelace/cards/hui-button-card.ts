@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type {
   HassConfig,
   HassEntities,
@@ -78,9 +78,6 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     return {
       type: "button",
-      tap_action: {
-        action: "toggle",
-      },
       entity: foundEntities[0] || "",
     };
   }
@@ -96,7 +93,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     },
     watch: ["_config"],
   })
-  _stateObj?: HassEntity;
+  private _stateObj?: HassEntity;
 
   @state()
   @consume({ context: themesContext, subscribe: true })
@@ -164,6 +161,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         action: getEntityDefaultButtonAction(config.entity),
       },
       hold_action: { action: "more-info" },
+      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       state_color: true,
@@ -315,8 +313,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
         ha-card:focus-visible {
           --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px
-            var(--state-color, var(--state-icon-color, #44739e));
+          --shadow-focus: 0 0 0 1px var(--state-color, var(--state-icon-color, #44739e));
           border-color: var(--state-color, var(--state-icon-color, #44739e));
           box-shadow: var(--shadow-default), var(--shadow-focus);
         }

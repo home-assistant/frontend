@@ -1,14 +1,15 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-language-picker";
+import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
-import "../../../../components/ha-language-picker";
 import type { CloudStatusLoggedIn } from "../../../../data/cloud";
 import { updateCloudPref } from "../../../../data/cloud";
 import type { CloudTTSInfo } from "../../../../data/cloud/tts";
@@ -76,7 +77,7 @@ export class CloudTTSPref extends LitElement {
             >
               ${voices.map(
                 (voice) =>
-                  html`<mwc-list-item .value=${voice}>${voice}</mwc-list-item>`
+                  html`<ha-list-item .value=${voice}>${voice}</ha-list-item>`
               )}
             </ha-select>
           </div>

@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
   mdiConsoleLine,
   mdiDevices,
   mdiEarth,
+  mdiKeyboard,
   mdiMagnify,
   mdiReload,
   mdiServerNetwork,
@@ -19,17 +19,20 @@ import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-spinner";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
+import "../../components/ha-list";
 import "../../components/ha-list-item";
+import "../../components/ha-spinner";
 import "../../components/ha-textfield";
+import "../../components/ha-tip";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -39,8 +42,8 @@ import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
-import { computeDeviceName } from "../../data/device_registry";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -245,7 +248,7 @@ export class QuickBar extends LitElement {
                 </div>
               `
             : html`
-                <mwc-list>
+                <ha-list>
                   ${this._opened
                     ? html`<lit-virtualizer
                         tabindex="-1"
@@ -267,7 +270,7 @@ export class QuickBar extends LitElement {
                       >
                       </lit-virtualizer>`
                     : ""}
-                </mwc-list>
+                </ha-list>
               `}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
@@ -422,10 +425,12 @@ export class QuickBar extends LitElement {
   }
 
   private _addSpinnerToCommandItem(index: number): void {
+    const div = document.createElement("div");
+    div.slot = "meta";
     const spinner = document.createElement("ha-spinner");
     spinner.size = "small";
-    spinner.slot = "meta";
-    this._getItemAtIndex(index)?.appendChild(spinner);
+    div.appendChild(spinner);
+    this._getItemAtIndex(index)?.appendChild(div);
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
@@ -529,9 +534,7 @@ export class QuickBar extends LitElement {
           ? this.hass.areas[device.area_id]
           : undefined;
         const deviceItem = {
-          primaryText:
-            computeDeviceName(device, this.hass) ||
-            this.hass.localize("ui.components.device-picker.unnamed_device"),
+          primaryText: computeDeviceNameDisplay(device, this.hass),
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),
@@ -737,10 +740,20 @@ export class QuickBar extends LitElement {
       }
     }
 
+    const additionalItems = [
+      {
+        path: "",
+        primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
+        action: () => showShortcutsDialog(this),
+        iconPath: mdiKeyboard,
+      },
+    ];
+
     return this._finalizeNavigationCommands([
       ...panelItems,
       ...sectionItems,
       ...supervisorItems,
+      ...additionalItems,
     ]);
   }
 
@@ -817,12 +830,12 @@ export class QuickBar extends LitElement {
       const categoryKey: CommandItem["categoryKey"] = "navigation";
 
       const navItem = {
-        ...item,
         iconPath: mdiEarth,
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
         action: () => navigate(item.path),
+        ...item,
       };
 
       return {
@@ -843,7 +856,7 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
-        mwc-list {
+        ha-list {
           position: relative;
           --mdc-list-vertical-padding: 0;
         }

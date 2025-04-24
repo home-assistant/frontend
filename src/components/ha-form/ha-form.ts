@@ -20,6 +20,7 @@ const LOAD_ELEMENTS = {
     import("./ha-form-positive_time_period_dict"),
   select: () => import("./ha-form-select"),
   string: () => import("./ha-form-string"),
+  optional_actions: () => import("./ha-form-optional_actions"),
 };
 
 const getValue = (obj, item) =>
@@ -183,8 +184,8 @@ export class HaForm extends LitElement implements HaFormElement {
     return context;
   }
 
-  protected createRenderRoot() {
-    const root = super.createRenderRoot();
+  protected createRenderRoot(): HTMLElement | DocumentFragment {
+    const root = super.createRenderRoot() as ShadowRoot;
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(root);
     return root;

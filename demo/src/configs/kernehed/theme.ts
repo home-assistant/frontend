@@ -1,10 +1,8 @@
 // https://community.home-assistant.io/t/slate-a-new-dark-theme/86410
 export const demoThemeKernehed = () => ({
   "text-primary-color": "var(--primary-text-color)",
-  "paper-item-icon-color": "var(--primary-text-color)",
   "primary-color": "#2980b9",
   "label-badge-red": "var(--accent-color)",
-  "paper-tabs-selection-bar-color": "green",
   "primary-text-color": "#FFFFFF",
   "light-primary-color": "var(--accent-color)",
   "primary-background-color": "#222222",
@@ -15,7 +13,6 @@ export const demoThemeKernehed = () => ({
   "paper-item-icon_-_color": "green",
   "paper-grey-200": "#222222",
   "label-badge-background-color": "#222222",
-  "paper-card-header-color": "var(--accent-color)",
   "paper-listbox-background-color": "#141414",
   "table-row-background-color": "#292929",
   "paper-grey-50": "var(--primary-text-color)",

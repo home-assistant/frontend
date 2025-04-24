@@ -8,9 +8,9 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-formfield";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-select";
+import "../../../../components/ha-list-item";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { energyStatisticHelpUrl } from "../../../../data/energy";
 import { getStatisticLabel } from "../../../../data/recorder";
@@ -74,6 +74,7 @@ export class DialogEnergyDeviceSettings
     this._possibleParents = this._params.device_consumptions.filter(
       (d) =>
         d.stat_consumption !== this._device!.stat_consumption &&
+        d.stat_consumption !== this._params?.device?.stat_consumption &&
         !children.includes(d.stat_consumption)
     );
   }
@@ -160,18 +161,26 @@ export class DialogEnergyDeviceSettings
           naturalMenuWidth
           clearable
         >
-          ${this._possibleParents.map(
-            (stat) => html`
-              <mwc-list-item .value=${stat.stat_consumption}
-                >${stat.name ||
-                getStatisticLabel(
-                  this.hass,
-                  stat.stat_consumption,
-                  this._params?.statsMetadata?.[stat.stat_consumption]
-                )}</mwc-list-item
-              >
-            `
-          )}
+          ${!this._possibleParents.length
+            ? html`
+                <ha-list-item disabled value="-"
+                  >${this.hass.localize(
+                    "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
+                  )}</ha-list-item
+                >
+              `
+            : this._possibleParents.map(
+                (stat) => html`
+                  <ha-list-item .value=${stat.stat_consumption}
+                    >${stat.name ||
+                    getStatisticLabel(
+                      this.hass,
+                      stat.stat_consumption,
+                      this._params?.statsMetadata?.[stat.stat_consumption]
+                    )}</ha-list-item
+                  >
+                `
+              )}
         </ha-select>
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">

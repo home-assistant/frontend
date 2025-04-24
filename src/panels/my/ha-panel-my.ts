@@ -110,6 +110,10 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth",
   },
+  config_dhcp: {
+    component: "dhcp",
+    redirect: "/config/dhcp",
+  },
   config_energy: {
     component: "energy",
     redirect: "/config/energy/dashboard",
