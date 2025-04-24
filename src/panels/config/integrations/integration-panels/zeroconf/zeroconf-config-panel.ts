@@ -4,7 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import type { RowClickedEvent, DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
+import type {
+  RowClickedEvent,
+  DataTableColumnContainer,
+} from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
