@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -14,7 +12,7 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
@@ -288,26 +286,24 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   ${documentationURL
                     ? html`
-                        <mwc-list>
-                          <ha-clickable-list-item
-                            .href=${documentationURL}
-                            open-new-tab
-                            twoline
-                            hasMeta
+                        <ha-md-list-item
+                          .href=${documentationURL}
+                          type="link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation"
+                            )}</span
                           >
-                            <span
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation"
-                              )}</span
-                            >
-                            <span slot="secondary"
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation_description"
-                              )}</span
-                            >
-                            <ha-icon-next slot="meta"></ha-icon-next>
-                          </ha-clickable-list-item>
-                        </mwc-list>
+                          <span slot="supporting-text"
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation_description"
+                            )}</span
+                          >
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-md-list-item>
                       `
                     : ""}
                   ${boardConfigEntries.length ||

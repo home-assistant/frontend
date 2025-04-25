@@ -1,8 +1,9 @@
-import type { PropertyValues, TemplateResult } from "lit";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
@@ -25,6 +26,10 @@ class HaWebRtcPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entityid?: string;
+
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -69,6 +74,11 @@ class HaWebRtcPlayer extends LitElement {
         ?controls=${this.controls}
         poster=${ifDefined(this.posterUrl)}
         @loadeddata=${this._loadedData}
+        style=${styleMap({
+          height: this.aspectRatio == null ? "100%" : "auto",
+          aspectRatio: this.aspectRatio,
+          objectFit: this.fitMode,
+        })}
       ></video>
     `;
   }

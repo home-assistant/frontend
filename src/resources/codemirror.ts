@@ -191,7 +191,7 @@ export const haTheme = EditorView.theme({
   ".cm-gutters": {
     backgroundColor:
       "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
-    color: "var(--paper-dialog-color, var(--secondary-text-color))",
+    color: "var(--secondary-text-color)",
     border: "none",
     borderRight: "1px solid var(--secondary-text-color)",
     paddingRight: "1px",

@@ -18,7 +18,7 @@ Tooltips use `display: contents` so they won't interfere with how elements are p
 
 ## Documentation
 
-This element is based on sholace `sl-tooltip` it only sets some css tokens and has a custom show/hide animation.
+This element is based on shoelace `sl-tooltip` it only sets some css tokens and has a custom show/hide animation.
 
 <a href="https://shoelace.style/components/tooltip" target="_blank" rel="noopener noreferrer">Shoelace documentation</a>
 
@@ -28,3 +28,7 @@ In your theme settings use this without the prefixed `--`.
 
 - `--ha-tooltip-border-radius` (Default: 4px)
 - `--ha-tooltip-arrow-size` (Default: 8px)
+- `--sl-tooltip-font-family` (Default: `var(--ha-font-family-body)`)
+- `--ha-tooltip-font-size` (Default: `var(--ha-font-size-s)`)
+- `--sl-tooltip-font-weight` (Default: `var(--ha-font-weight-normal)`)
+- `--sl-tooltip-line-height` (Default: `var(--ha-line-height-condensed)`)

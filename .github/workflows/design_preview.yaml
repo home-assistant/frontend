@@ -39,13 +39,14 @@ jobs:
 
       - name: Deploy preview to Netlify
         id: deploy
-        uses: netlify/actions/cli@master
-        with:
-          args: deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}"
+        run: |
+          npx -y netlify-cli deploy --dir=gallery/dist --alias "deploy-preview-${{ github.event.number }}" \
+            --json > deploy_output.json
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_GALLERY_SITE_ID }}
 
       - name: Generate summary
         run: |
-          echo "${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}" >> "$GITHUB_STEP_SUMMARY"
+          NETLIFY_LIVE_URL=$(jq -r '.deploy_url' deploy_output.json)
+          echo "$NETLIFY_LIVE_URL" >> "$GITHUB_STEP_SUMMARY"

@@ -1,7 +1,6 @@
-import "@material/mwc-list/mwc-list";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { mdiDeleteOutline, mdiPlus, mdiMenuDown, mdiWifi } from "@mdi/js";
+import { mdiDeleteOutline, mdiMenuDown, mdiPlus, mdiWifi } from "@mdi/js";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -9,14 +8,15 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-password-field";
 import "../../../components/ha-radio";
-import "../../../components/ha-list-item";
 import type { HaRadio } from "../../../components/ha-radio";
+import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -154,7 +154,7 @@ export class HassioNetwork extends LitElement {
                 </ha-button>
                 ${this._accessPoints.length
                   ? html`
-                      <mwc-list>
+                      <ha-list>
                         ${this._accessPoints.map(
                           (ap) => html`
                             <ha-list-item
@@ -175,7 +175,7 @@ export class HassioNetwork extends LitElement {
                             </ha-list-item>
                           `
                         )}
-                      </mwc-list>
+                      </ha-list>
                     `
                   : nothing}
                 ${this._wifiConfiguration
@@ -380,7 +380,7 @@ export class HassioNetwork extends LitElement {
           ? html`
               ${this._interface![version].address.map(
                 (address: string, index: number) => {
-                  const { ip, mask } = parseAddress(address);
+                  const { ip, mask, prefix } = parseAddress(address);
                   return html`
                     <div class="address-row">
                       <ha-textfield
@@ -395,18 +395,35 @@ export class HassioNetwork extends LitElement {
                         .disabled=${disableInputs}
                       >
                       </ha-textfield>
-                      <ha-textfield
-                        id="netmask"
-                        .label=${this.hass.localize(
-                          "ui.panel.config.network.supervisor.netmask"
-                        )}
-                        .version=${version}
-                        .value=${mask}
-                        .index=${index}
-                        @change=${this._handleInputValueChanged}
-                        .disabled=${disableInputs}
-                      >
-                      </ha-textfield>
+                      ${version === "ipv6"
+                        ? html`
+                            <ha-textfield
+                              id="prefix"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.network.supervisor.prefix"
+                              )}
+                              .version=${version}
+                              .value=${prefix || ""}
+                              .index=${index}
+                              @change=${this._handleInputValueChanged}
+                              .disabled=${disableInputs}
+                            >
+                            </ha-textfield>
+                          `
+                        : html`
+                            <ha-textfield
+                              id="netmask"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.network.supervisor.netmask"
+                              )}
+                              .version=${version}
+                              .value=${mask || ""}
+                              .index=${index}
+                              @change=${this._handleInputValueChanged}
+                              .disabled=${disableInputs}
+                            >
+                            </ha-textfield>
+                          `}
                       ${this._interface![version].address.length > 1 &&
                       !disableInputs
                         ? html`
@@ -654,25 +671,30 @@ export class HassioNetwork extends LitElement {
     if (id === "address") {
       const index = (ev.target as any).index as number;
       const { mask: oldMask } = parseAddress(
-        this._interface![version]!.address![index]
+        this._interface[version].address![index]
       );
       const { mask } = parseAddress(value);
-      this._interface[version]!.address![index] = formatAddress(
+      this._interface[version].address![index] = formatAddress(
         value,
         mask || oldMask || ""
       );
       this.requestUpdate("_interface");
     } else if (id === "netmask") {
       const index = (ev.target as any).index as number;
-      const { ip } = parseAddress(this._interface![version]!.address![index]);
-      this._interface[version]!.address![index] = formatAddress(ip, value);
+      const { ip } = parseAddress(this._interface[version].address![index]);
+      this._interface[version].address![index] = formatAddress(ip, value);
+      this.requestUpdate("_interface");
+    } else if (id === "prefix") {
+      const index = (ev.target as any).index as number;
+      const { ip } = parseAddress(this._interface[version].address![index]);
+      this._interface[version].address![index] = `${ip}/${value}`;
       this.requestUpdate("_interface");
     } else if (id === "nameserver") {
       const index = (ev.target as any).index as number;
-      this._interface[version]!.nameservers![index] = value;
+      this._interface[version].nameservers![index] = value;
       this.requestUpdate("_interface");
     } else {
-      this._interface[version]![id] = value;
+      this._interface[version][id] = value;
     }
   }
 
@@ -789,6 +811,10 @@ export class HassioNetwork extends LitElement {
         }
         .address-row ha-textfield {
           flex: 1;
+        }
+        .address-row #prefix {
+          flex: none;
+          width: 95px;
         }
         .address-row ha-icon-button {
           --mdc-icon-button-size: 36px;

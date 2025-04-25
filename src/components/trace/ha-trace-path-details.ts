@@ -1,5 +1,5 @@
 import { dump } from "js-yaml";
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";

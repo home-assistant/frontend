@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -12,6 +11,7 @@ import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -142,7 +142,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <mwc-list>
+            <ha-list>
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
@@ -226,7 +226,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   </ha-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-list>
           `;
 
     return html`
@@ -571,10 +571,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       flex-grow: 1;
       height: 100%;
     }
-    .flex mwc-list {
+    .flex ha-list {
       padding-bottom: 64px;
     }
-    .flex mwc-list,
+    .flex ha-list,
     .flex .empty {
       border-left: 1px solid var(--divider-color);
       width: 250px;

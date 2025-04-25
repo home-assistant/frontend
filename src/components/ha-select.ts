@@ -3,9 +3,11 @@ import { styles } from "@material/mwc-select/mwc-select.css";
 import { mdiClose } from "@mdi/js";
 import { css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { debounce } from "../common/util/debounce";
 import { nextRender } from "../common/util/render-status";
 import "./ha-icon-button";
+import "./ha-menu";
 
 @customElement("ha-select")
 export class HaSelect extends SelectBase {
@@ -30,6 +32,27 @@ export class HaSelect extends SelectBase {
           ></ha-icon-button>`
         : nothing}
     `;
+  }
+
+  protected override renderMenu() {
+    const classes = this.getMenuClasses();
+    return html`<ha-menu
+      innerRole="listbox"
+      wrapFocus
+      class=${classMap(classes)}
+      activatable
+      .fullwidth=${this.fixedMenuPosition ? false : !this.naturalMenuWidth}
+      .open=${this.menuOpen}
+      .anchor=${this.anchorElement}
+      .fixed=${this.fixedMenuPosition}
+      @selected=${this.onSelected}
+      @opened=${this.onOpened}
+      @closed=${this.onClosed}
+      @items-updated=${this.onItemsUpdated}
+      @keydown=${this.handleTypeahead}
+    >
+      ${this.renderMenuContent()}
+    </ha-menu>`;
   }
 
   protected override renderLeadingIcon() {

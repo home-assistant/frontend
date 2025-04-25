@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,9 +8,10 @@ import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import { getSignedPath } from "../../../data/auth";
 import { getErrorLogDownloadUrl } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
@@ -150,7 +150,7 @@ export class SystemLogCard extends LitElement {
                           { term: this.filter }
                         )}
                       </div>`
-                    : html`<mwc-list
+                    : html`<ha-list
                         >${filteredItems.map(
                           (item, idx) => html`
                             <ha-list-item
@@ -184,7 +184,7 @@ export class SystemLogCard extends LitElement {
                               </span>
                             </ha-list-item>
                           `
-                        )}</mwc-list
+                        )}</ha-list
                       >`}
 
                 <div class="card-actions">
@@ -248,7 +248,7 @@ export class SystemLogCard extends LitElement {
     :host {
       direction: var(--direction);
     }
-    mwc-list {
+    ha-list {
       direction: ltr;
     }
 

@@ -6,6 +6,7 @@ import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
@@ -90,7 +91,7 @@ export class MQTTConfigPanel extends LitElement {
                   @selected=${this._handleQos}
                   >${qosLevel.map(
                     (qos) =>
-                      html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                      html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
                   )}
                 </ha-select>
                 <ha-formfield

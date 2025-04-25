@@ -189,7 +189,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
-          "ui.panel.config.integrations.config_flow.error_saving_area",
+          "ui.panel.config.integrations.config_flow.error_saving_device",
           { error: err.message }
         ),
       });

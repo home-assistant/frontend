@@ -65,19 +65,26 @@ const createRspackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          use: (info) => ({
-            loader: "babel-loader",
-            options: {
-              ...bundle.babelOptions({
-                latestBuild,
-                isProdBuild,
-                isTestBuild,
-                sw: info.issuerLayer === "sw",
-              }),
-              cacheDirectory: !isProdBuild,
-              cacheCompression: false,
+          exclude: /node_modules[\\/]core-js/,
+          use: (info) => [
+            {
+              loader: "babel-loader",
+              options: {
+                ...bundle.babelOptions({
+                  latestBuild,
+                  isProdBuild,
+                  isTestBuild,
+                  sw: info.issuerLayer === "sw",
+                }),
+                cacheDirectory: !isProdBuild,
+                cacheCompression: false,
+              },
             },
-          }),
+            {
+              loader: "builtin:swc-loader",
+              options: bundle.swcOptions(),
+            },
+          ],
           resolve: {
             fullySpecified: false,
           },
@@ -136,7 +143,8 @@ const createRspackConfig = ({
             // calling define.amd will call require("!!webpack amd options")
             resource.startsWith("!!webpack") ||
             // loaded by webpack dev server but doesn't exist.
-            resource === "webpack/hot"
+            resource === "webpack/hot" ||
+            resource.startsWith("@swc/helpers")
           ) {
             return false;
           }

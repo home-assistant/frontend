@@ -123,30 +123,6 @@ class HuiEnergySankeyCard
       });
     }
 
-    // Add battery source if available
-    if (types.battery) {
-      const totalBatteryOut =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery.map((source) => source.stat_energy_from)
-        ) || 0;
-
-      nodes.push({
-        id: "battery",
-        label: this.hass.localize(
-          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
-        ),
-        value: totalBatteryOut,
-        tooltip: `${formatNumber(totalBatteryOut, this.hass.locale)} kWh`,
-        color: computedStyle.getPropertyValue("--energy-battery-out-color"),
-        index: 0,
-      });
-      links.push({
-        source: "battery",
-        target: "home",
-      });
-    }
-
     // Add solar if available
     if (types.solar) {
       const totalSolarProduction =
@@ -172,26 +148,51 @@ class HuiEnergySankeyCard
       });
     }
 
-    // Calculate total home consumption from all source nodes
+    // Calculate total home consumption from all producers
     homeNode.value = nodes
       .filter((node) => node.index === 0)
       .reduce((sum, node) => sum + (node.value || 0), 0);
 
-    // Add battery sink if available
     if (types.battery) {
+      // Add battery source
+      const totalBatteryOut =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.battery.map((source) => source.stat_energy_from)
+        ) || 0;
       const totalBatteryIn =
         calculateStatisticsSumGrowth(
           this._data.stats,
           types.battery.map((source) => source.stat_energy_to)
         ) || 0;
+      const netBattery = totalBatteryOut - totalBatteryIn;
+      const netBatteryOut = Math.max(netBattery, 0);
+      const netBatteryIn = Math.max(-netBattery, 0);
+      homeNode.value += netBattery;
 
+      nodes.push({
+        id: "battery",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+        ),
+        value: netBatteryOut,
+        tooltip: `${formatNumber(netBatteryOut, this.hass.locale)} kWh`,
+        color: computedStyle.getPropertyValue("--energy-battery-out-color"),
+        index: 0,
+      });
+      links.push({
+        source: "battery",
+        target: "home",
+      });
+
+      // Add battery sink
       nodes.push({
         id: "battery_in",
         label: this.hass.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
         ),
-        value: totalBatteryIn,
-        tooltip: `${formatNumber(totalBatteryIn, this.hass.locale)} kWh`,
+        value: netBatteryIn,
+        tooltip: `${formatNumber(netBatteryIn, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue("--energy-battery-in-color"),
         index: 1,
       });
@@ -204,8 +205,6 @@ class HuiEnergySankeyCard
           });
         }
       });
-
-      homeNode.value -= totalBatteryIn;
     }
 
     // Add grid return if available
@@ -282,7 +281,7 @@ class HuiEnergySankeyCard
 
       const entityAreaId =
         entity?.area_id ??
-        (entity.device_id && this.hass.devices[entity.device_id]?.area_id);
+        (entity?.device_id && this.hass.devices[entity.device_id]?.area_id);
       if (entityAreaId && entityAreaId in this.hass.areas) {
         const area = this.hass.areas[entityAreaId];
 

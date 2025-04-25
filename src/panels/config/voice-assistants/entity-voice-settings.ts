@@ -13,12 +13,12 @@ import {
   generateEntityDomainFilter,
   isEmptyEntityDomainFilter,
 } from "../../../common/entity/entity_domain_filter";
+import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
+import "../../../components/ha-checkbox";
+import "../../../components/ha-formfield";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-alert";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import {
@@ -30,16 +30,16 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { GoogleEntity } from "../../../data/google_assistant";
-import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import type { GoogleEntity } from "../../../data/google_assistant";
+import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
 import { documentationUrl } from "../../../util/documentation-url";
+import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {

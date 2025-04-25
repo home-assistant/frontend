@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiDrag } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -16,10 +15,11 @@ import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
 import "../ha-input-helper-text";
+import "../ha-list-item";
 import "../ha-radio";
 import "../ha-select";
-import "../ha-sortable";
 import "../ha-select-box";
+import "../ha-sortable";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
@@ -274,8 +274,8 @@ export class HaSelectSelector extends LitElement {
       >
         ${options.map(
           (item: SelectOption) => html`
-            <mwc-list-item .value=${item.value} .disabled=${item.disabled}
-              >${item.label}</mwc-list-item
+            <ha-list-item .value=${item.value} .disabled=${item.disabled}
+              >${item.label}</ha-list-item
             >
           `
         )}
@@ -420,11 +420,10 @@ export class HaSelectSelector extends LitElement {
       position: relative;
     }
     ha-select,
-    mwc-formfield,
     ha-formfield {
       display: block;
     }
-    mwc-list-item[disabled] {
+    ha-list-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
     }
     ha-chip-set {

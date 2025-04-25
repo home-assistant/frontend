@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -15,6 +15,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
@@ -157,13 +158,13 @@ class MoreInfoMediaPlayer extends LitElement {
               >
                 ${stateObj.attributes.source_list!.map(
                   (source) => html`
-                    <mwc-list-item .value=${source}>
+                    <ha-list-item .value=${source}>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "source",
                         source
                       )}
-                    </mwc-list-item>
+                    </ha-list-item>
                   `
                 )}
                 <ha-svg-icon .path=${mdiLoginVariant} slot="icon"></ha-svg-icon>
@@ -187,13 +188,13 @@ class MoreInfoMediaPlayer extends LitElement {
               >
                 ${stateObj.attributes.sound_mode_list.map(
                   (mode) => html`
-                    <mwc-list-item .value=${mode}>
+                    <ha-list-item .value=${mode}>
                       ${this.hass.formatEntityAttributeValue(
                         stateObj,
                         "sound_mode",
                         mode
                       )}
-                    </mwc-list-item>
+                    </ha-list-item>
                   `
                 )}
                 <ha-svg-icon .path=${mdiMusicNote} slot="icon"></ha-svg-icon>

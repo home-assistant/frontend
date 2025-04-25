@@ -1,6 +1,5 @@
-import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import type { List } from "@material/mwc-list/mwc-list";
+import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiClock,
   mdiDelete,
@@ -19,13 +18,14 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-markdown-element";
 import "../../../components/ha-relative-time";
@@ -39,12 +39,12 @@ import type { TodoItem } from "../../../data/todo";
 import {
   TodoItemStatus,
   TodoListEntityFeature,
+  TodoSortMode,
   createItem,
   deleteItems,
   moveItem,
   subscribeItems,
   updateItem,
-  TodoSortMode,
 } from "../../../data/todo";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
@@ -273,7 +273,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           .disabled=${!this._reordering}
           @item-moved=${this._itemMoved}
         >
-          <mwc-list wrapFocus multi>
+          <ha-list wrapFocus multi>
             ${uncheckedItems.length
               ? html`
                   <div class="header" role="seperator">
@@ -363,7 +363,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   ${this._renderItems(checkedItems, unavailable)}
                 `
               : ""}
-          </mwc-list>
+          </ha-list>
         </ha-sortable>
       </ha-card>
     `;
@@ -543,7 +543,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     let focusedIndex: number | undefined;
     let list: List | undefined;
     if (ev.type === "keydown") {
-      list = this.renderRoot.querySelector("mwc-list")!;
+      list = this.renderRoot.querySelector("ha-list")!;
       focusedIndex = list.getFocusedItemIndex();
     }
     const item = this._getItem(ev.currentTarget.itemId);
