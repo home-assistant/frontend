@@ -82,9 +82,7 @@ const createRspackConfig = ({
             },
             {
               loader: "builtin:swc-loader",
-              options: bundle.swcOptions({
-                latestBuild,
-              }),
+              options: bundle.swcOptions(),
             },
           ],
           resolve: {
