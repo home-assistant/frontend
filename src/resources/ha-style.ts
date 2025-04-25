@@ -5,31 +5,13 @@ import {
   DEFAULT_PRIMARY_COLOR,
   derivedStyles,
 } from "./styles-data";
+import { typographyStyles } from "./theme/typography";
 
 const mainStyles = css`
   /*
     Home Assistant default styles.
   */
   html {
-    /* typography */
-    --ha-font-family-body: Roboto, Noto, sans-serif;
-    --ha-font-family-code: monospace;
-    --ha-font-family-longform: ui-sans-serif, system-ui, sans-serif;
-
-    font-size: 14px;
-    --ha-font-size-scale: 1;
-
-    --ha-font-weight-light: 300;
-    --ha-font-weight-normal: 400;
-    --ha-font-weight-semibold: 500;
-    --ha-font-weight-bold: 600;
-
-    --ha-line-height-condensed: 1.2;
-    --ha-line-height-normal: 1.6;
-    --ha-line-height-expanded: 2;
-
-    --ha-font-smoothing: antialiased;
-
     height: 100vh;
 
     /* text */
@@ -161,5 +143,5 @@ const mainStyles = css`
 `.toString();
 
 const styleElement = document.createElement("style");
-styleElement.textContent = [mainStyles, fontStyles].join("");
+styleElement.textContent = [mainStyles, typographyStyles, fontStyles].join("");
 document.head.append(styleElement);

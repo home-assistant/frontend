@@ -57,22 +57,6 @@ export const darkStyles = {
 } as const;
 
 export const derivedStyles = {
-  /* typography */
-  "ha-font-size-xs": "calc(10px * var(--ha-font-size-scale))",
-  "ha-font-size-s": "calc(12px * var(--ha-font-size-scale))",
-  "ha-font-size-m": "calc(14px * var(--ha-font-size-scale))",
-  "ha-font-size-l": "calc(16px * var(--ha-font-size-scale))",
-  "ha-font-size-xl": "calc(20px * var(--ha-font-size-scale))",
-  "ha-font-size-2xl": "calc(24px * var(--ha-font-size-scale))",
-  "ha-font-size-3xl": "calc(28px * var(--ha-font-size-scale))",
-  "ha-font-size-4xl": "calc(32px * var(--ha-font-size-scale))",
-  "ha-font-size-5xl": "calc(40px * var(--ha-font-size-scale))",
-
-  "ha-font-family-heading": "var(--ha-font-family-body)",
-  "ha-font-weight-body": "var(--ha-font-weight-normal)",
-  "ha-font-weight-heading": "var(--ha-font-weight-bold)",
-  "ha-font-weight-action": "var(--ha-font-weight-semibold)",
-
   /* Vaadin typography */
   "material-h6-font-size": "var(--ha-font-size-m)",
   "material-small-font-size": "var(--ha-font-size-xs)",
