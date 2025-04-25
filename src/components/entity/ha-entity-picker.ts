@@ -23,7 +23,7 @@ import type {
 import "./state-badge";
 
 @customElement("ha-entity-picker")
-class HaEntityPicker extends LitElement {
+export class HaEntityPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
