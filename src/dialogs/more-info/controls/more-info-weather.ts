@@ -29,6 +29,7 @@ import {
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-state-icon";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
@@ -41,6 +42,11 @@ class MoreInfoWeather extends LitElement {
   @state() private _forecastType?: ModernForecastType;
 
   @state() private _subscribed?: Promise<() => void>;
+
+  // @ts-ignore
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".forecast",
+  });
 
   private _unsubscribeForecastEvents() {
     if (this._subscribed) {
@@ -547,6 +553,7 @@ class MoreInfoWeather extends LitElement {
             black 94%,
             transparent 100%
           );
+          user-select: none;
         }
 
         .forecast > div {
