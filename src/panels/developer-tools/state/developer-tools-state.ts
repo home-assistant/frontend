@@ -1,5 +1,6 @@
 import {
   mdiClipboardTextMultipleOutline,
+  mdiContentCopy,
   mdiInformationOutline,
   mdiRefresh,
 } from "@mdi/js";
@@ -19,22 +20,23 @@ import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { isMobileClient } from "../../../util/is_mobile";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-input-helper-text";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tip";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import "../../../components/search-input";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
+import { showToast } from "../../../util/toast";
 
 @customElement("developer-tools-state")
 class HaPanelDevState extends LitElement {
@@ -128,18 +130,20 @@ class HaPanelDevState extends LitElement {
               .value=${this._entityId}
               @value-changed=${this._entityIdChanged}
               allow-custom-entity
-              item-label-path="entity_id"
             ></ha-entity-picker>
-            ${this.hass.enableShortcuts && !isMobileClient
-              ? html`<ha-tip .hass=${this.hass}
-                  >${this.hass.localize("ui.tips.key_e_tip", {
-                    keyboard_shortcut: html`<a
-                      href="#"
-                      @click=${this._openShortcutDialog}
-                      >${this.hass.localize("ui.tips.keyboard_shortcut")}</a
-                    >`,
-                  })}</ha-tip
-                >`
+            ${this._entityId
+              ? html`
+                  <div class="entity-id">
+                    <span>${this._entityId}</span>
+                    <ha-icon-button
+                      .path=${mdiContentCopy}
+                      @click=${this._copyStateEntity}
+                      title=${this.hass.localize(
+                        "ui.panel.developer-tools.tabs.states.copy_id"
+                      )}
+                    ></ha-icon-button>
+                  </div>
+                `
               : nothing}
             <ha-textfield
               .label=${this.hass.localize(
@@ -335,6 +339,14 @@ class HaPanelDevState extends LitElement {
     ev.preventDefault();
     const entity = (ev.currentTarget! as any).entity;
     await copyToClipboard(entity.entity_id);
+  }
+
+  private async _copyStateEntity(ev) {
+    ev.preventDefault();
+    await copyToClipboard(this._entityId);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private _entitySelected(ev) {
@@ -599,6 +611,32 @@ class HaPanelDevState extends LitElement {
           display: block;
         }
 
+        .entity-id {
+          display: block;
+          font-family: var(--ha-font-family-code);
+          color: var(--secondary-text-color);
+          padding: 0 8px;
+          margin-bottom: 8px;
+          margin-top: 4px;
+          font-size: 12px;
+          --mdc-icon-size: 14px;
+          --mdc-icon-button-size: 24px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .entity-id ha-icon-button {
+          flex: none;
+        }
+
+        .entity-id span {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
         .state-input {
           margin-top: 16px;
         }
@@ -640,11 +678,6 @@ class HaPanelDevState extends LitElement {
         .filters search-input {
           display: block;
           --mdc-text-field-fill-color: transparent;
-        }
-        ha-tip {
-          display: flex;
-          padding: 8px 0;
-          text-align: left;
         }
 
         th.attributes {
