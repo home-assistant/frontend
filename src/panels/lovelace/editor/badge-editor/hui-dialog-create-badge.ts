@@ -243,7 +243,7 @@ export class HuiCreateDialogBadge
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = ev.detail.nname;
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
