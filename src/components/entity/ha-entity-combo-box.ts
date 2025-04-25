@@ -514,7 +514,6 @@ export class HaEntityComboBox extends LitElement {
     }
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
     }, 0);
   }
 }

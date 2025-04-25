@@ -220,9 +220,8 @@ export class HaEntityPicker extends LitElement {
   private _clear(e) {
     e.stopPropagation();
     this.value = undefined;
-    fireEvent(this, "value-changed", {
-      value: undefined,
-    });
+    fireEvent(this, "value-changed", { value: undefined });
+    fireEvent(this, "change");
   }
 
   private _showPicker() {
