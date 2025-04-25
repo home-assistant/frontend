@@ -192,12 +192,8 @@ class HaEntityPicker extends LitElement {
             .hass=${this.hass}
             .itemLabelPath=${this.itemLabelPath}
             .autofocus=${this.autofocus}
-            .disabled=${this.disabled}
-            .required=${this.required}
             .allowCustomEntity=${this.allowCustomEntity}
             .label=${this.hass.localize("ui.common.search")}
-            .value=${this.value}
-            .helper=${this.helper}
             .createDomains=${this.createDomains}
             .includeDomains=${this.includeDomains}
             .excludeDomains=${this.excludeDomains}
@@ -209,8 +205,15 @@ class HaEntityPicker extends LitElement {
             hide-clear-icon
           ></ha-entity-combo-box>
         </mwc-menu-surface>
+        ${this._renderHelper()}
       </div>
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+      : "";
   }
 
   private _clear(e) {

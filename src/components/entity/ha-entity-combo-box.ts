@@ -14,6 +14,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
@@ -423,6 +424,12 @@ export class HaEntityComboBox extends LitElement {
       this._initialItems = true;
     }
 
+    if (changedProps.has("_opened") && !this._opened) {
+      // Reset the input value when closed
+      // to avoid showing the last search term when opening again
+      this.comboBox?.setInputValue("");
+    }
+
     if (changedProps.has("createDomains") && this.createDomains?.length) {
       this.hass.loadFragmentTranslation("config");
     }
@@ -513,7 +520,9 @@ export class HaEntityComboBox extends LitElement {
   }
 
   private _setValue(value: string | undefined) {
-    this.value = value;
+    if (value && !isValidEntityId(value)) {
+      return;
+    }
     setTimeout(() => {
       fireEvent(this, "value-changed", { value });
       fireEvent(this, "change");
