@@ -313,8 +313,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
         ha-card:focus-visible {
           --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px var(--state-color, var(--state-icon-color, #44739e));
-          border-color: var(--state-color, var(--state-icon-color, #44739e));
+          --shadow-focus: 0 0 0 1px var(--state-color, var(--state-icon-color));
+          border-color: var(--state-color, var(--state-icon-color));
           box-shadow: var(--shadow-default), var(--shadow-focus);
         }
 
