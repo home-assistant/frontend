@@ -9364,6 +9364,7 @@ __metadata:
     "@lit-labs/observers": "npm:2.0.5"
     "@lit-labs/virtualizer": "npm:2.1.0"
     "@lit/context": "npm:1.1.5"
+    "@lit/reactive-element": "npm:2.1.0"
     "@lokalise/node-api": "npm:14.4.0"
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
@@ -9486,7 +9487,7 @@ __metadata:
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.6.1"
     map-stream: "npm:0.0.7"
-    marked: "npm:15.0.8"
+    marked: "npm:15.0.9"
     memoize-one: "npm:6.0.0"
     node-vibrant: "npm:4.0.3"
     object-hash: "npm:3.0.0"
@@ -11168,12 +11169,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:15.0.8":
-  version: 15.0.8
-  resolution: "marked@npm:15.0.8"
+"marked@npm:15.0.9":
+  version: 15.0.9
+  resolution: "marked@npm:15.0.9"
   bin:
     marked: bin/marked.js
-  checksum: 10/5510391949661699270f5b8e044c9c69fe1318205c0cd74431f7f6ea31a20087f5fe9b12e55d3d470caa6784d1b66bde7dd3d137177337bb680de133b9a3c0c2
+  checksum: 10/618918268f40ae92707829f43b04ee865ab48a4528d1bc89122fe25fe79e43efd0dfe8010415c2d15948148e848f289b26f3cfacbc908b3931e6614814e9549f
   languageName: node
   linkType: hard
 

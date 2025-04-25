@@ -74,11 +74,11 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
 });
 
 /** @type {import('@rspack/core').SwcLoaderOptions} */
-module.exports.swcOptions = ({ latestBuild }) => ({
+module.exports.swcOptions = () => ({
   jsc: {
     loose: true,
     externalHelpers: true,
-    target: latestBuild ? "ES2021" : "ES5",
+    target: "ES2021",
     parser: {
       syntax: "typescript",
       decorators: true,

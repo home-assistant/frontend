@@ -198,6 +198,8 @@ export class HuiCreateDialogCard
         @media all and (min-width: 850px) {
           ha-dialog {
             --mdc-dialog-min-width: 845px;
+            --mdc-dialog-min-height: calc(100vh - 72px);
+            --mdc-dialog-max-height: calc(100vh - 72px);
           }
         }
 
@@ -226,7 +228,7 @@ export class HuiCreateDialogCard
         }
         hui-card-picker {
           --card-picker-search-shape: 0;
-          --card-picker-search-margin: -2px -24px 0;
+          --card-picker-search-margin: 0 -24px 0;
         }
         hui-entity-picker-table {
           display: block;
