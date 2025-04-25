@@ -40,7 +40,7 @@ const FAKE_ENTITY: HassEntity = {
 };
 
 interface EntityComboBoxItem extends HassEntity {
-  label: string;
+  label: "";
   primary: string;
   secondary?: string;
   translated_domain?: string;
@@ -149,8 +149,6 @@ export class HaEntityComboBox extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @property({ attribute: "item-label-path" }) public itemLabelPath = "label";
-
   @state() private _opened = false;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -241,14 +239,14 @@ export class HaEntityComboBox extends LitElement {
 
             return {
               ...FAKE_ENTITY,
+              label: "",
               entity_id: CREATE_ID + domain,
               primary: primary,
-              label: primary,
               secondary: this.hass.localize(
                 "ui.components.entity.entity-picker.new_entity"
               ),
               icon_path: mdiPlus,
-            };
+            } satisfies EntityComboBoxItem;
           })
         : [];
 
@@ -256,10 +254,8 @@ export class HaEntityComboBox extends LitElement {
         return [
           {
             ...FAKE_ENTITY,
+            label: "",
             primary: this.hass!.localize(
-              "ui.components.entity.entity-picker.no_entities"
-            ),
-            label: this.hass!.localize(
               "ui.components.entity.entity-picker.no_entities"
             ),
             icon_path: mdiMagnify,
@@ -317,11 +313,11 @@ export class HaEntityComboBox extends LitElement {
 
           return {
             ...hass!.states[entityId],
+            label: "",
             primary: primary,
             secondary:
               secondary ||
               this.hass.localize("ui.components.device-picker.no_area"),
-            label: friendlyName,
             translated_domain: translatedDomain,
             sorting_label: [deviceName, entityName].filter(Boolean).join("-"),
             entity_name: entityName || deviceName,
@@ -373,10 +369,8 @@ export class HaEntityComboBox extends LitElement {
         return [
           {
             ...FAKE_ENTITY,
+            label: "",
             primary: this.hass!.localize(
-              "ui.components.entity.entity-picker.no_match"
-            ),
-            label: this.hass!.localize(
               "ui.components.entity.entity-picker.no_match"
             ),
             icon_path: mdiMagnify,
@@ -424,12 +418,6 @@ export class HaEntityComboBox extends LitElement {
       this._initialItems = true;
     }
 
-    if (changedProps.has("_opened") && !this._opened) {
-      // Reset the input value when closed
-      // to avoid showing the last search term when opening again
-      this.comboBox?.setInputValue("");
-    }
-
     if (changedProps.has("createDomains") && this.createDomains?.length) {
       this.hass.loadFragmentTranslation("config");
     }
@@ -439,7 +427,6 @@ export class HaEntityComboBox extends LitElement {
     return html`
       <ha-combo-box
         item-value-path="entity_id"
-        .itemLabelPath=${this.itemLabelPath}
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined
@@ -470,6 +457,8 @@ export class HaEntityComboBox extends LitElement {
 
   private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
+    // Clear the input field to prevent showing the old value next time
+    this.comboBox.setTextFieldValue("");
     const newValue = ev.detail.value?.trim();
 
     if (newValue && newValue.startsWith(CREATE_ID)) {
@@ -520,7 +509,7 @@ export class HaEntityComboBox extends LitElement {
   }
 
   private _setValue(value: string | undefined) {
-    if (value && !isValidEntityId(value)) {
+    if (!value || !isValidEntityId(value)) {
       return;
     }
     setTimeout(() => {
