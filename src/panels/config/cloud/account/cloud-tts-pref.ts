@@ -16,11 +16,29 @@ import type { CloudTTSInfo } from "../../../../data/cloud/tts";
 import {
   getCloudTTSInfo,
   getCloudTtsLanguages,
-  getCloudTtsSupportedVoices,
 } from "../../../../data/cloud/tts";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
+
+export const getCloudTtsSupportedVoices = (
+  language: string,
+  info: CloudTTSInfo | undefined
+) => {
+  const voices: { voiceId: string; voiceName: string }[] = [];
+
+  if (!info) {
+    return voices;
+  }
+
+  for (const [curLang, voiceId, voiceName] of info.languages) {
+    if (curLang === language) {
+      voices.push({ voiceId, voiceName });
+    }
+  }
+
+  return voices;
+};
 
 @customElement("cloud-tts-pref")
 export class CloudTTSPref extends LitElement {
@@ -77,7 +95,9 @@ export class CloudTTSPref extends LitElement {
             >
               ${voices.map(
                 (voice) =>
-                  html`<ha-list-item .value=${voice}>${voice}</ha-list-item>`
+                  html`<ha-list-item .value=${voice.voiceId}>
+                    ${voice.voiceName}
+                  </ha-list-item>`
               )}
             </ha-select>
           </div>
@@ -132,9 +152,9 @@ export class CloudTTSPref extends LitElement {
 
     const curVoice = this.cloudStatus!.prefs.tts_default_voice[1];
     const voices = this.getSupportedVoices(language, this.ttsInfo);
-    const newVoice = voices.find((item) => item === curVoice)
+    const newVoice = voices.find((item) => item.voiceId === curVoice)
       ? curVoice
-      : voices[0];
+      : voices[0].voiceId;
 
     try {
       await updateCloudPref(this.hass, {
