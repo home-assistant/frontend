@@ -269,8 +269,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       iconColorCSS,
       css`
         ha-card {
-          --state-inactive-color: var(--state-icon-color, #44739e);
-          --state-color: var(--state-icon-color, #44739e);
+          --state-inactive-color: var(--state-icon-color);
+          --state-color: var(--state-icon-color);
           --ha-ripple-color: var(--state-color);
           --ha-ripple-hover-opacity: 0.04;
           --ha-ripple-pressed-opacity: 0.12;
