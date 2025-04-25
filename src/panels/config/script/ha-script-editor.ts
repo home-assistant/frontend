@@ -17,21 +17,10 @@ import {
   mdiTag,
   mdiTransitConnection,
 } from "@mdi/js";
-import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import {
-  any,
-  array,
-  enums,
-  number,
-  object,
-  optional,
-  string,
-  assert,
-} from "superstruct";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -56,13 +45,12 @@ import {
 } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
-  MODES,
+  normalizeScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
-  migrateAutomationAction,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -81,22 +69,10 @@ import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
-import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
-
-const scriptConfigStruct = object({
-  alias: optional(string()),
-  description: optional(string()),
-  sequence: optional(array(any())),
-  icon: optional(string()),
-  mode: optional(enums([typeof MODES])),
-  max: optional(number()),
-  fields: optional(object()),
-});
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -116,10 +92,6 @@ export class HaScriptEditor extends SubscribeMixin(
   @property({ attribute: false }) public route!: Route;
 
   @state() private _config?: ScriptConfig;
-
-  @state() private _pastedConfig?: ScriptConfig;
-
-  private _previousConfig?: ScriptConfig;
 
   @state() private _dirty = false;
 
@@ -454,8 +426,8 @@ export class HaScriptEditor extends SubscribeMixin(
                           .narrow=${this.narrow}
                           .isWide=${this.isWide}
                           .config=${this._config}
-                          .pastedConfig=${this._pastedConfig}
                           .disabled=${this._readOnly}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                         ></manual-script-editor>
                       `}
@@ -532,7 +504,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
@@ -545,133 +517,6 @@ export class HaScriptEditor extends SubscribeMixin(
       this._dirty = false;
       this._readOnly = true;
     }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("paste", this._handlePaste);
-  }
-
-  public disconnectedCallback() {
-    window.removeEventListener("paste", this._handlePaste);
-    super.disconnectedCallback();
-  }
-
-  private _handlePaste = async (ev: ClipboardEvent) => {
-    // Ignore events on inputs/textareas
-    if (!canOverrideAlphanumericInput(ev.composedPath())) {
-      return;
-    }
-
-    const paste = ev.clipboardData?.getData("text");
-    if (!paste) {
-      return;
-    }
-
-    const loaded: any = load(paste);
-    if (loaded) {
-      let normalized: ScriptConfig | undefined;
-
-      try {
-        normalized = this._normalizeConfig(loaded);
-      } catch (_err: any) {
-        return;
-      }
-
-      try {
-        assert(normalized, scriptConfigStruct);
-      } catch (_err: any) {
-        showToast(this, {
-          message: this.hass.localize(
-            "ui.panel.config.script.editor.paste_invalid_config"
-          ),
-          duration: 4000,
-          dismissable: true,
-        });
-        return;
-      }
-
-      if (normalized) {
-        ev.preventDefault();
-
-        if (this._dirty) {
-          const result = await new Promise<boolean>((resolve) => {
-            showPasteReplaceDialog(this, {
-              domain: "script",
-              pastedConfig: normalized,
-              onClose: () => resolve(false),
-              onAppend: () => {
-                this._appendToExistingConfig(normalized);
-                resolve(false);
-              },
-              onReplace: () => resolve(true),
-            });
-          });
-
-          if (!result) {
-            return;
-          }
-        }
-
-        // replace the config completely
-        this._replaceExistingConfig(normalized);
-      }
-    }
-  };
-
-  private _appendToExistingConfig(config: ScriptConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this._config } as ScriptConfig;
-    this._pastedConfig = config;
-
-    if (!this._config) {
-      return;
-    }
-
-    this._config.fields = {
-      ...this._config.fields,
-      ...config.fields,
-    };
-
-    if (Array.isArray(this._config?.sequence)) {
-      this._config.sequence = this._config.sequence.concat(
-        config.sequence || []
-      );
-    }
-
-    this._dirty = true;
-    this._errors = undefined;
-
-    this._showPastedToastWithUndo();
-  }
-
-  private _replaceExistingConfig(config: ScriptConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this._config } as ScriptConfig;
-    this._config = config;
-    this._pastedConfig = config;
-    this._dirty = true;
-    this._errors = undefined;
-
-    this._showPastedToastWithUndo();
-  }
-
-  private _showPastedToastWithUndo() {
-    showToast(this, {
-      message: this.hass.localize(
-        "ui.panel.config.script.editor.paste_toast_message"
-      ),
-      duration: 4000,
-      action: {
-        text: this.hass.localize("ui.common.undo"),
-        action: () => {
-          this._config = this._previousConfig;
-          this._errors = undefined;
-          this._previousConfig = undefined;
-          this._pastedConfig = undefined;
-        },
-      },
-    });
   }
 
   private async _checkValidation() {
@@ -698,25 +543,12 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
-    // Normalize data: ensure sequence is a list
-    // Happens when people copy paste their scripts into the config
-    const value = config.sequence;
-    if (value && !Array.isArray(value)) {
-      config.sequence = [value];
-    }
-    if (config.sequence) {
-      config.sequence = migrateAutomationAction(config.sequence);
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     fetchScriptFileConfig(this.hass, this.scriptId!).then(
       (config) => {
         this._dirty = false;
         this._readOnly = false;
-        this._config = this._normalizeConfig(config);
+        this._config = normalizeScriptConfig(config);
         const entity = this.entityRegistry.find(
           (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
         );
@@ -749,24 +581,9 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _valueChanged(ev) {
-    // reset the pasted config as soon as the user starts editing
-    if (this._previousConfig) {
-      this._resetPastedConfig();
-    }
-
     this._config = ev.detail.value;
     this._errors = undefined;
     this._dirty = true;
-  }
-
-  private _resetPastedConfig() {
-    this._pastedConfig = undefined;
-    this._previousConfig = undefined;
-
-    showToast(this, {
-      message: "",
-      duration: 0,
-    });
   }
 
   private async _runScript(ev: CustomEvent) {
@@ -940,7 +757,7 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       const newConfig = {
-        ...this._normalizeConfig(result.substituted_config),
+        ...normalizeScriptConfig(result.substituted_config),
         alias: config.alias,
         description: config.description,
       };
@@ -1083,10 +900,7 @@ export class HaScriptEditor extends SubscribeMixin(
       return;
     }
 
-    // reset the pasted config as soon as the user saves
-    if (this._previousConfig) {
-      this._resetPastedConfig();
-    }
+    this._manualEditor?.resetPastedConfig();
 
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();

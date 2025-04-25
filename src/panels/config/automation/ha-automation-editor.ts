@@ -21,19 +21,8 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { load } from "js-yaml";
-import {
-  any,
-  array,
-  object,
-  optional,
-  string,
-  assert,
-  union,
-  assign,
-} from "superstruct";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -92,8 +81,7 @@ import {
 } from "./automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
-import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
+import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -111,23 +99,6 @@ declare global {
     duplicate: undefined;
   }
 }
-
-const baseConfigStruct = object({
-  alias: optional(string()),
-  description: optional(string()),
-  triggers: optional(array(any())),
-  conditions: optional(array(any())),
-  actions: optional(array(any())),
-  mode: optional(string()),
-  max_exceeded: optional(string()),
-  id: optional(string()),
-});
-
-const automationConfigStruct = union([
-  assign(baseConfigStruct, object({ triggers: array(any()) })),
-  assign(baseConfigStruct, object({ conditions: array(any()) })),
-  assign(baseConfigStruct, object({ actions: array(any()) })),
-]);
 
 export class HaAutomationEditor extends PreventUnsavedMixin(
   KeyboardShortcutMixin(LitElement)
@@ -147,10 +118,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @property({ attribute: false }) public route!: Route;
 
   @state() private _config?: AutomationConfig;
-
-  @state() private _pastedConfig?: AutomationConfig;
-
-  private _previousConfig?: AutomationConfig;
 
   @state() private _dirty = false;
 
@@ -182,6 +149,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry!: EntityRegistryEntry[];
+
+  @query("manual-automation-editor")
+  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -502,8 +472,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .isWide=${this.isWide}
                           .stateObj=${stateObj}
                           .config=${this._config}
-                          .pastedConfig=${this._pastedConfig}
                           .disabled=${Boolean(this._readOnly)}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                         ></manual-automation-editor>
                       `}
@@ -614,137 +584,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     }
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("paste", this._handlePaste);
-  }
-
-  public disconnectedCallback() {
-    window.removeEventListener("paste", this._handlePaste);
-    super.disconnectedCallback();
-  }
-
-  private _handlePaste = async (ev: ClipboardEvent) => {
-    if (!canOverrideAlphanumericInput(ev.composedPath())) {
-      return;
-    }
-
-    const paste = ev.clipboardData?.getData("text");
-    if (!paste) {
-      return;
-    }
-
-    const loaded: any = load(paste);
-    if (loaded) {
-      let normalized: AutomationConfig | undefined;
-
-      try {
-        normalized = normalizeAutomationConfig(loaded);
-      } catch (_err: any) {
-        return;
-      }
-
-      try {
-        assert(normalized, automationConfigStruct);
-      } catch (_err: any) {
-        showToast(this, {
-          message: this.hass.localize(
-            "ui.panel.config.automation.editor.paste_invalid_config"
-          ),
-          duration: 4000,
-          dismissable: true,
-        });
-        return;
-      }
-
-      if (normalized) {
-        ev.preventDefault();
-
-        if (this._dirty) {
-          const result = await new Promise<boolean>((resolve) => {
-            showPasteReplaceDialog(this, {
-              domain: "automation",
-              pastedConfig: normalized,
-              onClose: () => resolve(false),
-              onAppend: () => {
-                this._appendToExistingConfig(normalized);
-                resolve(false);
-              },
-              onReplace: () => resolve(true),
-            });
-          });
-
-          if (!result) {
-            return;
-          }
-        }
-
-        // replace the config completely
-        this._replaceExistingConfig(normalized);
-      }
-    }
-  };
-
-  private _appendToExistingConfig(config: AutomationConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this._config } as AutomationConfig;
-    this._pastedConfig = config;
-
-    if (!this._config) {
-      return;
-    }
-
-    if (Array.isArray(this._config?.triggers)) {
-      this._config.triggers = this._config.triggers.concat(
-        config.triggers || []
-      );
-    }
-
-    if (Array.isArray(this._config?.conditions)) {
-      this._config.conditions = this._config.conditions.concat(
-        config.conditions || []
-      );
-    }
-
-    if (Array.isArray(this._config?.actions)) {
-      this._config.actions = this._config.actions.concat(config.actions || []);
-    }
-
-    this._dirty = true;
-    this._errors = undefined;
-
-    this._showPastedToastWithUndo();
-  }
-
-  private _replaceExistingConfig(config: AutomationConfig) {
-    // make a copy otherwise we will reference the original config
-    this._previousConfig = { ...this._config } as AutomationConfig;
-    this._config = config;
-    this._pastedConfig = config;
-    this._dirty = true;
-    this._errors = undefined;
-
-    this._showPastedToastWithUndo();
-  }
-
-  private _showPastedToastWithUndo() {
-    showToast(this, {
-      message: this.hass.localize(
-        "ui.panel.config.automation.editor.paste_toast_message"
-      ),
-      duration: 4000,
-      action: {
-        text: this.hass.localize("ui.common.undo"),
-        action: () => {
-          this._config = this._previousConfig;
-          this._errors = undefined;
-          this._previousConfig = undefined;
-          this._pastedConfig = undefined;
-        },
-      },
-    });
-  }
-
   private _setEntityId() {
     const automation = this.automations.find(
       (entity: AutomationEntity) => entity.attributes.id === this.automationId
@@ -817,27 +656,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
 
-    // reset the pasted config as soon as the user starts editing
-    if (this._previousConfig) {
-      this._resetPastedConfig();
-    }
-
     this._config = ev.detail.value;
     if (this._readOnly) {
       return;
     }
     this._dirty = true;
     this._errors = undefined;
-  }
-
-  private _resetPastedConfig() {
-    this._pastedConfig = undefined;
-    this._previousConfig = undefined;
-
-    showToast(this, {
-      message: "",
-      duration: 0,
-    });
   }
 
   private _showInfo() {
@@ -1132,10 +956,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       return;
     }
 
-    // reset the pasted config as soon as the user saves
-    if (this._previousConfig) {
-      this._resetPastedConfig();
-    }
+    this._manualEditor?.resetPastedConfig();
 
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
