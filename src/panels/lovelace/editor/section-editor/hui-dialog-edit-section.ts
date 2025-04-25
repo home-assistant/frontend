@@ -171,7 +171,11 @@ export class HuiDialogEditSection
                 <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
                   ${TABS.map(
                     (tab) => html`
-                      <sl-tab slot="nav" .panel=${tab} .active=${this._currTab === tab}>
+                      <sl-tab
+                        slot="nav"
+                        .panel=${tab}
+                        .active=${this._currTab === tab}
+                      >
                         ${this.hass!.localize(
                           `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
                         )}
