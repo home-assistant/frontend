@@ -195,7 +195,7 @@ class HaEntityPicker extends LitElement {
             .disabled=${this.disabled}
             .required=${this.required}
             .allowCustomEntity=${this.allowCustomEntity}
-            .label=${this.label}
+            .label=${this.hass.localize("ui.common.search")}
             .value=${this.value}
             .helper=${this.helper}
             .createDomains=${this.createDomains}
