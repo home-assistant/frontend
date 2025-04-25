@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-base-time-input";
 import type { TimeChangedEvent } from "./ha-base-time-input";
@@ -30,14 +30,6 @@ class HaDurationInput extends LitElement {
   public enableDay = false;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @query("paper-time-input", true) private _input?: HTMLElement;
-
-  public focus() {
-    if (this._input) {
-      this._input.focus();
-    }
-  }
 
   protected render(): TemplateResult {
     return html`

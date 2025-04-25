@@ -17,9 +17,6 @@ export class HaComboBoxItem extends HaMdListItem {
       :host([border-top]) md-item {
         border-top: 1px solid var(--divider-color);
       }
-      [slot="start"] {
-        --paper-item-icon-color: var(--secondary-text-color);
-      }
       [slot="headline"] {
         line-height: 22px;
         font-size: 14px;
