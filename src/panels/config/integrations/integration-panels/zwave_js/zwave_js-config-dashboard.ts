@@ -43,7 +43,6 @@ import {
   subscribeZwaveControllerStatistics,
   subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
@@ -54,6 +53,7 @@ import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-no
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -505,7 +505,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             />
                           </div>
                           <ha-button
-                            @click=${this._openOptionFlow}
+                            @click=${this._openConfigFlow}
                             class="warning migrate-button"
                           >
                             ${this.hass.localize(
@@ -661,17 +661,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _openOptionFlow() {
+  private async _openConfigFlow() {
     if (!this.configEntryId) {
       return;
     }
-    const configEntries = await getConfigEntries(this.hass, {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "zwave_js",
       domain: "zwave_js",
+      entryId: this.configEntryId,
     });
-    const configEntry = configEntries.find(
-      (entry) => entry.entry_id === this.configEntryId
-    );
-    showOptionsFlowDialog(this, configEntry!);
   }
 
   private async _downloadBackup() {
