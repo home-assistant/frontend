@@ -31,14 +31,6 @@ class HaDurationInput extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @query("paper-time-input", true) private _input?: HTMLElement;
-
-  public focus() {
-    if (this._input) {
-      this._input.focus();
-    }
-  }
-
   protected render(): TemplateResult {
     return html`
       <ha-base-time-input
