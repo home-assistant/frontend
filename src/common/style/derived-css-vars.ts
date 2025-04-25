@@ -1,6 +1,8 @@
 import { css } from "lit";
 
-export const splitCssVars = (
+const trimWithLineBreak = (str: string) => str.replaceAll("\n", "").trim();
+
+export const extractDerivedVars = (
   string: TemplateStringsArray,
   ...values: any[]
 ) => {
@@ -13,10 +15,10 @@ export const splitCssVars = (
   const derivedVariables: Record<string, string> = {};
 
   if (cssString.includes("var(")) {
-    cssString.split("\n").forEach((line) => {
-      if (line.trim().startsWith("--") && line.includes("var(")) {
+    cssString.split(";").forEach((line) => {
+      if (trimWithLineBreak(line).startsWith("--") && line.includes("var(")) {
         const [name, value] = line.split(":").map((part) => part.trim());
-        derivedVariables[name.replace(/--/g, "")] = value.replace(/;/g, "");
+        derivedVariables[name.substring(2, name.length)] = value;
       }
     });
   }
