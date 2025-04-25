@@ -1,6 +1,5 @@
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -16,7 +15,11 @@ import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
 import "../../../../../components/ha-time-input";
 import "../../../../../components/ha-tip";
-import type { BackupConfig, BackupDay } from "../../../../../data/backup";
+import type {
+  BackupConfig,
+  BackupDay,
+  Retention,
+} from "../../../../../data/backup";
 import {
   BACKUP_DAYS,
   BackupScheduleRecurrence,
@@ -27,10 +30,7 @@ import {
 import type { SupervisorUpdateConfig } from "../../../../../data/supervisor/update";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
-import {
-  RetentionPreset,
-  type RetentionData,
-} from "./ha-backup-config-retention";
+import "./ha-backup-config-retention";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -39,54 +39,23 @@ enum BackupScheduleTime {
   CUSTOM = "custom",
 }
 
-const RETENTION_PRESETS: Record<
-  Exclude<RetentionPreset, RetentionPreset.CUSTOM | RetentionPreset.SHARED>,
-  RetentionData
-> = {
-  copies_3: { type: "copies", value: 3 },
-  forever: { type: "forever", value: 0 },
-};
-
 const SCHEDULE_OPTIONS = [
   BackupScheduleRecurrence.NEVER,
   BackupScheduleRecurrence.DAILY,
   BackupScheduleRecurrence.CUSTOM_DAYS,
 ] as const satisfies BackupScheduleRecurrence[];
 
-const RETENTION_PRESETS_OPTIONS = [
-  RetentionPreset.COPIES_3,
-  RetentionPreset.FOREVER,
-  RetentionPreset.CUSTOM,
-] as const satisfies RetentionPreset[];
-
 const SCHEDULE_TIME_OPTIONS = [
   BackupScheduleTime.DEFAULT,
   BackupScheduleTime.CUSTOM,
 ] as const satisfies BackupScheduleTime[];
-
-const computeRetentionPreset = (
-  data: RetentionData
-): RetentionPreset | undefined => {
-  for (const [key, value] of Object.entries(RETENTION_PRESETS)) {
-    if (
-      value.type === data.type &&
-      (value.type === RetentionPreset.FOREVER || value.value === data.value)
-    ) {
-      return key as RetentionPreset;
-    }
-  }
-  return RetentionPreset.CUSTOM;
-};
 
 interface FormData {
   recurrence: BackupScheduleRecurrence;
   time_option: BackupScheduleTime;
   time?: string | null;
   days: BackupDay[];
-  retention: {
-    type: "copies" | "days" | "forever";
-    value: number;
-  };
+  retention: Retention;
 }
 
 const INITIAL_FORM_DATA: FormData = {
@@ -94,8 +63,7 @@ const INITIAL_FORM_DATA: FormData = {
   time_option: BackupScheduleTime.DEFAULT,
   days: [],
   retention: {
-    type: "copies",
-    value: 3,
+    copies: 3,
   },
 };
 
@@ -109,17 +77,6 @@ class HaBackupConfigSchedule extends LitElement {
 
   @property({ attribute: false })
   public supervisorUpdateConfig?: SupervisorUpdateConfig;
-
-  @state() private _retentionPreset?: RetentionPreset;
-
-  protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("value")) {
-      if (this._retentionPreset !== RetentionPreset.CUSTOM) {
-        const data = this._getData(this.value);
-        this._retentionPreset = computeRetentionPreset(data.retention);
-      }
-    }
-  }
 
   private _getData = memoizeOne((value?: BackupConfigSchedule): FormData => {
     if (!value) {
@@ -138,15 +95,7 @@ class HaBackupConfigSchedule extends LitElement {
         config.schedule.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS
           ? config.schedule.days
           : [],
-      retention: {
-        type:
-          config.retention.days === null && config.retention.copies === null
-            ? "forever"
-            : config.retention.days != null
-              ? "days"
-              : "copies",
-        value: config.retention.days ?? config.retention.copies ?? 3,
-      },
+      retention: config.retention,
     };
   });
 
@@ -161,12 +110,7 @@ class HaBackupConfigSchedule extends LitElement {
             ? data.days
             : [],
       },
-      retention:
-        data.retention.type === "forever"
-          ? { days: null, copies: null }
-          : data.retention.type === "days"
-            ? { days: data.retention.value, copies: null }
-            : { copies: data.retention.value, days: null },
+      retention: data.retention,
     };
 
     fireEvent(this, "value-changed", { value: this.value });
@@ -367,13 +311,8 @@ class HaBackupConfigSchedule extends LitElement {
 
         <ha-backup-config-retention
           .hass=${this.hass}
-          .value=${data.retention.value}
-          .type=${data.retention.type}
-          .presetOptions=${RETENTION_PRESETS_OPTIONS}
-          .preset=${this._retentionPreset}
-          @value-changed=${this._retentionValueChanged}
-          @backup-retention-type-changed=${this._retentionTypeChanged}
-          @backup-retention-preset-changed=${this._retentionPresetChanged}
+          .retention=${data.retention}
+          @value-changed=${this._retentionChanged}
         ></ha-backup-config-retention>
         <ha-tip .hass=${this.hass}
           >${this.hass.localize("ui.panel.config.backup.schedule.tip", {
@@ -466,62 +405,18 @@ class HaBackupConfigSchedule extends LitElement {
     });
   }
 
-  private _retentionPresetChanged(ev: CustomEvent) {
-    let value = ev.detail.value as RetentionPreset;
-
-    // custom needs to have a type of days or copies, set it to default copies 3
-    if (
-      value === RetentionPreset.CUSTOM &&
-      this._retentionPreset === RetentionPreset.FOREVER
-    ) {
-      this._retentionPreset = value;
-      value = RetentionPreset.COPIES_3;
-    } else {
-      this._retentionPreset = value;
-    }
-
-    if (value !== RetentionPreset.CUSTOM) {
-      const data = this._getData(this.value);
-      const retention = RETENTION_PRESETS[value];
-      // Ensure we have at least 1 in default value because user can't select 0
-      if (value !== RetentionPreset.FOREVER) {
-        retention.value = Math.max(retention.value, 1);
-      }
-      this._setData({
-        ...data,
-        retention,
-      });
-    }
-  }
-
-  private _retentionValueChanged(ev: CustomEvent) {
+  private _retentionChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const value = ev.detail.value as number;
+    const retention = ev.detail.value as Retention;
 
     const data = this._getData(this.value);
 
     const newData = {
       ...data,
-      retention: {
-        ...data.retention,
-        value,
-      },
+      retention,
     };
 
     this._setData(newData);
-  }
-
-  private _retentionTypeChanged(ev: CustomEvent) {
-    const value = ev.detail.value as "copies" | "days";
-
-    const data = this._getData(this.value);
-    this._setData({
-      ...data,
-      retention: {
-        ...data.retention,
-        type: value,
-      },
-    });
   }
 
   static styles = css`

@@ -1,5 +1,6 @@
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-md-list-item";
@@ -7,9 +8,8 @@ import "../../../../../components/ha-md-select";
 import type { HaMdSelect } from "../../../../../components/ha-md-select";
 import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
-import type { BackupConfig } from "../../../../../data/backup";
+import type { BackupConfig, Retention } from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export type BackupConfigSchedule = Pick<BackupConfig, "schedule" | "retention">;
 
@@ -23,6 +23,15 @@ export enum RetentionPreset {
   CUSTOM = "custom",
 }
 
+const PRESET_MAP: Record<
+  Exclude<RetentionPreset, RetentionPreset.CUSTOM>,
+  Retention | null
+> = {
+  copies_3: { copies: 3, days: null },
+  forever: { copies: null, days: null },
+  shared: null,
+};
+
 export interface RetentionData {
   type: "copies" | "days" | "forever";
   value: number;
@@ -32,15 +41,57 @@ export interface RetentionData {
 class HaBackupConfigRetention extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public value!: number;
-
-  @property({ attribute: false }) public type!: "copies" | "days" | "forever";
-
-  @property({ attribute: false }) public presetOptions!: RetentionPreset[];
-
-  @property({ attribute: false }) public preset?: RetentionPreset;
+  @property({ attribute: false }) public retention?: Retention | null;
 
   @property() public headline?: string;
+
+  @property({ type: Boolean, attribute: "location-specific" })
+  public locationSpecific = false;
+
+  @state() private _preset: RetentionPreset = RetentionPreset.COPIES_3;
+
+  @state() private _type: "copies" | "days" = "copies";
+
+  @state() private _value = 3;
+
+  private presetOptions = [
+    RetentionPreset.COPIES_3,
+    RetentionPreset.FOREVER,
+    RetentionPreset.CUSTOM,
+  ];
+
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
+
+    if (!this.hasUpdated) {
+      if (!this.retention) {
+        this._preset = RetentionPreset.SHARED;
+      } else if (
+        this.retention?.days === null &&
+        this.retention?.copies === null
+      ) {
+        this._preset = RetentionPreset.FOREVER;
+      } else {
+        this._value = this.retention.copies || this.retention.days || 3;
+        if (
+          this.retention.days ||
+          this.locationSpecific ||
+          this.retention.copies !== 3
+        ) {
+          this._preset = RetentionPreset.CUSTOM;
+          this._type = this.retention?.copies ? "copies" : "days";
+        }
+      }
+
+      if (this.locationSpecific) {
+        this.presetOptions = [
+          RetentionPreset.SHARED,
+          RetentionPreset.FOREVER,
+          RetentionPreset.CUSTOM,
+        ];
+      }
+    }
+  }
 
   protected render() {
     return html`
@@ -57,7 +108,7 @@ class HaBackupConfigRetention extends LitElement {
         <ha-md-select
           slot="end"
           @change=${this._retentionPresetChanged}
-          .value=${this.preset ?? ""}
+          .value=${this._preset}
         >
           ${this.presetOptions.map(
             (option) => html`
@@ -73,7 +124,7 @@ class HaBackupConfigRetention extends LitElement {
         </ha-md-select>
       </ha-md-list-item>
 
-      ${this.preset === RetentionPreset.CUSTOM
+      ${this._preset === RetentionPreset.CUSTOM
         ? html`<ha-expansion-panel
             expanded
             .header=${this.hass.localize(
@@ -90,7 +141,7 @@ class HaBackupConfigRetention extends LitElement {
               <ha-md-textfield
                 slot="end"
                 @change=${this._retentionValueChanged}
-                .value=${this.value.toString()}
+                .value=${this._value.toString()}
                 id="value"
                 type="number"
                 .min=${MIN_VALUE.toString()}
@@ -101,7 +152,7 @@ class HaBackupConfigRetention extends LitElement {
               <ha-md-select
                 slot="end"
                 @change=${this._retentionTypeChanged}
-                .value=${this.type}
+                .value=${this._type}
                 id="type"
               >
                 <ha-md-select-option value="days">
@@ -126,11 +177,26 @@ class HaBackupConfigRetention extends LitElement {
   private _retentionPresetChanged(ev) {
     ev.stopPropagation();
     const target = ev.currentTarget as HaMdSelect;
-    const value = target.value as RetentionPreset;
+    let value = target.value as RetentionPreset;
 
-    fireEvent(this, "backup-retention-preset-changed", {
-      value,
-    });
+    if (
+      value === RetentionPreset.CUSTOM &&
+      (this.locationSpecific || this._preset === RetentionPreset.FOREVER)
+    ) {
+      this._preset = value;
+      // custom needs to have a type of days or copies, set it to default copies 3
+      value = RetentionPreset.COPIES_3;
+    } else {
+      this._preset = value;
+    }
+
+    if (this.locationSpecific || value !== RetentionPreset.CUSTOM) {
+      const retention = PRESET_MAP[value];
+
+      fireEvent(this, "value-changed", {
+        value: retention,
+      });
+    }
   }
 
   private _retentionValueChanged(ev) {
@@ -141,17 +207,23 @@ class HaBackupConfigRetention extends LitElement {
     target.value = clamped.toString();
 
     fireEvent(this, "value-changed", {
-      value: clamped,
+      value: {
+        copies: this._type === "copies" ? clamped : null,
+        days: this._type === "days" ? clamped : null,
+      },
     });
   }
 
   private _retentionTypeChanged(ev) {
     ev.stopPropagation();
     const target = ev.currentTarget as HaMdSelect;
-    const value = target.value as "copies" | "days";
+    const type = target.value as "copies" | "days";
 
-    fireEvent(this, "backup-retention-type-changed", {
-      value,
+    fireEvent(this, "value-changed", {
+      value: {
+        copies: type === "copies" ? this._value : null,
+        days: type === "days" ? this._value : null,
+      },
     });
   }
 
@@ -198,14 +270,5 @@ class HaBackupConfigRetention extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-backup-config-retention": HaBackupConfigRetention;
-  }
-
-  interface HASSDomEvents {
-    "backup-retention-preset-changed": {
-      value: RetentionPreset;
-    };
-    "backup-retention-type-changed": {
-      value: "copies" | "days" | "forever";
-    };
   }
 }
