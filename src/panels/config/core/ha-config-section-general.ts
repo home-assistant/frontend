@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";

@@ -722,6 +722,7 @@
         "statistic": "Statistic",
         "no_statistics": "You don't have any statistics",
         "no_match": "No matching statistics found",
+        "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics"
       },
@@ -1547,6 +1548,13 @@
       "restart": {
         "heading": "Restart Home Assistant",
         "advanced_options": "Advanced options",
+        "backup_in_progress": "A backup is currently being created. The action will automatically proceed once the backup process is complete.",
+        "upload_in_progress": "A backup upload is currently in progress. The action will automatically proceed once the upload process is complete.",
+        "restore_in_progress": "A backup restore is currently in progress. The action will automatically proceed once the restore process is complete.",
+        "wait_for_backup": "Wait for the backup creation to finish",
+        "error_backup_state": "An error occured while getting the current backup state. Error: {error}",
+        "wait_for_upload": "Wait for backup upload to finish",
+        "wait_for_restore": "Wait for backup restore to finish",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -1559,6 +1567,7 @@
           "confirm_title": "Restart Home Assistant?",
           "confirm_description": "This will interrupt all running automations and scripts.",
           "confirm_action": "Restart",
+          "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
@@ -1572,7 +1581,8 @@
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
-          "rebooting": "Rebooting system",
+          "action_toast": "Rebooting system",
+          "confirm_action_backup": "Wait and reboot",
           "failed": "Failed to reboot system"
         },
         "shutdown": {
@@ -1581,7 +1591,8 @@
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
-          "shutting_down": "Shutting down system",
+          "confirm_action_backup": "Wait and shut down",
+          "action_toast": "Shutting down system",
           "failed": "Failed to shut down system"
         },
         "restart-safe-mode": {
@@ -1590,6 +1601,7 @@
           "confirm_title": "Restart Home Assistant in safe mode?",
           "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_action": "Restart",
+          "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
         }
       },
@@ -6323,6 +6335,7 @@
             "disabled": "Disabled",
             "ip": "IP address",
             "netmask": "Netmask",
+            "prefix": "Subnet prefix",
             "add_address": "Add address",
             "gateway": "Gateway address",
             "dns_server": "DNS Server",
@@ -6463,6 +6476,9 @@
           },
           "areas": {
             "no_entities": "No entities in this area.",
+            "header": "Area badges",
+            "header_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
+            "edit_the_area": "edit the area",
             "groups": {
               "lights": "Lights",
               "covers": "Covers",
@@ -6795,6 +6811,12 @@
               "badges_position_options": {
                 "top": "Top",
                 "bottom": "Bottom"
+              },
+              "badges_wrap": "Badges behaviour",
+              "badges_wrap_options": {
+                "wrap": "Wrap",
+                "scroll": "Scroll",
+                "scroll_description": "Touchscreen-friendly"
               }
             }
           },
@@ -8935,6 +8957,13 @@
       },
       "logs": {
         "get_logs": "Failed to get add-on logs, {error}"
+      },
+      "system_managed": {
+        "badge": "System-managed",
+        "title": "This add-on is managed by Home Assistant",
+        "description": "Manually modifying this configuration may cause the add-on or integration to stop working properly.",
+        "managed_by": "Managed by",
+        "take_control": "Take control"
       }
     },
     "common": {
@@ -8958,6 +8987,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "back": "[%key:ui::common::back%]",
       "menu": "[%key:ui::common::menu%]",
       "show": "[%key:ui::panel::config::updates::show%]",
       "show_more": "Show more information about this",

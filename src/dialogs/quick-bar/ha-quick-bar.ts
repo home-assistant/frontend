@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
@@ -29,6 +28,7 @@ import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
+import "../../components/ha-list";
 import "../../components/ha-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
@@ -248,7 +248,7 @@ export class QuickBar extends LitElement {
                 </div>
               `
             : html`
-                <mwc-list>
+                <ha-list>
                   ${this._opened
                     ? html`<lit-virtualizer
                         tabindex="-1"
@@ -270,7 +270,7 @@ export class QuickBar extends LitElement {
                       >
                       </lit-virtualizer>`
                     : ""}
-                </mwc-list>
+                </ha-list>
               `}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
@@ -856,7 +856,7 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
-        mwc-list {
+        ha-list {
           position: relative;
           --mdc-list-vertical-padding: 0;
         }

@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiCodeBraces,
@@ -39,6 +39,7 @@ import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/sl-tab-group";
@@ -60,6 +61,7 @@ import {
   QuickBarMode,
   showQuickBar,
 } from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -76,7 +78,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -264,13 +265,13 @@ class HUIRoot extends LitElement {
       const listItems: TemplateResult[] = [];
       overflowItems.forEach((i) => {
         listItems.push(
-          html`<mwc-list-item
+          html`<ha-list-item
             graphic="icon"
             @request-selected=${i.overflowAction}
           >
             ${[this.hass!.localize(i.key), i.suffix].join(" ")}
             <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
-          </mwc-list-item>`
+          </ha-list-item>`
         );
       });
       result.push(

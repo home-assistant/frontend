@@ -9,7 +9,6 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-spinner";

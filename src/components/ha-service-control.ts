@@ -896,7 +896,6 @@ export class HaServiceControl extends LitElement {
       padding: var(--service-control-padding, 0 16px);
     }
     ha-settings-row {
-      --paper-time-input-justify-content: flex-end;
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
       border-top: var(

@@ -1,5 +1,4 @@
 import type { Button } from "@material/mwc-button";
-import "@material/mwc-menu";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -7,6 +6,7 @@ import { customElement, property, query } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
+import "./ha-menu";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
@@ -31,7 +31,7 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean, attribute: "no-anchor" }) public noAnchor = false;
 
-  @query("mwc-menu", true) private _menu?: Menu;
+  @query("ha-menu", true) private _menu?: Menu;
 
   public get items() {
     return this._menu?.items;
@@ -54,7 +54,7 @@ export class HaButtonMenu extends LitElement {
       <div @click=${this._handleClick}>
         <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
-      <mwc-menu
+      <ha-menu
         .corner=${this.corner}
         .menuCorner=${this.menuCorner}
         .fixed=${this.fixed}
@@ -64,7 +64,7 @@ export class HaButtonMenu extends LitElement {
         .x=${this.x}
       >
         <slot></slot>
-      </mwc-menu>
+      </ha-menu>
     `;
   }
 
@@ -73,7 +73,7 @@ export class HaButtonMenu extends LitElement {
 
     if (mainWindow.document.dir === "rtl") {
       this.updateComplete.then(() => {
-        this.querySelectorAll("mwc-list-item").forEach((item) => {
+        this.querySelectorAll("ha-list-item").forEach((item) => {
           const style = document.createElement("style");
           style.innerHTML =
             "span.material-icons:first-of-type { margin-left: var(--mdc-list-item-graphic-margin, 32px) !important; margin-right: 0px !important;}";
@@ -93,7 +93,7 @@ export class HaButtonMenu extends LitElement {
 
   private get _triggerButton() {
     return this.querySelector(
-      'ha-icon-button[slot="trigger"], mwc-button[slot="trigger"]'
+      'ha-icon-button[slot="trigger"], ha-button[slot="trigger"], mwc-button[slot="trigger"]'
     ) as HaIconButton | Button | null;
   }
 
