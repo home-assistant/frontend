@@ -4,8 +4,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "./ha-entity-combo-box";
 import type { HaEntityComboBoxEntityFilterFunc } from "./ha-entity-combo-box";
+import "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPickerLight extends LitElement {
@@ -87,7 +87,7 @@ class HaEntitiesPickerLight extends LitElement {
       ${currentEntities.map(
         (entityId) => html`
           <div>
-            <ha-entity-combo-box
+            <ha-entity-picker
               allow-custom-entity
               .curValue=${entityId}
               .hass=${this.hass}
@@ -103,12 +103,12 @@ class HaEntitiesPickerLight extends LitElement {
               .disabled=${this.disabled}
               .createDomains=${this.createDomains}
               @value-changed=${this._entityChanged}
-            ></ha-entity-combo-box>
+            ></ha-entity-picker>
           </div>
         `
       )}
       <div>
-        <ha-entity-combo-box
+        <ha-entity-picker
           allow-custom-entity
           .hass=${this.hass}
           .includeDomains=${this.includeDomains}
@@ -127,7 +127,7 @@ class HaEntitiesPickerLight extends LitElement {
           .createDomains=${this.createDomains}
           .required=${this.required && !currentEntities.length}
           @value-changed=${this._addEntity}
-        ></ha-entity-combo-box>
+        ></ha-entity-picker>
       </div>
     `;
   }
