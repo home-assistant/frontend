@@ -1,5 +1,5 @@
 import "@material/mwc-menu/mwc-menu-surface";
-import { mdiClose, mdiPencil, mdiShape } from "@mdi/js";
+import { mdiClose, mdiMenuDown, mdiShape } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,6 +7,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HomeAssistant } from "../../types";
@@ -109,8 +110,10 @@ class HaEntityPicker extends LitElement {
     const entityId = this.value || "";
 
     if (!this.value) {
-      return html` <span slot="headline">Select an entity</span>
-        <ha-svg-icon class="edit" slot="end" .path=${mdiPencil}></ha-svg-icon>`;
+      return html`
+        <span slot="headline" class="placeholder"> Select an entity </span>
+        <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
+      `;
     }
 
     const stateObj = this.hass.states[entityId];
@@ -119,18 +122,19 @@ class HaEntityPicker extends LitElement {
       return html`
         <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
         <span slot="headline">${entityId}</span>
-        <ha-svg-icon class="edit" slot="end" .path=${mdiPencil}></ha-svg-icon>
         <ha-icon-button
           class="clear"
           slot="end"
           @click=${this._clear}
           .path=${mdiClose}
         ></ha-icon-button>
+        <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
       `;
     }
 
     const { area, device } = getEntityContext(stateObj, this.hass);
-    const entityName = stateObj.attributes.friendly_name || stateObj.entity_id;
+    const entityName =
+      computeEntityName(stateObj, this.hass) || stateObj.entity_id;
     const deviceName = device ? computeDeviceName(device) : undefined;
     const areaName = area ? computeAreaName(area) : "No area";
 
@@ -149,13 +153,13 @@ class HaEntityPicker extends LitElement {
       ></state-badge>
       <span slot="headline">${primary}</span>
       <span slot="supporting-text">${secondary}</span>
-      <ha-svg-icon class="edit" slot="end" .path=${mdiPencil}></ha-svg-icon>
       <ha-icon-button
         class="clear"
         slot="end"
         @click=${this._clear}
         .path=${mdiClose}
       ></ha-icon-button>
+      <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
     `;
   }
 
@@ -275,6 +279,10 @@ class HaEntityPicker extends LitElement {
         .label {
           display: block;
           margin: 0 0 8px;
+        }
+        .placeholder {
+          color: var(--secondary-text-color);
+          padding: 0 8px;
         }
       `,
     ];
