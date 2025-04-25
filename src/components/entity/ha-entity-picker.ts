@@ -133,8 +133,8 @@ class HaEntityPicker extends LitElement {
     }
 
     const { area, device } = getEntityContext(stateObj, this.hass);
-    const entityName =
-      computeEntityName(stateObj, this.hass) || stateObj.entity_id;
+
+    const entityName = computeEntityName(stateObj, this.hass);
     const deviceName = device ? computeDeviceName(device) : undefined;
     const areaName = area ? computeAreaName(area) : "No area";
 
