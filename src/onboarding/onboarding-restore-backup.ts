@@ -133,15 +133,20 @@ class OnboardingRestoreBackup extends LitElement {
 
   private async _loadBackupInfo() {
     let onboardingInfo: BackupOnboardingConfig;
-    try {
-      if (this._restoreRunning || !this._loadedIntegrations.has("backup")) {
+    if (this._restoreRunning || !this._loadedIntegrations.has("backup")) {
+      try {
         if ((await waitForIntegration("backup")).integration_loaded) {
           this._loadedIntegrations.add("backup");
         } else {
           this._error = "Backup integration not loaded";
           return;
         }
+      } catch (_e) {
+        this._scheduleLoadBackupInfo(1000);
+        return;
       }
+    }
+    try {
       onboardingInfo = await fetchBackupOnboardingInfo();
     } catch (err: any) {
       if (this._restoreRunning) {
@@ -255,8 +260,8 @@ class OnboardingRestoreBackup extends LitElement {
     this._loadBackupInfo();
   }
 
-  private _scheduleLoadBackupInfo() {
-    setTimeout(() => this._loadBackupInfo(), STATUS_INTERVAL_IN_MS);
+  private _scheduleLoadBackupInfo(delay: number = STATUS_INTERVAL_IN_MS) {
+    setTimeout(() => this._loadBackupInfo(), delay);
   }
 
   private async _backupUploaded(ev: CustomEvent) {
