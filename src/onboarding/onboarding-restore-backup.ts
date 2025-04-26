@@ -134,7 +134,7 @@ class OnboardingRestoreBackup extends LitElement {
   private async _loadBackupInfo() {
     let onboardingInfo: BackupOnboardingConfig;
     try {
-      if (!this._loadedIntegrations.has("backup")) {
+      if (this._restoreRunning || !this._loadedIntegrations.has("backup")) {
         if ((await waitForIntegration("backup")).integration_loaded) {
           this._loadedIntegrations.add("backup");
         } else {
