@@ -174,9 +174,14 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     }
 
     const value: string[] = [];
+    const filteredLabels = this._filteredLabels(
+      this._labels,
+      this._filter,
+      this.value
+    );
 
     for (const index of ev.detail.index) {
-      const labelId = this._labels[index].label_id;
+      const labelId = filteredLabels[index].label_id;
       value.push(labelId);
     }
     this.value = value;

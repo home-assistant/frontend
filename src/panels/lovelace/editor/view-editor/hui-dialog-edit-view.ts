@@ -1,6 +1,4 @@
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import {
   mdiClose,
   mdiDotsVertical,
@@ -55,6 +53,7 @@ import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
+import "../../../../components/sl-tab-group";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -272,21 +271,21 @@ export class HuiDialogEditView extends LitElement {
               `
             : nothing}
           ${!this._yamlMode
-            ? html`<mwc-tab-bar
-                .activeIndex=${TABS.indexOf(this._currTab)}
-                @MDCTabBar:activated=${this._handleTabChanged}
-              >
+            ? html`<sl-tab-group @sl-tab-show=${this._handleTabChanged}>
                 ${TABS.map(
                   (tab) => html`
-                    <mwc-tab
-                      .label=${this.hass!.localize(
+                    <sl-tab
+                      slot="nav"
+                      .panel=${tab}
+                      .active=${this._currTab === tab}
+                    >
+                      ${this.hass!.localize(
                         `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
                       )}
-                    >
-                    </mwc-tab>
+                    </sl-tab>
                   `
                 )}
-              </mwc-tab-bar>`
+              </sl-tab-group>`
             : nothing}
         </ha-dialog-header>
         ${content}
@@ -515,7 +514,7 @@ export class HuiDialogEditView extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = TABS[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
@@ -644,10 +643,12 @@ export class HuiDialogEditView extends LitElement {
           font-size: inherit;
           font-weight: inherit;
         }
-        mwc-tab-bar {
-          color: var(--primary-text-color);
-          text-transform: uppercase;
-          padding: 0 20px;
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
         ha-button.warning {
           margin-right: auto;

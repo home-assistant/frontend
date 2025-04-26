@@ -8,9 +8,9 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
 import {
-  calculateStatisticsSumGrowth,
   calculateStatisticSumGrowth,
   getStatisticLabel,
 } from "../../../../data/recorder";
@@ -80,6 +80,7 @@ class HuiEnergySankeyCard
 
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
 
     const computedStyle = getComputedStyle(this);
 
@@ -98,11 +99,7 @@ class HuiEnergySankeyCard
     nodes.push(homeNode);
 
     if (types.grid) {
-      const totalFromGrid =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-        ) ?? 0;
+      const totalFromGrid = summedData.total.from_grid ?? 0;
 
       nodes.push({
         id: "grid",
@@ -125,11 +122,7 @@ class HuiEnergySankeyCard
 
     // Add solar if available
     if (types.solar) {
-      const totalSolarProduction =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.solar.map((source) => source.stat_energy_from)
-        ) || 0;
+      const totalSolarProduction = summedData.total.solar ?? 0;
 
       nodes.push({
         id: "solar",
@@ -155,16 +148,8 @@ class HuiEnergySankeyCard
 
     if (types.battery) {
       // Add battery source
-      const totalBatteryOut =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery.map((source) => source.stat_energy_from)
-        ) || 0;
-      const totalBatteryIn =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery.map((source) => source.stat_energy_to)
-        ) || 0;
+      const totalBatteryOut = summedData.total.from_battery ?? 0;
+      const totalBatteryIn = summedData.total.to_battery ?? 0;
       const netBattery = totalBatteryOut - totalBatteryIn;
       const netBatteryOut = Math.max(netBattery, 0);
       const netBatteryIn = Math.max(-netBattery, 0);
@@ -209,11 +194,7 @@ class HuiEnergySankeyCard
 
     // Add grid return if available
     if (types.grid && types.grid[0].flow_to) {
-      const totalToGrid =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid[0].flow_to.map((flow) => flow.stat_energy_to)
-        ) ?? 0;
+      const totalToGrid = summedData.total.to_grid ?? 0;
 
       nodes.push({
         id: "grid_return",

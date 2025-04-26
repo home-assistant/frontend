@@ -14,8 +14,11 @@ import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import type { EnergyData } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
+import type { EnergyData, EnergySumData } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getSummedData,
+} from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -279,11 +282,14 @@ export class HuiEnergyUsageGraphCard
     this._compareStart = energyData.startCompare;
     this._compareEnd = energyData.endCompare;
 
+    const { summedData, compareSummedData } = getSummedData(energyData);
+
     if (energyData.statsCompare) {
       datasets.push(
         ...this._processDataSet(
           energyData.statsCompare,
           energyData.statsMetadata,
+          compareSummedData!,
           statIds,
           colorIndices,
           computedStyles,
@@ -308,6 +314,7 @@ export class HuiEnergyUsageGraphCard
       ...this._processDataSet(
         energyData.stats,
         energyData.statsMetadata,
+        summedData,
         statIds,
         colorIndices,
         computedStyles,
@@ -325,6 +332,7 @@ export class HuiEnergyUsageGraphCard
   private _processDataSet(
     statistics: Statistics,
     statisticsMetaData: Record<string, StatisticsMetaData>,
+    summedData: EnergySumData,
     statIdsByCat: {
       to_grid?: string[] | undefined;
       from_grid?: string[] | undefined;
@@ -352,24 +360,11 @@ export class HuiEnergyUsageGraphCard
       used_battery?: Record<string, Record<number, number>>;
     } = {};
 
-    const summedData: {
-      to_grid?: Record<number, number>;
-      from_grid?: Record<number, number>;
-      to_battery?: Record<number, number>;
-      from_battery?: Record<number, number>;
-      solar?: Record<number, number>;
-    } = {};
-
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
-      const sum = [
-        "solar",
-        "to_grid",
-        "from_grid",
-        "to_battery",
-        "from_battery",
-      ].includes(key);
       const add = !["solar", "from_battery"].includes(key);
-      const totalStats: Record<number, number> = {};
+      if (!add) {
+        return;
+      }
       const sets: Record<string, Record<number, number>> = {};
       statIds!.forEach((id) => {
         const stats = statistics[id];
@@ -383,23 +378,13 @@ export class HuiEnergyUsageGraphCard
             return;
           }
           const val = stat.change;
-          // Get total of solar and to grid to calculate the solar energy used
-          if (sum) {
-            totalStats[stat.start] =
-              stat.start in totalStats ? totalStats[stat.start] + val : val;
-          }
-          if (add && !(stat.start in set)) {
+          if (!(stat.start in set)) {
             set[stat.start] = val;
           }
         });
         sets[id] = set;
       });
-      if (sum) {
-        summedData[key] = totalStats;
-      }
-      if (add) {
-        combinedData[key] = sets;
-      }
+      combinedData[key] = sets;
     });
 
     const grid_to_battery = {};
