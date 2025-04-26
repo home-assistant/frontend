@@ -5319,6 +5319,7 @@
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_device": "Error updating device: {error}",
+            "error_saving_entity": "Error updating entity: {error}",
             "created_config": "Created configuration for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
