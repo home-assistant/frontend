@@ -39,11 +39,14 @@ class MoreInfoMediaPlayer extends LitElement {
 
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
+  @property({ attribute: false }) customLabel?: string;
+
+  @property({ attribute: false }) customIcon?: string;
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
-
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
 
@@ -70,13 +73,15 @@ class MoreInfoMediaPlayer extends LitElement {
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <mwc-button
-                .label=${this.hass.localize(
-                  "ui.card.media_player.browse_media"
-                )}
+                .label=${this.customLabel === undefined
+                  ? this.hass.localize("ui.card.media_player.browse_media")
+                  : this.customLabel}
                 @click=${this._showBrowseMedia}
               >
                 <ha-svg-icon
-                  .path=${mdiPlayBoxMultiple}
+                  .path=${this.customLabel === undefined
+                    ? mdiPlayBoxMultiple
+                    : this.customIcon}
                   slot="icon"
                 ></ha-svg-icon>
               </mwc-button>
