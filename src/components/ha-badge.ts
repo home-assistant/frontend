@@ -111,7 +111,7 @@ export class HaBadge extends LitElement {
       color: var(--primary-text-color);
     }
     ::slotted([slot="icon"]) {
-      --mdc-icon-size: 18px;
+      --mdc-icon-size: var(--badge-icon-size, 18px);
       color: var(--badge-color);
       line-height: 0;
       margin-left: -4px;
