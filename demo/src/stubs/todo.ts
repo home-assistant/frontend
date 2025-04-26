@@ -28,6 +28,7 @@ const items = {
 
 export const mockTodo = (hass: MockHomeAssistant) => {
   hass.mockWS("todo/item/list", () => items);
+  hass.mockWS("todo/item/move", () => undefined);
   hass.mockWS("todo/item/subscribe", (_msg, _hass, onChange) => {
     onChange!(items);
     // eslint-disable-next-line @typescript-eslint/no-empty-function

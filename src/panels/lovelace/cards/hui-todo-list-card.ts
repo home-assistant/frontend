@@ -674,28 +674,47 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     this._moveItem(oldIndex, newIndex);
   }
 
+  private _findFirstItem(
+    items: HTMLCollection,
+    start: number,
+    direction: "up" | "down"
+  ) {
+    let item: Element | undefined;
+    let index = direction === "up" ? start - 1 : start;
+    while (item?.localName !== "ha-check-list-item") {
+      item = items[index];
+      index = direction === "up" ? index - 1 : index + 1;
+      if (!item) {
+        break;
+      }
+    }
+    return item;
+  }
+
   private async _moveItem(oldIndex: number, newIndex: number) {
     await this.updateComplete;
 
-    const list = this.renderRoot.querySelector("mwc-list")!;
+    const list = this.renderRoot.querySelector("ha-list")!;
 
-    const itemId = (list.children[oldIndex] as any).itemId as string;
+    const items = list.children;
 
-    let prevItemId: string | undefined;
-    if (newIndex > 0) {
-      if (newIndex < oldIndex) {
-        prevItemId = (list.children[newIndex - 1] as any).itemId;
-      } else {
-        prevItemId = (list.children[newIndex] as any).itemId;
-      }
-    }
+    const itemId = (items[oldIndex] as any).itemId as string;
+
+    const prevItemId = (
+      this._findFirstItem(
+        items,
+        newIndex,
+        newIndex < oldIndex ? "up" : "down"
+      ) as any
+    )?.itemId;
 
     // Optimistic change
     const itemIndex = this._items!.findIndex((itm) => itm.uid === itemId);
     const item = this._items!.splice(itemIndex, 1)[0];
-    if (newIndex === 0) {
+
+    if (!prevItemId) {
       this._items!.unshift(item);
-    } else if (prevItemId !== undefined) {
+    } else {
       const prevIndex = this._items!.findIndex((itm) => itm.uid === prevItemId);
       this._items!.splice(prevIndex + 1, 0, item);
     }
