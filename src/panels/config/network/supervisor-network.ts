@@ -1,5 +1,3 @@
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import { mdiDeleteOutline, mdiMenuDown, mdiPlus, mdiWifi } from "@mdi/js";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -35,6 +33,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/sl-tab-group";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -95,26 +94,27 @@ export class HassioNetwork extends LitElement {
     }
 
     return html`
-      <ha-card
-        outlined
-        .header=${this.hass.localize(
-          "ui.panel.config.network.supervisor.title"
-        )}
-      >
-        ${this._interfaces.length > 1
-          ? html`<mwc-tab-bar
-              .activeIndex=${this._curTabIndex}
-              @MDCTabBar:activated=${this._handleTabActivated}
-              >${this._interfaces.map(
-                (device) =>
-                  html`<mwc-tab
-                    .id=${device.interface}
-                    .label=${device.interface}
-                  >
-                  </mwc-tab>`
-              )}
-            </mwc-tab-bar>`
-          : nothing}
+      <ha-card outlined>
+        <div class="card-header">
+          ${this.hass.localize("ui.panel.config.network.supervisor.title")}
+          ${this._interfaces.length > 1
+            ? html`
+                <sl-tab-group @sl-tab-show=${this._handleTabActivated}
+                  >${this._interfaces.map(
+                    (device, i) =>
+                      html`<sl-tab
+                        slot="nav"
+                        .active=${this._curTabIndex === i}
+                        panel=${i.toString()}
+                        .id=${device.interface}
+                      >
+                        ${device.interface}
+                      </sl-tab>`
+                  )}
+                </sl-tab-group>
+              `
+            : nothing}
+        </div>
         ${cache(this._renderTab())}
       </ha-card>
     `;
@@ -627,8 +627,8 @@ export class HassioNetwork extends LitElement {
         return;
       }
     }
-    this._curTabIndex = ev.detail.index;
-    this._interface = { ...this._interfaces[ev.detail.index] };
+    this._curTabIndex = parseInt(ev.detail.name, 10);
+    this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 
   private _handleRadioValueChanged(ev: Event): void {
@@ -775,12 +775,6 @@ export class HassioNetwork extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
-        mwc-tab-bar {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-          margin-bottom: 24px;
-        }
-
         .content {
           display: block;
           padding: 20px 24px;
@@ -835,6 +829,17 @@ export class HassioNetwork extends LitElement {
         }
         ha-expansion-panel > :last-child {
           margin-bottom: 16px;
+        }
+
+        sl-tab-group {
+          line-height: 24px;
+        }
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

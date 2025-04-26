@@ -1,7 +1,4 @@
 import "@material/mwc-button/mwc-button";
-
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -40,6 +37,7 @@ import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioNetworkDialogParams } from "./show-dialog-network";
+import "../../../../src/components/sl-tab-group";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -117,19 +115,19 @@ export class DialogHassioNetwork
             ></ha-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
-            ? html`<mwc-tab-bar
-                .activeIndex=${this._curTabIndex}
-                @MDCTabBar:activated=${this._handleTabActivated}
+            ? html`<sl-tab-group @sl-tab-show=${this._handleTabActivated}
                 >${this._interfaces.map(
-                  (device) =>
-                    html`<mwc-tab
+                  (device, index) =>
+                    html`<sl-tab
+                      slot="nav"
                       .id=${device.interface}
-                      .label=${device.interface}
-                      dialogInitialFocus
+                      panel=${index.toString()}
+                      .active=${this._curTabIndex === index}
                     >
-                    </mwc-tab>`
+                      ${device.interface}
+                    </sl-tab>`
                 )}
-              </mwc-tab-bar>`
+              </sl-tab-group>`
             : ""}
         </div>
         ${cache(this._renderTab())}
@@ -486,8 +484,8 @@ export class DialogHassioNetwork
         return;
       }
     }
-    this._curTabIndex = ev.detail.index;
-    this._interface = { ...this._interfaces[ev.detail.index] };
+    this._curTabIndex = parseInt(ev.detail.name, 10);
+    this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 
   private _handleRadioValueChanged(ev: CustomEvent): void {
@@ -561,11 +559,6 @@ export class DialogHassioNetwork
           flex-shrink: 0;
         }
 
-        mwc-tab-bar {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        }
-
         ha-dialog {
           --dialog-content-position: static;
           --dialog-content-padding: 0;
@@ -637,6 +630,14 @@ export class DialogHassioNetwork
         }
         ha-list-item {
           --mdc-list-side-padding: 10px;
+        }
+
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];
