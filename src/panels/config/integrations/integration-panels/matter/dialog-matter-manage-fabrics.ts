@@ -1,14 +1,14 @@
-import "@material/mwc-list/mwc-list";
 import "@material/mwc-button/mwc-button";
 import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
-import "../../../../../components/ha-list-item";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-qr-code";
+import "../../../../../components/ha-spinner";
 import type {
   MatterFabricData,
   MatterNodeDiagnostics,
@@ -59,7 +59,7 @@ class DialogMatterManageFabrics extends LitElement {
           ${this.hass.localize("ui.panel.config.matter.manage_fabrics.fabrics")}
         </p>
         ${this._nodeDiagnostics
-          ? html`<mwc-list>
+          ? html`<ha-list>
               ${this._nodeDiagnostics.active_fabrics.map(
                 (fabric) =>
                   html`<ha-list-item
@@ -78,7 +78,7 @@ class DialogMatterManageFabrics extends LitElement {
                     ></ha-icon-button>
                   </ha-list-item>`
               )}
-            </mwc-list>`
+            </ha-list>`
           : html`<div class="center">
               <ha-spinner></ha-spinner>
             </div>`}

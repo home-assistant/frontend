@@ -1,36 +1,36 @@
 import { animate } from "@lit-labs/motion";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiClose, mdiDelete } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
+import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import type { MediaPlayerItem } from "../../data/media-player";
 import { MediaClassBrowserSettings } from "../../data/media-player";
 import {
   browseLocalMediaPlayer,
-  removeLocalMedia,
-  isLocalMediaSourceContentId,
   isImageUploadMediaSourceContentId,
+  isLocalMediaSourceContentId,
+  removeLocalMedia,
 } from "../../data/media_source";
-import { deleteImage, getIdFromUrl } from "../../data/image_upload";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-check-list-item";
-import "../ha-spinner";
 import "../ha-dialog";
 import "../ha-dialog-header";
+import "../ha-list";
+import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tip";
 import "./ha-media-player-browse";
 import "./ha-media-upload-button";
 import type { MediaManageDialogParams } from "./show-media-manage-dialog";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("dialog-media-manage")
 class DialogMediaManage extends LitElement {
@@ -170,7 +170,7 @@ class DialogMediaManage extends LitElement {
                   : ""}
               </div>`
             : html`
-                <mwc-list multi @selected=${this._handleSelected}>
+                <ha-list multi @selected=${this._handleSelected}>
                   ${repeat(
                     children,
                     (item) => item.media_content_id,
@@ -201,7 +201,7 @@ class DialogMediaManage extends LitElement {
                       `;
                     }
                   )}
-                </mwc-list>
+                </ha-list>
               `}
         ${isComponentLoaded(this.hass, "hassio")
           ? html`<ha-tip .hass=${this.hass}>

@@ -120,7 +120,6 @@ class PanelDeveloperTools extends LitElement {
       css`
         :host {
           color: var(--primary-text-color);
-          --paper-card-header-color: var(--primary-text-color);
           display: flex;
           min-height: 100vh;
         }

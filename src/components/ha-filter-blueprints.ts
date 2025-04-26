@@ -1,6 +1,4 @@
-import "@material/mwc-list/mwc-list";
 import type { SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,9 +10,10 @@ import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
-import "./ha-check-list-item";
+import "./ha-list";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
@@ -62,7 +61,7 @@ export class HaFilterBlueprints extends LitElement {
         </div>
         ${this._blueprints && this._shouldRender
           ? html`
-              <mwc-list
+              <ha-list
                 @selected=${this._blueprintsSelected}
                 multi
                 class="ha-scrollbar"
@@ -77,7 +76,7 @@ export class HaFilterBlueprints extends LitElement {
                         ${blueprint.metadata.name || id}
                       </ha-check-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </ha-expansion-panel>
@@ -95,7 +94,7 @@ export class HaFilterBlueprints extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (this.narrow || !this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49}px`;
       }, 300);
     }

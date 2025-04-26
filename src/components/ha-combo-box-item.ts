@@ -1,6 +1,6 @@
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
-import { HaMdListItem } from "./ha-md-list-item";
+import { HaMdListItem, haMdListStyles } from "./ha-md-list-item";
 
 @customElement("ha-combo-box-item")
 export class HaComboBoxItem extends HaMdListItem {
@@ -8,7 +8,7 @@ export class HaComboBoxItem extends HaMdListItem {
   public borderTop = false;
 
   static override styles = [
-    ...super.styles,
+    ...haMdListStyles,
     css`
       :host {
         --md-list-item-one-line-container-height: 48px;
@@ -16,9 +16,6 @@ export class HaComboBoxItem extends HaMdListItem {
       }
       :host([border-top]) md-item {
         border-top: 1px solid var(--divider-color);
-      }
-      [slot="start"] {
-        --paper-item-icon-color: var(--secondary-text-color);
       }
       [slot="headline"] {
         line-height: 22px;

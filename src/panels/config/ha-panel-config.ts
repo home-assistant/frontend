@@ -1,4 +1,4 @@
-import { ContextProvider } from "@lit-labs/context";
+import { ContextProvider } from "@lit/context";
 import {
   mdiAccount,
   mdiBackupRestore,
@@ -559,6 +559,13 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
         tag: "dhcp-config-panel",
         load: () =>
           import("./integrations/integration-panels/dhcp/dhcp-config-panel"),
+      },
+      zeroconf: {
+        tag: "zeroconf-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/zeroconf/zeroconf-config-panel"
+          ),
       },
       application_credentials: {
         tag: "ha-config-application-credentials",
