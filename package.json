@@ -198,7 +198,7 @@
     "eslint-plugin-wc": "3.0.0",
     "fancy-log": "2.0.0",
     "fs-extra": "11.3.0",
-    "glob": "11.0.1",
+    "glob": "11.0.2",
     "gulp": "5.0.0",
     "gulp-brotli": "3.0.0",
     "gulp-json-transform": "0.5.0",
