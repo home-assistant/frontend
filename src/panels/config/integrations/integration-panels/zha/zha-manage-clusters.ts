@@ -96,7 +96,7 @@ export class ZHAManageClusters extends LitElement {
                   (tab) => html`
                     <sl-tab
                       slot="nav"
-                      panel=${tab}
+                      .panel=${tab}
                       .active=${this._currTab === tab}
                       >${this.hass.localize(
                         `ui.panel.config.zha.clusters.tabs.${tab}`

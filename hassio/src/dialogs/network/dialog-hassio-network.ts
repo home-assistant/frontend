@@ -121,7 +121,7 @@ export class DialogHassioNetwork
                     html`<sl-tab
                       slot="nav"
                       .id=${device.interface}
-                      panel=${index.toString()}
+                      .panel=${index.toString()}
                       .active=${this._curTabIndex === index}
                     >
                       ${device.interface}
@@ -484,7 +484,7 @@ export class DialogHassioNetwork
         return;
       }
     }
-    this._curTabIndex = parseInt(ev.detail.name, 10);
+    this._curTabIndex = Number(ev.detail.name);
     this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 

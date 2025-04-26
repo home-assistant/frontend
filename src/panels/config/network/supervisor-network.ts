@@ -105,7 +105,7 @@ export class HassioNetwork extends LitElement {
                       html`<sl-tab
                         slot="nav"
                         .active=${this._curTabIndex === i}
-                        panel=${i.toString()}
+                        .panel=${i.toString()}
                         .id=${device.interface}
                       >
                         ${device.interface}
@@ -627,7 +627,7 @@ export class HassioNetwork extends LitElement {
         return;
       }
     }
-    this._curTabIndex = parseInt(ev.detail.name, 10);
+    this._curTabIndex = Number(ev.detail.name);
     this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 
