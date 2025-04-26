@@ -5542,6 +5542,15 @@
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials"
         },
+        "zeroconf": {
+          "name": "Name",
+          "type": "Type",
+          "port": "Port",
+          "ip_addresses": "IP Addresses",
+          "properties": "Properties",
+          "discovery_information": "Discovery information",
+          "copy_to_clipboard": "Copy to clipboard"
+        },
         "zha": {
           "common": {
             "clusters": "Clusters",
@@ -6346,6 +6355,11 @@
               "description": "The name your instance will have on your network",
               "failed_to_set_hostname": "Setting hostname failed"
             }
+          },
+          "discovery": {
+            "zeroconf": "Zeroconf browser",
+            "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
+            "zeroconf_browser": "View Zeroconf browser"
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
