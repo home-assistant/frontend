@@ -245,15 +245,10 @@ class StepFlowCreateEntry extends LitElement {
         const oldDeviceSlug = slugify(oldDeviceName);
         const newDeviceSlug = slugify(newDeviceName);
         entities.forEach((entity) => {
-          let newEntityId: string | undefined;
-
           const oldId = entity.entity_id;
 
           if (oldId.includes(oldDeviceSlug)) {
-            newEntityId = oldId.replace(oldDeviceSlug, newDeviceSlug);
-          }
-
-          if (newEntityId) {
+            const newEntityId = oldId.replace(oldDeviceSlug, newDeviceSlug);
             entityUpdates.push(
               updateEntityRegistryEntry(this.hass, entity.entity_id, {
                 new_entity_id: newEntityId,
