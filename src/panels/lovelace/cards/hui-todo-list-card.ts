@@ -156,6 +156,19 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return items;
   }
 
+  private _getCheckedAndItemsWithoutStatus = memoizeOne(
+    (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
+      items
+        ? this._sortItems(
+            items.filter(
+              (item) =>
+                item.status === TodoItemStatus.NeedsAction || !item.status
+            ),
+            sort
+          )
+        : []
+  );
+
   private _getCheckedItems = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
@@ -250,6 +263,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._config.display_order
     );
 
+    const reorderableItems = this._reordering
+      ? this._getCheckedAndItemsWithoutStatus(
+          this._items,
+          this._config.display_order
+        )
+      : undefined;
+
     return html`
       <ha-card
         .header=${this._config.title}
@@ -295,8 +315,18 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
                   )}
                 </p>`
-              : nothing}
-            ${uncheckedItems.length
+              : this._reordering
+                ? html`<div class="header" role="seperator">
+                      <h2>
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.cards.todo-list.reorder_items"
+                        )}
+                      </h2>
+                      ${this._renderMenu(this._config, unavailable)}
+                    </div>
+                    ${this._renderItems(reorderableItems, unavailable)}`
+                : nothing}
+            ${!this._reordering && uncheckedItems.length
               ? html`
                   <div class="header" role="seperator">
                     <h2>
@@ -309,7 +339,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                   ${this._renderItems(uncheckedItems, unavailable)}
                 `
               : nothing}
-            ${itemsWithoutStatus.length
+            ${!this._reordering && itemsWithoutStatus.length
               ? html`
                   <div>
                     ${uncheckedItems.length
