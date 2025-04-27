@@ -27,6 +27,7 @@ import {
   getEnergyWaterUnit,
   formatConsumptionShort,
   getSummedData,
+  computeConsumptionData,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -111,6 +112,10 @@ class HuiEnergyDistrubutionCard
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
+    const { consumption, compareConsumption: __ } = computeConsumptionData(
+      summedData,
+      undefined
+    );
 
     const totalFromGrid = summedData.total.from_grid ?? 0;
 
@@ -154,55 +159,38 @@ class HuiEnergyDistrubutionCard
 
     let solarConsumption: number | null = null;
     if (hasSolarProduction) {
-      solarConsumption =
-        (totalSolarProduction || 0) -
-        (returnedToGrid || 0) -
-        (totalBatteryIn || 0);
+      solarConsumption = consumption.total.used_solar;
     }
-
     let batteryFromGrid: null | number = null;
     let batteryToGrid: null | number = null;
-    if (solarConsumption !== null && solarConsumption < 0) {
-      // What we returned to the grid and what went in to the battery is more than produced,
-      // so we have used grid energy to fill the battery
-      // or returned battery energy to the grid
-      if (hasBattery) {
-        batteryFromGrid = solarConsumption * -1;
-        if (batteryFromGrid > totalFromGrid) {
-          batteryToGrid = batteryFromGrid - totalFromGrid;
-          batteryFromGrid = totalFromGrid;
-        }
-      }
-      solarConsumption = 0;
+    if (hasBattery) {
+      batteryToGrid = consumption.total.battery_to_grid;
+      batteryFromGrid = consumption.total.grid_to_battery;
     }
 
     let solarToBattery: null | number = null;
     if (hasSolarProduction && hasBattery) {
-      if (!batteryToGrid) {
-        batteryToGrid = Math.max(
-          0,
-          (returnedToGrid || 0) -
-            (totalSolarProduction || 0) -
-            (totalBatteryIn || 0) -
-            (batteryFromGrid || 0)
+      solarToBattery = 0;
+      summedData.timestamps.forEach((t) => {
+        solarToBattery! += Math.max(
+          Math.min(
+            summedData.solar![t] || 0,
+            (summedData.to_battery![t] || 0) -
+              (consumption.grid_to_battery![t] || 0)
+          ),
+          0
         );
-      }
-      solarToBattery = totalBatteryIn! - (batteryFromGrid || 0);
-    } else if (!hasSolarProduction && hasBattery) {
-      batteryToGrid = returnedToGrid;
+      });
     }
 
     let batteryConsumption: number | null = null;
     if (hasBattery) {
-      batteryConsumption = (totalBatteryOut || 0) - (batteryToGrid || 0);
+      batteryConsumption = Math.max(consumption.total.used_battery, 0);
     }
 
-    const gridConsumption = Math.max(0, totalFromGrid - (batteryFromGrid || 0));
+    const gridConsumption = Math.max(consumption.total.used_grid, 0);
 
-    const totalHomeConsumption = Math.max(
-      0,
-      gridConsumption + (solarConsumption || 0) + (batteryConsumption || 0)
-    );
+    const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
     let homeSolarCircumference: number | undefined;
     if (hasSolarProduction) {

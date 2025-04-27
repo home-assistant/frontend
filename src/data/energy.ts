@@ -795,10 +795,24 @@ export interface EnergySumData {
     from_battery?: number;
     solar?: number;
   };
+  timestamps: number[];
 }
 
-interface EnergyConsumptionData {
-  total: Record<number, number>;
+export interface EnergyConsumptionData {
+  used_total: Record<number, number>;
+  grid_to_battery: Record<number, number>;
+  battery_to_grid: Record<number, number>;
+  used_solar: Record<number, number>;
+  used_grid: Record<number, number>;
+  used_battery: Record<number, number>;
+  total: {
+    used_total: number;
+    grid_to_battery: number;
+    battery_to_grid: number;
+    used_solar: number;
+    used_grid: number;
+    used_battery: number;
+  };
 }
 
 export const getSummedData = memoizeOne(
@@ -867,7 +881,8 @@ const getSummedDataPartial = (
     }
   }
 
-  const summedData: EnergySumData = { total: {} };
+  const summedData: EnergySumData = { total: {}, timestamps: [] };
+  const timestamps = new Set<number>();
   Object.entries(statIds).forEach(([key, subStatIds]) => {
     const totalStats: Record<number, number> = {};
     const sets: Record<string, Record<number, number>> = {};
@@ -886,12 +901,15 @@ const getSummedDataPartial = (
         sum += val;
         totalStats[stat.start] =
           stat.start in totalStats ? totalStats[stat.start] + val : val;
+        timestamps.add(stat.start);
       });
       sets[id] = set;
     });
     summedData[key] = totalStats;
     summedData.total[key] = sum;
   });
+
+  summedData.timestamps = Array.from(timestamps).sort();
 
   return summedData;
 };
@@ -915,23 +933,123 @@ export const computeConsumptionData = memoizeOne(
 const computeConsumptionDataPartial = (
   data: EnergySumData
 ): EnergyConsumptionData => {
-  const outData: EnergyConsumptionData = { total: {} };
+  const outData: EnergyConsumptionData = {
+    used_total: {},
+    grid_to_battery: {},
+    battery_to_grid: {},
+    used_solar: {},
+    used_grid: {},
+    used_battery: {},
+    total: {
+      used_total: 0,
+      grid_to_battery: 0,
+      battery_to_grid: 0,
+      used_solar: 0,
+      used_grid: 0,
+      used_battery: 0,
+    },
+  };
 
-  Object.keys(data).forEach((type) => {
-    Object.keys(data[type]).forEach((start) => {
-      if (outData.total[start] === undefined) {
-        const consumption =
-          (data.from_grid?.[start] || 0) +
-          (data.solar?.[start] || 0) +
-          (data.from_battery?.[start] || 0) -
-          (data.to_grid?.[start] || 0) -
-          (data.to_battery?.[start] || 0);
-        outData.total[start] = consumption;
-      }
+  data.timestamps.forEach((t) => {
+    const used_total =
+      (data.from_grid?.[t] || 0) +
+      (data.solar?.[t] || 0) +
+      (data.from_battery?.[t] || 0) -
+      (data.to_grid?.[t] || 0) -
+      (data.to_battery?.[t] || 0);
+
+    outData.used_total[t] = used_total;
+    outData.total.used_total += used_total;
+    const {
+      grid_to_battery,
+      battery_to_grid,
+      used_solar,
+      used_grid,
+      used_battery,
+    } = computeConsumptionSingle({
+      from_grid: data.from_grid && (data.from_grid[t] ?? 0),
+      to_grid: data.to_grid && (data.to_grid[t] ?? 0),
+      solar: data.solar && (data.solar[t] ?? 0),
+      to_battery: data.to_battery && (data.to_battery[t] ?? 0),
+      from_battery: data.from_battery && (data.from_battery[t] ?? 0),
     });
+
+    outData.grid_to_battery[t] = grid_to_battery;
+    outData.total.grid_to_battery += grid_to_battery;
+    outData.battery_to_grid![t] = battery_to_grid;
+    outData.total.battery_to_grid += battery_to_grid;
+    outData.used_battery![t] = used_battery;
+    outData.total.used_battery += used_battery;
+    outData.used_grid![t] = used_grid;
+    outData.total.used_grid += used_grid;
+    outData.used_solar![t] = used_solar;
+    outData.total.used_solar += used_solar;
   });
 
   return outData;
+};
+
+export const computeConsumptionSingle = (data: {
+  from_grid: number | undefined;
+  to_grid: number | undefined;
+  solar: number | undefined;
+  to_battery: number | undefined;
+  from_battery: number | undefined;
+}): {
+  grid_to_battery: number;
+  battery_to_grid: number;
+  used_solar: number;
+  used_grid: number;
+  used_battery: number;
+} => {
+  const to_grid = data.to_grid;
+  const to_battery = data.to_battery;
+  const solar = data.solar;
+  const from_grid = data.from_grid;
+  const from_battery = data.from_battery;
+
+  let used_solar = 0;
+  let grid_to_battery = 0;
+  let battery_to_grid = 0;
+  let used_battery = 0;
+  let used_grid = 0;
+  if ((to_grid != null || to_battery != null) && solar != null) {
+    used_solar = (solar || 0) - (to_grid || 0) - (to_battery || 0);
+    if (used_solar < 0) {
+      if (to_battery != null) {
+        grid_to_battery = used_solar * -1;
+        if (grid_to_battery > (from_grid || 0)) {
+          battery_to_grid = grid_to_battery - (from_grid || 0);
+          grid_to_battery = from_grid || 0;
+        }
+      }
+      used_solar = 0;
+    }
+  }
+
+  if (from_battery != null) {
+    if (to_grid != null) {
+      used_battery = (from_battery || 0) - (battery_to_grid || 0);
+    } else {
+      used_battery = from_battery;
+    }
+  }
+
+  if (from_grid != null) {
+    if (to_battery != null) {
+      used_grid = from_grid - grid_to_battery;
+    } else {
+      used_grid = from_grid;
+    }
+  }
+
+  return {
+    used_solar,
+    used_grid,
+    used_battery,
+    grid_to_battery,
+    battery_to_grid,
+  };
 };
 
 export const formatConsumptionShort = (
