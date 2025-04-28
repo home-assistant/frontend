@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
@@ -19,6 +19,8 @@ import {
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 import "../../../../src/components/ha-icon";
+import "../../../../src/components/ha-list";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-svg-icon";
 import {
   getLegacyLovelaceCollection,
@@ -29,7 +31,6 @@ import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/vi
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
-import "../../../../src/components/ha-list-item";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
@@ -85,7 +86,7 @@ class HcCast extends LitElement {
               `
             : html`
                 <div class="section-header">PICK A VIEW</div>
-                <mwc-list @action=${this._handlePickView} activatable>
+                <ha-list @action=${this._handlePickView} activatable>
                   ${(
                     this.lovelaceViews ?? [
                       generateDefaultViewConfig({}, {}, {}, {}, () => ""),
@@ -113,7 +114,7 @@ class HcCast extends LitElement {
                             ></ha-svg-icon>`}
                       </ha-list-item>
                     `
-                  )}</mwc-list
+                  )}</ha-list
                 >
               `}
 

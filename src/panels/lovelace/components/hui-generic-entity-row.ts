@@ -16,6 +16,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("hui-generic-entity-row")
 export class HuiGenericEntityRow extends LitElement {
@@ -152,19 +153,17 @@ export class HuiGenericEntityRow extends LitElement {
             </div>`
           : nothing}
         ${(this.catchInteraction ?? !DOMAINS_INPUT_ROW.includes(domain))
-          ? html`<div
-              class="text-content value ${classMap({
-                pointer,
-              })}"
-              @action=${this._handleAction}
-              .actionHandler=${actionHandler({
-                hasHold: hasAction(this.config!.hold_action),
-                hasDoubleClick: hasAction(this.config!.double_tap_action),
-              })}
-            >
-              <div class="state"><slot></slot></div>
-            </div>`
-          : html`<slot></slot>`}
+          ? html`
+              <div class="text-content value">
+                <div class="state"><slot></slot></div>
+              </div>
+            `
+          : html`<slot
+              @touchcancel=${stopPropagation}
+              @touchend=${stopPropagation}
+              @keydown=${stopPropagation}
+              @click=${stopPropagation}
+            ></slot>`}
       </div>
     `;
   }

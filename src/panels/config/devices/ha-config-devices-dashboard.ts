@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiChevronRight,
   mdiDotsVertical,
@@ -919,7 +919,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing}
               <ha-sub-menu>
@@ -934,7 +934,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
                 </ha-md-menu-item>
-                <ha-menu slot="menu">${areaItems}</ha-menu>
+                <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
               </ha-sub-menu>
             </ha-md-button-menu>`
           : nothing}

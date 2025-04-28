@@ -10,6 +10,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-textfield";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-code-editor";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
@@ -109,7 +110,12 @@ class DialogImportBlueprint extends LitElement {
                     "ui.panel.config.blueprint.add.raw_blueprint"
                   )}
                 >
-                  <pre>${this._result.raw_data}</pre>
+                  <ha-code-editor
+                    mode="yaml"
+                    .value=${this._result.raw_data}
+                    read-only
+                    dir="ltr"
+                  ></ha-code-editor>
                 </ha-expansion-panel>
                 ${this._result?.exists
                   ? html`
@@ -273,6 +279,9 @@ class DialogImportBlueprint extends LitElement {
       :host([large]) ha-dialog {
         --mdc-dialog-min-width: 90vw;
         --mdc-dialog-max-width: 90vw;
+      }
+      ha-expansion-panel {
+        --expansion-panel-content-padding: 0px;
       }
     `,
   ];

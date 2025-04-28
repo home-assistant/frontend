@@ -59,12 +59,16 @@ export const haTheme = EditorView.theme({
     maxHeight: "var(--code-mirror-max-height, unset)",
   },
 
+  "&.cm-editor": {
+    "--indent-marker-active-bg-color": "var(--divider-color)",
+  },
+
   "&.cm-editor.cm-focused": {
     outline: "none",
   },
 
   "&.cm-focused .cm-cursor": {
-    borderLeftColor: "var(--secondary-text-color)",
+    borderLeftColor: "var(--primary-color)",
   },
 
   ".cm-selectionBackground, ::selection": {
@@ -187,7 +191,7 @@ export const haTheme = EditorView.theme({
   ".cm-gutters": {
     backgroundColor:
       "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
-    color: "var(--paper-dialog-color, var(--secondary-text-color))",
+    color: "var(--secondary-text-color)",
     border: "none",
     borderRight: "1px solid var(--secondary-text-color)",
     paddingRight: "1px",

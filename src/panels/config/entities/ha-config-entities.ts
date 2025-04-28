@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -901,7 +901,7 @@ ${
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
             </ha-md-menu-item>
-            <ha-menu slot="menu">${labelItems}</ha-menu>
+            <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
           </ha-sub-menu>
           <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
       : nothing

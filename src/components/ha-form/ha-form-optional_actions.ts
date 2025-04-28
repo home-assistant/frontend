@@ -6,6 +6,7 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HomeAssistant } from "../../types";
 import "./ha-form";
+import "../ha-list-item";
 import type {
   HaFormOptionalActionsSchema,
   HaFormDataContainer,

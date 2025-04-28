@@ -135,7 +135,7 @@ export class StateHistoryChartLine extends LitElement {
         seriesIndex: index,
         value: lastData,
         // HTML copied from echarts. May change based on options
-        marker: `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
+        marker: `<span style="display:inline-block;margin-right:4px;margin-inline-end:4px;margin-inline-start:initial;border-radius:10px;width:10px;height:10px;background-color:${dataset.color};"></span>`,
       });
     });
     const unit = this.unit

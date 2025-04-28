@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiDelete,
@@ -30,6 +30,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
@@ -794,7 +795,7 @@ export class HaConfigDevicePage extends LitElement {
                               .path=${mdiDotsVertical}
                             ></ha-icon-button>
                             ${actions.map((deviceAction) => {
-                              const listItem = html`<mwc-list-item
+                              const listItem = html`<ha-list-item
                                 class=${ifDefined(deviceAction.classes)}
                                 .action=${deviceAction.action}
                                 @click=${this._deviceActionClicked}
@@ -819,7 +820,7 @@ export class HaConfigDevicePage extends LitElement {
                                       ></ha-svg-icon>
                                     `
                                   : ""}
-                              </mwc-list-item>`;
+                              </ha-list-item>`;
                               return deviceAction.href
                                 ? html`<a
                                     href=${deviceAction.href}
@@ -1558,14 +1559,11 @@ export class HaConfigDevicePage extends LitElement {
 
         h1 {
           margin: 0;
-          font-family: var(--paper-font-headline_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-headline_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-headline_-_font-size);
-          font-weight: var(--paper-font-headline_-_font-weight);
-          letter-spacing: var(--paper-font-headline_-_letter-spacing);
-          line-height: var(--paper-font-headline_-_line-height);
+          font-family: var(--ha-font-family-body);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           opacity: var(--dark-primary-opacity);
         }
 

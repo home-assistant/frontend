@@ -10,10 +10,9 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  energySourcesByType,
   getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -75,56 +74,35 @@ class HuiEnergySelfSufficiencyGaugeCard
       )}`;
     }
 
-    const prefs = this._data.prefs;
-    const types = energySourcesByType(prefs);
-
     // The strategy only includes this card if we have a grid.
-    const hasConsumption = true;
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
 
-    const hasSolarProduction = types.solar !== undefined;
-    const hasBattery = types.battery !== undefined;
-    const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
+    const hasSolarProduction = summedData.solar !== undefined;
+    const hasBattery =
+      summedData.to_battery !== undefined ||
+      summedData.from_battery !== undefined;
+    const hasReturnToGrid = summedData.to_grid !== undefined;
 
-    const totalFromGrid =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-      ) ?? 0;
+    const totalFromGrid = summedData.total.from_grid ?? 0;
 
     let totalSolarProduction: number | null = null;
 
     if (hasSolarProduction) {
-      totalSolarProduction =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.solar!.map((source) => source.stat_energy_from)
-        ) || 0;
+      totalSolarProduction = summedData.total.solar ?? 0;
     }
 
     let totalBatteryIn: number | null = null;
     let totalBatteryOut: number | null = null;
 
     if (hasBattery) {
-      totalBatteryIn =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery!.map((source) => source.stat_energy_to)
-        ) || 0;
-      totalBatteryOut =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery!.map((source) => source.stat_energy_from)
-        ) || 0;
+      totalBatteryIn = summedData.total.to_battery ?? 0;
+      totalBatteryOut = summedData.total.from_battery ?? 0;
     }
 
     let returnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
-      returnedToGrid =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-        ) || 0;
+      returnedToGrid = summedData.total.to_grid ?? 0;
     }
 
     let solarConsumption: number | null = null;

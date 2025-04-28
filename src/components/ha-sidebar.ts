@@ -253,8 +253,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ${this._renderHeader()}
       ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
-      ${this._renderNotifications()}
-      ${this._renderUserItem(selectedPanel)}
+      <ha-md-list>
+        ${this._renderNotifications()}
+        ${this._renderUserItem(selectedPanel)}
+      </ha-md-list>
       <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
@@ -873,8 +875,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-md-list {
           padding: 4px 0;
-          display: flex;
-          flex-direction: column;
           box-sizing: border-box;
           height: calc(100% - var(--header-height) - 132px);
           height: calc(
@@ -886,11 +886,13 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list-item {
+          flex-shrink: 0;
           box-sizing: border-box;
           margin: 4px;
           border-radius: 4px;
-          height: 40px;
           --md-list-item-one-line-container-height: 40px;
+          --md-list-item-top-space: 0;
+          --md-list-item-bottom-space: 0;
           width: 48px;
           position: relative;
           --md-list-item-label-text-color: var(--sidebar-text-color);
@@ -900,6 +902,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
         :host([expanded]) ha-md-list-item {
           width: 248px;
+          width: calc(248px - env(safe-area-inset-left));
         }
 
         ha-md-list-item.selected {
@@ -923,6 +926,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-icon[slot="start"],
         ha-svg-icon[slot="start"] {
+          width: 24px;
           flex-shrink: 0;
           color: var(--sidebar-icon-color);
         }
@@ -977,13 +981,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-md-list-item.user {
           --md-list-item-leading-icon-size: 40px;
-          --md-list-item-bottom-space: 12px;
           --md-list-item-leading-space: 4px;
-          --md-list-item-trailing-space: 4px;
         }
 
         ha-user-badge {
           flex-shrink: 0;
+          margin-right: -8px;
         }
 
         .spacer {

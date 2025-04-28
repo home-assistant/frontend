@@ -20,7 +20,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -106,7 +106,7 @@ export class HaScriptEditor extends SubscribeMixin(
   @state() private _readOnly = false;
 
   @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaScriptEditor, value) {
       return value.find(({ entity_id }) => entity_id === this._entityId);
     },

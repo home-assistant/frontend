@@ -120,7 +120,6 @@ class PanelDeveloperTools extends LitElement {
       css`
         :host {
           color: var(--primary-text-color);
-          --paper-card-header-color: var(--primary-text-color);
           display: flex;
           min-height: 100vh;
         }
@@ -165,9 +164,9 @@ class PanelDeveloperTools extends LitElement {
           max-width: 100%;
         }
         sl-tab-group {
-          --ha-tab-active-text-color: var(--text-primary-color);
-          --ha-tab-track-color: var(--app-header-background-color);
-          --ha-tab-indicator-color: var(--text-primary-color);
+          --ha-tab-active-text-color: var(--app-header-text-color, white);
+          --ha-tab-indicator-color: var(--app-header-text-color, white);
+          --ha-tab-track-color: transparent;
         }
       `,
     ];

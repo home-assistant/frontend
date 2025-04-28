@@ -11,6 +11,7 @@ import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
 import type { ClimateEntity, HvacMode } from "../../../data/climate";
 import {
   climateHvacModeIcon,

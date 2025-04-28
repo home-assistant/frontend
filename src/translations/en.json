@@ -722,6 +722,7 @@
         "statistic": "Statistic",
         "no_statistics": "You don't have any statistics",
         "no_match": "No matching statistics found",
+        "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics"
       },
@@ -1106,7 +1107,15 @@
         "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
         "not_supported": "Your browser doesn't support QR scanning.",
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
-        "enter_qr_code": "Enter QR code value"
+        "enter_qr_code": "Enter QR code value",
+        "retry": "Retry",
+        "wrong_code": "Wrong barcode scanned! {format}: {rawValue}, we need a QR code.",
+        "no_camera_found": "No camera found",
+        "app": {
+          "title": "Scan QR code",
+          "description": "Find the code on your device",
+          "alternativeOptionLabel": "More options"
+        }
       },
       "climate-control": {
         "temperature_up": "Increase temperature",
@@ -1539,6 +1548,13 @@
       "restart": {
         "heading": "Restart Home Assistant",
         "advanced_options": "Advanced options",
+        "backup_in_progress": "A backup is currently being created. The action will automatically proceed once the backup process is complete.",
+        "upload_in_progress": "A backup upload is currently in progress. The action will automatically proceed once the upload process is complete.",
+        "restore_in_progress": "A backup restore is currently in progress. The action will automatically proceed once the restore process is complete.",
+        "wait_for_backup": "Wait for the backup creation to finish",
+        "error_backup_state": "An error occured while getting the current backup state. Error: {error}",
+        "wait_for_upload": "Wait for backup upload to finish",
+        "wait_for_restore": "Wait for backup restore to finish",
         "reload": {
           "title": "Quick reload",
           "description": "Loads new YAML configurations without a restart.",
@@ -1551,6 +1567,7 @@
           "confirm_title": "Restart Home Assistant?",
           "confirm_description": "This will interrupt all running automations and scripts.",
           "confirm_action": "Restart",
+          "confirm_action_backup": "Wait and restart",
           "failed": "Failed to restart Home Assistant"
         },
         "stop": {
@@ -1564,7 +1581,8 @@
           "confirm_title": "Reboot system?",
           "confirm_description": "This will reboot the complete system which includes Home Assistant and all the add-ons.",
           "confirm_action": "Reboot",
-          "rebooting": "Rebooting system",
+          "action_toast": "Rebooting system",
+          "confirm_action_backup": "Wait and reboot",
           "failed": "Failed to reboot system"
         },
         "shutdown": {
@@ -1573,7 +1591,8 @@
           "confirm_title": "Shut down system?",
           "confirm_description": "This will shut down the complete system which includes Home Assistant and all add-ons.",
           "confirm_action": "Shut down",
-          "shutting_down": "Shutting down system",
+          "confirm_action_backup": "Wait and shut down",
+          "action_toast": "Shutting down system",
           "failed": "Failed to shut down system"
         },
         "restart-safe-mode": {
@@ -1582,6 +1601,7 @@
           "confirm_title": "Restart Home Assistant in safe mode?",
           "confirm_description": "This will restart Home Assistant without loading any custom integrations and frontend modules.",
           "confirm_action": "Restart",
+          "confirm_action_backup": "Wait and Restart",
           "failed": "Failed to restart Home Assistant"
         }
       },
@@ -1601,7 +1621,8 @@
         "required_error_msg": "This field is required",
         "generic": {
           "name": "Name",
-          "icon": "Icon"
+          "icon": "Icon",
+          "advanced_settings": "Advanced settings"
         },
         "input_datetime": {
           "date": "Date",
@@ -1655,8 +1676,7 @@
           "edit_schedule_block": "Edit schedule block",
           "start": "Start",
           "end": "End",
-          "data": "Additional data",
-          "advanced_settings": "Advanced settings"
+          "data": "Additional data"
         },
         "template": {
           "time": "[%key:ui::panel::developer-tools::tabs::templates::time%]",
@@ -2513,6 +2533,7 @@
             "custom_retention_label": "Keep only",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
+              "global": "Use global settings",
               "copies_3": "3 backups",
               "forever": "Forever",
               "custom": "Custom"
@@ -2700,7 +2721,9 @@
               "no_location": "No location selected",
               "no_location_description": "You have to select at least one location to create a backup.",
               "more_locations": "Explore more locations",
-              "manage_network_storage": "Manage network storage"
+              "manage_network_storage": "Manage network storage",
+              "ha_cloud_backup": "{home_assistant_cloud} backup",
+              "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. The cloud stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
             },
             "encryption_key": {
               "title": "Encryption key",
@@ -2740,6 +2763,9 @@
           },
           "location": {
             "header": "Location",
+            "save_error": "Error saving configuration: {error}",
+            "retention_for_this_system": "Retention for this system",
+            "retention_for_location": "Retention for {location}",
             "not_found": "Not found",
             "not_found_description": "Location matching ''{backupId}'' not found",
             "error": "Could not fetch location details",
@@ -3152,7 +3178,7 @@
             "documentation": "documentation",
             "issues": "issues",
             "first_occurred": "First occurred",
-            "occurrences": "occurrences",
+            "number_of_occurrences": "{count} {count, plural,\n one {occurrence}\n other {occurrences}\n}",
             "last_logged": "Last logged"
           }
         },
@@ -4614,7 +4640,7 @@
               "introduction": "Add the devices that you want to be included in your scene. Set all entities in each device to the state you want for this scene.",
               "introduction_review": "To add the devices that you want to be included in your scene switch to the Live Edit mode.",
               "add": "Add a device",
-              "delete": "Delete device"
+              "delete": "Remove device"
             },
             "entities": {
               "header": "Entities",
@@ -4622,7 +4648,7 @@
               "introduction_review": "To add individual entities to your scene switch to the Live Edit mode.",
               "without_device": "Entities",
               "add": "Add an entity",
-              "delete": "Delete entity"
+              "delete": "Remove entity"
             }
           }
         },
@@ -5282,19 +5308,22 @@
           },
           "config_flow": {
             "success": "Success",
+            "assign_area": "Assign {number, plural,\n  one {device}\n  other {devices}\n} to area",
+            "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
             "finish": "Finish",
+            "finish_skip": "Skip and finish",
             "submit": "Submit",
             "next": "Next",
             "preview": "Preview",
-            "found_following_devices": "We found the following devices",
             "yaml_only_title": "This integration cannot be added from the UI",
             "yaml_only": "You can add this integration by adding it to your ''configuration.yaml''. See the documentation for more information.",
             "open_documentation": "Open documentation",
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
-            "error_saving_area": "Error saving area: {error}",
+            "error_saving_device": "Error updating device: {error}",
+            "error_saving_entity": "Error updating entity: {error}",
             "created_config": "Created configuration for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
@@ -5472,6 +5501,12 @@
           "service_uuids": "Service UUIDs",
           "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
         },
+        "dhcp": {
+          "title": "DHCP discovery",
+          "mac_address": "MAC Address",
+          "hostname": "Hostname",
+          "ip_address": "IP Address"
+        },
         "thread": {
           "other_networks": "Other networks",
           "my_network": "Preferred network",
@@ -5511,6 +5546,15 @@
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials"
+        },
+        "zeroconf": {
+          "name": "Name",
+          "type": "Type",
+          "port": "Port",
+          "ip_addresses": "IP Addresses",
+          "properties": "Properties",
+          "discovery_information": "Discovery information",
+          "copy_to_clipboard": "Copy to clipboard"
         },
         "zha": {
           "common": {
@@ -5650,7 +5694,6 @@
             "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
-            "reconfigure_server": "Re-configure server",
             "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
@@ -5672,7 +5715,8 @@
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
               "downloading": "Downloading backup",
-              "restoring": "Restoring backup"
+              "restoring": "Restoring backup",
+              "migrate": "Migrate controller"
             },
             "statistics": {
               "title": "Controller statistics",
@@ -5875,33 +5919,91 @@
           },
           "add_node": {
             "title": "Add a Z-Wave device",
-            "searching_device": "Searching for devices…",
-            "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
+            "searching_devices": "Searching for devices",
+            "follow_device_instructions": "Follow the directions provided with your device to put it into pairing mode (sometimes called \"inclusion mode\")",
+            "security_options": "Advanced security options",
             "choose_inclusion_strategy": "How do you want to add your device",
-            "qr_code": "QR Code",
-            "qr_code_paragraph": "If your device supports SmartStart you can scan the QR code for easy pairing.",
-            "scan_qr_code": "Scan QR code",
+            "add_device_failed": "Add device failed",
             "inclusion_failed": "The device could not be added.",
+            "getting_device_information": "Getting device information",
+            "saving_device": "Saving device",
             "check_logs": "Please check the logs for more information.",
-            "inclusion_finished": "The device has been added.",
-            "provisioning_finished": "The device has been added. Once you power it on, it will become available.",
-            "view_device": "View Device",
-            "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
-            "waiting_for_device": "Communicating with the device. Please wait.",
-            "adding_insecurely": "The device is being added insecurely",
-            "added_insecurely": "The device was added insecurely",
-            "added_insecurely_text": "There was an error during secure inclusion. You can try again by excluding the device and adding it again.",
-            "low_security_reason": {
-              "0": "Security bootstrapping was canceled by the user.",
-              "1": "The required security keys were not configured in the driver.",
-              "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
-              "3": "An expected message was not received within the corresponding timeout.",
-              "4": "There was no possible match in encryption parameters between the controller and the node.",
-              "5": "Security bootstrapping was canceled by the included node.",
-              "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
-              "7": "There was a mismatch in security keys between the controller and the node.",
-              "8": "Unknown error occurred."
+            "timeout_error": "No device found after {minutes} minutes. Please check the device and try again.",
+            "select_method": {
+              "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
+              "qr_code_webcam": "Scan QR code using webcam",
+              "qr_code_webcam_description": "Find and scan the code on your device.",
+              "qr_code_manual": "Enter QR code manually",
+              "qr_code_manual_description": "You can scan the QR code with another QR scanner and paste the code.",
+              "search_device": "Search for device",
+              "search_device_description": "Use this option to manually include a device that does not have a SmartStart QR code."
+            },
+            "qr": {
+              "manual": {
+                "title": "Enter QR code manually",
+                "text": "You can scan the QR code with another QR scanner and paste the code here.",
+                "placeholder": "Code"
+              },
+              "scan_code": "Scan QR code",
+              "other_add_options": "Other add options",
+              "invalid_code": "Invalid QR code ({code})",
+              "unsupported_code": "This QR code is not supported \"{code}\""
+            },
+            "specific_device": {
+              "title": "Searching for device",
+              "turn_on_device": "Turn on the device",
+              "turn_on_device_description": "If your device is already turned on, you might need to turn it off and on again. Consult your device manual if you are unsure.",
+              "add_another_z_wave_device": "Add another Z-Wave device",
+              "close_description": "Feel free to close this screen, as this process will continue in the background."
+            },
+            "select_strategy": {
+              "title": "Choose security strategy",
+              "default_label": "Secure if possible",
+              "default_description": "Requires user interaction during inclusion. Fast and secure with S2 when supported. Allows manually selecting which security keys to grant. Fallback to legacy S0 or no encryption when necessary.",
+              "s0_label": "Legacy Secure",
+              "s0_description": "Uses the older S0 security that is secure, but slow due to a lot of overhead. Allows securely including S2 capable devices which fail to be included with S2.",
+              "insecure_label": "Insecure",
+              "insecure_description": "Do not use encryption.",
+              "inclusion_strategy": "Inclusion strategy: {strategy}"
+            },
+            "configure_device": {
+              "title": "Add device",
+              "device_name": "Name",
+              "device_area": "Area",
+              "choose_network_type": "Choose network type",
+              "long_range_label": "Direct long range",
+              "long_range_description": "Direct connection to Home Assistant for extended coverage, without a mesh network.",
+              "mesh_label": "Mesh network",
+              "mesh_description": "Devices relay signals to each other, enhancing coverage and reliability.",
+              "add_device": "Add device",
+              "save_device_failed": "Saving new device info failed"
+            },
+            "validate_dsk_pin": {
+              "title": "Verify key",
+              "text": "Find the key on your device or manual and enter the 5-digit PIN.",
+              "placeholder": "PIN"
+            },
+            "added_insecure": {
+              "title": "Device added insecurely",
+              "text": "The device {name} has been added to your Z-Wave network.",
+              "added_insecurely_text": "{deviceName} has been added without secure inclusion. You can still use your device.",
+              "try_again_text": "You can try again by removing the device and adding it again.",
+              "view_device": "View device",
+              "low_security_reason": {
+                "0": "Security bootstrapping was canceled by the user.",
+                "1": "The required security keys were not configured in the driver.",
+                "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
+                "3": "An expected message was not received within the corresponding timeout.",
+                "4": "There was no possible match in encryption parameters between the controller and the node.",
+                "5": "Security bootstrapping was canceled by the included node.",
+                "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
+                "7": "There was a mismatch in security keys between the controller and the node.",
+                "8": "Unknown error occurred."
+              }
+            },
+            "grant_security_classes": {
+              "title": "Security classes",
+              "description": "The device has requested the following security classes"
             }
           },
           "provisioned": {
@@ -5939,9 +6041,9 @@
             "introduction": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
-            "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
-            "exclusion_failed": "The device could not be removed. Please check the logs for more information.",
+            "removing_device": "Removing device",
+            "exclusion_failed": "An error occurred during exclusion. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
@@ -6245,6 +6347,7 @@
             "disabled": "Disabled",
             "ip": "IP address",
             "netmask": "Netmask",
+            "prefix": "Subnet prefix",
             "add_address": "Add address",
             "gateway": "Gateway address",
             "dns_server": "DNS Server",
@@ -6257,6 +6360,11 @@
               "description": "The name your instance will have on your network",
               "failed_to_set_hostname": "Setting hostname failed"
             }
+          },
+          "discovery": {
+            "zeroconf": "Zeroconf browser",
+            "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
+            "zeroconf_browser": "View Zeroconf browser"
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
@@ -6384,8 +6492,13 @@
             "helpers": "[%key:ui::panel::config::helpers::caption%]"
           },
           "areas": {
+            "no_entities": "No entities in this area.",
+            "header": "Area badges",
+            "header_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
+            "edit_the_area": "edit the area",
             "groups": {
               "lights": "Lights",
+              "covers": "Covers",
               "climate": "Climate",
               "media_players": "Entertainment",
               "security": "Security",
@@ -6416,6 +6529,7 @@
             "unchecked_items": "Active",
             "no_unchecked_items": "You have no to-do items!",
             "checked_items": "Completed",
+            "no_status_items": "No status",
             "clear_items": "Remove completed items",
             "add_item": "Add item",
             "today": "Today",
@@ -6550,6 +6664,7 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
+          "unnamed_view": "Unnamed view",
           "delete_title": "Delete view",
           "delete_named_view_only": "''{name}'' view will be deleted.",
           "delete_unnamed_view_only": "This view will be deleted.",
@@ -6714,6 +6829,12 @@
               "badges_position_options": {
                 "top": "Top",
                 "bottom": "Bottom"
+              },
+              "badges_wrap": "Badges behaviour",
+              "badges_wrap_options": {
+                "wrap": "Wrap",
+                "scroll": "Scroll",
+                "scroll_description": "Touchscreen-friendly"
               }
             }
           },
@@ -7124,13 +7245,24 @@
             "generic": {
               "alt_text": "Alternative text",
               "aspect_ratio": "Aspect ratio",
+              "aspect_ratio_ignored": "Will be ignored because the card is resized.",
               "attribute": "Attribute",
               "camera_image": "Camera entity",
               "image_entity": "Image entity",
               "camera_view": "Camera view",
+              "camera_view_options": {
+                "auto": "Auto",
+                "live": "Live"
+              },
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
+              "fit_mode": "Fit mode",
+              "fit_mode_options": {
+                "contain": "Contain",
+                "cover": "Cover",
+                "fill": "Fill"
+              },
               "hold_action": "Hold behavior",
               "hours_to_show": "Hours to show",
               "days_to_show": "Days to show",
@@ -7285,6 +7417,10 @@
               "name": "Sensor",
               "show_more_detail": "Show more detail",
               "graph_type": "Graph type",
+              "graph_options": {
+                "none": "None",
+                "line": "Line"
+              },
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
@@ -7844,6 +7980,10 @@
           "title": "Advanced mode",
           "description": "Unlocks advanced features.",
           "link_promo": "Learn more"
+        },
+        "entity_id_picker": {
+          "title": "Display entity IDs in picker",
+          "description": "Shows the full entity IDs when selecting entities with a picker."
         },
         "refresh_tokens": {
           "header": "Refresh tokens",
@@ -8835,6 +8975,13 @@
       },
       "logs": {
         "get_logs": "Failed to get add-on logs, {error}"
+      },
+      "system_managed": {
+        "badge": "System-managed",
+        "title": "This add-on is managed by Home Assistant",
+        "description": "Manually modifying this configuration may cause the add-on or integration to stop working properly.",
+        "managed_by": "Managed by",
+        "take_control": "Take control"
       }
     },
     "common": {
@@ -8858,6 +9005,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "back": "[%key:ui::common::back%]",
       "menu": "[%key:ui::common::menu%]",
       "show": "[%key:ui::panel::config::updates::show%]",
       "show_more": "Show more information about this",
@@ -9234,7 +9382,6 @@
               "documentation": "[%key:ui::panel::config::logs::detail::documentation%]",
               "issues": "[%key:ui::panel::config::logs::detail::issues%]",
               "first_occurred": "[%key:ui::panel::config::logs::detail::first_occurred%]",
-              "occurrences": "[%key:ui::panel::config::logs::detail::occurrences%]",
               "last_logged": "[%key:ui::panel::config::logs::detail::last_logged%]"
             }
           }
