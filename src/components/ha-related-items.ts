@@ -3,7 +3,7 @@ import {
   mdiAlertCircleOutline,
   mdiDevices,
   mdiPaletteSwatch,
-  mdiSofa,
+  mdiTextureBox,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -235,10 +235,15 @@ export class HaRelatedItems extends LitElement {
                             })}
                             slot="graphic"
                           ></div>`
-                        : html`<ha-svg-icon
-                            .path=${mdiSofa}
-                            slot="graphic"
-                          ></ha-svg-icon>`}
+                        : area.icon
+                          ? html`<ha-icon
+                              slot="graphic"
+                              .icon=${area.icon}
+                            ></ha-icon>`
+                          : html`<ha-svg-icon
+                              slot="graphic"
+                              .path=${mdiTextureBox}
+                            ></ha-svg-icon>`}
                       ${area.name}
                       <ha-icon-next slot="meta"></ha-icon-next>
                     </ha-list-item>

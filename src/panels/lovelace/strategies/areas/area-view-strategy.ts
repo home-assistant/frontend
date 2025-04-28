@@ -8,7 +8,6 @@ import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import {
   AREA_STRATEGY_GROUP_ICONS,
-  AREA_STRATEGY_GROUP_LABELS,
   computeAreaTileCardConfig,
   getAreaGroupedEntities,
 } from "./helpers/areas-strategy-helper";
@@ -85,7 +84,7 @@ export class AreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            AREA_STRATEGY_GROUP_LABELS.lights,
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.lights"),
             AREA_STRATEGY_GROUP_ICONS.lights
           ),
           ...lights.map(computeTileCard),
@@ -98,7 +97,7 @@ export class AreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            AREA_STRATEGY_GROUP_LABELS.climate,
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.climate"),
             AREA_STRATEGY_GROUP_ICONS.climate
           ),
           ...climate.map(computeTileCard),
@@ -111,7 +110,9 @@ export class AreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            AREA_STRATEGY_GROUP_LABELS.media_players,
+            hass.localize(
+              "ui.panel.lovelace.strategy.areas.groups.media_players"
+            ),
             AREA_STRATEGY_GROUP_ICONS.media_players
           ),
           ...media_players.map(computeTileCard),
@@ -124,7 +125,7 @@ export class AreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            AREA_STRATEGY_GROUP_LABELS.security,
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.security"),
             AREA_STRATEGY_GROUP_ICONS.security
           ),
           ...security.map(computeTileCard),
@@ -137,7 +138,7 @@ export class AreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            AREA_STRATEGY_GROUP_LABELS.others,
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.others"),
             AREA_STRATEGY_GROUP_ICONS.others
           ),
           ...others.map(computeTileCard),
