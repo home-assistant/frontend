@@ -590,6 +590,10 @@ export class HaChartBase extends LitElement {
           lineStyle: { color: style.getPropertyValue("--info-color") },
           crossStyle: { color: style.getPropertyValue("--info-color") },
         },
+        extraCssText:
+          "direction:" +
+          style.getPropertyValue("--direction") +
+          ";margin-inline-start:3px;margin-inline-end:8px;",
       },
       timeline: {},
     };
