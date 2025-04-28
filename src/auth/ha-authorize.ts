@@ -152,7 +152,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         }
         h1 {
           font-size: var(--ha-font-size-3xl);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           margin-top: 16px;
           margin-bottom: 16px;
         }

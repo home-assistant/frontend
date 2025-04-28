@@ -302,7 +302,7 @@ export class HcConnect extends LitElement {
     }
     .error {
       color: red;
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     .error a {

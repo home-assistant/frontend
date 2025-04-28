@@ -412,7 +412,7 @@ export class AssistPipelineDebug extends LitElement {
       --expansion-panel-content-padding: 0px;
     }
     .heading {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-semibold);
       margin-bottom: 16px;
     }
 

@@ -35,7 +35,7 @@ export const stateControlCircularSliderStyle = css`
   }
   .label {
     width: 60%;
-    font-weight: 500;
+    font-weight: var(--ha-font-weight-semibold);
     text-align: center;
     color: var(--action-color, inherit);
     display: -webkit-box;

@@ -582,7 +582,7 @@ class DialogBackupOnboarding extends LitElement implements HassDialog {
           font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
           font-size: var(--ha-font-size-xl);
           font-style: normal;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           line-height: 28px;
           text-align: center;
         }

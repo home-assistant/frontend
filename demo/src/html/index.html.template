@@ -50,7 +50,7 @@
         font-family: Roboto, Noto, sans-serif;
         -moz-osx-font-smoothing: grayscale;
         -webkit-font-smoothing: antialiased;
-        font-weight: 400;
+        font-weight: var(--ha-font-weight-normal);
         height: 100vh;
         margin: 0;
         padding: 0;

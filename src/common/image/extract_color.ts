@@ -96,7 +96,7 @@ const customGenerator = (colors: Swatch[]) => {
     // eslint-disable-next-line no-console
     console.log(
       "%cPicked colors",
-      `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: bold; padding: 16px;`
+      `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: var(--ha-font-weight-bold); padding: 16px;`
     );
     colors.forEach((color) => logColor(color));
     // eslint-disable-next-line no-console

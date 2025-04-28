@@ -85,7 +85,7 @@ export class HaDialog extends DialogBase {
           var(--dialog-backdrop-filter, none)
         );
         --mdc-dialog-box-shadow: var(--dialog-box-shadow, none);
-        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
         --mdc-typography-headline6-font-size: var(--ha-font-size-xl);
       }
       .mdc-dialog__actions {

@@ -7,6 +7,8 @@ export const typographyStyles = css`
     --ha-font-family-code: monospace;
     --ha-font-family-longform: ui-sans-serif, system-ui, sans-serif;
 
+    --ha-font-family-heading: var(--ha-font-family-body);
+
     font-size: 14px;
     --ha-font-size-scale: 1;
     --ha-font-size-xs: calc(10px * var(--ha-font-size-scale));
@@ -24,7 +26,6 @@ export const typographyStyles = css`
     --ha-font-weight-semibold: 500;
     --ha-font-weight-bold: 600;
 
-    --ha-font-family-heading: var(--ha-font-family-body);
     --ha-font-weight-body: var(--ha-font-weight-normal);
     --ha-font-weight-heading: var(--ha-font-weight-bold);
     --ha-font-weight-action: var(--ha-font-weight-semibold);

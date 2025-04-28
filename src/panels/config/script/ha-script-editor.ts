@@ -1031,7 +1031,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .errors {
           padding: 20px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           color: var(--error-color);
         }
         .yaml-mode {
@@ -1082,7 +1082,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .header .name {
           font-size: var(--ha-font-size-xl);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
         }
         .header a {

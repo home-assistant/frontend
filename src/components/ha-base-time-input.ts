@@ -389,7 +389,10 @@ export class HaBaseTimeInput extends LitElement {
       );
       font-size: var(--mdc-typography-body2-font-size, 0.875rem);
       line-height: var(--mdc-typography-body2-line-height, 1.25rem);
-      font-weight: var(--mdc-typography-body2-font-weight, 400);
+      font-weight: var(
+        --mdc-typography-body2-font-weight,
+        var(--ha-font-weight-normal)
+      );
       letter-spacing: var(
         --mdc-typography-body2-letter-spacing,
         0.0178571429em

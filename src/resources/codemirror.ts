@@ -109,7 +109,8 @@ export const haTheme = EditorView.theme({
       "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))",
     fontSize: "var(--mdc-typography-button-font-size, 0.875rem)",
     height: "36px",
-    fontWeight: "var(--mdc-typography-button-font-weight, 500)",
+    fontWeight:
+      "var(--mdc-typography-button-font-weight, var(--ha-font-weight-semibold))",
     borderRadius: "4px",
     letterSpacing: "var(--mdc-typography-button-letter-spacing, 0.0892857em)",
   },

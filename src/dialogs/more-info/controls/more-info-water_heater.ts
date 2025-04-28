@@ -242,7 +242,7 @@ class MoreInfoWaterHeater extends LitElement {
 
         .current .value {
           font-size: var(--ha-font-size-2xl);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-semibold);
           line-height: 28px;
           direction: ltr;
         }

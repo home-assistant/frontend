@@ -92,7 +92,7 @@ export class DemoDateTimeDate extends LitElement {
 
   static styles = css`
     .header {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     .center {
       text-align: center;

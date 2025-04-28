@@ -961,7 +961,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         .breadcrumb .title {
           font-size: var(--ha-font-size-4xl);
           line-height: 1.2;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           margin: 0;
           overflow: hidden;
           display: -webkit-box;

@@ -212,7 +212,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           width: 30%;
         }
         .device .name {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
         }
         .device .manuf {
           color: var(--secondary-text-color);

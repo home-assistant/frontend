@@ -706,7 +706,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     ha-list-item[selected] {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     span[slot="icon"] {

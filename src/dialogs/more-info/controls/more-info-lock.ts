@@ -182,7 +182,7 @@ class MoreInfoLock extends LitElement {
           align-items: center;
           flex-direction: row;
           gap: 8px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-semibold);
           color: var(--success-color);
         }
         ha-control-button-group.jammed {

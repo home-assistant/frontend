@@ -76,7 +76,7 @@ export class HaIntegrationActionCard extends LitElement {
       }
       h2 {
         font-size: var(--ha-font-size-l);
-        font-weight: 400;
+        font-weight: var(--ha-font-weight-normal);
         margin-top: 8px;
         margin-bottom: 0;
         max-width: 100%;

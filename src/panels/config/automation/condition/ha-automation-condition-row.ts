@@ -554,7 +554,7 @@ export default class HaAutomationConditionRow extends LitElement {
           right: 0px;
           left: 0px;
           text-transform: uppercase;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           font-size: var(--ha-font-size-m);
           background-color: var(--divider-color, #e0e0e0);
           color: var(--text-primary-color);

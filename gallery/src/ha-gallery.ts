@@ -251,7 +251,7 @@ class HaGallery extends LitElement {
 
       .page-footer .header {
         font-size: var(--ha-font-size-l);
-        font-weight: 500;
+        font-weight: var(--ha-font-weight-semibold);
         line-height: 28px;
         text-align: center;
       }

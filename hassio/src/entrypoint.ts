@@ -8,7 +8,7 @@ body {
   font-family: Roboto, sans-serif;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-weight: 400;
+  font-weight: var(--ha-font-weight-normal);
   margin: 0;
   padding: 0;
   height: 100vh;

@@ -797,7 +797,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     .header h2 {
       color: var(--primary-text-color);
       font-size: inherit;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-semibold);
     }
 
     .empty {
