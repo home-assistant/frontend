@@ -42,6 +42,8 @@ export class HaEntityPicker extends LitElement {
 
   @property() public helper?: string;
 
+  @property() public placeholder?: string;
+
   @property({ attribute: false, type: Array }) public createDomains?: string[];
 
   /**
@@ -111,25 +113,33 @@ export class HaEntityPicker extends LitElement {
 
     if (!this.value) {
       return html`
-        <span slot="headline" class="placeholder"> Select an entity </span>
+        <span slot="headline" class="placeholder"
+          >${this.placeholder ??
+          this.hass.localize(
+            "ui.components.entity.entity-picker.placeholder"
+          )}</span
+        >
         <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
       `;
     }
 
     const stateObj = this.hass.states[entityId];
 
+    const showClearIcon =
+      !this.required && !this.disabled && !this.hideClearIcon;
+
     if (!stateObj) {
       return html`
         <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
         <span slot="headline">${entityId}</span>
-        ${this.hideClearIcon
-          ? nothing
-          : html`<ha-icon-button
+        ${showClearIcon
+          ? html`<ha-icon-button
               class="clear"
               slot="end"
               @click=${this._clear}
               .path=${mdiClose}
-            ></ha-icon-button>`}
+            ></ha-icon-button>`
+          : nothing}
         <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
       `;
     }
@@ -155,14 +165,14 @@ export class HaEntityPicker extends LitElement {
       ></state-badge>
       <span slot="headline">${primary}</span>
       <span slot="supporting-text">${secondary}</span>
-      ${this.hideClearIcon
-        ? nothing
-        : html`<ha-icon-button
+      ${showClearIcon
+        ? html`<ha-icon-button
             class="clear"
             slot="end"
             @click=${this._clear}
             .path=${mdiClose}
-          ></ha-icon-button>`}
+          ></ha-icon-button>`
+        : nothing}
       <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
     `;
   }
@@ -177,6 +187,7 @@ export class HaEntityPicker extends LitElement {
       <div class="container">
         ${!this._opened
           ? html`<ha-combo-box-item
+              .disabled=${this.disabled}
               id="anchor"
               type="button"
               compact
@@ -223,6 +234,9 @@ export class HaEntityPicker extends LitElement {
   }
 
   private async _showPicker() {
+    if (this.disabled) {
+      return;
+    }
     this._opened = true;
     await this.updateComplete;
     this._input?.focus();
@@ -273,6 +287,7 @@ export class HaEntityPicker extends LitElement {
           margin: 0 4px;
         }
         .clear {
+          margin: 0 -8px;
           --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;
         }
