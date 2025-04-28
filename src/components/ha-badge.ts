@@ -103,7 +103,7 @@ export class HaBadge extends LitElement {
       color: var(--secondary-text-color);
     }
     .content {
-      font-size: 12px;
+      font-size: var(--ha-font-size-badge, var(--ha-font-size-s));
       font-style: normal;
       font-weight: 500;
       line-height: 16px;
@@ -111,7 +111,7 @@ export class HaBadge extends LitElement {
       color: var(--primary-text-color);
     }
     ::slotted([slot="icon"]) {
-      --mdc-icon-size: 18px;
+      --mdc-icon-size: var(--ha-icon-size-badge, 18px);
       color: var(--badge-color);
       line-height: 0;
       margin-left: -4px;
