@@ -127,7 +127,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
     (params: TooltipPositionCallbackParams) => {
-      const { value, name, marker, seriesName } = Array.isArray(params)
+      const { value, name, marker, seriesName, color } = Array.isArray(params)
         ? params[0]
         : params;
       const title = seriesName
@@ -140,7 +140,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
       const markerLocalized = !computeRTL(this.hass)
         ? marker
-        : '<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:#9e9e9e;"></span>';
+        : `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
 
       const lines = [
         markerLocalized + name,
