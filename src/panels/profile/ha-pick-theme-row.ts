@@ -12,9 +12,9 @@ import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
 import {
-  DEFAULT_ACCENT_COLOR,
-  DEFAULT_PRIMARY_COLOR,
-} from "../../resources/styles-data";
+  DefaultAccentColor,
+  DefaultPrimaryColor,
+} from "../../resources/theme/color.globals";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
@@ -129,8 +129,7 @@ export class HaPickThemeRow extends LitElement {
             ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
                   <ha-textfield
-                    .value=${themeSettings?.primaryColor ||
-                    DEFAULT_PRIMARY_COLOR}
+                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.primary_color"
@@ -139,7 +138,7 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   <ha-textfield
-                    .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
+                    .value=${themeSettings?.accentColor || DefaultAccentColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.accent_color"
