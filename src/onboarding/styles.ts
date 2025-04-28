@@ -6,7 +6,7 @@ export const onBoardingStyles = css`
   }
   h1 {
     font-weight: 400;
-    font-size: 28px;
+    font-size: var(--ha-font-size-3xl);
     line-height: 36px;
     margin-bottom: 8px;
   }

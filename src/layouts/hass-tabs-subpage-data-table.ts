@@ -760,7 +760,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       margin-left: 4px;
       margin-inline-start: 4px;
       margin-inline-end: initial;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       width: max-content;
       cursor: initial;
       direction: var(--direction);
@@ -823,7 +823,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       box-sizing: border-box;
       border-radius: 50%;
       font-weight: 400;
-      font-size: 11px;
+      font-size: var(--ha-font-size-xs);
       background-color: var(--primary-color);
       line-height: 16px;
       text-align: center;
@@ -857,7 +857,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       justify-content: space-between;
       padding: 8px 12px;
       box-sizing: border-box;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       --ha-assist-chip-container-color: var(--card-background-color);
     }
 

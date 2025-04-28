@@ -502,11 +502,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         text-align: center;
       }
       .primary-text {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
         margin: 0;
       }
       .secondary-text {
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         margin-bottom: 0;
         color: var(--secondary-text-color);
       }
@@ -519,11 +519,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
       .header .title {
         color: var(--secondary-text-color);
-        font-size: 18px;
+        font-size: var(--ha-font-size-l);
       }
 
       .header .value {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
       }
       .row {
         display: flex;

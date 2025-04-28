@@ -1081,7 +1081,7 @@ export class HaScriptEditor extends SubscribeMixin(
           align-items: center;
         }
         .header .name {
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           font-weight: 400;
           flex: 1;
         }

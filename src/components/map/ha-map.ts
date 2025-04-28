@@ -688,7 +688,7 @@ export class HaMap extends ReactiveElement {
       border-radius: 20px;
       text-align: center;
       color: var(--text-primary-color);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
     }
 
     .marker-cluster span {

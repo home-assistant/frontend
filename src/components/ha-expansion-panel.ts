@@ -218,7 +218,7 @@ export class HaExpansionPanel extends LitElement {
     .secondary {
       display: block;
       color: var(--secondary-text-color);
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
     }
   `;
 }

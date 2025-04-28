@@ -196,7 +196,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     }
     .content.subtitle {
       color: var(--ha-heading-card-subtitle-color, var(--secondary-text-color));
-      font-size: var(--ha-heading-card-subtitle-font-size, 14px);
+      font-size: var(
+        --ha-heading-card-subtitle-font-size,
+        var(--ha-font-size-m)
+      );
       font-weight: var(--ha-heading-card-subtitle-font-weight, 500);
       line-height: var(--ha-heading-card-subtitle-line-height, 20px);
     }

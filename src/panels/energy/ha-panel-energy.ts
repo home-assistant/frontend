@@ -402,7 +402,7 @@ class PanelEnergy extends LitElement {
           display: flex;
           flex: 1;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
           font-weight: 400;
           box-sizing: border-box;

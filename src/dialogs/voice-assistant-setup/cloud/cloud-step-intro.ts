@@ -153,7 +153,7 @@ export class CloudStepIntro extends LitElement {
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: var(--ha-font-size-2xl);
       }
       .access .round-icon {
         color: #00aef8;
@@ -161,14 +161,14 @@ export class CloudStepIntro extends LitElement {
       }
       .feature h2 {
         font-weight: 500;
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
         line-height: 24px;
         margin-top: 0;
         margin-bottom: 8px;
       }
       .feature p {
         font-weight: 400;
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         line-height: 20px;
         margin: 0;
       }

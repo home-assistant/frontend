@@ -23,7 +23,7 @@ export const stateControlCircularSliderStyle = css`
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    font-size: 16px;
+    font-size: var(--ha-font-size-l);
     line-height: 1.5;
     letter-spacing: 0.1px;
     gap: 8px;
@@ -72,7 +72,7 @@ export const stateControlCircularSliderStyle = css`
     pointer-events: auto;
   }
   .primary-state {
-    font-size: 36px;
+    font-size: var(--ha-font-size-4xl);
   }
   .buttons ha-outlined-icon-button {
     --md-outlined-icon-button-container-width: 48px;
@@ -83,7 +83,7 @@ export const stateControlCircularSliderStyle = css`
     font-size: 44px;
   }
   .container.md .state {
-    font-size: 30px;
+    font-size: var(--ha-font-size-3xl);
   }
   .container.md .info {
     margin-top: 12px;
@@ -97,14 +97,14 @@ export const stateControlCircularSliderStyle = css`
   }
 
   .container.sm ha-big-number {
-    font-size: 32px;
+    font-size: var(--ha-font-size-4xl);
   }
   .container.sm .state {
-    font-size: 26px;
+    font-size: var(--ha-font-size-2xl);
   }
   .container.sm .info {
     margin-top: 12px;
-    font-size: 14px;
+    font-size: var(--ha-font-size-m);
     gap: 2px;
     --mdc-icon-size: 14px;
   }
@@ -116,10 +116,10 @@ export const stateControlCircularSliderStyle = css`
   }
 
   .container.xs ha-big-number {
-    font-size: 32px;
+    font-size: var(--ha-font-size-4xl);
   }
   .container.xs .state {
-    font-size: 16px;
+    font-size: var(--ha-font-size-l);
   }
   .container.xs .info {
     margin-top: 12px;

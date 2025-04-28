@@ -409,13 +409,6 @@ export class HuiEntitiesCardEditor
     return [
       configElementStyle,
       css`
-        .edit-entity-row-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 18px;
-        }
-
         hui-header-footer-editor {
           padding-top: 4px;
         }

@@ -171,7 +171,7 @@ class HaConfigRepairs extends LitElement {
       --mdc-list-vertical-padding: 0;
     }
     .title {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       padding: 16px;
       padding-bottom: 0;
     }

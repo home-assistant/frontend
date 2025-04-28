@@ -294,7 +294,7 @@ export class HaFileUpload extends LitElement {
     }
     .supports {
       color: var(--secondary-text-color);
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
     }
     :host([disabled]) .secondary {
       color: var(--disabled-text-color);
@@ -333,7 +333,7 @@ export class HaFileUpload extends LitElement {
       background: none;
       border: none;
       padding: 0;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--primary-color);
       text-decoration: underline;
       cursor: pointer;

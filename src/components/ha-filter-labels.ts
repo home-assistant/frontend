@@ -234,7 +234,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           box-sizing: border-box;
           border-radius: 50%;
           font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
           background-color: var(--primary-color);
           line-height: 16px;
           text-align: center;

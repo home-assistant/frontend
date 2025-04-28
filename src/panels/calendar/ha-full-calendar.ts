@@ -563,7 +563,7 @@ export class HAFullCalendar extends LitElement {
         th.fc-col-header-cell.fc-day {
           background-color: var(--table-header-background-color);
           color: var(--primary-text-color);
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
           font-weight: bold;
           text-transform: uppercase;
         }
@@ -587,7 +587,7 @@ export class HAFullCalendar extends LitElement {
 
         a.fc-daygrid-day-number {
           float: none !important;
-          font-size: 12px;
+          font-size: var(--ha-font-size-s);
           cursor: pointer;
         }
 
@@ -657,13 +657,13 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-list-day-text {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           font-weight: 400;
         }
 
         .fc-list-day-side-text {
           font-weight: 400;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           color: var(--primary-color);
         }
 

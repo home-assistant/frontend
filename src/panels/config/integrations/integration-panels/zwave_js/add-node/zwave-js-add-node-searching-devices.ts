@@ -121,7 +121,7 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
       display: block;
     }
     .note {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
     .searching-spinner {
