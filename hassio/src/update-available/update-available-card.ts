@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   css,
   type CSSResultGroup,

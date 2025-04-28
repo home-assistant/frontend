@@ -11,10 +11,12 @@ import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { isMobileClient } from "../../util/is_mobile";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
+import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
 import "./ha-pick-dashboard-row";
 import "./ha-pick-first-weekday-row";
@@ -155,6 +157,15 @@ class HaProfileSectionGeneral extends LitElement {
                   ></ha-advanced-mode-row>
                 `
               : ""}
+            ${this.hass.user!.is_admin
+              ? html`
+                  <ha-entity-id-picker-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .coreUserData=${this._coreUserData}
+                  ></ha-entity-id-picker-row>
+                `
+              : ""}
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
@@ -219,11 +230,15 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-set-suspend-row>
-            <ha-enable-shortcuts-row
-              id="shortcuts"
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-enable-shortcuts-row>
+            ${!isMobileClient
+              ? html`
+                  <ha-enable-shortcuts-row
+                    id="shortcuts"
+                    .narrow=${this.narrow}
+                    .hass=${this.hass}
+                  ></ha-enable-shortcuts-row>
+                `
+              : ""}
           </ha-card>
         </div>
       </hass-tabs-subpage>

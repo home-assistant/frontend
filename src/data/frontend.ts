@@ -3,6 +3,7 @@ import { getOptimisticCollection } from "./collection";
 
 export interface CoreFrontendUserData {
   showAdvanced?: boolean;
+  showEntityIdPicker?: boolean;
 }
 
 declare global {

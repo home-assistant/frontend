@@ -93,8 +93,7 @@ export class HuiAreaCard
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false })
-  public layout?: string;
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: AreaCardConfig;
 

@@ -1,16 +1,16 @@
-import "@material/mwc-list/mwc-list-item";
+import { mdiClose } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { mdiClose } from "@mdi/js";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import "./ha-select";
 import "./ha-icon-button";
+import "./ha-input-helper-text";
+import "./ha-list-item";
+import "./ha-select";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
-import "./ha-input-helper-text";
 
 export interface TimeChangedEvent {
   days?: number;
@@ -266,8 +266,8 @@ export class HaBaseTimeInput extends LitElement {
               @selected=${this._valueChanged}
               @closed=${stopPropagation}
             >
-              <mwc-list-item value="AM">AM</mwc-list-item>
-              <mwc-list-item value="PM">PM</mwc-list-item>
+              <ha-list-item value="AM">AM</ha-list-item>
+              <ha-list-item value="PM">PM</ha-list-item>
             </ha-select>`}
       </div>
       ${this.helper

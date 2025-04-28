@@ -25,9 +25,9 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-combo-box-item";
 import "./ha-floor-icon";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
 
@@ -125,38 +125,38 @@ export class HaAreaFloorPicker extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<FloorAreaEntry> = (item) => {
     const rtl = computeRTL(this.hass);
     return html`
-      <ha-list-item
-        graphic="icon"
+      <ha-combo-box-item
+        type="button"
         style=${item.type === "area" && item.hasFloor
-          ? rtl
-            ? "--mdc-list-side-padding-right: 48px;"
-            : "--mdc-list-side-padding-left: 48px;"
+          ? "--md-list-item-leading-space: 48px;"
           : ""}
       >
         ${item.type === "area" && item.hasFloor
-          ? html`<ha-tree-indicator
-              style=${styleMap({
-                width: "48px",
-                position: "absolute",
-                top: "0px",
-                left: rtl ? undefined : "8px",
-                right: rtl ? "8px" : undefined,
-                transform: rtl ? "scaleX(-1)" : "",
-              })}
-              .end=${item.lastArea}
-              slot="graphic"
-            ></ha-tree-indicator>`
+          ? html`
+              <ha-tree-indicator
+                style=${styleMap({
+                  width: "48px",
+                  position: "absolute",
+                  top: "0px",
+                  left: rtl ? undefined : "4px",
+                  right: rtl ? "4px" : undefined,
+                  transform: rtl ? "scaleX(-1)" : "",
+                })}
+                .end=${item.lastArea}
+                slot="start"
+              ></ha-tree-indicator>
+            `
           : nothing}
         ${item.type === "floor"
-          ? html`<ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>`
+          ? html`<ha-floor-icon slot="start" .floor=${item}></ha-floor-icon>`
           : item.icon
-            ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
+            ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
             : html`<ha-svg-icon
-                slot="graphic"
+                slot="start"
                 .path=${mdiTextureBox}
               ></ha-svg-icon>`}
         ${item.name}
-      </ha-list-item>
+      </ha-combo-box-item>
     `;
   };
 

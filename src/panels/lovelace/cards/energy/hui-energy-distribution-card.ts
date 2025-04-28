@@ -26,6 +26,7 @@ import {
   getEnergyGasUnit,
   getEnergyWaterUnit,
   formatConsumptionShort,
+  getSummedData,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -109,11 +110,9 @@ class HuiEnergyDistrubutionCard
     const hasWater = types.water !== undefined;
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
 
-    const totalFromGrid =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-      ) ?? 0;
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
+
+    const totalFromGrid = summedData.total.from_grid ?? 0;
 
     let waterUsage: number | null = null;
     if (hasWater) {
@@ -136,37 +135,21 @@ class HuiEnergyDistrubutionCard
     let totalSolarProduction: number | null = null;
 
     if (hasSolarProduction) {
-      totalSolarProduction =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.solar!.map((source) => source.stat_energy_from)
-        ) || 0;
+      totalSolarProduction = summedData.total.solar ?? 0;
     }
 
     let totalBatteryIn: number | null = null;
     let totalBatteryOut: number | null = null;
 
     if (hasBattery) {
-      totalBatteryIn =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery!.map((source) => source.stat_energy_to)
-        ) || 0;
-      totalBatteryOut =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery!.map((source) => source.stat_energy_from)
-        ) || 0;
+      totalBatteryIn = summedData.total.to_battery ?? 0;
+      totalBatteryOut = summedData.total.from_battery ?? 0;
     }
 
     let returnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
-      returnedToGrid =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-        ) || 0;
+      returnedToGrid = summedData.total.to_grid ?? 0;
     }
 
     let solarConsumption: number | null = null;
