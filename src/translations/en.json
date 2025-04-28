@@ -2723,7 +2723,7 @@
               "more_locations": "Explore more locations",
               "manage_network_storage": "Manage network storage",
               "ha_cloud_backup": "{home_assistant_cloud} backup",
-              "ha_cloud_description": "Stores an encrypted backup offsite. Ideal if your local backup can not be used to restore your system. Thats why it stores one backup with a maximum size of 5 GB. The oldest backups are automatically deleted."
+              "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. The cloud stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
             },
             "encryption_key": {
               "title": "Encryption key",
