@@ -77,9 +77,11 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ? this.getDeviceEntry(entityEntry.device_id)
               : undefined;
 
-          const areaName = deviceEntry
-            ? getDeviceContext(deviceEntry, this.hass).area?.name
-            : undefined;
+          const areaName =
+            deviceEntry && deviceEntry.entry_type !== "service"
+              ? getDeviceContext(deviceEntry, this.hass).area?.name ||
+                this.hass.localize("ui.panel.config.updates.no_area")
+              : undefined;
 
           return html`
             <ha-md-list-item
