@@ -120,7 +120,7 @@ class HaConfigBackupDetails extends LitElement {
                         `
                       : this.config?.agents[this.agentId]
                         ? html`<ha-backup-config-retention
-                            .locationSpecific=${true}
+                            location-specific
                             .headline=${this.hass.localize(
                               `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
                               { location: agentName }
@@ -285,8 +285,8 @@ class HaConfigBackupDetails extends LitElement {
     }
   }
 
-  private _retentionChanged(ev: CustomEvent) {
-    const retention = ev.detail.value as Retention;
+  private _retentionChanged(ev: CustomEvent<{ value: Retention }>) {
+    const retention = ev.detail.value;
     this._updateAgentConfig({
       retention,
     });

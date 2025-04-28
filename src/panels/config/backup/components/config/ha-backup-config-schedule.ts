@@ -405,9 +405,9 @@ class HaBackupConfigSchedule extends LitElement {
     });
   }
 
-  private _retentionChanged(ev: CustomEvent) {
+  private _retentionChanged(ev: CustomEvent<{ value: Retention }>) {
     ev.stopPropagation();
-    const retention = ev.detail.value as Retention;
+    const retention = ev.detail.value;
 
     const data = this._getData(this.value);
 

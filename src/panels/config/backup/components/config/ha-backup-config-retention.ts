@@ -17,7 +17,7 @@ const MIN_VALUE = 1;
 const MAX_VALUE = 9999; // because of input width
 
 export enum RetentionPreset {
-  SHARED = "shared",
+  GLOBAL = "global",
   COPIES_3 = "copies_3",
   FOREVER = "forever",
   CUSTOM = "custom",
@@ -29,7 +29,7 @@ const PRESET_MAP: Record<
 > = {
   copies_3: { copies: 3, days: null },
   forever: { copies: null, days: null },
-  shared: null,
+  global: null,
 };
 
 export interface RetentionData {
@@ -65,7 +65,7 @@ class HaBackupConfigRetention extends LitElement {
 
     if (!this.hasUpdated) {
       if (!this.retention) {
-        this._preset = RetentionPreset.SHARED;
+        this._preset = RetentionPreset.GLOBAL;
       } else if (
         this.retention?.days === null &&
         this.retention?.copies === null
@@ -85,7 +85,7 @@ class HaBackupConfigRetention extends LitElement {
 
       if (this.locationSpecific) {
         this.presetOptions = [
-          RetentionPreset.SHARED,
+          RetentionPreset.GLOBAL,
           RetentionPreset.FOREVER,
           RetentionPreset.CUSTOM,
         ];
