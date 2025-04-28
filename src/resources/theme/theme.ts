@@ -1,7 +1,10 @@
 import { fontStyles } from "../roboto";
-import { colorDerivedVariables, colorStyles } from "./color";
-import { mainDerivedVariables, mainStyles } from "./main";
-import { typographyDerivedVariables, typographyStyles } from "./typography";
+import { colorDerivedVariables, colorStyles } from "./color.globals";
+import { mainDerivedVariables, mainStyles } from "./main.globals";
+import {
+  typographyDerivedVariables,
+  typographyStyles,
+} from "./typography.globals";
 
 export const themeStyles = [
   fontStyles.toString(),
