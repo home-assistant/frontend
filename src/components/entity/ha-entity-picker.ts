@@ -148,7 +148,7 @@ export class HaEntityPicker extends LitElement {
 
     const entityName = computeEntityName(stateObj, this.hass);
     const deviceName = device ? computeDeviceName(device) : undefined;
-    const areaName = area ? computeAreaName(area) : "No area";
+    const areaName = area ? computeAreaName(area) : undefined;
 
     const isRTL = computeRTL(this.hass);
 
@@ -164,7 +164,10 @@ export class HaEntityPicker extends LitElement {
         slot="start"
       ></state-badge>
       <span slot="headline">${primary}</span>
-      <span slot="supporting-text">${secondary}</span>
+      <span slot="supporting-text">
+        ${secondary ||
+        this.hass.localize("ui.components.device-picker.no_area")}
+      </span>
       ${showClearIcon
         ? html`<ha-icon-button
             class="clear"
