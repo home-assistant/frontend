@@ -128,7 +128,7 @@ class HuiLockOpenDoorCardFeature
         }
         .open-done {
           font-size: var(--ha-font-size-m);
-          line-height: 14px;
+          line-height: var(--ha-line-height-condensed);
           display: flex;
           align-items: center;
           justify-content: center;

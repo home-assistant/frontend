@@ -182,16 +182,14 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       -webkit-font-smoothing: var(--ha-font-smoothing);
       font-size: var(--ha-font-size-2xl);
       font-weight: var(--ha-font-weight-normal);
-      line-height: var(--ha-line-height-condensed);
-
-      line-height: 40px;
+      line-height: var(--ha-line-height-expanded);
       padding: 8px 16px;
     }
 
     .has-plant-image .header {
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-semibold);
-      line-height: 16px;
+      line-height: var(--ha-line-height-condensed);
       padding: 16px;
       color: white;
       width: 100%;

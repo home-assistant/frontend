@@ -43,7 +43,7 @@ class StateCardTimer extends LitElement {
           margin-inline-start: 16px;
           margin-inline-end: initial;
           text-align: var(--float-end);
-          line-height: 40px;
+          line-height: var(--ha-line-height-expanded);
           white-space: nowrap;
         }
       `,

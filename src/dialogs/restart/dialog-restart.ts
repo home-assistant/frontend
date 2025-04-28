@@ -469,7 +469,7 @@ class DialogRestart extends LitElement {
         .section {
           font-weight: var(--ha-font-weight-semibold);
           font-size: var(--ha-font-size-m);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           margin: 8px 0 4px 0;
           padding-left: var(--mdc-list-side-padding, 20px);
           padding-right: var(--mdc-list-side-padding, 20px);

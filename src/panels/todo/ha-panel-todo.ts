@@ -412,7 +412,7 @@ class PanelTodo extends LitElement {
           );
           --mdc-typography-button-line-height: var(
             --mdc-typography-headline6-line-height,
-            2rem
+            var(--ha-line-height-expanded)
           );
           --button-height: 40px;
         }

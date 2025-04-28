@@ -6,7 +6,7 @@ export const cardFeatureStyles = css`
     --control-select-menu-height: var(--feature-height);
     --control-select-menu-border-radius: var(--feature-border-radius);
     --control-select-menu-focus-color: var(--feature-color);
-    line-height: 1.2;
+    line-height: var(--ha-line-height-condensed);
     display: block;
     width: 100%;
   }

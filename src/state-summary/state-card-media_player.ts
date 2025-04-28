@@ -45,7 +45,7 @@ class StateCardMediaPlayer extends LitElement {
       haStyle,
       css`
         :host {
-          line-height: 1.5;
+          line-height: var(--ha-line-height-normal);
         }
 
         .state {
@@ -60,7 +60,7 @@ class StateCardMediaPlayer extends LitElement {
         }
 
         .main-text[take-height] {
-          line-height: 40px;
+          line-height: var(--ha-line-height-expanded);
         }
 
         .secondary-text {

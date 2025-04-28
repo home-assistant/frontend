@@ -354,7 +354,7 @@ class HassioIngressView extends LitElement {
 
     .main-title {
       margin: var(--margin-title);
-      line-height: 20px;
+      line-height: var(--ha-line-height-normal);
       flex-grow: 1;
     }
 

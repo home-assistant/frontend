@@ -873,7 +873,7 @@ class HuiEnergyDistrubutionCard
       justify-content: center;
       text-align: center;
       font-size: var(--ha-font-size-s);
-      line-height: 12px;
+      line-height: var(--ha-line-height-condensed);
       position: relative;
       text-decoration: none;
       color: var(--primary-text-color);

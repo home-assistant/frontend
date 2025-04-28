@@ -235,7 +235,7 @@ class DialogCalendarEventDetail extends LitElement {
       haStyleDialog,
       css`
         state-info {
-          line-height: 40px;
+          line-height: var(--ha-line-height-expanded);
         }
         ha-svg-icon {
           width: 40px;

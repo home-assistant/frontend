@@ -362,7 +362,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       text-overflow: ellipsis;
       overflow: hidden;
       font-size: var(--ha-font-size-l);
-      line-height: 40px;
+      line-height: var(--ha-line-height-expanded);
       color: var(--ha-picture-card-text-color, white);
       align-self: center;
     }
@@ -384,7 +384,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       display: block;
       font-size: var(--ha-font-size-s);
       text-align: center;
-      line-height: 12px;
+      line-height: var(--ha-line-height-condensed);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

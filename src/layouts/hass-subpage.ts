@@ -125,7 +125,7 @@ class HassSubpage extends LitElement {
 
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           min-width: 0;
           flex-grow: 1;
           overflow-wrap: break-word;

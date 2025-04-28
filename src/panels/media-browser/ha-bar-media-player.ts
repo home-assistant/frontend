@@ -575,7 +575,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     ha-button-menu ha-button[slot="trigger"] {
-      line-height: 1;
+      line-height: var(--ha-line-height-condensed);
       --mdc-theme-primary: var(--primary-text-color);
       --mdc-icon-size: 16px;
     }

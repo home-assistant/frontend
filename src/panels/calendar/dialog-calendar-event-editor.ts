@@ -589,7 +589,7 @@ class DialogCalendarEventEditor extends LitElement {
           }
         }
         state-info {
-          line-height: 40px;
+          line-height: var(--ha-line-height-expanded);
         }
         ha-alert {
           display: block;

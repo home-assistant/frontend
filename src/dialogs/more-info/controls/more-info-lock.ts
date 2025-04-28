@@ -177,7 +177,7 @@ class MoreInfoLock extends LitElement {
           --control-button-background-color: var(--warning-color);
         }
         .open-done {
-          line-height: 60px;
+          line-height: var(--ha-line-height-expanded);
           display: flex;
           align-items: center;
           flex-direction: row;

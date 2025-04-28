@@ -1067,7 +1067,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           border-radius: 50%;
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 4px;
           color: var(--text-primary-color);

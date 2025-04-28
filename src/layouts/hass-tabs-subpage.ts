@@ -304,7 +304,7 @@ class HassTabsSubpage extends LitElement {
         .main-title {
           flex: 1;
           max-height: var(--header-height);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           color: var(--sidebar-text-color);
           margin: var(--main-title-margin, var(--margin-title));
         }

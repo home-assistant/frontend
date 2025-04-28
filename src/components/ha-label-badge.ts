@@ -80,7 +80,7 @@ class HaLabelBadge extends LitElement {
           /* Make the label as wide as container+border. (parent_borderwidth / font-size) */
           left: -0.2em;
           right: -0.2em;
-          line-height: 1em;
+          line-height: var(--ha-line-height-condensed);
           font-size: 0.5em;
         }
         .label-badge .label span {

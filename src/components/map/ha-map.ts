@@ -692,7 +692,7 @@ export class HaMap extends ReactiveElement {
     }
 
     .marker-cluster span {
-      line-height: 30px;
+      line-height: var(--ha-line-height-expanded);
     }
   `;
 }

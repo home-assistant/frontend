@@ -169,7 +169,7 @@ class HassioHardwareDialog extends LitElement {
         pre {
           padding: 16px;
           overflow: auto;
-          line-height: 1.45;
+          line-height: var(--ha-line-height-normal);
           font-family: var(--ha-font-family-code);
         }
         code {

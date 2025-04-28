@@ -7,7 +7,7 @@ export const onBoardingStyles = css`
   h1 {
     font-weight: var(--ha-font-weight-normal);
     font-size: var(--ha-font-size-3xl);
-    line-height: 36px;
+    line-height: var(--ha-line-height-condensed);
     margin-bottom: 8px;
   }
   ha-icon-button-arrow-prev {
@@ -16,7 +16,7 @@ export const onBoardingStyles = css`
   }
   p {
     font-size: var(--ha-font-size-m);
-    line-height: 1.5rem;
+    line-height: var(--ha-line-height-normal);
     margin-top: 0;
     margin-bottom: 32px;
   }

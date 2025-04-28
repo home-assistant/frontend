@@ -634,7 +634,7 @@ export class StatisticsChart extends LitElement {
     }
     .info {
       text-align: center;
-      line-height: 60px;
+      line-height: var(--ha-line-height-expanded);
       color: var(--secondary-text-color);
     }
   `;

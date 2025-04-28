@@ -36,14 +36,14 @@ export class HaTileInfo extends LitElement {
     .primary {
       font-weight: var(--ha-font-weight-semibold);
       font-size: var(--ha-font-size-m);
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
       letter-spacing: 0.1px;
       color: var(--primary-text-color);
     }
     .secondary {
       font-weight: var(--ha-font-weight-normal);
       font-size: var(--ha-font-size-s);
-      line-height: 16px;
+      line-height: var(--ha-line-height-condensed);
       letter-spacing: 0.4px;
       color: var(--primary-text-color);
     }

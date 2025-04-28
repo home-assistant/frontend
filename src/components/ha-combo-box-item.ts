@@ -18,12 +18,12 @@ export class HaComboBoxItem extends HaMdListItem {
         border-top: 1px solid var(--divider-color);
       }
       [slot="headline"] {
-        line-height: 22px;
+        line-height: var(--ha-line-height-normal);
         font-size: var(--ha-font-size-m);
         white-space: nowrap;
       }
       [slot="supporting-text"] {
-        line-height: 18px;
+        line-height: var(--ha-line-height-normal);
         font-size: var(--ha-font-size-s);
         white-space: nowrap;
       }

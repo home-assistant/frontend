@@ -59,7 +59,7 @@ export class HaBigNumber extends LitElement {
       css`
         :host {
           font-size: 57px;
-          line-height: 1.12;
+          line-height: var(--ha-line-height-condensed);
           letter-spacing: -0.25px;
         }
         .value {
@@ -87,12 +87,12 @@ export class HaBigNumber extends LitElement {
         }
         .value .decimal {
           font-size: 0.42em;
-          line-height: 1.33;
+          line-height: var(--ha-line-height-condensed);
           min-height: 1.33em;
         }
         .value .unit {
           font-size: 0.33em;
-          line-height: 1.26;
+          line-height: var(--ha-line-height-condensed);
         }
         /* Accessibility */
         .visually-hidden {

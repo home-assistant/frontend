@@ -406,7 +406,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     ha-input-helper-text {
       padding-top: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-normal);
     }
   `;
 }

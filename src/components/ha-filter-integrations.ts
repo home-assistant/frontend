@@ -198,7 +198,7 @@ export class HaFilterIntegrations extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           font-size: var(--ha-font-size-xs);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

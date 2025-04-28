@@ -24,7 +24,7 @@ export const stateControlCircularSliderStyle = css`
     justify-content: center;
     pointer-events: none;
     font-size: var(--ha-font-size-l);
-    line-height: 1.5;
+    line-height: var(--ha-line-height-normal);
     letter-spacing: 0.1px;
     gap: 8px;
     --mdc-icon-size: 16px;
@@ -42,7 +42,7 @@ export const stateControlCircularSliderStyle = css`
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.5;
+    line-height: var(--ha-line-height-normal);
     min-height: 1.5em;
     white-space: nowrap;
   }

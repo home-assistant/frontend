@@ -38,12 +38,12 @@ class PageDescription extends HaMarkdown {
       }
       .title {
         font-size: var(--ha-font-size-5xl);
-        line-height: 56px;
+        line-height: var(--ha-line-height-normal);
         padding-bottom: 8px;
       }
       .subtitle {
         font-size: var(--ha-font-size-l);
-        line-height: 24px;
+        line-height: var(--ha-line-height-normal);
       }
       .root {
         max-width: 800px;

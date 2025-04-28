@@ -74,7 +74,7 @@ export class HaSettingsRow extends LitElement {
         --mdc-typography-body2-font-weight,
         var(--ha-font-weight-normal)
       );
-      line-height: normal;
+      line-height: var(--ha-line-height-normal);
       color: var(--secondary-text-color);
     }
     .body[two-line] {

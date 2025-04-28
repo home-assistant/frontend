@@ -180,7 +180,7 @@ export class HaControlSelectMenu extends SelectBase {
         --mdc-icon-size: 20px;
         --ha-ripple-color: var(--secondary-text-color);
         font-size: var(--ha-font-size-m);
-        line-height: 1.4;
+        line-height: var(--ha-line-height-condensed);
         width: auto;
         color: var(--primary-text-color);
         -webkit-tap-highlight-color: transparent;
