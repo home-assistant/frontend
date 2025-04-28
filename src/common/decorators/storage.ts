@@ -6,6 +6,7 @@ type Callback = (oldValue: any, newValue: any) => void;
 
 type ReactiveStorageElement = ReactiveElement & {
   __unbsubLocalStorage: UnsubscribeFunc | undefined;
+  __initialized: boolean;
 };
 
 class StorageClass {
@@ -165,6 +166,14 @@ export function storage(options: {
       }
     };
 
+    // @ts-ignore
+    const performUpdate = proto.performUpdate;
+    // @ts-ignore
+    proto.performUpdate = function () {
+      (this as unknown as ReactiveStorageElement).__initialized = true;
+      performUpdate.call(this);
+    };
+
     if (options.state && options.subscribe) {
       const connectedCallback = proto.connectedCallback;
       const disconnectedCallback = proto.disconnectedCallback;
@@ -194,15 +203,15 @@ export function storage(options: {
     let newDescriptor: PropertyDescriptor;
     if (descriptor === undefined) {
       newDescriptor = {
-        get(this: ReactiveElement) {
+        get(this: ReactiveStorageElement) {
           return getValue();
         },
-        set(this: ReactiveElement, value) {
+        set(this: ReactiveStorageElement, value) {
           // Don't set the initial value if we have a value in localStorage
-          if (this.hasUpdated || getValue() === undefined) {
+          if (this.__initialized || getValue() === undefined) {
             setValue(this, value);
+            this.requestUpdate(propertyKey, undefined);
           }
-          this.requestUpdate(propertyKey, undefined);
         },
         configurable: true,
         enumerable: true,
@@ -211,8 +220,12 @@ export function storage(options: {
       const oldSetter = descriptor.set;
       newDescriptor = {
         ...descriptor,
-        set(this: ReactiveElement, value) {
-          setValue(this, value);
+        set(this: ReactiveStorageElement, value) {
+          // Don't set the initial value if we have a value in localStorage
+          if (this.__initialized || getValue() === undefined) {
+            setValue(this, value);
+            this.requestUpdate(propertyKey, undefined);
+          }
           oldSetter?.call(this, value);
         },
       };
