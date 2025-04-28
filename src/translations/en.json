@@ -2533,6 +2533,7 @@
             "custom_retention_label": "Keep only",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
+              "global": "Use global settings",
               "copies_3": "3 backups",
               "forever": "Forever",
               "custom": "Custom"
@@ -2762,6 +2763,9 @@
           },
           "location": {
             "header": "Location",
+            "save_error": "Error saving configuration: {error}",
+            "retention_for_this_system": "Retention for this system",
+            "retention_for_location": "Retention for {location}",
             "not_found": "Not found",
             "not_found_description": "Location matching ''{backupId}'' not found",
             "error": "Could not fetch location details",
