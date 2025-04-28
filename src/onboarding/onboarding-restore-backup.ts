@@ -1,27 +1,27 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "./restore-backup/onboarding-restore-backup-restore";
-import "./restore-backup/onboarding-restore-backup-status";
-import type { LocalizeFunc } from "../common/translations/localize";
-import "./onboarding-loading";
-import { removeSearchParam } from "../common/url/search-params";
+import { storage } from "../common/decorators/storage";
 import { navigate } from "../common/navigate";
-import { onBoardingStyles } from "./styles";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { removeSearchParam } from "../common/url/search-params";
+import { CLOUD_AGENT, type BackupContentExtended } from "../data/backup";
 import {
   fetchBackupOnboardingInfo,
   type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
-import { CLOUD_AGENT, type BackupContentExtended } from "../data/backup";
-import { storage } from "../common/decorators/storage";
+import type { CloudStatus } from "../data/cloud";
 import {
   fetchHaCloudStatus,
   signOutHaCloud,
   waitForIntegration,
 } from "../data/onboarding";
-import type { CloudStatus } from "../data/cloud";
 import { showToast } from "../util/toast";
+import "./onboarding-loading";
+import "./restore-backup/onboarding-restore-backup-restore";
+import "./restore-backup/onboarding-restore-backup-status";
+import { onBoardingStyles } from "./styles";
 
 const STATUS_INTERVAL_IN_MS = 5000;
 
@@ -141,7 +141,13 @@ class OnboardingRestoreBackup extends LitElement {
           this._error = "Backup integration not loaded";
           return;
         }
-      } catch (_e) {
+      } catch (err: any) {
+        // core seems to be back up restored
+        if (err.status_code === 404) {
+          this._resetAndReload();
+          return;
+        }
+
         this._scheduleLoadBackupInfo(1000);
         return;
       }
@@ -162,9 +168,7 @@ class OnboardingRestoreBackup extends LitElement {
 
         // core seems to be back up restored
         if (err.status_code === 404) {
-          this._restoreRunning = undefined;
-          this._backupId = undefined;
-          window.location.replace("/");
+          this._resetAndReload();
           return;
         }
       }
@@ -253,6 +257,12 @@ class OnboardingRestoreBackup extends LitElement {
     } else {
       this._view = "cloud_login";
     }
+  }
+
+  private _resetAndReload() {
+    this._restoreRunning = undefined;
+    this._backupId = undefined;
+    window.location.replace("/");
   }
 
   private _showCloudBackup() {
