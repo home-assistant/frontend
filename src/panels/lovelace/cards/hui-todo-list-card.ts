@@ -264,7 +264,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     );
 
     const reorderableItems = this._reordering
-      ? this._getCheckedAndItemsWithoutStatus(
+      ? this._getUncheckedAndItemsWithoutStatus(
           this._items,
           this._config.display_order
         )
@@ -324,7 +324,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                       </h2>
                       ${this._renderMenu(this._config, unavailable)}
                     </div>
-                    ${this._renderItems(reorderableItems, unavailable)}`
+                    ${this._renderItems(reorderableItems ?? [], unavailable)}`
                 : nothing}
             ${!this._reordering && uncheckedItems.length
               ? html`
