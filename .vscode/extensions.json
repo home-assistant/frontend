@@ -5,6 +5,7 @@
     "runem.lit-plugin",
     "github.vscode-pull-request-github",
     "eamodio.gitlens",
-    "vitest.explorer"
+    "vitest.explorer",
+    "yeion7.styled-global-variables-autocomplete"
   ]
 }

@@ -30,7 +30,7 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { DEFAULT_PRIMARY_COLOR } from "../../../resources/styles-data";
+import { DefaultPrimaryColor } from "../../../resources/theme/color.globals";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
@@ -42,9 +42,9 @@ const DATASAMPLES = 60;
 
 const DATA_SET_CONFIG: SeriesOption = {
   type: "line",
-  color: DEFAULT_PRIMARY_COLOR,
+  color: DefaultPrimaryColor,
   areaStyle: {
-    color: DEFAULT_PRIMARY_COLOR + "2B",
+    color: DefaultPrimaryColor + "2B",
   },
   symbolSize: 0,
   lineStyle: {
