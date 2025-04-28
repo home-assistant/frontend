@@ -1,4 +1,3 @@
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiClose, mdiMenuDown, mdiShape } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
@@ -10,6 +9,7 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { debounce } from "../../common/util/debounce";
 import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-icon-button";
@@ -100,7 +100,7 @@ export class HaEntityPicker extends LitElement {
 
   @property({ attribute: "item-label-path" }) public itemLabelPath = "label";
 
-  @query("#anchor", true) private _anchor?: HaMdListItem;
+  @query("#anchor") private _anchor?: HaMdListItem;
 
   @query("#input") private _input?: HaEntityComboBox;
 
@@ -122,12 +122,14 @@ export class HaEntityPicker extends LitElement {
       return html`
         <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
         <span slot="headline">${entityId}</span>
-        <ha-icon-button
-          class="clear"
-          slot="end"
-          @click=${this._clear}
-          .path=${mdiClose}
-        ></ha-icon-button>
+        ${this.hideClearIcon
+          ? nothing
+          : html`<ha-icon-button
+              class="clear"
+              slot="end"
+              @click=${this._clear}
+              .path=${mdiClose}
+            ></ha-icon-button>`}
         <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
       `;
     }
@@ -153,12 +155,14 @@ export class HaEntityPicker extends LitElement {
       ></state-badge>
       <span slot="headline">${primary}</span>
       <span slot="supporting-text">${secondary}</span>
-      <ha-icon-button
-        class="clear"
-        slot="end"
-        @click=${this._clear}
-        .path=${mdiClose}
-      ></ha-icon-button>
+      ${this.hideClearIcon
+        ? nothing
+        : html`<ha-icon-button
+            class="clear"
+            slot="end"
+            @click=${this._clear}
+            .path=${mdiClose}
+          ></ha-icon-button>`}
       <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
     `;
   }
@@ -171,41 +175,35 @@ export class HaEntityPicker extends LitElement {
     return html`
       ${this.label ? html`<p class="label">${this.label}</p>` : nothing}
       <div class="container">
-        <ha-combo-box-item
-          id="anchor"
-          type="button"
-          compact
-          @click=${this._showPicker}
-        >
-          ${this._renderContent()}
-        </ha-combo-box-item>
-        <mwc-menu-surface
-          .open=${this._opened}
-          .anchor=${this._anchor}
-          @closed=${this._onClosed}
-          @opened=${this._onOpened}
-          @opened-changed=${this._openedChanged}
-          @input=${stopPropagation}
-        >
-          <ha-entity-combo-box
-            id="input"
-            .hass=${this.hass}
-            .itemLabelPath=${this.itemLabelPath}
-            .autofocus=${this.autofocus}
-            .allowCustomEntity=${this.allowCustomEntity}
-            .label=${this.hass.localize("ui.common.search")}
-            .value=${this.value}
-            .createDomains=${this.createDomains}
-            .includeDomains=${this.includeDomains}
-            .excludeDomains=${this.excludeDomains}
-            .includeDeviceClasses=${this.includeDeviceClasses}
-            .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-            .includeEntities=${this.includeEntities}
-            .excludeEntities=${this.excludeEntities}
-            .entityFilter=${this.entityFilter}
-            hide-clear-icon
-          ></ha-entity-combo-box>
-        </mwc-menu-surface>
+        ${!this._opened
+          ? html`<ha-combo-box-item
+              id="anchor"
+              type="button"
+              compact
+              @click=${this._showPicker}
+            >
+              ${this._renderContent()}
+            </ha-combo-box-item>`
+          : html`<ha-entity-combo-box
+              id="input"
+              .hass=${this.hass}
+              .itemLabelPath=${this.itemLabelPath}
+              .autofocus=${this.autofocus}
+              .allowCustomEntity=${this.allowCustomEntity}
+              .label=${this.hass.localize("ui.common.search")}
+              .value=${this.value}
+              .createDomains=${this.createDomains}
+              .includeDomains=${this.includeDomains}
+              .excludeDomains=${this.excludeDomains}
+              .includeDeviceClasses=${this.includeDeviceClasses}
+              .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
+              .includeEntities=${this.includeEntities}
+              .excludeEntities=${this.excludeEntities}
+              .entityFilter=${this.entityFilter}
+              hide-clear-icon
+              @opened-changed=${this._debounceOpenedChanged}
+              @input=${stopPropagation}
+            ></ha-entity-combo-box>`}
         ${this._renderHelper()}
       </div>
     `;
@@ -214,7 +212,7 @@ export class HaEntityPicker extends LitElement {
   private _renderHelper() {
     return this.helper
       ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-      : "";
+      : nothing;
   }
 
   private _clear(e) {
@@ -224,23 +222,26 @@ export class HaEntityPicker extends LitElement {
     fireEvent(this, "change");
   }
 
-  private _showPicker() {
+  private async _showPicker() {
     this._opened = true;
+    await this.updateComplete;
+    this._input?.focus();
+    this._input?.open();
   }
 
-  private _onClosed(ev) {
-    ev.stopPropagation();
-  }
+  // Multiple calls to _openedChanged can be triggered in quick succession
+  // when the menu is opened
+  private _debounceOpenedChanged = debounce(
+    (ev) => this._openedChanged(ev),
+    10
+  );
 
-  private async _onOpened() {
-    this._opened = true;
-    await this._input?.focus();
-    await this._input?.open();
-  }
-
-  private _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    if (this._opened && !ev.detail.value) {
+  private async _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
+    const opened = ev.detail.value;
+    if (this._opened && !opened) {
       this._opened = false;
+      await this.updateComplete;
+      this._anchor?.focus();
     }
   }
 
