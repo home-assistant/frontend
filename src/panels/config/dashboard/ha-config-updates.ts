@@ -6,6 +6,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { getDeviceContext } from "../../../common/entity/get_device_context";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
 import "../../../components/ha-icon-next";
@@ -76,6 +77,10 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ? this.getDeviceEntry(entityEntry.device_id)
               : undefined;
 
+          const areaName = deviceEntry
+            ? getDeviceContext(deviceEntry, this.hass).area?.name
+            : undefined;
+
           return html`
             <ha-md-list-item
               class=${ifDefined(
@@ -106,7 +111,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                         "ui.panel.config.updates.update_in_progress"
                       )}
                     ></ha-spinner>`
-                  : ""}
+                  : nothing}
               </div>
               <span
                 >${deviceEntry
@@ -114,10 +119,11 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                   : entity.attributes.friendly_name}</span
               >
               <span slot="supporting-text">
+                ${areaName ? html`${areaName} ⸱ ` : nothing}
                 ${entity.attributes.title} ${entity.attributes.latest_version}
                 ${entity.attributes.skipped_version
                   ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
-                  : ""}
+                  : nothing}
               </span>
               ${!this.narrow
                 ? entity.attributes.in_progress
@@ -130,7 +136,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                       ></ha-spinner>
                     </div>`
                   : html`<ha-icon-next slot="end"></ha-icon-next>`
-                : ""}
+                : nothing}
             </ha-md-list-item>
           `;
         })}
