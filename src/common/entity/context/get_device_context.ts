@@ -1,9 +1,10 @@
-import type { AreaRegistryEntry } from "../../data/area_registry";
-import type { DeviceRegistryEntry } from "../../data/device_registry";
-import type { FloorRegistryEntry } from "../../data/floor_registry";
-import type { HomeAssistant } from "../../types";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { FloorRegistryEntry } from "../../../data/floor_registry";
+import type { HomeAssistant } from "../../../types";
 
 interface DeviceContext {
+  device: DeviceRegistryEntry;
   area: AreaRegistryEntry | null;
   floor: FloorRegistryEntry | null;
 }
@@ -18,6 +19,7 @@ export const getDeviceContext = (
   const floor = floorId ? hass.floors[floorId] : null;
 
   return {
+    device: device,
     area: area,
     floor: floor,
   };

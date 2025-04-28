@@ -13,7 +13,7 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityContext } from "../../common/entity/get_entity_context";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
