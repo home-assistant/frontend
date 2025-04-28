@@ -2,7 +2,6 @@ import { extractDerivedVars } from "../../common/style/derived-css-vars";
 
 const result = extractDerivedVars`
   html {
-  html {
     height: 100vh;
 
 
