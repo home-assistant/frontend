@@ -782,12 +782,19 @@ export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
 export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";
 
-interface EnergySumData {
+export interface EnergySumData {
   to_grid?: Record<number, number>;
   from_grid?: Record<number, number>;
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  total: {
+    to_grid?: number;
+    from_grid?: number;
+    to_battery?: number;
+    from_battery?: number;
+    solar?: number;
+  };
 }
 
 interface EnergyConsumptionData {
@@ -860,29 +867,30 @@ const getSummedDataPartial = (
     }
   }
 
-  const summedData: EnergySumData = {};
+  const summedData: EnergySumData = { total: {} };
   Object.entries(statIds).forEach(([key, subStatIds]) => {
     const totalStats: Record<number, number> = {};
     const sets: Record<string, Record<number, number>> = {};
+    let sum = 0;
     subStatIds!.forEach((id) => {
       const stats = compare ? data.statsCompare[id] : data.stats[id];
       if (!stats) {
         return;
       }
-
       const set = {};
       stats.forEach((stat) => {
         if (stat.change === null || stat.change === undefined) {
           return;
         }
         const val = stat.change;
-        // Get total of solar and to grid to calculate the solar energy used
+        sum += val;
         totalStats[stat.start] =
           stat.start in totalStats ? totalStats[stat.start] + val : val;
       });
       sets[id] = set;
     });
     summedData[key] = totalStats;
+    summedData.total[key] = sum;
   });
 
   return summedData;

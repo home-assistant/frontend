@@ -268,14 +268,6 @@ export class HaDeviceEntitiesCard extends LitElement {
     #entities > ha-list {
       margin: 0 16px 0 8px;
     }
-    #entities > paper-icon-item {
-      margin: 0;
-    }
-    paper-icon-item {
-      min-height: 40px;
-      padding: 0 16px;
-      cursor: pointer;
-    }
     .name {
       font-size: 14px;
     }

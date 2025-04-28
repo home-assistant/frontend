@@ -86,6 +86,7 @@ import {
   deleteScript,
   fetchScriptFileConfig,
   getScriptStateConfig,
+  hasScriptFields,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -1068,12 +1069,17 @@ ${rejected
     if (!entry) {
       return;
     }
-    await triggerScript(this.hass, entry.unique_id);
-    showToast(this, {
-      message: this.hass.localize("ui.notification_toast.triggered", {
-        name: computeStateName(script),
-      }),
-    });
+
+    if (hasScriptFields(this.hass, entry.unique_id)) {
+      this._showInfo(script);
+    } else {
+      await triggerScript(this.hass, entry.unique_id);
+      showToast(this, {
+        message: this.hass.localize("ui.notification_toast.triggered", {
+          name: computeStateName(script),
+        }),
+      });
+    }
   };
 
   private _showInfo(script: any) {

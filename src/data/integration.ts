@@ -10,6 +10,7 @@ export const integrationsWithPanel = {
   matter: "config/matter",
   mqtt: "config/mqtt",
   thread: "config/thread",
+  zeroconf: "config/zeroconf",
   zha: "config/zha/dashboard",
   zwave_js: "config/zwave_js/dashboard",
 };

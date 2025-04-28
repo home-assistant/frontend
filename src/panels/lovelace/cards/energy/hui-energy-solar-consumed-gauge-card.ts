@@ -9,10 +9,9 @@ import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  energySourcesByType,
   getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -74,23 +73,14 @@ class HuiEnergySolarGaugeCard
       )}`;
     }
 
-    const prefs = this._data.prefs;
-    const types = energySourcesByType(prefs);
-
-    if (!types.solar) {
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
+    if (!("solar" in summedData.total)) {
       return nothing;
     }
 
-    const totalSolarProduction =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.solar.map((source) => source.stat_energy_from)
-      ) || 0;
+    const totalSolarProduction = summedData.total.solar;
 
-    const productionReturnedToGrid = calculateStatisticsSumGrowth(
-      this._data.stats,
-      types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-    );
+    const productionReturnedToGrid = summedData.total.to_grid ?? null;
 
     let value: number | undefined;
 

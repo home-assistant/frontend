@@ -118,6 +118,10 @@ export const getMyRedirects = (): Redirects => ({
     component: "energy",
     redirect: "/config/energy/dashboard",
   },
+  config_zeroconf: {
+    component: "zeroconf",
+    redirect: "/config/zeroconf",
+  },
   devices: {
     redirect: "/config/devices/dashboard",
   },

@@ -1130,6 +1130,11 @@ class HUIRoot extends LitElement {
         .edit-icon.view {
           display: none;
         }
+        #add-view {
+          white-space: nowrap;
+          display: flex;
+          align-items: center;
+        }
         #add-view ha-svg-icon {
           background-color: var(--accent-color);
           border-radius: 4px;

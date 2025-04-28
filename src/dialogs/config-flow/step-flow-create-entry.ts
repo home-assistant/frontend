@@ -10,19 +10,23 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
+import { slugify } from "../../common/string/slugify";
 import "../../components/ha-area-picker";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
-import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import {
+  updateEntityRegistryEntry,
+  type EntityRegistryDisplayEntry,
+} from "../../data/entity_registry";
+import { domainToName } from "../../data/integration";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { brandsUrl } from "../../util/brands-url";
-import { domainToName } from "../../data/integration";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -202,9 +206,21 @@ class StepFlowCreateEntry extends LitElement {
 
   private async _flowDone(): Promise<void> {
     if (Object.keys(this._deviceUpdate).length) {
-      await Promise.all(
-        Object.entries(this._deviceUpdate).map(([deviceId, update]) =>
-          updateDeviceRegistryEntry(this.hass, deviceId, {
+      const renamedDevices: {
+        deviceId: string;
+        oldDeviceName: string | null | undefined;
+        newDeviceName: string;
+      }[] = [];
+      const deviceUpdates = Object.entries(this._deviceUpdate).map(
+        ([deviceId, update]) => {
+          if (update.name) {
+            renamedDevices.push({
+              deviceId,
+              oldDeviceName: computeDeviceName(this.hass.devices[deviceId]),
+              newDeviceName: update.name,
+            });
+          }
+          return updateDeviceRegistryEntry(this.hass, deviceId, {
             name_by_user: update.name,
             area_id: update.area,
           }).catch((err: any) => {
@@ -214,9 +230,41 @@ class StepFlowCreateEntry extends LitElement {
                 { error: err.message }
               ),
             });
-          })
-        )
+          });
+        }
       );
+      const entityUpdates: Promise<any>[] = [];
+      renamedDevices.forEach(({ deviceId, oldDeviceName, newDeviceName }) => {
+        if (!oldDeviceName) {
+          return;
+        }
+        const entities = this._deviceEntities(
+          deviceId,
+          Object.values(this.hass.entities)
+        );
+        const oldDeviceSlug = slugify(oldDeviceName);
+        const newDeviceSlug = slugify(newDeviceName);
+        entities.forEach((entity) => {
+          const oldId = entity.entity_id;
+
+          if (oldId.includes(oldDeviceSlug)) {
+            const newEntityId = oldId.replace(oldDeviceSlug, newDeviceSlug);
+            entityUpdates.push(
+              updateEntityRegistryEntry(this.hass, entity.entity_id, {
+                new_entity_id: newEntityId,
+              }).catch((err) =>
+                showAlertDialog(this, {
+                  text: this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.error_saving_entity",
+                    { error: err.message }
+                  ),
+                })
+              )
+            );
+          }
+        });
+      });
+      await Promise.allSettled([...deviceUpdates, ...entityUpdates]);
     }
 
     fireEvent(this, "flow-update", { step: undefined });
