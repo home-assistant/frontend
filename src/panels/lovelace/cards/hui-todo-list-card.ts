@@ -156,7 +156,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return items;
   }
 
-  private _getCheckedAndItemsWithoutStatus = memoizeOne(
+  private _getUncheckedAndItemsWithoutStatus = memoizeOne(
     (items?: TodoItem[], sort?: string | undefined): TodoItem[] =>
       items
         ? this._sortItems(
