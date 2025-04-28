@@ -388,7 +388,10 @@ export class HaBaseTimeInput extends LitElement {
         var(--mdc-typography-font-family, Roboto, sans-serif)
       );
       font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
-      line-height: var(--mdc-typography-body2-line-height, 1.25rem);
+      line-height: var(
+        --mdc-typography-body2-line-height,
+        var(--ha-line-height-normal)
+      );
       font-weight: var(
         --mdc-typography-body2-font-weight,
         var(--ha-font-weight-normal)

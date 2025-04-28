@@ -15,7 +15,10 @@ export const configFlowContentStyles = css`
       var(--mdc-typography-font-family, Roboto, sans-serif)
     );
     font-size: var(--mdc-typography-headline6-font-size, var(--ha-font-size-l));
-    line-height: var(--mdc-typography-headline6-line-height, 2rem);
+    line-height: var(
+      --mdc-typography-headline6-line-height,
+      var(--ha-line-height-expanded)
+    );
     font-weight: var(
       --mdc-typography-headline6-font-weight,
       var(--ha-font-weight-semibold)
