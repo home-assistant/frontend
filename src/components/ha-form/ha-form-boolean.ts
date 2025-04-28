@@ -70,7 +70,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
       padding-top: 4px;
       box-sizing: border-box;
       color: var(--secondary-text-color);
-      font-size: 0.875rem;
+      font-size: var(--ha-font-size-s);
       font-weight: var(--mdc-typography-body2-font-weight, 400);
     }
   `;

@@ -15,7 +15,7 @@ export const onBoardingStyles = css`
     display: block;
   }
   p {
-    font-size: 1rem;
+    font-size: var(--ha-font-size-m);
     line-height: 1.5rem;
     margin-top: 0;
     margin-bottom: 32px;

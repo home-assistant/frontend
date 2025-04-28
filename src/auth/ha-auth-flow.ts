@@ -101,7 +101,7 @@ export class HaAuthFlow extends LitElement {
         a.forgot-password {
           color: var(--primary-color);
           text-decoration: none;
-          font-size: 0.875rem;
+          font-size: var(--ha-font-size-s);
         }
         .space-between {
           display: flex;

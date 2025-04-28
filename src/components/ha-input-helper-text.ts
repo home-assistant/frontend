@@ -12,7 +12,7 @@ class InputHelperText extends LitElement {
     :host {
       display: block;
       color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-      font-size: 0.75rem;
+      font-size: var(--ha-font-size-xs);
       padding-left: 16px;
       padding-right: 16px;
       padding-inline-start: 16px;

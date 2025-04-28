@@ -324,7 +324,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         }
 
         .state {
-          font-size: 0.9rem;
+          font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
         }
       `,

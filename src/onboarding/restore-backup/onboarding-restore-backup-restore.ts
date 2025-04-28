@@ -307,7 +307,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
           text-align: left;
         }
         .description {
-          font-size: 1rem;
+          font-size: var(--ha-font-size-m);
           line-height: 1.5rem;
           margin-top: 24px;
           margin-bottom: 16px;

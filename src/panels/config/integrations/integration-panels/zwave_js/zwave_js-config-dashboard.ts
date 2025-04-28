@@ -912,11 +912,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           height: 48px;
         }
         .network-status div.heading .details {
-          font-size: 1.5rem;
+          font-size: var(--ha-font-size-xl);
         }
 
         .network-status small {
-          font-size: 1rem;
+          font-size: var(--ha-font-size-m);
         }
 
         ha-list-item {

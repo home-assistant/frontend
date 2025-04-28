@@ -931,7 +931,7 @@ export class HaDataTable extends LitElement {
           font-family: Roboto, sans-serif;
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
-          font-size: 0.875rem;
+          font-size: var(--ha-font-size-s);
           line-height: 1.25rem;
           font-weight: 400;
           letter-spacing: 0.0178571429em;
@@ -1051,7 +1051,7 @@ export class HaDataTable extends LitElement {
           font-family: Roboto, sans-serif;
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
-          font-size: 0.875rem;
+          font-size: var(--ha-font-size-s);
           line-height: 1.25rem;
           font-weight: 400;
           letter-spacing: 0.0178571429em;
@@ -1173,7 +1173,7 @@ export class HaDataTable extends LitElement {
           font-family: Roboto, sans-serif;
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
-          font-size: 0.875rem;
+          font-size: var(--ha-font-size-s);
           line-height: 1.375rem;
           font-weight: 500;
           letter-spacing: 0.0071428571em;

@@ -231,22 +231,22 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
         "hour minute second"
         "hour minute am-pm";
 
-      font-size: 2rem;
+      font-size: var(--ha-font-size-3xl);
       font-weight: 500;
       line-height: 0.8;
       direction: ltr;
     }
 
     .time-title + .time-parts {
-      font-size: 1.5rem;
+      font-size: var(--ha-font-size-xl);
     }
 
     .time-wrapper.size-medium .time-parts {
-      font-size: 3rem;
+      font-size: var(--ha-font-size-5xl);
     }
 
     .time-wrapper.size-large .time-parts {
-      font-size: 4rem;
+      font-size: 56px;
     }
 
     .time-wrapper.size-medium .time-parts .time-part.second,
