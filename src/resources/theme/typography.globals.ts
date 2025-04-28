@@ -1,11 +1,12 @@
+import { css } from "lit";
 import { extractDerivedVars } from "../../common/style/derived-css-vars";
 
-const result = extractDerivedVars`
+export const typographyStyles = css`
   html {
     --ha-font-family-body: Roboto, Noto, sans-serif;
     --ha-font-family-code: monospace;
     --ha-font-family-longform: ui-sans-serif, system-ui, sans-serif;
-    
+
     font-size: 14px;
     --ha-font-size-scale: 1;
     --ha-font-size-xs: calc(10px * var(--ha-font-size-scale));
@@ -36,5 +37,4 @@ const result = extractDerivedVars`
   }
 `;
 
-export const typographyStyles = result.css;
-export const typographyDerivedVariables = result.derivedVariables;
+export const typographyDerivedVariables = extractDerivedVars(typographyStyles);

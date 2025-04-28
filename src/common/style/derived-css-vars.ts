@@ -1,30 +1,45 @@
-import { css } from "lit";
+import type { CSSResult } from "lit";
 
-const trimWithLineBreak = (str: string) => str.replaceAll("\n", "").trim();
-
-export const extractDerivedVars = (
-  string: TemplateStringsArray,
-  ...values: any[]
+const _extractCssVars = (
+  cssString: string,
+  condition: (string) => boolean = () => true
 ) => {
-  const cssString = string.reduce(
-    (result, currentString, index) =>
-      result + currentString + (values[index] || ""),
-    ""
-  );
+  const variables: Record<string, string> = {};
 
-  const derivedVariables: Record<string, string> = {};
+  cssString.split(";").forEach((rawLine) => {
+    const line = rawLine.substring(rawLine.indexOf("--")).trim();
+    if (line.startsWith("--") && condition(line)) {
+      const [name, value] = line.split(":").map((part) => part.trim());
+      variables[name.substring(2, name.length)] = value;
+    }
+  });
+  return variables;
+};
 
-  if (cssString.includes("var(")) {
-    cssString.split(";").forEach((line) => {
-      if (trimWithLineBreak(line).startsWith("--") && line.includes("var(")) {
-        const [name, value] = line.split(":").map((part) => part.trim());
-        derivedVariables[name.substring(2, name.length)] = value;
-      }
-    });
+export const extractVar = (css: CSSResult, varName: string) => {
+  const cssString = css.toString();
+  const search = `--${varName}:`;
+  const startIndex = cssString.indexOf(search);
+  if (startIndex === -1) {
+    return "";
   }
 
-  return {
-    css: css([cssString] as unknown as TemplateStringsArray),
-    derivedVariables,
-  };
+  const endIndex = cssString.indexOf(";", startIndex + search.length);
+  return cssString.substring(startIndex + search.length, endIndex).trim();
+};
+
+export const extractVars = (css: CSSResult) => {
+  const cssString = css.toString();
+
+  return _extractCssVars(cssString);
+};
+
+export const extractDerivedVars = (css: CSSResult) => {
+  const cssString = css.toString();
+
+  if (!cssString.includes("var(")) {
+    return {};
+  }
+
+  return _extractCssVars(cssString, (line) => line.includes("var("));
 };

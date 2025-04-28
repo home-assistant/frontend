@@ -1,5 +1,5 @@
 import type { ThemeVars } from "../../data/ws-themes";
-import { darkStyles } from "../../resources/styles-data";
+import { darkColorVariables } from "../../resources/theme/color.globals";
 import { derivedStyles } from "../../resources/theme/theme";
 import type { HomeAssistant } from "../../types";
 import {
@@ -51,7 +51,7 @@ export const applyThemesOnElement = (
 
   if (themeToApply && darkMode) {
     cacheKey = `${cacheKey}__dark`;
-    themeRules = { ...darkStyles };
+    themeRules = { ...darkColorVariables };
   }
 
   if (themeToApply === "default") {

@@ -1,7 +1,11 @@
-import { extractDerivedVars } from "../../common/style/derived-css-vars";
-import { DEFAULT_ACCENT_COLOR, DEFAULT_PRIMARY_COLOR } from "../styles-data";
+import { css } from "lit";
+import {
+  extractDerivedVars,
+  extractVar,
+  extractVars,
+} from "../../common/style/derived-css-vars";
 
-const result = extractDerivedVars`
+export const colorStyles = css`
   html {
     /* text */
     --primary-text-color: #212121;
@@ -11,10 +15,10 @@ const result = extractDerivedVars`
     --disabled-text-color: #bdbdbd;
 
     /* main interface colors */
-    --primary-color: ${DEFAULT_PRIMARY_COLOR};
+    --primary-color: #03a9f4;
     --dark-primary-color: #0288d1;
     --light-primary-color: #b3e5fc;
-    --accent-color: ${DEFAULT_ACCENT_COLOR};
+    --accent-color: #ff9800;
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
     --outline-hover-color: rgba(0, 0, 0, 0.24);
@@ -110,7 +114,10 @@ const result = extractDerivedVars`
     /* state color */
     --state-active-color: var(--amber-color);
     --state-inactive-color: var(--grey-color);
-    --state-unavailable-color: var(--state-icon-unavailable-color, var(--disabled-text-color));
+    --state-unavailable-color: var(
+      --state-icon-unavailable-color,
+      var(--disabled-text-color)
+    );
 
     /* state domain colors */
     --state-alarm_control_panel-armed_away-color: var(--green-color);
@@ -188,9 +195,15 @@ const result = extractDerivedVars`
     --sidebar-selected-icon-color: var(--primary-color);
     --sidebar-icon-color: rgba(var(--rgb-primary-text-color), 0.6);
     --switch-checked-color: var(--primary-color);
-    --switch-checked-button-color: var(--switch-checked-color, var(--primary-background-color));
+    --switch-checked-button-color: var(
+      --switch-checked-color,
+      var(--primary-background-color)
+    );
     --switch-checked-track-color: var(--switch-checked-color, #000000);
-    --switch-unchecked-button-color: var(--switch-unchecked-color, var(--primary-background-color));
+    --switch-unchecked-button-color: var(
+      --switch-unchecked-color,
+      var(--primary-background-color)
+    );
     --switch-unchecked-track-color: var(--switch-unchecked-color, #000000);
     --slider-color: var(--primary-color);
     --slider-secondary-color: var(--light-primary-color);
@@ -203,7 +216,7 @@ const result = extractDerivedVars`
     --data-table-background-color: var(--card-background-color);
     --markdown-code-background-color: var(--primary-background-color);
 
-    // https://github.com/material-components/material-web/blob/master/docs/theming.md
+    /* https://github.com/material-components/material-web/blob/master/docs/theming.md */
     --mdc-theme-primary: var(--primary-color);
     --mdc-theme-secondary: var(--accent-color);
     --mdc-theme-background: var(--primary-background-color);
@@ -234,9 +247,15 @@ const result = extractDerivedVars`
     --mdc-text-field-idle-line-color: var(--input-idle-line-color);
     --mdc-text-field-hover-line-color: var(--input-hover-line-color);
     --mdc-text-field-disabled-line-color: var(--input-disabled-line-color);
-    --mdc-text-field-outlined-idle-border-color: var(--input-outlined-idle-border-color);
-    --mdc-text-field-outlined-hover-border-color: var(--input-outlined-hover-border-color);
-    --mdc-text-field-outlined-disabled-border-color: var(--input-outlined-disabled-border-color);
+    --mdc-text-field-outlined-idle-border-color: var(
+      --input-outlined-idle-border-color
+    );
+    --mdc-text-field-outlined-hover-border-color: var(
+      --input-outlined-hover-border-color
+    );
+    --mdc-text-field-outlined-disabled-border-color: var(
+      --input-outlined-disabled-border-color
+    );
     --mdc-text-field-fill-color: var(--input-fill-color);
     --mdc-text-field-disabled-fill-color: var(--input-disabled-fill-color);
     --mdc-text-field-ink-color: var(--input-ink-color);
@@ -245,9 +264,15 @@ const result = extractDerivedVars`
 
     --mdc-select-idle-line-color: var(--input-idle-line-color);
     --mdc-select-hover-line-color: var(--input-hover-line-color);
-    --mdc-select-outlined-idle-border-color: var(--input-outlined-idle-border-color);
-    --mdc-select-outlined-hover-border-color: var(--input-outlined-hover-border-color);
-    --mdc-select-outlined-disabled-border-color: var(--input-outlined-disabled-border-color);
+    --mdc-select-outlined-idle-border-color: var(
+      --input-outlined-idle-border-color
+    );
+    --mdc-select-outlined-hover-border-color: var(
+      --input-outlined-hover-border-color
+    );
+    --mdc-select-outlined-disabled-border-color: var(
+      --input-outlined-disabled-border-color
+    );
     --mdc-select-fill-color: var(--input-fill-color);
     --mdc-select-disabled-fill-color: var(--input-disabled-fill-color);
     --mdc-select-ink-color: var(--input-ink-color);
@@ -255,11 +280,17 @@ const result = extractDerivedVars`
     --mdc-select-disabled-ink-color: var(--input-disabled-ink-color);
     --mdc-select-dropdown-icon-color: var(--input-dropdown-icon-color);
     --mdc-select-disabled-dropdown-icon-color: var(--input-disabled-ink-color);
-    --ha-assist-chip-filled-container-color: rgba(var(--rgb-primary-text-color),0.15);
-    --ha-assist-chip-active-container-color: rgba(var(--rgb-primary-color),0.15);
+    --ha-assist-chip-filled-container-color: rgba(
+      var(--rgb-primary-text-color),
+      0.15
+    );
+    --ha-assist-chip-active-container-color: rgba(
+      var(--rgb-primary-color),
+      0.15
+    );
     --chip-background-color: rgba(var(--rgb-primary-text-color), 0.15);
 
-    // Vaadin
+    /* Vaadin */
     --material-body-text-color: var(--primary-text-color);
     --material-background-color: var(--card-background-color);
     --material-secondary-background-color: var(--secondary-background-color);
@@ -267,5 +298,62 @@ const result = extractDerivedVars`
   }
 `;
 
-export const colorStyles = result.css;
-export const colorDerivedVariables = result.derivedVariables;
+const darkColorStyles = css`
+  --primary-background-color: #111111;
+  --card-background-color: #1c1c1c;
+  --secondary-background-color: #282828;
+  --clear-background-color: #111111;
+  --primary-text-color: #e1e1e1;
+  --secondary-text-color: #9b9b9b;
+  --disabled-text-color: #6f6f6f;
+  --app-header-text-color: #e1e1e1;
+  --app-header-background-color: #101e24;
+  --switch-unchecked-button-color: #999999;
+  --switch-unchecked-track-color: #9b9b9b;
+  --divider-color: rgba(225, 225, 225, 0.12);
+  --outline-color: rgba(225, 225, 225, 0.12);
+  --outline-hover-color: rgba(225, 225, 225, 0.24);
+  --mdc-ripple-color: #aaaaaa;
+  --mdc-linear-progress-buffer-color: rgba(255, 255, 255, 0.1);
+
+  --input-idle-line-color: rgba(255, 255, 255, 0.42);
+  --input-hover-line-color: rgba(255, 255, 255, 0.87);
+  --input-disabled-line-color: rgba(255, 255, 255, 0.06);
+  --input-outlined-idle-border-color: rgba(255, 255, 255, 0.38);
+  --input-outlined-hover-border-color: rgba(255, 255, 255, 0.87);
+  --input-outlined-disabled-border-color: rgba(255, 255, 255, 0.06);
+  --input-fill-color: rgba(255, 255, 255, 0.05);
+  --input-disabled-fill-color: rgba(255, 255, 255, 0.02);
+  --input-ink-color: rgba(255, 255, 255, 0.87);
+  --input-label-ink-color: rgba(255, 255, 255, 0.6);
+  --input-disabled-ink-color: rgba(255, 255, 255, 0.37);
+  --input-dropdown-icon-color: rgba(255, 255, 255, 0.54);
+
+  --codemirror-keyword: #c792ea;
+  --codemirror-operator: #89ddff;
+  --codemirror-variable: #f07178;
+  --codemirror-variable-2: #eeffff;
+  --codemirror-variable-3: #decb6b;
+  --codemirror-builtin: #ffcb6b;
+  --codemirror-atom: #f78c6c;
+  --codemirror-number: #ff5370;
+  --codemirror-def: #82aaff;
+  --codemirror-string: #c3e88d;
+  --codemirror-string-2: #f07178;
+  --codemirror-comment: #545454;
+  --codemirror-tag: #ff5370;
+  --codemirror-meta: #ffcb6b;
+  --codemirror-attribute: #c792ea;
+  --codemirror-property: #c792ea;
+  --codemirror-qualifier: #decb6b;
+  --codemirror-type: #decb6b;
+  --energy-grid-return-color: #a280db;
+  --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5) contrast(1.2)
+    saturate(0.3);
+  --disabled-color: #464646;
+`;
+export const colorDerivedVariables = extractDerivedVars(colorStyles);
+export const darkColorVariables = extractVars(darkColorStyles);
+
+export const DefaultPrimaryColor = extractVar(colorStyles, "primary-color");
+export const DefaultAccentColor = extractVar(colorStyles, "accent-color");

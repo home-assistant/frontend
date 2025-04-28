@@ -1,9 +1,9 @@
+import { css } from "lit";
 import { extractDerivedVars } from "../../common/style/derived-css-vars";
 
-const result = extractDerivedVars`
+export const mainStyles = css`
   html {
     height: 100vh;
-
 
     /* for header */
     --header-height: 56px;
@@ -27,7 +27,6 @@ const result = extractDerivedVars`
     --margin-title-ltr: 0 0 0 24px;
     --margin-title-rtl: 0 24px 0 0;
 
-
     /* Vaadin typography */
     --material-h6-font-size: var(--ha-font-size-m);
     --material-small-font-size: var(--ha-font-size-xs);
@@ -36,5 +35,4 @@ const result = extractDerivedVars`
   }
 `;
 
-export const mainStyles = result.css;
-export const mainDerivedVariables = result.derivedVariables;
+export const mainDerivedVariables = extractDerivedVars(mainStyles);
