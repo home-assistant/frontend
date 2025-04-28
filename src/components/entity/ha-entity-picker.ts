@@ -275,6 +275,8 @@ export class HaEntityPicker extends LitElement {
         ha-combo-box-item {
           background-color: var(--mdc-text-field-fill-color, whitesmoke);
           border-radius: 4px;
+          border-end-end-radius: 0;
+          border-end-start-radius: 0;
           --md-list-item-one-line-container-height: 56px;
           --md-list-item-two-line-container-height: 56px;
           --md-list-item-top-space: 8px;
@@ -282,10 +284,36 @@ export class HaEntityPicker extends LitElement {
           --md-list-item-leading-space: 8px;
           --md-list-item-trailing-space: 8px;
           --ha-md-list-item-gap: 8px;
-          --md-focus-ring-width: 2px;
+          /* Remove the default focus ring */
+          --md-focus-ring-width: 0px;
           --md-focus-ring-duration: 0s;
-          --md-focus-ring-color: var(--secondary-text-color);
         }
+
+        /* Add Similar focus style as the text field */
+        ha-combo-box-item:after {
+          display: block;
+          content: "";
+          position: absolute;
+          pointer-events: none;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          width: 100%;
+          background-color: var(
+            --mdc-text-field-idle-line-color,
+            rgba(0, 0, 0, 0.42)
+          );
+          transform:
+            height 180ms ease-in-out,
+            background-color 180ms ease-in-out;
+        }
+
+        ha-combo-box-item:focus:after {
+          height: 2px;
+          background-color: var(--mdc-theme-primary);
+        }
+
         ha-combo-box-item ha-svg-icon[slot="start"] {
           margin: 0 4px;
         }

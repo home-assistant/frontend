@@ -33,7 +33,6 @@ import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import "../../../components/search-input";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -584,11 +583,6 @@ class HaPanelDevState extends LitElement {
   private _yamlChanged(ev) {
     this._stateAttributes = ev.detail.value;
     this._validJSON = ev.detail.isValid;
-  }
-
-  private _openShortcutDialog(ev: Event) {
-    ev.preventDefault();
-    showShortcutsDialog(this);
   }
 
   static get styles(): CSSResultGroup {
