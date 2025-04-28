@@ -106,6 +106,10 @@ export class HaSankeyChart extends LitElement {
   private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
     const filteredNodes = data.nodes.filter((n) => n.value > 0);
     const indexes = [...new Set(filteredNodes.map((n) => n.index))];
+    const depthMap = new Map<number, number>();
+    indexes.sort().forEach((index, i) => {
+      depthMap.set(index, i);
+    });
     const links = this._processLinks(filteredNodes, data.links);
     const sectionWidth = width / indexes.length;
     const labelSpace = sectionWidth - NODE_SIZE - LABEL_DISTANCE;
@@ -119,7 +123,7 @@ export class HaSankeyChart extends LitElement {
         itemStyle: {
           color: node.color,
         },
-        depth: node.index,
+        depth: depthMap.get(node.index),
       })),
       links,
       draggable: false,
