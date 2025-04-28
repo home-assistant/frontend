@@ -103,7 +103,7 @@ export class HaBadge extends LitElement {
       color: var(--secondary-text-color);
     }
     .content {
-      font-size: var(--badge-font-size, 12px);
+      font-size: var(--ha-font-size-badge, var(--ha-font-size-s));
       font-style: normal;
       font-weight: 500;
       line-height: 16px;
