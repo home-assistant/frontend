@@ -21,13 +21,13 @@ export const typographyStyles = css`
 
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;
-    --ha-font-weight-semibold: 500;
+    --ha-font-weight-medium: 500;
     --ha-font-weight-bold: 700;
 
     --ha-font-family-heading: var(--ha-font-family-body);
     --ha-font-weight-body: var(--ha-font-weight-normal);
     --ha-font-weight-heading: var(--ha-font-weight-bold);
-    --ha-font-weight-action: var(--ha-font-weight-semibold);
+    --ha-font-weight-action: var(--ha-font-weight-medium);
 
     --ha-line-height-condensed: 1.2;
     --ha-line-height-normal: 1.6;
