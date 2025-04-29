@@ -587,6 +587,12 @@ export default class HaAutomationConditionRow extends LitElement {
         ha-md-menu-item > ha-svg-icon {
           --mdc-icon-size: 24px;
         }
+        :host([highlight]) ha-card {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
+          border-color: var(--state-inactive-color);
+          box-shadow: var(--shadow-default), var(--shadow-focus);
+        }
       `,
     ];
   }
