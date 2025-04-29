@@ -1028,11 +1028,7 @@ export const computeConsumptionSingle = (data: {
   }
 
   if (from_battery != null) {
-    if (to_grid != null) {
-      used_battery = (from_battery || 0) - (battery_to_grid || 0);
-    } else {
-      used_battery = from_battery;
-    }
+    used_battery = (from_battery || 0) - (battery_to_grid || 0);
   }
 
   if (from_grid != null) {
