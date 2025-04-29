@@ -40,6 +40,7 @@ const FAKE_ENTITY: HassEntity = {
 };
 
 interface EntityComboBoxItem extends HassEntity {
+  // Force empty label to always displayed empty value by default in the search field
   label: "";
   primary: string;
   secondary?: string;
@@ -58,9 +59,9 @@ export type HaEntityComboBoxEntityFilterFunc = (entity: HassEntity) => boolean;
 const CREATE_ID = "___create-new-entity___";
 
 const DOMAIN_STYLE = styleMap({
-  fontSize: "12px",
-  fontWeight: "400",
-  lineHeight: "18px",
+  fontSize: "var(--ha-font-size-s)",
+  fontWeight: "var(--ha-font-weight-normal)",
+  lineHeight: "var(--ha-line-height-normal)",
   alignSelf: "flex-end",
   maxWidth: "30%",
   textOverflow: "ellipsis",
@@ -70,7 +71,7 @@ const DOMAIN_STYLE = styleMap({
 
 const ENTITY_ID_STYLE = styleMap({
   fontFamily: "var(--code-font-family, monospace)",
-  fontSize: "11px",
+  fontSize: "var(--ha-font-size-xs)",
 });
 
 @customElement("ha-entity-combo-box")
@@ -186,8 +187,7 @@ export class HaEntityComboBox extends LitElement {
               .hass=${this.hass}
             ></state-badge>
           `}
-
-      <span slot="headline">${item.primary} </span>
+      <span slot="headline">${item.primary}</span>
       ${item.secondary
         ? html`<span slot="supporting-text">${item.secondary}</span>`
         : nothing}
