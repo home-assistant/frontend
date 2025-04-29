@@ -6363,6 +6363,9 @@
             }
           },
           "discovery": {
+            "ssdp": "SSDP browser",
+            "ssdp_info": "The SSDP browser shows devices discovered by Home Assistant using SSDP/UPNP. Devices that Home Assistant has discovered will appear here.",
+            "ssdp_browser": "View SSDP browser",
             "zeroconf": "Zeroconf browser",
             "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
             "zeroconf_browser": "View Zeroconf browser"

@@ -13,7 +13,40 @@ class ConfigNetworkDiscovery extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   protected render() {
-    return isComponentLoaded(this.hass, "zeroconf")
+    return html`
+      ${isComponentLoaded(this.hass, "ssdp")
+      ? html`
+          <ha-card
+            outlined
+            header=${this.hass.localize(
+              "ui.panel.config.network.discovery.ssdp"
+            )}
+          >
+            <div class="card-content">
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.network.discovery.ssdp_info"
+                )}
+              </p>
+            </div>
+            <div class="card-actions">
+              <a
+                href="/config/ssdp"
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.network.discovery.ssdp_browser"
+                )}
+              >
+                <ha-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.network.discovery.ssdp_browser"
+                  )}
+                </ha-button>
+              </a>
+            </div>
+          </ha-card>
+        `
+      : ""}
+      ${isComponentLoaded(this.hass, "zeroconf")
       ? html`
           <ha-card
             outlined
@@ -44,7 +77,8 @@ class ConfigNetworkDiscovery extends LitElement {
             </div>
           </ha-card>
         `
-      : "";
+      : ""}
+    `;
   }
 
   static get styles(): CSSResultGroup {
