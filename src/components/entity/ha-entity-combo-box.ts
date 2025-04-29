@@ -219,9 +219,6 @@ export class HaEntityComboBox extends LitElement {
     ): EntityComboBoxItem[] => {
       let states: EntityComboBoxItem[] = [];
 
-      if (!hass) {
-        return [];
-      }
       let entityIds = Object.keys(hass.states);
 
       const createItems = createDomains?.length
