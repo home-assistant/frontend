@@ -563,10 +563,8 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
       ssdp: {
         tag: "ssdp-config-panel",
         load: () =>
-          import(
-            "./integrations/integration-panels/ssdp/ssdp-config-panel"
-          ),
-      },      
+          import("./integrations/integration-panels/ssdp/ssdp-config-panel"),
+      },
       zeroconf: {
         tag: "zeroconf-config-panel",
         load: () =>
