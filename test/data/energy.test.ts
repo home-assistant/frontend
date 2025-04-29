@@ -85,77 +85,76 @@ describe("Energy Short Format Test", () => {
 });
 
 describe("Energy Usage Calculation Tests", () => {
-  it("Grid consumption only", () => {
-    assert.deepEqual(
-      computeConsumptionSingle({
-        from_grid: 0,
-        to_grid: undefined,
-        solar: undefined,
-        to_battery: undefined,
-        from_battery: undefined,
-      }),
-      {
-        grid_to_battery: 0,
-        battery_to_grid: 0,
-        used_solar: 0,
-        used_grid: 0,
-        used_battery: 0,
-      }
-    );
-    assert.deepEqual(
-      computeConsumptionSingle({
-        from_grid: 5,
-        to_grid: undefined,
-        solar: undefined,
-        to_battery: undefined,
-        from_battery: undefined,
-      }),
-      {
-        grid_to_battery: 0,
-        battery_to_grid: 0,
-        used_solar: 0,
-        used_grid: 5,
-        used_battery: 0,
-      }
-    );
+  it("Consuming Energy From the Grid", () => {
+    [0, 5, 1000].forEach((x) => {
+      assert.deepEqual(
+        computeConsumptionSingle({
+          from_grid: x,
+          to_grid: undefined,
+          solar: undefined,
+          to_battery: undefined,
+          from_battery: undefined,
+        }),
+        {
+          grid_to_battery: 0,
+          battery_to_grid: 0,
+          used_solar: 0,
+          used_grid: x,
+          used_battery: 0,
+        }
+      );
+    });
   });
-  it("Solar production", () => {
-    assert.deepEqual(
-      computeConsumptionSingle({
-        from_grid: 0,
-        to_grid: 3,
-        solar: 7,
-        to_battery: undefined,
-        from_battery: undefined,
-      }),
-      {
-        grid_to_battery: 0,
-        battery_to_grid: 0,
-        used_solar: 4,
-        used_grid: 0,
-        used_battery: 0,
-      }
-    );
+  it("Solar production, consuming some and returning the remainder to grid.", () => {
+    [2.99, 3, 10, 100].forEach((s) => {
+      assert.deepEqual(
+        computeConsumptionSingle({
+          from_grid: 0,
+          to_grid: 3,
+          solar: s,
+          to_battery: undefined,
+          from_battery: undefined,
+        }),
+        {
+          grid_to_battery: 0,
+          battery_to_grid: 0,
+          used_solar: Math.max(0, s - 3),
+          used_grid: 0,
+          used_battery: 0,
+        }
+      );
+    });
   });
-  it("Grid and solar consumption", () => {
-    assert.deepEqual(
-      computeConsumptionSingle({
-        from_grid: 5,
-        to_grid: 3,
-        solar: 7,
-        to_battery: undefined,
-        from_battery: undefined,
-      }),
-      {
-        grid_to_battery: 0,
-        battery_to_grid: 0,
-        used_solar: 4,
-        used_grid: 5,
-        used_battery: 0,
-      }
-    );
+  it("Solar production with simultaneous grid consumption. Excess solar returned to the grid.", () => {
+    [
+      [0, 0],
+      [3, 0],
+      [0, 3],
+      [5, 4],
+      [4, 5],
+      [10, 3],
+      [3, 7],
+      [3, 7.1],
+    ].forEach(([from_grid, to_grid]) => {
+      assert.deepEqual(
+        computeConsumptionSingle({
+          from_grid,
+          to_grid,
+          solar: 7,
+          to_battery: undefined,
+          from_battery: undefined,
+        }),
+        {
+          grid_to_battery: 0,
+          battery_to_grid: 0,
+          used_solar: Math.max(0, 7 - to_grid),
+          used_grid: from_grid,
+          used_battery: 0,
+        }
+      );
+    });
   });
-  it("Grid and battery", () => {
+  it("Charging the battery from the grid", () => {
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -172,6 +171,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_battery: 0,
       }
     );
+  });
+  it("Consuming from the grid and battery simultaneously", () => {
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -188,7 +189,27 @@ describe("Energy Usage Calculation Tests", () => {
         used_battery: 5,
       }
     );
-    /* Fails
+  });
+  it("Consuming some battery and returning some battery to the grid", () => {
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 0,
+        to_grid: 4,
+        solar: 0,
+        to_battery: 0,
+        from_battery: 5,
+      }),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 4,
+        used_solar: 0,
+        used_grid: 0,
+        used_battery: 1,
+      }
+    );
+  });
+  /* Fails
+  it("Charging and discharging the battery to/from the grid in the same interval.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -204,8 +225,10 @@ describe("Energy Usage Calculation Tests", () => {
         used_grid: 1,
         used_battery: 0,
       }
-    ); */
-    /* Test does not pass, battery is not really correct when solar is not present
+    );
+  }); */
+  /* Test does not pass, battery is not really correct when solar is not present
+  it("Charging the battery with no solar sensor.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -222,8 +245,9 @@ describe("Energy Usage Calculation Tests", () => {
         used_battery: 0,
       }
     );
-    */
-    /* Test does not pass
+  }); */
+  /* Test does not pass
+  it("Discharging battery to grid while also consuming from grid.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -240,8 +264,9 @@ describe("Energy Usage Calculation Tests", () => {
         used_battery: 0,
       }
     );
-    */
   });
+    */
+
   it("Grid, solar, and battery", () => {
     assert.deepEqual(
       computeConsumptionSingle({
