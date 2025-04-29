@@ -40,7 +40,7 @@ const FAKE_ENTITY: HassEntity = {
 };
 
 interface EntityComboBoxItem extends HassEntity {
-  // Force empty label to always displayed empty value by default in the search field
+  // Force empty label to always display empty value by default in the search field
   label: "";
   primary: string;
   secondary?: string;
