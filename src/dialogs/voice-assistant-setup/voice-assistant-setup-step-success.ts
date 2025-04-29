@@ -325,10 +325,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         updateDeviceRegistryEntry(this.hass, this.deviceId, {
           name_by_user: this._deviceName,
         });
-      } catch (error) {
+      } catch (error: any) {
         this._error = this.hass.localize(
           "ui.panel.config.voice_assistants.satellite_wizard.success.failed_rename",
-          { error }
+          { error: error.message || error }
         );
         return;
       }
