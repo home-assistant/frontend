@@ -889,12 +889,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           flex-direction: row-reverse;
           margin-right: 48px;
+          margin-inline-end: 48px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
 
         .highlight-add-button ha-svg-icon {
           position: relative;
           top: -0.5em;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          transform: scaleX(var(--scale-direction));
         }
 
         .content {

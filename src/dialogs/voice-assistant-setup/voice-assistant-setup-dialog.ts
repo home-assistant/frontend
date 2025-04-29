@@ -404,6 +404,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           align-items: center;
           margin-right: 12px;
           margin-inline-end: 12px;
+          margin-inline-start: initial;
         }
       `,
     ];
