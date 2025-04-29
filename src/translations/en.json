@@ -372,7 +372,9 @@
       "default": "Default",
       "dont_save": "Don't save",
       "copy": "Copy",
-      "show": "Show"
+      "show": "Show",
+      "replace": "Replace",
+      "append": "Append"
     },
     "components": {
       "selectors": {
@@ -1934,6 +1936,10 @@
         "assist": {
           "title": "Assist",
           "open_assist": "open Assist dialog"
+        },
+        "automations": {
+          "title": "Automations",
+          "paste": "to paste automation YAML from clipboard to automation editor"
         },
         "charts": {
           "title": "Charts",
@@ -4343,7 +4349,13 @@
               "add_category": "Add category",
               "add_labels": "Add labels",
               "add_area": "Add area"
-            }
+            },
+            "paste_confirm": {
+              "title": "Pasted automation",
+              "text": "How do you want to paste your automation?"
+            },
+            "paste_toast_message": "Pasted automation from clipboard",
+            "paste_invalid_config": "Pasted automation is not editable in the visual editor"
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
@@ -4576,7 +4588,13 @@
               "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
               "unsaved_confirm_title": "Save changes?",
               "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
-            }
+            },
+            "paste_confirm": {
+              "title": "Pasted script",
+              "text": "How do you want to paste your script?"
+            },
+            "paste_toast_message": "Pasted script from clipboard",
+            "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
             "edit_script": "Edit script"

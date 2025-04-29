@@ -32,6 +32,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ attribute: false }) public actions!: Action[];
 
+  @property({ attribute: false }) public highlightedActions?: Action[];
+
   @state() private _showReorder = false;
 
   @storage({
@@ -91,6 +93,7 @@ export default class HaAutomationAction extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}
+                ?highlight=${this.highlightedActions?.includes(action)}
               >
                 ${this._showReorder && !this.disabled
                   ? html`

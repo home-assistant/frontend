@@ -14,6 +14,7 @@ import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 
 declare global {
   interface HASSDomEvents {
@@ -80,7 +81,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _showVoiceCommandDialog(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e) ||
+        !canOverrideAlphanumericInput(e.composedPath()) ||
         !this._conversation(this.hass.config.components)
       ) {
         return;
@@ -113,7 +114,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private async _createMyLink(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e)
+        !canOverrideAlphanumericInput(e.composedPath())
       ) {
         return;
       }
@@ -182,42 +183,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       return (
         this.hass?.user?.is_admin &&
         this.hass.enableShortcuts &&
-        this._canOverrideAlphanumericInput(e)
+        canOverrideAlphanumericInput(e.composedPath())
       );
-    }
-
-    private _canOverrideAlphanumericInput(e: KeyboardEvent) {
-      const composedPath = e.composedPath();
-
-      if (
-        composedPath.some((el) => "tagName" in el && el.tagName === "HA-MENU")
-      ) {
-        return false;
-      }
-
-      const el = composedPath[0] as Element;
-
-      if (el.tagName === "TEXTAREA") {
-        return false;
-      }
-
-      if (el.parentElement?.tagName === "HA-SELECT") {
-        return false;
-      }
-
-      if (el.tagName !== "INPUT") {
-        return true;
-      }
-
-      switch ((el as HTMLInputElement).type) {
-        case "button":
-        case "checkbox":
-        case "hidden":
-        case "radio":
-        case "range":
-          return true;
-        default:
-          return false;
-      }
     }
   };
