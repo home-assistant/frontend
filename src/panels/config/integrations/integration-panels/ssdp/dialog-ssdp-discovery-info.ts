@@ -56,45 +56,8 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
         <p>
           <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_st")}</b>:
           ${this._params.entry.ssdp_st} <br />
-          ${this._params.entry.ssdp_usn !== undefined &&
-          this._params.entry.ssdp_usn !== ""
-            ? html`
-                <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_usn")}</b> :
-                ${this._params.entry.ssdp_usn}<br />
-              `
-            : ""}
-          ${this._params.entry.ssdp_location !== undefined &&
-          this._params.entry.ssdp_location !== ""
-            ? html`
-                <b
-                  >${this.hass.localize(
-                    "ui.panel.config.ssdp.ssdp_location"
-                  )}</b
-                >
-                : ${this._params.entry.ssdp_location}<br />
-              `
-            : ""}
-          ${this._params.entry.ssdp_nt !== undefined &&
-          this._params.entry.ssdp_nt !== ""
-            ? html`
-                <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_nt")}</b> :
-                ${this._params.entry.ssdp_nt}<br />
-              `
-            : ""}
-          ${this._params.entry.ssdp_server !== undefined &&
-          this._params.entry.ssdp_server !== ""
-            ? html`
-                <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_server")}</b>
-                : ${this._params.entry.ssdp_server}<br />
-              `
-            : ""}
-          ${this._params.entry.ssdp_ext !== undefined &&
-          this._params.entry.ssdp_ext !== ""
-            ? html`
-                <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_ext")}</b> :
-                ${this._params.entry.ssdp_ext}<br />
-              `
-            : ""}
+          <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_location")}</b>:
+          ${this._params.entry.ssdp_location}
         </p>
 
         <h4>${this.hass.localize("ui.panel.config.ssdp.ssdp_headers")}</h4>
