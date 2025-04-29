@@ -22,6 +22,7 @@ import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
+import { getEntityContext } from "../../../../common/entity/get_entity_context";
 
 const DEFAULT_CONFIG: Partial<EnergySankeyCardConfig> = {
   group_by_floor: true,
@@ -388,13 +389,9 @@ class HuiEnergySankeyCard
       },
     };
     deviceNodes.forEach((deviceNode) => {
-      const entity = this.hass.entities[deviceNode.id];
-      const entityAreaId =
-        entity?.area_id ??
-        (entity?.device_id && this.hass.devices[entity.device_id]?.area_id);
-      if (entityAreaId && entityAreaId in this.hass.areas) {
-        const area = this.hass.areas[entityAreaId];
-
+      const entity = this.hass.states[deviceNode.id];
+      const { area, floor } = getEntityContext(entity, this.hass);
+      if (area) {
         if (area.area_id in areas) {
           areas[area.area_id].value += deviceNode.value;
           areas[area.area_id].devices.push(deviceNode);
@@ -405,14 +402,14 @@ class HuiEnergySankeyCard
           };
         }
         // see if the area has a floor
-        if (area.floor_id && area.floor_id in this.hass.floors) {
-          if (area.floor_id in floors) {
-            floors[area.floor_id].value += deviceNode.value;
-            if (!floors[area.floor_id].areas.includes(area.area_id)) {
-              floors[area.floor_id].areas.push(area.area_id);
+        if (floor) {
+          if (floor.floor_id in floors) {
+            floors[floor.floor_id].value += deviceNode.value;
+            if (!floors[floor.floor_id].areas.includes(area.area_id)) {
+              floors[floor.floor_id].areas.push(area.area_id);
             }
           } else {
-            floors[area.floor_id] = {
+            floors[floor.floor_id] = {
               value: deviceNode.value,
               areas: [area.area_id],
             };
