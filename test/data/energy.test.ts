@@ -172,6 +172,39 @@ describe("Energy Usage Calculation Tests", () => {
         used_battery: 0,
       }
     );
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 5,
+        to_grid: 0,
+        solar: 0,
+        to_battery: 0,
+        from_battery: 5,
+      }),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 0,
+        used_solar: 0,
+        used_grid: 5,
+        used_battery: 5,
+      }
+    );
+    /* Fails
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 5,
+        to_grid: 1,
+        solar: 0,
+        to_battery: 3,
+        from_battery: 1,
+      }),
+      {
+        grid_to_battery: 3,
+        battery_to_grid: 1,
+        used_solar: 0,
+        used_grid: 1,
+        used_battery: 0,
+      }
+    ); */
     /* Test does not pass, battery is not really correct when solar is not present
     assert.deepEqual(
       computeConsumptionSingle({
@@ -224,6 +257,54 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 5,
         used_battery: 0,
+      }
+    );
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 5,
+        to_grid: 3,
+        solar: 7,
+        to_battery: 3,
+        from_battery: 10,
+      }),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 0,
+        used_solar: 1,
+        used_grid: 5,
+        used_battery: 10,
+      }
+    );
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 2,
+        to_grid: 7,
+        solar: 7,
+        to_battery: 1,
+        from_battery: 1,
+      }),
+      {
+        grid_to_battery: 1,
+        battery_to_grid: 0,
+        used_solar: 0,
+        used_grid: 1,
+        used_battery: 1,
+      }
+    );
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 2,
+        to_grid: 7,
+        solar: 9,
+        to_battery: 1,
+        from_battery: 1,
+      }),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 0,
+        used_solar: 1,
+        used_grid: 2,
+        used_battery: 1,
       }
     );
     /* Test does not pass
