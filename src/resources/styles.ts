@@ -48,7 +48,7 @@ export const haStyle = css`
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: var(--ha-font-size-xl);
-    font-weight: var(--ha-font-weight-semibold);
+    font-weight: var(--ha-font-weight-medium);
     line-height: var(--ha-line-height-normal);
   }
 
