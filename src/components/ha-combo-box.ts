@@ -147,6 +147,10 @@ export class HaComboBox extends LitElement {
     this._comboBox.value = value;
   }
 
+  public setTextFieldValue(value: string) {
+    this._inputElement.value = value;
+  }
+
   protected render(): TemplateResult {
     return html`
       <!-- @ts-ignore Tag definition is not included in theme folder -->

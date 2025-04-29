@@ -566,6 +566,7 @@
           "no_match": "No matching entities found",
           "show_entities": "Show entities",
           "new_entity": "Create a new entity",
+          "placeholder": "Select an entity",
           "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n } helper."
         },
         "entity-attribute-picker": {
@@ -2119,7 +2120,8 @@
           "join_beta": "[%key:supervisor::system::supervisor::join_beta_action%]",
           "leave_beta": "[%key:supervisor::system::supervisor::leave_beta_action%]",
           "skipped": "Skipped",
-          "update_in_progress": "Update in progress"
+          "update_in_progress": "Update in progress",
+          "no_area": "No area"
         },
         "repairs": {
           "caption": "Repairs",
@@ -2533,6 +2535,7 @@
             "custom_retention_label": "Keep only",
             "retention_description": "Based on the maximum number of backups or how many days they should be kept.",
             "retention_presets": {
+              "global": "Use global settings",
               "copies_3": "3 backups",
               "forever": "Forever",
               "custom": "Custom"
@@ -2722,7 +2725,7 @@
               "more_locations": "Explore more locations",
               "manage_network_storage": "Manage network storage",
               "ha_cloud_backup": "{home_assistant_cloud} backup",
-              "ha_cloud_description": "Stores an encrypted backup offsite. Ideal if your local backup can not be used to restore your system. Thats why it stores one backup with a maximum size of 5 GB. The oldest backups are automatically deleted."
+              "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. The cloud stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
             },
             "encryption_key": {
               "title": "Encryption key",
@@ -2762,6 +2765,9 @@
           },
           "location": {
             "header": "Location",
+            "save_error": "Error saving configuration: {error}",
+            "retention_for_this_system": "Retention for this system",
+            "retention_for_location": "Retention for {location}",
             "not_found": "Not found",
             "not_found_description": "Location matching ''{backupId}'' not found",
             "error": "Could not fetch location details",
@@ -5319,6 +5325,7 @@
             "no_config_flow": "This integration does not support configuration via the UI. If you followed this link from the Home Assistant website, make sure you run the latest version of Home Assistant.",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_device": "Error updating device: {error}",
+            "error_saving_entity": "Error updating entity: {error}",
             "created_config": "Created configuration for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
@@ -5541,6 +5548,15 @@
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials"
+        },
+        "zeroconf": {
+          "name": "Name",
+          "type": "Type",
+          "port": "Port",
+          "ip_addresses": "IP Addresses",
+          "properties": "Properties",
+          "discovery_information": "Discovery information",
+          "copy_to_clipboard": "Copy to clipboard"
         },
         "zha": {
           "common": {
@@ -6347,6 +6363,11 @@
               "failed_to_set_hostname": "Setting hostname failed"
             }
           },
+          "discovery": {
+            "zeroconf": "Zeroconf browser",
+            "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
+            "zeroconf_browser": "View Zeroconf browser"
+          },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
           "ip_information": "IP Information",
@@ -6510,6 +6531,7 @@
             "unchecked_items": "Active",
             "no_unchecked_items": "You have no to-do items!",
             "checked_items": "Completed",
+            "no_status_items": "No status",
             "clear_items": "Remove completed items",
             "add_item": "Add item",
             "today": "Today",

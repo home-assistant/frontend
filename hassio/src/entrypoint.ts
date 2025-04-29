@@ -1,6 +1,6 @@
 import "./hassio-main";
 
-import("../../src/resources/ha-style");
+import("../../src/resources/append-ha-style");
 
 const styleEl = document.createElement("style");
 styleEl.textContent = `

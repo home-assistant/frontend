@@ -1,5 +1,3 @@
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import { mdiEye, mdiGauge, mdiWaterPercent, mdiWeatherWindy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -8,8 +6,11 @@ import memoizeOne from "memoize-one";
 import { formatDateWeekdayShort } from "../../../common/datetime/format_date";
 import { formatTime } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/number/format_number";
+import "../../../components/ha-relative-time";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import "../../../components/sl-tab-group";
 import type {
   ForecastEvent,
   ModernForecastType,
@@ -18,8 +19,8 @@ import type {
 import {
   getDefaultForecastType,
   getForecast,
-  getSupportedForecastTypes,
   getSecondaryWeatherAttribute,
+  getSupportedForecastTypes,
   getWeatherStateIcon,
   getWeatherUnit,
   getWind,
@@ -27,8 +28,6 @@ import {
   weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-state-icon";
 import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 
 @customElement("more-info-weather")
@@ -299,21 +298,22 @@ class MoreInfoWeather extends LitElement {
               ${this.hass.localize("ui.card.weather.forecast")}:
             </div>
             ${supportedForecasts.length > 1
-              ? html`<mwc-tab-bar
-                  .activeIndex=${supportedForecasts.findIndex(
-                    (item) => item === this._forecastType
-                  )}
-                  @MDCTabBar:activated=${this._handleForecastTypeChanged}
+              ? html`<sl-tab-group
+                  @sl-tab-show=${this._handleForecastTypeChanged}
                 >
                   ${supportedForecasts.map(
                     (forecastType) =>
-                      html`<mwc-tab
-                        .label=${this.hass!.localize(
+                      html`<sl-tab
+                        slot="nav"
+                        .panel=${forecastType}
+                        .active=${this._forecastType === forecastType}
+                      >
+                        ${this.hass!.localize(
                           `ui.card.weather.${forecastType}`
                         )}
-                      ></mwc-tab>`
+                      </sl-tab>`
                   )}
-                </mwc-tab-bar>`
+                </sl-tab-group>`
               : nothing}
             <div class="forecast">
               ${forecast.map((item) =>
@@ -403,9 +403,7 @@ class MoreInfoWeather extends LitElement {
   }
 
   private _handleForecastTypeChanged(ev: CustomEvent): void {
-    this._forecastType = this._supportedForecasts(this.stateObj!)[
-      ev.detail.index
-    ];
+    this._forecastType = ev.detail.name;
   }
 
   static get styles(): CSSResultGroup {
@@ -419,13 +417,18 @@ class MoreInfoWeather extends LitElement {
           margin-inline-end: initial;
         }
 
-        mwc-tab-bar {
-          margin-bottom: 4px;
-        }
-
         .section {
           margin: 16px 0 8px 0;
           font-size: 1.2em;
+        }
+
+        sl-tab {
+          flex: 1;
+        }
+
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
 
         .flex {
