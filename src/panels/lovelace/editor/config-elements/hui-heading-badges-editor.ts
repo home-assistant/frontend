@@ -147,7 +147,6 @@ export class HuiHeadingBadgesEditor extends LitElement {
         <ha-entity-combo-box
           .hass=${this.hass}
           id="input"
-          .type=${"entity_id"}
           .label=${this.hass.localize(
             "ui.components.target-picker.add_entity_id"
           )}
