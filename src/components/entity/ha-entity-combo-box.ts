@@ -57,6 +57,7 @@ interface EntityComboBoxItem extends HassEntity {
 export type HaEntityComboBoxEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const CREATE_ID = "___create-new-entity___";
+const NO_ENTITIES_ID = "___no-entities___";
 
 const DOMAIN_STYLE = styleMap({
   fontSize: "var(--ha-font-size-s)",
@@ -252,6 +253,7 @@ export class HaEntityComboBox extends LitElement {
           {
             ...FAKE_ENTITY,
             label: "",
+            entity_id: NO_ENTITIES_ID,
             primary: this.hass!.localize(
               "ui.components.entity.entity-picker.no_entities"
             ),
@@ -367,6 +369,7 @@ export class HaEntityComboBox extends LitElement {
           {
             ...FAKE_ENTITY,
             label: "",
+            entity_id: NO_ENTITIES_ID,
             primary: this.hass!.localize(
               "ui.components.entity.entity-picker.no_match"
             ),
@@ -499,7 +502,21 @@ export class HaEntityComboBox extends LitElement {
 
     const results = fuse.multiTermsSearch(filterString);
     if (results) {
-      target.filteredItems = results.map((result) => result.item);
+      if (results.length === 0) {
+        target.filteredItems = [
+          {
+            ...FAKE_ENTITY,
+            label: "",
+            entity_id: NO_ENTITIES_ID,
+            primary: this.hass!.localize(
+              "ui.components.entity.entity-picker.no_match"
+            ),
+            icon_path: mdiMagnify,
+          },
+        ] as EntityComboBoxItem[];
+      } else {
+        target.filteredItems = results.map((result) => result.item);
+      }
     } else {
       target.filteredItems = this._items;
     }
