@@ -100,8 +100,6 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @property({ attribute: "item-label-path" }) public itemLabelPath = "label";
-
   @query("#anchor") private _anchor?: HaMdListItem;
 
   @query("#input") private _input?: HaEntityComboBox;
@@ -181,10 +179,6 @@ export class HaEntityPicker extends LitElement {
   }
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     return html`
       ${this.label ? html`<p class="label">${this.label}</p>` : nothing}
       <div class="container">
@@ -201,7 +195,6 @@ export class HaEntityPicker extends LitElement {
           : html`<ha-entity-combo-box
               id="input"
               .hass=${this.hass}
-              .itemLabelPath=${this.itemLabelPath}
               .autofocus=${this.autofocus}
               .allowCustomEntity=${this.allowCustomEntity}
               .label=${this.hass.localize("ui.common.search")}
