@@ -22,7 +22,7 @@ export const typographyStyles = css`
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;
     --ha-font-weight-semibold: 500;
-    --ha-font-weight-bold: 600;
+    --ha-font-weight-bold: 700;
 
     --ha-font-family-heading: var(--ha-font-family-body);
     --ha-font-weight-body: var(--ha-font-weight-normal);
