@@ -28,7 +28,7 @@ export const fontStyles = css`
       local("Roboto-Light"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-Light.woff2)
         format("woff2");
-    font-weight: 300;
+    font-weight: var(--ha-font-weight-light);
     font-style: normal;
   }
   @font-face {
@@ -38,7 +38,7 @@ export const fontStyles = css`
       local("Roboto-LightItalic"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-LightItalic.woff2)
         format("woff2");
-    font-weight: 300;
+    font-weight: var(--ha-font-weight-light);
     font-style: italic;
   }
   @font-face {
@@ -48,7 +48,7 @@ export const fontStyles = css`
       local("Roboto-Regular"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-Regular.woff2)
         format("woff2");
-    font-weight: 400;
+    font-weight: var(--ha-font-weight-normal);
     font-style: normal;
   }
   @font-face {
@@ -58,7 +58,7 @@ export const fontStyles = css`
       local("Roboto-Italic"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-RegularItalic.woff2)
         format("woff2");
-    font-weight: 400;
+    font-weight: var(--ha-font-weight-normal);
     font-style: italic;
   }
   @font-face {
@@ -68,7 +68,7 @@ export const fontStyles = css`
       local("Roboto-Medium"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-Medium.woff2)
         format("woff2");
-    font-weight: 500;
+    font-weight: var(--ha-font-weight-semibold);
     font-style: normal;
   }
   @font-face {
@@ -78,7 +78,7 @@ export const fontStyles = css`
       local("Roboto-MediumItalic"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-MediumItalic.woff2)
         format("woff2");
-    font-weight: 500;
+    font-weight: var(--ha-font-weight-semibold);
     font-style: italic;
   }
   @font-face {
@@ -88,7 +88,7 @@ export const fontStyles = css`
       local("Roboto-Bold"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-Bold.woff2)
         format("woff2");
-    font-weight: 700;
+    font-weight: var(--ha-font-weight-bold);
     font-style: normal;
   }
   @font-face {
@@ -98,7 +98,7 @@ export const fontStyles = css`
       local("Roboto-BoldItalic"),
       url(${unsafeCSS(__STATIC_PATH__)}fonts/roboto/Roboto-BoldItalic.woff2)
         format("woff2");
-    font-weight: 700;
+    font-weight: var(--ha-font-weight-bold);
     font-style: italic;
   }
   @font-face {
