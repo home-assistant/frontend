@@ -37,7 +37,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
     state: false,
     subscribe: false,
   })
-  private _activeGrouping?: string = "type";
+  private _activeGrouping?: string = "ssdp_location";
 
   @storage({
     key: "ssdp-discovery-table-collapsed",
@@ -105,7 +105,11 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this._data.find((ent) => [ent.ssdp_st, ent.ssdp_location].filter(Boolean).join("|") === ev.detail.id);
+    const entry = this._data.find(
+      (ent) =>
+        [ent.ssdp_st, ent.ssdp_location].filter(Boolean).join("|") ===
+        ev.detail.id
+    );
     showSSDPDiscoveryInfoDialog(this, {
       entry: entry!,
     });
