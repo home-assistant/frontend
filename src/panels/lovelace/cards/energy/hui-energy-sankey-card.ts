@@ -22,7 +22,7 @@ import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
-import { getEntityContext } from "../../../../common/entity/get_entity_context";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 
 const DEFAULT_CONFIG: Partial<EnergySankeyCardConfig> = {
   group_by_floor: true,
