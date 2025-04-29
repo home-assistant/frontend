@@ -54,37 +54,32 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
         )}
       >
         <p>
-          <b>${this.hass.localize("ui.panel.config.ssdp.name")}</b>:
-          ${this._params.entry.name.slice(
-            0,
-            -this._params.entry.type.length - 1
-          )}
-          <br />
-          <b>${this.hass.localize("ui.panel.config.ssdp.type")}</b>:
-          ${this._params.entry.type}
-          <br />
-          <b>${this.hass.localize("ui.panel.config.ssdp.port")}</b>:
-          ${this._params.entry.port}
-          <br />
+          <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_st")}</b>: ${this._params.entry.ssdp_st} <br />
+          ${this._params.entry.ssdp_usn !== undefined ? html`<b>${this.hass.localize("ui.panel.config.ssdp.ssdp_usn")}</b>:${this._params.entry.ssdp_usn}<br />` : ""}
+          ${this._params.entry.ssdp_location !== undefined ? html`<b>${this.hass.localize("ui.panel.config.ssdp.ssdp_location")}</b>:${this._params.entry.ssdp_location}<br />` : ""}
+          ${this._params.entry.ssdp_nt !== undefined ? html`<b>${this.hass.localize("ui.panel.config.ssdp.ssdp_nt")}</b>:${this._params.entry.ssdp_nt}<br />` : ""}
+          ${this._params.entry.ssdp_server !== undefined ? html`<b>${this.hass.localize("ui.panel.config.ssdp.ssdp_server")}</b>:${this._params.entry.ssdp_server}<br />` : ""}
+          ${this._params.entry.ssdp_ext !== undefined ? html`<b>${this.hass.localize("ui.panel.config.ssdp.ssdp_ext")}</b>:${this._params.entry.ssdp_ext}<br />` : ""}
         </p>
 
-        <h4>${this.hass.localize("ui.panel.config.ssdp.ip_addresses")}</h4>
+        <h4>${this.hass.localize("ui.panel.config.ssdp.ssdp_headers")}</h4>
         <table width="100%">
           <tbody>
-            ${this._params.entry.ip_addresses.map(
-              (ipAddress) => html`
+            ${Object.entries(this._params.entry.ssdp_headers).map(
+              ([key, value]) => html`
                 <tr>
-                  <td>${ipAddress}</td>
+                  <td><b>${key}</b></td>
+                  <td>${value}</td>
                 </tr>
               `
             )}
           </tbody>
         </table>
 
-        <h4>${this.hass.localize("ui.panel.config.ssdp.properties")}</h4>
+        <h4>${this.hass.localize("ui.panel.config.ssdp.upnp")}</h4>
         <table width="100%">
           <tbody>
-            ${Object.entries(this._params.entry.properties).map(
+            ${Object.entries(this._params.entry.upnp).map(
               ([key, value]) => html`
                 <tr>
                   <td><b>${key}</b></td>

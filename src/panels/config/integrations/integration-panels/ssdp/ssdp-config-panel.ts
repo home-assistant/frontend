@@ -57,8 +57,8 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<SSDPDiscoveryData> = {
-        name: {
-          title: localize("ui.panel.config.ssdp.name"),
+        ssdp_st: {
+          title: localize("ui.panel.config.ssdp.ssdp_st"),
           sortable: true,
           filterable: true,
           showNarrow: true,
@@ -66,26 +66,12 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
           hideable: false,
           moveable: false,
           direction: "asc",
-          template: (data) =>
-            html`${data.name.slice(0, -data.type.length - 1)}`,
         },
-        type: {
-          title: localize("ui.panel.config.ssdp.type"),
+        ssdp_location: {
+          title: localize("ui.panel.config.ssdp.ssdp_location"),
           filterable: true,
           sortable: true,
           groupable: true,
-        },
-        ip_addresses: {
-          title: localize("ui.panel.config.ssdp.ip_addresses"),
-          showNarrow: true,
-          filterable: true,
-          sortable: false,
-          template: (data) => html`${data.ip_addresses.join(", ")}`,
-        },
-        port: {
-          title: localize("ui.panel.config.ssdp.port"),
-          filterable: true,
-          sortable: true,
         },
       };
 
@@ -96,7 +82,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   private _dataWithIds = memoizeOne((data) =>
     data.map((row) => ({
       ...row,
-      id: row.name,
+      id: [row.ssdp_st, row.ssdp_location].filter(Boolean).join("|"),
     }))
   );
 
@@ -119,7 +105,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const entry = this._data.find((ent) => ent.name === ev.detail.id);
+    const entry = this._data.find((ent) => [ent.ssdp_st, ent.ssdp_location].filter(Boolean).join("|") === ev.detail.id);
     showSSDPDiscoveryInfoDialog(this, {
       entry: entry!,
     });

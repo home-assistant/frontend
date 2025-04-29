@@ -5548,6 +5548,18 @@
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials"
         },
+        "ssdp": {
+          "ssdp_st": "Search Target (ST)",
+          "ssdp_nt": "Notification Type (NT)",
+          "ssdp_server": "Server Info",
+          "ssdp_ext": "Extension Flag",
+          "ssdp_location": "Device Description URL",
+          "ssdp_headers": "SSDP Headers",
+          "ssdp_usn": "Unique Service Name (USN)",
+          "upnp": "Universal Plug and Play (UPnP)",
+          "discovery_information": "Discovery information",
+          "copy_to_clipboard": "Copy to clipboard"
+        },
         "zeroconf": {
           "name": "Name",
           "type": "Type",
