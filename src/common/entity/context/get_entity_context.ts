@@ -44,16 +44,16 @@ export const getEntityEntryContext = (
 ): EntityContext => {
   const entity = hass.entities[entry.entity_id];
   const deviceId = entry?.device_id;
-  const device = deviceId ? hass.devices[deviceId] : null;
+  const device = deviceId ? hass.devices[deviceId] : undefined;
   const areaId = entry?.area_id || device?.area_id;
-  const area = areaId ? hass.areas[areaId] : null;
+  const area = areaId ? hass.areas[areaId] : undefined;
   const floorId = area?.floor_id;
-  const floor = floorId ? hass.floors[floorId] : null;
+  const floor = floorId ? hass.floors[floorId] : undefined;
 
   return {
     entity: entity,
-    device: device,
-    area: area,
-    floor: floor,
+    device: device || null,
+    area: area || null,
+    floor: floor || null,
   };
 };

@@ -11,10 +11,10 @@ export const getAreaContext = (
   hass: HomeAssistant
 ): AreaContext => {
   const floorId = area.floor_id;
-  const floor = floorId ? hass.floors[floorId] : null;
+  const floor = floorId ? hass.floors[floorId] : undefined;
 
   return {
     area: area,
-    floor: floor,
+    floor: floor || null,
   };
 };

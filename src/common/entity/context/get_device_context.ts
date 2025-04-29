@@ -14,13 +14,13 @@ export const getDeviceContext = (
   hass: HomeAssistant
 ): DeviceContext => {
   const areaId = device.area_id;
-  const area = areaId ? hass.areas[areaId] : null;
+  const area = areaId ? hass.areas[areaId] : undefined;
   const floorId = area?.floor_id;
-  const floor = floorId ? hass.floors[floorId] : null;
+  const floor = floorId ? hass.floors[floorId] : undefined;
 
   return {
     device: device,
-    area: area,
-    floor: floor,
+    area: area || null,
+    floor: floor || null,
   };
 };
