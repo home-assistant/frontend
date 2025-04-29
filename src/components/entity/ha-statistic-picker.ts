@@ -1,5 +1,6 @@
 import { mdiChartLine, mdiClose, mdiMenuDown, mdiShape } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -33,6 +34,13 @@ import "./ha-entity-combo-box";
 import type { HaEntityComboBox } from "./ha-entity-combo-box";
 import "./ha-statistic-combo-box";
 import "./state-badge";
+
+interface StatisticItem {
+  primary: string;
+  secondary?: string;
+  iconPath?: string;
+  stateObj?: HassEntity;
+}
 
 @customElement("ha-statistic-picker")
 export class HaStatisticPicker extends LitElement {
@@ -151,10 +159,41 @@ export class HaStatisticPicker extends LitElement {
       `;
     }
 
-    const stateObj = this.hass.states[statisticId];
+    const item = this._computeItem(statisticId);
 
     const showClearIcon =
       !this.required && !this.disabled && !this.hideClearIcon;
+
+    return html`
+      ${item.stateObj
+        ? html`
+            <state-badge
+              .hass=${this.hass}
+              .stateObj=${item.stateObj}
+              slot="start"
+            ></state-badge>
+          `
+        : item.iconPath
+          ? html`<ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>`
+          : nothing}
+      <span slot="headline">${item.primary}</span>
+      ${item.secondary
+        ? html`<span slot="supporting-text">${item.secondary}</span>`
+        : nothing}
+      ${showClearIcon
+        ? html`<ha-icon-button
+            class="clear"
+            slot="end"
+            @click=${this._clear}
+            .path=${mdiClose}
+          ></ha-icon-button>`
+        : nothing}
+      <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
+    `;
+  }
+
+  private _computeItem(statisticId: string): StatisticItem {
+    const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
       const { area, device } = getEntityContext(stateObj, this.hass);
@@ -170,27 +209,11 @@ export class HaStatisticPicker extends LitElement {
         .filter(Boolean)
         .join(isRTL ? " ◂ " : " ▸ ");
 
-      return html`
-        <state-badge
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          slot="start"
-        ></state-badge>
-        <span slot="headline">${primary}</span>
-        <span slot="supporting-text">
-          ${secondary ||
-          this.hass.localize("ui.components.device-picker.no_area")}
-        </span>
-        ${showClearIcon
-          ? html`<ha-icon-button
-              class="clear"
-              slot="end"
-              @click=${this._clear}
-              .path=${mdiClose}
-            ></ha-icon-button>`
-          : nothing}
-        <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
-      `;
+      return {
+        primary,
+        secondary,
+        stateObj,
+      };
     }
 
     const statistic = this.statisticIds
@@ -207,45 +230,19 @@ export class HaStatisticPicker extends LitElement {
         const label = getStatisticLabel(this.hass, statisticId, statistic);
         const domain = statisticId.split(":")[0];
         const domainName = domainToName(this.hass.localize, domain);
-        return html`
-          <ha-svg-icon slot="start" .path=${mdiChartLine}></ha-svg-icon>
-          <span slot="headline">${label}</span>
-          <span slot="supporting-text">${domainName}</span>
-            ${
-              showClearIcon
-                ? html`
-                    <ha-icon-button
-                      class="clear"
-                      slot="end"
-                      @click=${this._clear}
-                      .path=${mdiClose}
-                    ></ha-icon-button>
-                  `
-                : nothing
-            }
-            <ha-svg-icon
-              class="edit"
-              slot="end"
-              .path=${mdiMenuDown}
-            ></ha-svg-icon>
-          </span>
-        `;
+
+        return {
+          primary: label,
+          secondary: domainName,
+          iconPath: mdiChartLine,
+        };
       }
     }
 
-    return html`
-      <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
-      <span slot="headline">${statisticId}</span>
-      ${showClearIcon
-        ? html`<ha-icon-button
-            class="clear"
-            slot="end"
-            @click=${this._clear}
-            .path=${mdiClose}
-          ></ha-icon-button>`
-        : nothing}
-      <ha-svg-icon class="edit" slot="end" .path=${mdiMenuDown}></ha-svg-icon>
-    `;
+    return {
+      primary: statisticId,
+      iconPath: mdiShape,
+    };
   }
 
   protected render() {
@@ -253,15 +250,17 @@ export class HaStatisticPicker extends LitElement {
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <div class="container">
         ${!this._opened
-          ? html`<ha-combo-box-item
-              .disabled=${this.disabled}
-              id="anchor"
-              type="button"
-              compact
-              @click=${this._showPicker}
-            >
-              ${this._renderContent()}
-            </ha-combo-box-item>`
+          ? html`
+              <ha-combo-box-item
+                .disabled=${this.disabled}
+                id="anchor"
+                type="button"
+                compact
+                @click=${this._showPicker}
+              >
+                ${this._renderContent()}
+              </ha-combo-box-item>
+            `
           : html`
               <ha-statistic-combo-box
                 id="input"

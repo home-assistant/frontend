@@ -1,4 +1,4 @@
-import { mdiChartLine } from "@mdi/js";
+import { mdiChartLine, mdiShape } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import Fuse from "fuse.js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -134,11 +134,13 @@ export class HaStatisticComboBox extends LitElement {
   ) => html`
     <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
       ${!item.state
-        ? html`<ha-svg-icon
-            style="margin: 0 4px"
-            slot="start"
-            .path=${item.iconPath}
-          ></ha-svg-icon>`
+        ? html`
+            <ha-svg-icon
+              style="margin: 0 4px"
+              slot="start"
+              .path=${item.iconPath}
+            ></ha-svg-icon>
+          `
         : html`
             <state-badge
               slot="start"
@@ -225,8 +227,9 @@ export class HaStatisticComboBox extends LitElement {
         ) {
           return;
         }
-        const entityState = this.hass.states[meta.statistic_id];
-        if (!entityState) {
+        const stateObj = this.hass.states[meta.statistic_id];
+
+        if (!stateObj) {
           if (!entitiesOnly) {
             const id = meta.statistic_id;
             const label = getStatisticLabel(this.hass, meta.statistic_id, meta);
@@ -246,6 +249,7 @@ export class HaStatisticComboBox extends LitElement {
                 label: "",
                 type,
                 sorting_label: label,
+                iconPath: mdiShape,
               });
             } else if (type === "external") {
               const domain = id.split(":")[0];
@@ -265,10 +269,10 @@ export class HaStatisticComboBox extends LitElement {
         }
         const id = meta.statistic_id;
 
-        const { area, device } = getEntityContext(entityState, hass);
+        const { area, device } = getEntityContext(stateObj, hass);
 
-        const friendlyName = computeStateName(entityState); // Keep this for search
-        const entityName = computeEntityName(entityState, hass);
+        const friendlyName = computeStateName(stateObj); // Keep this for search
+        const entityName = computeEntityName(stateObj, hass);
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
 
@@ -282,7 +286,7 @@ export class HaStatisticComboBox extends LitElement {
           primary,
           secondary,
           label: "",
-          state: entityState,
+          state: stateObj,
           type: "entity",
           sorting_label: [deviceName, entityName].join("_"),
           entity_name: entityName || deviceName,
