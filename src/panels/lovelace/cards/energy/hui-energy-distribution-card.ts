@@ -169,18 +169,12 @@ class HuiEnergyDistrubutionCard
     }
 
     let solarToBattery: null | number = null;
+    let solarToGrid: null | number = null;
+    if (hasSolarProduction) {
+      solarToGrid = consumption.total.solar_to_grid;
+    }
     if (hasSolarProduction && hasBattery) {
-      solarToBattery = 0;
-      summedData.timestamps.forEach((t) => {
-        solarToBattery! += Math.max(
-          Math.min(
-            summedData.solar![t] || 0,
-            (summedData.to_battery![t] || 0) -
-              (consumption.grid_to_battery![t] || 0)
-          ),
-          0
-        );
-      });
+      solarToBattery = consumption.total.solar_to_battery;
     }
 
     let batteryConsumption: number | null = null;
@@ -250,7 +244,7 @@ class HuiEnergyDistrubutionCard
     const totalLines =
       gridConsumption +
       (solarConsumption || 0) +
-      (returnedToGrid ? returnedToGrid - (batteryToGrid || 0) : 0) +
+      (solarToGrid || 0) +
       (solarToBattery || 0) +
       (batteryConsumption || 0) +
       (batteryFromGrid || 0) +
@@ -650,18 +644,14 @@ class HuiEnergyDistrubutionCard
                 d="M0,${hasBattery ? 50 : hasSolarProduction ? 56 : 53} H100"
                 vector-effect="non-scaling-stroke"
               ></path>
-              ${returnedToGrid && hasSolarProduction && this._animate
+              ${solarToGrid && this._animate
                 ? svg`<circle
                     r="1"
                     class="return"
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${
-                        6 -
-                        ((returnedToGrid - (batteryToGrid || 0)) / totalLines) *
-                          6
-                      }s"
+                      dur="${6 - (solarToGrid / totalLines) * 6}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >

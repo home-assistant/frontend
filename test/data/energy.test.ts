@@ -101,6 +101,8 @@ describe("Energy Usage Calculation Tests", () => {
           used_solar: 0,
           used_grid: x,
           used_battery: 0,
+          solar_to_battery: 0,
+          solar_to_grid: 0,
         }
       );
     });
@@ -121,6 +123,8 @@ describe("Energy Usage Calculation Tests", () => {
           used_solar: Math.max(0, s - 3),
           used_grid: 0,
           used_battery: 0,
+          solar_to_battery: 0,
+          solar_to_grid: 3,
         }
       );
     });
@@ -150,6 +154,8 @@ describe("Energy Usage Calculation Tests", () => {
           used_solar: Math.max(0, 7 - to_grid),
           used_grid: from_grid,
           used_battery: 0,
+          solar_to_battery: 0,
+          solar_to_grid: to_grid,
         }
       );
     });
@@ -169,6 +175,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 2,
         used_battery: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
   });
@@ -187,6 +195,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 5,
         used_battery: 5,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
   });
@@ -205,6 +215,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 0,
         used_battery: 1,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
   });
@@ -282,6 +294,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 5,
         used_battery: 0,
+        solar_to_battery: 3,
+        solar_to_grid: 3,
       }
     );
     assert.deepEqual(
@@ -298,6 +312,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 5,
         used_battery: 10,
+        solar_to_battery: 3,
+        solar_to_grid: 3,
       }
     );
     assert.deepEqual(
@@ -314,6 +330,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 1,
         used_battery: 1,
+        solar_to_battery: 0,
+        solar_to_grid: 7,
       }
     );
     assert.deepEqual(
@@ -330,6 +348,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 2,
         used_battery: 1,
+        solar_to_battery: 1,
+        solar_to_grid: 7,
       }
     );
     /* Test does not pass

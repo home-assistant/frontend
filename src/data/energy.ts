@@ -802,6 +802,8 @@ export interface EnergyConsumptionData {
   used_total: Record<number, number>;
   grid_to_battery: Record<number, number>;
   battery_to_grid: Record<number, number>;
+  solar_to_battery: Record<number, number>;
+  solar_to_grid: Record<number, number>;
   used_solar: Record<number, number>;
   used_grid: Record<number, number>;
   used_battery: Record<number, number>;
@@ -809,6 +811,8 @@ export interface EnergyConsumptionData {
     used_total: number;
     grid_to_battery: number;
     battery_to_grid: number;
+    solar_to_battery: number;
+    solar_to_grid: number;
     used_solar: number;
     used_grid: number;
     used_battery: number;
@@ -937,6 +941,8 @@ const computeConsumptionDataPartial = (
     used_total: {},
     grid_to_battery: {},
     battery_to_grid: {},
+    solar_to_battery: {},
+    solar_to_grid: {},
     used_solar: {},
     used_grid: {},
     used_battery: {},
@@ -944,6 +950,8 @@ const computeConsumptionDataPartial = (
       used_total: 0,
       grid_to_battery: 0,
       battery_to_grid: 0,
+      solar_to_battery: 0,
+      solar_to_grid: 0,
       used_solar: 0,
       used_grid: 0,
       used_battery: 0,
@@ -966,6 +974,8 @@ const computeConsumptionDataPartial = (
       used_solar,
       used_grid,
       used_battery,
+      solar_to_battery,
+      solar_to_grid,
     } = computeConsumptionSingle({
       from_grid: data.from_grid && (data.from_grid[t] ?? 0),
       to_grid: data.to_grid && (data.to_grid[t] ?? 0),
@@ -984,6 +994,10 @@ const computeConsumptionDataPartial = (
     outData.total.used_grid += used_grid;
     outData.used_solar![t] = used_solar;
     outData.total.used_solar += used_solar;
+    outData.solar_to_battery[t] = solar_to_battery;
+    outData.total.solar_to_battery += solar_to_battery;
+    outData.solar_to_grid[t] = solar_to_grid;
+    outData.total.solar_to_grid += solar_to_grid;
   });
 
   return outData;
@@ -998,6 +1012,8 @@ export const computeConsumptionSingle = (data: {
 }): {
   grid_to_battery: number;
   battery_to_grid: number;
+  solar_to_battery: number;
+  solar_to_grid: number;
   used_solar: number;
   used_grid: number;
   used_battery: number;
@@ -1011,6 +1027,8 @@ export const computeConsumptionSingle = (data: {
   let used_solar = 0;
   let grid_to_battery = 0;
   let battery_to_grid = 0;
+  let solar_to_battery = 0;
+  let solar_to_grid = 0;
   let used_battery = 0;
   let used_grid = 0;
   if ((to_grid != null || to_battery != null) && solar != null) {
@@ -1028,14 +1046,19 @@ export const computeConsumptionSingle = (data: {
   }
 
   if (from_battery != null) {
-    used_battery = (from_battery || 0) - (battery_to_grid || 0);
+    used_battery = (from_battery || 0) - battery_to_grid;
   }
 
   if (from_grid != null) {
+    used_grid = from_grid - grid_to_battery;
+  }
+
+  if (solar != null) {
     if (to_battery != null) {
-      used_grid = from_grid - grid_to_battery;
-    } else {
-      used_grid = from_grid;
+      solar_to_battery = Math.max(0, (to_battery || 0) - grid_to_battery);
+    }
+    if (to_grid != null) {
+      solar_to_grid = Math.max(0, (to_grid || 0) - battery_to_grid);
     }
   }
 
@@ -1045,6 +1068,8 @@ export const computeConsumptionSingle = (data: {
     used_battery,
     grid_to_battery,
     battery_to_grid,
+    solar_to_battery,
+    solar_to_grid,
   };
 };
 
