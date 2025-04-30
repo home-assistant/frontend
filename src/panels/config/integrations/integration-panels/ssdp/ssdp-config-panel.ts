@@ -57,14 +57,21 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<SSDPDiscoveryData> = {
-        ssdp_st: {
-          title: localize("ui.panel.config.ssdp.ssdp_st"),
+        name: {
+          title: localize("ui.panel.config.ssdp.name"),
           sortable: true,
           filterable: true,
           showNarrow: true,
           main: true,
           hideable: false,
           moveable: false,
+        },
+        ssdp_st: {
+          title: localize("ui.panel.config.ssdp.ssdp_st"),
+          sortable: true,
+          filterable: true,
+          showNarrow: true,
+          hideable: false,
           direction: "asc",
         },
         ssdp_location: {
