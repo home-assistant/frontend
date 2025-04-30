@@ -244,7 +244,9 @@ export class HaManualScriptEditor extends LitElement {
 
       if ("script" in config) {
         config = config.script;
-        config = config[Object.keys(config)[0]];
+        if (Object.keys(config).length) {
+          config = config[Object.keys(config)[0]];
+        }
       }
 
       if (Array.isArray(config)) {
