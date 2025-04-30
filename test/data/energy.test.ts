@@ -101,6 +101,7 @@ describe("Energy Usage Calculation Tests", () => {
           used_solar: 0,
           used_grid: x,
           used_battery: 0,
+          used_total: x,
           solar_to_battery: 0,
           solar_to_grid: 0,
         }
@@ -120,11 +121,12 @@ describe("Energy Usage Calculation Tests", () => {
         {
           grid_to_battery: 0,
           battery_to_grid: 0,
-          used_solar: Math.max(0, s - 3),
+          used_solar: Math.min(s, Math.max(0, s - 3)),
           used_grid: 0,
           used_battery: 0,
+          used_total: s - 3,
           solar_to_battery: 0,
-          solar_to_grid: 3,
+          solar_to_grid: Math.min(3, s),
         }
       );
     });
@@ -152,10 +154,11 @@ describe("Energy Usage Calculation Tests", () => {
           grid_to_battery: 0,
           battery_to_grid: 0,
           used_solar: Math.max(0, 7 - to_grid),
-          used_grid: from_grid,
+          used_grid: from_grid - Math.max(0, to_grid - 7),
+          used_total: from_grid - to_grid + 7,
           used_battery: 0,
           solar_to_battery: 0,
-          solar_to_grid: to_grid,
+          solar_to_grid: Math.min(7, to_grid),
         }
       );
     });
@@ -175,6 +178,7 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 2,
         used_battery: 0,
+        used_total: 2,
         solar_to_battery: 0,
         solar_to_grid: 0,
       }
@@ -195,6 +199,7 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 5,
         used_battery: 5,
+        used_total: 10,
         solar_to_battery: 0,
         solar_to_grid: 0,
       }
@@ -215,12 +220,12 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 0,
         used_battery: 1,
+        used_total: 1,
         solar_to_battery: 0,
         solar_to_grid: 0,
       }
     );
   });
-  /* Fails
   it("Charging and discharging the battery to/from the grid in the same interval.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
@@ -234,12 +239,15 @@ describe("Energy Usage Calculation Tests", () => {
         grid_to_battery: 3,
         battery_to_grid: 1,
         used_solar: 0,
-        used_grid: 1,
+        used_grid: 2,
         used_battery: 0,
+        used_total: 2,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
-  }); */
-  /* Test does not pass, battery is not really correct when solar is not present
+  });
+
   it("Charging the battery with no solar sensor.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
@@ -255,10 +263,12 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 2,
         used_battery: 0,
+        used_total: 2,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
-  }); */
-  /* Test does not pass
+  });
   it("Discharging battery to grid while also consuming from grid.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
@@ -274,10 +284,12 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 5,
         used_battery: 0,
+        used_total: 5,
+        solar_to_grid: 0,
+        solar_to_battery: 0,
       }
     );
   });
-    */
 
   it("Grid, solar, and battery", () => {
     assert.deepEqual(
@@ -294,6 +306,7 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 5,
         used_battery: 0,
+        used_total: 6,
         solar_to_battery: 3,
         solar_to_grid: 3,
       }
@@ -312,6 +325,7 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 5,
         used_battery: 10,
+        used_total: 16,
         solar_to_battery: 3,
         solar_to_grid: 3,
       }
@@ -330,6 +344,7 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 1,
         used_battery: 1,
+        used_total: 2,
         solar_to_battery: 0,
         solar_to_grid: 7,
       }
@@ -348,11 +363,11 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 1,
         used_grid: 2,
         used_battery: 1,
+        used_total: 4,
         solar_to_battery: 1,
         solar_to_grid: 7,
       }
     );
-    /* Test does not pass
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -367,8 +382,29 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 5,
         used_battery: 0,
+        used_total: 5,
+        solar_to_battery: 0,
+        solar_to_grid: 1,
       }
     );
-    */
+    assert.deepEqual(
+      computeConsumptionSingle({
+        from_grid: 6,
+        to_grid: 0,
+        solar: 3,
+        to_battery: 6,
+        from_battery: 6,
+      }),
+      {
+        grid_to_battery: 3,
+        battery_to_grid: 0,
+        used_solar: 0,
+        used_grid: 3,
+        used_battery: 6,
+        solar_to_battery: 3,
+        solar_to_grid: 0,
+        used_total: 9,
+      }
+    );
   });
 });
