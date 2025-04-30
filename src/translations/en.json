@@ -5568,6 +5568,7 @@
           "thread_network_delete_credentials": "Delete Thread network credentials"
         },
         "ssdp": {
+          "name": "Name",
           "ssdp_st": "Search Target (ST)",
           "ssdp_location": "Device Description URL",
           "ssdp_headers": "SSDP Headers",
