@@ -1036,23 +1036,23 @@ export const computeConsumptionSingle = (data: {
 
   let used_total_remaining = Math.max(used_total, 0);
   // Consumption Priority
-  // Solar -> Grid_Out
   // Battery_Out -> Grid_Out
+  // Solar -> Grid_Out
   // Solar -> Battery_In
   // Grid_In -> Battery_In
   // Solar -> Consumption
   // Battery_Out -> Consumption
   // Grid_In -> Consumption
 
-  // Solar -> Grid_Out
-  solar_to_grid = Math.min(solar, to_grid);
-  to_grid -= solar_to_grid;
-  solar -= solar_to_grid;
-
   // Battery_Out -> Grid_Out
   battery_to_grid = Math.min(from_battery, to_grid);
   from_battery -= battery_to_grid;
   to_grid -= battery_to_grid;
+
+  // Solar -> Grid_Out
+  solar_to_grid = Math.min(solar, to_grid);
+  to_grid -= solar_to_grid;
+  solar -= solar_to_grid;
 
   // Solar -> Battery_In
   solar_to_battery = Math.min(solar, to_battery);
