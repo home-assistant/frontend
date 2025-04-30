@@ -6392,6 +6392,9 @@
             }
           },
           "discovery": {
+            "dhcp": "DHCP browser",
+            "dhcp_info": "The DHCP browser displays devices discovered by Home Assistant via DHCP, ARP+PTR lookups, and router-based device trackers. All detected devices by these methods will appear here.",
+            "dhcp_browser": "View DHCP browser",
             "ssdp": "SSDP browser",
             "ssdp_info": "The SSDP browser shows devices discovered by Home Assistant using SSDP/UPnP. Devices that Home Assistant has discovered will appear here.",
             "ssdp_browser": "View SSDP browser",
