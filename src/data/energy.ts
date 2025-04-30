@@ -1031,15 +1031,21 @@ export const computeConsumptionSingle = (data: {
   let solar_to_grid = 0;
   let used_battery = 0;
   let used_grid = 0;
-  if ((to_grid != null || to_battery != null) && solar != null) {
+  if (solar == null) {
+    if (to_battery != null) {
+      grid_to_battery = to_battery;
+    }
+    if (to_grid != null) {
+      battery_to_grid = to_grid;
+    }
+  } else if (to_grid != null || to_battery != null) {
     used_solar = (solar || 0) - (to_grid || 0) - (to_battery || 0);
     if (used_solar < 0) {
       if (to_battery != null) {
-        grid_to_battery = used_solar * -1;
-        if (grid_to_battery > (from_grid || 0)) {
-          battery_to_grid = grid_to_battery - (from_grid || 0);
-          grid_to_battery = from_grid || 0;
-        }
+        grid_to_battery = Math.min(used_solar * -1, from_grid || 0, to_battery);
+      }
+      if (to_grid != null) {
+        battery_to_grid = Math.min(to_grid - solar, from_battery || 0, to_grid);
       }
       used_solar = 0;
     }

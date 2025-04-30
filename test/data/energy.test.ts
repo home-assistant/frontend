@@ -220,7 +220,6 @@ describe("Energy Usage Calculation Tests", () => {
       }
     );
   });
-  /* Fails
   it("Charging and discharging the battery to/from the grid in the same interval.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
@@ -234,12 +233,13 @@ describe("Energy Usage Calculation Tests", () => {
         grid_to_battery: 3,
         battery_to_grid: 1,
         used_solar: 0,
-        used_grid: 1,
+        used_grid: 2,
         used_battery: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
-  }); */
-  /* Test does not pass, battery is not really correct when solar is not present
+  });
   it("Charging the battery with no solar sensor.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
@@ -255,10 +255,11 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 2,
         used_battery: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
-  }); */
-  /* Test does not pass
+  });
   it("Discharging battery to grid while also consuming from grid.", () => {
     assert.deepEqual(
       computeConsumptionSingle({
@@ -274,10 +275,11 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 5,
         used_battery: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
       }
     );
   });
-    */
 
   it("Grid, solar, and battery", () => {
     assert.deepEqual(
@@ -352,7 +354,6 @@ describe("Energy Usage Calculation Tests", () => {
         solar_to_grid: 7,
       }
     );
-    /* Test does not pass
     assert.deepEqual(
       computeConsumptionSingle({
         from_grid: 5,
@@ -367,8 +368,9 @@ describe("Energy Usage Calculation Tests", () => {
         used_solar: 0,
         used_grid: 5,
         used_battery: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 1,
       }
     );
-    */
   });
 });
