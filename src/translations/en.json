@@ -4356,6 +4356,7 @@
               "text": "How do you want to paste your automation?"
             },
             "paste_toast_message": "Pasted automation from clipboard",
+            "paste_invalid_yaml": "Pasted value is not valid YAML",
             "paste_invalid_config": "Pasted automation is not editable in the visual editor"
           },
           "trace": {
@@ -4595,6 +4596,7 @@
               "text": "How do you want to paste your script?"
             },
             "paste_toast_message": "Pasted script from clipboard",
+            "paste_invalid_yaml": "Pasted value is not valid YAML",
             "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
