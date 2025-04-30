@@ -7,6 +7,7 @@ import type { Store } from "home-assistant-js-websocket/dist/store";
 import type { DataTableRowData } from "../components/data-table/ha-data-table";
 
 export interface SSDPDiscoveryData extends DataTableRowData {
+  name: string | undefined;
   ssdp_usn: string;
   ssdp_st: string;
   upnp: Record<string, unknown>;
