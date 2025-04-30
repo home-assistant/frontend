@@ -1062,7 +1062,7 @@ export const computeConsumptionSingle = (data: {
   // Grid_In -> Battery_In
   grid_to_battery = Math.min(from_grid, to_battery);
   from_grid -= grid_to_battery;
-  to_battery -= to_battery;
+  to_battery -= grid_to_battery;
 
   // Solar -> Consumption
   used_solar = Math.min(used_total_remaining, solar);
