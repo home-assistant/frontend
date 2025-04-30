@@ -1559,6 +1559,7 @@ export class HaConfigDevicePage extends LitElement {
           align-items: center;
           padding-left: 8px;
           padding-inline-start: 8px;
+          padding-inline-end: initial;
           direction: var(--direction);
         }
 
