@@ -497,7 +497,10 @@ export const isTrigger = (config: unknown): boolean => {
     return false;
   }
   const trigger = config as Record<string, unknown>;
-  return "trigger" in trigger && typeof trigger.trigger === "string";
+  return (
+    ("trigger" in trigger && typeof trigger.trigger === "string") ||
+    ("platform" in trigger && typeof trigger.platform === "string")
+  );
 };
 
 export const isCondition = (config: unknown): boolean => {
