@@ -15,15 +15,11 @@ class ConfigNetworkDHCP extends LitElement {
     return html`
       <ha-card
         outlined
-        header=${this.hass.localize(
-          "ui.panel.config.network.discovery.dhcp"
-        )}
+        header=${this.hass.localize("ui.panel.config.network.discovery.dhcp")}
       >
         <div class="card-content">
           <p>
-            ${this.hass.localize(
-              "ui.panel.config.network.discovery.dhcp_info"
-            )}
+            ${this.hass.localize("ui.panel.config.network.discovery.dhcp_info")}
           </p>
         </div>
         <div class="card-actions">

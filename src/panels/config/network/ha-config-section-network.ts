@@ -42,7 +42,7 @@ class HaConfigSectionNetwork extends LitElement {
             ? html`<ha-config-network-dhcp
                 .hass=${this.hass}
               ></ha-config-network-dhcp>`
-            : ""}          
+            : ""}
           ${isComponentLoaded(this.hass, "ssdp")
             ? html`<ha-config-network-ssdp
                 .hass=${this.hass}
