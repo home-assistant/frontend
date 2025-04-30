@@ -16,11 +16,11 @@ class HaStatisticsPicker extends LitElement {
   @property({ attribute: "statistic-types" })
   public statisticTypes?: "mean" | "sum";
 
-  @property({ attribute: "picked-statistic-label" })
-  public pickedStatisticLabel?: string;
+  @property({ type: String })
+  public label?: string;
 
-  @property({ attribute: "pick-statistic-label" })
-  public pickStatisticLabel?: string;
+  @property({ type: String })
+  public placeholder?: string;
 
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
@@ -82,6 +82,7 @@ class HaStatisticsPicker extends LitElement {
       : this.statisticTypes;
 
     return html`
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
       ${repeat(
         this._currentStatistics,
         (statisticId) => statisticId,
@@ -96,7 +97,6 @@ class HaStatisticsPicker extends LitElement {
               .value=${statisticId}
               .statisticTypes=${includeStatisticTypesCurrent}
               .statisticIds=${this.statisticIds}
-              .label=${this.pickedStatisticLabel}
               .excludeStatistics=${this.value}
               .allowCustomEntity=${this.allowCustomEntity}
               @value-changed=${this._statisticChanged}
@@ -113,7 +113,7 @@ class HaStatisticsPicker extends LitElement {
           .includeDeviceClass=${this.includeDeviceClass}
           .statisticTypes=${this.statisticTypes}
           .statisticIds=${this.statisticIds}
-          .label=${this.pickStatisticLabel}
+          .placeholder=${this.placeholder}
           .excludeStatistics=${this.value}
           .allowCustomEntity=${this.allowCustomEntity}
           @value-changed=${this._addStatistic}
@@ -180,6 +180,10 @@ class HaStatisticsPicker extends LitElement {
       display: block;
       width: 100%;
       margin-top: 8px;
+    }
+    label {
+      display: block;
+      margin-bottom: 0 0 8px;
     }
   `;
 }

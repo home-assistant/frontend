@@ -180,7 +180,7 @@ export class HaEntityPicker extends LitElement {
 
   protected render() {
     return html`
-      ${this.label ? html`<p class="label">${this.label}</p>` : nothing}
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
       <div class="container">
         ${!this._opened
           ? html`<ha-combo-box-item
@@ -319,7 +319,7 @@ export class HaEntityPicker extends LitElement {
           --mdc-icon-size: 20px;
           width: 32px;
         }
-        .label {
+        label {
           display: block;
           margin: 0 0 8px;
         }

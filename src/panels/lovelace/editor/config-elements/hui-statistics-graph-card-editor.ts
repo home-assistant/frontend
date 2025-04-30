@@ -318,10 +318,10 @@ export class HuiStatisticsGraphCardEditor
         <ha-statistics-picker
           allow-custom-entity
           .hass=${this.hass}
-          .pickStatisticLabel=${this.hass!.localize(
+          .placeholder=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
           )}
-          .pickedStatisticLabel=${this.hass!.localize(
+          .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.statistics-graph.picked_statistic"
           )}
           .includeStatisticsUnitOfMeasurement=${statisticsUnit}
