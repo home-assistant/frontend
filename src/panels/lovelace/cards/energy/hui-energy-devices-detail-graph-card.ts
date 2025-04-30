@@ -347,12 +347,13 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     const untrackedConsumption: BarSeriesOption["data"] = [];
-    Object.keys(consumptionData.total)
+    Object.keys(consumptionData.used_total)
       .sort((a, b) => Number(a) - Number(b))
       .forEach((time) => {
         const ts = Number(time);
         const value =
-          consumptionData.total[time] - (totalDeviceConsumption[time] || 0);
+          consumptionData.used_total[time] -
+          (totalDeviceConsumption[time] || 0);
         const dataPoint: number[] = [ts, value];
         if (compare) {
           dataPoint[2] = dataPoint[0];
