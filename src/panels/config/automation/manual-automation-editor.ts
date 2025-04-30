@@ -314,103 +314,118 @@ export class HaManualAutomationEditor extends LitElement {
       return;
     }
 
-    const loaded: any = load(paste);
-    if (loaded) {
-      let config = loaded;
+    let loaded: any;
+    try {
+      loaded = load(paste);
+    } catch (_err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.paste_invalid_yaml"
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
 
-      if ("automation" in config) {
-        config = config.automation;
-        if (Array.isArray(config)) {
-          config = config[0];
-        }
-      }
+    if (!loaded || typeof loaded !== "object") {
+      return;
+    }
 
+    let config = loaded;
+
+    if ("automation" in config) {
+      config = config.automation;
       if (Array.isArray(config)) {
-        if (config.length === 1) {
-          config = config[0];
-        } else {
-          const newConfig: AutomationConfig = {
-            triggers: [],
-            conditions: [],
-            actions: [],
-          };
-          let found = false;
-          config.forEach((cfg: any) => {
-            if (isTrigger(cfg)) {
-              found = true;
-              (newConfig.triggers as Trigger[]).push(cfg);
-            }
-            if (isCondition(cfg)) {
-              found = true;
-              (newConfig.conditions as Condition[]).push(cfg);
-            }
-            if (getActionType(cfg) !== "unknown") {
-              found = true;
-              (newConfig.actions as Action[]).push(cfg);
-            }
-          });
-          if (found) {
-            config = newConfig;
+        config = config[0];
+      }
+    }
+
+    if (Array.isArray(config)) {
+      if (config.length === 1) {
+        config = config[0];
+      } else {
+        const newConfig: AutomationConfig = {
+          triggers: [],
+          conditions: [],
+          actions: [],
+        };
+        let found = false;
+        config.forEach((cfg: any) => {
+          if (isTrigger(cfg)) {
+            found = true;
+            (newConfig.triggers as Trigger[]).push(cfg);
           }
-        }
-      }
-
-      if (isTrigger(config)) {
-        config = { triggers: [config] };
-      }
-      if (isCondition(config)) {
-        config = { conditions: [config] };
-      }
-      if (getActionType(config) !== "unknown") {
-        config = { actions: [config] };
-      }
-
-      let normalized: AutomationConfig;
-
-      try {
-        normalized = normalizeAutomationConfig(config);
-      } catch (_err: any) {
-        return;
-      }
-
-      try {
-        assert(normalized, automationConfigStruct);
-      } catch (_err: any) {
-        showToast(this, {
-          message: this.hass.localize(
-            "ui.panel.config.automation.editor.paste_invalid_config"
-          ),
-          duration: 4000,
-          dismissable: true,
+          if (isCondition(cfg)) {
+            found = true;
+            (newConfig.conditions as Condition[]).push(cfg);
+          }
+          if (getActionType(cfg) !== "unknown") {
+            found = true;
+            (newConfig.actions as Action[]).push(cfg);
+          }
         });
-        return;
-      }
-
-      if (normalized) {
-        ev.preventDefault();
-
-        if (this.dirty) {
-          const result = await new Promise<boolean>((resolve) => {
-            showPasteReplaceDialog(this, {
-              domain: "automation",
-              pastedConfig: normalized,
-              onClose: () => resolve(false),
-              onAppend: () => {
-                this._appendToExistingConfig(normalized);
-                resolve(false);
-              },
-              onReplace: () => resolve(true),
-            });
-          });
-
-          if (!result) {
-            return;
-          }
+        if (found) {
+          config = newConfig;
         }
-
-        // replace the config completely
-        this._replaceExistingConfig(normalized);
       }
+    }
+
+    if (isTrigger(config)) {
+      config = { triggers: [config] };
+    }
+    if (isCondition(config)) {
+      config = { conditions: [config] };
+    }
+    if (getActionType(config) !== "unknown") {
+      config = { actions: [config] };
+    }
+
+    let normalized: AutomationConfig;
+
+    try {
+      normalized = normalizeAutomationConfig(config);
+    } catch (_err: any) {
+      return;
+    }
+
+    try {
+      assert(normalized, automationConfigStruct);
+    } catch (_err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.paste_invalid_config"
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    if (normalized) {
+      ev.preventDefault();
+
+      if (this.dirty) {
+        const result = await new Promise<boolean>((resolve) => {
+          showPasteReplaceDialog(this, {
+            domain: "automation",
+            pastedConfig: normalized,
+            onClose: () => resolve(false),
+            onAppend: () => {
+              this._appendToExistingConfig(normalized);
+              resolve(false);
+            },
+            onReplace: () => resolve(true),
+          });
+        });
+
+        if (!result) {
+          return;
+        }
+      }
+
+      // replace the config completely
+      this._replaceExistingConfig(normalized);
     }
   };
 
