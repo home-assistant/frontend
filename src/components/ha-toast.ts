@@ -24,6 +24,10 @@ export class HaToast extends Snackbar {
         max-width: 650px;
       }
 
+      .mdc-snackbar__actions {
+        color: rgba(255, 255, 255, 0.87);
+      }
+
       /* Revert the default styles set by mwc-snackbar */
       @media (max-width: 480px), (max-width: 344px) {
         .mdc-snackbar__surface {
