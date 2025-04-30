@@ -96,6 +96,9 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.dhcp.no_devices_found"
+        )}
         filter=${this._macAddress || ""}
       ></hass-tabs-subpage-data-table>
     `;
