@@ -174,7 +174,10 @@ export class HaStatisticPicker extends LitElement {
             ></state-badge>
           `
         : item.iconPath
-          ? html`<ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>`
+          ? html`<ha-svg-icon
+              slot="start"
+              .path=${item.iconPath}
+            ></ha-svg-icon>`
           : nothing}
       <span slot="headline">${item.primary}</span>
       ${item.secondary
