@@ -6,25 +6,15 @@ interface AreaContext {
   area: AreaRegistryEntry | null;
   floor: FloorRegistryEntry | null;
 }
-
 export const getAreaContext = (
-  areaId: string,
+  area: AreaRegistryEntry,
   hass: HomeAssistant
 ): AreaContext => {
-  const area = (hass.areas[areaId] as AreaRegistryEntry | undefined) || null;
-
-  if (!area) {
-    return {
-      area: null,
-      floor: null,
-    };
-  }
-
-  const floorId = area?.floor_id;
-  const floor = floorId ? hass.floors[floorId] : null;
+  const floorId = area.floor_id;
+  const floor = floorId ? hass.floors[floorId] : undefined;
 
   return {
     area: area,
-    floor: floor,
+    floor: floor || null,
   };
 };

@@ -16,11 +16,11 @@ export const buttonLinkStyle = css`
 
 export const haStyle = css`
   :host {
-    font-family: var(--paper-font-body1_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-body1_-_-webkit-font-smoothing);
-    font-size: var(--paper-font-body1_-_font-size);
-    font-weight: var(--paper-font-body1_-_font-weight);
-    line-height: var(--paper-font-body1_-_line-height);
+    font-family: var(--ha-font-family-body);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    font-size: var(--ha-font-size-m);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-normal);
   }
 
   app-header div[sticky] {
@@ -34,36 +34,30 @@ export const haStyle = css`
   }
 
   h1 {
-    font-family: var(--paper-font-headline_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
-    white-space: var(--paper-font-headline_-_white-space);
-    overflow: var(--paper-font-headline_-_overflow);
-    text-overflow: var(--paper-font-headline_-_text-overflow);
-    font-size: var(--paper-font-headline_-_font-size);
-    font-weight: var(--paper-font-headline_-_font-weight);
-    line-height: var(--paper-font-headline_-_line-height);
+    font-family: var(--ha-font-family-heading);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    font-size: var(--ha-font-size-2xl);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-condensed);
   }
 
   h2 {
-    font-family: var(--paper-font-title_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
-    white-space: var(--paper-font-title_-_white-space);
-    overflow: var(--paper-font-title_-_overflow);
-    text-overflow: var(--paper-font-title_-_text-overflow);
-    font-size: var(--paper-font-title_-_font-size);
-    font-weight: var(--paper-font-title_-_font-weight);
-    line-height: var(--paper-font-title_-_line-height);
+    font-family: var(--ha-font-family-body);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: var(--ha-font-size-xl);
+    font-weight: var(--ha-font-weight-medium);
+    line-height: var(--ha-line-height-normal);
   }
 
   h3 {
-    font-family: var(--paper-font-subhead_-_font-family);
-    -webkit-font-smoothing: var(--paper-font-subhead_-_-webkit-font-smoothing);
-    white-space: var(--paper-font-subhead_-_white-space);
-    overflow: var(--paper-font-subhead_-_overflow);
-    text-overflow: var(--paper-font-subhead_-_text-overflow);
-    font-size: var(--paper-font-subhead_-_font-size);
-    font-weight: var(--paper-font-subhead_-_font-weight);
-    line-height: var(--paper-font-subhead_-_line-height);
+    font-family: var(--ha-font-family-body);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
+    font-size: var(--ha-font-size-l);
+    font-weight: var(--ha-font-weight-normal);
+    line-height: var(--ha-line-height-normal);
   }
 
   a {

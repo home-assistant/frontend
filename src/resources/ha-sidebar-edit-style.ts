@@ -1,7 +1,7 @@
 import { css } from "lit";
 
 export const sidebarEditStyle = css`
-  .reorder-list a:nth-of-type(2n) paper-icon-item {
+  ha-sortable ha-md-list-item:nth-child(2n) {
     animation-name: keyframes1;
     animation-iteration-count: infinite;
     transform-origin: 50% 10%;
@@ -9,7 +9,7 @@ export const sidebarEditStyle = css`
     animation-duration: 0.25s;
   }
 
-  .reorder-list a:nth-of-type(2n-1) paper-icon-item {
+  ha-sortable ha-md-list-item:nth-child(2n-1) {
     animation-name: keyframes2;
     animation-iteration-count: infinite;
     animation-direction: alternate;
@@ -18,14 +18,9 @@ export const sidebarEditStyle = css`
     animation-duration: 0.33s;
   }
 
-  .reorder-list a {
+  ha-sortable ha-md-list-item {
     height: 48px;
-    display: flex;
-  }
-
-  .reorder-list {
-    outline: none;
-    display: block !important;
+    cursor: grab;
   }
 
   .hidden-panel {
@@ -59,19 +54,7 @@ export const sidebarEditStyle = css`
   .show-panel,
   .hide-panel {
     display: none;
-    position: absolute;
-    top: 0;
-    right: 4px;
-    inset-inline-end: 4px;
-    inset-inline-start: initial;
-    --mdc-icon-button-size: 40px;
-  }
-
-  .hide-panel {
-    top: 4px;
-    right: 8px;
-    inset-inline-end: 8px;
-    inset-inline-start: initial;
+    --mdc-icon-button-size: 24px;
   }
 
   :host([expanded]) .hide-panel {
@@ -79,12 +62,12 @@ export const sidebarEditStyle = css`
   }
 
   :host([expanded]) .show-panel {
-    display: inline-flex;
+    display: block;
   }
 
-  paper-icon-item.hidden-panel,
-  paper-icon-item.hidden-panel span,
-  paper-icon-item.hidden-panel ha-icon[slot="item-icon"] {
+  ha-md-list-item.hidden-panel,
+  ha-md-list-item.hidden-panel span,
+  ha-md-list-item.hidden-panel ha-icon[slot="start"] {
     color: var(--secondary-text-color);
     cursor: pointer;
   }

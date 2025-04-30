@@ -11,8 +11,8 @@ import { fireEvent } from "../common/dom/fire_event";
 import { customIcons } from "../data/custom_icons";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
-import "./ha-list-item";
 import "./ha-icon";
+import "./ha-combo-box-item";
 
 interface IconItem {
   icon: string;
@@ -67,11 +67,12 @@ const loadCustomIconItems = async (iconsetPrefix: string) => {
   }
 };
 
-const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) =>
-  html`<ha-list-item graphic="avatar">
-    <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
+const rowRenderer: ComboBoxLitRenderer<IconItem | RankedIcon> = (item) => html`
+  <ha-combo-box-item type="button">
+    <ha-icon .icon=${item.icon} slot="start"></ha-icon>
     ${item.icon}
-  </ha-list-item>`;
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-icon-picker")
 export class HaIconPicker extends LitElement {

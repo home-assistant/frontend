@@ -2,11 +2,11 @@ import type { Button } from "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import { fireEvent } from "../common/dom/fire_event";
+import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
-import "./ha-menu";
-import type { HaMenu } from "./ha-menu";
+import "./ha-md-menu";
+import type { HaMdMenu } from "./ha-md-menu";
 
 @customElement("ha-md-button-menu")
 export class HaMdButtonMenu extends LitElement {
@@ -19,7 +19,7 @@ export class HaMdButtonMenu extends LitElement {
   @property({ type: Boolean, attribute: "has-overflow" }) public hasOverflow =
     false;
 
-  @query("ha-menu", true) private _menu!: HaMenu;
+  @query("ha-md-menu", true) private _menu!: HaMdMenu;
 
   public get items() {
     return this._menu.items;
@@ -38,14 +38,14 @@ export class HaMdButtonMenu extends LitElement {
       <div @click=${this._handleClick}>
         <slot name="trigger" @slotchange=${this._setTriggerAria}></slot>
       </div>
-      <ha-menu
+      <ha-md-menu
         .positioning=${this.positioning}
         .hasOverflow=${this.hasOverflow}
         @opening=${this._handleOpening}
         @closing=${this._handleClosing}
       >
         <slot></slot>
-      </ha-menu>
+      </ha-md-menu>
     `;
   }
 

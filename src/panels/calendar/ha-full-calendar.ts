@@ -630,7 +630,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-icon-x:before {
-          font-family: var(--paper-font-common-base_-_font-family);
+          font-family: var(--ha-font-family-body);
           content: "X";
         }
 

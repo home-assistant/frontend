@@ -327,8 +327,18 @@ export default class HaScriptFieldRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
 
         ha-list-item[disabled] {
@@ -342,6 +352,12 @@ export default class HaScriptFieldRow extends LitElement {
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        :host([highlight]) ha-card {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
+          border-color: var(--state-inactive-color);
+          box-shadow: var(--shadow-default), var(--shadow-focus);
         }
       `,
     ];

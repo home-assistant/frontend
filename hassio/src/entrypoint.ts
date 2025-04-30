@@ -1,9 +1,6 @@
 import "./hassio-main";
 
-import("../../src/resources/ha-style");
-import("@polymer/polymer/lib/utils/settings").then(
-  ({ setCancelSyntheticClickEvents }) => setCancelSyntheticClickEvents(false)
-);
+import("../../src/resources/append-ha-style");
 
 const styleEl = document.createElement("style");
 styleEl.textContent = `

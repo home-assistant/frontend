@@ -83,7 +83,9 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
               : [
                   {
                     type: "markdown",
-                    content: "No entities in this area.",
+                    content: hass.localize(
+                      "ui.panel.lovelace.strategy.areas.no_entities"
+                    ),
                   },
                 ]),
           ],

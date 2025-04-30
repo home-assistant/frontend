@@ -201,6 +201,8 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
   title?: string;
   layout?: "vertical" | "horizontal";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -440,6 +442,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
+  fit_mode?: "cover" | "contain" | "fill";
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -458,6 +461,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
+  fit_mode?: "cover" | "contain" | "fill";
   entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

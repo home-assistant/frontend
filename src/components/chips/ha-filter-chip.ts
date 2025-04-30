@@ -1,14 +1,23 @@
-import { MdFilterChip } from "@material/web/chips/filter-chip";
+import { FilterChip } from "@material/web/chips/internal/filter-chip";
+import { styles } from "@material/web/chips/internal/filter-styles";
+import { styles as selectableStyles } from "@material/web/chips/internal/selectable-styles";
+import { styles as sharedStyles } from "@material/web/chips/internal/shared-styles";
+import { styles as trailingIconStyles } from "@material/web/chips/internal/trailing-icon-styles";
+import { styles as elevatedStyles } from "@material/web/chips/internal/elevated-styles";
 import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-filter-chip")
-export class HaFilterChip extends MdFilterChip {
+export class HaFilterChip extends FilterChip {
   @property({ type: Boolean, reflect: true, attribute: "no-leading-icon" })
   noLeadingIcon = false;
 
   static override styles = [
-    ...super.styles,
+    sharedStyles,
+    elevatedStyles,
+    trailingIconStyles,
+    selectableStyles,
+    styles,
     css`
       :host {
         --md-sys-color-primary: var(--primary-text-color);

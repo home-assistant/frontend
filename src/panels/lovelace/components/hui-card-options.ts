@@ -12,7 +12,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, queryAssignedNodes } from "lit/decorators";
+import { customElement, property, queryAssignedElements } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
@@ -53,7 +53,7 @@ export class HuiCardOptions extends LitElement {
 
   @property({ type: Array }) public path?: LovelaceCardPath;
 
-  @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
+  @queryAssignedElements() private _assignedElements?: LovelaceCard[];
 
   @property({ attribute: "hide-position", type: Boolean })
   public hidePosition = false;
@@ -67,7 +67,9 @@ export class HuiCardOptions extends LitElement {
   protected _clipboard?: LovelaceCardConfig;
 
   public getCardSize() {
-    return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
+    return this._assignedElements
+      ? computeCardSize(this._assignedElements[0])
+      : 1;
   }
 
   protected updated(changedProps: PropertyValues) {

@@ -52,6 +52,9 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @state()
+  private _controlEnabled = false;
+
   @state() private _error?: string;
 
   private _backPath = new URLSearchParams(window.parent.location.search).get(
@@ -134,9 +137,15 @@ class HassioAddonDashboard extends LitElement {
           .hass=${this.hass}
           .supervisor=${this.supervisor}
           .addon=${this.addon}
+          .controlEnabled=${this._controlEnabled}
+          @system-managed-take-control=${this._enableControl}
         ></hassio-addon-router>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _enableControl() {
+    this._controlEnabled = true;
   }
 
   static get styles(): CSSResultGroup {
