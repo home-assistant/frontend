@@ -55,7 +55,7 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
       >
         <p>
           <b>${this.hass.localize("ui.panel.config.ssdp.name")}</b>:
-          ${this._params.entry.name} <br />          
+          ${this._params.entry.name} <br />
           <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_st")}</b>:
           ${this._params.entry.ssdp_st} <br />
           <b>${this.hass.localize("ui.panel.config.ssdp.ssdp_location")}</b>:
