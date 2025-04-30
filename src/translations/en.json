@@ -5530,7 +5530,7 @@
           "mac_address": "MAC Address",
           "hostname": "Hostname",
           "ip_address": "IP Address",
-          "no_devices_found": "No matching DHCP discoveries found"
+          "no_devices_found": "No matching DHCP discoveries found; The device may not have made a DHCP request recently"
         },
         "thread": {
           "other_networks": "Other networks",
