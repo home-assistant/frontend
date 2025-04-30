@@ -26,8 +26,12 @@ import type {
   ManualAutomationConfig,
   Trigger,
 } from "../../../data/automation";
-import { normalizeAutomationConfig } from "../../../data/automation";
-import type { Action } from "../../../data/script";
+import {
+  isCondition,
+  isTrigger,
+  normalizeAutomationConfig,
+} from "../../../data/automation";
+import { getActionType, type Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -312,10 +316,59 @@ export class HaManualAutomationEditor extends LitElement {
 
     const loaded: any = load(paste);
     if (loaded) {
-      let normalized: AutomationConfig | undefined;
+      let config = loaded;
+
+      if ("automation" in config) {
+        config = config.automation;
+        if (Array.isArray(config)) {
+          config = config[0];
+        }
+      }
+
+      if (Array.isArray(config)) {
+        if (config.length === 1) {
+          config = config[0];
+        } else {
+          const newConfig: AutomationConfig = {
+            triggers: [],
+            conditions: [],
+            actions: [],
+          };
+          let found = false;
+          config.forEach((cfg: any) => {
+            if (isTrigger(cfg)) {
+              found = true;
+              (newConfig.triggers as Trigger[]).push(cfg);
+            }
+            if (isCondition(cfg)) {
+              found = true;
+              (newConfig.conditions as Condition[]).push(cfg);
+            }
+            if (getActionType(cfg) !== "unknown") {
+              found = true;
+              (newConfig.actions as Action[]).push(cfg);
+            }
+          });
+          if (found) {
+            config = newConfig;
+          }
+        }
+      }
+
+      if (isTrigger(config)) {
+        config = { triggers: [config] };
+      }
+      if (isCondition(config)) {
+        config = { conditions: [config] };
+      }
+      if (getActionType(config) !== "unknown") {
+        config = { actions: [config] };
+      }
+
+      let normalized: AutomationConfig;
 
       try {
-        normalized = normalizeAutomationConfig(loaded);
+        normalized = normalizeAutomationConfig(config);
       } catch (_err: any) {
         return;
       }
