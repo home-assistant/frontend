@@ -414,25 +414,13 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         </div>
 
         <div slot="selection-bar">
-          ${!this.narrow
-            ? html`
-                <ha-button @click=${this._deleteSelected} class="warning">
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                </ha-button>
-              `
-            : html`
-                <ha-icon-button
-                  .label=${this.hass.localize(
-                    "ui.panel.config.backup.backups.delete_selected"
-                  )}
-                  .path=${mdiDelete}
-                  class="warning"
-                  @click=${this._deleteSelected}
-                ></ha-icon-button>
-              `}
+          <ha-button @click=${this._deleteSelected} class="warning">
+            ${this.hass.localize(
+              "ui.panel.config.backup.backups.delete_selected"
+            )}
+          </ha-button>
         </div>
+
 
         <ha-filter-states
           .hass=${this.hass}
