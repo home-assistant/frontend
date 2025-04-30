@@ -24,7 +24,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { Action, Fields, ScriptConfig } from "../../../data/script";
-import { MODES, normalizeScriptConfig } from "../../../data/script";
+import {
+  getActionType,
+  MODES,
+  normalizeScriptConfig,
+} from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -236,10 +240,29 @@ export class HaManualScriptEditor extends LitElement {
 
     const loaded: any = load(paste);
     if (loaded) {
+      let config = loaded;
+
+      if ("script" in config) {
+        config = config.script;
+        config = config[Object.keys(config)[0]];
+      }
+
+      if (Array.isArray(config)) {
+        if (config.length === 1) {
+          config = config[0];
+        } else {
+          config = { sequence: config };
+        }
+      }
+
+      if (!["sequence", "unknown"].includes(getActionType(config))) {
+        config = { sequence: [config] };
+      }
+
       let normalized: ScriptConfig | undefined;
 
       try {
-        normalized = normalizeScriptConfig(loaded);
+        normalized = normalizeScriptConfig(config);
       } catch (_err: any) {
         return;
       }
