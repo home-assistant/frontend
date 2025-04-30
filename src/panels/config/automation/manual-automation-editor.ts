@@ -26,7 +26,11 @@ import type {
   ManualAutomationConfig,
   Trigger,
 } from "../../../data/automation";
-import { normalizeAutomationConfig } from "../../../data/automation";
+import {
+  isCondition,
+  isTrigger,
+  normalizeAutomationConfig,
+} from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -332,11 +336,11 @@ export class HaManualAutomationEditor extends LitElement {
           };
           let found = false;
           config.forEach((cfg: any) => {
-            if ("trigger" in cfg) {
+            if (isTrigger(cfg)) {
               found = true;
               (newConfig.triggers as Trigger[]).push(cfg);
             }
-            if ("condition" in cfg) {
+            if (isCondition(cfg)) {
               found = true;
               (newConfig.conditions as Condition[]).push(cfg);
             }
@@ -351,10 +355,10 @@ export class HaManualAutomationEditor extends LitElement {
         }
       }
 
-      if ("trigger" in config) {
+      if (isTrigger(config)) {
         config = { triggers: [config] };
       }
-      if ("condition" in config) {
+      if (isCondition(config)) {
         config = { conditions: [config] };
       }
       if (getActionType(config) !== "unknown") {
