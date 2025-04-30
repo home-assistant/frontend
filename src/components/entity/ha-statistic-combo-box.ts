@@ -48,7 +48,7 @@ interface StatisticItem {
 const TYPE_ORDER = ["entity", "external", "no_state"] as StatisticItemType[];
 
 const ENTITY_ID_STYLE = styleMap({
-  fontFamily: "var(--code-font-family, monospace)",
+  fontFamily: "var(--ha-font-family-code)",
   fontSize: "11px",
 });
 
