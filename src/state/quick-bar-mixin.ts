@@ -15,6 +15,7 @@ import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 
 declare global {
   interface HASSDomEvents {
@@ -51,6 +52,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           case "a":
             this._showVoiceCommandDialog(ev.detail);
             break;
+          case "?":
+            this._showShortcutDialog(ev.detail);
         }
       });
 
@@ -65,6 +68,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         m: (ev) => this._createMyLink(ev),
         a: (ev) => this._showVoiceCommandDialog(ev),
         d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
+        "Shift+?": (ev) => this._showShortcutDialog(ev),
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: (ev) => this._showQuickBar(ev),
         KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
@@ -109,6 +114,19 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e.preventDefault();
 
       showQuickBar(this, { mode });
+    }
+
+    private _showShortcutDialog(e: KeyboardEvent) {
+      if (!this._canShowQuickBar(e)) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      showShortcutsDialog(this);
     }
 
     private async _createMyLink(e: KeyboardEvent) {
