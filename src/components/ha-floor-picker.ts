@@ -3,7 +3,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -28,9 +27,9 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-combo-box-item";
 import "./ha-floor-icon";
 import "./ha-icon-button";
-import "./ha-list-item";
 
 type ScorableFloorRegistryEntry = ScorableTextItem & FloorRegistryEntry;
 
@@ -38,14 +37,12 @@ const ADD_NEW_ID = "___ADD_NEW___";
 const NO_FLOORS_ID = "___NO_FLOORS___";
 const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
-const rowRenderer: ComboBoxLitRenderer<FloorRegistryEntry> = (item) =>
-  html`<ha-list-item
-    graphic="icon"
-    class=${classMap({ "add-new": item.floor_id === ADD_NEW_ID })}
-  >
-    <ha-floor-icon slot="graphic" .floor=${item}></ha-floor-icon>
+const rowRenderer: ComboBoxLitRenderer<FloorRegistryEntry> = (item) => html`
+  <ha-combo-box-item type="button">
+    <ha-floor-icon slot="start" .floor=${item}></ha-floor-icon>
     ${item.name}
-  </ha-list-item>`;
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-floor-picker")
 export class HaFloorPicker extends LitElement {

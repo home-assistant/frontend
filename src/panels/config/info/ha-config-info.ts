@@ -1,10 +1,11 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
   mdiFileDocument,
   mdiHandsPray,
   mdiHelp,
+  mdiKeyboard,
   mdiNewspaperVariant,
+  mdiOpenInNew,
   mdiTshirtCrew,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -12,12 +13,17 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-logo-svg";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
 import { fetchHassioInfo } from "../../../data/hassio/supervisor";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
@@ -169,16 +175,30 @@ class HaConfigInfo extends LitElement {
           </ha-card>
 
           <ha-card outlined class="pages">
-            <mwc-list>
+            <ha-md-list>
+              <ha-md-list-item type="button" @click=${this._showShortcuts}>
+                <div
+                  slot="start"
+                  class="icon-background"
+                  style="background-color: #9e4dd1;"
+                >
+                  <ha-svg-icon .path=${mdiKeyboard}></ha-svg-icon>
+                </div>
+                <span
+                  >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
+                >
+              </ha-md-list-item>
+
               ${PAGES.map(
                 (page) => html`
-                  <ha-clickable-list-item
-                    graphic="avatar"
-                    open-new-tab
-                    href=${documentationUrl(this.hass, page.path)}
+                  <ha-md-list-item
+                    type="link"
+                    .href=${documentationUrl(this.hass, page.path)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <div
-                      slot="graphic"
+                      slot="start"
                       class="icon-background"
                       .style="background-color: ${page.iconColor}"
                     >
@@ -189,10 +209,11 @@ class HaConfigInfo extends LitElement {
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
-                  </ha-clickable-list-item>
+                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-md-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-md-list>
             ${customUiList.length
               ? html`
                   <div class="custom-ui">
@@ -238,6 +259,11 @@ class HaConfigInfo extends LitElement {
 
     this._hassioInfo = hassioInfo;
     this._osInfo = osInfo;
+  }
+
+  private _showShortcuts(ev): void {
+    ev.stopPropagation();
+    showShortcutsDialog(this);
   }
 
   static get styles(): CSSResultGroup {
@@ -326,16 +352,7 @@ class HaConfigInfo extends LitElement {
           padding: 4px 0;
         }
 
-        mwc-list {
-          --mdc-list-side-padding: 16px;
-          --mdc-list-vertical-padding: 0;
-        }
-
-        ha-clickable-list-item {
-          height: 64px;
-        }
-
-        ha-svg-icon {
+        .icon-background ha-svg-icon {
           height: 24px;
           width: 24px;
           display: block;

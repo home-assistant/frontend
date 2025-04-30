@@ -321,8 +321,12 @@ export class HaCardConditionEditor extends LitElement {
         overflow: hidden;
         transition: max-height 0.3s;
         text-align: center;
-        border-top-right-radius: var(--ha-card-border-radius, 12px);
-        border-top-left-radius: var(--ha-card-border-radius, 12px);
+        border-top-right-radius: calc(
+          var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+        );
+        border-top-left-radius: calc(
+          var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+        );
       }
       .testing.active {
         max-height: 100px;

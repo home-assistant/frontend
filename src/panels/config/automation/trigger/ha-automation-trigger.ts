@@ -32,6 +32,8 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ attribute: false }) public triggers!: Trigger[];
 
+  @property({ attribute: false }) public highlightedTriggers?: Trigger[];
+
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _showReorder = false;
@@ -92,6 +94,7 @@ export default class HaAutomationTrigger extends LitElement {
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
+                ?highlight=${this.highlightedTriggers?.includes(trg)}
               >
                 ${this._showReorder && !this.disabled
                   ? html`

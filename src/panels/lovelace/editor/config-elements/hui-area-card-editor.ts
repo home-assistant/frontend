@@ -25,6 +25,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import type { SelectOption } from "../../../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -53,6 +54,7 @@ export class HuiAreaCardEditor
 
   private _schema = memoizeOne(
     (
+      localize: LocalizeFunc,
       showCamera: boolean,
       binaryClasses: SelectOption[],
       sensorClasses: SelectOption[]
@@ -64,7 +66,17 @@ export class HuiAreaCardEditor
           ? ([
               {
                 name: "camera_view",
-                selector: { select: { options: ["auto", "live"] } },
+                selector: {
+                  select: {
+                    options: ["auto", "live"].map((value) => ({
+                      value,
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                      ),
+                    })),
+                    mode: "dropdown",
+                  },
+                },
               },
             ] as const)
           : []),
@@ -212,6 +224,7 @@ export class HuiAreaCardEditor
     );
 
     const schema = this._schema(
+      this.hass.localize,
       this._config.show_camera || false,
       binarySelectOptions,
       sensorSelectOptions

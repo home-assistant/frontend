@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAccount,
   mdiFile,
@@ -15,6 +14,7 @@ import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-req
 import { stringCompare } from "../../../common/string/compare";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-tip";
 import { showAutomationEditor } from "../../../data/automation";
@@ -106,7 +106,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
           this.hass.localize(`ui.panel.config.${this._mode}.dialog_new.header`)
         )}
       >
-        <mwc-list
+        <ha-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel=${this.hass.localize(
@@ -196,7 +196,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
                   </a>
                 </ha-tip>
               `}
-        </mwc-list>
+        </ha-list>
       </ha-dialog>
     `;
   }

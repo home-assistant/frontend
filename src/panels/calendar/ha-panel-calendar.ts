@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-list";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -14,6 +13,8 @@ import "../../components/ha-button-menu";
 import "../../components/ha-card";
 import "../../components/ha-check-list-item";
 import "../../components/ha-icon-button";
+import "../../components/ha-list";
+import "../../components/ha-list-item";
 import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
@@ -162,7 +163,7 @@ class PanelCalendar extends LitElement {
           @click=${this._handleRefresh}
         ></ha-icon-button>
         ${showPane && this.hass.user?.is_admin
-          ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>
+          ? html`<ha-list slot="pane" multi}>${calendarItems}</ha-list>
               <ha-list-item
                 graphic="icon"
                 slot="pane-footer"

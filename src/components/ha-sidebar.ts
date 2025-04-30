@@ -17,15 +17,16 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/paper-item/paper-icon-item";
-import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResult, CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, eventOptions, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import {
+  customElement,
+  eventOptions,
+  property,
+  state,
+  query,
+} from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
@@ -48,7 +49,9 @@ import "./ha-menu-button";
 import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
-import { preventDefault } from "../common/dom/prevent_default";
+import "./ha-md-list";
+import "./ha-md-list-item";
+import type { HaMdListItem } from "./ha-md-list-item";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -221,6 +224,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   })
   private _hiddenPanels: string[] = [];
 
+  @query(".tooltip") private _tooltip!: HTMLDivElement;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return this.hass.user?.is_admin
       ? [
@@ -238,13 +243,20 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
+    // Show the supervisor as being part of configuration
+    const selectedPanel = this.route.path?.startsWith("/hassio/")
+      ? "config"
+      : this.hass.panelUrl;
+
     // prettier-ignore
     return html`
       ${this._renderHeader()}
-      ${this._renderAllPanels()}
+      ${this._renderAllPanels(selectedPanel)}
       ${this._renderDivider()}
-      ${this._renderNotifications()}
-      ${this._renderUserItem()}
+      <ha-md-list>
+        ${this._renderNotifications()}
+        ${this._renderUserItem(selectedPanel)}
+      </ha-md-list>
       <div disabled class="bottom-spacer"></div>
       <div class="tooltip"></div>
     `;
@@ -314,9 +326,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return;
     }
 
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
     if (
       this.hass &&
-      changedProps.get("hass")?.connected === false &&
+      oldHass?.connected === false &&
       this.hass.connected === true
     ) {
       this._subscribePersistentNotifications();
@@ -327,9 +341,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (!SUPPORT_SCROLL_IF_NEEDED) {
       return;
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.panelUrl !== this.hass.panelUrl) {
-      const selectedEl = this.shadowRoot!.querySelector(".iron-selected");
+    if (oldHass?.panelUrl !== this.hass.panelUrl) {
+      const selectedEl = this.shadowRoot!.querySelector(".selected");
       if (selectedEl) {
         // @ts-ignore
         selectedEl.scrollIntoViewIfNeeded();
@@ -381,7 +394,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     </div>`;
   }
 
-  private _renderAllPanels() {
+  private _renderAllPanels(selectedPanel: string) {
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
@@ -390,34 +403,26 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this.hass.locale
     );
 
-    // Show the supervisor as being part of configuration
-    const selectedPanel = this.route.path?.startsWith("/hassio/")
-      ? "config"
-      : this.hass.panelUrl;
-
     // prettier-ignore
     return html`
-      <paper-listbox
-        attr-for-selected="data-panel"
+      <ha-md-list
         class="ha-scrollbar"
-        .selected=${selectedPanel}
         @focusin=${this._listboxFocusIn}
         @focusout=${this._listboxFocusOut}
         @scroll=${this._listboxScroll}
         @keydown=${this._listboxKeydown}
-        @iron-activate=${preventDefault}
       >
         ${this.editMode
-          ? this._renderPanelsEdit(beforeSpacer)
-          : this._renderPanels(beforeSpacer)}
+          ? this._renderPanelsEdit(beforeSpacer, selectedPanel)
+          : this._renderPanels(beforeSpacer, selectedPanel)}
         ${this._renderSpacer()}
-        ${this._renderPanels(afterSpacer)}
+        ${this._renderPanels(afterSpacer, selectedPanel)}
         ${this._renderExternalConfiguration()}
-      </paper-listbox>
+        </ha-md-list>
     `;
   }
 
-  private _renderPanels(panels: PanelInfo[]) {
+  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
@@ -429,7 +434,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]
-            : undefined
+            : undefined,
+        selectedPanel
       )
     );
   }
@@ -437,30 +443,24 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _renderPanel(
     urlPath: string,
     title: string | null,
-    icon?: string | null,
-    iconPath?: string | null
+    icon: string | null | undefined,
+    iconPath: string | null | undefined,
+    selectedPanel: string
   ) {
     return urlPath === "config"
-      ? this._renderConfiguration(title)
+      ? this._renderConfiguration(title, selectedPanel)
       : html`
-          <a
-            role="option"
-            aria-selected=${urlPath === this.hass.panelUrl}
-            href=${`/${urlPath}`}
-            data-panel=${urlPath}
-            tabindex="-1"
+          <ha-md-list-item
+            .href=${this.editMode ? undefined : `/${urlPath}`}
+            type="link"
+            class=${selectedPanel === urlPath ? "selected" : ""}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
           >
-            <paper-icon-item>
-              ${iconPath
-                ? html`<ha-svg-icon
-                    slot="item-icon"
-                    .path=${iconPath}
-                  ></ha-svg-icon>`
-                : html`<ha-icon slot="item-icon" .icon=${icon}></ha-icon>`}
-              <span class="item-text">${title}</span>
-            </paper-icon-item>
+            ${iconPath
+              ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
+              : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
+            <span class="item-text" slot="headline">${title}</span>
             ${this.editMode
               ? html`<ha-icon-button
                   .label=${this.hass.localize("ui.sidebar.hide_panel")}
@@ -468,9 +468,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
                   class="hide-panel"
                   .panel=${urlPath}
                   @click=${this._hidePanel}
+                  slot="end"
                 ></ha-icon-button>`
-              : ""}
-          </a>
+              : nothing}
+          </ha-md-list-item>
         `;
   }
 
@@ -493,14 +494,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._panelOrder = panelOrder;
   }
 
-  private _renderPanelsEdit(beforeSpacer: PanelInfo[]) {
+  private _renderPanelsEdit(beforeSpacer: PanelInfo[], selectedPanel: string) {
     return html`
-      <ha-sortable
-        handle-selector="paper-icon-item"
-        .disabled=${!this.editMode}
-        @item-moved=${this._panelMoved}
-      >
-        <div class="reorder-list">${this._renderPanels(beforeSpacer)}</div>
+      <ha-sortable .disabled=${!this.editMode} @item-moved=${this._panelMoved}
+        ><div>${this._renderPanels(beforeSpacer, selectedPanel)}</div>
       </ha-sortable>
       ${this._renderSpacer()}${this._renderHiddenPanels()}
     `;
@@ -513,26 +510,24 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           if (!panel) {
             return "";
           }
-          return html`<paper-icon-item
+          return html`<ha-md-list-item
             @click=${this._unhidePanel}
             class="hidden-panel"
             .panel=${url}
+            type="button"
           >
             ${panel.url_path === this.hass.defaultPanel && !panel.icon
               ? html`<ha-svg-icon
-                  slot="item-icon"
+                  slot="start"
                   .path=${PANEL_ICONS.lovelace}
                 ></ha-svg-icon>`
               : panel.url_path in PANEL_ICONS
                 ? html`<ha-svg-icon
-                    slot="item-icon"
+                    slot="start"
                     .path=${PANEL_ICONS[panel.url_path]}
                   ></ha-svg-icon>`
-                : html`<ha-icon
-                    slot="item-icon"
-                    .icon=${panel.icon}
-                  ></ha-icon>`}
-            <span class="item-text"
+                : html`<ha-icon slot="start" .icon=${panel.icon}></ha-icon>`}
+            <span class="item-text" slot="headline"
               >${panel.url_path === this.hass.defaultPanel
                 ? this.hass.localize("panel.states")
                 : this.hass.localize(`panel.${panel.title}`) ||
@@ -542,8 +537,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
               .label=${this.hass.localize("ui.sidebar.show_panel")}
               .path=${mdiPlus}
               class="show-panel"
+              slot="end"
             ></ha-icon-button>
-          </paper-icon-item>`;
+          </ha-md-list-item>`;
         })}
         ${this._renderSpacer()}`
       : ""}`;
@@ -557,41 +553,34 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return html`<div class="spacer" disabled></div>`;
   }
 
-  private _renderConfiguration(title: string | null) {
-    return html`<a
-      class="configuration-container"
-      role="option"
-      aria-selected=${this.hass.panelUrl === "config"}
-      href="/config"
-      data-panel="config"
-      tabindex="-1"
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item
-        class="configuration"
-        role="option"
-        aria-selected=${this.hass.panelUrl === "config"}
+  private _renderConfiguration(title: string | null, selectedPanel: string) {
+    return html`
+      <ha-md-list-item
+        class="configuration${selectedPanel === "config" ? " selected" : ""}"
+        type="button"
+        href="/config"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <ha-svg-icon slot="item-icon" .path=${mdiCog}></ha-svg-icon>
+        <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
         ${!this.alwaysExpand &&
         (this._updatesCount > 0 || this._issuesCount > 0)
           ? html`
-              <span class="configuration-badge" slot="item-icon">
+              <span class="badge" slot="start">
                 ${this._updatesCount + this._issuesCount}
               </span>
             `
           : ""}
-        <span class="item-text">${title}</span>
+        <span class="item-text" slot="headline">${title}</span>
         ${this.alwaysExpand && (this._updatesCount > 0 || this._issuesCount > 0)
           ? html`
-              <span class="configuration-badge"
+              <span class="badge" slot="end"
                 >${this._updatesCount + this._issuesCount}</span
               >
             `
           : ""}
-      </paper-icon-item>
-    </a>`;
+      </ha-md-list-item>
+    `;
   }
 
   private _renderNotifications() {
@@ -599,91 +588,67 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       ? this._notifications.length
       : 0;
 
-    return html`<div
-      class="notifications-container"
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item
+    return html`
+      <ha-md-list-item
         class="notifications"
-        role="option"
-        aria-selected="false"
         @click=${this._handleShowNotificationDrawer}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+        type="button"
       >
-        <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
+        <ha-svg-icon slot="start" .path=${mdiBell}></ha-svg-icon>
         ${!this.alwaysExpand && notificationCount > 0
           ? html`
-              <span class="notification-badge" slot="item-icon">
-                ${notificationCount}
-              </span>
+              <span class="badge" slot="start"> ${notificationCount} </span>
             `
           : ""}
-        <span class="item-text">
-          ${this.hass.localize("ui.notification_drawer.title")}
-        </span>
+        <span class="item-text" slot="headline"
+          >${this.hass.localize("ui.notification_drawer.title")}</span
+        >
         ${this.alwaysExpand && notificationCount > 0
-          ? html` <span class="notification-badge">${notificationCount}</span> `
+          ? html`<span class="badge" slot="end">${notificationCount}</span>`
           : ""}
-      </paper-icon-item>
-    </div>`;
+      </ha-md-list-item>
+    `;
   }
 
-  private _renderUserItem() {
-    return html`<a
-      class=${classMap({
-        profile: true,
-        // Mimic behavior that paper-listbox provides
-        "iron-selected": this.hass.panelUrl === "profile",
-      })}
-      href="/profile"
-      data-panel="panel"
-      tabindex="-1"
-      role="option"
-      aria-selected=${this.hass.panelUrl === "profile"}
-      aria-label=${this.hass.localize("panel.profile")}
-      @mouseenter=${this._itemMouseEnter}
-      @mouseleave=${this._itemMouseLeave}
-    >
-      <paper-icon-item>
+  private _renderUserItem(selectedPanel: string) {
+    return html`
+      <ha-md-list-item
+        href="/profile"
+        type="link"
+        class="user ${selectedPanel === "profile" ? " selected" : ""}"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
+      >
         <ha-user-badge
-          slot="item-icon"
+          slot="start"
           .user=${this.hass.user}
           .hass=${this.hass}
         ></ha-user-badge>
 
-        <span class="item-text">
-          ${this.hass.user ? this.hass.user.name : ""}
-        </span>
-      </paper-icon-item>
-    </a>`;
+        <span class="item-text" slot="headline"
+          >${this.hass.user ? this.hass.user.name : ""}</span
+        >
+      </ha-md-list-item>
+    `;
   }
 
   private _renderExternalConfiguration() {
     return html`${!this.hass.user?.is_admin &&
     this.hass.auth.external?.config.hasSettingsScreen
       ? html`
-          <a
-            role="option"
-            aria-label=${this.hass.localize(
-              "ui.sidebar.external_app_configuration"
-            )}
-            href="#external-app-configuration"
-            tabindex="-1"
-            aria-selected="false"
+          <ha-md-list-item
             @click=${this._handleExternalAppConfiguration}
+            type="button"
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
           >
-            <paper-icon-item>
-              <ha-svg-icon
-                slot="item-icon"
-                .path=${mdiCellphoneCog}
-              ></ha-svg-icon>
-              <span class="item-text">
-                ${this.hass.localize("ui.sidebar.external_app_configuration")}
-              </span>
-            </paper-icon-item>
-          </a>
+            <ha-svg-icon slot="start" .path=${mdiCellphoneCog}></ha-svg-icon>
+            <span class="item-text" slot="headline">
+              ${this.hass.localize("ui.sidebar.external_app_configuration")}
+            </span>
+          </ha-md-list-item>
         `
       : ""}`;
   }
@@ -693,10 +658,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this.hass.auth.external!.fireMessage({
       type: "config_screen/show",
     });
-  }
-
-  private get _tooltip() {
-    return this.shadowRoot!.querySelector(".tooltip")! as HTMLDivElement;
   }
 
   private _handleAction(ev: CustomEvent<ActionHandlerDetail>) {
@@ -761,7 +722,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       clearTimeout(this._mouseLeaveTimeout);
       this._mouseLeaveTimeout = undefined;
     }
-    this._showTooltip(ev.currentTarget as PaperIconItemElement);
+    this._showTooltip(ev.currentTarget as HaMdListItem);
   }
 
   private _itemMouseLeave() {
@@ -774,10 +735,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _listboxFocusIn(ev) {
-    if (this.alwaysExpand || ev.target.nodeName !== "A") {
+    if (this.alwaysExpand || ev.target.localName !== "ha-md-list-item") {
       return;
     }
-    this._showTooltip(ev.target.querySelector("paper-icon-item"));
+    this._showTooltip(ev.target);
   }
 
   private _listboxFocusOut() {
@@ -801,22 +762,25 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this._recentKeydownActiveUntil = new Date().getTime() + 100;
   }
 
-  private _showTooltip(item: PaperIconItemElement) {
+  private _showTooltip(item: HaMdListItem) {
     if (this._tooltipHideTimeout) {
       clearTimeout(this._tooltipHideTimeout);
       this._tooltipHideTimeout = undefined;
     }
     const tooltip = this._tooltip;
-    const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
+    const listbox = this.shadowRoot!.querySelector("ha-md-list")!;
     let top = item.offsetTop + 11;
     if (listbox.contains(item)) {
+      top += listbox.offsetTop;
       top -= listbox.scrollTop;
     }
-    tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
+    tooltip.innerText = (
+      item.querySelector(".item-text") as HTMLElement
+    ).innerText;
     tooltip.style.display = "block";
     tooltip.style.position = "fixed";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 4}px`;
+    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 8}px`;
   }
 
   private _hideTooltip() {
@@ -905,15 +869,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         .menu mwc-button {
           width: 100%;
         }
-        .reorder-list,
         .hidden-panel {
           display: none;
         }
 
-        paper-listbox {
+        ha-md-list {
           padding: 4px 0;
-          display: flex;
-          flex-direction: column;
           box-sizing: border-box;
           height: calc(100% - var(--header-height) - 132px);
           height: calc(
@@ -922,90 +883,66 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           overflow-x: hidden;
           background: none;
           margin-left: env(safe-area-inset-left);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: initial;
         }
 
-        a {
-          text-decoration: none;
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
-          position: relative;
-          display: block;
-          outline: 0;
-        }
-
-        paper-icon-item {
+        ha-md-list-item {
+          flex-shrink: 0;
           box-sizing: border-box;
           margin: 4px;
-          padding-left: 12px;
-          padding-inline-start: 12px;
-          padding-inline-end: initial;
           border-radius: 4px;
-          --paper-item-min-height: 40px;
+          --md-list-item-one-line-container-height: 40px;
+          --md-list-item-top-space: 0;
+          --md-list-item-bottom-space: 0;
           width: 48px;
+          position: relative;
+          --md-list-item-label-text-color: var(--sidebar-text-color);
+          --md-list-item-leading-space: 12px;
+          --md-list-item-trailing-space: 12px;
+          --md-list-item-leading-icon-size: 24px;
         }
-        :host([expanded]) paper-icon-item {
+        :host([expanded]) ha-md-list-item {
           width: 248px;
+          width: calc(248px - env(safe-area-inset-left));
         }
 
-        ha-icon[slot="item-icon"],
-        ha-svg-icon[slot="item-icon"] {
-          color: var(--sidebar-icon-color);
+        ha-md-list-item.selected {
+          --md-list-item-label-text-color: var(--sidebar-selected-icon-color);
+          --md-ripple-hover-color: var(--sidebar-selected-icon-color);
         }
-
-        .iron-selected paper-icon-item::before,
-        a:not(.iron-selected):focus::before {
+        ha-md-list-item.selected::before {
           border-radius: 4px;
           position: absolute;
           top: 0;
-          right: 2px;
+          right: 0;
           bottom: 0;
-          left: 2px;
+          left: 0;
           pointer-events: none;
           content: "";
           transition: opacity 15ms linear;
           will-change: opacity;
-        }
-        .iron-selected paper-icon-item::before {
           background-color: var(--sidebar-selected-icon-color);
-          opacity: 0.12;
-        }
-        a:not(.iron-selected):focus::before {
-          background-color: currentColor;
           opacity: var(--dark-divider-opacity);
-          margin: 4px 8px;
-        }
-        .iron-selected paper-icon-item:focus::before,
-        .iron-selected:focus paper-icon-item::before {
-          opacity: 0.2;
         }
 
-        .iron-selected paper-icon-item[pressed]:before {
-          opacity: 0.37;
+        ha-icon[slot="start"],
+        ha-svg-icon[slot="start"] {
+          width: 24px;
+          flex-shrink: 0;
+          color: var(--sidebar-icon-color);
         }
 
-        paper-icon-item span {
-          color: var(--sidebar-text-color);
-          font-weight: 500;
-          font-size: 14px;
-        }
-
-        a.iron-selected paper-icon-item ha-icon,
-        a.iron-selected paper-icon-item ha-svg-icon {
+        ha-md-list-item.selected ha-svg-icon[slot="start"],
+        ha-md-list-item.selected ha-icon[slot="start"] {
           color: var(--sidebar-selected-icon-color);
         }
 
-        a.iron-selected .item-text {
-          color: var(--sidebar-selected-text-color);
-        }
-
-        paper-icon-item .item-text {
+        ha-md-list-item .item-text {
           display: none;
           max-width: calc(100% - 56px);
+          font-weight: 500;
+          font-size: 14px;
         }
-        :host([expanded]) paper-icon-item .item-text {
+        :host([expanded]) ha-md-list-item .item-text {
           display: block;
         }
 
@@ -1019,60 +956,37 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           height: 1px;
           background-color: var(--divider-color);
         }
-        .notifications-container,
-        .configuration-container {
+        .badge {
           display: flex;
-          margin-left: env(safe-area-inset-left);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: initial;
-        }
-        .notifications {
-          cursor: pointer;
-        }
-        .notifications .item-text,
-        .configuration .item-text {
-          flex: 1;
-        }
-        .profile {
-          margin-left: env(safe-area-inset-left);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: initial;
-        }
-        .profile paper-icon-item {
-          padding-left: 4px;
-          padding-inline-start: 4px;
-          padding-inline-end: auto;
-        }
-        .profile .item-text {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
-        }
-
-        .notification-badge,
-        .configuration-badge {
-          position: absolute;
-          left: calc(var(--app-drawer-width, 248px) - 42px);
-          inset-inline-start: calc(var(--app-drawer-width, 248px) - 42px);
-          inset-inline-end: initial;
-          min-width: 20px;
-          box-sizing: border-box;
-          border-radius: 50%;
+          justify-content: center;
+          align-items: center;
+          min-width: 8px;
+          border-radius: 10px;
           font-weight: 400;
+          line-height: normal;
           background-color: var(--accent-color);
-          line-height: 20px;
-          text-align: center;
-          padding: 0px 2px;
+          padding: 2px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
         }
-        ha-svg-icon + .notification-badge,
-        ha-svg-icon + .configuration-badge {
+
+        ha-svg-icon + .badge {
           position: absolute;
-          bottom: 14px;
+          top: 4px;
           left: 26px;
-          inset-inline-start: 26px;
-          inset-inline-end: initial;
+          border-radius: 10px;
           font-size: 0.65em;
+          line-height: 2;
+          padding: 0 4px;
+        }
+
+        ha-md-list-item.user {
+          --md-list-item-leading-icon-size: 40px;
+          --md-list-item-leading-space: 4px;
+        }
+
+        ha-user-badge {
+          flex-shrink: 0;
+          margin-right: -8px;
         }
 
         .spacer {
@@ -1086,19 +1000,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           font-size: 14px;
           padding: 16px;
           white-space: nowrap;
-        }
-
-        .dev-tools {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          padding: 0 8px;
-          width: 256px;
-          box-sizing: border-box;
-        }
-
-        .dev-tools a {
-          color: var(--sidebar-icon-color);
         }
 
         .tooltip {

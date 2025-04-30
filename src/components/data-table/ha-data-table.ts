@@ -645,15 +645,16 @@ export class HaDataTable extends LitElement {
       return;
     }
 
-    const prom = this.sortColumn
-      ? sortData(
-          filteredData,
-          this._sortColumns[this.sortColumn],
-          this.sortDirection,
-          this.sortColumn,
-          this.hass.locale.language
-        )
-      : filteredData;
+    const prom =
+      this.sortColumn && this._sortColumns[this.sortColumn]
+        ? sortData(
+            filteredData,
+            this._sortColumns[this.sortColumn],
+            this.sortDirection,
+            this.sortColumn,
+            this.hass.locale.language
+          )
+        : filteredData;
 
     const [data] = await Promise.all([prom, nextRender]);
 
