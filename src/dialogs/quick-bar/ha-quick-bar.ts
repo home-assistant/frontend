@@ -357,13 +357,9 @@ export class QuickBar extends LitElement {
         tabindex="0"
         type="button"
       >
-        <span class="headline">${item.primaryText}</span>
+        <span slot="headline">${item.primaryText}</span>
         ${item.area
-          ? html`
-              <span slot="supporting-text" class="item-text secondary"
-                >${item.area}</span
-              >
-            `
+          ? html` <span slot="supporting-text">${item.area}</span> `
           : nothing}
       </ha-md-list-item>
     `;
@@ -390,11 +386,7 @@ export class QuickBar extends LitElement {
           : html`<span slot="start">${item.icon}</span>`}
         <span slot="headline">${item.primaryText}</span>
         ${item.altText
-          ? html`
-              <span slot="supporting-text" class="item-text secondary"
-                >${item.altText}</span
-              >
-            `
+          ? html` <span slot="supporting-text">${item.altText}</span> `
           : nothing}
         ${item.entityId && showEntityId
           ? html`<span slot="supporting-text" style=${ENTITY_ID_STYLE}
