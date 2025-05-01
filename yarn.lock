@@ -9186,17 +9186,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hls.js@npm:1.5.7":
-  version: 1.5.7
-  resolution: "hls.js@npm:1.5.7"
-  checksum: 10/8d863a56f3674ccf11eaf214005c57e2df13c51e7a7064b2f239ff2aca8aaac11571b86769f007f29c4034bc92fad8dd889e28670d07d7000e8953c40dbfcff9
-  languageName: node
-  linkType: hard
-
-"hls.js@patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch":
-  version: 1.5.7
-  resolution: "hls.js@patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch::version=1.5.7&hash=77028d"
-  checksum: 10/8c3eadf08e2486d2de9323c6b7cad38c1aa809f2dd7f799f437a7bbca617ff43b8833fb56e33f324f94609d6a949fb34609a25de6dcebcc5365e297e1b53b977
+"hls.js@npm:1.6.2":
+  version: 1.6.2
+  resolution: "hls.js@npm:1.6.2"
+  checksum: 10/800527345be55b892da9efa19696f14658f0f86d9e0fce9b49537e0ed2f232024ef05e23692599846ea2966712c296b137803795dbfaa6b208d9747d2ee0a207
   languageName: node
   linkType: hard
 
@@ -9340,7 +9333,7 @@ __metadata:
     gulp-json-transform: "npm:0.5.0"
     gulp-rename: "npm:2.0.0"
     gulp-zopfli-green: "npm:6.0.2"
-    hls.js: "patch:hls.js@npm%3A1.5.7#~/.yarn/patches/hls.js-npm-1.5.7-f5bbd3d060.patch"
+    hls.js: "npm:1.6.2"
     home-assistant-js-websocket: "npm:9.5.0"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.1.7"
