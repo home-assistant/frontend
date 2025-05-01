@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-camera-stream";
@@ -46,7 +45,8 @@ class MoreInfoCamera extends LitElement {
         <ha-progress-button
           @click=${this._downloadSnapshot}
           .progress=${this._waiting}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
+          .disabled=${this.stateObj.state === UNAVAILABLE ||
+          this.stateObj.state === "idle"}
         >
           ${this.hass.localize(
             "ui.dialogs.more_info_control.camera.download_snapshot"
@@ -78,7 +78,7 @@ class MoreInfoCamera extends LitElement {
       const blob = await result.blob();
       const url = window.URL.createObjectURL(blob);
       fileDownload(url, filename);
-    } catch (err) {
+    } catch (_err) {
       this._waiting = false;
       button.actionError();
       showToast(this, {
@@ -93,25 +93,23 @@ class MoreInfoCamera extends LitElement {
     button.actionSuccess();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .actions {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        box-sizing: border-box;
-        padding: 12px;
-        z-index: 1;
-        gap: 8px;
-      }
-    `;
-  }
+    .actions {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      box-sizing: border-box;
+      padding: 12px;
+      z-index: 1;
+      gap: 8px;
+    }
+  `;
 }
 
 customElements.define("more-info-camera", MoreInfoCamera);

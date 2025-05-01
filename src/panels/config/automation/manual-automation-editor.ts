@@ -3,18 +3,35 @@ import { mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { load } from "js-yaml";
+import {
+  any,
+  array,
+  assert,
+  assign,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
+  AutomationConfig,
   Condition,
   ManualAutomationConfig,
   Trigger,
 } from "../../../data/automation";
-import type { Action } from "../../../data/script";
+import {
+  isCondition,
+  isTrigger,
+  normalizeAutomationConfig,
+} from "../../../data/automation";
+import { getActionType, type Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -30,6 +47,26 @@ import {
 } from "../../../common/url/search-params";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import type { AutomationBlueprint } from "../../../data/blueprint";
+import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
+import { showToast } from "../../../util/toast";
+import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
+
+const baseConfigStruct = object({
+  alias: optional(string()),
+  description: optional(string()),
+  triggers: optional(array(any())),
+  conditions: optional(array(any())),
+  actions: optional(array(any())),
+  mode: optional(string()),
+  max_exceeded: optional(string()),
+  id: optional(string()),
+});
+
+const automationConfigStruct = union([
+  assign(baseConfigStruct, object({ triggers: array(any()) })),
+  assign(baseConfigStruct, object({ conditions: array(any()) })),
+  assign(baseConfigStruct, object({ actions: array(any()) })),
+]);
 
 @customElement("manual-automation-editor")
 export class HaManualAutomationEditor extends LitElement {
@@ -46,6 +83,22 @@ export class HaManualAutomationEditor extends LitElement {
     | AutomationBlueprint;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
+
+  @property({ attribute: false }) public dirty = false;
+
+  @state() private _pastedConfig?: ManualAutomationConfig;
+
+  private _previousConfig?: ManualAutomationConfig;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("paste", this._handlePaste);
+  }
+
+  public disconnectedCallback() {
+    window.removeEventListener("paste", this._handlePaste);
+    super.disconnectedCallback();
+  }
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
@@ -126,6 +179,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
+        .highlightedTriggers=${this._pastedConfig?.triggers || []}
         .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
@@ -167,6 +221,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
+        .highlightedConditions=${this._pastedConfig?.conditions || []}
         .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
@@ -206,6 +261,7 @@ export class HaManualAutomationEditor extends LitElement {
         role="region"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
+        .highlightedActions=${this._pastedConfig?.actions || []}
         .path=${["actions"]}
         @value-changed=${this._actionChanged}
         .hass=${this.hass}
@@ -217,6 +273,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _triggerChanged(ev: CustomEvent): void {
     ev.stopPropagation();
+    this.resetPastedConfig();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, triggers: ev.detail.value as Trigger[] },
     });
@@ -224,6 +281,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _conditionChanged(ev: CustomEvent): void {
     ev.stopPropagation();
+    this.resetPastedConfig();
     fireEvent(this, "value-changed", {
       value: {
         ...this.config!,
@@ -234,6 +292,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _actionChanged(ev: CustomEvent): void {
     ev.stopPropagation();
+    this.resetPastedConfig();
     fireEvent(this, "value-changed", {
       value: { ...this.config!, actions: ev.detail.value as Action[] },
     });
@@ -245,6 +304,216 @@ export class HaManualAutomationEditor extends LitElement {
     }
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
+    });
+  }
+
+  private _handlePaste = async (ev: ClipboardEvent) => {
+    if (!canOverrideAlphanumericInput(ev.composedPath())) {
+      return;
+    }
+
+    const paste = ev.clipboardData?.getData("text");
+    if (!paste) {
+      return;
+    }
+
+    let loaded: any;
+    try {
+      loaded = load(paste);
+    } catch (_err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.paste_invalid_yaml"
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    if (!loaded || typeof loaded !== "object") {
+      return;
+    }
+
+    let config = loaded;
+
+    if ("automation" in config) {
+      config = config.automation;
+      if (Array.isArray(config)) {
+        config = config[0];
+      }
+    }
+
+    if (Array.isArray(config)) {
+      if (config.length === 1) {
+        config = config[0];
+      } else {
+        const newConfig: AutomationConfig = {
+          triggers: [],
+          conditions: [],
+          actions: [],
+        };
+        let found = false;
+        config.forEach((cfg: any) => {
+          if (isTrigger(cfg)) {
+            found = true;
+            (newConfig.triggers as Trigger[]).push(cfg);
+          }
+          if (isCondition(cfg)) {
+            found = true;
+            (newConfig.conditions as Condition[]).push(cfg);
+          }
+          if (getActionType(cfg) !== "unknown") {
+            found = true;
+            (newConfig.actions as Action[]).push(cfg);
+          }
+        });
+        if (found) {
+          config = newConfig;
+        }
+      }
+    }
+
+    if (isTrigger(config)) {
+      config = { triggers: [config] };
+    }
+    if (isCondition(config)) {
+      config = { conditions: [config] };
+    }
+    if (getActionType(config) !== "unknown") {
+      config = { actions: [config] };
+    }
+
+    let normalized: AutomationConfig;
+
+    try {
+      normalized = normalizeAutomationConfig(config);
+    } catch (_err: any) {
+      return;
+    }
+
+    try {
+      assert(normalized, automationConfigStruct);
+    } catch (_err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.automation.editor.paste_invalid_config"
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    if (normalized) {
+      ev.preventDefault();
+
+      if (this.dirty) {
+        const result = await new Promise<boolean>((resolve) => {
+          showPasteReplaceDialog(this, {
+            domain: "automation",
+            pastedConfig: normalized,
+            onClose: () => resolve(false),
+            onAppend: () => {
+              this._appendToExistingConfig(normalized);
+              resolve(false);
+            },
+            onReplace: () => resolve(true),
+          });
+        });
+
+        if (!result) {
+          return;
+        }
+      }
+
+      // replace the config completely
+      this._replaceExistingConfig(normalized);
+    }
+  };
+
+  private _appendToExistingConfig(config: ManualAutomationConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this.config } as ManualAutomationConfig;
+    this._pastedConfig = config;
+
+    if (!this.config) {
+      return;
+    }
+
+    if ("triggers" in config) {
+      this.config.triggers = ensureArray(this.config.triggers || []).concat(
+        ensureArray(config.triggers)
+      );
+    }
+    if ("conditions" in config) {
+      this.config.conditions = ensureArray(this.config.conditions || []).concat(
+        ensureArray(config.conditions)
+      );
+    }
+    if ("actions" in config) {
+      this.config.actions = ensureArray(this.config.actions || []).concat(
+        ensureArray(config.actions)
+      ) as Action[];
+    }
+
+    this._showPastedToastWithUndo();
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.config!,
+      },
+    });
+  }
+
+  private _replaceExistingConfig(config: ManualAutomationConfig) {
+    // make a copy otherwise we will reference the original config
+    this._previousConfig = { ...this.config } as ManualAutomationConfig;
+    this._pastedConfig = config;
+    this.config = config;
+
+    this._showPastedToastWithUndo();
+
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.config,
+      },
+    });
+  }
+
+  private _showPastedToastWithUndo() {
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.automation.editor.paste_toast_message"
+      ),
+      duration: 4000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => {
+          fireEvent(this, "value-changed", {
+            value: {
+              ...this._previousConfig!,
+            },
+          });
+
+          this._previousConfig = undefined;
+          this._pastedConfig = undefined;
+        },
+      },
+    });
+  }
+
+  public resetPastedConfig() {
+    if (!this._previousConfig) {
+      return;
+    }
+
+    this._pastedConfig = undefined;
+    this._previousConfig = undefined;
+
+    showToast(this, {
+      message: "",
+      duration: 0,
     });
   }
 

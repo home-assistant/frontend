@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-list-item";
 import type { ZHADevice } from "../../../../../data/zha";
 import { bindDevices, unbindDevices } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
@@ -50,11 +50,11 @@ export class ZHADeviceBindingControl extends LitElement {
           >
             ${this.bindableDevices.map(
               (device, idx) => html`
-                <mwc-list-item .value=${String(idx)}>
+                <ha-list-item .value=${String(idx)}>
                   ${device.user_given_name
                     ? device.user_given_name
                     : device.name}
-                </mwc-list-item>
+                </ha-list-item>
               `
             )}
           </ha-select>
@@ -95,7 +95,7 @@ export class ZHADeviceBindingControl extends LitElement {
       try {
         await bindDevices(this.hass, this.device.ieee, this._deviceToBind.ieee);
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         button.actionError();
       } finally {
         this._bindingOperationInProgress = false;
@@ -116,7 +116,7 @@ export class ZHADeviceBindingControl extends LitElement {
           this._deviceToBind.ieee
         );
         button.actionSuccess();
-      } catch (err: any) {
+      } catch (_err: any) {
         button.actionError();
       } finally {
         this._bindingOperationInProgress = false;

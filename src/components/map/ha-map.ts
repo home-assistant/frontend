@@ -8,9 +8,10 @@ import type {
   Map,
   Marker,
   Polyline,
+  MarkerClusterGroup,
 } from "leaflet";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { ReactiveElement, css } from "lit";
+import type { PropertyValues } from "lit";
+import { css, ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { formatDateTime } from "../../common/datetime/format_date_time";
@@ -26,6 +27,7 @@ import type { HomeAssistant, ThemeMode } from "../../types";
 import { isTouch } from "../../util/is_touch";
 import "../ha-icon-button";
 import "./ha-entity-marker";
+import { DecoratedMarker } from "../../common/map/decorated_marker";
 
 declare global {
   // for fire event
@@ -52,7 +54,8 @@ export interface HaMapPaths {
 export interface HaMapEntity {
   entity_id: string;
   color: string;
-  label_mode?: "name" | "state" | "icon";
+  label_mode?: "name" | "state" | "attribute" | "icon";
+  attribute?: string;
   name?: string;
   focus?: boolean;
 }
@@ -84,6 +87,9 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Number }) public zoom = 14;
 
+  @property({ attribute: "cluster-markers", type: Boolean })
+  public clusterMarkers = true;
+
   @state() private _loaded = false;
 
   public leafletMap?: Map;
@@ -92,15 +98,17 @@ export class HaMap extends ReactiveElement {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _mapItems: Array<Marker | Circle> = [];
+  private _mapItems: (Marker | Circle)[] = [];
 
-  private _mapFocusItems: Array<Marker | Circle> = [];
+  private _mapFocusItems: (Marker | Circle)[] = [];
 
-  private _mapZones: Array<Marker | Circle> = [];
+  private _mapZones: DecoratedMarker[] = [];
 
-  private _mapFocusZones: Array<Marker | Circle> = [];
+  private _mapFocusZones: (Marker | Circle)[] = [];
 
-  private _mapPaths: Array<Polyline | CircleMarker> = [];
+  private _mapCluster: MarkerClusterGroup | undefined;
+
+  private _mapPaths: (Polyline | CircleMarker)[] = [];
 
   private _clickCount = 0;
 
@@ -151,6 +159,10 @@ export class HaMap extends ReactiveElement {
       }
     }
 
+    if (changedProps.has("clusterMarkers")) {
+      this._drawEntities();
+    }
+
     if (changedProps.has("_loaded") || changedProps.has("paths")) {
       this._drawPaths();
     }
@@ -175,6 +187,7 @@ export class HaMap extends ReactiveElement {
     ) {
       return;
     }
+
     this._updateMapStyle();
   }
 
@@ -426,6 +439,11 @@ export class HaMap extends ReactiveElement {
       this._mapFocusZones = [];
     }
 
+    if (this._mapCluster) {
+      this._mapCluster.remove();
+      this._mapCluster = undefined;
+    }
+
     if (!this.entities) {
       return;
     }
@@ -481,26 +499,24 @@ export class HaMap extends ReactiveElement {
           iconHTML = el.outerHTML;
         }
 
-        // create marker with the icon
-        this._mapZones.push(
-          Leaflet.marker([latitude, longitude], {
-            icon: Leaflet.divIcon({
-              html: iconHTML,
-              iconSize: [24, 24],
-              className,
-            }),
-            interactive: this.interactiveZones,
-            title,
-          })
-        );
-
         // create circle around it
         const circle = Leaflet.circle([latitude, longitude], {
           interactive: false,
           color: passive ? passiveZoneColor : zoneColor,
           radius,
         });
-        this._mapZones.push(circle);
+
+        const marker = new DecoratedMarker([latitude, longitude], circle, {
+          icon: Leaflet.divIcon({
+            html: iconHTML,
+            iconSize: [24, 24],
+            className,
+          }),
+          interactive: this.interactiveZones,
+          title,
+        });
+
+        this._mapZones.push(marker);
         if (
           this.fitZones &&
           (typeof entity === "string" || entity.focus !== false)
@@ -516,12 +532,16 @@ export class HaMap extends ReactiveElement {
       const entityName =
         typeof entity !== "string" && entity.label_mode === "state"
           ? this.hass.formatEntityState(stateObj)
-          : (customTitle ??
-            title
-              .split(" ")
-              .map((part) => part[0])
-              .join("")
-              .substr(0, 3));
+          : typeof entity !== "string" &&
+              entity.label_mode === "attribute" &&
+              entity.attribute !== undefined
+            ? this.hass.formatEntityAttributeValue(stateObj, entity.attribute)
+            : (customTitle ??
+              title
+                .split(" ")
+                .map((part) => part[0])
+                .join("")
+                .substr(0, 3));
 
       const entityMarker = document.createElement("ha-entity-marker");
       entityMarker.hass = this.hass;
@@ -538,7 +558,7 @@ export class HaMap extends ReactiveElement {
       }
 
       // create marker with the icon
-      const marker = Leaflet.marker([latitude, longitude], {
+      const marker = new DecoratedMarker([latitude, longitude], undefined, {
         icon: Leaflet.divIcon({
           html: entityMarker,
           iconSize: [48, 48],
@@ -546,24 +566,34 @@ export class HaMap extends ReactiveElement {
         }),
         title: title,
       });
-      this._mapItems.push(marker);
       if (typeof entity === "string" || entity.focus !== false) {
         this._mapFocusItems.push(marker);
       }
 
       // create circle around if entity has accuracy
       if (gpsAccuracy) {
-        this._mapItems.push(
-          Leaflet.circle([latitude, longitude], {
-            interactive: false,
-            color: darkPrimaryColor,
-            radius: gpsAccuracy,
-          })
-        );
+        marker.decorationLayer = Leaflet.circle([latitude, longitude], {
+          interactive: false,
+          color: darkPrimaryColor,
+          radius: gpsAccuracy,
+        });
       }
+
+      this._mapItems.push(marker);
     }
 
-    this._mapItems.forEach((marker) => map.addLayer(marker));
+    if (this.clusterMarkers) {
+      this._mapCluster = Leaflet.markerClusterGroup({
+        showCoverageOnHover: false,
+        removeOutsideVisibleBounds: false,
+        maxClusterRadius: 40,
+      });
+      this._mapCluster.addLayers(this._mapItems);
+      map.addLayer(this._mapCluster);
+    } else {
+      this._mapItems.forEach((marker) => map.addLayer(marker));
+    }
+
     this._mapZones.forEach((marker) => map.addLayer(marker));
   }
 
@@ -576,81 +606,95 @@ export class HaMap extends ReactiveElement {
     this._resizeObserver.observe(this);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: 300px;
-      }
-      #map {
-        height: 100%;
-      }
-      #map.clickable {
-        cursor: pointer;
-      }
-      #map.dark {
-        background: #090909;
-      }
-      #map.forced-dark {
-        color: #ffffff;
-        --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5)
-          contrast(1.2) saturate(0.3);
-      }
-      #map.forced-light {
-        background: #ffffff;
-        color: #000000;
-        --map-filter: invert(0);
-      }
-      #map.clickable:active,
-      #map:active {
-        cursor: grabbing;
-        cursor: -moz-grabbing;
-        cursor: -webkit-grabbing;
-      }
-      .leaflet-tile-pane {
-        filter: var(--map-filter);
-      }
-      .dark .leaflet-bar a {
-        background-color: #1c1c1c;
-        color: #ffffff;
-      }
-      .dark .leaflet-bar a:hover {
-        background-color: #313131;
-      }
-      .leaflet-marker-draggable {
-        cursor: move !important;
-      }
-      .leaflet-edit-resize {
-        border-radius: 50%;
-        cursor: nesw-resize !important;
-      }
-      .named-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
-        color: var(--primary-text-color);
-      }
-      .leaflet-pane {
-        z-index: 0 !important;
-      }
-      .leaflet-control,
-      .leaflet-top,
-      .leaflet-bottom {
-        z-index: 1 !important;
-      }
-      .leaflet-tooltip {
-        padding: 8px;
-        font-size: 90%;
-        background: rgba(80, 80, 80, 0.9) !important;
-        color: white !important;
-        border-radius: 4px;
-        box-shadow: none !important;
-        text-align: center;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      height: 300px;
+    }
+    #map {
+      height: 100%;
+    }
+    #map.clickable {
+      cursor: pointer;
+    }
+    #map.dark {
+      background: #090909;
+    }
+    #map.forced-dark {
+      color: #ffffff;
+      --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5) contrast(1.2)
+        saturate(0.3);
+    }
+    #map.forced-light {
+      background: #ffffff;
+      color: #000000;
+      --map-filter: invert(0);
+    }
+    #map.clickable:active,
+    #map:active {
+      cursor: grabbing;
+      cursor: -moz-grabbing;
+      cursor: -webkit-grabbing;
+    }
+    .leaflet-tile-pane {
+      filter: var(--map-filter);
+    }
+    .dark .leaflet-bar a {
+      background-color: #1c1c1c;
+      color: #ffffff;
+    }
+    .dark .leaflet-bar a:hover {
+      background-color: #313131;
+    }
+    .leaflet-marker-draggable {
+      cursor: move !important;
+    }
+    .leaflet-edit-resize {
+      border-radius: 50%;
+      cursor: nesw-resize !important;
+    }
+    .named-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      color: var(--primary-text-color);
+    }
+    .leaflet-pane {
+      z-index: 0 !important;
+    }
+    .leaflet-control,
+    .leaflet-top,
+    .leaflet-bottom {
+      z-index: 1 !important;
+    }
+    .leaflet-tooltip {
+      padding: 8px;
+      font-size: 90%;
+      background: rgba(80, 80, 80, 0.9) !important;
+      color: white !important;
+      border-radius: 4px;
+      box-shadow: none !important;
+      text-align: center;
+    }
+
+    .marker-cluster div {
+      background-clip: padding-box;
+      background-color: var(--primary-color);
+      border: 3px solid rgba(var(--rgb-primary-color), 0.2);
+      width: 32px;
+      height: 32px;
+      border-radius: 20px;
+      text-align: center;
+      color: var(--text-primary-color);
+      font-size: 14px;
+    }
+
+    .marker-cluster span {
+      line-height: 30px;
+    }
+  `;
 }
 
 declare global {

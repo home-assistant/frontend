@@ -10,14 +10,14 @@ import type {
   ComboBoxLightValueChangedEvent,
 } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
+import "./ha-combo-box-item";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -105,6 +105,9 @@ export class HaComboBox extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public opened = false;
 
+  @property({ type: Boolean, attribute: "hide-clear-icon" })
+  public hideClearIcon = false;
+
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
   @query("ha-textfield", true) private _inputElement!: HaTextField;
@@ -142,6 +145,10 @@ export class HaComboBox extends LitElement {
 
   public setInputValue(value: string) {
     this._comboBox.value = value;
+  }
+
+  public setTextFieldValue(value: string) {
+    this._inputElement.value = value;
   }
 
   protected render(): TemplateResult {
@@ -187,7 +194,7 @@ export class HaComboBox extends LitElement {
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-textfield>
-        ${this.value
+        ${this.value && !this.hideClearIcon
           ? html`<ha-svg-icon
               role="button"
               tabindex="-1"
@@ -204,6 +211,7 @@ export class HaComboBox extends LitElement {
           aria-expanded=${this.opened ? "true" : "false"}
           class="toggle-button"
           .path=${this.opened ? mdiMenuUp : mdiMenuDown}
+          ?disabled=${this.disabled}
           @click=${this._toggleOpen}
         ></ha-svg-icon>
       </vaadin-combo-box-light>
@@ -212,10 +220,11 @@ export class HaComboBox extends LitElement {
 
   private _defaultRowRenderer: ComboBoxLitRenderer<
     string | Record<string, any>
-  > = (item) =>
-    html`<ha-list-item>
+  > = (item) => html`
+    <ha-combo-box-item type="button">
       ${this.itemLabelPath ? item[this.itemLabelPath] : item}
-    </ha-list-item>`;
+    </ha-combo-box-item>
+  `;
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
@@ -324,49 +333,51 @@ export class HaComboBox extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        width: 100%;
-      }
-      vaadin-combo-box-light {
-        position: relative;
-        --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
-      }
-      ha-textfield {
-        width: 100%;
-      }
-      ha-textfield > ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-        color: var(--secondary-text-color);
-      }
-      ha-svg-icon {
-        color: var(--input-dropdown-icon-color);
-        position: absolute;
-        cursor: pointer;
-      }
-      .toggle-button {
-        right: 12px;
-        top: -10px;
-        inset-inline-start: initial;
-        inset-inline-end: 12px;
-        direction: var(--direction);
-      }
-      :host([opened]) .toggle-button {
-        color: var(--primary-color);
-      }
-      .clear-button {
-        --mdc-icon-size: 20px;
-        top: -7px;
-        right: 36px;
-        inset-inline-start: initial;
-        inset-inline-end: 36px;
-        direction: var(--direction);
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      width: 100%;
+    }
+    vaadin-combo-box-light {
+      position: relative;
+      --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
+    }
+    ha-textfield {
+      width: 100%;
+    }
+    ha-textfield > ha-icon-button {
+      --mdc-icon-button-size: 24px;
+      padding: 2px;
+      color: var(--secondary-text-color);
+    }
+    ha-svg-icon {
+      color: var(--input-dropdown-icon-color);
+      position: absolute;
+      cursor: pointer;
+    }
+    .toggle-button {
+      right: 12px;
+      top: -10px;
+      inset-inline-start: initial;
+      inset-inline-end: 12px;
+      direction: var(--direction);
+    }
+    :host([opened]) .toggle-button {
+      color: var(--primary-color);
+    }
+    .toggle-button[disabled] {
+      color: var(--disabled-text-color);
+      pointer-events: none;
+    }
+    .clear-button {
+      --mdc-icon-size: 20px;
+      top: -7px;
+      right: 36px;
+      inset-inline-start: initial;
+      inset-inline-end: 36px;
+      direction: var(--direction);
+    }
+  `;
 }
 
 declare global {

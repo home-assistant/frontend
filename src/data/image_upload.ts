@@ -32,7 +32,7 @@ export const getIdFromUrl = (url: string): string | undefined => {
 export const generateImageThumbnailUrl = (
   mediaId: string,
   size?: number,
-  original: boolean = false
+  original = false
 ) => {
   if (!original && !size) {
     throw new Error("Size must be provided if original is false");
@@ -81,8 +81,8 @@ export const deleteImage = (hass: HomeAssistant, id: string) =>
     image_id: id,
   });
 
-export const getImageData = async (url: string) => {
-  const response = await fetch(url);
+export const getImageData = async (hass: HomeAssistant, url: string) => {
+  const response = await fetch(hass.hassUrl(url));
 
   if (!response.ok) {
     throw new Error(

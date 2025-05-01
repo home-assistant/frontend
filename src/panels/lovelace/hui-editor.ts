@@ -8,7 +8,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
 import "../../components/ha-icon-button";
@@ -47,7 +46,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @state() private _changed?: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     return html`
       <ha-top-app-bar-fixed>
         <ha-icon-button
@@ -63,7 +62,7 @@ class LovelaceFullConfigEditor extends LitElement {
           slot="actionItems"
           class="save-button
               ${classMap({
-            saved: this._saving! === false || this._changed === true,
+            saved: this._saving === false || this._changed === true,
           })}"
         >
           ${this._changed

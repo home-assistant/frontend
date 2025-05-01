@@ -89,11 +89,13 @@
         window.latestJS = true;
       }
     </script>
-    <script>
-    {%- for extra_module in extra_modules -%}
-    import("{{ extra_module }}");
-    {%- endfor -%}
-    </script>
+    <% if (obj.hassUrl === "") { %>
+      <script>
+        {%- for extra_module in extra_modules -%}
+        import("{{ extra_module }}");
+        {%- endfor -%}
+      </script>
+    <% } %>
     <script>
         if (!window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
@@ -102,12 +104,15 @@
           <% } %>
         }
     </script>
-    <script>
-      if (!window.latestJS) {
-        {%- for extra_script in extra_js_es5 -%}
-        _ls("{{ extra_script }}");
-        {%- endfor -%}
-      }
-    </script>
+
+    <% if (obj.hassUrl === "") { %>
+      <script>
+        if (!window.latestJS) {
+          {%- for extra_script in extra_js_es5 -%}
+          _ls("{{ extra_script }}");
+          {%- endfor -%}
+        }
+      </script>
+    <% } %>
   </body>
 </html>

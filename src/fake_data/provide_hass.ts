@@ -40,13 +40,13 @@ export interface MockHomeAssistant extends HomeAssistant {
   addEntities(entites: Entity | Entity[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
-  mockWS(
+  mockWS<T extends (...args) => any = any>(
     type: string,
     callback: (
       msg: any,
       hass: MockHomeAssistant,
       onChange?: (response: any) => void
-    ) => any
+    ) => Awaited<ReturnType<T>>
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
@@ -69,10 +69,8 @@ export const provideHass = (
   const hass = (): MockHomeAssistant => elements[0].hass;
 
   const wsCommands = {};
-  const restResponses: Array<[string | RegExp, MockRestCallback]> = [];
-  const eventListeners: {
-    [event: string]: Array<(event) => void>;
-  } = {};
+  const restResponses: [string | RegExp, MockRestCallback][] = [];
+  const eventListeners: Record<string, ((event) => void)[]> = {};
   const entities = {};
 
   async function updateTranslations(
@@ -151,23 +149,15 @@ export const provideHass = (
     restResponses.push([path, callback]);
   }
 
-  mockAPI(
-    /states\/.+/,
-    (
-      // @ts-ignore
-      method,
-      path,
-      parameters
-    ) => {
-      const [domain, objectId] = path.substr(7).split(".", 2);
-      if (!domain || !objectId) {
-        return;
-      }
-      addEntities(
-        getEntity(domain, objectId, parameters.state, parameters.attributes)
-      );
+  mockAPI(/states\/.+/, (_method, path, parameters) => {
+    const [domain, objectId] = path.substr(7).split(".", 2);
+    if (!domain || !objectId) {
+      return;
     }
-  );
+    addEntities(
+      getEntity(domain, objectId, parameters.state, parameters.attributes)
+    );
+  });
 
   const localLanguage = getLocalLanguage();
   const noop = () => undefined;

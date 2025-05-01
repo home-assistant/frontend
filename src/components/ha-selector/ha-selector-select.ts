@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiDrag } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
@@ -16,8 +15,10 @@ import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-formfield";
 import "../ha-input-helper-text";
+import "../ha-list-item";
 import "../ha-radio";
 import "../ha-select";
+import "../ha-select-box";
 import "../ha-sortable";
 
 @customElement("ha-selector-select")
@@ -92,6 +93,25 @@ export class HaSelectSelector extends LitElement {
     }
 
     if (
+      !this.selector.select?.multiple &&
+      !this.selector.select?.reorder &&
+      !this.selector.select?.custom_value &&
+      this._mode === "box"
+    ) {
+      return html`
+        ${this.label ? html`<span class="label">${this.label}</span>` : nothing}
+        <ha-select-box
+          .options=${options}
+          .value=${this.value as string | undefined}
+          @value-changed=${this._valueChanged}
+          .maxColumns=${this.selector.select?.box_max_columns}
+          .hass=${this.hass}
+        ></ha-select-box>
+        ${this._renderHelper()}
+      `;
+    }
+
+    if (
       !this.selector.select?.custom_value &&
       !this.selector.select?.reorder &&
       this._mode === "list"
@@ -156,6 +176,7 @@ export class HaSelectSelector extends LitElement {
                 no-style
                 .disabled=${!this.selector.select.reorder}
                 @item-moved=${this._itemMoved}
+                handle-selector="button.primary.action"
               >
                 <ha-chip-set>
                   ${repeat(
@@ -177,7 +198,6 @@ export class HaSelectSelector extends LitElement {
                                 <ha-svg-icon
                                   slot="icon"
                                   .path=${mdiDrag}
-                                  data-handle
                                 ></ha-svg-icon>
                               `
                             : nothing}
@@ -254,8 +274,8 @@ export class HaSelectSelector extends LitElement {
       >
         ${options.map(
           (item: SelectOption) => html`
-            <mwc-list-item .value=${item.value} .disabled=${item.disabled}
-              >${item.label}</mwc-list-item
+            <ha-list-item .value=${item.value} .disabled=${item.disabled}
+              >${item.label}</ha-list-item
             >
           `
         )}
@@ -269,7 +289,7 @@ export class HaSelectSelector extends LitElement {
       : "";
   }
 
-  private get _mode(): "list" | "dropdown" {
+  private get _mode(): "list" | "dropdown" | "box" {
     return (
       this.selector.select?.mode ||
       ((this.selector.select?.options?.length || 0) < 6 ? "list" : "dropdown")
@@ -400,15 +420,23 @@ export class HaSelectSelector extends LitElement {
       position: relative;
     }
     ha-select,
-    mwc-formfield,
     ha-formfield {
       display: block;
     }
-    mwc-list-item[disabled] {
+    ha-list-item[disabled] {
       --mdc-theme-text-primary-on-background: var(--disabled-text-color);
     }
     ha-chip-set {
       padding: 8px 0;
+    }
+
+    .label {
+      display: block;
+      margin: 0 0 8px;
+    }
+
+    ha-select-box + ha-input-helper-text {
+      margin-top: 4px;
     }
 
     .sortable-fallback {

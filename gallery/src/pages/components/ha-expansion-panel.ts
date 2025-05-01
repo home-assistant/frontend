@@ -1,4 +1,4 @@
-import { mdiPacMan } from "@mdi/js";
+import { mdiLightbulbOn, mdiPacMan } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
@@ -125,6 +125,23 @@ const SAMPLES: {
       `;
     },
   },
+  {
+    template(slot, leftChevron) {
+      return html`
+        <ha-expansion-panel
+          slot=${slot}
+          .leftChevron=${leftChevron}
+          header="Attr Header with actions"
+        >
+          <ha-svg-icon
+            slot="leading-icon"
+            .path=${mdiLightbulbOn}
+          ></ha-svg-icon>
+          ${SHORT_TEXT}
+        </ha-expansion-panel>
+      `;
+    },
+  },
 ];
 
 @customElement("demo-components-ha-expansion-panel")
@@ -143,13 +160,11 @@ export class DemoHaExpansionPanel extends LitElement {
     `;
   }
 
-  static get styles() {
-    return css`
-      ha-expansion-panel {
-        margin: -16px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-expansion-panel {
+      margin: -16px;
+    }
+  `;
 }
 
 declare global {

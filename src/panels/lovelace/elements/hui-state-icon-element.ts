@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -59,6 +59,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
 
     this._config = {
       state_color: true,
+      tap_action: { action: "more-info" },
       hold_action: { action: "more-info" },
       ...config,
     };
@@ -102,18 +103,16 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-      state-badge:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    state-badge:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: 100%;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

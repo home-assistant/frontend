@@ -1,13 +1,13 @@
 import { mdiPlus } from "@mdi/js";
-import "@material/mwc-list/mwc-list";
-import type { CSSResultGroup } from "lit";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-person-badge";
 import type { Person } from "../../../data/person";
 import {
@@ -92,7 +92,7 @@ export class HaConfigPerson extends LitElement {
           </span>
 
           <ha-card outlined class="storage">
-            <mwc-list>
+            <ha-list>
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
@@ -109,7 +109,7 @@ export class HaConfigPerson extends LitElement {
                   </ha-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-list>
             ${this._storageItems.length === 0
               ? html`
                   <div class="empty">
@@ -128,7 +128,7 @@ export class HaConfigPerson extends LitElement {
           ${this._configItems.length > 0
             ? html`
                 <ha-card outlined header="Configuration.yaml persons">
-                  <mwc-list>
+                  <ha-list>
                     ${this._configItems.map(
                       (entry) => html`
                         <ha-list-item graphic="avatar">
@@ -141,7 +141,7 @@ export class HaConfigPerson extends LitElement {
                         </ha-list-item>
                       `
                     )}
-                  </mwc-list>
+                  </ha-list>
                 </ha-card>
               `
             : nothing}
@@ -268,7 +268,7 @@ export class HaConfigPerson extends LitElement {
             (ent) => ent !== entry
           );
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },
@@ -278,27 +278,25 @@ export class HaConfigPerson extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      ha-card {
-        max-width: 600px;
-        margin: 16px auto;
-        overflow: hidden;
-      }
-      .empty {
-        padding: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-      }
-      mwc-list:has(+ .empty) {
-        display: none;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    ha-card {
+      max-width: 600px;
+      margin: 16px auto;
+      overflow: hidden;
+    }
+    .empty {
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+    ha-list:has(+ .empty) {
+      display: none;
+    }
+  `;
 }
 
 declare global {

@@ -1,10 +1,8 @@
 import { mdiPlayCircleOutline } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-button";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
@@ -12,7 +10,7 @@ import { convertTextToSpeech } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { TTSTryDialogParams } from "./show-dialog-tts-try";
-import "../../components/ha-circular-progress";
+import "../../components/buttons/ha-progress-button";
 
 @customElement("dialog-tts-try")
 export class TTSTryDialog extends LitElement {
@@ -82,29 +80,17 @@ export class TTSTryDialog extends LitElement {
           ?dialogInitialFocus=${!this._defaultMessage}
         >
         </ha-textarea>
-        ${this._loadingExample
-          ? html`
-              <ha-circular-progress
-                size="small"
-                indeterminate
-                slot="primaryAction"
-                class="loading"
-              ></ha-circular-progress>
-            `
-          : html`
-              <ha-button
-                ?dialogInitialFocus=${Boolean(this._defaultMessage)}
-                slot="primaryAction"
-                .label=${this.hass.localize("ui.dialogs.tts-try.play")}
-                @click=${this._playExample}
-                .disabled=${!this._valid}
-              >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiPlayCircleOutline}
-                ></ha-svg-icon>
-              </ha-button>
-            `}
+
+        <ha-progress-button
+          .progress=${this._loadingExample}
+          ?dialogInitialFocus=${Boolean(this._defaultMessage)}
+          slot="primaryAction"
+          .label=${this.hass.localize("ui.dialogs.tts-try.play")}
+          @click=${this._playExample}
+          .disabled=${!this._valid}
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlayCircleOutline}></ha-svg-icon>
+        </ha-progress-button>
       </ha-dialog>
     `;
   }
@@ -163,23 +149,21 @@ export class TTSTryDialog extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-dialog {
-        --mdc-dialog-max-width: 500px;
-      }
-      ha-textarea,
-      ha-select {
-        width: 100%;
-      }
-      ha-select {
-        margin-top: 8px;
-      }
-      .loading {
-        height: 36px;
-      }
-    `;
-  }
+  static styles = css`
+    ha-dialog {
+      --mdc-dialog-max-width: 500px;
+    }
+    ha-textarea,
+    ha-select {
+      width: 100%;
+    }
+    ha-select {
+      margin-top: 8px;
+    }
+    .loading {
+      height: 36px;
+    }
+  `;
 }
 
 declare global {

@@ -291,9 +291,10 @@ export interface ShorthandNotCondition extends ShorthandBaseCondition {
   not: Condition[];
 }
 
-export interface AutomationElementGroup {
-  [key: string]: { icon?: string; members?: AutomationElementGroup };
-}
+export type AutomationElementGroup = Record<
+  string,
+  { icon?: string; members?: AutomationElementGroup }
+>;
 
 export type Condition =
   | StateCondition
@@ -366,7 +367,7 @@ export const saveAutomationConfig = (
   hass: HomeAssistant,
   id: string,
   config: AutomationConfig
-) => hass.callApi<void>("POST", `config/automation/config/${id}`, config);
+) => hass.callApi<undefined>("POST", `config/automation/config/${id}`, config);
 
 export const normalizeAutomationConfig = <
   T extends Partial<AutomationConfig> | AutomationConfig,
@@ -491,6 +492,25 @@ export const getAutomationEditorInitData = () => {
   return data;
 };
 
+export const isTrigger = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const trigger = config as Record<string, unknown>;
+  return (
+    ("trigger" in trigger && typeof trigger.trigger === "string") ||
+    ("platform" in trigger && typeof trigger.platform === "string")
+  );
+};
+
+export const isCondition = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const condition = config as Record<string, unknown>;
+  return "condition" in condition && typeof condition.condition === "string";
+};
+
 export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
@@ -519,8 +539,8 @@ export const testCondition = (
     variables,
   });
 
-export type AutomationClipboard = {
+export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;
-};
+}

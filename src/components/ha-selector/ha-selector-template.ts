@@ -69,21 +69,22 @@ export class HaTemplateSelector extends LitElement {
   }
 
   private _handleChange(ev) {
-    const value = ev.target.value;
+    let value = ev.target.value;
     if (this.value === value) {
       return;
     }
     this.warn = WARNING_STRINGS.find((str) => value.includes(str));
+    if (value === "" && !this.required) {
+      value = undefined;
+    }
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles() {
-    return css`
-      p {
-        margin-top: 0;
-      }
-    `;
-  }
+  static styles = css`
+    p {
+      margin-top: 0;
+    }
+  `;
 }
 
 declare global {

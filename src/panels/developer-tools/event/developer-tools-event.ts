@@ -19,11 +19,11 @@ class HaPanelDevEvent extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _eventType: string = "";
+  @state() private _eventType = "";
 
   @state() private _eventData: object = {};
 
-  @state() private _isValid: boolean = true;
+  @state() private _isValid = true;
 
   protected render(): TemplateResult {
     return html`
@@ -92,11 +92,11 @@ class HaPanelDevEvent extends LitElement {
         </div>
 
         <div>
-          <div class="header">
+          <h2>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.events.active_listeners"
             )}
-          </div>
+          </h2>
           <events-list
             @event-selected=${this._eventSelected}
             .hass=${this.hass}
@@ -160,7 +160,6 @@ class HaPanelDevEvent extends LitElement {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
-          @apply --paper-font-body1;
           display: block;
         }
 
@@ -178,10 +177,6 @@ class HaPanelDevEvent extends LitElement {
 
         ha-textfield {
           display: block;
-        }
-
-        .header {
-          @apply --paper-font-title;
         }
 
         event-subscribe-card {

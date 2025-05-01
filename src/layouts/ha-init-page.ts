@@ -1,6 +1,8 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
+import "@material/mwc-button";
+import "../components/ha-spinner";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
@@ -36,7 +38,7 @@ class HaInitPage extends LitElement {
         `
       : html`
           <div id="progress-indicator-wrapper">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
           <div id="loading-text">
             ${this.migration
@@ -70,7 +72,7 @@ class HaInitPage extends LitElement {
 
   protected firstUpdated() {
     this._showProgressIndicatorTimeout = window.setTimeout(() => {
-      import("../components/ha-circular-progress");
+      import("../components/ha-spinner");
     }, 5000);
 
     this._retryInterval = window.setInterval(() => {
@@ -88,34 +90,32 @@ class HaInitPage extends LitElement {
     location.reload();
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        flex: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      #progress-indicator-wrapper {
-        display: flex;
-        align-items: center;
-        margin: 25px 0;
-        height: 50px;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      .retry-text {
-        margin-top: 0;
-      }
-      p,
-      #loading-text {
-        max-width: 350px;
-        color: var(--primary-text-color);
-        text-align: center;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      flex: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #progress-indicator-wrapper {
+      display: flex;
+      align-items: center;
+      margin: 25px 0;
+      height: 50px;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    .retry-text {
+      margin-top: 0;
+    }
+    p,
+    #loading-text {
+      max-width: 350px;
+      color: var(--primary-text-color);
+      text-align: center;
+    }
+  `;
 }
 
 customElements.define("ha-init-page", HaInitPage);

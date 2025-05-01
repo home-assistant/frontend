@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -32,7 +31,11 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
       throw Error("Icon required");
     }
 
-    this._config = { hold_action: { action: "more-info" }, ...config };
+    this._config = {
+      tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected render() {
@@ -60,18 +63,16 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-      ha-icon:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    ha-icon:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: 100%;
+    }
+  `;
 }
 
 declare global {

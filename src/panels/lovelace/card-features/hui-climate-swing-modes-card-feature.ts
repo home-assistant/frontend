@@ -11,6 +11,7 @@ import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -100,7 +101,7 @@ class HuiClimateSwingModesCardFeature
 
     try {
       await this._setMode(swingMode);
-    } catch (err) {
+    } catch (_err) {
       this._currentSwingMode = oldSwingMode;
     }
   }

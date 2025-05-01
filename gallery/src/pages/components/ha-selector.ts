@@ -6,22 +6,23 @@ import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
+import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
 import type { AreaRegistryEntry } from "../../../../src/data/area_registry";
 import type { BlueprintInput } from "../../../../src/data/blueprint";
+import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
+import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
+import type { LabelRegistryEntry } from "../../../../src/data/label_registry";
 import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { getEntity } from "../../../../src/fake_data/entity";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { ProvideHassElement } from "../../../../src/mixins/provide-hass-lit-mixin";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import type { FloorRegistryEntry } from "../../../../src/data/floor_registry";
-import type { LabelRegistryEntry } from "../../../../src/data/label_registry";
-import { mockFloorRegistry } from "../../../../demo/src/stubs/floor_registry";
-import { mockLabelRegistry } from "../../../../demo/src/stubs/label_registry";
-import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 const ENTITIES = [
   getEntity("alarm_control_panel", "alarm", "disarmed", {
@@ -47,6 +48,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     area_id: "bedroom",
     configuration_url: null,
     config_entries: ["config_entry_1"],
+    config_entries_subentries: {},
     connections: [],
     disabled_by: null,
     entry_type: null,
@@ -70,6 +72,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     area_id: "backyard",
     configuration_url: null,
     config_entries: ["config_entry_2"],
+    config_entries_subentries: {},
     connections: [],
     disabled_by: null,
     entry_type: null,
@@ -93,6 +96,7 @@ const DEVICES: DeviceRegistryEntry[] = [
     area_id: null,
     configuration_url: null,
     config_entries: ["config_entry_3"],
+    config_entries_subentries: {},
     connections: [],
     disabled_by: null,
     entry_type: null,
@@ -123,6 +127,8 @@ const AREAS: AreaRegistryEntry[] = [
     picture: null,
     aliases: [],
     labels: [],
+    temperature_entity_id: null,
+    humidity_entity_id: null,
     created_at: 0,
     modified_at: 0,
   },
@@ -134,6 +140,8 @@ const AREAS: AreaRegistryEntry[] = [
     picture: null,
     aliases: [],
     labels: [],
+    temperature_entity_id: null,
+    humidity_entity_id: null,
     created_at: 0,
     modified_at: 0,
   },
@@ -145,6 +153,8 @@ const AREAS: AreaRegistryEntry[] = [
     picture: null,
     aliases: [],
     labels: [],
+    temperature_entity_id: null,
+    humidity_entity_id: null,
     created_at: 0,
     modified_at: 0,
   },
@@ -634,9 +644,6 @@ class DemoHaSelector extends LitElement implements ProvideHassElement {
   }
 
   static styles = css`
-    ha-settings-row {
-      --paper-item-body-two-line-min-height: 0;
-    }
     .options {
       max-width: 800px;
       margin: 16px auto;

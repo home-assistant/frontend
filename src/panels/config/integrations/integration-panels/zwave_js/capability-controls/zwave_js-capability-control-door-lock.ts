@@ -11,14 +11,14 @@ import "../../../../../../components/ha-list-item";
 import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-switch";
 import "../../../../../../components/ha-formfield";
-import "../../../../../../components/ha-circular-progress";
+import "../../../../../../components/ha-spinner";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import type { HaProgressButton } from "../../../../../../components/buttons/ha-progress-button";
 import { extractApiErrorMessage } from "../../../../../../data/hassio/common";
 
 type DoorHandleStatus = [boolean, boolean, boolean, boolean];
 
-type DoorLockConfiguration = {
+interface DoorLockConfiguration {
   operationType: number;
   outsideHandlesCanOpenDoorConfiguration: DoorHandleStatus;
   insideHandlesCanOpenDoorConfiguration: DoorHandleStatus;
@@ -27,7 +27,7 @@ type DoorLockConfiguration = {
   holdAndReleaseTime?: number;
   twistAssist?: boolean;
   blockToBlock?: boolean;
-};
+}
 
 enum DoorLockMode {
   Unsecured = 0x00,
@@ -40,14 +40,14 @@ enum DoorLockMode {
   Secured = 0xff,
 }
 
-type DoorLockCapabilities = {
+interface DoorLockCapabilities {
   supportedOperationTypes: number[];
   supportedDoorLockModes: DoorLockMode[];
   blockToBlockSupported?: boolean;
   twistAssistSupported?: boolean;
   holdAndReleaseSupported?: boolean;
   autoRelockSupported?: boolean;
-};
+}
 
 const TIMED_MODES = [
   DoorLockMode.UnsecuredWithTimeout,
@@ -100,7 +100,7 @@ class ZWaveJSCapabilityDoorLock extends LitElement {
       !this._capabilities ||
       this._currentDoorLockMode === undefined
     ) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     const isValid = this._isValid();

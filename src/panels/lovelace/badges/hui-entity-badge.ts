@@ -1,6 +1,5 @@
 import { mdiAlertCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -10,6 +9,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-badge";
@@ -189,7 +189,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       </state-display>
     `;
 
-    const name = this._config.name || stateObj.attributes.friendly_name;
+    const name = this._config.name || computeStateName(stateObj);
 
     const showState = this._config.show_state;
     const showName = this._config.show_name;
@@ -237,19 +237,17 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-badge {
-        --badge-color: var(--state-inactive-color);
-      }
-      ha-badge.error {
-        --badge-color: var(--red-color);
-      }
-      ha-badge.active {
-        --badge-color: var(--primary-color);
-      }
-    `;
-  }
+  static styles = css`
+    ha-badge {
+      --badge-color: var(--state-inactive-color);
+    }
+    ha-badge.error {
+      --badge-color: var(--red-color);
+    }
+    ha-badge.active {
+      --badge-color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

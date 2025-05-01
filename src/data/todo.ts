@@ -14,10 +14,18 @@ export const enum TodoItemStatus {
   Completed = "completed",
 }
 
+export enum TodoSortMode {
+  NONE = "none",
+  ALPHA_ASC = "alpha_asc",
+  ALPHA_DESC = "alpha_desc",
+  DUEDATE_ASC = "duedate_asc",
+  DUEDATE_DESC = "duedate_desc",
+}
+
 export interface TodoItem {
   uid: string;
   summary: string;
-  status: TodoItemStatus;
+  status: TodoItemStatus | null;
   description?: string | null;
   due?: string | null;
 }
@@ -64,7 +72,7 @@ export const fetchItems = async (
 export const subscribeItems = (
   hass: HomeAssistant,
   entity_id: string,
-  callback: (item) => void
+  callback: (update: TodoItems) => void
 ) =>
   hass.connection.subscribeMessage<any>(callback, {
     type: "todo/item/subscribe",

@@ -140,17 +140,21 @@ export class EnergyViewStrategy extends ReactiveElement {
     }
 
     // Only include if we have a solar source.
-    if (hasSolar && hasReturn) {
-      view.cards!.push({
-        type: "energy-solar-consumed-gauge",
-        view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
-      });
-      view.cards!.push({
-        type: "energy-self-sufficiency-gauge",
-        view_layout: { position: "sidebar" },
-        collection_key: "energy_dashboard",
-      });
+    if (hasSolar) {
+      if (hasReturn) {
+        view.cards!.push({
+          type: "energy-solar-consumed-gauge",
+          view_layout: { position: "sidebar" },
+          collection_key: "energy_dashboard",
+        });
+      }
+      if (hasGrid) {
+        view.cards!.push({
+          type: "energy-self-sufficiency-gauge",
+          view_layout: { position: "sidebar" },
+          collection_key: "energy_dashboard",
+        });
+      }
     }
 
     // Only include if we have a grid

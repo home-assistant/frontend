@@ -1,31 +1,38 @@
-import "@material/mwc-button";
 import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../ha-circular-progress";
+import "../ha-button";
+import "../ha-spinner";
 import "../ha-svg-icon";
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
+  @property() public label?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public progress = false;
 
   @property({ type: Boolean }) public raised = false;
 
+  @property({ type: Boolean }) public unelevated = false;
+
   @state() private _result?: "success" | "error";
 
   public render(): TemplateResult {
     const overlay = this._result || this.progress;
     return html`
-      <mwc-button
-        ?raised=${this.raised}
+      <ha-button
+        .raised=${this.raised}
+        .label=${this.label}
+        .unelevated=${this.unelevated}
         .disabled=${this.disabled || this.progress}
         class=${this._result || ""}
       >
+        <slot name="icon" slot="icon"></slot>
         <slot></slot>
-      </mwc-button>
+      </ha-button>
       ${!overlay
         ? nothing
         : html`
@@ -35,13 +42,8 @@ export class HaProgressButton extends LitElement {
                 : this._result === "error"
                   ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
                   : this.progress
-                    ? html`
-                        <ha-circular-progress
-                          size="small"
-                          indeterminate
-                        ></ha-circular-progress>
-                      `
-                    : ""}
+                    ? html`<ha-spinner size="small"></ha-spinner>`
+                    : nothing}
             </div>
           `}
     `;
@@ -62,64 +64,67 @@ export class HaProgressButton extends LitElement {
     }, 2000);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        outline: none;
-        display: inline-block;
-        position: relative;
-        pointer-events: none;
-      }
+  static styles = css`
+    :host {
+      outline: none;
+      display: inline-block;
+      position: relative;
+      pointer-events: none;
+    }
 
-      mwc-button {
-        transition: all 1s;
-        pointer-events: initial;
-      }
+    ha-button {
+      transition: all 1s;
+      pointer-events: initial;
+    }
 
-      mwc-button.success {
-        --mdc-theme-primary: white;
-        background-color: var(--success-color);
-        transition: none;
-        border-radius: 4px;
-        pointer-events: none;
-      }
+    ha-button.success {
+      --mdc-theme-primary: white;
+      background-color: var(--success-color);
+      transition: none;
+      border-radius: 4px;
+      pointer-events: none;
+    }
 
-      mwc-button[raised].success {
-        --mdc-theme-primary: var(--success-color);
-        --mdc-theme-on-primary: white;
-      }
+    ha-button[unelevated].success,
+    ha-button[raised].success {
+      --mdc-theme-primary: var(--success-color);
+      --mdc-theme-on-primary: white;
+    }
 
-      mwc-button.error {
-        --mdc-theme-primary: white;
-        background-color: var(--error-color);
-        transition: none;
-        border-radius: 4px;
-        pointer-events: none;
-      }
+    ha-button.error {
+      --mdc-theme-primary: white;
+      background-color: var(--error-color);
+      transition: none;
+      border-radius: 4px;
+      pointer-events: none;
+    }
 
-      mwc-button[raised].error {
-        --mdc-theme-primary: var(--error-color);
-        --mdc-theme-on-primary: white;
-      }
+    ha-button[unelevated].error,
+    ha-button[raised].error {
+      --mdc-theme-primary: var(--error-color);
+      --mdc-theme-on-primary: white;
+    }
 
-      .progress {
-        bottom: 4px;
-        position: absolute;
-        text-align: center;
-        top: 4px;
-        width: 100%;
-      }
+    .progress {
+      bottom: 4px;
+      position: absolute;
+      text-align: center;
+      top: 4px;
+      width: 100%;
+    }
 
-      ha-svg-icon {
-        color: white;
-      }
+    ha-svg-icon {
+      color: white;
+    }
 
-      mwc-button.success slot,
-      mwc-button.error slot {
-        visibility: hidden;
-      }
-    `;
-  }
+    ha-button.success slot,
+    ha-button.error slot {
+      visibility: hidden;
+    }
+    :host([destructive]) {
+      --mdc-theme-primary: var(--error-color);
+    }
+  `;
 }
 
 declare global {

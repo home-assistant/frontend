@@ -1,11 +1,11 @@
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import type { HomeAssistant } from "../types";
 import "./ha-select";
+import "./ha-list-item";
 
 const DEFAULT_THEME = "default";
 
@@ -39,35 +39,33 @@ export class HaThemePicker extends LitElement {
       >
         ${!this.required
           ? html`
-              <mwc-list-item value="remove">
+              <ha-list-item value="remove">
                 ${this.hass!.localize("ui.components.theme-picker.no_theme")}
-              </mwc-list-item>
+              </ha-list-item>
             `
           : nothing}
         ${this.includeDefault
           ? html`
-              <mwc-list-item .value=${DEFAULT_THEME}>
+              <ha-list-item .value=${DEFAULT_THEME}>
                 Home Assistant
-              </mwc-list-item>
+              </ha-list-item>
             `
           : nothing}
         ${Object.keys(this.hass!.themes.themes)
           .sort()
           .map(
             (theme) =>
-              html`<mwc-list-item .value=${theme}>${theme}</mwc-list-item>`
+              html`<ha-list-item .value=${theme}>${theme}</ha-list-item>`
           )}
       </ha-select>
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _changed(ev): void {
     if (!this.hass || ev.target.value === "") {

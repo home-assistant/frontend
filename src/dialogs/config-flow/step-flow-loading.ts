@@ -1,7 +1,7 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig, LoadingReason } from "./show-dialog-data-entry-flow";
@@ -28,22 +28,20 @@ class StepFlowLoading extends LitElement {
     return html`
       <div class="init-spinner">
         ${description ? html`<div>${description}</div>` : ""}
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
       </div>
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .init-spinner {
-        padding: 50px 100px;
-        text-align: center;
-      }
-      ha-circular-progress {
-        margin-top: 16px;
-      }
-    `;
-  }
+  static styles = css`
+    .init-spinner {
+      padding: 50px 100px;
+      text-align: center;
+    }
+    ha-spinner {
+      margin-top: 16px;
+    }
+  `;
 }
 
 declare global {

@@ -7,7 +7,7 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
 import { stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { AreaFilterValue } from "../../../components/ha-area-filter";
+import type { AreasDisplayValue } from "../../../components/ha-areas-display-editor";
 import { areaCompare } from "../../../data/area_registry";
 import type {
   EnergyPreferences,
@@ -50,11 +50,11 @@ const HIDE_DOMAIN = new Set([
   ...ASSIST_ENTITIES,
 ]);
 
-const HIDE_PLATFORM = new Set(["mobile_app"]);
+const HIDE_PLATFORM = new Set(["backup", "mobile_app"]);
 
 interface SplittedByAreaDevice {
-  areasWithEntities: { [areaId: string]: HassEntity[] };
-  devicesWithEntities: { [deviceId: string]: HassEntity[] };
+  areasWithEntities: Record<string, HassEntity[]>;
+  devicesWithEntities: Record<string, HassEntity[]>;
   otherEntities: HassEntities;
 }
 
@@ -132,7 +132,7 @@ export const computeCards = (
   const cards: LovelaceCardConfig[] = [];
 
   // For entity card
-  const entitiesConf: Array<string | EntityConfig> = [];
+  const entitiesConf: (string | EntityConfig)[] = [];
 
   const titlePrefix = entityCardOptions.title
     ? entityCardOptions.title.toLowerCase()
@@ -365,7 +365,7 @@ export const generateViewConfig = (
   icon: string | undefined,
   entities: HassEntities
 ): LovelaceViewConfig => {
-  const ungroupedEntitites: { [domain: string]: string[] } = {};
+  const ungroupedEntitites: Record<string, string[]> = {};
 
   // Organize ungrouped entities in ungrouped things
   for (const entityId of Object.keys(entities)) {
@@ -503,7 +503,7 @@ export const generateDefaultViewConfig = (
   entities: HassEntities,
   localize: LocalizeFunc,
   energyPrefs?: EnergyPreferences,
-  areasPrefs?: AreaFilterValue,
+  areasPrefs?: AreasDisplayValue,
   hideEntitiesWithoutAreas?: boolean,
   hideEnergy?: boolean
 ): LovelaceViewConfig => {

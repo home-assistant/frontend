@@ -1,17 +1,16 @@
+import { mdiClose, mdiContentDuplicate, mdiPencil } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { mdiClose, mdiPencil, mdiContentDuplicate } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
+import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { getElementStubConfig } from "./get-element-stub-config";
+import type { HomeAssistant } from "../../../types";
 import type {
   ConditionalElementConfig,
   IconElementConfig,
@@ -22,6 +21,7 @@ import type {
   StateIconElementConfig,
   StateLabelElementConfig,
 } from "../elements/types";
+import { getElementStubConfig } from "./get-element-stub-config";
 
 declare global {
   interface HASSDomEvents {
@@ -116,10 +116,10 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
         >
           ${elementTypes.map(
             (element) => html`
-              <mwc-list-item .value=${element}
+              <ha-list-item .value=${element}
                 >${this.hass?.localize(
                   `ui.panel.lovelace.editor.card.picture-elements.element_types.${element}`
-                )}</mwc-list-item
+                )}</ha-list-item
               >
             `
           )}
@@ -230,44 +230,42 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     fireEvent(this, "elements-changed", { elements: newElements });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .element {
-        display: flex;
-        align-items: center;
-      }
+  static styles = css`
+    .element {
+      display: flex;
+      align-items: center;
+    }
 
-      .element-row {
-        height: 60px;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-grow: 1;
-      }
+    .element-row {
+      height: 60px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-grow: 1;
+    }
 
-      .element-row div {
-        display: flex;
-        flex-direction: column;
-      }
+    .element-row div {
+      display: flex;
+      flex-direction: column;
+    }
 
-      .remove-icon,
-      .edit-icon,
-      .duplicate-icon {
-        --mdc-icon-button-size: 36px;
-        color: var(--secondary-text-color);
-      }
+    .remove-icon,
+    .edit-icon,
+    .duplicate-icon {
+      --mdc-icon-button-size: 36px;
+      color: var(--secondary-text-color);
+    }
 
-      .secondary {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-      }
+    .secondary {
+      font-size: 12px;
+      color: var(--secondary-text-color);
+    }
 
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+    ha-select {
+      width: 100%;
+    }
+  `;
 }
 
 declare global {

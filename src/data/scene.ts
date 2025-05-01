@@ -55,13 +55,15 @@ export interface SceneConfig {
   metadata?: SceneMetaData;
 }
 
-export interface SceneEntities {
-  [entityId: string]: string | { state: string; [key: string]: any };
-}
+export type SceneEntities = Record<
+  string,
+  string | { state: string; [key: string]: any }
+>;
 
-export interface SceneMetaData {
-  [entityId: string]: { entity_only?: boolean | undefined };
-}
+export type SceneMetaData = Record<
+  string,
+  { entity_only?: boolean | undefined }
+>;
 
 export const activateScene = (
   hass: HomeAssistant,

@@ -1,11 +1,11 @@
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { Condition } from "../common/validate-condition";
 
-export type LovelaceHeadingBadgeConfig = {
+export interface LovelaceHeadingBadgeConfig {
   type?: string;
   [key: string]: any;
   visibility?: Condition[];
-};
+}
 
 export interface ErrorBadgeConfig extends LovelaceHeadingBadgeConfig {
   type: string;
@@ -23,4 +23,6 @@ export interface EntityHeadingBadgeConfig extends LovelaceHeadingBadgeConfig {
   show_icon?: boolean;
   color?: string;
   tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }

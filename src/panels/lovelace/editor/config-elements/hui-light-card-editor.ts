@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
+import { mdiGestureTap } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -19,6 +20,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     theme: optional(string()),
     icon: optional(string()),
+    tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
   })
@@ -48,12 +50,43 @@ const SCHEMA = [
   },
   { name: "theme", selector: { theme: {} } },
   {
-    name: "hold_action",
-    selector: { ui_action: {} },
-  },
-  {
-    name: "double_tap_action",
-    selector: { ui_action: {} },
+    name: "interactions",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiGestureTap,
+    schema: [
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "toggle",
+          },
+        },
+      },
+      {
+        name: "hold_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: [
+          {
+            name: "double_tap_action",
+            selector: {
+              ui_action: {
+                default_action: "none",
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
 ] as const;
 

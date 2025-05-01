@@ -1,8 +1,18 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -14,7 +24,6 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -25,6 +34,7 @@ const cardConfigStruct = assign(
     show_current: optional(boolean()),
     show_forecast: optional(boolean()),
     forecast_type: optional(string()),
+    forecast_slots: optional(number()),
     secondary_info_attribute: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
@@ -225,6 +235,42 @@ export class HuiWeatherForecastCardEditor
                   },
                 },
               },
+              {
+                name: "forecast_slots",
+                selector: { number: { min: 1, max: 12 } },
+                default: 5,
+              },
+              {
+                name: "interactions",
+                type: "expandable",
+                flatten: true,
+                iconPath: mdiGestureTap,
+                schema: [
+                  {
+                    name: "tap_action",
+                    selector: {
+                      ui_action: {
+                        default_action: "more-info",
+                      },
+                    },
+                  },
+                  {
+                    name: "",
+                    type: "optional_actions",
+                    flatten: true,
+                    schema: (["hold_action", "double_tap_action"] as const).map(
+                      (action) => ({
+                        name: action,
+                        selector: {
+                          ui_action: {
+                            default_action: "none" as const,
+                          },
+                        },
+                      })
+                    ),
+                  },
+                ],
+              },
             ] as const)
           : []),
       ] as const
@@ -303,6 +349,10 @@ export class HuiWeatherForecastCardEditor
       case "forecast_type":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.weather-forecast.forecast_type"
+        );
+      case "forecast_slots":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.weather-forecast.forecast_slots"
         );
       case "forecast":
         return this.hass!.localize(

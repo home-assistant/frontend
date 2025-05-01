@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -33,7 +33,7 @@ class HassioCoreInfo extends LitElement {
 
   @state() private _metrics?: HassioStats;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult | undefined {
     const metrics = [
       {
         description: this.supervisor.localize("system.core.cpu_usage"),
@@ -196,9 +196,6 @@ class HassioCoreInfo extends LitElement {
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
-        }
-        mwc-list-item ha-svg-icon {
-          color: var(--secondary-text-color);
         }
         a {
           text-decoration: none;

@@ -1,13 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { LOCAL_TIME_ZONE } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-circular-progress";
-import "../components/ha-country-picker";
+import "../components/ha-spinner";
+import { COUNTRIES } from "../components/ha-country-picker";
 import type { ConfigUpdateValues } from "../data/core";
 import { saveCoreConfig } from "../data/core";
 import { countryCurrency } from "../data/currency";
@@ -52,7 +52,7 @@ class OnboardingCoreConfig extends LitElement {
     }
     if (this._skipCore) {
       return html`<div class="row center">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
       </div>`;
     }
     return html`
@@ -131,6 +131,17 @@ class OnboardingCoreConfig extends LitElement {
       this._save(ev);
       return;
     }
+
+    // Set suggested country
+    let suggested: string | undefined;
+    if (navigator.language) {
+      const lang = navigator.language.split("-").pop()!.toUpperCase();
+      if (COUNTRIES.includes(lang)) {
+        suggested = lang;
+      }
+    }
+    this._country = suggested;
+
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;
     setTimeout(
@@ -174,64 +185,62 @@ class OnboardingCoreConfig extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .row {
-        display: flex;
-        flex-direction: row;
-        margin: 0 -8px;
-        align-items: center;
-        --ha-select-min-width: 100px;
-      }
+  static styles = css`
+    .row {
+      display: flex;
+      flex-direction: row;
+      margin: 0 -8px;
+      align-items: center;
+      --ha-select-min-width: 100px;
+    }
 
-      .secondary {
-        color: var(--secondary-text-color);
-      }
+    .secondary {
+      color: var(--secondary-text-color);
+    }
 
-      p {
-        font-size: 14px;
-        line-height: 20px;
-      }
+    p {
+      font-size: 14px;
+      line-height: 20px;
+    }
 
-      ha-textfield {
-        display: block;
-      }
+    ha-textfield {
+      display: block;
+    }
 
-      .flex {
-        flex: 1;
-      }
+    .flex {
+      flex: 1;
+    }
 
-      .middle-text {
-        margin: 16px 0;
-      }
+    .middle-text {
+      margin: 16px 0;
+    }
 
-      .row {
-        margin-top: 16px;
-      }
+    .row {
+      margin-top: 16px;
+    }
 
-      .center {
-        justify-content: center;
-      }
+    .center {
+      justify-content: center;
+    }
 
-      .row > * {
-        margin: 0 8px;
-      }
+    .row > * {
+      margin: 0 8px;
+    }
 
-      .radio-group {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-      }
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
 
-      .footer {
-        margin-top: 16px;
-        text-align: right;
-      }
-      a {
-        color: var(--primary-color);
-      }
-    `;
-  }
+    .footer {
+      margin-top: 16px;
+      text-align: right;
+    }
+    a {
+      color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

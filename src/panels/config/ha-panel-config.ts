@@ -1,4 +1,4 @@
-import { ContextProvider } from "@lit-labs/context";
+import { ContextProvider } from "@lit/context";
 import {
   mdiAccount,
   mdiBackupRestore,
@@ -57,7 +57,7 @@ declare global {
   }
 }
 
-export const configSections: { [name: string]: PageNavigation[] } = {
+export const configSections: Record<string, PageNavigation[]> = {
   dashboard: [
     {
       path: "/config/integrations",
@@ -548,6 +548,30 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
             "./integrations/integration-panels/thread/thread-config-panel"
           ),
       },
+      bluetooth: {
+        tag: "bluetooth-config-dashboard-router",
+        load: () =>
+          import(
+            "./integrations/integration-panels/bluetooth/bluetooth-config-dashboard-router"
+          ),
+      },
+      dhcp: {
+        tag: "dhcp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/dhcp/dhcp-config-panel"),
+      },
+      ssdp: {
+        tag: "ssdp-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/ssdp/ssdp-config-panel"),
+      },
+      zeroconf: {
+        tag: "zeroconf-config-panel",
+        load: () =>
+          import(
+            "./integrations/integration-panels/zeroconf/zeroconf-config-panel"
+          ),
+      },
       application_credentials: {
         tag: "ha-config-application-credentials",
         load: () =>
@@ -562,7 +586,7 @@ class HaPanelConfig extends SubscribeMixin(HassRouterPage) {
 
   @state() private _cloudStatus?: CloudStatus;
 
-  private _listeners: Array<() => void> = [];
+  private _listeners: (() => void)[] = [];
 
   public connectedCallback() {
     super.connectedCallback();

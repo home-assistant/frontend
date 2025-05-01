@@ -14,6 +14,8 @@ import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
 
 declare global {
   interface HASSDomEvents {
@@ -50,6 +52,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           case "a":
             this._showVoiceCommandDialog(ev.detail);
             break;
+          case "?":
+            this._showShortcutDialog(ev.detail);
         }
       });
 
@@ -64,6 +68,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         m: (ev) => this._createMyLink(ev),
         a: (ev) => this._showVoiceCommandDialog(ev),
         d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
+        "Shift+?": (ev) => this._showShortcutDialog(ev),
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: (ev) => this._showQuickBar(ev),
         KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
@@ -80,7 +86,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _showVoiceCommandDialog(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e) ||
+        !canOverrideAlphanumericInput(e.composedPath()) ||
         !this._conversation(this.hass.config.components)
       ) {
         return;
@@ -110,10 +116,23 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showQuickBar(this, { mode });
     }
 
+    private _showShortcutDialog(e: KeyboardEvent) {
+      if (!this._canShowQuickBar(e)) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      showShortcutsDialog(this);
+    }
+
     private async _createMyLink(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e)
+        !canOverrideAlphanumericInput(e.composedPath())
       ) {
         return;
       }
@@ -182,34 +201,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       return (
         this.hass?.user?.is_admin &&
         this.hass.enableShortcuts &&
-        this._canOverrideAlphanumericInput(e)
+        canOverrideAlphanumericInput(e.composedPath())
       );
-    }
-
-    private _canOverrideAlphanumericInput(e: KeyboardEvent) {
-      const el = e.composedPath()[0] as Element;
-
-      if (el.tagName === "TEXTAREA") {
-        return false;
-      }
-
-      if (el.parentElement?.tagName === "HA-SELECT") {
-        return false;
-      }
-
-      if (el.tagName !== "INPUT") {
-        return true;
-      }
-
-      switch ((el as HTMLInputElement).type) {
-        case "button":
-        case "checkbox":
-        case "hidden":
-        case "radio":
-        case "range":
-          return true;
-        default:
-          return false;
-      }
     }
   };

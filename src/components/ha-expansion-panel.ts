@@ -1,6 +1,6 @@
 import { mdiChevronDown } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -13,11 +13,11 @@ export class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) leftChevron =
-    false;
+  @property({ attribute: "left-chevron", type: Boolean, reflect: true })
+  public leftChevron = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) noCollapse =
-    false;
+  @property({ attribute: "no-collapse", type: Boolean, reflect: true })
+  public noCollapse = false;
 
   @property() header?: string;
 
@@ -28,6 +28,14 @@ export class HaExpansionPanel extends LitElement {
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
+    const chevronIcon = this.noCollapse
+      ? nothing
+      : html`
+          <ha-svg-icon
+            .path=${mdiChevronDown}
+            class="summary-icon ${classMap({ expanded: this.expanded })}"
+          ></ha-svg-icon>
+        `;
     return html`
       <div class="top ${classMap({ expanded: this.expanded })}">
         <div
@@ -42,28 +50,15 @@ export class HaExpansionPanel extends LitElement {
           aria-expanded=${this.expanded}
           aria-controls="sect1"
         >
-          ${this.leftChevron && !this.noCollapse
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiChevronDown}
-                  class="summary-icon ${classMap({ expanded: this.expanded })}"
-                ></ha-svg-icon>
-              `
-            : ""}
+          ${this.leftChevron ? chevronIcon : nothing}
+          <slot name="leading-icon"></slot>
           <slot name="header">
             <div class="header">
               ${this.header}
               <slot class="secondary" name="secondary">${this.secondary}</slot>
             </div>
           </slot>
-          ${!this.leftChevron && !this.noCollapse
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiChevronDown}
-                  class="summary-icon ${classMap({ expanded: this.expanded })}"
-                ></ha-svg-icon>
-              `
-            : ""}
+          ${!this.leftChevron ? chevronIcon : nothing}
           <slot name="icons"></slot>
         </div>
       </div>
@@ -141,92 +136,91 @@ export class HaExpansionPanel extends LitElement {
     );
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
+  static styles = css`
+    :host {
+      display: block;
+    }
 
-      .top {
-        display: flex;
-        align-items: center;
-        border-radius: var(--ha-card-border-radius, 12px);
-      }
+    .top {
+      display: flex;
+      align-items: center;
+      border-radius: var(--ha-card-border-radius, 12px);
+    }
 
-      .top.expanded {
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-      }
+    .top.expanded {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
 
-      .top.focused {
-        background: var(--input-fill-color);
-      }
+    .top.focused {
+      background: var(--input-fill-color);
+    }
 
-      :host([outlined]) {
-        box-shadow: none;
-        border-width: 1px;
-        border-style: solid;
-        border-color: var(--outline-color);
-        border-radius: var(--ha-card-border-radius, 12px);
-      }
+    :host([outlined]) {
+      box-shadow: none;
+      border-width: 1px;
+      border-style: solid;
+      border-color: var(--outline-color);
+      border-radius: var(--ha-card-border-radius, 12px);
+    }
 
-      .summary-icon {
-        transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-        direction: var(--direction);
-        margin-left: 8px;
-        margin-inline-start: 8px;
-        margin-inline-end: initial;
-      }
+    .summary-icon {
+      transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      direction: var(--direction);
+      margin-left: 8px;
+      margin-inline-start: 8px;
+      margin-inline-end: initial;
+    }
 
-      :host([leftchevron]) .summary-icon {
-        margin-left: 0;
-        margin-right: 8px;
-        margin-inline-start: 0;
-        margin-inline-end: 8px;
-      }
+    :host([left-chevron]) .summary-icon,
+    ::slotted([slot="leading-icon"]) {
+      margin-left: 0;
+      margin-right: 8px;
+      margin-inline-start: 0;
+      margin-inline-end: 8px;
+    }
 
-      #summary {
-        flex: 1;
-        display: flex;
-        padding: var(--expansion-panel-summary-padding, 0 8px);
-        min-height: 48px;
-        align-items: center;
-        cursor: pointer;
-        overflow: hidden;
-        font-weight: 500;
-        outline: none;
-      }
-      #summary.noCollapse {
-        cursor: default;
-      }
+    #summary {
+      flex: 1;
+      display: flex;
+      padding: var(--expansion-panel-summary-padding, 0 8px);
+      min-height: 48px;
+      align-items: center;
+      cursor: pointer;
+      overflow: hidden;
+      font-weight: 500;
+      outline: none;
+    }
+    #summary.noCollapse {
+      cursor: default;
+    }
 
-      .summary-icon.expanded {
-        transform: rotate(180deg);
-      }
+    .summary-icon.expanded {
+      transform: rotate(180deg);
+    }
 
-      .header,
-      ::slotted([slot="header"]) {
-        flex: 1;
-      }
+    .header,
+    ::slotted([slot="header"]) {
+      flex: 1;
+    }
 
-      .container {
-        padding: var(--expansion-panel-content-padding, 0 8px);
-        overflow: hidden;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
-        height: 0px;
-      }
+    .container {
+      padding: var(--expansion-panel-content-padding, 0 8px);
+      overflow: hidden;
+      transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      height: 0px;
+    }
 
-      .container.expanded {
-        height: auto;
-      }
+    .container.expanded {
+      height: auto;
+    }
 
-      .secondary {
-        display: block;
-        color: var(--secondary-text-color);
-        font-size: 12px;
-      }
-    `;
-  }
+    .secondary {
+      display: block;
+      color: var(--secondary-text-color);
+      font-size: 12px;
+    }
+  `;
 }
 
 declare global {

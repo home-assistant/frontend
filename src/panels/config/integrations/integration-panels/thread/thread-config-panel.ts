@@ -88,21 +88,21 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
             target="_blank"
             @click=${this._signUrl}
           >
-            <mwc-list-item>
+            <ha-list-item>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.download_diagnostics"
               )}
-            </mwc-list-item>
+            </ha-list-item>
           </a>
-          <mwc-list-item @click=${this._addTLV}
+          <ha-list-item @click=${this._addTLV}
             >${this.hass.localize(
               "ui.panel.config.thread.add_dataset_from_tlv"
-            )}</mwc-list-item
+            )}</ha-list-item
           >
-          <mwc-list-item @click=${this._addOTBR}
+          <ha-list-item @click=${this._addOTBR}
             >${this.hass.localize(
               "ui.panel.config.thread.add_open_thread_border_router"
-            )}</mwc-list-item
+            )}</ha-list-item
           >
         </ha-button-menu>
         <div class="content">
@@ -396,7 +396,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       datasets: ThreadDataSet[]
     ): { preferred?: ThreadNetwork; networks: ThreadNetwork[] } => {
       let preferred: ThreadNetwork | undefined;
-      const networks: { [key: string]: ThreadNetwork } = {};
+      const networks: Record<string, ThreadNetwork> = {};
       for (const router of routers) {
         const network = router.extended_pan_id;
         if (network in networks) {
@@ -446,7 +446,7 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
     }
     try {
       this._otbrInfo = await getOTBRInfo(this.hass);
-    } catch (err) {
+    } catch (_err) {
       this._otbrInfo = undefined;
     }
   }

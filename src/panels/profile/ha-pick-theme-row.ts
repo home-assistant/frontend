@@ -1,19 +1,20 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
+import "../../components/ha-list-item";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import "../../components/ha-textfield";
 import {
-  DEFAULT_ACCENT_COLOR,
-  DEFAULT_PRIMARY_COLOR,
-} from "../../resources/styles-data";
+  DefaultAccentColor,
+  DefaultPrimaryColor,
+} from "../../resources/theme/color.globals";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
@@ -68,15 +69,15 @@ export class HaPickThemeRow extends LitElement {
           @selected=${this._handleThemeSelection}
           naturalMenuWidth
         >
-          <mwc-list-item .value=${USE_DEFAULT_THEME}>
+          <ha-list-item .value=${USE_DEFAULT_THEME}>
             ${this.hass.localize("ui.panel.profile.themes.use_default")}
-          </mwc-list-item>
-          <mwc-list-item .value=${HOME_ASSISTANT_THEME}>
+          </ha-list-item>
+          <ha-list-item .value=${HOME_ASSISTANT_THEME}>
             Home Assistant
-          </mwc-list-item>
+          </ha-list-item>
           ${this._themeNames.map(
             (theme) => html`
-              <mwc-list-item .value=${theme}>${theme}</mwc-list-item>
+              <ha-list-item .value=${theme}>${theme}</ha-list-item>
             `
           )}
         </ha-select>
@@ -128,8 +129,7 @@ export class HaPickThemeRow extends LitElement {
             ${curTheme === HOME_ASSISTANT_THEME
               ? html`<div class="color-pickers">
                   <ha-textfield
-                    .value=${themeSettings?.primaryColor ||
-                    DEFAULT_PRIMARY_COLOR}
+                    .value=${themeSettings?.primaryColor || DefaultPrimaryColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.primary_color"
@@ -138,7 +138,7 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   <ha-textfield
-                    .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
+                    .value=${themeSettings?.accentColor || DefaultAccentColor}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.accent_color"
@@ -224,34 +224,32 @@ export class HaPickThemeRow extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .inputs {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        margin: 0 12px;
-      }
-      ha-formfield {
-        margin: 0 4px;
-      }
-      .color-pickers {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        flex-grow: 1;
-      }
-      ha-textfield {
-        --text-field-padding: 8px;
-        min-width: 75px;
-        flex-grow: 1;
-        margin: 0 4px;
-      }
-    `;
-  }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .inputs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin: 0 12px;
+    }
+    ha-formfield {
+      margin: 0 4px;
+    }
+    .color-pickers {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex-grow: 1;
+    }
+    ha-textfield {
+      --text-field-padding: 8px;
+      min-width: 75px;
+      flex-grow: 1;
+      margin: 0 4px;
+    }
+  `;
 }
 
 declare global {

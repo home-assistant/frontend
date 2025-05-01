@@ -1,4 +1,4 @@
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HaFormConstantSchema, HaFormElement } from "./types";
@@ -15,16 +15,14 @@ export class HaFormConstant extends LitElement implements HaFormElement {
         : ""}`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-      }
-      .label {
-        font-weight: 500;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+    }
+    .label {
+      font-weight: 500;
+    }
+  `;
 }
 
 declare global {

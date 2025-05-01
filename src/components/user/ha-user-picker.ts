@@ -1,5 +1,4 @@
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -46,10 +45,10 @@ class HaUserPicker extends LitElement {
         @selected=${this._userChanged}
       >
         ${this.users?.length === 0
-          ? html`<mwc-list-item value="">
+          ? html`<ha-list-item value="">
               ${this.noUserLabel ||
               this.hass?.localize("ui.components.user-picker.no_user")}
-            </mwc-list-item>`
+            </ha-list-item>`
           : ""}
         ${this._sortedUsers(this.users).map(
           (user) => html`
@@ -88,16 +87,11 @@ class HaUserPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: inline-block;
-      }
-      mwc-list {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: inline-block;
+    }
+  `;
 }
 
 customElements.define("ha-user-picker", HaUserPicker);

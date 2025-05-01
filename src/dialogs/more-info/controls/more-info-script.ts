@@ -1,7 +1,7 @@
 import { mdiPlay, mdiStop } from "@mdi/js";
 import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-relative-time";
@@ -17,6 +17,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../components/ha-more-info-state-header";
 import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import "../../../components/ha-markdown";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
@@ -56,10 +57,11 @@ class MoreInfoScript extends LitElement {
     }
     const stateObj = this.stateObj;
 
-    const fields =
+    const script =
       this.hass.services.script[
         this.entry?.unique_id || computeObjectId(this.stateObj.entity_id)
-      ]?.fields;
+      ];
+    const fields = script?.fields;
 
     const hasFields = fields && Object.keys(fields).length > 0;
 
@@ -81,6 +83,13 @@ class MoreInfoScript extends LitElement {
           : this.hass.localize("ui.card.script.idle")}
         .changedOverride=${this.stateObj.attributes.last_triggered || 0}
       ></ha-more-info-state-header>
+
+      ${script?.description
+        ? html`<ha-markdown
+            breaks
+            .content=${script.description}
+          ></ha-markdown>`
+        : nothing}
 
       <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
         ${hasQueue
@@ -199,37 +208,39 @@ class MoreInfoScript extends LitElement {
     return false;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .queue {
-        visibility: hidden;
-        color: var(--secondary-text-color);
-        text-align: center;
-        margin-bottom: 16px;
-        height: 21px;
-      }
-      .queue.has-queue {
-        visibility: visible;
-      }
-      .fields {
-        padding: 16px;
-        border: 1px solid var(--divider-color);
-        border-radius: 8px;
-        margin-bottom: 16px;
-      }
-      .fields .title {
-        font-weight: bold;
-      }
-      ha-control-button ha-svg-icon {
-        z-index: -1;
-        margin-right: 4px;
-      }
-      ha-service-control {
-        --service-control-padding: 0;
-        --service-control-items-border-top: none;
-      }
-    `;
-  }
+  static styles = css`
+    .queue {
+      visibility: hidden;
+      color: var(--secondary-text-color);
+      text-align: center;
+      margin-bottom: 16px;
+      height: 21px;
+    }
+    .queue.has-queue {
+      visibility: visible;
+    }
+    .fields {
+      padding: 16px;
+      border: 1px solid var(--divider-color);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .fields .title {
+      font-weight: bold;
+    }
+    ha-control-button ha-svg-icon {
+      z-index: -1;
+      margin-right: 4px;
+    }
+    ha-service-control {
+      --service-control-padding: 0;
+      --service-control-items-border-top: none;
+    }
+    ha-markdown {
+      text-align: center;
+      padding: 0 16px;
+    }
+  `;
 }
 
 declare global {

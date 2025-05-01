@@ -1,14 +1,11 @@
 import { mdiDrag } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HaEntityComboBoxEntityFilterFunc } from "../../../components/entity/ha-entity-combo-box";
 import "../../../components/entity/ha-entity-picker";
-import type {
-  HaEntityPicker,
-  HaEntityPickerEntityFilterFunc,
-} from "../../../components/entity/ha-entity-picker";
+import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-sortable";
 import type { HomeAssistant } from "../../../types";
@@ -21,7 +18,7 @@ export class HuiEntityEditor extends LitElement {
   @property({ attribute: false }) public entities?: EntityConfig[];
 
   @property({ attribute: false })
-  public entityFilter?: HaEntityPickerEntityFilterFunc;
+  public entityFilter?: HaEntityComboBoxEntityFilterFunc;
 
   @property() public label?: string;
 
@@ -120,38 +117,36 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-entity-picker {
-        margin-top: 8px;
-      }
-      .add-entity {
-        display: block;
-        margin-left: 31px;
-        margin-inline-start: 31px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
-      .entity {
-        display: flex;
-        align-items: center;
-      }
-      .entity .handle {
-        padding-right: 8px;
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor: grab;
-        padding-inline-end: 8px;
-        padding-inline-start: initial;
-        direction: var(--direction);
-      }
-      .entity .handle > * {
-        pointer-events: none;
-      }
-      .entity ha-entity-picker {
-        flex-grow: 1;
-      }
-    `;
-  }
+  static styles = css`
+    ha-entity-picker {
+      margin-top: 8px;
+    }
+    .add-entity {
+      display: block;
+      margin-left: 31px;
+      margin-inline-start: 31px;
+      margin-inline-end: initial;
+      direction: var(--direction);
+    }
+    .entity {
+      display: flex;
+      align-items: center;
+    }
+    .entity .handle {
+      padding-right: 8px;
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
+      padding-inline-end: 8px;
+      padding-inline-start: initial;
+      direction: var(--direction);
+    }
+    .entity .handle > * {
+      pointer-events: none;
+    }
+    .entity ha-entity-picker {
+      flex-grow: 1;
+    }
+  `;
 }
 
 declare global {

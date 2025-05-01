@@ -1,20 +1,21 @@
+import { format } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { format } from "date-fns";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/entity/state-badge";
 import "../../../components/ha-climate-state";
 import "../../../components/ha-cover-controls";
 import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-date-input";
 import "../../../components/ha-humidifier-state";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
 import "../../../components/ha-time-input";
-import "../../../components/entity/ha-entity-toggle";
-import "../../../components/entity/state-badge";
 import { isTiltOnly } from "../../../data/cover";
 import { isUnavailableState } from "../../../data/entity";
 import type { ImageEntity } from "../../../data/image";
@@ -45,63 +46,61 @@ class EntityPreviewRow extends LitElement {
       <div class="value">${this._renderEntityState(stateObj)}</div>`;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-      }
-      .name {
-        margin-left: 16px;
-        margin-right: 8px;
-        margin-inline-start: 16px;
-        margin-inline-end: 8px;
-        flex: 1 1 30%;
-      }
-      .value {
-        direction: ltr;
-      }
-      .numberflex {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        flex-grow: 2;
-      }
-      .numberstate {
-        min-width: 45px;
-        text-align: end;
-      }
-      ha-textfield {
-        text-align: end;
-        direction: ltr !important;
-      }
-      ha-slider {
-        width: 100%;
-        max-width: 200px;
-      }
-      ha-time-input {
-        margin-left: 4px;
-        margin-inline-start: 4px;
-        margin-inline-end: initial;
-        direction: var(--direction);
-      }
-      .datetimeflex {
-        display: flex;
-        justify-content: flex-end;
-        width: 100%;
-      }
-      mwc-button {
-        margin-right: -0.57em;
-        margin-inline-end: -0.57em;
-        margin-inline-start: initial;
-      }
-      img {
-        display: block;
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+    }
+    .name {
+      margin-left: 16px;
+      margin-right: 8px;
+      margin-inline-start: 16px;
+      margin-inline-end: 8px;
+      flex: 1 1 30%;
+    }
+    .value {
+      direction: ltr;
+    }
+    .numberflex {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-grow: 2;
+    }
+    .numberstate {
+      min-width: 45px;
+      text-align: end;
+    }
+    ha-textfield {
+      text-align: end;
+      direction: ltr !important;
+    }
+    ha-slider {
+      width: 100%;
+      max-width: 200px;
+    }
+    ha-time-input {
+      margin-left: 4px;
+      margin-inline-start: 4px;
+      margin-inline-end: initial;
+      direction: var(--direction);
+    }
+    .datetimeflex {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+    }
+    mwc-button {
+      margin-right: -0.57em;
+      margin-inline-end: -0.57em;
+      margin-inline-start: initial;
+    }
+    img {
+      display: block;
+      width: 100%;
+    }
+  `;
 
   private _renderEntityState(stateObj: HassEntity): TemplateResult | string {
     const domain = stateObj.entity_id.split(".", 1)[0];
@@ -295,9 +294,9 @@ class EntityPreviewRow extends LitElement {
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
                 (option) => html`
-                  <mwc-list-item .value=${option}>
+                  <ha-list-item .value=${option}>
                     ${this.hass!.formatEntityState(stateObj, option)}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               )
             : ""}

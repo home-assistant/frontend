@@ -1,5 +1,4 @@
 import { mdiStop } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -77,16 +76,14 @@ class HaCoverControls extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .state {
-        white-space: nowrap;
-      }
-      .hidden {
-        visibility: hidden !important;
-      }
-    `;
-  }
+  static styles = css`
+    .state {
+      white-space: nowrap;
+    }
+    .hidden {
+      visibility: hidden !important;
+    }
+  `;
 }
 
 declare global {

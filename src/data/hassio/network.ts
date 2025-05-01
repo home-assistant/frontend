@@ -21,7 +21,7 @@ export interface NetworkInterface {
   wifi?: Partial<WifiConfiguration> | null;
 }
 
-interface DockerNetwork {
+export interface DockerNetwork {
   address: string;
   dns: string;
   gateway: string;
@@ -120,17 +120,14 @@ export const parseAddress = (address: string) => {
   const [ip, cidr] = address.split("/");
   const isIPv6 = ip.includes(":");
   const mask = cidr ? cidrToNetmask(cidr, isIPv6) : null;
-  return { ip, mask };
+  return { ip, mask, prefix: cidr };
 };
 
 export const formatAddress = (ip: string, mask: string) =>
   `${ip}/${netmaskToCidr(mask)}`;
 
 // Helper functions
-export const cidrToNetmask = (
-  cidr: string,
-  isIPv6: boolean = false
-): string => {
+export const cidrToNetmask = (cidr: string, isIPv6 = false): string => {
   const bits = parseInt(cidr, 10);
   if (isIPv6) {
     const fullMask = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff";

@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
@@ -27,12 +26,12 @@ import { computeCssColor } from "../common/color/compute-color";
 import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { AreaRegistryEntry } from "../data/area_registry";
 import type { DeviceRegistryEntry } from "../data/device_registry";
-import { computeDeviceName } from "../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
@@ -40,13 +39,14 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./entity/ha-entity-picker";
-import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
+import "./entity/ha-entity-combo-box";
+import type { HaEntityComboBoxEntityFilterFunc } from "./entity/ha-entity-combo-box";
 import "./ha-area-floor-picker";
 import { floorDefaultIconPath } from "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
@@ -80,7 +80,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
-  public entityFilter?: HaEntityPickerEntityFilterFunc;
+  public entityFilter?: HaEntityComboBoxEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -150,7 +150,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               return this._renderChip(
                 "device_id",
                 device_id,
-                device ? computeDeviceName(device, this.hass) : device_id,
+                device
+                  ? computeDeviceNameDisplay(device, this.hass)
+                  : device_id,
                 undefined,
                 undefined,
                 mdiDevices
@@ -339,38 +341,40 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html`<span role="gridcell">
-              <ha-icon-button
-                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                .label=${this.hass.localize(
-                  "ui.components.target-picker.expand"
-                )}
-                .path=${mdiUnfoldMoreVertical}
-                hide-title
-                .id=${id}
-                .type=${type}
-                @click=${this._handleExpand}
-              ></ha-icon-button>
-              <simple-tooltip class="expand" animation-delay="0"
-                >${this.hass.localize(
+              <ha-tooltip
+                .content=${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
-                )}</simple-tooltip
+                )}
               >
+                <ha-icon-button
+                  class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
+                  .label=${this.hass.localize(
+                    "ui.components.target-picker.expand"
+                  )}
+                  .path=${mdiUnfoldMoreVertical}
+                  hide-title
+                  .id=${id}
+                  .type=${type}
+                  @click=${this._handleExpand}
+                ></ha-icon-button>
+              </ha-tooltip>
             </span>`}
         <span role="gridcell">
-          <ha-icon-button
-            class="mdc-chip__icon mdc-chip__icon--trailing"
-            .label=${this.hass.localize("ui.components.target-picker.remove")}
-            .path=${mdiClose}
-            hide-title
-            .id=${id}
-            .type=${type}
-            @click=${this._handleRemove}
-          ></ha-icon-button>
-          <simple-tooltip animation-delay="0"
-            >${this.hass.localize(
+          <ha-tooltip
+            .content=${this.hass.localize(
               `ui.components.target-picker.remove_${type}`
-            )}</simple-tooltip
+            )}
           >
+            <ha-icon-button
+              class="mdc-chip__icon mdc-chip__icon--trailing"
+              .label=${this.hass.localize("ui.components.target-picker.remove")}
+              .path=${mdiClose}
+              hide-title
+              .id=${id}
+              .type=${type}
+              @click=${this._handleRemove}
+            ></ha-icon-button>
+          </ha-tooltip>
         </span>
       </div>
     `;
@@ -445,7 +449,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 ></ha-label-picker>
               `
             : html`
-                <ha-entity-picker
+                <ha-entity-combo-box
                   .hass=${this.hass}
                   id="input"
                   .type=${"entity_id"}
@@ -460,7 +464,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @value-changed=${this._targetPicked}
                   @click=${this._preventDefault}
                   allow-custom-entity
-                ></ha-entity-picker>
+                ></ha-entity-combo-box>
               `}</mwc-menu-surface
     >`;
   }
@@ -828,9 +832,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:hover {
         z-index: 5;
       }
-      simple-tooltip.expand {
-        min-width: 200px;
-      }
       :host([disabled]) .mdc-chip {
         opacity: var(--light-disabled-opacity);
         pointer-events: none;
@@ -838,11 +839,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       mwc-menu-surface {
         --mdc-menu-min-width: 100%;
       }
-      ha-entity-picker,
+      ha-entity-combo-box,
       ha-device-picker,
       ha-area-floor-picker {
         display: block;
         width: 100%;
+      }
+      ha-tooltip {
+        --ha-tooltip-arrow-size: 0;
       }
     `;
   }

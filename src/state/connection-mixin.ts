@@ -76,7 +76,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
-        debugConnection: false,
+        debugConnection: __DEV__,
         suspendWhenHidden: true,
         enableShortcuts: true,
         moreInfoEntityId: null,
@@ -89,7 +89,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           notifyOnError = true,
           returnResponse = false
         ) => {
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log(
               "Calling service",
@@ -115,7 +115,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             ) {
               return { context: { id: "" } };
             }
-            if (__DEV__ || this.hass?.debugConnection) {
+            if (this.hass?.debugConnection) {
               // eslint-disable-next-line no-console
               console.error(
                 "Error calling service",
@@ -167,7 +167,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         ) => fetchWithAuth(auth, `${auth.data.hassUrl}${path}`, init),
         // For messages that do not get a response
         sendWS: (msg) => {
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
@@ -175,14 +175,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         },
         // For messages that expect a response
         callWS: <R>(msg) => {
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
 
           const resp = conn.sendMessagePromise<R>(msg);
 
-          if (__DEV__ || this.hass?.debugConnection) {
+          if (this.hass?.debugConnection) {
             resp.then(
               // eslint-disable-next-line no-console
               (result) => console.log("Received", result),
@@ -247,6 +247,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               entity.ec !== undefined
                 ? entityReg.entity_categories[entity.ec]
                 : undefined,
+            has_entity_name: entity.hn,
             name: entity.en,
             icon: entity.ic,
             hidden: entity.hb,
@@ -286,7 +287,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       clearInterval(this.__backendPingInterval);
       this.__backendPingInterval = setInterval(() => {
         if (this.hass?.connected) {
-          promiseTimeout(5000, this.hass?.connection.ping()).catch(() => {
+          // If the backend is busy, or the connection is latent,
+          // it can take more than 10 seconds for the ping to return.
+          // We give it a 15 second timeout to be safe.
+          promiseTimeout(15000, this.hass?.connection.ping()).catch(() => {
             if (!this.hass?.connected) {
               return;
             }
@@ -296,7 +300,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             this.hass?.connection.reconnect(true);
           });
         }
-      }, 10000);
+      }, 30000);
     }
 
     protected hassReconnected() {

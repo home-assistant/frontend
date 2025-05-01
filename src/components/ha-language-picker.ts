@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -12,6 +12,49 @@ import type { HomeAssistant } from "../types";
 import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
+
+export const getLanguageOptions = (
+  languages: string[],
+  nativeName: boolean,
+  noSort: boolean,
+  locale?: FrontendLocaleData
+) => {
+  let options: { label: string; value: string }[] = [];
+
+  if (nativeName) {
+    const translations = translationMetadata.translations;
+    options = languages.map((lang) => {
+      let label = translations[lang]?.nativeName;
+      if (!label) {
+        try {
+          // this will not work if Intl.DisplayNames is polyfilled, it will return in the language of the user
+          label = new Intl.DisplayNames(lang, {
+            type: "language",
+            fallback: "code",
+          }).of(lang)!;
+        } catch (_err) {
+          label = lang;
+        }
+      }
+      return {
+        value: lang,
+        label,
+      };
+    });
+  } else if (locale) {
+    options = languages.map((lang) => ({
+      value: lang,
+      label: formatLanguageCode(lang, locale),
+    }));
+  }
+
+  if (!noSort && locale) {
+    options.sort((a, b) =>
+      caseInsensitiveStringCompare(a.label, b.label, locale.language)
+    );
+  }
+  return options;
+};
 
 @customElement("ha-language-picker")
 export class HaLanguagePicker extends LitElement {
@@ -68,6 +111,7 @@ export class HaLanguagePicker extends LitElement {
       const languageOptions = this._getLanguagesOptions(
         this.languages ?? this._defaultLanguages,
         this.nativeName,
+        this.noSort,
         this.hass?.locale
       );
       const selectedItemIndex = languageOptions.findIndex(
@@ -82,45 +126,7 @@ export class HaLanguagePicker extends LitElement {
     }
   }
 
-  private _getLanguagesOptions = memoizeOne(
-    (languages: string[], nativeName: boolean, locale?: FrontendLocaleData) => {
-      let options: { label: string; value: string }[] = [];
-
-      if (nativeName) {
-        const translations = translationMetadata.translations;
-        options = languages.map((lang) => {
-          let label = translations[lang]?.nativeName;
-          if (!label) {
-            try {
-              // this will not work if Intl.DisplayNames is polyfilled, it will return in the language of the user
-              label = new Intl.DisplayNames(lang, {
-                type: "language",
-                fallback: "code",
-              }).of(lang)!;
-            } catch (err) {
-              label = lang;
-            }
-          }
-          return {
-            value: lang,
-            label,
-          };
-        });
-      } else if (locale) {
-        options = languages.map((lang) => ({
-          value: lang,
-          label: formatLanguageCode(lang, locale),
-        }));
-      }
-
-      if (!this.noSort && locale) {
-        options.sort((a, b) =>
-          caseInsensitiveStringCompare(a.label, b.label, locale.language)
-        );
-      }
-      return options;
-    }
-  );
+  private _getLanguagesOptions = memoizeOne(getLanguageOptions);
 
   private _computeDefaultLanguageOptions() {
     this._defaultLanguages = Object.keys(translationMetadata.translations);
@@ -130,6 +136,7 @@ export class HaLanguagePicker extends LitElement {
     const languageOptions = this._getLanguagesOptions(
       this.languages ?? this._defaultLanguages,
       this.nativeName,
+      this.noSort,
       this.hass?.locale
     );
 
@@ -167,13 +174,11 @@ export class HaLanguagePicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        width: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      width: 100%;
+    }
+  `;
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;

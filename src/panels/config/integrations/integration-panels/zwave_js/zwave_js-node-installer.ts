@@ -1,11 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import "../../../../../components/ha-card";
-import { computeDeviceName } from "../../../../../data/device_registry";
 import type {
   ZWaveJSNodeCapabilities,
   ZwaveJSNodeMetadata,
@@ -20,10 +20,10 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
+import "./capability-controls/zwave_js-capability-control-color-switch";
+import "./capability-controls/zwave_js-capability-control-door-lock";
 import "./capability-controls/zwave_js-capability-control-multilevel-switch";
 import "./capability-controls/zwave_js-capability-control-thermostat-setback";
-import "./capability-controls/zwave_js-capability-control-door-lock";
-import "./capability-controls/zwave_js-capability-control-color-switch";
 
 const CAPABILITY_CONTROLS = {
   38: "multilevel_switch",
@@ -109,7 +109,7 @@ class ZWaveJSNodeInstaller extends LitElement {
             ${device
               ? html`
                   <div class="device-info">
-                    <h2>${computeDeviceName(device, this.hass)}</h2>
+                    <h2>${computeDeviceNameDisplay(device, this.hass)}</h2>
                     <p>${device.manufacturer} ${device.model}</p>
                   </div>
                 `

@@ -61,9 +61,10 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
     }
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     this._hardware = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    return true;
   }
 
   protected render() {
@@ -196,7 +197,7 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
           padding: 16px;
           overflow: auto;
           line-height: 1.45;
-          font-family: var(--code-font-family, monospace);
+          font-family: var(--ha-font-family-code);
         }
         code {
           font-size: 85%;

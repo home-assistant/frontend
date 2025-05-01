@@ -1,13 +1,7 @@
-import {
-  css,
-  type CSSResultGroup,
-  html,
-  LitElement,
-  nothing,
-  type PropertyValues,
-} from "lit";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -28,16 +22,20 @@ import "./ha-web-rtc-player";
 
 const MJPEG_STREAM = "mjpeg";
 
-type Stream = {
+interface Stream {
   type: StreamType | typeof MJPEG_STREAM;
   visible: boolean;
-};
+}
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public stateObj?: CameraEntity;
+
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -108,6 +106,10 @@ export class HaCameraStream extends LitElement {
           : this._connected
             ? computeMJPEGStreamUrl(this.stateObj)
             : this._posterUrl || ""}
+        style=${styleMap({
+          aspectRatio: this.aspectRatio,
+          objectFit: this.fitMode,
+        })}
         alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }
@@ -124,6 +126,8 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleHlsStreams}
         class=${stream.visible ? "" : "hidden"}
+        .aspectRatio=${this.aspectRatio}
+        .fitMode=${this.fitMode}
       ></ha-hls-player>`;
     }
 
@@ -138,6 +142,8 @@ export class HaCameraStream extends LitElement {
         .posterUrl=${this._posterUrl}
         @streams=${this._handleWebRtcStreams}
         class=${stream.visible ? "" : "hidden"}
+        .aspectRatio=${this.aspectRatio}
+        .fitMode=${this.fitMode}
       ></ha-web-rtc-player>`;
     }
 
@@ -166,7 +172,7 @@ export class HaCameraStream extends LitElement {
         this.clientWidth,
         this.clientHeight
       );
-    } catch (err: any) {
+    } catch (_err: any) {
       // poster url is optional
       this._posterUrl = undefined;
     }
@@ -256,22 +262,30 @@ export class HaCameraStream extends LitElement {
     }
   );
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host,
-      img {
-        display: block;
-      }
+  static styles = css`
+    :host,
+    img {
+      display: block;
+    }
 
-      img {
-        width: 100%;
-      }
+    img {
+      width: 100%;
+    }
 
-      .hidden {
-        display: none;
-      }
-    `;
-  }
+    ha-web-rtc-player {
+      width: 100%;
+      height: 100%;
+    }
+
+    ha-hls-player {
+      width: 100%;
+      height: 100%;
+    }
+
+    .hidden {
+      display: none;
+    }
+  `;
 }
 
 declare global {

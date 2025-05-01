@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
@@ -20,6 +20,7 @@ const LOAD_ELEMENTS = {
     import("./ha-form-positive_time_period_dict"),
   select: () => import("./ha-form-select"),
   string: () => import("./ha-form-string"),
+  optional_actions: () => import("./ha-form-optional_actions"),
 };
 
 const getValue = (obj, item) =>
@@ -183,8 +184,8 @@ export class HaForm extends LitElement implements HaFormElement {
     return context;
   }
 
-  protected createRenderRoot() {
-    const root = super.createRenderRoot();
+  protected createRenderRoot(): HTMLElement | DocumentFragment {
+    const root = super.createRenderRoot() as ShadowRoot;
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(root);
     return root;
@@ -249,19 +250,17 @@ export class HaForm extends LitElement implements HaFormElement {
     return this.computeWarning ? this.computeWarning(warning, schema) : warning;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      .root > * {
-        display: block;
-      }
-      .root > *:not([own-margin]):not(:last-child) {
-        margin-bottom: 24px;
-      }
-      ha-alert[own-margin] {
-        margin-bottom: 4px;
-      }
-    `;
-  }
+  static styles = css`
+    .root > * {
+      display: block;
+    }
+    .root > *:not([own-margin]):not(:last-child) {
+      margin-bottom: 24px;
+    }
+    ha-alert[own-margin] {
+      margin-bottom: 4px;
+    }
+  `;
 }
 
 declare global {

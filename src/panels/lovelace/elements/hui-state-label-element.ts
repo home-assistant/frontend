@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -56,7 +56,11 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
       throw Error("Entity required");
     }
 
-    this._config = { hold_action: { action: "more-info" }, ...config };
+    this._config = {
+      tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -115,22 +119,20 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        cursor: pointer;
-      }
-      div {
-        padding: 8px;
-        white-space: nowrap;
-      }
-      div:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+    div {
+      padding: 8px;
+      white-space: nowrap;
+    }
+    div:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: 100%;
+    }
+  `;
 }
 
 declare global {

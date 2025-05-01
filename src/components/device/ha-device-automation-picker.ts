@@ -1,6 +1,4 @@
-import { consume } from "@lit-labs/context";
-import "@material/mwc-list/mwc-list-item";
-import type { CSSResultGroup } from "lit";
+import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -12,6 +10,7 @@ import {
 } from "../../data/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
+import "../ha-list-item";
 import "../ha-select";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -107,24 +106,24 @@ export abstract class HaDeviceAutomationPicker<
         .disabled=${this._automations.length === 0}
       >
         ${value === NO_AUTOMATION_KEY
-          ? html`<mwc-list-item .value=${NO_AUTOMATION_KEY}>
+          ? html`<ha-list-item .value=${NO_AUTOMATION_KEY}>
               ${this.NO_AUTOMATION_TEXT}
-            </mwc-list-item>`
+            </ha-list-item>`
           : ""}
         ${value === UNKNOWN_AUTOMATION_KEY
-          ? html`<mwc-list-item .value=${UNKNOWN_AUTOMATION_KEY}>
+          ? html`<ha-list-item .value=${UNKNOWN_AUTOMATION_KEY}>
               ${this.UNKNOWN_AUTOMATION_TEXT}
-            </mwc-list-item>`
+            </ha-list-item>`
           : ""}
         ${this._automations.map(
           (automation, idx) => html`
-            <mwc-list-item .value=${`${automation.device_id}_${idx}`}>
+            <ha-list-item .value=${`${automation.device_id}_${idx}`}>
               ${this._localizeDeviceAutomation(
                 this.hass,
                 this._entityReg,
                 automation
               )}
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </ha-select>
@@ -185,11 +184,9 @@ export abstract class HaDeviceAutomationPicker<
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-select {
-        display: block;
-      }
-    `;
-  }
+  static styles = css`
+    ha-select {
+      display: block;
+    }
+  `;
 }

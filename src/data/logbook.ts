@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   BINARY_STATE_OFF,
   BINARY_STATE_ON,
@@ -8,9 +8,9 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { autoCaseNoun } from "../common/translations/auto_case_noun";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type { HaEntityPickerEntityFilterFunc } from "../components/entity/ha-entity-picker";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity";
+import type { HaEntityComboBoxEntityFilterFunc } from "../components/entity/ha-entity-combo-box";
 
 const LOGBOOK_LOCALIZE_PATH = "ui.components.logbook.messages";
 export const CONTINUOUS_DOMAINS = ["counter", "proximity", "sensor", "zone"];
@@ -119,7 +119,7 @@ export const subscribeLogbook = (
   endDate: string,
   entityIds?: string[],
   deviceIds?: string[]
-): Promise<() => Promise<void>> => {
+): Promise<UnsubscribeFunc> => {
   // If all specified filters are empty lists, we can return an empty list.
   if (
     (entityIds || deviceIds) &&
@@ -148,7 +148,8 @@ export const subscribeLogbook = (
 export const createHistoricState = (
   currentStateObj: HassEntity,
   state?: string
-): HassEntity => <HassEntity>(<unknown>{
+): HassEntity =>
+  ({
     entity_id: currentStateObj.entity_id,
     state: state,
     attributes: {
@@ -170,7 +171,7 @@ export const createHistoricState = (
         ? undefined
         : currentStateObj?.attributes.entity_picture,
     },
-  });
+  }) as unknown as HassEntity;
 
 export const localizeTriggerSource = (
   localize: LocalizeFunc,
@@ -321,9 +322,8 @@ export const localizeStateMessage = (
   });
 };
 
-export const filterLogbookCompatibleEntities: HaEntityPickerEntityFilterFunc = (
-  entity
-) =>
-  computeStateDomain(entity) !== "sensor" ||
-  (entity.attributes.unit_of_measurement === undefined &&
-    entity.attributes.state_class === undefined);
+export const filterLogbookCompatibleEntities: HaEntityComboBoxEntityFilterFunc =
+  (entity) =>
+    computeStateDomain(entity) !== "sensor" ||
+    (entity.attributes.unit_of_measurement === undefined &&
+      entity.attributes.state_class === undefined);

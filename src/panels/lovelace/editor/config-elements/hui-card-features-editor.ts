@@ -1,6 +1,5 @@
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -25,6 +24,7 @@ import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-cli
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
 import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
@@ -43,6 +43,7 @@ import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
+import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
@@ -59,6 +60,7 @@ const UI_FEATURE_TYPES = [
   "climate-preset-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
+  "counter-actions",
   "cover-open-close",
   "cover-position",
   "cover-tilt-position",
@@ -77,6 +79,7 @@ const UI_FEATURE_TYPES = [
   "select-options",
   "target-humidity",
   "target-temperature",
+  "toggle",
   "update-actions",
   "vacuum-commands",
   "water-heater-operation-modes",
@@ -91,6 +94,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "climate-preset-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
+  "counter-actions",
   "fan-preset-modes",
   "humidifier-modes",
   "lawn-mower-commands",
@@ -112,6 +116,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
     supportsClimateSwingHorizontalModesCardFeature,
   "climate-hvac-modes": supportsClimateHvacModesCardFeature,
   "climate-preset-modes": supportsClimatePresetModesCardFeature,
+  "counter-actions": supportsCounterActionsCardFeature,
   "cover-open-close": supportsCoverOpenCloseCardFeature,
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
@@ -130,6 +135,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "select-options": supportsSelectOptionsCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
+  toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
@@ -144,6 +150,38 @@ const CUSTOM_FEATURE_ENTRIES: Record<
 customCardFeatures.forEach((feature) => {
   CUSTOM_FEATURE_ENTRIES[feature.type] = feature;
 });
+
+export const getSupportedFeaturesType = (
+  stateObj: HassEntity,
+  featuresTypes?: string[]
+) => {
+  const filteredFeaturesTypes = UI_FEATURE_TYPES.filter(
+    (type) => !featuresTypes || featuresTypes.includes(type)
+  ) as string[];
+
+  const customFeaturesTypes = customCardFeatures.map(
+    (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
+  );
+  return filteredFeaturesTypes
+    .concat(customFeaturesTypes)
+    .filter((type) => supportsFeaturesType(stateObj, type));
+};
+
+export const supportsFeaturesType = (stateObj: HassEntity, type: string) => {
+  if (isCustomType(type)) {
+    const customType = stripCustomPrefix(type);
+    const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
+    if (!customFeatureEntry?.supported) return true;
+    try {
+      return customFeatureEntry.supported(stateObj);
+    } catch {
+      return false;
+    }
+  }
+
+  const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
+  return !supportsFeature || supportsFeature(stateObj);
+};
 
 declare global {
   interface HASSDomEvents {
@@ -172,20 +210,12 @@ export class HuiCardFeaturesEditor extends LitElement {
 
   private _supportsFeatureType(type: string): boolean {
     if (!this.stateObj) return false;
+    return supportsFeaturesType(this.stateObj, type);
+  }
 
-    if (isCustomType(type)) {
-      const customType = stripCustomPrefix(type);
-      const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
-      if (!customFeatureEntry?.supported) return true;
-      try {
-        return customFeatureEntry.supported(this.stateObj);
-      } catch {
-        return false;
-      }
-    }
-
-    const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
-    return !supportsFeature || supportsFeature(this.stateObj);
+  private _getSupportedFeaturesType() {
+    if (!this.stateObj) return [];
+    return getSupportedFeaturesType(this.stateObj, this.featuresTypes);
   }
 
   private _isFeatureTypeEditable(type: string) {
@@ -217,18 +247,6 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     return this._featuresKeys.get(feature)!;
-  }
-
-  private _getSupportedFeaturesType() {
-    const featuresTypes = UI_FEATURE_TYPES.filter(
-      (type) => !this.featuresTypes || this.featuresTypes.includes(type)
-    ) as readonly string[];
-    const customFeaturesTypes = customCardFeatures.map(
-      (feature) => `${CUSTOM_TYPE_PREFIX}${feature.type}`
-    );
-    return featuresTypes
-      .concat(customFeaturesTypes)
-      .filter((type) => this._supportsFeatureType(type));
   }
 
   protected render() {
@@ -400,61 +418,59 @@ export class HuiCardFeaturesEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: flex !important;
-        flex-direction: column;
-      }
-      ha-button-menu {
-        margin-top: 8px;
-      }
-      .feature {
-        display: flex;
-        align-items: center;
-      }
-      .feature .handle {
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor: grab;
-        padding-right: 8px;
-        padding-inline-end: 8px;
-        padding-inline-start: initial;
-        direction: var(--direction);
-      }
-      .feature .handle > * {
-        pointer-events: none;
-      }
+  static styles = css`
+    :host {
+      display: flex !important;
+      flex-direction: column;
+    }
+    ha-button-menu {
+      margin-top: 8px;
+    }
+    .feature {
+      display: flex;
+      align-items: center;
+    }
+    .feature .handle {
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
+      padding-right: 8px;
+      padding-inline-end: 8px;
+      padding-inline-start: initial;
+      direction: var(--direction);
+    }
+    .feature .handle > * {
+      pointer-events: none;
+    }
 
-      .feature-content {
-        height: 60px;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-grow: 1;
-      }
+    .feature-content {
+      height: 60px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-grow: 1;
+    }
 
-      .feature-content div {
-        display: flex;
-        flex-direction: column;
-      }
+    .feature-content div {
+      display: flex;
+      flex-direction: column;
+    }
 
-      .remove-icon,
-      .edit-icon {
-        --mdc-icon-button-size: 36px;
-        color: var(--secondary-text-color);
-      }
+    .remove-icon,
+    .edit-icon {
+      --mdc-icon-button-size: 36px;
+      color: var(--secondary-text-color);
+    }
 
-      .secondary {
-        font-size: 12px;
-        color: var(--secondary-text-color);
-      }
+    .secondary {
+      font-size: 12px;
+      color: var(--secondary-text-color);
+    }
 
-      li[divider] {
-        border-bottom-color: var(--divider-color);
-      }
-    `;
-  }
+    li[divider] {
+      border-bottom-color: var(--divider-color);
+    }
+  `;
 }
 
 declare global {

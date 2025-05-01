@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-formfield/mwc-formfield";
-import "@material/mwc-list/mwc-list-item";
+
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
@@ -71,7 +70,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         this._helperConfigEntry = configEntry;
       }
       // eslint-disable-next-line no-empty
-    } catch (err) {}
+    } catch (_err) {}
   }
 
   protected render() {

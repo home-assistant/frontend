@@ -1,6 +1,5 @@
-import { consume } from "@lit-labs/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
+import { consume } from "@lit/context";
 import {
   mdiChevronRight,
   mdiCog,
@@ -44,7 +43,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-categories";
 import "../../../components/ha-filter-devices";
@@ -53,10 +51,13 @@ import "../../../components/ha-filter-floor-areas";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -266,14 +267,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         },
         area: {
           title: localize("ui.panel.config.scene.picker.headers.area"),
-          hidden: true,
+          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
         },
         category: {
           title: localize("ui.panel.config.scene.picker.headers.category"),
-          hidden: true,
+          defaultHidden: true,
           groupable: true,
           filterable: true,
           sortable: true,
@@ -314,17 +315,19 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           template: (scene) =>
             !scene.attributes.id
               ? html`
-                  <simple-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
+                  <ha-tooltip
+                    placement="left"
+                    .content=${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
-                  </simple-tooltip>
-                  <ha-svg-icon
-                    .path=${mdiPencilOff}
-                    style="color: var(--secondary-text-color)"
-                  ></ha-svg-icon>
+                  >
+                    <ha-svg-icon
+                      .path=${mdiPencilOff}
+                      style="color: var(--secondary-text-color)"
+                    ></ha-svg-icon>
+                  </ha-tooltip>
                 `
-              : "",
+              : nothing,
         },
         actions: {
           title: "",
@@ -420,7 +423,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         (category) =>
           html`<ha-md-menu-item
             .value=${category.category_id}
-            @click=${this._handleBulkCategory}
+            .clickAction=${this._handleBulkCategory}
           >
             ${category.icon
               ? html`<ha-icon slot="start" .icon=${category.icon}></ha-icon>`
@@ -428,7 +431,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             <div slot="headline">${category.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkCategory}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkCategory}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.automation.picker.bulk_actions.no_category"
@@ -436,7 +439,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateCategory}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateCategory}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.category.editor.add")}
         </div>
@@ -473,7 +476,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         </ha-md-menu-item>`;
       })}
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateLabel}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateLabel}>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.labels.add_label")}
         </div></ha-md-menu-item
@@ -483,7 +486,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         (area) =>
           html`<ha-md-menu-item
             .value=${area.area_id}
-            @click=${this._handleBulkArea}
+            .clickAction=${this._handleBulkArea}
           >
             ${area.icon
               ? html`<ha-icon slot="start" .icon=${area.icon}></ha-icon>`
@@ -494,7 +497,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             <div slot="headline">${area.name}</div>
           </ha-md-menu-item>`
       )}
-      <ha-md-menu-item .value=${null} @click=${this._handleBulkArea}>
+      <ha-md-menu-item .value=${null} .clickAction=${this._handleBulkArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.no_area"
@@ -502,7 +505,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         </div>
       </ha-md-menu-item>
       <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-      <ha-md-menu-item @click=${this._bulkCreateArea}>
+      <ha-md-menu-item .clickAction=${this._bulkCreateArea}>
         <div slot="headline">
           ${this.hass.localize(
             "ui.panel.config.devices.picker.bulk_actions.add_area"
@@ -552,7 +555,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         ).length}
         .columns=${this._columns(this.hass.localize)}
         id="entity_id"
-        .initialGroupColumn=${this._activeGrouping || "category"}
+        .initialGroupColumn=${this._activeGrouping ?? "category"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
@@ -697,7 +700,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                   </ha-assist-chip>`
                 : html`<ha-icon-button
                     .path=${mdiDotsVertical}
-                    .label=${"ui.panel.config.automation.picker.bulk_action"}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
                     slot="trigger"
                   ></ha-icon-button>`
             }
@@ -720,7 +725,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${categoryItems}</ha-menu>
+                    <ha-md-menu slot="menu">${categoryItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -738,7 +743,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -756,7 +761,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${areaItems}</ha-menu>
+                    <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing
             }
@@ -844,7 +849,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const categoryItems: Set<string> = new Set();
+        const categoryItems = new Set<string>();
         this.scenes
           .filter(
             (scene) =>
@@ -868,7 +873,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         Array.isArray(filter.value) &&
         filter.value.length
       ) {
-        const labelItems: Set<string> = new Set();
+        const labelItems = new Set<string>();
         this.scenes
           .filter((scene) =>
             this._entityReg
@@ -930,10 +935,10 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     }
   }
 
-  private async _handleBulkCategory(ev) {
-    const category = ev.currentTarget.value;
+  private _handleBulkCategory = (item) => {
+    const category = item.value;
     this._bulkAddCategory(category);
-  }
+  };
 
   private async _bulkAddCategory(category: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
@@ -996,10 +1001,10 @@ ${rejected
     }
   }
 
-  private async _handleBulkArea(ev) {
-    const area = ev.currentTarget.value;
+  private _handleBulkArea = (item) => {
+    const area = item.value;
     this._bulkAddArea(area);
-  }
+  };
 
   private async _bulkAddArea(area: string) {
     const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
@@ -1026,7 +1031,7 @@ ${rejected
     }
   }
 
-  private async _bulkCreateArea() {
+  private _bulkCreateArea = () => {
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
         const area = await createAreaRegistryEntry(this.hass, values);
@@ -1034,7 +1039,7 @@ ${rejected
         return area;
       },
     });
-  }
+  };
 
   private _editCategory(scene: any) {
     const entityReg = this._entityReg.find(
@@ -1131,7 +1136,7 @@ ${rejected
     });
   }
 
-  private async _bulkCreateCategory() {
+  private _bulkCreateCategory = () => {
     showCategoryRegistryDetailDialog(this, {
       scope: "scene",
       createEntry: async (values) => {
@@ -1144,9 +1149,9 @@ ${rejected
         return category;
       },
     });
-  }
+  };
 
-  private _bulkCreateLabel() {
+  private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
@@ -1154,14 +1159,14 @@ ${rejected
         return label;
       },
     });
-  }
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
   }
 
   private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
+    this._activeGrouping = ev.detail.value ?? "";
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {
@@ -1192,9 +1197,11 @@ ${rejected
           text-decoration: none;
         }
         .empty {
-          --paper-font-headline_-_font-size: 28px;
           --mdc-icon-size: 80px;
           max-width: 500px;
+        }
+        .empty h1 {
+          font-size: var(--ha-font-size-3xl);
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

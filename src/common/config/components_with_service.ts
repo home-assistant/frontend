@@ -4,6 +4,6 @@ import type { HomeAssistant } from "../../types";
 export const componentsWithService = (
   hass: HomeAssistant,
   service: string
-): Array<string> =>
+): string[] =>
   hass &&
   Object.keys(hass.services).filter((key) => service in hass.services[key]);

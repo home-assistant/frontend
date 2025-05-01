@@ -11,6 +11,7 @@ import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-card";
 import "../../../components/ha-check-list-item";
+import "../../../components/ha-list-item";
 import type { RepairsIssue } from "../../../data/repairs";
 import {
   severitySort,
@@ -57,7 +58,7 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
         this._repairsIssues = repairs.issues.sort(
           (a, b) => severitySort[a.severity] - severitySort[b.severity]
         );
-        const integrations: Set<string> = new Set();
+        const integrations = new Set<string>();
         for (const issue of this._repairsIssues) {
           integrations.add(issue.domain);
         }
@@ -97,22 +98,22 @@ class HaConfigRepairsDashboard extends SubscribeMixin(LitElement) {
             ${isComponentLoaded(this.hass, "system_health") ||
             isComponentLoaded(this.hass, "hassio")
               ? html`
-                  <mwc-list-item
+                  <ha-list-item
                     @request-selected=${this._showSystemInformationDialog}
                   >
                     ${this.hass.localize(
                       "ui.panel.config.repairs.system_information"
                     )}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               : ""}
-            <mwc-list-item
+            <ha-list-item
               @request-selected=${this._showIntegrationStartupDialog}
             >
               ${this.hass.localize(
                 "ui.panel.config.repairs.integration_startup_time"
               )}
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
         </div>
         <div class="content">

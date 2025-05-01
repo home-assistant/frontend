@@ -6,9 +6,7 @@ export const supportsFeature = (
 ): boolean => supportsFeatureFromAttributes(stateObj.attributes, feature);
 
 export const supportsFeatureFromAttributes = (
-  attributes: {
-    [key: string]: any;
-  },
+  attributes: Record<string, any>,
   feature: number
 ): boolean =>
   // eslint-disable-next-line no-bitwise

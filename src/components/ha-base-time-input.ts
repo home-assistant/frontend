@@ -1,16 +1,16 @@
-import "@material/mwc-list/mwc-list-item";
+import { mdiClose } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { mdiClose } from "@mdi/js";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import "./ha-select";
 import "./ha-icon-button";
+import "./ha-input-helper-text";
+import "./ha-list-item";
+import "./ha-select";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
-import "./ha-input-helper-text";
 
 export interface TimeChangedEvent {
   days?: number;
@@ -266,8 +266,8 @@ export class HaBaseTimeInput extends LitElement {
               @selected=${this._valueChanged}
               @closed=${stopPropagation}
             >
-              <mwc-list-item value="AM">AM</mwc-list-item>
-              <mwc-list-item value="PM">PM</mwc-list-item>
+              <ha-list-item value="AM">AM</ha-list-item>
+              <ha-list-item value="PM">PM</ha-list-item>
             </ha-select>`}
       </div>
       ${this.helper
@@ -329,14 +329,12 @@ export class HaBaseTimeInput extends LitElement {
     :host([clearable]) {
       position: relative;
     }
-    :host {
-      display: block;
-    }
     .time-input-wrap-wrap {
       display: flex;
     }
     .time-input-wrap {
       display: flex;
+      flex: var(--time-input-flex, unset);
       border-radius: var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0 0;
       overflow: hidden;
       position: relative;
@@ -345,6 +343,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     ha-textfield {
       width: 55px;
+      flex-grow: 1;
       text-align: center;
       --mdc-shape-small: 0;
       --text-field-appearance: none;

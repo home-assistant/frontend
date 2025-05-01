@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
@@ -47,7 +47,12 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
   }
 
   private async _setMode(mode: AlarmMode) {
-    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
+    await setProtectedAlarmControlPanelMode(
+      this,
+      this.hass!,
+      this.stateObj!,
+      mode
+    );
   }
 
   private async _valueChanged(ev: CustomEvent) {
@@ -60,7 +65,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
 
     try {
       await this._setMode(mode);
-    } catch (err) {
+    } catch (_err) {
       this._currentMode = oldMode;
     }
   }
@@ -95,20 +100,18 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-control-select {
-        height: 45vh;
-        max-height: max(320px, var(--modes-count, 1) * 80px);
-        min-height: max(200px, var(--modes-count, 1) * 80px);
-        --control-select-thickness: 130px;
-        --control-select-border-radius: 36px;
-        --control-select-color: var(--primary-color);
-        --control-select-background: var(--disabled-color);
-        --control-select-background-opacity: 0.2;
-      }
-    `;
-  }
+  static styles = css`
+    ha-control-select {
+      height: 45vh;
+      max-height: max(320px, var(--modes-count, 1) * 80px);
+      min-height: max(200px, var(--modes-count, 1) * 80px);
+      --control-select-thickness: 130px;
+      --control-select-border-radius: 36px;
+      --control-select-color: var(--primary-color);
+      --control-select-background: var(--disabled-color);
+      --control-select-background-opacity: 0.2;
+    }
+  `;
 }
 
 declare global {

@@ -21,14 +21,15 @@ import {
 import { formatTime24h } from "../common/datetime/format_time";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant } from "../types";
-import type { ConfigEntry } from "./config_entries";
-import { getConfigEntries } from "./config_entries";
 import type {
   Statistics,
   StatisticsMetaData,
   StatisticsUnitConfiguration,
 } from "./recorder";
 import { fetchStatistics, getStatisticMetadata } from "./recorder";
+import { calcDateRange } from "../common/datetime/calc_date_range";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { formatNumber } from "../common/number/format_number";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -90,14 +91,13 @@ export const emptyWaterEnergyPreference =
 interface EnergySolarForecast {
   wh_hours: Record<string, number>;
 }
-export type EnergySolarForecasts = {
-  [config_entry_id: string]: EnergySolarForecast;
-};
+export type EnergySolarForecasts = Record<string, EnergySolarForecast>;
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
   name?: string;
+  included_in_stat?: string;
 }
 
 export interface FlowFromGridSourceEnergyPreference {
@@ -232,9 +232,7 @@ export const saveEnergyPreferences = async (
   return newPrefs;
 };
 
-export interface FossilEnergyConsumption {
-  [date: string]: number;
-}
+export type FossilEnergyConsumption = Record<string, number>;
 
 export const getFossilEnergyConsumption = async (
   hass: HomeAssistant,
@@ -274,7 +272,6 @@ export interface EnergyData {
   stats: Statistics;
   statsMetadata: Record<string, StatisticsMetaData>;
   statsCompare: Statistics;
-  co2SignalConfigEntry?: ConfigEntry;
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
@@ -352,31 +349,22 @@ const getEnergyData = async (
   end?: Date,
   compare?: boolean
 ): Promise<EnergyData> => {
-  const [configEntries, info] = await Promise.all([
-    getConfigEntries(hass, { domain: "co2signal" }),
-    getEnergyInfo(hass),
-  ]);
-
-  const co2SignalConfigEntry = configEntries.length
-    ? configEntries[0]
-    : undefined;
+  const info = await getEnergyInfo(hass);
 
   let co2SignalEntity: string | undefined;
-  if (co2SignalConfigEntry) {
-    for (const entity of Object.values(hass.entities)) {
-      if (entity.platform !== "co2signal") {
-        continue;
-      }
-
-      // The integration offers 2 entities. We want the % one.
-      const co2State = hass.states[entity.entity_id];
-      if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
-        continue;
-      }
-
-      co2SignalEntity = co2State.entity_id;
-      break;
+  for (const entity of Object.values(hass.entities)) {
+    if (entity.platform !== "co2signal") {
+      continue;
     }
+
+    // The integration offers 2 entities. We want the % one.
+    const co2State = hass.states[entity.entity_id];
+    if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
+      continue;
+    }
+
+    co2SignalEntity = co2State.entity_id;
+    break;
   }
 
   const consumptionStatIDs: string[] = [];
@@ -566,7 +554,6 @@ const getEnergyData = async (
     stats,
     statsMetadata,
     statsCompare,
-    co2SignalConfigEntry,
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
@@ -682,21 +669,17 @@ export const getEnergyDataCollection = (
 
   collection._active = 0;
   collection.prefs = options.prefs;
+
   const now = new Date();
   const hour = formatTime24h(now, hass.locale, hass.config).split(":")[0];
   // Set start to start of today if we have data for today, otherwise yesterday
-  collection.start = calcDate(
-    hour === "0" ? addDays(now, -1) : now,
-    startOfDay,
-    hass.locale,
-    hass.config
-  );
-  collection.end = calcDate(
-    hour === "0" ? addDays(now, -1) : now,
-    endOfDay,
-    hass.locale,
-    hass.config
-  );
+  const preferredPeriod =
+    (localStorage.getItem(`energy-default-period-${key}`) as DateRange) ||
+    "today";
+  const period =
+    preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
+
+  [collection.start, collection.end] = calcDateRange(hass, period);
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
@@ -715,8 +698,10 @@ export const getEnergyDataCollection = (
         );
         scheduleUpdatePeriod();
       },
-      addHours(calcDate(now, endOfDay, hass.locale, hass.config), 1).getTime() -
-        Date.now() // Switch to next day an hour after the day changed
+      addHours(
+        calcDate(new Date(), endOfDay, hass.locale, hass.config),
+        1
+      ).getTime() - Date.now() // Switch to next day an hour after the day changed
     );
   };
   scheduleUpdatePeriod();
@@ -725,19 +710,19 @@ export const getEnergyDataCollection = (
     collection.prefs = undefined;
   };
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
+    if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
+    }
     collection.start = newStart;
     collection.end = newEnd;
     if (
       collection.start.getTime() ===
         calcDate(new Date(), startOfDay, hass.locale, hass.config).getTime() &&
       collection.end?.getTime() ===
-        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime() &&
-      !collection._updatePeriodTimeout
+        calcDate(new Date(), endOfDay, hass.locale, hass.config).getTime()
     ) {
       scheduleUpdatePeriod();
-    } else if (collection._updatePeriodTimeout) {
-      clearTimeout(collection._updatePeriodTimeout);
-      collection._updatePeriodTimeout = undefined;
     }
   };
   collection.setCompare = (compare: boolean) => {
@@ -756,8 +741,8 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {},
-  excludeSource?: string
+  excludeSource?: string,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
@@ -782,16 +767,13 @@ export const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
-): string | undefined => {
-  const unitClass = getEnergyGasUnitClass(prefs, statisticsMetaData);
-  if (unitClass === undefined) {
-    return undefined;
+): string => {
+  const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
+  if (unitClass === "energy") {
+    return "kWh";
   }
-  return unitClass === "energy"
-    ? "kWh"
-    : hass.config.unit_system.length === "km"
-      ? "m³"
-      : "ft³";
+
+  return hass.config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
 export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
@@ -800,16 +782,41 @@ export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
 export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";
 
-interface EnergySumData {
-  to_grid?: { [start: number]: number };
-  from_grid?: { [start: number]: number };
-  to_battery?: { [start: number]: number };
-  from_battery?: { [start: number]: number };
-  solar?: { [start: number]: number };
+export interface EnergySumData {
+  to_grid?: Record<number, number>;
+  from_grid?: Record<number, number>;
+  to_battery?: Record<number, number>;
+  from_battery?: Record<number, number>;
+  solar?: Record<number, number>;
+  total: {
+    to_grid?: number;
+    from_grid?: number;
+    to_battery?: number;
+    from_battery?: number;
+    solar?: number;
+  };
+  timestamps: number[];
 }
 
-interface EnergyConsumptionData {
-  total: { [start: number]: number };
+export interface EnergyConsumptionData {
+  used_total: Record<number, number>;
+  grid_to_battery: Record<number, number>;
+  battery_to_grid: Record<number, number>;
+  solar_to_battery: Record<number, number>;
+  solar_to_grid: Record<number, number>;
+  used_solar: Record<number, number>;
+  used_grid: Record<number, number>;
+  used_battery: Record<number, number>;
+  total: {
+    used_total: number;
+    grid_to_battery: number;
+    battery_to_grid: number;
+    solar_to_battery: number;
+    solar_to_grid: number;
+    used_solar: number;
+    used_grid: number;
+    used_battery: number;
+  };
 }
 
 export const getSummedData = memoizeOne(
@@ -878,30 +885,35 @@ const getSummedDataPartial = (
     }
   }
 
-  const summedData: EnergySumData = {};
+  const summedData: EnergySumData = { total: {}, timestamps: [] };
+  const timestamps = new Set<number>();
   Object.entries(statIds).forEach(([key, subStatIds]) => {
-    const totalStats: { [start: number]: number } = {};
-    const sets: { [statId: string]: { [start: number]: number } } = {};
+    const totalStats: Record<number, number> = {};
+    const sets: Record<string, Record<number, number>> = {};
+    let sum = 0;
     subStatIds!.forEach((id) => {
       const stats = compare ? data.statsCompare[id] : data.stats[id];
       if (!stats) {
         return;
       }
-
       const set = {};
       stats.forEach((stat) => {
         if (stat.change === null || stat.change === undefined) {
           return;
         }
         const val = stat.change;
-        // Get total of solar and to grid to calculate the solar energy used
+        sum += val;
         totalStats[stat.start] =
           stat.start in totalStats ? totalStats[stat.start] + val : val;
+        timestamps.add(stat.start);
       });
       sets[id] = set;
     });
     summedData[key] = totalStats;
+    summedData.total[key] = sum;
   });
+
+  summedData.timestamps = Array.from(timestamps).sort();
 
   return summedData;
 };
@@ -925,21 +937,184 @@ export const computeConsumptionData = memoizeOne(
 const computeConsumptionDataPartial = (
   data: EnergySumData
 ): EnergyConsumptionData => {
-  const outData: EnergyConsumptionData = { total: {} };
+  const outData: EnergyConsumptionData = {
+    used_total: {},
+    grid_to_battery: {},
+    battery_to_grid: {},
+    solar_to_battery: {},
+    solar_to_grid: {},
+    used_solar: {},
+    used_grid: {},
+    used_battery: {},
+    total: {
+      used_total: 0,
+      grid_to_battery: 0,
+      battery_to_grid: 0,
+      solar_to_battery: 0,
+      solar_to_grid: 0,
+      used_solar: 0,
+      used_grid: 0,
+      used_battery: 0,
+    },
+  };
 
-  Object.keys(data).forEach((type) => {
-    Object.keys(data[type]).forEach((start) => {
-      if (outData.total[start] === undefined) {
-        const consumption =
-          (data.from_grid?.[start] || 0) +
-          (data.solar?.[start] || 0) +
-          (data.from_battery?.[start] || 0) -
-          (data.to_grid?.[start] || 0) -
-          (data.to_battery?.[start] || 0);
-        outData.total[start] = consumption;
-      }
+  data.timestamps.forEach((t) => {
+    const {
+      grid_to_battery,
+      battery_to_grid,
+      used_solar,
+      used_grid,
+      used_battery,
+      used_total,
+      solar_to_battery,
+      solar_to_grid,
+    } = computeConsumptionSingle({
+      from_grid: data.from_grid && (data.from_grid[t] ?? 0),
+      to_grid: data.to_grid && (data.to_grid[t] ?? 0),
+      solar: data.solar && (data.solar[t] ?? 0),
+      to_battery: data.to_battery && (data.to_battery[t] ?? 0),
+      from_battery: data.from_battery && (data.from_battery[t] ?? 0),
     });
+
+    outData.used_total[t] = used_total;
+    outData.total.used_total += used_total;
+    outData.grid_to_battery[t] = grid_to_battery;
+    outData.total.grid_to_battery += grid_to_battery;
+    outData.battery_to_grid![t] = battery_to_grid;
+    outData.total.battery_to_grid += battery_to_grid;
+    outData.used_battery![t] = used_battery;
+    outData.total.used_battery += used_battery;
+    outData.used_grid![t] = used_grid;
+    outData.total.used_grid += used_grid;
+    outData.used_solar![t] = used_solar;
+    outData.total.used_solar += used_solar;
+    outData.solar_to_battery[t] = solar_to_battery;
+    outData.total.solar_to_battery += solar_to_battery;
+    outData.solar_to_grid[t] = solar_to_grid;
+    outData.total.solar_to_grid += solar_to_grid;
   });
 
   return outData;
+};
+
+export const computeConsumptionSingle = (data: {
+  from_grid: number | undefined;
+  to_grid: number | undefined;
+  solar: number | undefined;
+  to_battery: number | undefined;
+  from_battery: number | undefined;
+}): {
+  grid_to_battery: number;
+  battery_to_grid: number;
+  solar_to_battery: number;
+  solar_to_grid: number;
+  used_solar: number;
+  used_grid: number;
+  used_battery: number;
+  used_total: number;
+} => {
+  let to_grid = Math.max(data.to_grid || 0, 0);
+  let to_battery = Math.max(data.to_battery || 0, 0);
+  let solar = Math.max(data.solar || 0, 0);
+  let from_grid = Math.max(data.from_grid || 0, 0);
+  let from_battery = Math.max(data.from_battery || 0, 0);
+
+  const used_total =
+    (from_grid || 0) +
+    (solar || 0) +
+    (from_battery || 0) -
+    (to_grid || 0) -
+    (to_battery || 0);
+
+  let used_solar = 0;
+  let grid_to_battery = 0;
+  let battery_to_grid = 0;
+  let solar_to_battery = 0;
+  let solar_to_grid = 0;
+  let used_battery = 0;
+  let used_grid = 0;
+
+  let used_total_remaining = Math.max(used_total, 0);
+  // Consumption Priority
+  // Battery_Out -> Grid_Out
+  // Solar -> Grid_Out
+  // Solar -> Battery_In
+  // Grid_In -> Battery_In
+  // Solar -> Consumption
+  // Battery_Out -> Consumption
+  // Grid_In -> Consumption
+
+  // Battery_Out -> Grid_Out
+  battery_to_grid = Math.min(from_battery, to_grid);
+  from_battery -= battery_to_grid;
+  to_grid -= battery_to_grid;
+
+  // Solar -> Grid_Out
+  solar_to_grid = Math.min(solar, to_grid);
+  to_grid -= solar_to_grid;
+  solar -= solar_to_grid;
+
+  // Solar -> Battery_In
+  solar_to_battery = Math.min(solar, to_battery);
+  to_battery -= solar_to_battery;
+  solar -= solar_to_battery;
+
+  // Grid_In -> Battery_In
+  grid_to_battery = Math.min(from_grid, to_battery);
+  from_grid -= grid_to_battery;
+  to_battery -= grid_to_battery;
+
+  // Solar -> Consumption
+  used_solar = Math.min(used_total_remaining, solar);
+  used_total_remaining -= used_solar;
+  solar -= used_solar;
+
+  // Battery_Out -> Consumption
+  used_battery = Math.min(from_battery, used_total_remaining);
+  from_battery -= used_battery;
+  used_total_remaining -= used_battery;
+
+  // Grid_In -> Consumption
+  used_grid = Math.min(used_total_remaining, from_grid);
+  from_grid -= used_grid;
+  used_total_remaining -= from_grid;
+
+  return {
+    used_solar,
+    used_grid,
+    used_battery,
+    used_total,
+    grid_to_battery,
+    battery_to_grid,
+    solar_to_battery,
+    solar_to_grid,
+  };
+};
+
+export const formatConsumptionShort = (
+  hass: HomeAssistant,
+  consumption: number | null,
+  unit: string
+): string => {
+  if (!consumption) {
+    return `0 ${unit}`;
+  }
+  const units = ["kWh", "MWh", "GWh", "TWh"];
+  let pickedUnit = unit;
+  let val = consumption;
+  let unitIndex = units.findIndex((u) => u === unit);
+  if (unitIndex >= 0) {
+    while (val >= 1000 && unitIndex < units.length - 1) {
+      val /= 1000;
+      unitIndex++;
+    }
+    pickedUnit = units[unitIndex];
+  }
+  return (
+    formatNumber(val, hass.locale, {
+      maximumFractionDigits: val < 10 ? 2 : val < 100 ? 1 : 0,
+    }) +
+    " " +
+    pickedUnit
+  );
 };

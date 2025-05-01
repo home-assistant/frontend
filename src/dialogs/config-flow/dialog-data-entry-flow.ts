@@ -6,11 +6,13 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
-import { subscribeDataEntryFlowProgressed } from "../../data/data_entry_flow";
+import {
+  subscribeDataEntryFlowProgress,
+  subscribeDataEntryFlowProgressed,
+} from "../../data/data_entry_flow";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -53,6 +55,8 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _loading?: LoadingReason;
 
+  @state() private _progress?: number;
+
   private _instance = instance;
 
   @state() private _step:
@@ -63,7 +67,7 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _handler?: string;
 
-  private _unsubDataEntryFlowProgressed?: Promise<UnsubscribeFunc>;
+  private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
     this._params = params;
@@ -161,11 +165,9 @@ class DataEntryFlowDialog extends LitElement {
     this._step = undefined;
     this._params = undefined;
     this._handler = undefined;
-    if (this._unsubDataEntryFlowProgressed) {
-      this._unsubDataEntryFlowProgressed.then((unsub) => {
-        unsub();
-      });
-      this._unsubDataEntryFlowProgressed = undefined;
+    if (this._unsubDataEntryFlowProgress) {
+      this._unsubDataEntryFlowProgress();
+      this._unsubDataEntryFlowProgress = undefined;
     }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -229,9 +231,7 @@ class DataEntryFlowDialog extends LitElement {
                         `
                       : ""}
                     <ha-icon-button
-                      .label=${this.hass.localize(
-                        "ui.panel.config.integrations.config_flow.dismiss"
-                      )}
+                      .label=${this.hass.localize("ui.common.close")}
                       .path=${mdiClose}
                       dialogAction="close"
                     ></ha-icon-button>
@@ -258,7 +258,9 @@ class DataEntryFlowDialog extends LitElement {
                               .params=${this._params}
                               .step=${this._step}
                               .hass=${this.hass}
-                              .domain=${this._step.handler}
+                              .handler=${this._step.handler}
+                              .domain=${this._params.domain ??
+                              this._step.handler}
                             ></step-flow-abort>
                           `
                         : this._step.type === "progress"
@@ -267,6 +269,7 @@ class DataEntryFlowDialog extends LitElement {
                                 .flowConfig=${this._params.flowConfig}
                                 .step=${this._step}
                                 .hass=${this.hass}
+                                .progress=${this._progress}
                               ></step-flow-progress>
                             `
                           : this._step.type === "menu"
@@ -282,6 +285,8 @@ class DataEntryFlowDialog extends LitElement {
                                   .flowConfig=${this._params.flowConfig}
                                   .step=${this._step}
                                   .hass=${this.hass}
+                                  .navigateToResult=${this._params
+                                    .navigateToResult}
                                 ></step-flow-create-entry>
                               `}
                 `}
@@ -312,49 +317,56 @@ class DataEntryFlowDialog extends LitElement {
   private async _processStep(
     step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
   ): Promise<void> {
-    if (step instanceof Promise) {
-      this._loading = "loading_step";
-      try {
-        this._step = await step;
-      } catch (err: any) {
-        this.closeDialog();
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.integrations.config_flow.error"
-          ),
-          text: err?.body?.message,
-        });
-        return;
-      } finally {
-        this._loading = undefined;
-      }
-      return;
-    }
-
     if (step === undefined) {
       this.closeDialog();
       return;
     }
+
+    this._loading = "loading_step";
+    let _step: DataEntryFlowStep;
+    try {
+      _step = await step;
+    } catch (err: any) {
+      this.closeDialog();
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error"
+        ),
+        text: err?.body?.message,
+      });
+      return;
+    } finally {
+      this._loading = undefined;
+    }
+
     this._step = undefined;
     await this.updateComplete;
-    this._step = step;
+    this._step = _step;
   }
 
   private async _subscribeDataEntryFlowProgressed() {
-    if (this._unsubDataEntryFlowProgressed) {
+    if (this._unsubDataEntryFlowProgress) {
       return;
     }
-    this._unsubDataEntryFlowProgressed = subscribeDataEntryFlowProgressed(
-      this.hass.connection,
-      async (ev) => {
+    this._progress = undefined;
+    const unsubs = [
+      subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
         if (ev.data.flow_id !== this._step?.flow_id) {
           return;
         }
         this._processStep(
           this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
         );
-      }
-    );
+        this._progress = undefined;
+      }),
+      subscribeDataEntryFlowProgress(this.hass.connection, (ev) => {
+        // ha-progress-ring has an issue with 0 so we round up
+        this._progress = Math.ceil(ev.data.progress * 100);
+      }),
+    ];
+    this._unsubDataEntryFlowProgress = async () => {
+      (await Promise.all(unsubs)).map((unsub) => unsub());
+    };
   }
 
   static get styles(): CSSResultGroup {

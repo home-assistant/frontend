@@ -1,5 +1,3 @@
-// Compat needs to be first import
-import "../../src/resources/compatibility";
 import { customElement } from "lit/decorators";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
@@ -65,6 +63,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockEntityRegistry(hass, [
       {
         config_entry_id: "co2signal",
+        config_subentry_id: null,
         device_id: "co2signal",
         area_id: null,
         disabled_by: null,
@@ -85,6 +84,7 @@ export class HaDemo extends HomeAssistantAppEl {
       },
       {
         config_entry_id: "co2signal",
+        config_subentry_id: null,
         device_id: "co2signal",
         area_id: null,
         disabled_by: null,

@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, LitElement, html, nothing } from "lit";
 import { mdiAlertCircle, mdiMicrophone, mdiSend } from "@mdi/js";
 import { customElement, property, query, state } from "lit/decorators";
@@ -28,6 +28,9 @@ export class HaAssistChat extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public pipeline?: AssistPipeline;
+
+  @property({ type: Boolean, attribute: "disable-speech" })
+  public disableSpeech = false;
 
   @property({ type: Boolean, attribute: false })
   public startListening?: boolean;
@@ -103,7 +106,7 @@ export class HaAssistChat extends LitElement {
             )
           : true);
     const supportsMicrophone = AudioRecorder.isSupported;
-    const supportsSTT = this.pipeline?.stt_engine;
+    const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
       ${controlHA
@@ -292,10 +295,13 @@ export class HaAssistChat extends LitElement {
     this._addMessage(userMessage);
     this.requestUpdate("_audioRecorder");
 
-    const hassMessage: AssistMessage = {
+    let continueConversation = false;
+    let hassMessage = {
       who: "hass",
       text: "…",
+      error: false,
     };
+    let currentDeltaRole = "";
     // To make sure the answer is placed at the right user text, we add it before we process it
     try {
       const unsub = await runAssistPipeline(
@@ -325,8 +331,47 @@ export class HaAssistChat extends LitElement {
             this._addMessage(hassMessage);
           }
 
+          if (event.type === "intent-progress") {
+            const delta = event.data.chat_log_delta;
+
+            // new message
+            if (delta.role) {
+              // If currentDeltaRole exists, it means we're receiving our
+              // second or later message. Let's add it to the chat.
+              if (currentDeltaRole && delta.role && hassMessage.text !== "…") {
+                // Remove progress indicator of previous message
+                hassMessage.text = hassMessage.text.substring(
+                  0,
+                  hassMessage.text.length - 1
+                );
+
+                hassMessage = {
+                  who: "hass",
+                  text: "…",
+                  error: false,
+                };
+                this._addMessage(hassMessage);
+              }
+              currentDeltaRole = delta.role;
+            }
+
+            if (
+              currentDeltaRole === "assistant" &&
+              "content" in delta &&
+              delta.content
+            ) {
+              hassMessage.text =
+                hassMessage.text.substring(0, hassMessage.text.length - 1) +
+                delta.content +
+                "…";
+              this.requestUpdate("_conversation");
+            }
+          }
+
           if (event.type === "intent-end") {
             this._conversationId = event.data.intent_output.conversation_id;
+            continueConversation =
+              event.data.intent_output.continue_conversation;
             const plain = event.data.intent_output.response.speech?.plain;
             if (plain) {
               hassMessage.text = plain.speech;
@@ -338,7 +383,12 @@ export class HaAssistChat extends LitElement {
             const url = event.data.tts_output.url;
             this._audio = new Audio(url);
             this._audio.play();
-            this._audio.addEventListener("ended", this._unloadAudio);
+            this._audio.addEventListener("ended", () => {
+              this._unloadAudio();
+              if (continueConversation) {
+                this._startListening();
+              }
+            });
             this._audio.addEventListener("pause", this._unloadAudio);
             this._audio.addEventListener("canplaythrough", this._playAudio);
             this._audio.addEventListener("error", this._audioError);
@@ -432,28 +482,71 @@ export class HaAssistChat extends LitElement {
     this._processing = true;
     this._audio?.pause();
     this._addMessage({ who: "user", text });
-    const message: AssistMessage = {
+    let hassMessage = {
       who: "hass",
       text: "…",
+      error: false,
     };
+    let currentDeltaRole = "";
     // To make sure the answer is placed at the right user text, we add it before we process it
-    this._addMessage(message);
+    this._addMessage(hassMessage);
     try {
       const unsub = await runAssistPipeline(
         this.hass,
         (event) => {
+          if (event.type === "intent-progress") {
+            const delta = event.data.chat_log_delta;
+
+            // new message and previous message has content
+            if (delta.role) {
+              // If currentDeltaRole exists, it means we're receiving our
+              // second or later message. Let's add it to the chat.
+              if (
+                currentDeltaRole &&
+                delta.role === "assistant" &&
+                hassMessage.text !== "…"
+              ) {
+                // Remove progress indicator of previous message
+                hassMessage.text = hassMessage.text.substring(
+                  0,
+                  hassMessage.text.length - 1
+                );
+
+                hassMessage = {
+                  who: "hass",
+                  text: "…",
+                  error: false,
+                };
+                this._addMessage(hassMessage);
+              }
+              currentDeltaRole = delta.role;
+            }
+
+            if (
+              currentDeltaRole === "assistant" &&
+              "content" in delta &&
+              delta.content
+            ) {
+              hassMessage.text =
+                hassMessage.text.substring(0, hassMessage.text.length - 1) +
+                delta.content +
+                "…";
+              this.requestUpdate("_conversation");
+            }
+          }
+
           if (event.type === "intent-end") {
             this._conversationId = event.data.intent_output.conversation_id;
             const plain = event.data.intent_output.response.speech?.plain;
             if (plain) {
-              message.text = plain.speech;
+              hassMessage.text = plain.speech;
             }
             this.requestUpdate("_conversation");
             unsub();
           }
           if (event.type === "error") {
-            message.text = event.data.message;
-            message.error = true;
+            hassMessage.text = event.data.message;
+            hassMessage.error = true;
             this.requestUpdate("_conversation");
             unsub();
           }
@@ -467,169 +560,168 @@ export class HaAssistChat extends LitElement {
         }
       );
     } catch {
-      message.text = this.hass.localize("ui.dialogs.voice_command.error");
-      message.error = true;
+      hassMessage.text = this.hass.localize("ui.dialogs.voice_command.error");
+      hassMessage.error = true;
       this.requestUpdate("_conversation");
     } finally {
       this._processing = false;
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: var(--ha-assist-chat-min-height, 415px);
-      }
-      ha-textfield {
-        display: block;
-        margin: 0 24px 16px;
-      }
-      .messages {
-        flex: 1;
-        display: block;
-        box-sizing: border-box;
-        position: relative;
-      }
-      .messages-container {
-        position: absolute;
-        bottom: 0px;
-        right: 0px;
-        left: 0px;
-        padding: 24px;
-        box-sizing: border-box;
-        overflow-y: auto;
-        max-height: 100%;
-      }
+  static styles = css`
+    :host {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    ha-textfield {
+      display: block;
+    }
+    .messages {
+      flex: 1;
+      display: block;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .messages-container {
+      position: absolute;
+      bottom: 0px;
+      right: 0px;
+      left: 0px;
+      padding: 0px 10px 16px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      max-height: 100%;
+    }
+    .message {
+      white-space: pre-line;
+      font-size: 18px;
+      clear: both;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 15px;
+    }
+
+    @media all and (max-width: 450px), all and (max-height: 500px) {
       .message {
-        white-space: pre-line;
-        font-size: 18px;
-        clear: both;
-        margin: 8px 0;
-        padding: 8px;
-        border-radius: 15px;
+        font-size: 16px;
       }
+    }
 
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        .message {
-          font-size: 16px;
-        }
-      }
+    .message p {
+      margin: 0;
+    }
+    .message p:not(:last-child) {
+      margin-bottom: 8px;
+    }
 
-      .message p {
-        margin: 0;
-      }
-      .message p:not(:last-child) {
-        margin-bottom: 8px;
-      }
+    .message.user {
+      margin-left: 24px;
+      margin-inline-start: 24px;
+      margin-inline-end: initial;
+      float: var(--float-end);
+      text-align: right;
+      border-bottom-right-radius: 0px;
+      background-color: var(--chat-background-color-user, var(--primary-color));
+      color: var(--text-primary-color);
+      direction: var(--direction);
+    }
 
-      .message.user {
-        margin-left: 24px;
-        margin-inline-start: 24px;
-        margin-inline-end: initial;
-        float: var(--float-end);
-        text-align: right;
-        border-bottom-right-radius: 0px;
-        background-color: var(--primary-color);
-        color: var(--text-primary-color);
-        direction: var(--direction);
-      }
+    .message.hass {
+      margin-right: 24px;
+      margin-inline-end: 24px;
+      margin-inline-start: initial;
+      float: var(--float-start);
+      border-bottom-left-radius: 0px;
+      background-color: var(
+        --chat-background-color-hass,
+        var(--secondary-background-color)
+      );
 
-      .message.hass {
-        margin-right: 24px;
-        margin-inline-end: 24px;
-        margin-inline-start: initial;
-        float: var(--float-start);
-        border-bottom-left-radius: 0px;
-        background-color: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      direction: var(--direction);
+    }
 
-        color: var(--primary-text-color);
-        direction: var(--direction);
-      }
+    .message.user a {
+      color: var(--text-primary-color);
+    }
 
-      .message.user a {
-        color: var(--text-primary-color);
-      }
+    .message.hass a {
+      color: var(--primary-text-color);
+    }
 
-      .message.hass a {
-        color: var(--primary-text-color);
-      }
+    .message.error {
+      background-color: var(--error-color);
+      color: var(--text-primary-color);
+    }
 
-      .message.error {
-        background-color: var(--error-color);
-        color: var(--text-primary-color);
+    .bouncer {
+      width: 48px;
+      height: 48px;
+      position: absolute;
+    }
+    .double-bounce1,
+    .double-bounce2 {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      opacity: 0.2;
+      position: absolute;
+      top: 0;
+      left: 0;
+      -webkit-animation: sk-bounce 2s infinite ease-in-out;
+      animation: sk-bounce 2s infinite ease-in-out;
+    }
+    .double-bounce2 {
+      -webkit-animation-delay: -1s;
+      animation-delay: -1s;
+    }
+    @-webkit-keyframes sk-bounce {
+      0%,
+      100% {
+        -webkit-transform: scale(0);
       }
+      50% {
+        -webkit-transform: scale(1);
+      }
+    }
+    @keyframes sk-bounce {
+      0%,
+      100% {
+        transform: scale(0);
+        -webkit-transform: scale(0);
+      }
+      50% {
+        transform: scale(1);
+        -webkit-transform: scale(1);
+      }
+    }
 
-      .bouncer {
-        width: 48px;
-        height: 48px;
-        position: absolute;
-      }
-      .double-bounce1,
-      .double-bounce2 {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background-color: var(--primary-color);
-        opacity: 0.2;
-        position: absolute;
-        top: 0;
-        left: 0;
-        -webkit-animation: sk-bounce 2s infinite ease-in-out;
-        animation: sk-bounce 2s infinite ease-in-out;
-      }
-      .double-bounce2 {
-        -webkit-animation-delay: -1s;
-        animation-delay: -1s;
-      }
-      @-webkit-keyframes sk-bounce {
-        0%,
-        100% {
-          -webkit-transform: scale(0);
-        }
-        50% {
-          -webkit-transform: scale(1);
-        }
-      }
-      @keyframes sk-bounce {
-        0%,
-        100% {
-          transform: scale(0);
-          -webkit-transform: scale(0);
-        }
-        50% {
-          transform: scale(1);
-          -webkit-transform: scale(1);
-        }
-      }
+    .listening-icon {
+      position: relative;
+      color: var(--secondary-text-color);
+      margin-right: -24px;
+      margin-inline-end: -24px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      transform: scaleX(var(--scale-direction));
+    }
 
-      .listening-icon {
-        position: relative;
-        color: var(--secondary-text-color);
-        margin-right: -24px;
-        margin-inline-end: -24px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        transform: scaleX(var(--scale-direction));
-      }
+    .listening-icon[active] {
+      color: var(--primary-color);
+    }
 
-      .listening-icon[active] {
-        color: var(--primary-color);
-      }
-
-      .unsupported {
-        color: var(--error-color);
-        position: absolute;
-        --mdc-icon-size: 16px;
-        right: 5px;
-        inset-inline-end: 5px;
-        inset-inline-start: initial;
-        top: 0px;
-      }
-    `;
-  }
+    .unsupported {
+      color: var(--error-color);
+      position: absolute;
+      --mdc-icon-size: 16px;
+      right: 5px;
+      inset-inline-end: 5px;
+      inset-inline-start: initial;
+      top: 0px;
+    }
+  `;
 }
 
 declare global {

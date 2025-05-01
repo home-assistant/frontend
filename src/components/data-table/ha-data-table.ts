@@ -48,9 +48,10 @@ export interface SortingChangedEvent {
 
 export type SortingDirection = "desc" | "asc" | null;
 
-export interface DataTableColumnContainer<T = any> {
-  [key: string]: DataTableColumnData<T>;
-}
+export type DataTableColumnContainer<T = any> = Record<
+  string,
+  DataTableColumnData<T>
+>;
 
 export interface DataTableSortColumnData {
   sortable?: boolean;
@@ -94,9 +95,7 @@ export interface DataTableRowData {
   selectable?: boolean;
 }
 
-export interface SortableColumnContainer {
-  [key: string]: ClonedDataTableColumnData;
-}
+export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 
@@ -449,6 +448,7 @@ export class HaDataTable extends LitElement {
                     )}
                     @click=${this._handleHeaderClick}
                     .columnId=${key}
+                    title=${ifDefined(column.title)}
                   >
                     ${column.sortable
                       ? html`
@@ -645,15 +645,16 @@ export class HaDataTable extends LitElement {
       return;
     }
 
-    const prom = this.sortColumn
-      ? sortData(
-          filteredData,
-          this._sortColumns[this.sortColumn],
-          this.sortDirection,
-          this.sortColumn,
-          this.hass.locale.language
-        )
-      : filteredData;
+    const prom =
+      this.sortColumn && this._sortColumns[this.sortColumn]
+        ? sortData(
+            filteredData,
+            this._sortColumns[this.sortColumn],
+            this.sortDirection,
+            this.sortColumn,
+            this.hass.locale.language
+          )
+        : filteredData;
 
     const [data] = await Promise.all([prom, nextRender]);
 
@@ -694,9 +695,9 @@ export class HaDataTable extends LitElement {
             grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
             delete grouped.undefined;
           }
-          const sorted: {
-            [key: string]: DataTableRowData[];
-          } = Object.keys(grouped)
+          const sorted: Record<string, DataTableRowData[]> = Object.keys(
+            grouped
+          )
             .sort((a, b) => {
               const orderA = groupOrder?.indexOf(a) ?? -1;
               const orderB = groupOrder?.indexOf(b) ?? -1;

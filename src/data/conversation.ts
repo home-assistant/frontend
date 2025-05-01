@@ -13,11 +13,7 @@ interface IntentTarget {
 
 interface IntentResultBase {
   language: string;
-  speech:
-    | {
-        [SpeechType in "plain" | "ssml"]: { extra_data: any; speech: string };
-      }
-    | null;
+  speech: Record<"plain" | "ssml", { extra_data: any; speech: string }> | null;
 }
 
 interface IntentResultActionDone extends IntentResultBase {
@@ -55,6 +51,7 @@ export interface ConversationResult {
     | IntentResultActionDone
     | IntentResultQueryAnswer
     | IntentResultError;
+  continue_conversation: boolean;
 }
 
 export interface Agent {
@@ -126,4 +123,23 @@ export const debugAgent = (
     sentences: ensureArray(sentences),
     language,
     device_id,
+  });
+
+export interface LanguageScore {
+  cloud: number;
+  focused_local: number;
+  full_local: number;
+}
+
+export type LanguageScores = Record<string, LanguageScore>;
+
+export const getLanguageScores = (
+  hass: HomeAssistant,
+  language?: string,
+  country?: string
+): Promise<{ languages: LanguageScores; preferred_language: string | null }> =>
+  hass.callWS({
+    type: "conversation/agent/homeassistant/language_scores",
+    language,
+    country,
   });

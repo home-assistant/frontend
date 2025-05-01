@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -30,7 +29,11 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       throw Error("Invalid configuration");
     }
 
-    this._config = { hold_action: { action: "more-info" }, ...config };
+    this._config = {
+      tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
+      ...config,
+    };
 
     this.classList.toggle(
       "clickable",
@@ -73,23 +76,21 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host(.clickable) {
-        cursor: pointer;
-        overflow: hidden;
-        -webkit-touch-callout: none !important;
-      }
-      hui-image {
-        -webkit-user-select: none !important;
-      }
-      hui-image:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
-      }
-    `;
-  }
+  static styles = css`
+    :host(.clickable) {
+      cursor: pointer;
+      overflow: hidden;
+      -webkit-touch-callout: none !important;
+    }
+    hui-image {
+      -webkit-user-select: none !important;
+    }
+    hui-image:focus {
+      outline: none;
+      background: var(--divider-color);
+      border-radius: 100%;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

@@ -2,7 +2,7 @@ import { html, nothing } from "lit";
 import { customElement } from "lit/decorators";
 import { FlowPreviewGeneric } from "./flow-preview-generic";
 import "../../../components/ha-hls-player";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 
 @customElement("flow-preview-generic_camera")
 class FlowPreviewGenericCamera extends FlowPreviewGeneric {
@@ -25,12 +25,11 @@ class FlowPreviewGenericCamera extends FlowPreviewGeneric {
       : ""}
     ${streamUrl
       ? html`<p>Stream:</p>
-          <ha-circular-progress
+          <ha-spinner
             class="render-spinner"
             id="hls-load-spinner"
-            indeterminate
             size="large"
-          ></ha-circular-progress>
+          ></ha-spinner>
           <ha-hls-player
             autoplay
             playsinline

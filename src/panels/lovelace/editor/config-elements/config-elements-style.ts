@@ -43,7 +43,7 @@ export const configElementStyle = css`
   ha-expansion-panel .content {
     padding: 12px;
   }
-  ha-expansion-panel > * {
+  ha-expansion-panel > *[slot="header"] {
     margin: 0;
     font-size: inherit;
     font-weight: inherit;

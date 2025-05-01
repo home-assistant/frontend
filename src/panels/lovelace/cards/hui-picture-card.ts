@@ -1,4 +1,4 @@
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -46,7 +46,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       throw new Error("Image required");
     }
 
-    this._config = config;
+    this._config = {
+      tap_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -152,23 +155,21 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        overflow: hidden;
-        height: 100%;
-      }
+  static styles = css`
+    ha-card {
+      overflow: hidden;
+      height: 100%;
+    }
 
-      ha-card.clickable {
-        cursor: pointer;
-      }
+    ha-card.clickable {
+      cursor: pointer;
+    }
 
-      img {
-        display: block;
-        width: 100%;
-      }
-    `;
-  }
+    img {
+      display: block;
+      width: 100%;
+    }
+  `;
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);

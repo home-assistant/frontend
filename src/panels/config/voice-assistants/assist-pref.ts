@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
   mdiCommentProcessingOutline,
@@ -8,19 +7,24 @@ import {
   mdiStar,
   mdiTrashCan,
 } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../../common/language/format_language";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { AssistPipeline } from "../../../data/assist_pipeline";
 import {
   createAssistPipeline,
@@ -39,15 +43,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
-import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import type { HaSwitch } from "../../../components/ha-switch";
-import { navigate } from "../../../common/navigate";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -121,12 +121,14 @@ export class AssistPref extends LitElement {
             class="icon-link"
           >
             <ha-icon-button
-              label="Learn how it works"
+              .label=${this.hass.localize(
+                "ui.panel.config.voice_assistants.assistants.pipeline.link_learn_how_it_works"
+              )}
               .path=${mdiHelpCircle}
             ></ha-icon-button>
           </a>
         </div>
-        <mwc-list>
+        <ha-list>
           ${this._pipelines.map(
             (pipeline) => html`
               <ha-list-item
@@ -203,7 +205,7 @@ export class AssistPref extends LitElement {
               </ha-list-item>
             `
           )}
-        </mwc-list>
+        </ha-list>
         <ha-button @click=${this._addPipeline} class="add" outlined>
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
@@ -266,7 +268,7 @@ export class AssistPref extends LitElement {
     }
     try {
       await setExposeNewEntities(this.hass, "conversation", toggle.checked);
-    } catch (err: any) {
+    } catch (_err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -352,71 +354,69 @@ export class AssistPref extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-      .header-actions {
-        position: absolute;
-        right: 0px;
-        inset-inline-end: 0px;
-        inset-inline-start: initial;
-        top: 24px;
-        display: flex;
-        flex-direction: row;
-      }
-      .header-actions .icon-link {
-        margin-top: -16px;
-        margin-right: 8px;
-        margin-inline-end: 8px;
-        margin-inline-start: initial;
-        direction: var(--direction);
-        color: var(--secondary-text-color);
-      }
-      ha-list-item {
-        --mdc-list-item-meta-size: auto;
-        --mdc-list-item-meta-display: flex;
-        --mdc-list-side-padding-right: 8px;
-        --mdc-list-side-padding-left: 16px;
-      }
+  static styles = css`
+    a {
+      color: var(--primary-color);
+    }
+    .header-actions {
+      position: absolute;
+      right: 0px;
+      inset-inline-end: 0px;
+      inset-inline-start: initial;
+      top: 24px;
+      display: flex;
+      flex-direction: row;
+    }
+    .header-actions .icon-link {
+      margin-top: -16px;
+      margin-right: 8px;
+      margin-inline-end: 8px;
+      margin-inline-start: initial;
+      direction: var(--direction);
+      color: var(--secondary-text-color);
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: auto;
+      --mdc-list-item-meta-display: flex;
+      --mdc-list-side-padding-right: 8px;
+      --mdc-list-side-padding-left: 16px;
+    }
 
-      ha-list-item.danger {
-        color: var(--error-color);
-        border-top: 1px solid var(--divider-color);
-      }
+    ha-list-item.danger {
+      color: var(--error-color);
+      border-top: 1px solid var(--divider-color);
+    }
 
-      ha-button-menu a {
-        text-decoration: none;
-      }
+    ha-button-menu a {
+      text-decoration: none;
+    }
 
-      ha-svg-icon {
-        color: currentColor;
-        width: 16px;
-      }
+    ha-svg-icon {
+      color: currentColor;
+      width: 16px;
+    }
 
-      .add {
-        margin: 0 16px 16px;
-      }
-      .card-actions {
-        display: flex;
-      }
-      .card-actions a {
-        text-decoration: none;
-      }
-      .card-header {
-        display: flex;
-        align-items: center;
-        padding-bottom: 0;
-      }
-      img {
-        height: 28px;
-        margin-right: 16px;
-        margin-inline-end: 16px;
-        margin-inline-start: initial;
-      }
-    `;
-  }
+    .add {
+      margin: 0 16px 16px;
+    }
+    .card-actions {
+      display: flex;
+    }
+    .card-actions a {
+      text-decoration: none;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding-bottom: 0;
+    }
+    img {
+      height: 28px;
+      margin-right: 16px;
+      margin-inline-end: 16px;
+      margin-inline-start: initial;
+    }
+  `;
 }
 
 declare global {

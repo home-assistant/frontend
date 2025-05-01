@@ -1,6 +1,5 @@
 import { atLeastVersion } from "../../common/config/version";
 import type { HomeAssistant } from "../../types";
-import { handleFetchPromise } from "../../util/hass-call-api";
 import type { HassioResponse } from "./common";
 import { hassioApiResultExtractor } from "./common";
 
@@ -32,12 +31,12 @@ export interface HassioBackup {
 export interface HassioBackupDetail extends HassioBackup {
   size: number;
   homeassistant: string;
-  addons: Array<{
+  addons: {
     slug: "ADDON_SLUG";
     name: "NAME";
     version: "INSTALLED_VERSION";
     size: "SIZE_IN_MB";
-  }>;
+  }[];
   repositories: string[];
   folders: string[];
 }
@@ -59,9 +58,7 @@ export const fetchHassioBackups = async (
   hass: HomeAssistant
 ): Promise<HassioBackup[]> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    const data: {
-      [key: string]: HassioBackup[];
-    } = await hass.callWS({
+    const data: Record<string, HassioBackup[]> = await hass.callWS({
       type: "supervisor/api",
       endpoint: `/${
         atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"
@@ -84,34 +81,24 @@ export const fetchHassioBackups = async (
 };
 
 export const fetchHassioBackupInfo = async (
-  hass: HomeAssistant | undefined,
+  hass: HomeAssistant,
   backup: string
 ): Promise<HassioBackupDetail> => {
-  if (hass) {
-    if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-      return hass.callWS({
-        type: "supervisor/api",
-        endpoint: `/${
-          atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"
-        }/${backup}/info`,
-        method: "get",
-      });
-    }
-    return hassioApiResultExtractor(
-      await hass.callApi<HassioResponse<HassioBackupDetail>>(
-        "GET",
-        `hassio/${
-          atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"
-        }/${backup}/info`
-      )
-    );
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/${
+        atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"
+      }/${backup}/info`,
+      method: "get",
+    });
   }
-  // When called from onboarding we don't have hass
   return hassioApiResultExtractor(
-    await handleFetchPromise(
-      fetch(`/api/hassio/backups/${backup}/info`, {
-        method: "GET",
-      })
+    await hass.callApi<HassioResponse<HassioBackupDetail>>(
+      "GET",
+      `hassio/${
+        atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"
+      }/${backup}/info`
     )
   );
 };
@@ -227,7 +214,7 @@ export const uploadBackup = async (
     );
   } else {
     // When called from onboarding we don't have hass
-    resp = await fetch("/api/hassio/backups/new/upload", {
+    resp = await fetch(`${__HASS_URL__}/api/hassio/backups/new/upload`, {
       method: "POST",
       body: fd,
     });
@@ -242,24 +229,15 @@ export const uploadBackup = async (
 };
 
 export const restoreBackup = async (
-  hass: HomeAssistant | undefined,
+  hass: HomeAssistant,
   type: HassioBackupDetail["type"],
   backupSlug: string,
   backupDetails: HassioPartialBackupCreateParams | HassioFullBackupCreateParams,
-  useSnapshotUrl: boolean
+  useBackupUrl: boolean
 ): Promise<void> => {
-  if (hass) {
-    await hass.callApi<HassioResponse<{ job_id: string }>>(
-      "POST",
-      `hassio/${useSnapshotUrl ? "snapshots" : "backups"}/${backupSlug}/restore/${type}`,
-      backupDetails
-    );
-  } else {
-    await handleFetchPromise(
-      fetch(`/api/hassio/backups/${backupSlug}/restore/${type}`, {
-        method: "POST",
-        body: JSON.stringify(backupDetails),
-      })
-    );
-  }
+  await hass.callApi<HassioResponse<{ job_id: string }>>(
+    "POST",
+    `hassio/${useBackupUrl ? "backups" : "snapshots"}/${backupSlug}/restore/${type}`,
+    backupDetails
+  );
 };

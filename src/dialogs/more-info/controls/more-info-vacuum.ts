@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiFan,
   mdiHomeImportOutline,
@@ -9,7 +8,6 @@ import {
   mdiStop,
   mdiTargetVariant,
 } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -20,6 +18,7 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
@@ -183,13 +182,13 @@ class MoreInfoVacuum extends LitElement {
                 >
                   ${stateObj.attributes.fan_speed_list!.map(
                     (mode) => html`
-                      <mwc-list-item .value=${mode}>
+                      <ha-list-item .value=${mode}>
                         ${this.hass.formatEntityAttributeValue(
                           stateObj,
                           "fan_speed",
                           mode
                         )}
-                      </mwc-list-item>
+                      </ha-list-item>
                     `
                   )}
                 </ha-select>
@@ -316,24 +315,22 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        line-height: 1.5;
-      }
-      .status-subtitle {
-        color: var(--secondary-text-color);
-      }
-      .flex-horizontal {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-      }
-      .space-around {
-        justify-content: space-around;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      line-height: 1.5;
+    }
+    .status-subtitle {
+      color: var(--secondary-text-color);
+    }
+    .flex-horizontal {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .space-around {
+      justify-content: space-around;
+    }
+  `;
 }
 
 declare global {

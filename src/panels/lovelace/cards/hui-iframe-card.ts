@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -7,13 +6,13 @@ import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
-import { IFRAME_SANDBOX } from "../../../util/iframe";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import type { IframeCardConfig } from "./types";
+import { IFRAME_SANDBOX } from "../../../util/iframe";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -93,6 +92,9 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     if (this._config.allow_open_top_navigation) {
       sandbox_user_params += "allow-top-navigation-by-user-activation";
     }
+    const sandbox_params = this._config.disable_sandbox
+      ? undefined
+      : `${sandbox_user_params} ${IFRAME_SANDBOX}`;
 
     return html`
       <ha-card .header=${this._config.title}>
@@ -105,7 +107,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
           <iframe
             title=${ifDefined(this._config.title)}
             src=${this._config.url}
-            .sandbox=${`${sandbox_user_params} ${IFRAME_SANDBOX}`}
+            sandbox=${ifDefined(sandbox_params)}
             allow=${this._config.allow ?? "fullscreen"}
           ></iframe>
         </div>
@@ -122,32 +124,30 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     };
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        overflow: hidden;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
+  static styles = css`
+    ha-card {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
-      #root {
-        width: 100%;
-        height: 100%;
-        position: relative;
-      }
+    #root {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
 
-      iframe {
-        position: absolute;
-        border: none;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-      }
-    `;
-  }
+    iframe {
+      position: absolute;
+      border: none;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+  `;
 }
 
 declare global {

@@ -12,7 +12,6 @@ import type {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-fab";
-import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import type { User } from "../../../data/user";
 import {
@@ -271,7 +270,7 @@ export class HaConfigUsers extends LitElement {
           await deleteUser(this.hass!, entry!.id);
           this._users = this._users!.filter((ent) => ent !== entry);
           return true;
-        } catch (err: any) {
+        } catch (_err: any) {
           return false;
         }
       },

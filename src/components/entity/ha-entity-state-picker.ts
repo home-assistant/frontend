@@ -57,7 +57,7 @@ class HaEntityStatePicker extends LitElement {
       (this._comboBox as any).items = [
         ...(this.extraOptions ?? []),
         ...(this.entityId && stateObj
-          ? getStates(stateObj, this.attribute).map((key) => ({
+          ? getStates(this.hass, stateObj, this.attribute).map((key) => ({
               value: key,
               label: !this.attribute
                 ? this.hass.formatEntityState(stateObj, key)

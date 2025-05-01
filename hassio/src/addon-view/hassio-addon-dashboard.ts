@@ -11,7 +11,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
-import "../../../src/components/ha-circular-progress";
 import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchAddonInfo,
@@ -52,6 +51,9 @@ class HassioAddonDashboard extends LitElement {
     | StoreAddonDetails;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @state()
+  private _controlEnabled = false;
 
   @state() private _error?: string;
 
@@ -135,9 +137,15 @@ class HassioAddonDashboard extends LitElement {
           .hass=${this.hass}
           .supervisor=${this.supervisor}
           .addon=${this.addon}
+          .controlEnabled=${this._controlEnabled}
+          @system-managed-take-control=${this._enableControl}
         ></hassio-addon-router>
       </hass-tabs-subpage>
     `;
+  }
+
+  private _enableControl() {
+    this._controlEnabled = true;
   }
 
   static get styles(): CSSResultGroup {

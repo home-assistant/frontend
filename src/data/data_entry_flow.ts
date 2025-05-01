@@ -2,7 +2,11 @@ import type { Connection } from "home-assistant-js-websocket";
 import type { HaFormSchema } from "../components/ha-form/types";
 import type { ConfigEntry } from "./config_entries";
 
-export type FlowType = "config_flow" | "options_flow" | "repair_flow";
+export type FlowType =
+  | "config_flow"
+  | "config_subentries_flow"
+  | "options_flow"
+  | "repair_flow";
 
 export interface DataEntryFlowProgressedEvent {
   type: "data_entry_flow_progressed";
@@ -10,6 +14,15 @@ export interface DataEntryFlowProgressedEvent {
     handler: string;
     flow_id: string;
     refresh: boolean;
+  };
+}
+
+export interface DataEntryFlowProgressEvent {
+  type: "data_entry_flow_progress_update";
+  data: {
+    handler: string;
+    flow_id: string;
+    progress: number;
   };
 }
 
@@ -103,4 +116,13 @@ export const subscribeDataEntryFlowProgressed = (
   conn.subscribeEvents<DataEntryFlowProgressedEvent>(
     callback,
     "data_entry_flow_progressed"
+  );
+
+export const subscribeDataEntryFlowProgress = (
+  conn: Connection,
+  callback: (ev: DataEntryFlowProgressEvent) => void
+) =>
+  conn.subscribeEvents<DataEntryFlowProgressEvent>(
+    callback,
+    "data_entry_flow_progress_update"
   );

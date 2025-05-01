@@ -146,7 +146,7 @@ class HaMountPicker extends LitElement {
           "ui.components.mount-picker.error.no_supervisor"
         );
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       this._error = this.hass.localize(
         "ui.components.mount-picker.error.fetch_mounts"
       );

@@ -1,5 +1,5 @@
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -79,6 +79,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         .disabled=${this.disabled}
         @opening=${this._handleOpen}
         @closing=${this._handleClose}
+        positioning="fixed"
       >
         <ha-textfield
           slot="trigger"
@@ -206,46 +207,44 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     this.toggleAttribute("opened", false);
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host([own-margin]) {
-        margin-bottom: 5px;
-      }
-      ha-md-button-menu {
-        display: block;
-        cursor: pointer;
-      }
-      ha-formfield {
-        display: block;
-        padding-right: 16px;
-        padding-inline-end: 16px;
-        padding-inline-start: initial;
-        direction: var(--direction);
-      }
-      ha-textfield {
-        display: block;
-        width: 100%;
-        pointer-events: none;
-      }
-      ha-icon-button {
-        color: var(--input-dropdown-icon-color);
-        position: absolute;
-        right: 1em;
-        top: 4px;
-        cursor: pointer;
-        inset-inline-end: 1em;
-        inset-inline-start: initial;
-        direction: var(--direction);
-      }
-      :host([opened]) ha-icon-button {
-        color: var(--primary-color);
-      }
-      :host([opened]) ha-md-button-menu {
-        --mdc-text-field-idle-line-color: var(--input-hover-line-color);
-        --mdc-text-field-label-ink-color: var(--primary-color);
-      }
-    `;
-  }
+  static styles = css`
+    :host([own-margin]) {
+      margin-bottom: 5px;
+    }
+    ha-md-button-menu {
+      display: block;
+      cursor: pointer;
+    }
+    ha-formfield {
+      display: block;
+      padding-right: 16px;
+      padding-inline-end: 16px;
+      padding-inline-start: initial;
+      direction: var(--direction);
+    }
+    ha-textfield {
+      display: block;
+      width: 100%;
+      pointer-events: none;
+    }
+    ha-icon-button {
+      color: var(--input-dropdown-icon-color);
+      position: absolute;
+      right: 1em;
+      top: 4px;
+      cursor: pointer;
+      inset-inline-end: 1em;
+      inset-inline-start: initial;
+      direction: var(--direction);
+    }
+    :host([opened]) ha-icon-button {
+      color: var(--primary-color);
+    }
+    :host([opened]) ha-md-button-menu {
+      --mdc-text-field-idle-line-color: var(--input-hover-line-color);
+      --mdc-text-field-label-ink-color: var(--primary-color);
+    }
+  `;
 }
 
 declare global {

@@ -1,11 +1,11 @@
 import "@material/mwc-button/mwc-button";
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard } from "../types";
@@ -18,6 +18,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     return 2;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceCardConfig): void {}
 
   protected updated(changedProperties: PropertyValues) {
@@ -38,30 +39,28 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
 
     return html`
       <div class="content">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
         ${this.hass.localize("ui.panel.lovelace.cards.starting.description")}
       </div>
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        display: block;
-        height: calc(100vh - var(--header-height));
-      }
-      ha-circular-progress {
-        margin-bottom: 20px;
-      }
-      .content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-    `;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      height: calc(100vh - var(--header-height));
+    }
+    ha-spinner {
+      margin-bottom: 20px;
+    }
+    .content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  `;
 }
 
 declare global {

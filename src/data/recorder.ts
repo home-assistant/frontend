@@ -5,6 +5,7 @@ import type { HomeAssistant } from "../types";
 
 export interface RecorderInfo {
   backlog: number | null;
+  db_in_default_location: boolean;
   max_backlog: number;
   migration_in_progress: boolean;
   migration_is_live: boolean;
@@ -14,9 +15,7 @@ export interface RecorderInfo {
 
 export type StatisticType = "change" | "state" | "sum" | "min" | "max" | "mean";
 
-export interface Statistics {
-  [statisticId: string]: StatisticValue[];
-}
+export type Statistics = Record<string, StatisticValue[]>;
 
 export interface StatisticValue {
   start: number;
@@ -37,13 +36,19 @@ export interface Statistic {
   change: number | null;
 }
 
+export enum StatisticMeanType {
+  NONE = 0,
+  ARITHMETIC = 1,
+  CIRCULAR = 2,
+}
+
 export interface StatisticsMetaData {
   statistics_unit_of_measurement: string | null;
   statistic_id: string;
   source: string;
   name?: string | null;
   has_sum: boolean;
-  has_mean: boolean;
+  mean_type: StatisticMeanType;
   unit_class: string | null;
 }
 
@@ -52,6 +57,7 @@ export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
   "entity_no_longer_recorded",
   "state_class_removed",
   "units_changed",
+  "mean_type_changed",
   "no_state",
 ];
 
@@ -60,7 +66,8 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultStateClassRemoved
-  | StatisticsValidationResultUnitsChanged;
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultMeanTypeChanged;
 
 export interface StatisticsValidationResultNoState {
   type: "no_state";
@@ -92,6 +99,15 @@ export interface StatisticsValidationResultUnitsChanged {
   };
 }
 
+export interface StatisticsValidationResultMeanTypeChanged {
+  type: "mean_type_changed";
+  data: {
+    statistic_id: string;
+    state_mean_type: StatisticMeanType;
+    metadata_mean_type: StatisticMeanType;
+  };
+}
+
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
   power?: "W" | "kW";
@@ -109,7 +125,7 @@ export interface StatisticsUnitConfiguration {
   volume?: "L" | "gal" | "ft³" | "m³";
 }
 
-const statisticTypes = [
+const _statisticTypes = [
   "change",
   "last_reset",
   "max",
@@ -118,11 +134,12 @@ const statisticTypes = [
   "state",
   "sum",
 ] as const;
-export type StatisticsTypes = (typeof statisticTypes)[number][];
+export type StatisticsTypes = (typeof _statisticTypes)[number][];
 
-export interface StatisticsValidationResults {
-  [statisticId: string]: StatisticsValidationResult[];
-}
+export type StatisticsValidationResults = Record<
+  string,
+  StatisticsValidationResult[]
+>;
 
 export const getRecorderInfo = (conn: Connection) =>
   conn.sendMessagePromise<RecorderInfo>({
@@ -206,14 +223,14 @@ export const updateStatisticsMetadata = (
   statistic_id: string,
   unit_of_measurement: string | null
 ) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "recorder/update_statistics_metadata",
     statistic_id,
     unit_of_measurement,
   });
 
 export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
-  hass.callWS<void>({
+  hass.callWS<undefined>({
     type: "recorder/clear_statistics",
     statistic_ids,
   });
@@ -278,7 +295,10 @@ export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,
   type: StatisticType
 ) => {
-  if (mean_stat_types.includes(type) && metadata.has_mean) {
+  if (
+    mean_stat_types.includes(type) &&
+    metadata.mean_type !== StatisticMeanType.NONE
+  ) {
     return true;
   }
   if (sum_stat_types.includes(type) && metadata.has_sum) {
@@ -295,7 +315,7 @@ export const adjustStatisticsSum = (
   adjustment_unit_of_measurement: string | null
 ): Promise<void> => {
   const start_time_iso = new Date(start_time).toISOString();
-  return hass.callWS({
+  return hass.callWS<undefined>({
     type: "recorder/adjust_sum_statistics",
     statistic_id,
     start_time: start_time_iso,
@@ -334,4 +354,4 @@ export const isExternalStatistic = (statisticsId: string): boolean =>
   statisticsId.includes(":");
 
 export const updateStatisticsIssues = (hass: HomeAssistant) =>
-  hass.callWS({ type: "recorder/update_statistics_issues" });
+  hass.callWS<undefined>({ type: "recorder/update_statistics_issues" });

@@ -1,4 +1,4 @@
-import { mdiGestureTap, mdiPalette } from "@mdi/js";
+import { mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -48,6 +48,8 @@ const badgeConfigStruct = assign(
     show_icon: optional(boolean()),
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     image: optional(string()), // For old badge config support
   })
 );
@@ -74,10 +76,10 @@ export class HuiEntityBadgeEditor
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "appearance",
+          name: "content",
           type: "expandable",
           flatten: true,
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -93,6 +95,7 @@ export class HuiEntityBadgeEditor
                   name: "color",
                   selector: {
                     ui_color: {
+                      default_color: "state",
                       include_state: true,
                     },
                   },
@@ -168,6 +171,21 @@ export class HuiEntityBadgeEditor
                 },
               },
             },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -241,8 +259,6 @@ export class HuiEntityBadgeEditor
       case "state_content":
       case "show_entity_picture":
       case "displayed_elements":
-      case "appearance":
-      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.badge.entity.${schema.name}`
         );

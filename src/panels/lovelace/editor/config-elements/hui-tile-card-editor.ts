@@ -1,4 +1,5 @@
-import { mdiGestureTap, mdiListBox, mdiPalette } from "@mdi/js";
+import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -8,6 +9,7 @@ import {
   assert,
   assign,
   boolean,
+  enums,
   object,
   optional,
   string,
@@ -15,6 +17,7 @@ import {
 } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -34,7 +37,7 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import "./hui-card-features-editor";
+import { getSupportedFeaturesType } from "./hui-card-features-editor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -48,9 +51,13 @@ const cardConfigStruct = assign(
     show_entity_picture: optional(boolean()),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
-    icon_tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+    icon_tap_action: optional(actionConfigStruct),
+    icon_hold_action: optional(actionConfigStruct),
+    icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
+    features_position: optional(enums(["bottom", "inline"])),
   })
 );
 
@@ -69,14 +76,18 @@ export class HuiTileCardEditor
   }
 
   private _schema = memoizeOne(
-    (entityId: string | undefined, hideState: boolean) =>
+    (
+      localize: LocalizeFunc,
+      entityId: string | undefined,
+      hideState: boolean
+    ) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
-          name: "appearance",
+          name: "content",
           flatten: true,
           type: "expandable",
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -106,12 +117,6 @@ export class HuiTileCardEditor
                   },
                 },
                 {
-                  name: "vertical",
-                  selector: {
-                    boolean: {},
-                  },
-                },
-                {
                   name: "hide_state",
                   selector: {
                     boolean: {},
@@ -132,6 +137,26 @@ export class HuiTileCardEditor
                   },
                 ] as const satisfies readonly HaFormSchema[])
               : []),
+            {
+              name: "content_layout",
+              required: true,
+              selector: {
+                select: {
+                  mode: "box",
+                  options: ["horizontal", "vertical"].map((value) => ({
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
+                    ),
+                    value,
+                    image: {
+                      src: `/static/images/form/tile_content_layout_${value}.svg`,
+                      src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
+                      flip_rtl: true,
+                    },
+                  })),
+                },
+              },
+            },
           ],
         },
         {
@@ -159,16 +184,62 @@ export class HuiTileCardEditor
               },
             },
             {
-              name: "hold_action",
-              selector: {
-                ui_action: {
-                  default_action: "none",
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (
+                [
+                  "hold_action",
+                  "icon_hold_action",
+                  "double_tap_action",
+                  "icon_double_tap_action",
+                ] as const
+              ).map((action) => ({
+                name: action,
+                selector: {
+                  ui_action: {
+                    default_action: "none" as const,
+                  },
                 },
-              },
+              })),
             },
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
+  );
+
+  private _featuresSchema = memoizeOne(
+    (localize: LocalizeFunc, vertical: boolean) =>
+      [
+        {
+          name: "features_position",
+          required: true,
+          selector: {
+            select: {
+              mode: "box",
+              options: ["bottom", "inline"].map((value) => ({
+                label: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
+                ),
+                description: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}_description`
+                ),
+                value,
+                image: {
+                  src: `/static/images/form/tile_features_position_${value}.svg`,
+                  src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
+                  flip_rtl: true,
+                },
+                disabled: vertical && value === "inline",
+              })),
+            },
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
+  private _hasCompatibleFeatures = memoizeOne(
+    (stateObj: HassEntity) => getSupportedFeaturesType(stateObj).length > 0
   );
 
   protected render() {
@@ -179,9 +250,29 @@ export class HuiTileCardEditor
     const entityId = this._config!.entity;
     const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
-    const schema = this._schema(entityId, this._config!.hide_state ?? false);
+    const schema = this._schema(
+      this.hass.localize,
+      entityId,
+      this._config.hide_state ?? false
+    );
 
-    const data = this._config;
+    const featuresSchema = this._featuresSchema(
+      this.hass.localize,
+      this._config.vertical ?? false
+    );
+
+    const data = {
+      ...this._config,
+      content_layout: this._config.vertical ? "vertical" : "horizontal",
+    };
+
+    // Default features position to bottom and force it to bottom in vertical mode
+    if (!data.features_position || data.vertical) {
+      data.features_position = "bottom";
+    }
+
+    const hasCompatibleFeatures =
+      (stateObj && this._hasCompatibleFeatures(stateObj)) || false;
 
     return html`
       <ha-form
@@ -193,13 +284,26 @@ export class HuiTileCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiListBox}></ha-svg-icon>
         <h3 slot="header">
-          <ha-svg-icon .path=${mdiListBox}></ha-svg-icon>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.generic.features"
           )}
         </h3>
         <div class="content">
+          ${hasCompatibleFeatures
+            ? html`
+                <ha-form
+                  class="features-form"
+                  .hass=${this.hass}
+                  .data=${data}
+                  .schema=${featuresSchema}
+                  .computeLabel=${this._computeLabelCallback}
+                  .computeHelper=${this._computeHelperCallback}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `
+            : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
             .stateObj=${stateObj}
@@ -231,6 +335,12 @@ export class HuiTileCardEditor
 
     if (!config.state_content) {
       delete config.state_content;
+    }
+
+    // Convert content_layout to vertical
+    if (config.content_layout) {
+      config.vertical = config.content_layout === "vertical";
+      delete config.content_layout;
     }
 
     fireEvent(this, "config-changed", { config });
@@ -282,17 +392,20 @@ export class HuiTileCardEditor
   }
 
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema:
+      | SchemaUnion<ReturnType<typeof this._schema>>
+      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
       case "color":
       case "icon_tap_action":
+      case "icon_hold_action":
+      case "icon_double_tap_action":
       case "show_entity_picture":
-      case "vertical":
       case "hide_state":
       case "state_content":
-      case "appearance":
-      case "interactions":
+      case "content_layout":
+      case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );
@@ -304,13 +417,22 @@ export class HuiTileCardEditor
   };
 
   private _computeHelperCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema:
+      | SchemaUnion<ReturnType<typeof this._schema>>
+      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`
         );
+      case "features_position":
+        if (this._config?.vertical) {
+          return this.hass!.localize(
+            `ui.panel.lovelace.editor.card.tile.${schema.name}_helper_vertical`
+          );
+        }
+        return undefined;
       default:
         return undefined;
     }
@@ -327,6 +449,14 @@ export class HuiTileCardEditor
         ha-form {
           display: block;
           margin-bottom: 24px;
+        }
+        .info {
+          color: var(--secondary-text-color);
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        .features-form {
+          margin-bottom: 8px;
         }
       `,
     ];

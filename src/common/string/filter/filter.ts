@@ -130,7 +130,7 @@ enum Arrow {
  * 4. `<match_pos_0>` etc
  */
 // export type FuzzyScore = [score: number, wordStart: number, ...matches: number[]];// [number, number, number];
-export type FuzzyScore = Array<number>;
+export type FuzzyScore = number[];
 
 export function fuzzyScore(
   pattern: string,
@@ -469,7 +469,7 @@ const _minWordMatchPos = initArr(2 * _maxLen); // min word position for a certai
 const _maxWordMatchPos = initArr(2 * _maxLen); // max word position for a certain pattern position
 const _diag = initTable(); // the length of a contiguous diagonal match
 const _table = initTable();
-const _arrows = <Arrow[][]>initTable();
+const _arrows = initTable() as Arrow[][];
 
 function initArr(maxLen: number) {
   const row: number[] = [];
@@ -498,17 +498,15 @@ function _fillInMaxWordMatchPos(
   }
 }
 
-export interface FuzzyScorer {
-  (
-    pattern: string,
-    lowPattern: string,
-    patternPos: number,
-    word: string,
-    lowWord: string,
-    wordPos: number,
-    firstMatchCanBeWeak: boolean
-  ): FuzzyScore | undefined;
-}
+export type FuzzyScorer = (
+  pattern: string,
+  lowPattern: string,
+  patternPos: number,
+  word: string,
+  lowWord: string,
+  wordPos: number,
+  firstMatchCanBeWeak: boolean
+) => FuzzyScore | undefined;
 
 export function createMatches(score: undefined | FuzzyScore): Match[] {
   if (typeof score === "undefined") {

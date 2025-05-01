@@ -1,8 +1,6 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -13,8 +11,10 @@ import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import "../../../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -142,7 +142,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <mwc-list>
+            <ha-list>
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
@@ -199,7 +199,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     stateObject.entity_id === "zone.home" &&
                     !this._canEditCore
                       ? nothing
-                      : html`<div slot="meta">
+                      : html`<ha-tooltip
+                          slot="meta"
+                          placement="left"
+                          .content=${hass.localize(
+                            "ui.panel.config.zone.configured_in_yaml"
+                          )}
+                          .disabled=${stateObject.entity_id === "zone.home"}
+                          hoist
+                        >
                           <ha-icon-button
                             .id=${!this.narrow ? stateObject.entity_id : ""}
                             .entityId=${stateObject.entity_id}
@@ -214,23 +222,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               : hass.localize("ui.panel.config.zone.edit_zone")}
                             @click=${this._editHomeZone}
                           ></ha-icon-button>
-                          ${stateObject.entity_id !== "zone.home"
-                            ? html`
-                                <simple-tooltip
-                                  animation-delay="0"
-                                  position="left"
-                                >
-                                  ${hass.localize(
-                                    "ui.panel.config.zone.configured_in_yaml"
-                                  )}
-                                </simple-tooltip>
-                              `
-                            : ""}
-                        </div>`}
+                        </ha-tooltip>`}
                   </ha-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-list>
           `;
 
     return html`
@@ -452,7 +448,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.panel.config.zone.can_not_edit"),
         text: this.hass.localize("ui.panel.config.zone.configured_in_yaml"),
-        confirm: () => {},
       });
       return;
     }
@@ -522,7 +517,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         this._map?.fitMap();
       }
       return true;
-    } catch (err: any) {
+    } catch (_err: any) {
       return false;
     }
   }
@@ -538,60 +533,61 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      hass-loading-screen {
-        --app-header-background-color: var(--sidebar-background-color);
-        --app-header-text-color: var(--sidebar-text-color);
-      }
-      ha-list-item {
-        --mdc-list-item-meta-size: 48px;
-      }
-      a {
-        color: var(--primary-color);
-      }
-      ha-card {
-        margin: 16px auto;
-        overflow: hidden;
-      }
-      ha-icon,
-      ha-icon-button:not([disabled]) {
-        color: var(--secondary-text-color);
-      }
-      ha-icon-button {
-        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
-      }
-      .empty {
-        text-align: center;
-        padding: 8px;
-      }
-      .flex {
-        display: flex;
-        height: 100%;
-      }
-      .overflow {
-        height: 100%;
-        overflow: auto;
-      }
-      ha-locations-editor {
-        flex-grow: 1;
-        height: 100%;
-      }
-      .flex mwc-list {
-        padding-bottom: 64px;
-      }
-      .flex mwc-list,
-      .flex .empty {
-        border-left: 1px solid var(--divider-color);
-        width: 250px;
-        min-height: 100%;
-        box-sizing: border-box;
-      }
-      ha-card {
-        margin-bottom: 100px;
-      }
-    `;
-  }
+  static styles = css`
+    hass-loading-screen {
+      --app-header-background-color: var(--sidebar-background-color);
+      --app-header-text-color: var(--sidebar-text-color);
+    }
+    ha-list-item {
+      --mdc-list-item-meta-size: 48px;
+    }
+    a {
+      color: var(--primary-color);
+    }
+    ha-card {
+      margin: 16px auto;
+      overflow: hidden;
+    }
+    ha-icon,
+    ha-icon-button:not([disabled]) {
+      color: var(--secondary-text-color);
+    }
+    ha-icon-button {
+      --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
+    }
+    .empty {
+      text-align: center;
+      padding: 8px;
+    }
+    .flex {
+      display: flex;
+      height: 100%;
+    }
+    .overflow {
+      height: 100%;
+      overflow: auto;
+    }
+    ha-locations-editor {
+      flex-grow: 1;
+      height: 100%;
+    }
+    .flex ha-list {
+      padding-bottom: 64px;
+    }
+    .flex ha-list,
+    .flex .empty {
+      border-left: 1px solid var(--divider-color);
+      width: 250px;
+      min-height: 100%;
+      box-sizing: border-box;
+    }
+    ha-card {
+      margin-bottom: 100px;
+    }
+    ha-tooltip {
+      display: block;
+    }
+  `;
 }
 
 declare global {

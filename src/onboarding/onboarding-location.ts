@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import {
   mdiCrosshairsGps,
   mdiMagnify,
@@ -13,10 +13,10 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
-import "../components/ha-circular-progress";
-import "../components/ha-formfield";
+import "../components/ha-list";
 import "../components/ha-list-item";
 import "../components/ha-radio";
+import "../components/ha-spinner";
 import "../components/ha-textfield";
 import type { HaTextField } from "../components/ha-textfield";
 import "../components/map/ha-locations-editor";
@@ -115,13 +115,7 @@ class OnboardingLocation extends LitElement {
         >
           <ha-svg-icon slot="leadingIcon" .path=${mdiMagnify}></ha-svg-icon>
           ${this._working
-            ? html`
-                <ha-circular-progress
-                  slot="trailingIcon"
-                  indeterminate
-                  size="small"
-                ></ha-circular-progress>
-              `
+            ? html` <ha-spinner slot="trailingIcon" size="small"></ha-spinner> `
             : html`
                 <ha-icon-button
                   @click=${this._handleButtonClick}
@@ -138,7 +132,7 @@ class OnboardingLocation extends LitElement {
         </ha-textfield>
         ${this._places !== undefined
           ? html`
-              <mwc-list activatable>
+              <ha-list activatable>
                 ${this._places?.length
                   ? this._places.map((place) => {
                       const primary = [
@@ -178,7 +172,7 @@ class OnboardingLocation extends LitElement {
                         ? ""
                         : "No results"}</ha-list-item
                     >`}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </div>
@@ -500,7 +494,7 @@ class OnboardingLocation extends LitElement {
           inset-inline-end: 10px;
           direction: var(--direction);
         }
-        ha-textfield > ha-circular-progress {
+        ha-textfield > ha-spinner {
           position: relative;
           left: 12px;
           inset-inline-start: 12px;
@@ -513,7 +507,7 @@ class OnboardingLocation extends LitElement {
           border-radius: var(--mdc-shape-large, 16px);
           overflow: hidden;
         }
-        mwc-list {
+        ha-list {
           width: 100%;
           border: 1px solid var(--divider-color);
           box-sizing: border-box;

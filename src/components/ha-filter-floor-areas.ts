@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -15,12 +13,13 @@ import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
+import "./ha-expansion-panel";
 import "./ha-floor-icon";
 import "./ha-icon";
+import "./ha-icon-button";
+import "./ha-list";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
-import "./ha-icon-button";
-import "./ha-expansion-panel";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
@@ -54,7 +53,7 @@ export class HaFilterFloorAreas extends LitElement {
 
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -74,7 +73,7 @@ export class HaFilterFloorAreas extends LitElement {
         </div>
         ${this._shouldRender
           ? html`
-              <mwc-list class="ha-scrollbar">
+              <ha-list class="ha-scrollbar">
                 ${repeat(
                   areas?.floors || [],
                   (floor) => floor.floor_id,
@@ -108,14 +107,14 @@ export class HaFilterFloorAreas extends LitElement {
                   (area) => area.area_id,
                   (area) => this._renderArea(area)
                 )}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </ha-expansion-panel>
     `;
   }
 
-  private _renderArea(area, last: boolean = false) {
+  private _renderArea(area, last = false) {
     const hasFloor = !!area.floor_id;
     return html`
       <ha-check-list-item
@@ -183,7 +182,7 @@ export class HaFilterFloorAreas extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49}px`;
       }, 300);
     }
@@ -251,7 +250,7 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     const results = await Promise.all(relatedPromises);
-    const items: Set<string> = new Set();
+    const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {
         result[this.type!]!.forEach((item) => items.add(item));

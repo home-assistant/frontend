@@ -46,9 +46,25 @@ describe("Color Conversion Tests", () => {
     expect(hs2rgb(hs)).toEqual([255, 0, 0]);
   });
 
-  it("should convert theme color to hex", () => {
+  it("should convert theme color to hex (ignoring alpha)", () => {
     expect(theme2hex("red")).toBe("#ff0000");
+    expect(theme2hex("ReD")).toBe("#ff0000");
     expect(theme2hex("#ff0000")).toBe("#ff0000");
     expect(theme2hex("unicorn")).toBe("unicorn");
+    expect(theme2hex("#abc")).toBe("#aabbcc");
+    expect(theme2hex("#abcd")).toBe("#aabbcc");
+    expect(theme2hex("#aabbccdd")).toBe("#aabbcc");
+  });
+
+  it("should convert rgb theme color to hex", () => {
+    expect(theme2hex("rgb( 255, 0, 0)")).toBe("#ff0000");
+    expect(theme2hex("rgb(0,255, 0)")).toBe("#00ff00");
+    expect(theme2hex("rgb(0, 0,255 )")).toBe("#0000ff");
+  });
+
+  it("should convert rgba theme color to hex by ignoring alpha", () => {
+    expect(theme2hex("rgba( 255, 0, 0, 0.5)")).toBe("#ff0000");
+    expect(theme2hex("rgba(0,255, 0, 0.3)")).toBe("#00ff00");
+    expect(theme2hex("rgba(0, 0,255 , 0.7)")).toBe("#0000ff");
   });
 });

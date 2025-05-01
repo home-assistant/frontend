@@ -4,6 +4,7 @@
     "target": "ES2021",
     "lib": ["ES2021", "DOM", "DOM.Iterable", "WebWorker"],
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     // Modules
     "module": "ESNext",
     "moduleResolution": "node",
@@ -44,11 +45,38 @@
           // CSS
           "no-invalid-css": "off" // warning does not work
         },
-        "globalTags": ["google-cast-launcher"],
-        "customHtmlData": [
-          "./node_modules/@lrnwebcomponents/simple-tooltip/custom-elements.json"
-        ]
+        "globalTags": ["google-cast-launcher"]
       }
-    ]
+    ],
+    "paths": {
+      "lit/static-html": ["./node_modules/lit/static-html.js"],
+      "lit/decorators": ["./node_modules/lit/decorators.js"],
+      "lit/directive": ["./node_modules/lit/directive.js"],
+      "lit/directives/until": ["./node_modules/lit/directives/until.js"],
+      "lit/directives/class-map": [
+        "./node_modules/lit/directives/class-map.js"
+      ],
+      "lit/directives/style-map": [
+        "./node_modules/lit/directives/style-map.js"
+      ],
+      "lit/directives/if-defined": [
+        "./node_modules/lit/directives/if-defined.js"
+      ],
+      "lit/directives/guard": ["./node_modules/lit/directives/guard.js"],
+      "lit/directives/cache": ["./node_modules/lit/directives/cache.js"],
+      "lit/directives/repeat": ["./node_modules/lit/directives/repeat.js"],
+      "lit/directives/live": ["./node_modules/lit/directives/live.js"],
+      "lit/directives/keyed": ["./node_modules/lit/directives/keyed.js"],
+      "lit/polyfill-support": ["./node_modules/lit/polyfill-support.js"],
+      "@lit-labs/virtualizer/layouts/grid": [
+        "./node_modules/@lit-labs/virtualizer/layouts/grid.js"
+      ],
+      "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver": [
+        "./node_modules/@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js"
+      ],
+      "@lit-labs/observers/resize-controller": [
+        "./node_modules/@lit-labs/observers/resize-controller.js"
+      ]
+    }
   }
 }

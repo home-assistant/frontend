@@ -1,11 +1,12 @@
 [build-system]
-requires = ["setuptools~=75.1"]
+requires = ["setuptools~=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name         = "home-assistant-frontend"
-version      = "20241224.0"
-license      = {text = "Apache-2.0"}
+version      = "20250430.0"
+license      = "Apache-2.0"
+license-files = ["LICENSE*"]
 description  = "The Home Assistant frontend"
 readme       = "README.md"
 authors      = [
@@ -17,8 +18,6 @@ requires-python = ">=3.13.0"
 "Homepage" = "https://github.com/home-assistant/frontend"
 
 [tool.setuptools]
-platforms = ["any"]
-zip-safe  = false
 include-package-data = true
 
 [tool.setuptools.packages.find]

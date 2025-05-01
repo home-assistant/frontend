@@ -48,7 +48,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
     this._newEncryptionKey = generateEncryptionKey();
   }
 
-  public closeDialog(): void {
+  public closeDialog() {
     if (this._params!.cancel) {
       this._params!.cancel();
     }
@@ -59,6 +59,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
     this._step = undefined;
     this._params = undefined;
     this._newEncryptionKey = undefined;
+    return true;
   }
 
   private _done() {
@@ -91,7 +92,7 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this.hass.localize("ui.dialogs.generic.close")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
           ></ha-icon-button>

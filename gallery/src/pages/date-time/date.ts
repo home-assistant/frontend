@@ -1,8 +1,8 @@
-import "@material/mwc-list/mwc-list";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { formatDateNumeric } from "../../../../src/common/datetime/format_date";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-list";
 import type { FrontendLocaleData } from "../../../../src/data/translation";
 import {
   DateFormat,
@@ -27,7 +27,7 @@ export class DemoDateTimeDate extends LitElement {
     };
     const date = new Date();
     return html`
-      <mwc-list>
+      <ha-list>
         <div class="container header">
           <div>Language</div>
           <div class="center">Default (lang)</div>
@@ -86,32 +86,30 @@ export class DemoDateTimeDate extends LitElement {
             </div>
           `
         )}
-      </mwc-list>
+      </ha-list>
     `;
   }
 
-  static get styles() {
-    return css`
-      .header {
-        font-weight: bold;
-      }
-      .center {
-        text-align: center;
-      }
-      .container {
-        max-width: 600px;
-        margin: 12px auto;
-        display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-      }
+  static styles = css`
+    .header {
+      font-weight: bold;
+    }
+    .center {
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
 
-      .container > div {
-        flex-grow: 1;
-        width: 20%;
-      }
-    `;
-  }
+    .container > div {
+      flex-grow: 1;
+      width: 20%;
+    }
+  `;
 }
 
 declare global {

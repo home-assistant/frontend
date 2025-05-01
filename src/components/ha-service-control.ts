@@ -4,7 +4,7 @@ import type {
   HassServices,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -38,6 +38,7 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 import "./ha-service-section-icon";
+import { hasTemplate } from "../common/string/has-template";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -60,15 +61,13 @@ interface Field extends Omit<HassService["fields"][string], "selector"> {
 }
 
 interface ExtHassService extends Omit<HassService, "fields"> {
-  fields: Array<
-    Omit<HassService["fields"][string], "selector"> & {
-      key: string;
-      selector?: Selector;
-      fields?: Record<string, Omit<HassService["fields"][string], "selector">>;
-      collapsed?: boolean;
-    }
-  >;
-  flatFields: Array<Field>;
+  fields: (Omit<HassService["fields"][string], "selector"> & {
+    key: string;
+    selector?: Selector;
+    fields?: Record<string, Omit<HassService["fields"][string], "selector">>;
+    collapsed?: boolean;
+  })[];
+  flatFields: Field[];
   hasSelector: string[];
 }
 
@@ -102,6 +101,8 @@ export class HaServiceControl extends LitElement {
   @state() private _manifest?: IntegrationManifest;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  private _stickySelector: Record<string, Selector> = {};
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
@@ -525,7 +526,7 @@ export class HaServiceControl extends LitElement {
           return fields.length &&
             this._hasFilteredFields(fields, targetEntities)
             ? html`<ha-expansion-panel
-                leftChevron
+                left-chevron
                 .expanded=${!dataField.collapsed}
                 .header=${this.hass.localize(
                   `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
@@ -592,7 +593,23 @@ export class HaServiceControl extends LitElement {
       return nothing;
     }
 
-    const selector = dataField?.selector ?? { text: undefined };
+    const fieldDataHasTemplate =
+      this._value?.data && hasTemplate(this._value.data[dataField.key]);
+
+    const selector =
+      fieldDataHasTemplate &&
+      typeof this._value!.data![dataField.key] === "string"
+        ? { template: null }
+        : fieldDataHasTemplate &&
+            typeof this._value!.data![dataField.key] === "object"
+          ? { object: null }
+          : (this._stickySelector[dataField.key] ??
+            dataField?.selector ?? { text: null });
+
+    if (fieldDataHasTemplate) {
+      // Hold this selector type until the field is cleared
+      this._stickySelector[dataField.key] = selector;
+    }
 
     const showOptional = showOptionalToggle(dataField);
 
@@ -695,6 +712,7 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys.delete(key);
       data = { ...this._value?.data };
       delete data[key];
+      delete this._stickySelector[key];
     }
     if (data) {
       fireEvent(this, "value-changed", {
@@ -818,6 +836,10 @@ export class HaServiceControl extends LitElement {
 
   private _serviceDataChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    if (ev.detail.isValid === false) {
+      // Don't clear an object selector that returns invalid YAML
+      return;
+    }
     const key = (ev.currentTarget as any).key;
     const value = ev.detail.value;
     if (
@@ -830,8 +852,13 @@ export class HaServiceControl extends LitElement {
 
     const data = { ...this._value?.data, [key]: value };
 
-    if (value === "" || value === undefined) {
+    if (
+      value === "" ||
+      value === undefined ||
+      (typeof value === "object" && !Object.keys(value).length)
+    ) {
       delete data[key];
+      delete this._stickySelector[key];
     }
 
     fireEvent(this, "value-changed", {
@@ -859,70 +886,67 @@ export class HaServiceControl extends LitElement {
     this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return css`
-      ha-settings-row {
-        padding: var(--service-control-padding, 0 16px);
-      }
-      ha-settings-row {
-        --paper-time-input-justify-content: flex-end;
-        --settings-row-content-width: 100%;
-        --settings-row-prefix-display: contents;
-        border-top: var(
-          --service-control-items-border-top,
-          1px solid var(--divider-color)
-        );
-      }
-      ha-service-picker,
-      ha-entity-picker,
-      ha-yaml-editor {
-        display: block;
-        margin: var(--service-control-padding, 0 16px);
-      }
-      ha-yaml-editor {
-        padding: 16px 0;
-      }
-      p {
-        margin: var(--service-control-padding, 0 16px);
-        padding: 16px 0;
-      }
-      :host([hidePicker]) p {
-        padding-top: 0;
-      }
-      .checkbox-spacer {
-        width: 32px;
-      }
-      ha-checkbox {
-        margin-left: -16px;
-        margin-inline-start: -16px;
-        margin-inline-end: initial;
-      }
-      .help-icon {
-        color: var(--secondary-text-color);
-      }
-      .description {
-        justify-content: space-between;
-        display: flex;
-        align-items: center;
-        padding-right: 2px;
-        padding-inline-end: 2px;
-        padding-inline-start: initial;
-      }
-      .description p {
-        direction: ltr;
-      }
-      ha-expansion-panel {
-        --ha-card-border-radius: 0;
-        --expansion-panel-summary-padding: 0 16px;
-        --expansion-panel-content-padding: 0;
-      }
-    `;
-  }
+  static styles = css`
+    ha-settings-row {
+      padding: var(--service-control-padding, 0 16px);
+    }
+    ha-settings-row {
+      --settings-row-content-width: 100%;
+      --settings-row-prefix-display: contents;
+      border-top: var(
+        --service-control-items-border-top,
+        1px solid var(--divider-color)
+      );
+    }
+    ha-service-picker,
+    ha-entity-picker,
+    ha-yaml-editor {
+      display: block;
+      margin: var(--service-control-padding, 0 16px);
+    }
+    ha-yaml-editor {
+      padding: 16px 0;
+    }
+    p {
+      margin: var(--service-control-padding, 0 16px);
+      padding: 16px 0;
+    }
+    :host([hidePicker]) p {
+      padding-top: 0;
+    }
+    .checkbox-spacer {
+      width: 32px;
+    }
+    ha-checkbox {
+      margin-left: -16px;
+      margin-inline-start: -16px;
+      margin-inline-end: initial;
+    }
+    .help-icon {
+      color: var(--secondary-text-color);
+    }
+    .description {
+      justify-content: space-between;
+      display: flex;
+      align-items: center;
+      padding-right: 2px;
+      padding-inline-end: 2px;
+      padding-inline-start: initial;
+    }
+    .description p {
+      direction: ltr;
+    }
+    ha-expansion-panel {
+      --ha-card-border-radius: 0;
+      --expansion-panel-summary-padding: 0 16px;
+      --expansion-panel-content-padding: 0;
+    }
+  `;
 }
 
 declare global {

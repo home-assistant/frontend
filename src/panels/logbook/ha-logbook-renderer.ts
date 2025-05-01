@@ -12,9 +12,8 @@ import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
-import { computeTimelineColor } from "../../components/chart/timeline-chart/timeline-color";
+import { computeTimelineColor } from "../../components/chart/timeline-color";
 import "../../components/entity/state-badge";
-import "../../components/ha-circular-progress";
 import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import type { LogbookEntry } from "../../data/logbook";
@@ -168,7 +167,8 @@ class HaLogbookRenderer extends LitElement {
 
     const traceContext =
       triggerDomains.includes(item.domain!) &&
-      item.context_id! in this.traceContexts
+      item.context_id &&
+      item.context_id in this.traceContexts
         ? this.traceContexts[item.context_id!]
         : undefined;
 
@@ -682,7 +682,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         button.link {
-          color: var(--paper-item-icon-color);
+          color: var(--state-icon-color);
           text-decoration: none;
         }
 

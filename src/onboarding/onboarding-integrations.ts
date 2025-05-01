@@ -35,27 +35,34 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _entries: ConfigEntry[] = [];
 
-  @state() private _discoveredDomains?: Set<string>;
+  @state() private _discoveredDomains: Set<string> = new Set<string>();
 
-  public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
+  @state() private _discoveredDomainsReceived = false;
+
+  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
-      subscribeConfigFlowInProgress(this.hass, (flows) => {
-        this._discoveredDomains = new Set(
-          flows
-            .filter((flow) => !HIDDEN_DOMAINS.has(flow.handler))
-            .map((flow) => flow.handler)
-        );
+      subscribeConfigFlowInProgress(this.hass, (messages) => {
+        messages.forEach((message) => {
+          if (
+            message.type === "removed" ||
+            HIDDEN_DOMAINS.has(message.flow.handler)
+          ) {
+            return;
+          }
+          this._discoveredDomains.add(message.flow.handler);
+        });
         this.hass.loadBackendTranslation(
           "title",
           Array.from(this._discoveredDomains)
         );
+        this._discoveredDomainsReceived = true;
       }),
       subscribeConfigEntries(
         this.hass,
         (messages) => {
           let fullUpdate = false;
           const newEntries: ConfigEntry[] = [];
-          const integrations: Set<string> = new Set();
+          const integrations = new Set<string>();
           messages.forEach((message) => {
             if (message.type === null || message.type === "added") {
               if (HIDDEN_DOMAINS.has(message.entry.domain)) {
@@ -93,16 +100,16 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discoveredDomains) {
+    if (!this._discoveredDomainsReceived) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.
-    let uniqueDomains: Set<string> = new Set();
+    let uniqueDomains = new Set<string>();
     this._entries.forEach((entry) => {
       uniqueDomains.add(entry.domain);
     });
     uniqueDomains = new Set([...uniqueDomains, ...this._discoveredDomains]);
-    let domains: Array<[string, string]> = [];
+    let domains: [string, string][] = [];
     for (const domain of uniqueDomains.values()) {
       domains.push([domain, domainToName(this.hass.localize, domain)]);
     }

@@ -7,7 +7,7 @@ const BASE_URL = `${__STATIC_PATH__}translations`;
 const STORAGE = window.localStorage || {};
 
 // Store loaded translations in memory so translations are available immediately
-// when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
+// when DOM is created. Even a cache lookup creates noticeable latency.
 const translations = {};
 
 async function fetchTranslation(fingerprint: string) {
@@ -113,7 +113,7 @@ export function getLocalLanguage() {
           return language;
         }
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       // Ignore parsing error.
     }
   }
