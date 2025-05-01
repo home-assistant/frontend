@@ -131,7 +131,7 @@
     "qrcode": "1.5.4",
     "roboto-fontface": "0.10.0",
     "rrule": "2.8.1",
-    "sortablejs": "patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch",
+    "sortablejs": "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch",
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
     "tinykeys": "3.0.0",

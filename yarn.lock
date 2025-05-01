@@ -9374,7 +9374,7 @@ __metadata:
     rspack-manifest-plugin: "npm:5.0.3"
     serve: "npm:14.2.4"
     sinon: "npm:20.0.0"
-    sortablejs: "patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch"
+    sortablejs: "patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch"
     stacktrace-js: "npm:2.0.2"
     superstruct: "npm:2.0.2"
     tar: "npm:7.4.3"
@@ -13454,17 +13454,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sortablejs@npm:1.15.3":
-  version: 1.15.3
-  resolution: "sortablejs@npm:1.15.3"
-  checksum: 10/85d39a172ef47adedf273afa65daa8aefcbaafd43a5b5c480d8637add93033f5784da697d0d3545d9bb6e11fd71f1847f307ee26be452942f3785a683fd44bb5
+"sortablejs@npm:1.15.6":
+  version: 1.15.6
+  resolution: "sortablejs@npm:1.15.6"
+  checksum: 10/3179071352662e6cff20d7d10792a934fc892a83a01ae09c7e604d2dd51daaf07283b00a8f2b13025f27959ff68a1469959bc94ef2a7049723d4c381a368a5ac
   languageName: node
   linkType: hard
 
-"sortablejs@patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch":
-  version: 1.15.3
-  resolution: "sortablejs@patch:sortablejs@npm%3A1.15.3#~/.yarn/patches/sortablejs-npm-1.15.3-3235a8f83b.patch::version=1.15.3&hash=fba0ad"
-  checksum: 10/249f4cfd2b4a811f4e1505b25d4d67a97521afabdabd2f5482f985da20785d995c2899d442ad79075c7ba547e477aef81f09b0028f12d1de468cbca4f2b8c043
+"sortablejs@patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch":
+  version: 1.15.6
+  resolution: "sortablejs@patch:sortablejs@npm%3A1.15.6#~/.yarn/patches/sortablejs-npm-1.15.6-3235a8f83b.patch::version=1.15.6&hash=fba0ad"
+  checksum: 10/4d7515c6490fd9d7184a758775634b72c971f1ac739f8bf19683ad973374d6afb3adeb5dcb5c604d15faac55867b401cdb0631c0baee9f73d4c1ef82ee4318f8
   languageName: node
   linkType: hard
 
