@@ -462,6 +462,8 @@ describe("Energy Usage Calculation Tests", () => {
         used_total: 9,
       }
     );
+  });
+  it("Solar -> Battery -> Grid", () => {
     assert.deepEqual(
       checkConsumptionResult({
         from_grid: 0,
@@ -478,6 +480,27 @@ describe("Energy Usage Calculation Tests", () => {
         used_battery: 0,
         solar_to_battery: 1,
         solar_to_grid: 0,
+        used_total: 0,
+      }
+    );
+  });
+  it("Solar -> Grid && Grid -> Battery", () => {
+    assert.deepEqual(
+      checkConsumptionResult({
+        from_grid: 1,
+        to_grid: 1,
+        solar: 1,
+        to_battery: 1,
+        from_battery: 0,
+      }),
+      {
+        grid_to_battery: 1,
+        battery_to_grid: 0,
+        used_solar: 0,
+        used_grid: 0,
+        used_battery: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 1,
         used_total: 0,
       }
     );
