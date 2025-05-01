@@ -1938,9 +1938,10 @@
           "title": "Assist",
           "open_assist": "open Assist dialog"
         },
-        "automations": {
-          "title": "Automations",
-          "paste": "to paste automation YAML from clipboard to automation editor"
+        "automation_script": {
+          "title": "Automations / Scripts",
+          "paste": "to paste automation/script YAML from clipboard to editor",
+          "save": "to save automation/script"
         },
         "charts": {
           "title": "Charts",
