@@ -1,6 +1,8 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
+import "@material/mwc-button";
+import "../components/ha-spinner";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
