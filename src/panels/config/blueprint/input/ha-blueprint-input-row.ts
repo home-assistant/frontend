@@ -8,7 +8,6 @@ import {
   mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
-  mdiFlask,
   mdiGroup,
   mdiPlaylistEdit,
   mdiRenameBox,
@@ -33,11 +32,9 @@ import type {
   BlueprintInput,
 } from "../../../../data/blueprint";
 import { INPUT_ICONS } from "../../../../data/blueprint";
-import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
-  showAlertDialog,
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
@@ -122,12 +119,6 @@ export default class HaBlueprintInputRow extends LitElement {
             >
             </ha-icon-button>
 
-            <ha-list-item graphic="icon">
-              ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.test"
-              )}
-              <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
-            </ha-list-item>
             <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.blueprint.editor.inputs.rename"
@@ -280,28 +271,25 @@ export default class HaBlueprintInputRow extends LitElement {
   private async _handleAction(ev: CustomEvent<ActionDetail>) {
     switch (ev.detail.index) {
       case 0:
-        await this._testInput();
-        break;
-      case 1:
         await this._renameInput();
         break;
-      case 2:
+      case 1:
         fireEvent(this, "duplicate");
+        break;
+      case 2:
+        this._setClipboard();
         break;
       case 3:
         this._setClipboard();
-        break;
-      case 4:
-        this._setClipboard();
         fireEvent(this, "value-changed", { value: null });
         break;
-      case 5:
+      case 4:
         fireEvent(this, "move-up");
         break;
-      case 6:
+      case 5:
         fireEvent(this, "move-down");
         break;
-      case 7:
+      case 6:
         if (this._yamlMode) {
           this._switchUiMode();
         } else {
@@ -309,7 +297,7 @@ export default class HaBlueprintInputRow extends LitElement {
         }
         this.expand();
         break;
-      case 8:
+      case 7:
         this._onDelete();
         break;
     }
@@ -347,63 +335,6 @@ export default class HaBlueprintInputRow extends LitElement {
   private _switchYamlMode() {
     this._warnings = undefined;
     this._yamlMode = true;
-  }
-
-  private async _testInput() {
-    if (this._testing) {
-      return;
-    }
-    this._testingResult = undefined;
-    this._testing = true;
-    const input = this.input;
-
-    try {
-      const validateResult = await validateConfig(this.hass, {
-        inputs: input,
-      });
-
-      // Abort if input changed.
-      if (this.input !== input) {
-        this._testing = false;
-        return;
-      }
-
-      if (!validateResult.inputs.valid) {
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.blueprint.editor.inputs.invalid_input"
-          ),
-          text: validateResult.inputs.error,
-        });
-        this._testing = false;
-        return;
-      }
-
-      let result: { result: boolean };
-      try {
-        result = await testInput(this.hass, input);
-      } catch (err: any) {
-        if (this.input !== input) {
-          this._testing = false;
-          return;
-        }
-
-        showAlertDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.blueprint.editor.inputs.test_failed"
-          ),
-          text: err.message,
-        });
-        this._testing = false;
-        return;
-      }
-
-      this._testingResult = result.result;
-    } finally {
-      setTimeout(() => {
-        this._testing = false;
-      }, 2500);
-    }
   }
 
   private async _renameInput(): Promise<void> {

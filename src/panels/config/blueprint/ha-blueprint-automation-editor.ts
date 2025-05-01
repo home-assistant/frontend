@@ -13,7 +13,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
   @state() protected _blueprint: AutomationBlueprint | undefined;
 
   public static defaultConfig: Blueprint = {
-    blueprint: {
+    metadata: {
       name: "New blueprint",
       domain: "automation",
       input: {},
@@ -29,14 +29,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
     return HaBlueprintAutomationEditor.defaultConfig;
   }
 
-  protected checkValidation(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   protected normalizeBlueprint(config: Partial<Blueprint>): Blueprint {
-    // TODO: Fix this method
-    // config = migrateBlueprintConfig(config);
-
     // Normalize data: ensure triggers, actions and conditions are lists
     // Happens when people copy paste their automations into the config
     for (const key of ["triggers", "conditions", "actions"]) {

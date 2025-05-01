@@ -216,7 +216,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           </mwc-button>
           <mwc-button @click=${this._save}>
             ${this.hass.localize(
-              this._params.blueprint.blueprint.name
+              this._params.blueprint.metadata.name
                 ? "ui.panel.config.blueprint.editor.rename"
                 : "ui.panel.config.blueprint.editor.save"
             )}

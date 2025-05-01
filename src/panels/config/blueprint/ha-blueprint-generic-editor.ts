@@ -59,10 +59,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   @state() private _saving = false;
 
-  @state() private _validationErrors?: (string | TemplateResult)[];
-
-  @state() private _errors?: string;
-
   @state() private _yamlErrors?: string;
 
   @state() private _blueprintPath?: string;
@@ -81,8 +77,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     blueprint: Partial<Blueprint>
   ): Blueprint;
 
-  protected abstract checkValidation(): Promise<void>;
-
   protected _valueChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
 
@@ -92,7 +86,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       return;
     }
     this._dirty = true;
-    this._errors = undefined;
   }
 
   private async _promptBlueprintAlias(): Promise<boolean> {
@@ -134,7 +127,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     }
 
     this._saving = true;
-    this._validationErrors = undefined;
 
     try {
       await saveBlueprint(
@@ -154,7 +146,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         });
       }
     } catch (errors: any) {
-      this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
         message: errors.body?.message || errors.error || errors.body,
       });
@@ -179,7 +170,6 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       this._dirty = false;
       this._readOnly = false;
       this._blueprint = this.normalizeBlueprint(blueprint);
-      await this.checkValidation();
       this._updateInputsInHass();
     } catch (err: any) {
       await showAlertDialog(this, {
