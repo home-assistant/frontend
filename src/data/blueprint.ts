@@ -200,7 +200,6 @@ type BlueprintClipboardBase = {
 };
 type AutomationBlueprintClipboard = BlueprintClipboardBase &
   AutomationClipboard;
-// type ScriptBlueprintClipboard = BlueprintClipboardBase & ScriptClipboard;
 export type BlueprintClipboard = AutomationBlueprintClipboard;
 
 export const INPUT_ICONS = {

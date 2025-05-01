@@ -23,8 +23,10 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
 
   @state() private _opened = false;
 
-  // TODO: Forward parameters to import dialog
-  showDialog(_: any): void {
+  @state() private _parameters: unknown;
+
+  showDialog(parameters: unknown): void {
+    this._parameters = parameters;
     this._opened = true;
   }
 
@@ -56,10 +58,7 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
       return;
     }
 
-    showImportBlueprintDialog(this, {
-      url: "",
-      importedCallback: () => null,
-    });
+    showImportBlueprintDialog(this, this._parameters);
     this.closeDialog();
   }
 
