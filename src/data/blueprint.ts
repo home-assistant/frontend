@@ -49,6 +49,7 @@ export type Blueprints = Record<string, BlueprintOrError>;
 export type BlueprintOrError = Blueprint | { error: string };
 
 export interface BlueprintBase {
+  blueprint?: BlueprintMetaData;
   metadata: BlueprintMetaData;
 }
 
@@ -180,12 +181,12 @@ export const showBlueprintEditor = (
 ) => {
   initialBlueprintEditorData = data;
 
-  const params: Record<string, string> = { domain };
+  const params: Record<string, string> = {};
   if (expanded) {
     params.expanded = "1";
   }
 
-  navigate(`/config/blueprint/edit/new?${createSearchParam(params)}`);
+  navigate(`/config/blueprint/edit/${domain}/new?${createSearchParam(params)}`);
 };
 
 export const getBlueprintEditorInitData = () => {

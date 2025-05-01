@@ -1,4 +1,4 @@
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 export const loadNewBlueprintDialog = () => import("./dialog-new-blueprint");
 

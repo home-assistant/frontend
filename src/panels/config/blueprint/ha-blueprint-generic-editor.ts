@@ -224,6 +224,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   private _inputChanged(
     ev: CustomEvent<{ value: [string, BlueprintInput][] }>
   ) {
+    ev.stopPropagation();
     const input = ev.detail.value.reduce(
       (acc, [key, i]) => ({ ...acc, [key]: i }),
       {}
@@ -238,6 +239,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         input,
       },
     };
+    this._dirty = true;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -278,7 +280,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${this._backTapped}
-        .header=${this._blueprint?.metadata.name ||
+        .header=${this._blueprint?.metadata?.name ||
         this.hass.localize("ui.panel.config.blueprint.editor.default_name")}
       >
         ${this.renderHeader()}
@@ -314,7 +316,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
           <ha-blueprint-input
             role="region"
             aria-labelledby="inputs-heading"
-            .inputs=${Object.entries(this._blueprint?.metadata.input || {})}
+            .inputs=${Object.entries(this._blueprint?.metadata?.input || {})}
             @value-changed=${this._inputChanged}
             .hass=${this.hass}
             .disabled=${this._readOnly}

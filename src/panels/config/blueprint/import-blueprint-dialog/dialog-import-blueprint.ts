@@ -2,18 +2,18 @@ import "@material/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-circular-progress";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-expansion-panel";
-import "../../../components/ha-markdown";
-import "../../../components/ha-alert";
-import "../../../components/ha-textfield";
-import type { HaTextField } from "../../../components/ha-textfield";
-import type { BlueprintImportResult } from "../../../data/blueprint";
-import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
-import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-circular-progress";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-markdown";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-textfield";
+import type { HaTextField } from "../../../../components/ha-textfield";
+import type { BlueprintImportResult } from "../../../../data/blueprint";
+import { importBlueprint, saveBlueprint } from "../../../../data/blueprint";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {

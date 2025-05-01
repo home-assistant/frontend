@@ -30,6 +30,10 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
 
   public normalizeBlueprint(config: Partial<Blueprint>): Blueprint {
     // TODO: Implement this? Is it needed?
+    if (config.blueprint) {
+      config.metadata = config.blueprint;
+    }
+
     return config as Blueprint;
   }
 

@@ -6,6 +6,7 @@ import deepClone from "deep-clone-simple";
 import type {
   BlueprintClipboard,
   BlueprintInput,
+  BlueprintInputSection,
 } from "../../../../data/blueprint";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-button";
@@ -15,14 +16,21 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { nextRender } from "../../../../common/util/render-status";
 import { storage } from "../../../../common/decorators/storage";
 import type HaBlueprintInputRow from "./ha-blueprint-input-row";
+import type { HaBlueprintInputSection } from "./types/ha-blueprint-input-section";
+import { showNewInputDialog } from "../new-input-dialog/show-dialog-new-input";
+
 import "./ha-blueprint-input-row";
-import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
+import "./types/ha-blueprint-input-section";
+import "./types/ha-blueprint-input-input";
 
 @customElement("ha-blueprint-input")
 export class HaBlueprintInput extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public inputs!: [string, BlueprintInput][];
+  @property({ attribute: false }) public inputs!: [
+    string,
+    BlueprintInput | BlueprintInputSection | null,
+  ][];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -73,7 +81,7 @@ export class HaBlueprintInput extends LitElement {
       ...this.inputs.slice(0, index),
       data,
       ...this.inputs.slice(index),
-    ] as [string, BlueprintInput][];
+    ] as [string, BlueprintInput | BlueprintInputSection | null][];
     // Add input locally to avoid UI jump
     this.inputs = inputs;
     await nextRender();
@@ -116,30 +124,19 @@ export class HaBlueprintInput extends LitElement {
     });
   }
 
-  private async _addInput() {
-    const id = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.blueprint.editor.inputs.add"),
-      inputLabel: this.hass.localize(
-        "ui.panel.config.blueprint.editor.inputs.id"
-      ),
-      inputType: "string",
-      placeholder: "",
-      defaultValue: "",
-      confirmText: this.hass.localize("ui.common.submit"),
-    });
-    if (!id) {
-      // This shouldn't be possible
-      return;
-    }
-
+  private async _addInput(id: string, type: "input" | "section") {
     const elClass = customElements.get(
-      `ha-blueprint-input-default`
+      `ha-blueprint-input-${type}`
     ) as CustomElementConstructor & {
-      defaultConfig: BlueprintInput;
+      defaultConfig: BlueprintInput | HaBlueprintInputSection | null;
     };
-    const inputs = [...this.inputs, [id, { ...elClass.defaultConfig }]];
+    const inputs = [...(this.inputs || []), [id, { ...elClass.defaultConfig }]];
     this._focusLastInputOnChange = true;
     fireEvent(this, "value-changed", { value: inputs });
+  }
+
+  private _showNewInputDialog() {
+    showNewInputDialog(this, { onSubmit: this._addInput.bind(this) });
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -190,11 +187,9 @@ export class HaBlueprintInput extends LitElement {
             ([id]) => id,
             (inputPair, idx) => html`
               <ha-blueprint-input-row
-                .sortableData=${inputPair}
-                .index=${idx}
                 .first=${idx === 0}
                 .last=${idx === this.inputs.length - 1}
-                .totalInputs=${this.inputs.length}
+                .index=${idx}
                 .input=${inputPair}
                 .disabled=${this.disabled}
                 @duplicate=${this._duplicateInput}
@@ -220,11 +215,10 @@ export class HaBlueprintInput extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.blueprint.editor.inputs.add"
               )}
-              @click=${this._addInput}
+              @click=${this._showNewInputDialog}
             >
               <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
-            <!-- TODO: Add button for creating input section -->
           </div>
         </div>
       </ha-sortable>

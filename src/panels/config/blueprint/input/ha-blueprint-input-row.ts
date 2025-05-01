@@ -9,6 +9,7 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
+  mdiGroup,
   mdiPlaylistEdit,
   mdiRenameBox,
 } from "@mdi/js";
@@ -26,11 +27,12 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
-import {
-  INPUT_ICONS,
-  type BlueprintClipboard,
-  type BlueprintInput,
+import type {
+  BlueprintInputSection,
+  BlueprintClipboard,
+  BlueprintInput,
 } from "../../../../data/blueprint";
+import { INPUT_ICONS } from "../../../../data/blueprint";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
@@ -50,13 +52,18 @@ const preventDefault = (ev) => ev.preventDefault();
 export default class HaBlueprintInputRow extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public input!: [string, BlueprintInput];
+  @property({ attribute: false }) public input!: [
+    string,
+    BlueprintInput | BlueprintInputSection | null,
+  ];
 
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
+
+  @property({ type: Number }) public index!: number;
 
   @storage({
     key: "blueprintClipboard",
@@ -78,19 +85,24 @@ export default class HaBlueprintInputRow extends LitElement {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
 
+  private _inputIsSection(x: any): x is BlueprintInputSection {
+    return "input" in x;
+  }
+
   protected render() {
-    if (!this.input) {
+    if (!this.input || !this.input[1]) {
       return nothing;
     }
+
+    const icon = this._inputIsSection(this.input[1])
+      ? mdiGroup
+      : INPUT_ICONS[Object.keys(this.input[1].selector!)[0]];
 
     return html`
       <ha-card outlined>
         <ha-expansion-panel leftChevron>
           <h3 slot="header">
-            <ha-svg-icon
-              class="input-icon"
-              .path=${INPUT_ICONS[Object.keys(this.input[1].selector!)[0]]}
-            ></ha-svg-icon>
+            <ha-svg-icon class="input-icon" .path=${icon}></ha-svg-icon>
             ${this.input[0]}
           </h3>
 

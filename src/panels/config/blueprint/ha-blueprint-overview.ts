@@ -52,7 +52,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { showAddBlueprintDialog } from "./show-dialog-add-blueprint";
+import { showAddBlueprintDialog } from "./new-blueprint-dialog/show-dialog-add-blueprint";
 import { storage } from "../../../common/decorators/storage";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {

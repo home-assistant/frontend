@@ -1,21 +1,21 @@
 import { customElement, property, state } from "lit/decorators";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
 import { mdiDownloadOutline, mdiPencilOutline } from "@mdi/js";
-import type { HassDialog } from "../../../dialogs/make-dialog-manager";
-import type { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import { haStyle, haStyleDialog } from "../../../resources/styles";
-import { showImportBlueprintDialog } from "./show-dialog-import-blueprint";
-import type { Blueprint, BlueprintDomain } from "../../../data/blueprint";
-import { showBlueprintEditor } from "../../../data/blueprint";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { showImportBlueprintDialog } from "../import-blueprint-dialog/show-dialog-import-blueprint";
+import type { Blueprint, BlueprintDomain } from "../../../../data/blueprint";
+import { showBlueprintEditor } from "../../../../data/blueprint";
 
 import "@material/mwc-list/mwc-list";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-list-item";
-import "../../../components/ha-textfield";
-import "../../../components/ha-icon-next";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-textfield";
+import "../../../../components/ha-icon-next";
 
 @customElement("ha-dialog-new-blueprint")
 class DialogNewBlueprint extends LitElement implements HassDialog {

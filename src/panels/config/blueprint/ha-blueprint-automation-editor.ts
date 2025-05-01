@@ -46,6 +46,10 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
       }
     }
 
+    if (config.blueprint) {
+      config.metadata = config.blueprint;
+    }
+
     return config as Blueprint;
   }
 
