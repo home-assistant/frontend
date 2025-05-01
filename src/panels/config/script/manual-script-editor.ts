@@ -24,7 +24,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { Action, Fields, ScriptConfig } from "../../../data/script";
-import { MODES, normalizeScriptConfig } from "../../../data/script";
+import {
+  getActionType,
+  MODES,
+  normalizeScriptConfig,
+} from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -234,54 +238,90 @@ export class HaManualScriptEditor extends LitElement {
       return;
     }
 
-    const loaded: any = load(paste);
-    if (loaded) {
-      let normalized: ScriptConfig | undefined;
+    let loaded: any;
+    try {
+      loaded = load(paste);
+    } catch (_err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.script.editor.paste_invalid_config"
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
 
-      try {
-        normalized = normalizeScriptConfig(loaded);
-      } catch (_err: any) {
-        return;
+    if (!loaded || typeof loaded !== "object") {
+      return;
+    }
+
+    let config = loaded;
+
+    if ("script" in config) {
+      config = config.script;
+      if (Object.keys(config).length) {
+        config = config[Object.keys(config)[0]];
       }
+    }
 
-      try {
-        assert(normalized, scriptConfigStruct);
-      } catch (_err: any) {
-        showToast(this, {
-          message: this.hass.localize(
-            "ui.panel.config.script.editor.paste_invalid_config"
-          ),
-          duration: 4000,
-          dismissable: true,
-        });
-        return;
+    if (Array.isArray(config)) {
+      if (config.length === 1) {
+        config = config[0];
+      } else {
+        config = { sequence: config };
       }
+    }
 
-      if (normalized) {
-        ev.preventDefault();
+    if (!["sequence", "unknown"].includes(getActionType(config))) {
+      config = { sequence: [config] };
+    }
 
-        if (this.dirty) {
-          const result = await new Promise<boolean>((resolve) => {
-            showPasteReplaceDialog(this, {
-              domain: "script",
-              pastedConfig: normalized,
-              onClose: () => resolve(false),
-              onAppend: () => {
-                this._appendToExistingConfig(normalized);
-                resolve(false);
-              },
-              onReplace: () => resolve(true),
-            });
+    let normalized: ScriptConfig | undefined;
+
+    try {
+      normalized = normalizeScriptConfig(config);
+    } catch (_err: any) {
+      return;
+    }
+
+    try {
+      assert(normalized, scriptConfigStruct);
+    } catch (_err: any) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.panel.config.script.editor.paste_invalid_config"
+        ),
+        duration: 4000,
+        dismissable: true,
+      });
+      return;
+    }
+
+    if (normalized) {
+      ev.preventDefault();
+
+      if (this.dirty) {
+        const result = await new Promise<boolean>((resolve) => {
+          showPasteReplaceDialog(this, {
+            domain: "script",
+            pastedConfig: normalized,
+            onClose: () => resolve(false),
+            onAppend: () => {
+              this._appendToExistingConfig(normalized);
+              resolve(false);
+            },
+            onReplace: () => resolve(true),
           });
+        });
 
-          if (!result) {
-            return;
-          }
+        if (!result) {
+          return;
         }
-
-        // replace the config completely
-        this._replaceExistingConfig(normalized);
       }
+
+      // replace the config completely
+      this._replaceExistingConfig(normalized);
     }
   };
 

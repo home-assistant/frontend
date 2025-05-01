@@ -71,7 +71,7 @@ const DOMAIN_STYLE = styleMap({
 });
 
 const ENTITY_ID_STYLE = styleMap({
-  fontFamily: "var(--code-font-family, monospace)",
+  fontFamily: "var(--ha-font-family-code)",
   fontSize: "var(--ha-font-size-xs)",
 });
 

@@ -161,7 +161,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                         placement="right"
                       >
                         <ha-svg-icon
-                          style="padding-left: 10px; padding-inline-start: 10px; direction: var(--direction);"
+                          style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
                           .path=${mdiCheckCircleOutline}
                         ></ha-svg-icon>
                       </ha-tooltip>

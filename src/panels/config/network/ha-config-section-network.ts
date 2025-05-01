@@ -5,6 +5,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./ha-config-network";
+import "./ha-config-network-dhcp";
 import "./ha-config-network-ssdp";
 import "./ha-config-network-zeroconf";
 import "./ha-config-url-form";
@@ -37,6 +38,11 @@ class HaConfigSectionNetwork extends LitElement {
             : ""}
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
+          ${isComponentLoaded(this.hass, "dhcp")
+            ? html`<ha-config-network-dhcp
+                .hass=${this.hass}
+              ></ha-config-network-dhcp>`
+            : ""}
           ${isComponentLoaded(this.hass, "ssdp")
             ? html`<ha-config-network-ssdp
                 .hass=${this.hass}
@@ -62,6 +68,7 @@ class HaConfigSectionNetwork extends LitElement {
     supervisor-network,
     ha-config-url-form,
     ha-config-network,
+    ha-config-network-dhcp,
     ha-config-network-ssdp,
     ha-config-network-zeroconf {
       display: block;
