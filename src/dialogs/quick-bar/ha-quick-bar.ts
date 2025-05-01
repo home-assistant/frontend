@@ -615,7 +615,9 @@ export class QuickBar extends LitElement {
 
         const entityItem = {
           primaryText: primary,
-          altText: secondary,
+          altText:
+            secondary ||
+            this.hass.localize("ui.components.device-picker.no_area"),
           icon: html`
             <ha-state-icon
               .hass=${this.hass}
