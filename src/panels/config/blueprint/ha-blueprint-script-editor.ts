@@ -13,7 +13,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   @state() protected _blueprint: ScriptBlueprint | undefined;
 
   public static defaultConfig: Blueprint = {
-    blueprint: {
+    metadata: {
       name: "New blueprint",
       domain: "script",
       input: {},
@@ -29,16 +29,11 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   }
 
   public normalizeBlueprint(config: Partial<Blueprint>): Blueprint {
-    // TODO: Implement this? Is it needed?
     if (config.blueprint) {
       config.metadata = config.blueprint;
     }
 
     return config as Blueprint;
-  }
-
-  public async checkValidation(): Promise<void> {
-    // Ignore empty method
   }
 
   protected renderHeader() {
