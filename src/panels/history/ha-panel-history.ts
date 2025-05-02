@@ -63,6 +63,7 @@ class HaPanelHistory extends LitElement {
 
   @state() private _endDate: Date;
 
+  @state()
   @storage({
     key: "historyPickedValue",
     state: true,

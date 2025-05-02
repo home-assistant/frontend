@@ -210,6 +210,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
+  @state()
   @storage({
     key: "sidebarPanelOrder",
     state: true,
@@ -217,6 +218,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   })
   private _panelOrder: string[] = [];
 
+  @state()
   @storage({
     key: "sidebarHiddenPanels",
     state: true,

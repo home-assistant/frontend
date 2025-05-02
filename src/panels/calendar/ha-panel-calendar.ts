@@ -42,6 +42,7 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
+  @state()
   @storage({
     key: "deSelectedCalendars",
     state: true,

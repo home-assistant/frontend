@@ -36,6 +36,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _opened = false;
 
+  @state()
   @storage({
     key: "AssistPipelineId",
     state: true,

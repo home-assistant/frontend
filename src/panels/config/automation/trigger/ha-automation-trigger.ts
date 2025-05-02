@@ -38,6 +38,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   @state() private _showReorder = false;
 
+  @state()
   @storage({
     key: "automationClipboard",
     state: true,
