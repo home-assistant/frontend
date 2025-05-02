@@ -118,6 +118,7 @@ class HaBlueprintOverview extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "blueprint-table-search",

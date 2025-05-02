@@ -42,6 +42,7 @@ class BrowseMediaTTS extends LitElement {
 
   @state() private _provider?: TTSEngine;
 
+  @state()
   @storage({
     key: "TtsMessage",
     state: true,

@@ -23,6 +23,7 @@ export class MQTTConfigPanel extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-topic-ls",
     state: true,
@@ -30,6 +31,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _topic = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-payload-ls",
     state: true,
@@ -37,6 +39,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _payload = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-qos-ls",
     state: true,
@@ -44,6 +47,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _qos = "0";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-retain-ls",
     state: true,
@@ -51,6 +55,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _retain = false;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-allow-template-ls",
     state: true,

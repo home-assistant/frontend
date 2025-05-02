@@ -55,6 +55,7 @@ class PanelTodo extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
+  @state()
   @storage({
     key: "selectedTodoEntity",
     state: true,

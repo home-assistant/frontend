@@ -33,6 +33,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
 
   @state() supportedLanguages?: string[];
 
+  @state()
   @storage({
     key: "assist_debug_language",
     state: true,

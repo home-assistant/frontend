@@ -135,6 +135,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaAutomationEditor, value) {
