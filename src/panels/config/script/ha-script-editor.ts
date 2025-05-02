@@ -105,6 +105,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _readOnly = false;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaScriptEditor, value) {
