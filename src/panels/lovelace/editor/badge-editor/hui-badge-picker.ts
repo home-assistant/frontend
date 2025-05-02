@@ -43,6 +43,7 @@ export class HuiBadgePicker extends LitElement {
 
   @property({ attribute: false }) public suggestedBadges?: string[];
 
+  @state()
   @storage({
     key: "dashboardBadgeClipboard",
     state: true,

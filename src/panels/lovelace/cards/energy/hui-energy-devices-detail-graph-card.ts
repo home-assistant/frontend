@@ -62,6 +62,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _compareEnd?: Date;
 
+  @state()
   @storage({
     key: "energy-devices-hidden-stats",
     state: true,

@@ -69,6 +69,7 @@ export class HaConfigApplicationCredentials extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "application-credentials-table-search",

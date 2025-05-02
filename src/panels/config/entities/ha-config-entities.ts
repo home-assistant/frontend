@@ -159,6 +159,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-search",
@@ -169,6 +170,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
