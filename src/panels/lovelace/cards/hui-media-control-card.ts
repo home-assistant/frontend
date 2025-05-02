@@ -526,7 +526,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _stateObj(): MediaPlayerEntity | undefined {
-    return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
+    return this._config
+      ? (this.hass!.states[this._config.entity] as MediaPlayerEntity)
+      : undefined;
   }
 
   private _handleSeek(e: MouseEvent): void {
