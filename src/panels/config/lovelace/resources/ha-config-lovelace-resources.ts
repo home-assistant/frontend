@@ -46,6 +46,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @state() private _resources: LovelaceResource[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "lovelace-resources-table-search",

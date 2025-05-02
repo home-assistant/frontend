@@ -64,6 +64,7 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
+  @state()
   @storage({
     key: "mediaBrowserPreferredLayout",
     state: true,
@@ -78,6 +79,7 @@ class PanelMediaBrowser extends LitElement {
     },
   ];
 
+  @state()
   @storage({
     key: "mediaBrowseEntityId",
     state: true,

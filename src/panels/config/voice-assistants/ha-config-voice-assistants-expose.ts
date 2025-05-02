@@ -76,6 +76,7 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _extEntities?: Record<string, ExtEntityRegistryEntry>;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "voice-expose-table-search",
