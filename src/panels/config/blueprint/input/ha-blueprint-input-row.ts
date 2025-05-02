@@ -1,4 +1,3 @@
-import { consume } from "@lit-labs/context";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiArrowDown,
@@ -32,8 +31,6 @@ import type {
   BlueprintInput,
 } from "../../../../data/blueprint";
 import { INPUT_ICONS } from "../../../../data/blueprint";
-import { fullEntitiesContext } from "../../../../data/context";
-import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import {
   showConfirmationDialog,
   showPromptDialog,
@@ -77,10 +74,6 @@ export default class HaBlueprintInputRow extends LitElement {
   @state() private _testing = false;
 
   @state() private _testingResult?: boolean;
-
-  @state()
-  @consume({ context: fullEntitiesContext, subscribe: true })
-  _entityReg!: EntityRegistryEntry[];
 
   private _inputIsSection(x: any): x is BlueprintInputSection {
     return "input" in x;
