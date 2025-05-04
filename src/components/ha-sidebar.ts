@@ -52,6 +52,7 @@ import "./user/ha-user-badge";
 import "./ha-md-list";
 import "./ha-md-list-item";
 import type { HaMdListItem } from "./ha-md-list-item";
+import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -424,8 +425,12 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
-    return panels.map((panel) =>
+  private _renderPanels(
+    panels: PanelInfo[],
+    selectedPanel: string,
+    orderable = false
+  ) {
+    return panels.map((panel, idx) =>
       this._renderPanel(
         panel.url_path,
         panel.url_path === this.hass.defaultPanel
@@ -437,7 +442,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]
             : undefined,
-        selectedPanel
+        selectedPanel,
+        orderable ? idx : null
       )
     );
   }
@@ -447,7 +453,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     title: string | null,
     icon: string | null | undefined,
     iconPath: string | null | undefined,
-    selectedPanel: string
+    selectedPanel: string,
+    index: number | null
   ) {
     return urlPath === "config"
       ? this._renderConfiguration(title, selectedPanel)
@@ -463,8 +470,20 @@ class HaSidebar extends SubscribeMixin(LitElement) {
               ? html`<ha-svg-icon slot="start" .path=${iconPath}></ha-svg-icon>`
               : html`<ha-icon slot="start" .icon=${icon}></ha-icon>`}
             <span class="item-text" slot="headline">${title}</span>
-            ${this.editMode
+            ${index != null
               ? html`<ha-icon-button
+                  @click=${this._changePosition}
+                  .label=${this.hass!.localize("ui.sidebar.change_position")}
+                  class="hide-panel"
+                  slot="end"
+                  .index=${index}
+                  .title=${title}
+                >
+                  <div class="position-badge">${index + 1}</div>
+                </ha-icon-button>`
+              : nothing}
+            ${this.editMode
+              ? html` <ha-icon-button
                   .label=${this.hass.localize("ui.sidebar.hide_panel")}
                   .path=${mdiClose}
                   class="hide-panel"
@@ -480,7 +499,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _panelMoved(ev: CustomEvent) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
+    this._panelMove(oldIndex, newIndex);
+  }
 
+  private _panelMove(oldIndex: number, newIndex: number) {
     const [beforeSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
@@ -499,7 +521,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   private _renderPanelsEdit(beforeSpacer: PanelInfo[], selectedPanel: string) {
     return html`
       <ha-sortable .disabled=${!this.editMode} @item-moved=${this._panelMoved}
-        ><div>${this._renderPanels(beforeSpacer, selectedPanel)}</div>
+        ><div>${this._renderPanels(beforeSpacer, selectedPanel, true)}</div>
       </ha-sortable>
       ${this._renderSpacer()}${this._renderHiddenPanels()}
     `;
@@ -688,6 +710,28 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _closeEditMode() {
     fireEvent(this, "hass-edit-sidebar", { editMode: false });
+  }
+
+  private async _changePosition(ev): Promise<void> {
+    ev.preventDefault();
+    const oldIndex = (ev.currentTarget as any).index as number;
+    const name = ((ev.currentTarget as any).title as string) || "";
+
+    const positionString = await showPromptDialog(this, {
+      title: this.hass!.localize("ui.sidebar.change_position"),
+      text: this.hass!.localize("ui.sidebar.change_position_dialog_text", {
+        name,
+      }),
+      inputType: "number",
+      inputMin: "1",
+      placeholder: String(oldIndex + 1),
+    });
+
+    if (!positionString) return;
+    const position = parseInt(positionString);
+    if (isNaN(position)) return;
+    const newIndex = Math.max(0, position - 1);
+    this._panelMove(oldIndex, newIndex);
   }
 
   private async _hidePanel(ev: Event) {
@@ -940,7 +984,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-md-list-item .item-text {
           display: none;
-          max-width: calc(100% - 56px);
+          max-width: 100%;
           font-weight: 500;
           font-size: 14px;
         }
@@ -969,6 +1013,19 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           background-color: var(--accent-color);
           padding: 2px 6px;
           color: var(--text-accent-color, var(--text-primary-color));
+        }
+
+        .position-badge {
+          display: block;
+          width: 24px;
+          line-height: 24px;
+          box-sizing: border-box;
+          border-radius: 50%;
+          font-weight: 500;
+          text-align: center;
+          font-size: 14px;
+          background-color: var(--app-header-edit-background-color, #455a64);
+          color: var(--app-header-edit-text-color, white);
         }
 
         ha-svg-icon + .badge {
