@@ -233,6 +233,7 @@ export interface GaugeSegment {
 
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
+  attribute?: string;
   name?: string;
   unit?: string;
   min?: number;
