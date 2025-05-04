@@ -23,6 +23,7 @@ import type { UiAction } from "../../components/hui-action-editor";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity_attributes";
 
 const TAP_ACTIONS: UiAction[] = [
   "more-info",
@@ -92,18 +93,7 @@ export class HuiGaugeCardEditor
           selector: {
             attribute: {
               entity_id: entityId,
-              hide_attributes: [
-                // exclude some of base entity attributes
-                "friendly_name",
-                "unit_of_measurement",
-                "icon",
-                "entity_picture",
-                "hidden",
-                "assumed_state",
-                "device_class",
-                "state_class",
-                "restored",
-              ],
+              hide_attributes: NON_NUMERIC_ATTRIBUTES,
             },
           },
         },
