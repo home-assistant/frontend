@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-card";
+import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-icon-next";
 import type { HomeAssistant, Route } from "../../../types";
@@ -51,23 +52,25 @@ class HaConfigSectionNetwork extends LitElement {
                     "ui.panel.config.network.discovery.title"
                   )}
                 >
-                  ${NETWORK_BROWSERS.map(
-                    (domain) => html`
-                      <ha-md-list-item type="link" href="/config/${domain}">
-                        <div slot="headline">
-                          ${this.hass.localize(
-                            `ui.panel.config.network.discovery.${domain}`
-                          )}
-                        </div>
-                        <div slot="supporting-text">
-                          ${this.hass.localize(
-                            `ui.panel.config.network.discovery.${domain}_info`
-                          )}
-                        </div>
-                        <ha-icon-next slot="end"></ha-icon-next>
-                      </ha-md-list-item>
-                    `
-                  )}
+                  <ha-md-list>
+                    ${NETWORK_BROWSERS.map(
+                      (domain) => html`
+                        <ha-md-list-item type="link" href="/config/${domain}">
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              `ui.panel.config.network.discovery.${domain}`
+                            )}
+                          </div>
+                          <div slot="supporting-text">
+                            ${this.hass.localize(
+                              `ui.panel.config.network.discovery.${domain}_info`
+                            )}
+                          </div>
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-md-list-item>
+                      `
+                    )}
+                  </ha-md-list>
                 </ha-card>
               `
             : ""}
@@ -91,6 +94,9 @@ class HaConfigSectionNetwork extends LitElement {
       margin: 0 auto;
       margin-bottom: 24px;
       max-width: 600px;
+    }
+    .discovery-card ha-md-list {
+      padding-top: 0;
     }
   `;
 }
