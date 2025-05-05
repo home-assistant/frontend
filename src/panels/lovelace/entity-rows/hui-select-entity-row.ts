@@ -93,7 +93,6 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
   `;
 
   private _handleAction(ev): void {
-    ev.stopPropagation();
     const stateObj = this.hass!.states[this._config!.entity] as SelectEntity;
 
     const option = ev.target.value;
