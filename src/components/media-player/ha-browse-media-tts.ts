@@ -263,7 +263,7 @@ class BrowseMediaTTS extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
       }
     `,
   ];
