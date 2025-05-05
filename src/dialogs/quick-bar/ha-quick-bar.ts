@@ -34,6 +34,7 @@ import "../../components/ha-list";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import "../../components/ha-tip";
+import "../../components/ha-md-list-item";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -165,6 +166,11 @@ export class QuickBar extends LitElement {
     if (!this.hasUpdated) {
       loadVirtualizer();
     }
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title");
   }
 
   private _getItems = memoizeOne(
