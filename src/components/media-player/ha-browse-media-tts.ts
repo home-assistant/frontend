@@ -51,50 +51,64 @@ class BrowseMediaTTS extends LitElement {
   private _message?: string;
 
   protected render() {
-    return html`<ha-card>
-      <div class="card-content">
-        <ha-textarea
-          autogrow
-          .label=${this.hass.localize(
-            "ui.components.media-browser.tts.message"
-          )}
-          .value=${this._message ||
-          this.hass.localize(
-            "ui.components.media-browser.tts.example_message",
-            {
-              name: this.hass.user?.name || "Alice",
-            }
-          )}
-        >
-        </ha-textarea>
-        ${this._provider?.supported_languages?.length
-          ? html` <div class="options">
-              <ha-language-picker
-                .hass=${this.hass}
-                .languages=${this._provider.supported_languages}
-                .value=${this._language}
-                required
-                @value-changed=${this._languageChanged}
-              ></ha-language-picker>
-              <ha-tts-voice-picker
-                .hass=${this.hass}
-                .value=${this._voice}
-                .engineId=${this._provider.engine_id}
-                .language=${this._language}
-                required
-                @value-changed=${this._voiceChanged}
-              ></ha-tts-voice-picker>
-            </div>`
-          : nothing}
-      </div>
-      <div class="card-actions">
-        <mwc-button @click=${this._ttsClicked}>
-          ${this.hass.localize(
-            `ui.components.media-browser.tts.action_${this.action}`
-          )}
-        </mwc-button>
-      </div>
-    </ha-card> `;
+    return html`
+      <ha-card>
+        <div class="card-content">
+          <ha-textarea
+            autogrow
+            .label=${this.hass.localize(
+              "ui.components.media-browser.tts.message"
+            )}
+            .value=${this._message ||
+            this.hass.localize(
+              "ui.components.media-browser.tts.example_message",
+              {
+                name: this.hass.user?.name || "Alice",
+              }
+            )}
+          >
+          </ha-textarea>
+          ${this._provider?.supported_languages?.length
+            ? html` <div class="options">
+                <ha-language-picker
+                  .hass=${this.hass}
+                  .languages=${this._provider.supported_languages}
+                  .value=${this._language}
+                  required
+                  @value-changed=${this._languageChanged}
+                ></ha-language-picker>
+                <ha-tts-voice-picker
+                  .hass=${this.hass}
+                  .value=${this._voice}
+                  .engineId=${this._provider.engine_id}
+                  .language=${this._language}
+                  required
+                  @value-changed=${this._voiceChanged}
+                ></ha-tts-voice-picker>
+              </div>`
+            : nothing}
+        </div>
+        <div class="card-actions">
+          <mwc-button @click=${this._ttsClicked}>
+            ${this.hass.localize(
+              `ui.components.media-browser.tts.action_${this.action}`
+            )}
+          </mwc-button>
+        </div>
+      </ha-card>
+      ${this._voice
+        ? html`
+            <div class="footer">
+              ${this.hass.localize(
+                `ui.components.media-browser.tts.selected_voice_id`,
+                {
+                  voice_id: html`<code>${this._voice || "-"}</code>`,
+                }
+              )}
+            </div>
+          `
+        : nothing}
+    `;
   }
 
   protected override willUpdate(changedProps: PropertyValues): void {
@@ -217,6 +231,15 @@ class BrowseMediaTTS extends LitElement {
       }
       button.link {
         color: var(--primary-color);
+      }
+      .footer {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        margin: 16px 0;
+        text-align: center;
+      }
+      .footer code {
+        font-weight: bold;
       }
     `,
   ];
