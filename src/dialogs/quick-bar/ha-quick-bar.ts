@@ -358,6 +358,7 @@ export class QuickBar extends LitElement {
   private _renderDeviceItem(item: DeviceItem, index?: number) {
     return html`
       <ha-md-list-item
+        class="two-line"
         .item=${item}
         index=${ifDefined(index)}
         tabindex="0"
@@ -376,6 +377,7 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-md-list-item
+        class=${showEntityId ? "three-line" : "two-line"}
         .item=${item}
         index=${ifDefined(index)}
         tabindex="0"
@@ -621,9 +623,7 @@ export class QuickBar extends LitElement {
 
         const entityItem = {
           primaryText: primary,
-          altText:
-            secondary ||
-            this.hass.localize("ui.components.device-picker.no_area"),
+          altText: secondary,
           icon: html`
             <ha-state-icon
               .hass=${this.hass}
@@ -1019,6 +1019,23 @@ export class QuickBar extends LitElement {
 
         ha-md-list-item {
           width: 100%;
+        }
+
+        /* Fixed height for items because we are use virtualizer */
+        ha-md-list-item.two-line {
+          --md-list-item-one-line-container-height: 64px;
+          --md-list-item-two-line-container-height: 64px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+        }
+
+        ha-md-list-item.three-line {
+          width: 100%;
+          --md-list-item-one-line-container-height: 72px;
+          --md-list-item-two-line-container-height: 72px;
+          --md-list-item-three-line-container-height: 72px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
         }
 
         ha-tip {

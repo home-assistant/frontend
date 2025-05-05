@@ -162,10 +162,7 @@ export class HaEntityPicker extends LitElement {
         slot="start"
       ></state-badge>
       <span slot="headline">${primary}</span>
-      <span slot="supporting-text">
-        ${secondary ||
-        this.hass.localize("ui.components.device-picker.no_area")}
-      </span>
+      <span slot="supporting-text">${secondary}</span>
       ${showClearIcon
         ? html`<ha-icon-button
             class="clear"
