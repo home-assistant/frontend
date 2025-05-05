@@ -129,70 +129,73 @@ class StepFlowCreateEntry extends LitElement {
               )}</span
             >`
           : nothing}
-        ${devices.length === 0
-          ? html`<p>
-              ${localize(
-                "ui.panel.config.integrations.config_flow.created_config",
-                { name: this.step.title }
-              )}
-            </p>`
-          : html`
-              <div class="devices">
-                ${devices.map(
-                  (device) => html`
-                    <div class="device">
-                      <div class="device-info">
-                        ${this.step.result?.domain
-                          ? html`<img
-                              slot="graphic"
-                              alt=${domainToName(
-                                this.hass.localize,
-                                this.step.result.domain
-                              )}
-                              src=${brandsUrl({
-                                domain: this.step.result.domain,
-                                type: "icon",
-                                darkOptimized: this.hass.themes?.darkMode,
-                              })}
-                              crossorigin="anonymous"
-                              referrerpolicy="no-referrer"
-                            />`
-                          : nothing}
-                        <div class="device-info-details">
-                          <span>${device.model || device.manufacturer}</span>
-                          ${device.model
-                            ? html`<span class="secondary">
-                                ${device.manufacturer}
-                              </span>`
-                            : nothing}
-                        </div>
-                      </div>
-                      <ha-textfield
-                        .label=${localize(
-                          "ui.panel.config.integrations.config_flow.device_name"
-                        )}
-                        .placeholder=${computeDeviceNameDisplay(
-                          device,
-                          this.hass
-                        )}
-                        .value=${this._deviceUpdate[device.id]?.name ??
-                        computeDeviceName(device)}
-                        @change=${this._deviceNameChanged}
-                        .device=${device.id}
-                      ></ha-textfield>
-                      <ha-area-picker
-                        .hass=${this.hass}
-                        .device=${device.id}
-                        .value=${this._deviceUpdate[device.id]?.area ??
-                        device.area_id ??
-                        undefined}
-                        @value-changed=${this._areaPicked}
-                      ></ha-area-picker>
-                    </div>
-                  `
+        ${devices.length === 0 &&
+        ["options_flow", "repair_flow"].includes(this.flowConfig.flowType)
+          ? nothing
+          : devices.length === 0
+            ? html`<p>
+                ${localize(
+                  "ui.panel.config.integrations.config_flow.created_config",
+                  { name: this.step.title }
                 )}
-              </div>
-            `}
+              </p>`
+            : html`
+                <div class="devices">
+                  ${devices.map(
+                    (device) => html`
+                      <div class="device">
+                        <div class="device-info">
+                          ${this.step.result?.domain
+                            ? html`<img
+                                slot="graphic"
+                                alt=${domainToName(
+                                  this.hass.localize,
+                                  this.step.result.domain
+                                )}
+                                src=${brandsUrl({
+                                  domain: this.step.result.domain,
+                                  type: "icon",
+                                  darkOptimized: this.hass.themes?.darkMode,
+                                })}
+                                crossorigin="anonymous"
+                                referrerpolicy="no-referrer"
+                              />`
+                            : nothing}
+                          <div class="device-info-details">
+                            <span>${device.model || device.manufacturer}</span>
+                            ${device.model
+                              ? html`<span class="secondary">
+                                  ${device.manufacturer}
+                                </span>`
+                              : nothing}
+                          </div>
+                        </div>
+                        <ha-textfield
+                          .label=${localize(
+                            "ui.panel.config.integrations.config_flow.device_name"
+                          )}
+                          .placeholder=${computeDeviceNameDisplay(
+                            device,
+                            this.hass
+                          )}
+                          .value=${this._deviceUpdate[device.id]?.name ??
+                          computeDeviceName(device)}
+                          @change=${this._deviceNameChanged}
+                          .device=${device.id}
+                        ></ha-textfield>
+                        <ha-area-picker
+                          .hass=${this.hass}
+                          .device=${device.id}
+                          .value=${this._deviceUpdate[device.id]?.area ??
+                          device.area_id ??
+                          undefined}
+                          @value-changed=${this._areaPicked}
+                        ></ha-area-picker>
+                      </div>
+                    `
+                  )}
+                </div>
+              `}
       </div>
       <div class="buttons">
         <mwc-button @click=${this._flowDone}
