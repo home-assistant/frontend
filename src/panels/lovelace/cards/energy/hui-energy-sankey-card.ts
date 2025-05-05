@@ -357,7 +357,7 @@ class HuiEnergySankeyCard
         value: untrackedConsumption,
         tooltip: `${formatNumber(untrackedConsumption, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue("--state-unavailable-color"),
-        index: 4,
+        index: 3 + deviceSections.length,
       });
       links.push({
         source: "home",
