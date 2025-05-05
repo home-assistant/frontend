@@ -52,6 +52,7 @@ class HaPanelDevAction extends LitElement {
 
   private _yamlValid = true;
 
+  @state()
   @storage({
     key: "panel-dev-action-state-service-data",
     state: true,
@@ -59,6 +60,7 @@ class HaPanelDevAction extends LitElement {
   })
   private _serviceData?: ServiceAction = { action: "", target: {}, data: {} };
 
+  @state()
   @storage({
     key: "panel-dev-action-state-yaml-mode",
     state: true,

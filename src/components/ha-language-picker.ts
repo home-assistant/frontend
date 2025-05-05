@@ -102,7 +102,7 @@ export class HaLanguagePicker extends LitElement {
       localeChanged
     ) {
       this._select.layoutOptions();
-      if (this._select.value !== this.value) {
+      if (!this.disabled && this._select.value !== this.value) {
         fireEvent(this, "value-changed", { value: this._select.value });
       }
       if (!this.value) {
@@ -141,7 +141,10 @@ export class HaLanguagePicker extends LitElement {
     );
 
     const value =
-      this.value ?? (this.required ? languageOptions[0]?.value : this.value);
+      this.value ??
+      (this.required && !this.disabled
+        ? languageOptions[0]?.value
+        : this.value);
 
     return html`
       <ha-select
@@ -182,7 +185,7 @@ export class HaLanguagePicker extends LitElement {
 
   private _changed(ev): void {
     const target = ev.target as HaSelect;
-    if (target.value === "" || target.value === this.value) {
+    if (this.disabled || target.value === "" || target.value === this.value) {
       return;
     }
     this.value = target.value;

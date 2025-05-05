@@ -62,6 +62,7 @@ class HaPanelDevState extends LitElement {
 
   @state() private _validJSON = true;
 
+  @state()
   @storage({
     key: "devToolsShowAttributes",
     state: true,

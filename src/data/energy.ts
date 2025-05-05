@@ -959,21 +959,13 @@ const computeConsumptionDataPartial = (
   };
 
   data.timestamps.forEach((t) => {
-    const used_total =
-      (data.from_grid?.[t] || 0) +
-      (data.solar?.[t] || 0) +
-      (data.from_battery?.[t] || 0) -
-      (data.to_grid?.[t] || 0) -
-      (data.to_battery?.[t] || 0);
-
-    outData.used_total[t] = used_total;
-    outData.total.used_total += used_total;
     const {
       grid_to_battery,
       battery_to_grid,
       used_solar,
       used_grid,
       used_battery,
+      used_total,
       solar_to_battery,
       solar_to_grid,
     } = computeConsumptionSingle({
@@ -984,6 +976,8 @@ const computeConsumptionDataPartial = (
       from_battery: data.from_battery && (data.from_battery[t] ?? 0),
     });
 
+    outData.used_total[t] = used_total;
+    outData.total.used_total += used_total;
     outData.grid_to_battery[t] = grid_to_battery;
     outData.total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;
@@ -1017,12 +1011,20 @@ export const computeConsumptionSingle = (data: {
   used_solar: number;
   used_grid: number;
   used_battery: number;
+  used_total: number;
 } => {
-  const to_grid = data.to_grid;
-  const to_battery = data.to_battery;
-  const solar = data.solar;
-  const from_grid = data.from_grid;
-  const from_battery = data.from_battery;
+  let to_grid = Math.max(data.to_grid || 0, 0);
+  let to_battery = Math.max(data.to_battery || 0, 0);
+  let solar = Math.max(data.solar || 0, 0);
+  let from_grid = Math.max(data.from_grid || 0, 0);
+  let from_battery = Math.max(data.from_battery || 0, 0);
+
+  const used_total =
+    (from_grid || 0) +
+    (solar || 0) +
+    (from_battery || 0) -
+    (to_grid || 0) -
+    (to_battery || 0);
 
   let used_solar = 0;
   let grid_to_battery = 0;
@@ -1031,41 +1033,57 @@ export const computeConsumptionSingle = (data: {
   let solar_to_grid = 0;
   let used_battery = 0;
   let used_grid = 0;
-  if ((to_grid != null || to_battery != null) && solar != null) {
-    used_solar = (solar || 0) - (to_grid || 0) - (to_battery || 0);
-    if (used_solar < 0) {
-      if (to_battery != null) {
-        grid_to_battery = used_solar * -1;
-        if (grid_to_battery > (from_grid || 0)) {
-          battery_to_grid = grid_to_battery - (from_grid || 0);
-          grid_to_battery = from_grid || 0;
-        }
-      }
-      used_solar = 0;
-    }
-  }
 
-  if (from_battery != null) {
-    used_battery = (from_battery || 0) - battery_to_grid;
-  }
+  let used_total_remaining = Math.max(used_total, 0);
+  // Consumption Priority
+  // Battery_Out -> Grid_Out
+  // Solar -> Grid_Out
+  // Solar -> Battery_In
+  // Grid_In -> Battery_In
+  // Solar -> Consumption
+  // Battery_Out -> Consumption
+  // Grid_In -> Consumption
 
-  if (from_grid != null) {
-    used_grid = from_grid - grid_to_battery;
-  }
+  // Battery_Out -> Grid_Out
+  battery_to_grid = Math.min(from_battery, to_grid);
+  from_battery -= battery_to_grid;
+  to_grid -= battery_to_grid;
 
-  if (solar != null) {
-    if (to_battery != null) {
-      solar_to_battery = Math.max(0, (to_battery || 0) - grid_to_battery);
-    }
-    if (to_grid != null) {
-      solar_to_grid = Math.max(0, (to_grid || 0) - battery_to_grid);
-    }
-  }
+  // Solar -> Grid_Out
+  solar_to_grid = Math.min(solar, to_grid);
+  to_grid -= solar_to_grid;
+  solar -= solar_to_grid;
+
+  // Solar -> Battery_In
+  solar_to_battery = Math.min(solar, to_battery);
+  to_battery -= solar_to_battery;
+  solar -= solar_to_battery;
+
+  // Grid_In -> Battery_In
+  grid_to_battery = Math.min(from_grid, to_battery);
+  from_grid -= grid_to_battery;
+  to_battery -= grid_to_battery;
+
+  // Solar -> Consumption
+  used_solar = Math.min(used_total_remaining, solar);
+  used_total_remaining -= used_solar;
+  solar -= used_solar;
+
+  // Battery_Out -> Consumption
+  used_battery = Math.min(from_battery, used_total_remaining);
+  from_battery -= used_battery;
+  used_total_remaining -= used_battery;
+
+  // Grid_In -> Consumption
+  used_grid = Math.min(used_total_remaining, from_grid);
+  from_grid -= used_grid;
+  used_total_remaining -= from_grid;
 
   return {
     used_solar,
     used_grid,
     used_battery,
+    used_total,
     grid_to_battery,
     battery_to_grid,
     solar_to_battery,

@@ -210,6 +210,9 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.bluetooth.no_advertisements_found"
+        )}
         @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}

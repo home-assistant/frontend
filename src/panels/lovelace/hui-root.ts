@@ -300,6 +300,12 @@ class HUIRoot extends LitElement {
 
     const background = curViewConfig?.background || this.config.background;
 
+    const _isTabHiddenForUser = (view: LovelaceViewConfig) =>
+      view.visible !== undefined &&
+      ((Array.isArray(view.visible) &&
+        !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
+        view.visible === false);
+
     const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
       ${views.map(
         (view, index) => html`
@@ -311,13 +317,7 @@ class HUIRoot extends LitElement {
             class=${classMap({
               icon: Boolean(view.icon),
               "hide-tab": Boolean(
-                !this._editMode &&
-                  view.visible !== undefined &&
-                  ((Array.isArray(view.visible) &&
-                    !view.visible.some(
-                      (e) => e.user === this.hass!.user?.id
-                    )) ||
-                    view.visible === false)
+                !this._editMode && (view.subview || _isTabHiddenForUser(view))
               ),
             })}
           >
