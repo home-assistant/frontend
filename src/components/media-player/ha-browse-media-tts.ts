@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiClipboardTextMultipleOutline } from "@mdi/js";
+import { mdiContentCopy } from "@mdi/js";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
@@ -108,16 +108,13 @@ class BrowseMediaTTS extends LitElement {
                   voice_id: html`<code>${this._voice || "-"}</code>`,
                 }
               )}
-              <ha-svg-icon
+              <ha-icon-button
+                .path=${mdiContentCopy}
                 @click=${this._copyVoiceId}
-                alt=${this.hass.localize(
-                  "ui.components.media-browser.tts.copy_voice_id"
-                )}
                 title=${this.hass.localize(
                   "ui.components.media-browser.tts.copy_voice_id"
                 )}
-                .path=${mdiClipboardTextMultipleOutline}
-              ></ha-svg-icon>
+              ></ha-icon-button>
             </div>
           `
         : nothing}
@@ -262,10 +259,13 @@ class BrowseMediaTTS extends LitElement {
       .footer code {
         font-weight: var(--ha-font-weight-bold);
       }
-      .footer ha-svg-icon {
-        cursor: pointer;
-        width: 16px;
-        margin-left: 8px;
+      .footer {
+        --mdc-icon-size: 14px;
+        --mdc-icon-button-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
       }
     `,
   ];
