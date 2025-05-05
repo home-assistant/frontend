@@ -255,6 +255,9 @@ export const getMyRedirects = (): Redirects => ({
   profile: {
     redirect: "/profile",
   },
+  profile_security: {
+    redirect: "/profile/security",
+  },
   logbook: {
     component: "logbook",
     redirect: "/logbook",
