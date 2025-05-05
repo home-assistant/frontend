@@ -233,13 +233,13 @@ class BrowseMediaTTS extends LitElement {
         color: var(--primary-color);
       }
       .footer {
-        font-size: 12px;
+        font-size: var(--ha-font-size-s);
         color: var(--secondary-text-color);
         margin: 16px 0;
         text-align: center;
       }
       .footer code {
-        font-weight: bold;
+        font-weight: var(--ha-font-weight-bold);
       }
     `,
   ];
