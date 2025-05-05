@@ -164,7 +164,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
             `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
             "_blank"
           );
-          break;
+          return;
         }
       }
 
@@ -190,7 +190,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
           "_blank"
         );
-        break;
+        return;
       }
       showToast(this, {
         message: this.hass.localize(
