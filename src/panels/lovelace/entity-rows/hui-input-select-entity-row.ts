@@ -3,8 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/ha-md-select";
-import "../../../components/ha-md-select-option";
+import "../../../components/ha-list-item";
+import "../../../components/ha-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import type { InputSelectEntity } from "../../../data/input_select";
@@ -57,26 +57,25 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         hide-name
       >
-        <ha-md-select
+        <ha-select
           .label=${this._config.name || computeStateName(stateObj)}
           .value=${stateObj.state}
+          .options=${stateObj.attributes.options}
           .disabled=${
             stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
           }
           naturalMenuWidth
-          @change=${this._selectedChanged}
+          @selected=${this._selectedChanged}
           @click=${stopPropagation}
           @closed=${stopPropagation}
         >
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
                 (option) =>
-                  html`<ha-md-select-option .value=${option}>
-                    <div slot="headline">${option}</div>
-                  </ha-md-select-option>`
+                  html`<ha-list-item .value=${option}>${option}</ha-list-item>`
               )
-            : nothing}
-        </ha-md-select>
+            : ""}
+        </ha-select>
       </hui-generic-entity-row>
     `;
   }
@@ -86,8 +85,9 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       display: flex;
       align-items: center;
     }
-    ha-md-select {
+    ha-select {
       width: 100%;
+      --ha-select-min-width: 0;
     }
   `;
 
