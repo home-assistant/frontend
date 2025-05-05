@@ -513,6 +513,13 @@ describe("Self-consumed solar gauge tests", () => {
     const hasBattery = false;
     assert.deepEqual(
       calculateSolarConsumedGauge(hasBattery, {
+        total: {},
+        timestamps: [0],
+      }),
+      undefined
+    );
+    assert.deepEqual(
+      calculateSolarConsumedGauge(hasBattery, {
         solar: {
           "0": 0,
         },
@@ -576,12 +583,17 @@ describe("Self-consumed solar gauge tests", () => {
     const hasBattery = true;
     assert.deepEqual(
       calculateSolarConsumedGauge(hasBattery, {
+        total: {},
+        timestamps: [0],
+      }),
+      undefined
+    );
+    assert.deepEqual(
+      calculateSolarConsumedGauge(hasBattery, {
         solar: {
           "0": 0,
         },
-        total: {
-          solar: 0,
-        },
+        total: {},
         timestamps: [0],
       }),
       undefined
@@ -608,10 +620,7 @@ describe("Self-consumed solar gauge tests", () => {
         to_grid: {
           "1": 1,
         },
-        total: {
-          solar: 4,
-          to_grid: 1,
-        },
+        total: {},
         timestamps: [0, 1],
       }),
       75
@@ -633,64 +642,71 @@ describe("Self-consumed solar gauge tests", () => {
           "2": 1,
           "3": 1,
         },
-        total: {
-          solar: 1,
-          to_grid: 4,
-          from_battery: 4,
-        },
+        total: {},
         timestamps: [0, 1, 2, 3, 10],
       }),
       // As the battery is discharged from unknown source, it does not affect solar production number.
       100
     );
+    assert.deepEqual(
+      calculateSolarConsumedGauge(hasBattery, {
+        solar: {
+          "0": 10,
+        },
+        to_battery: {
+          "0": 10,
+        },
+        to_grid: {
+          "1": 3,
+          "3": 1,
+        },
+        from_battery: {
+          "1": 3,
+          "2": 2,
+          "3": 2,
+          "4": 3,
+          "5": 100, // Unknown source, not counted
+        },
+        total: {},
+        timestamps: [0, 1, 2, 3, 4, 5],
+      }),
+      // As the battery is discharged from unknown source, it does not affect solar production number.
+      60
+    );
   });
   it("complex battery/solar/grid", () => {
     const hasBattery = true;
-    const solar = {
-      "1": 6,
-      "2": 0,
-      "3": 7,
-    };
-    const to_battery = {
-      "1": 5,
-      "2": 5,
-      "3": 7,
-    };
-    const to_grid = {
-      "0": 5,
-      "10": 1,
-      "11": 1,
-      "12": 5,
-      "13": 3,
-    };
-    const from_grid = {
-      "2": 5,
-    };
-    const from_battery = {
-      "0": 5,
-      "10": 3,
-      "11": 4,
-      "12": 5,
-      "13": 5,
-    };
+
     const value = calculateSolarConsumedGauge(hasBattery, {
-      solar,
-      to_battery,
-      to_grid,
-      from_grid,
-      from_battery,
+      solar: {
+        "1": 6,
+        "2": 0,
+        "3": 7,
+      },
+      to_battery: {
+        "1": 5,
+        "2": 5,
+        "3": 7,
+      },
+      to_grid: {
+        "0": 5,
+        "10": 1,
+        "11": 1,
+        "12": 5,
+        "13": 3,
+      },
+      from_grid: {
+        "2": 5,
+      },
+      from_battery: {
+        "0": 5,
+        "10": 3,
+        "11": 4,
+        "12": 5,
+        "13": 5,
+      },
       total: {
-        solar: Object.values(solar).reduce((acc, val) => acc + val, 0),
-        to_battery: Object.values(to_battery).reduce(
-          (acc, val) => acc + val,
-          0
-        ),
-        to_grid: Object.values(to_grid).reduce((acc, val) => acc + val, 0),
-        from_grid: Object.values(from_grid).reduce((acc, val) => acc + val, 0),
-        from_battery: Object.values(from_battery).reduce(
-          (acc, val) => acc + val,
-          0
-        ),
+        // Total is don't care when hasBattery, only hourly values are used
       },
       timestamps: [0, 1, 2, 3, 10, 11, 12, 13],
     });
@@ -709,31 +725,25 @@ describe("Self-consumed solar gauge tests", () => {
 
   it("complex battery/solar/grid #2", () => {
     const hasBattery = true;
-    const solar = {
-      "0": 100,
-      "2": 100,
-    };
-    const to_battery = {
-      "0": 100,
-      "1": 100,
-      "2": 100,
-    };
-    const to_grid = {
-      "10": 50,
-    };
-    const from_grid = {
-      "1": 100,
-    };
-
-    const from_battery = {
-      "10": 300,
-    };
     const value = calculateSolarConsumedGauge(hasBattery, {
-      solar,
-      to_battery,
-      to_grid,
-      from_grid,
-      from_battery,
+      solar: {
+        "0": 100,
+        "2": 100,
+      },
+      to_battery: {
+        "0": 100,
+        "1": 100,
+        "2": 100,
+      },
+      to_grid: {
+        "10": 50,
+      },
+      from_grid: {
+        "1": 100,
+      },
+      from_battery: {
+        "10": 300,
+      },
       total: {
         solar: 200,
         to_battery: 300,
