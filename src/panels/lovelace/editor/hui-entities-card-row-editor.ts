@@ -182,6 +182,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
   static styles = css`
     ha-entity-picker {
       margin-top: 8px;
+      max-width: calc(
+        100% - 32px - 36px - 36px
+      ); /* 100% - sort icon - remove icon - edit icon */
     }
     .add-entity {
       display: block;
