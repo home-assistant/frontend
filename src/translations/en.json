@@ -921,7 +921,7 @@
           "action_pick": "Select",
           "set_as_default": "Set as default options",
           "faild_to_store_defaults": "Failed to store defaults: {error}",
-          "selected_voice_id": "Selected voice ID: {voice_id}",
+          "selected_voice_id": "Selected voice ID",
           "copy_voice_id": "Copy voice ID"
         },
         "pick": "Pick",

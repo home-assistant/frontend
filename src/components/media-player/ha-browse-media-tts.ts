@@ -103,11 +103,9 @@ class BrowseMediaTTS extends LitElement {
         ? html`
             <div class="footer">
               ${this.hass.localize(
-                `ui.components.media-browser.tts.selected_voice_id`,
-                {
-                  voice_id: html`<code>${this._voice || "-"}</code>`,
-                }
+                `ui.components.media-browser.tts.selected_voice_id`
               )}
+              <code>${this._voice || "-"}</code>
               <ha-icon-button
                 .path=${mdiContentCopy}
                 @click=${this._copyVoiceId}
