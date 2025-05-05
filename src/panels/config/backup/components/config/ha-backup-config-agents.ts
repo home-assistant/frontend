@@ -1,5 +1,5 @@
 import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -57,26 +57,54 @@ class HaBackupConfigAgents extends LitElement {
       );
     }
 
+    const texts: (TemplateResult | string)[] = [];
+
     const encryptionTurnedOff =
       this.agentsConfig?.[agentId]?.protected === false;
 
     if (encryptionTurnedOff) {
-      return html`
+      texts.push(html`
         <span class="dot warning"></span>
         <span>
           ${this.hass.localize(
             "ui.panel.config.backup.agents.encryption_turned_off"
           )}
         </span>
-      `;
+      `);
     }
 
     if (isNetworkMountAgent(agentId)) {
-      return this.hass.localize(
-        "ui.panel.config.backup.agents.network_mount_agent_description"
+      texts.push(
+        this.hass.localize(
+          "ui.panel.config.backup.agents.network_mount_agent_description"
+        )
       );
     }
-    return "";
+
+    const retention = this.agentsConfig?.[agentId]?.retention;
+
+    if (retention) {
+      if (retention.copies === null && retention.days === null) {
+        texts.push(
+          this.hass.localize("ui.panel.config.backup.agents.retention_all")
+        );
+      } else {
+        texts.push(
+          this.hass.localize(
+            `ui.panel.config.backup.agents.retention_${retention.copies ? "backups" : "days"}`,
+            {
+              count: retention.copies || retention.days,
+            }
+          )
+        );
+      }
+    }
+    return html`${texts.map(
+      (text, index) =>
+        html`${text}${index < texts.length - 1
+          ? html`<span> ⸱ </span>`
+          : nothing}`
+    )}`;
   }
 
   private _availableAgents = memoizeOne(
