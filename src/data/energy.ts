@@ -1118,3 +1118,92 @@ export const formatConsumptionShort = (
     pickedUnit
   );
 };
+
+export const calculateSolarConsumedGauge = (
+  hasBattery: boolean,
+  data: EnergySumData
+): number | undefined => {
+  const { consumption, compareConsumption: _ } = computeConsumptionData(
+    data,
+    undefined
+  );
+  if (!hasBattery) {
+    const solarProduction = data.total.solar;
+    const hasSolarProduction = !!solarProduction;
+    if (hasSolarProduction) {
+      return (consumption.total.used_solar / solarProduction) * 100;
+    }
+    return undefined;
+  }
+
+  let solarConsumed = 0;
+  let solarReturned = 0;
+  const batteryLifo: { type: "solar" | "grid"; value: number }[] = [];
+
+  // Here we will attempt to track consumed solar energy, as it routes through the battery and ultimately to consumption or grid.
+  // At each timestamp we will track energy added to the battery (and its source), and we will drain this in Last-in/First-out order.
+  // Energy leaving the battery when the stack is empty will just be ignored, as we cannot determine where it came from.
+  // This is likely energy stored during a previous period.
+
+  data.timestamps.forEach((t) => {
+    solarConsumed += consumption.used_solar[t] ?? 0;
+    solarReturned += consumption.solar_to_grid[t] ?? 0;
+
+    if (consumption.grid_to_battery[t]) {
+      batteryLifo.push({
+        type: "grid",
+        value: consumption.grid_to_battery[t],
+      });
+    }
+    if (consumption.solar_to_battery[t]) {
+      batteryLifo.push({
+        type: "solar",
+        value: consumption.solar_to_battery[t],
+      });
+    }
+
+    let batteryToGrid = consumption.battery_to_grid[t] ?? 0;
+    let usedBattery = consumption.used_battery[t] ?? 0;
+
+    while (usedBattery > 0 && batteryLifo.length) {
+      const lastLifo = batteryLifo[batteryLifo.length - 1];
+      if (usedBattery >= lastLifo.value) {
+        if (lastLifo.type === "solar") {
+          solarConsumed += lastLifo.value;
+        }
+        usedBattery -= lastLifo.value;
+        batteryLifo.pop();
+      } else {
+        lastLifo.value -= usedBattery;
+        if (lastLifo.type === "solar") {
+          solarConsumed += usedBattery;
+        }
+        usedBattery = 0;
+      }
+    }
+
+    while (batteryToGrid > 0 && batteryLifo.length) {
+      const lastLifo = batteryLifo[batteryLifo.length - 1];
+      if (batteryToGrid >= lastLifo.value) {
+        if (lastLifo.type === "solar") {
+          solarReturned += lastLifo.value;
+        }
+        batteryToGrid -= lastLifo.value;
+        batteryLifo.pop();
+      } else {
+        lastLifo.value -= batteryToGrid;
+        if (lastLifo.type === "solar") {
+          solarReturned += batteryToGrid;
+        }
+        batteryToGrid = 0;
+      }
+    }
+  });
+
+  const totalProduction = solarConsumed + solarReturned;
+  const hasSolarProduction = !!totalProduction;
+  if (hasSolarProduction) {
+    return (solarConsumed / totalProduction) * 100;
+  }
+  return undefined;
+};
