@@ -168,6 +168,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-search",

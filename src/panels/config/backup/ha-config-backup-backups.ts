@@ -98,6 +98,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "backups-table-filters",

@@ -314,9 +314,7 @@ export class HaEntityComboBox extends LitElement {
             ...hass!.states[entityId],
             label: "",
             primary: primary,
-            secondary:
-              secondary ||
-              this.hass.localize("ui.components.device-picker.no_area"),
+            secondary: secondary,
             translated_domain: translatedDomain,
             sorting_label: [deviceName, entityName].filter(Boolean).join("-"),
             entity_name: entityName || deviceName,
