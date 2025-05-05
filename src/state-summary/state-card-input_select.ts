@@ -1,11 +1,10 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
-import "../components/ha-list-item";
-import "../components/ha-select";
+import "../components/ha-md-select";
+import "../components/ha-md-select-option";
 import { UNAVAILABLE } from "../data/entity";
 import type { InputSelectEntity } from "../data/input_select";
 import { setInputSelectOption } from "../data/input_select";
@@ -20,23 +19,21 @@ class StateCardInputSelect extends LitElement {
   protected render(): TemplateResult {
     return html`
       <state-badge .hass=${this.hass} .stateObj=${this.stateObj}></state-badge>
-      <ha-select
+      <ha-md-select
         .label=${computeStateName(this.stateObj)}
         .value=${this.stateObj.state}
-        .options=${this.stateObj.attributes.options}
         .disabled=${
           this.stateObj.state === UNAVAILABLE /* UNKNOWN state is allowed */
         }
-        naturalMenuWidth
-        fixedMenuPosition
-        @selected=${this._selectedOptionChanged}
-        @closed=${stopPropagation}
+        @change=${this._selectedOptionChanged}
       >
         ${this.stateObj.attributes.options.map(
           (option) =>
-            html`<ha-list-item .value=${option}>${option}</ha-list-item>`
+            html`<ha-md-select-option .value=${option}>
+              <div slot="headline">${option}</div>
+            </ha-md-select-option>`
         )}
-      </ha-select>
+      </ha-md-select>
     `;
   }
 
@@ -58,7 +55,7 @@ class StateCardInputSelect extends LitElement {
       margin-top: 10px;
     }
 
-    ha-select {
+    ha-md-select {
       width: 100%;
     }
   `;
