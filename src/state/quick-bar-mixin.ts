@@ -153,39 +153,42 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         for (const [slug, redirect] of Object.entries(
           myPanelSupervisor.REDIRECTS
         )) {
-          if (targetPath.startsWith(redirect.redirect)) {
-            myParams.append("redirect", slug);
-            if (redirect.redirect === "/hassio/addon") {
-              myParams.append("addon", targetPath.split("/")[3]);
-            }
-            window.open(
-              `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-              "_blank"
-            );
-            return;
+          if (!targetPath.startsWith(redirect.redirect)) {
+            continue;
           }
+          myParams.append("redirect", slug);
+          if (redirect.redirect === "/hassio/addon") {
+            myParams.append("addon", targetPath.split("/")[3]);
+          }
+          window.open(
+            `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+            "_blank"
+          );
         }
       }
 
       const myPanel = await import("../panels/my/ha-panel-my");
 
       for (const [slug, redirect] of Object.entries(myPanel.getMyRedirects())) {
-        if (targetPath.startsWith(redirect.redirect)) {
-          myParams.append("redirect", slug);
-          if (redirect.params) {
-            const params = extractSearchParamsObject();
-            for (const key of Object.keys(redirect.params)) {
-              if (key in params) {
-                myParams.append(key, params[key]);
-              }
+        if (!targetPath.startsWith(redirect.redirect)) {
+          continue;
+        }
+        myParams.append("redirect", slug);
+        if (redirect.params) {
+          const params = extractSearchParamsObject();
+          for (const key of Object.keys(redirect.params)) {
+            if (key in params) {
+              myParams.append(key, params[key]);
             }
           }
-          window.open(
-            `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-            "_blank"
-          );
-          return;
         }
+        if (redirect.redirect === "/config/integrations/integration") {
+          myParams.append("domain", targetPath.split("/")[4]);
+        }
+        window.open(
+          `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+          "_blank"
+        );
       }
       showToast(this, {
         message: this.hass.localize(
