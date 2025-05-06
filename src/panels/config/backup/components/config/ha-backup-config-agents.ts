@@ -102,7 +102,7 @@ class HaBackupConfigAgents extends LitElement {
         );
       }
     }
-    return join(texts, html`<span class="separator"> ⸱ </span>`);
+    return join(texts, html`<span class="separator"> · </span>`);
   }
 
   private _availableAgents = memoizeOne(

@@ -57,7 +57,7 @@ class MoreInfoValve extends LitElement {
     );
 
     if (positionStateDisplay) {
-      return `${stateDisplay} ⸱ ${positionStateDisplay}`;
+      return `${stateDisplay} · ${positionStateDisplay}`;
     }
     return stateDisplay;
   }
