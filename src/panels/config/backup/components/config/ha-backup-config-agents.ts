@@ -59,25 +59,27 @@ class HaBackupConfigAgents extends LitElement {
 
     const texts: (TemplateResult | string)[] = [];
 
-    const encryptionTurnedOff =
-      this.agentsConfig?.[agentId]?.protected === false;
-
-    if (encryptionTurnedOff) {
-      texts.push(html`
-        <span class="dot warning"></span>
-        <span>
-          ${this.hass.localize(
-            "ui.panel.config.backup.agents.encryption_turned_off"
-          )}
-        </span>
-      `);
-    }
-
     if (isNetworkMountAgent(agentId)) {
       texts.push(
         this.hass.localize(
           "ui.panel.config.backup.agents.network_mount_agent_description"
         )
+      );
+    }
+
+    const encryptionTurnedOff =
+      this.agentsConfig?.[agentId]?.protected === false;
+
+    if (encryptionTurnedOff) {
+      texts.push(
+        html`<div class="unencrypted-warning">
+          <span class="dot warning"></span>
+          <span>
+            ${this.hass.localize(
+              "ui.panel.config.backup.agents.encryption_turned_off"
+            )}
+          </span>
+        </div>`
       );
     }
 
@@ -102,7 +104,7 @@ class HaBackupConfigAgents extends LitElement {
     return html`${texts.map(
       (text, index) =>
         html`${text}${index < texts.length - 1
-          ? html`<span> ⸱ </span>`
+          ? html`<span class="separator"> ⸱ </span>`
           : nothing}`
     )}`;
   }
@@ -315,6 +317,11 @@ class HaBackupConfigAgents extends LitElement {
       gap: 8px;
       line-height: normal;
     }
+    .unencrypted-warning {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .dot {
       display: block;
       position: relative;
@@ -322,10 +329,21 @@ class HaBackupConfigAgents extends LitElement {
       height: 8px;
       background-color: var(--disabled-color);
       border-radius: 50%;
-      flex: none;
     }
     .dot.warning {
       background-color: var(--warning-color);
+    }
+    @media all and (max-width: 500px) {
+      .separator {
+        display: none;
+      }
+      ha-md-list-item [slot="supporting-text"] {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 4px;
+      }
     }
   `;
 }
