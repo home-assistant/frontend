@@ -58,7 +58,7 @@ export const sidebarEditStyle = css`
   }
 
   :host([expanded]) .hide-panel {
-    display: inline-block;
+    display: block;
   }
 
   :host([expanded]) .show-panel {
