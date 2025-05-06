@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -177,6 +176,17 @@ class DataEntryFlowDialog extends LitElement {
       return nothing;
     }
 
+    const showDocumentationLink =
+      ([
+        "form",
+        "menu",
+        "external",
+        "progress",
+        "data_entry_flow_progressed",
+      ].includes(this._step?.type as any) &&
+        this._params.manifest?.is_built_in) ||
+      !!this._params.manifest?.documentation;
+
     return html`
       <ha-dialog
         open
@@ -191,7 +201,7 @@ class DataEntryFlowDialog extends LitElement {
                 <step-flow-loading
                   .flowConfig=${this._params.flowConfig}
                   .hass=${this.hass}
-                  .loadingReason=${this._loading}
+                  .loadingReason=${this._loading!}
                   .handler=${this._handler}
                   .step=${this._step}
                 ></step-flow-loading>
@@ -199,26 +209,18 @@ class DataEntryFlowDialog extends LitElement {
             : this._step === undefined
               ? // When we are going to next step, we render 1 round of empty
                 // to reset the element.
-                ""
+                nothing
               : html`
                   <div class="dialog-actions">
-                    ${([
-                      "form",
-                      "menu",
-                      "external",
-                      "progress",
-                      "data_entry_flow_progressed",
-                    ].includes(this._step?.type as any) &&
-                      this._params.manifest?.is_built_in) ||
-                    this._params.manifest?.documentation
+                    ${showDocumentationLink
                       ? html`
                           <a
-                            href=${this._params.manifest.is_built_in
+                            href=${this._params.manifest!.is_built_in
                               ? documentationUrl(
                                   this.hass,
-                                  `/integrations/${this._params.manifest.domain}`
+                                  `/integrations/${this._params.manifest!.domain}`
                                 )
-                              : this._params?.manifest?.documentation}
+                              : this._params.manifest!.documentation}
                             target="_blank"
                             rel="noreferrer noopener"
                           >
@@ -229,7 +231,7 @@ class DataEntryFlowDialog extends LitElement {
                             </ha-icon-button
                           ></a>
                         `
-                      : ""}
+                      : nothing}
                     <ha-icon-button
                       .label=${this.hass.localize("ui.common.close")}
                       .path=${mdiClose}
@@ -242,6 +244,7 @@ class DataEntryFlowDialog extends LitElement {
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}
+                          .increasePaddingEnd=${showDocumentationLink}
                         ></step-flow-form>
                       `
                     : this._step.type === "external"
@@ -250,6 +253,7 @@ class DataEntryFlowDialog extends LitElement {
                             .flowConfig=${this._params.flowConfig}
                             .step=${this._step}
                             .hass=${this.hass}
+                            .increasePaddingEnd=${showDocumentationLink}
                           ></step-flow-external>
                         `
                       : this._step.type === "abort"
@@ -261,6 +265,7 @@ class DataEntryFlowDialog extends LitElement {
                               .handler=${this._step.handler}
                               .domain=${this._params.domain ??
                               this._step.handler}
+                              .increasePaddingEnd=${showDocumentationLink}
                             ></step-flow-abort>
                           `
                         : this._step.type === "progress"
@@ -270,6 +275,7 @@ class DataEntryFlowDialog extends LitElement {
                                 .step=${this._step}
                                 .hass=${this.hass}
                                 .progress=${this._progress}
+                                .increasePaddingEnd=${showDocumentationLink}
                               ></step-flow-progress>
                             `
                           : this._step.type === "menu"
@@ -278,6 +284,7 @@ class DataEntryFlowDialog extends LitElement {
                                   .flowConfig=${this._params.flowConfig}
                                   .step=${this._step}
                                   .hass=${this.hass}
+                                  .increasePaddingEnd=${showDocumentationLink}
                                 ></step-flow-menu>
                               `
                             : html`
@@ -286,7 +293,8 @@ class DataEntryFlowDialog extends LitElement {
                                   .step=${this._step}
                                   .hass=${this.hass}
                                   .navigateToResult=${this._params
-                                    .navigateToResult}
+                                    .navigateToResult ?? false}
+                                  .increasePaddingEnd=${showDocumentationLink}
                                 ></step-flow-create-entry>
                               `}
                 `}
