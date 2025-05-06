@@ -84,7 +84,7 @@ class HaCallServiceButton extends LitElement {
 
   static styles = css`
     :host {
-      --button-text-align: left;
+      --button-text-align: start;
     }
   `;
 }
