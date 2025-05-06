@@ -852,8 +852,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           color: var(--sidebar-icon-color);
         }
         .title {
-          margin-left: 19px;
-          margin-inline-start: 19px;
+          margin-left: 3px;
+          margin-inline-start: 3px;
           margin-inline-end: initial;
           width: 100%;
           display: none;
@@ -940,7 +940,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         ha-md-list-item .item-text {
           display: none;
-          max-width: calc(100% - 56px);
           font-weight: 500;
           font-size: 14px;
         }
