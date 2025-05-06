@@ -366,7 +366,7 @@ export class HaStateControlClimateTemperature extends LitElement {
           >
             ${this._renderTarget(this._targetTemperature.low!, "normal", true)}
           </button>
-          <span>⸱</span>
+          <span>·</span>
           <button
             @click=${this._handleSelectTemp}
             .target=${"high"}
