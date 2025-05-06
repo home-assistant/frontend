@@ -6,6 +6,13 @@ import { customElement } from "lit/decorators";
 
 @customElement("ha-outlined-icon-button")
 export class HaOutlinedIconButton extends IconButton {
+  protected override getRenderClasses() {
+    return {
+      ...super.getRenderClasses(),
+      outlined: true,
+    };
+  }
+
   static override styles = [
     css`
       .icon-button {

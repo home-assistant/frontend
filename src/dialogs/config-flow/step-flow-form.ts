@@ -27,6 +27,9 @@ class StepFlowForm extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, attribute: "increase-padding-end" })
+  public increasePaddingEnd = false;
+
   @state() private _loading = false;
 
   @state() private _stepData?: Record<string, any>;
@@ -43,7 +46,9 @@ class StepFlowForm extends LitElement {
     const stepData = this._stepDataProcessed;
 
     return html`
-      <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
+      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
+        ${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}
+      </h2>
       <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg

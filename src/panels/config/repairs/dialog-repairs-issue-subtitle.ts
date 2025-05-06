@@ -20,7 +20,7 @@ class DialogRepairsIssueSubtitle extends LitElement {
   protected render() {
     const domainName = domainToName(this.hass.localize, this.issue.domain);
     const reportedBy = domainName
-      ? ` ⸱ ${this.hass.localize("ui.panel.config.repairs.reported_by", {
+      ? ` · ${this.hass.localize("ui.panel.config.repairs.reported_by", {
           integration: domainName,
         })}`
       : "";

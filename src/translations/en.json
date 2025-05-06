@@ -920,7 +920,9 @@
           "action_play": "Say",
           "action_pick": "Select",
           "set_as_default": "Set as default options",
-          "faild_to_store_defaults": "Failed to store defaults: {error}"
+          "faild_to_store_defaults": "Failed to store defaults: {error}",
+          "selected_voice_id": "Selected voice ID",
+          "copy_voice_id": "Copy voice ID"
         },
         "pick": "Pick",
         "play": "Play",
@@ -2489,7 +2491,10 @@
             "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
-            "local_agent": "This system"
+            "local_agent": "This system",
+            "retention_all": "Keep all backups",
+            "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
+            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"
           },
           "data": {
             "ha_settings": "Home Assistant settings",

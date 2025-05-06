@@ -36,6 +36,9 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
+  @property({ type: Boolean, attribute: "increase-padding-end" })
+  public increasePaddingEnd = false;
+
   public navigateToResult = false;
 
   @state() private _deviceUpdate: Record<
@@ -113,7 +116,7 @@ class StepFlowCreateEntry extends LitElement {
       this.step.result?.entry_id
     );
     return html`
-      <h2>
+      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
         ${devices.length
           ? localize("ui.panel.config.integrations.config_flow.assign_area", {
               number: devices.length,
