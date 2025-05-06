@@ -1,5 +1,6 @@
 import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
 import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import { join } from "lit/directives/join";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -101,12 +102,7 @@ class HaBackupConfigAgents extends LitElement {
         );
       }
     }
-    return html`${texts.map(
-      (text, index) =>
-        html`${text}${index < texts.length - 1
-          ? html`<span class="separator"> ⸱ </span>`
-          : nothing}`
-    )}`;
+    return join(texts, html`<span class="separator"> ⸱ </span>`);
   }
 
   private _availableAgents = memoizeOne(
