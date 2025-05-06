@@ -603,7 +603,7 @@ export class HaDataTable extends LitElement {
                           .map(
                             ([key2, column2], i) =>
                               html`${i !== 0
-                                ? " ⸱ "
+                                ? " · "
                                 : nothing}${column2.template
                                 ? column2.template(row)
                                 : row[key2]}`
