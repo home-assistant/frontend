@@ -1,5 +1,6 @@
 import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import { join } from "lit/directives/join";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -57,26 +58,51 @@ class HaBackupConfigAgents extends LitElement {
       );
     }
 
+    const texts: (TemplateResult | string)[] = [];
+
+    if (isNetworkMountAgent(agentId)) {
+      texts.push(
+        this.hass.localize(
+          "ui.panel.config.backup.agents.network_mount_agent_description"
+        )
+      );
+    }
+
     const encryptionTurnedOff =
       this.agentsConfig?.[agentId]?.protected === false;
 
     if (encryptionTurnedOff) {
-      return html`
-        <span class="dot warning"></span>
-        <span>
-          ${this.hass.localize(
-            "ui.panel.config.backup.agents.encryption_turned_off"
-          )}
-        </span>
-      `;
-    }
-
-    if (isNetworkMountAgent(agentId)) {
-      return this.hass.localize(
-        "ui.panel.config.backup.agents.network_mount_agent_description"
+      texts.push(
+        html`<div class="unencrypted-warning">
+          <span class="dot warning"></span>
+          <span>
+            ${this.hass.localize(
+              "ui.panel.config.backup.agents.encryption_turned_off"
+            )}
+          </span>
+        </div>`
       );
     }
-    return "";
+
+    const retention = this.agentsConfig?.[agentId]?.retention;
+
+    if (retention) {
+      if (retention.copies === null && retention.days === null) {
+        texts.push(
+          this.hass.localize("ui.panel.config.backup.agents.retention_all")
+        );
+      } else {
+        texts.push(
+          this.hass.localize(
+            `ui.panel.config.backup.agents.retention_${retention.copies ? "backups" : "days"}`,
+            {
+              count: retention.copies || retention.days,
+            }
+          )
+        );
+      }
+    }
+    return join(texts, html`<span class="separator"> ⸱ </span>`);
   }
 
   private _availableAgents = memoizeOne(
@@ -287,6 +313,11 @@ class HaBackupConfigAgents extends LitElement {
       gap: 8px;
       line-height: normal;
     }
+    .unencrypted-warning {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .dot {
       display: block;
       position: relative;
@@ -294,10 +325,21 @@ class HaBackupConfigAgents extends LitElement {
       height: 8px;
       background-color: var(--disabled-color);
       border-radius: 50%;
-      flex: none;
     }
     .dot.warning {
       background-color: var(--warning-color);
+    }
+    @media all and (max-width: 500px) {
+      .separator {
+        display: none;
+      }
+      ha-md-list-item [slot="supporting-text"] {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 4px;
+      }
     }
   `;
 }
