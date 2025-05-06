@@ -22,6 +22,9 @@ export const configFlowContentStyles = css`
     text-transform: var(--mdc-typography-headline6-text-transform, inherit);
     box-sizing: border-box;
   }
+  h2.end-space {
+    padding-inline-end: 72px;
+  }
 
   .content,
   .preview {
