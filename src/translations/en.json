@@ -2018,9 +2018,7 @@
       "sidebar_toggle": "Sidebar toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
-      "show_panel": "Show panel",
-      "change_position": "Change panel position",
-      "change_position_dialog_text": "What position do you want to move your ''{name}'' panel to?"
+      "show_panel": "Show panel"
     },
     "panel": {
       "my": {
