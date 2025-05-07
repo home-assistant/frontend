@@ -10,6 +10,7 @@ import type { LitElement } from "lit";
 export interface DragScrollControllerConfig {
   selector: string;
   enabled?: boolean;
+  trackScroll?: boolean;
 }
 
 export class DragScrollController implements ReactiveController {
@@ -35,6 +36,8 @@ export class DragScrollController implements ReactiveController {
 
   private _enabled = true;
 
+  private _trackScroll = false;
+
   public get enabled(): boolean {
     return this._enabled;
   }
@@ -54,10 +57,11 @@ export class DragScrollController implements ReactiveController {
 
   constructor(
     host: ReactiveControllerHost & LitElement,
-    { selector, enabled }: DragScrollControllerConfig
+    { selector, enabled, trackScroll }: DragScrollControllerConfig
   ) {
     this._selector = selector;
     this._host = host;
+    this._trackScroll = trackScroll ?? false;
     this.enabled = enabled ?? true;
     host.addController(this);
   }
@@ -79,11 +83,14 @@ export class DragScrollController implements ReactiveController {
     );
     if (this._scrollContainer) {
       this._scrollContainer.addEventListener("mousedown", this._mouseDown);
-      this._scrollContainer.addEventListener("scroll", this._onScroll);
-      this.scrolledStart = this._scrollContainer.scrollLeft > 0;
-      this.scrolledEnd =
-        this._scrollContainer.scrollLeft + this._scrollContainer.offsetWidth <
-        this._scrollContainer.scrollWidth;
+      if (this._trackScroll) {
+        this._scrollContainer.addEventListener("scroll", this._onScroll);
+        this.scrolledStart = this._scrollContainer.scrollLeft > 0;
+        this.scrolledEnd =
+          this._scrollContainer.scrollLeft + this._scrollContainer.offsetWidth <
+          this._scrollContainer.scrollWidth;
+        this._host.requestUpdate();
+      }
     }
   }
 
@@ -97,6 +104,8 @@ export class DragScrollController implements ReactiveController {
     }
     this.scrolled = false;
     this.scrolling = false;
+    this.scrolledStart = false;
+    this.scrolledEnd = false;
     this.mouseIsDown = false;
     this.scrollStartX = 0;
     this.scrollLeft = 0;

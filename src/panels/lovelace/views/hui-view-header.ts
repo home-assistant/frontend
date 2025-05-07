@@ -54,6 +54,7 @@ export class HuiViewHeader extends LitElement {
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".scroll",
+    trackScroll: true,
     enabled: false,
   });
 
