@@ -1123,17 +1123,16 @@ export const calculateSolarConsumedGauge = (
   hasBattery: boolean,
   data: EnergySumData
 ): number | undefined => {
+  if (!data.total.solar) {
+    return undefined;
+  }
   const { consumption, compareConsumption: _ } = computeConsumptionData(
     data,
     undefined
   );
   if (!hasBattery) {
     const solarProduction = data.total.solar;
-    const hasSolarProduction = !!solarProduction;
-    if (hasSolarProduction) {
-      return (consumption.total.used_solar / solarProduction) * 100;
-    }
-    return undefined;
+    return (consumption.total.used_solar / solarProduction) * 100;
   }
 
   let solarConsumed = 0;

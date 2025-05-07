@@ -593,7 +593,9 @@ describe("Self-consumed solar gauge tests", () => {
         solar: {
           "0": 0,
         },
-        total: {},
+        total: {
+          solar: 0,
+        },
         timestamps: [0],
       }),
       undefined
@@ -620,7 +622,9 @@ describe("Self-consumed solar gauge tests", () => {
         to_grid: {
           "1": 1,
         },
-        total: {},
+        total: {
+          solar: 4,
+        },
         timestamps: [0, 1],
       }),
       75
@@ -642,7 +646,9 @@ describe("Self-consumed solar gauge tests", () => {
           "2": 1,
           "3": 1,
         },
-        total: {},
+        total: {
+          solar: 1,
+        },
         timestamps: [0, 1, 2, 3, 10],
       }),
       // As the battery is discharged from unknown source, it does not affect solar production number.
@@ -667,7 +673,9 @@ describe("Self-consumed solar gauge tests", () => {
           "4": 3,
           "5": 100, // Unknown source, not counted
         },
-        total: {},
+        total: {
+          solar: 10,
+        },
         timestamps: [0, 1, 2, 3, 4, 5],
       }),
       // As the battery is discharged from unknown source, it does not affect solar production number.
@@ -706,7 +714,8 @@ describe("Self-consumed solar gauge tests", () => {
         "13": 5,
       },
       total: {
-        // Total is don't care when hasBattery, only hourly values are used
+        // Total is mostly don't care when hasBattery, only hourly values are used
+        solar: 13,
       },
       timestamps: [0, 1, 2, 3, 10, 11, 12, 13],
     });
