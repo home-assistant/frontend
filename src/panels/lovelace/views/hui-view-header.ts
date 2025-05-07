@@ -54,6 +54,7 @@ export class HuiViewHeader extends LitElement {
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".scroll",
+    enabled: false,
   });
 
   connectedCallback(): void {
@@ -79,6 +80,11 @@ export class HuiViewHeader extends LitElement {
       changedProperties.has("card")
     ) {
       this._checkHidden();
+    }
+
+    if (changedProperties.has("config") || changedProperties.has("lovelace")) {
+      this._dragScrollController.enabled =
+        !this.lovelace.editMode && this.config?.badges_wrap === "scroll";
     }
 
     if (changedProperties.has("config")) {
