@@ -96,9 +96,7 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
                   <td><b>${key}</b></td>
                   <td>
                     ${typeof value === "object" && value !== null
-                      ? html`<a
-                          href="#"
-                          @click=${this._handleShowRawData(key, value)}
+                      ? html`<a href="#" @click=${this._showRawData(key, value)}
                           >${this.hass.localize(
                             "ui.panel.config.ssdp.show_raw_data"
                           )}</a
