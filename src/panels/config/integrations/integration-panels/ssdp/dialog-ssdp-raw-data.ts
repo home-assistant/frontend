@@ -1,6 +1,7 @@
 import { LitElement, html, nothing, css } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { TemplateResult } from "lit";
+import { dump } from "js-yaml";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { HassDialog } from "../../../../../dialogs/make-dialog-manager";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
