@@ -42,14 +42,12 @@ class DialogSSDPRawData extends LitElement implements HassDialog {
           `${this.hass.localize("ui.panel.config.ssdp.raw_data_title")}: ${this._params.key}`
         )}
       >
-        <div class="content">
-          <ha-code-editor
-            mode="yaml"
-            .value=${JSON.stringify(this._params.data, null, 2)}
-            readonly
-            autofocus
-          ></ha-code-editor>
-        </div>
+        <ha-code-editor
+          mode="yaml"
+          .value=${JSON.stringify(this._params.data, null, 2)}
+          readonly
+          autofocus
+        ></ha-code-editor>
       </ha-dialog>
     `;
   }
@@ -58,12 +56,6 @@ class DialogSSDPRawData extends LitElement implements HassDialog {
     ha-code-editor {
       --code-mirror-max-height: 60vh;
       --code-mirror-height: auto;
-    }
-    .content {
-      margin: 0;
-      padding: 0;
-      display: block;
-      width: 100%;
     }
   `;
 }
