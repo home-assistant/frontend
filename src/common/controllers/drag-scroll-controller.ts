@@ -23,6 +23,10 @@ export class DragScrollController implements ReactiveController {
 
   public scrollLeft = 0;
 
+  public scrolledStart = false;
+
+  public scrolledEnd = false;
+
   private _host: ReactiveControllerHost & LitElement;
 
   private _selector: string;
@@ -75,6 +79,11 @@ export class DragScrollController implements ReactiveController {
     );
     if (this._scrollContainer) {
       this._scrollContainer.addEventListener("mousedown", this._mouseDown);
+      this._scrollContainer.addEventListener("scroll", this._onScroll);
+      this.scrolledStart = this._scrollContainer.scrollLeft > 0;
+      this.scrolledEnd =
+        this._scrollContainer.scrollLeft + this._scrollContainer.offsetWidth <
+        this._scrollContainer.scrollWidth;
     }
   }
 
@@ -83,6 +92,7 @@ export class DragScrollController implements ReactiveController {
     window.removeEventListener("mouseup", this._mouseUp);
     if (this._scrollContainer) {
       this._scrollContainer.removeEventListener("mousedown", this._mouseDown);
+      this._scrollContainer.removeEventListener("scroll", this._onScroll);
       this._scrollContainer = undefined;
     }
     this.scrolled = false;
@@ -91,6 +101,22 @@ export class DragScrollController implements ReactiveController {
     this.scrollStartX = 0;
     this.scrollLeft = 0;
   }
+
+  private _onScroll = (event: Event) => {
+    const oldScrolledStart = this.scrolledStart;
+    const oldScrolledEnd = this.scrolledEnd;
+
+    const container = event.currentTarget as HTMLElement;
+    this.scrolledStart = container.scrollLeft > 0;
+    this.scrolledEnd =
+      container.scrollLeft + container.offsetWidth < container.scrollWidth;
+    if (
+      this.scrolledStart !== oldScrolledStart ||
+      this.scrolledEnd !== oldScrolledEnd
+    ) {
+      this._host.requestUpdate();
+    }
+  };
 
   private _mouseDown = (event: MouseEvent) => {
     const scrollContainer = this._scrollContainer;

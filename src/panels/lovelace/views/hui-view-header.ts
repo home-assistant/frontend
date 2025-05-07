@@ -202,9 +202,10 @@ export class HuiViewHeader extends LitElement {
       this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
     const badgesWrap =
       this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
-    const badgeDragging = this._dragScrollController.scrolling
-      ? "dragging"
-      : "";
+
+    const badgeDragging = this._dragScrollController.scrolling;
+    const startScrolled = this._dragScrollController.scrolledStart;
+    const endScrolled = this._dragScrollController.scrolledEnd;
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
@@ -267,7 +268,13 @@ export class HuiViewHeader extends LitElement {
           ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
                 <div
-                  class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
+                  class="badges ${classMap({
+                    [badgesPosition]: true,
+                    [badgesWrap]: true,
+                    dragging: badgeDragging,
+                    "start-scrolled": startScrolled,
+                    "end-scrolled": endScrolled,
+                  })}"
                 >
                   <hui-view-badges
                     .badges=${this.badges}
@@ -359,6 +366,21 @@ export class HuiViewHeader extends LitElement {
       max-width: 100%;
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
       scrollbar-width: none;
+    }
+
+    .container:not(.edit-mode) .badges.scroll.start-scrolled {
+      mask-image: linear-gradient(90deg, transparent 0%, black 16px);
+    }
+
+    .container:not(.edit-mode) .badges.scroll.end-scrolled {
+      mask-image: linear-gradient(
+        90deg,
+        black calc(100% - 16px),
+        transparent 100%
+      );
+    }
+
+    .container:not(.edit-mode) .badges.scroll.start-scrolled.end-scrolled {
       mask-image: linear-gradient(
         90deg,
         transparent 0%,
@@ -403,7 +425,6 @@ export class HuiViewHeader extends LitElement {
     .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {
       --badges-wrap: nowrap;
       --badges-aligmnent: flex-start;
-      --badge-padding: 16px;
     }
 
     .container:not(.edit-mode) .layout.center.badges-scroll hui-view-badges {
@@ -424,7 +445,6 @@ export class HuiViewHeader extends LitElement {
         hui-view-badges {
         --badges-wrap: wrap;
         --badges-aligmnent: flex-end;
-        --badge-padding: 0;
       }
       .layout.responsive.has-heading hui-view-badges {
         --badges-aligmnent: flex-end;
