@@ -7,6 +7,7 @@ import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
   LegendComponentOption,
+  LineSeriesOption,
   XAXisOption,
   YAXisOption,
 } from "echarts/types/dist/shared";
@@ -600,12 +601,28 @@ export class HaChartBase extends LitElement {
   }
 
   private _getSeries() {
-    if (!Array.isArray(this.data)) {
-      return this.data;
-    }
-    return this.data.filter(
+    const series = ensureArray(this.data).filter(
       (d) => !this._hiddenDatasets.has(String(d.name ?? d.id))
     );
+    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+      | YAXisOption
+      | undefined;
+    if (yAxis?.type === "log") {
+      // set <=0 values to null so they render as gaps on a log graph
+      return series.map((d) => ({
+        ...d,
+        data: (d as LineSeriesOption).data?.map((v) =>
+          Array.isArray(v)
+            ? [
+                v[0],
+                typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
+                ...v.slice(2),
+              ]
+            : v
+        ),
+      }));
+    }
+    return series;
   }
 
   private _getDefaultHeight() {
