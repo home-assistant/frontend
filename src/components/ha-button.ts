@@ -23,7 +23,6 @@ export class HaButton extends Button {
       }
       .slot-container {
         overflow: var(--button-slot-container-overflow, visible);
-        justify-content: var(--button-text-align, center);
         width: 100%;
       }
       :host([destructive]) {
