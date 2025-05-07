@@ -85,7 +85,6 @@ class SearchInputOutlined extends LitElement {
       display: inline-flex;
       /* For iOS */
       z-index: 0;
-      --mdc-icon-button-size: 24px;
     }
     ha-outlined-text-field {
       display: block;
@@ -94,6 +93,8 @@ class SearchInputOutlined extends LitElement {
     }
     ha-svg-icon,
     ha-icon-button {
+      --mdc-icon-button-size: 24px;
+      height: var(--mdc-icon-button-size);
       display: flex;
       color: var(--primary-text-color);
     }
