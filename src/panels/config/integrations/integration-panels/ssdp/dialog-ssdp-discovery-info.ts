@@ -40,18 +40,14 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
     });
   }
 
-  private _handleShowRawData(key: string, data: Record<string, unknown>) {
+  private _showRawData(key: string, data: Record<string, unknown>) {
     return (e: Event) => {
       e.preventDefault();
-      this._showRawData(key, data);
+      showSSDPRawDataDialog(this, {
+        key,
+        data,
+      });
     };
-  }
-
-  private _showRawData(key: string, data: Record<string, unknown>): void {
-    showSSDPRawDataDialog(this, {
-      key,
-      data,
-    });
   }
 
   protected render(): TemplateResult | typeof nothing {
