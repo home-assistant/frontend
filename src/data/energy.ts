@@ -1164,38 +1164,35 @@ export const calculateSolarConsumedGauge = (
     let batteryToGrid = consumption.battery_to_grid[t] ?? 0;
     let usedBattery = consumption.used_battery[t] ?? 0;
 
-    while (usedBattery > 0 && batteryLifo.length) {
+    const drainBattery = function (amount: number): {
+      energy: number;
+      type: "solar" | "grid";
+    } {
       const lastLifo = batteryLifo[batteryLifo.length - 1];
-      if (usedBattery >= lastLifo.value) {
-        if (lastLifo.type === "solar") {
-          solarConsumed += lastLifo.value;
-        }
-        usedBattery -= lastLifo.value;
+      const type = lastLifo.type;
+      if (amount >= lastLifo.value) {
+        const energy = lastLifo.value;
         batteryLifo.pop();
-      } else {
-        lastLifo.value -= usedBattery;
-        if (lastLifo.type === "solar") {
-          solarConsumed += usedBattery;
-        }
-        usedBattery = 0;
+        return { energy, type };
       }
+      lastLifo.value -= amount;
+      return { energy: amount, type };
+    };
+
+    while (usedBattery > 0 && batteryLifo.length) {
+      const { energy, type } = drainBattery(usedBattery);
+      if (type === "solar") {
+        solarConsumed += energy;
+      }
+      usedBattery -= energy;
     }
 
     while (batteryToGrid > 0 && batteryLifo.length) {
-      const lastLifo = batteryLifo[batteryLifo.length - 1];
-      if (batteryToGrid >= lastLifo.value) {
-        if (lastLifo.type === "solar") {
-          solarReturned += lastLifo.value;
-        }
-        batteryToGrid -= lastLifo.value;
-        batteryLifo.pop();
-      } else {
-        lastLifo.value -= batteryToGrid;
-        if (lastLifo.type === "solar") {
-          solarReturned += batteryToGrid;
-        }
-        batteryToGrid = 0;
+      const { energy, type } = drainBattery(batteryToGrid);
+      if (type === "solar") {
+        solarReturned += energy;
       }
+      batteryToGrid -= energy;
     }
   });
 
