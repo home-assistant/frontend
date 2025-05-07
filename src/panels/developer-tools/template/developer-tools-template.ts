@@ -322,7 +322,7 @@ ${type === "object"
         }
 
         .rendered {
-          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+          font-family: var(--ha-font-family-code);
           -webkit-font-smoothing: antialiased;
           clear: both;
           white-space: pre-wrap;

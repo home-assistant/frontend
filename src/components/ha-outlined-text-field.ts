@@ -37,7 +37,7 @@ export class HaOutlinedTextField extends OutlinedTextField {
         --mdc-icon-size: var(--md-input-chip-icon-size, 18px);
       }
       .input {
-        font-family: Roboto, sans-serif;
+        font-family: var(--ha-font-family-body);
       }
     `,
   ];
