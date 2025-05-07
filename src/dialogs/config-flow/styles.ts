@@ -12,7 +12,7 @@ export const configFlowContentStyles = css`
     -webkit-font-smoothing: antialiased;
     font-family: var(
       --mdc-typography-headline6-font-family,
-      var(--mdc-typography-font-family, Roboto, sans-serif)
+      var(--mdc-typography-font-family, var(--ha-font-family-body))
     );
     font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
     line-height: var(--mdc-typography-headline6-line-height, 2rem);

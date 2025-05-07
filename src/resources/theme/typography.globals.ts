@@ -1,5 +1,8 @@
 import { css } from "lit";
-import { extractDerivedVars } from "../../common/style/derived-css-vars";
+import {
+  extractDerivedVars,
+  extractVar,
+} from "../../common/style/derived-css-vars";
 
 export const typographyStyles = css`
   html {
@@ -38,3 +41,8 @@ export const typographyStyles = css`
 `;
 
 export const typographyDerivedVariables = extractDerivedVars(typographyStyles);
+
+export const haFontFamilyBody = extractVar(
+  typographyStyles,
+  "font-family-body"
+);

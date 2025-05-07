@@ -1,3 +1,4 @@
+import { haFontFamilyBody } from "../../src/resources/theme/typography.globals";
 import "./hassio-main";
 
 import("../../src/resources/append-ha-style");
@@ -5,7 +6,7 @@ import("../../src/resources/append-ha-style");
 const styleEl = document.createElement("style");
 styleEl.textContent = `
 body {
-  font-family: Roboto, sans-serif;
+  font-family: ${haFontFamilyBody};
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-weight: 400;

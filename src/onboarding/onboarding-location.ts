@@ -526,7 +526,7 @@ class OnboardingLocation extends LitElement {
           color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
           font-family: var(
             --mdc-typography-caption-font-family,
-            var(--mdc-typography-font-family, Roboto, sans-serif)
+            var(--mdc-typography-font-family, var(--ha-font-family-body))
           );
           font-size: var(--mdc-typography-caption-font-size, 0.75rem);
           font-weight: var(--mdc-typography-caption-font-weight, 400);

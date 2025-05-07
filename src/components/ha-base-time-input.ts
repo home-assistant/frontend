@@ -385,7 +385,7 @@ export class HaBaseTimeInput extends LitElement {
       -webkit-font-smoothing: antialiased;
       font-family: var(
         --mdc-typography-body2-font-family,
-        var(--mdc-typography-font-family, Roboto, sans-serif)
+        var(--mdc-typography-font-family, var(--ha-font-family-body))
       );
       font-size: var(--mdc-typography-body2-font-size, 0.875rem);
       line-height: var(--mdc-typography-body2-line-height, 1.25rem);
