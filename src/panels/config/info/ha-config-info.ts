@@ -297,7 +297,7 @@ class HaConfigInfo extends LitElement {
         }
 
         .header p {
-          font-size: 22px;
+          font-size: var(--ha-font-size-xl);
           font-weight: 400;
           line-height: 28px;
           text-align: center;
@@ -328,7 +328,7 @@ class HaConfigInfo extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           font-weight: 400;
           padding: 4px 0;
         }
@@ -344,7 +344,7 @@ class HaConfigInfo extends LitElement {
         .ha-version {
           color: var(--primary-text-color);
           font-weight: 500;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
 
         .pages {

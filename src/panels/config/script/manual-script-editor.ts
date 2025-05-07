@@ -430,7 +430,7 @@ export class HaManualScriptEditor extends LitElement {
           margin-top: -16px;
         }
         .header .name {
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           font-weight: 400;
           flex: 1;
         }

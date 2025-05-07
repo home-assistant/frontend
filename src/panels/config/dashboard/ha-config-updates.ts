@@ -156,7 +156,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     return [
       css`
         .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding: 16px;
           padding-bottom: 0;
         }
@@ -188,7 +188,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
           text-decoration: underline;
         }
         ha-md-list-item {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         div[slot="start"] {
           position: relative;

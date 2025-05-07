@@ -152,12 +152,12 @@ class LovelaceFullConfigEditor extends LitElement {
         }
 
         .comments {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
 
         .save-button {
           opacity: 0;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           padding: 0px 10px;
         }
 

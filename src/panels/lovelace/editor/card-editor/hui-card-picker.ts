@@ -475,7 +475,7 @@ export class HuiCardPicker extends LitElement {
         }
 
         .cards-container-header {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           font-weight: 500;
           padding: 12px 8px;
           margin: 0;
@@ -512,7 +512,7 @@ export class HuiCardPicker extends LitElement {
         .card-header {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           font-weight: bold;
           letter-spacing: -0.012em;
           line-height: 20px;

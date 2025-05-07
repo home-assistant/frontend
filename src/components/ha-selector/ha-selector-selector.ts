@@ -290,7 +290,7 @@ export class HaSelectorSelector extends LitElement {
       padding: 0px 16px 16px 16px;
     }
     .title {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       padding-top: 16px;
       overflow: hidden;
       text-overflow: ellipsis;

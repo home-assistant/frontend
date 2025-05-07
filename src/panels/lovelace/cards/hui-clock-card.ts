@@ -204,7 +204,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-title {
       color: var(--primary-text-color);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       font-weight: 400;
       line-height: 18px;
       overflow: hidden;
@@ -215,12 +215,12 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     .time-wrapper.size-medium .time-title {
-      font-size: 18px;
+      font-size: var(--ha-font-size-l);
       line-height: 21px;
     }
 
     .time-wrapper.size-large .time-title {
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
       line-height: 28px;
     }
 
@@ -251,13 +251,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-wrapper.size-medium .time-parts .time-part.second,
     .time-wrapper.size-medium .time-parts .time-part.am-pm {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       margin-left: 6px;
     }
 
     .time-wrapper.size-large .time-parts .time-part.second,
     .time-wrapper.size-large .time-parts .time-part.am-pm {
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
       margin-left: 8px;
     }
 
@@ -283,7 +283,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-parts .time-part.second,
     .time-parts .time-part.am-pm {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       margin-left: 4px;
     }
 

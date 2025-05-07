@@ -93,7 +93,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           background-color: var(--primary-background-color, #fafafa);
         }
         p {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           line-height: 20px;
         }
         .card-content {
@@ -151,7 +151,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           margin-inline-start: initial;
         }
         h1 {
-          font-size: 28px;
+          font-size: var(--ha-font-size-3xl);
           font-weight: 400;
           margin-top: 16px;
           margin-bottom: 16px;

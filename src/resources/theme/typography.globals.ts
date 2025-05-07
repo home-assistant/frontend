@@ -9,15 +9,21 @@ export const typographyStyles = css`
 
     font-size: 14px;
     --ha-font-size-scale: 1;
-    --ha-font-size-xs: calc(10px * var(--ha-font-size-scale));
-    --ha-font-size-s: calc(12px * var(--ha-font-size-scale));
-    --ha-font-size-m: calc(14px * var(--ha-font-size-scale));
-    --ha-font-size-l: calc(16px * var(--ha-font-size-scale));
-    --ha-font-size-xl: calc(20px * var(--ha-font-size-scale));
-    --ha-font-size-2xl: calc(24px * var(--ha-font-size-scale));
-    --ha-font-size-3xl: calc(28px * var(--ha-font-size-scale));
-    --ha-font-size-4xl: calc(32px * var(--ha-font-size-scale));
-    --ha-font-size-5xl: calc(40px * var(--ha-font-size-scale));
+    --ha-font-size-xs: calc(10px * var(--ha-font-size-scale)); /* 0.714286rem */
+    --ha-font-size-s: calc(12px * var(--ha-font-size-scale)); /* 0.857143rem */
+    --ha-font-size-m: calc(14px * var(--ha-font-size-scale)); /* 1rem */
+    --ha-font-size-l: calc(16px * var(--ha-font-size-scale)); /* 1.142857rem */
+    --ha-font-size-xl: calc(20px * var(--ha-font-size-scale)); /* 1.428571rem */
+    --ha-font-size-2xl: calc(
+      24px * var(--ha-font-size-scale)
+    ); /* 1.714286rem */
+    --ha-font-size-3xl: calc(28px * var(--ha-font-size-scale)); /* 2rem */
+    --ha-font-size-4xl: calc(
+      32px * var(--ha-font-size-scale)
+    ); /* 2.285714rem */
+    --ha-font-size-5xl: calc(
+      40px * var(--ha-font-size-scale)
+    ); /* 2.857143rem */
 
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;

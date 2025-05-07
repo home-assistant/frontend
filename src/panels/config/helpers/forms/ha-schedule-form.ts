@@ -480,7 +480,7 @@ class HaScheduleForm extends LitElement {
         th.fc-col-header-cell.fc-day {
           background-color: var(--table-header-background-color);
           color: var(--primary-text-color);
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
           font-weight: bold;
           text-transform: uppercase;
         }

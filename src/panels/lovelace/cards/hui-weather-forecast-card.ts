@@ -529,19 +529,19 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .temp-attribute .temp span {
           position: absolute;
-          font-size: 24px;
+          font-size: var(--ha-font-size-2xl);
           top: 1px;
         }
 
         .state,
         .temp-attribute .temp {
-          font-size: 28px;
+          font-size: var(--ha-font-size-3xl);
           line-height: 1.2;
         }
 
         .name,
         .attribute {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           line-height: 1;
         }
 
@@ -581,7 +581,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         .forecast .temp {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
 
         .forecast-image-icon {
@@ -617,7 +617,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           display: flex;
           justify-content: center;
           align-items: center;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding: 10px 20px;
           text-align: center;
         }
@@ -639,7 +639,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         [class*="narrow"] .state,
         [class*="narrow"] .temp-attribute .temp {
-          font-size: 22px;
+          font-size: var(--ha-font-size-xl);
         }
 
         [class*="narrow"] .temp-attribute .temp {
@@ -650,7 +650,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         [class*="narrow"] .temp span {
           top: 1px;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
 
         /* ============= VERY NARROW ============= */

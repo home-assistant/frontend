@@ -170,7 +170,7 @@ export class HuiSubElementEditor extends LitElement {
     .back-title {
       display: flex;
       align-items: center;
-      font-size: 18px;
+      font-size: var(--ha-font-size-l);
     }
   `;
 }

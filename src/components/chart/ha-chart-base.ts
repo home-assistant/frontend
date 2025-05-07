@@ -739,7 +739,7 @@ export class HaChartBase extends LitElement {
       max-height: 60%;
       overflow-y: auto;
       padding: 12px 0 0;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--primary-text-color);
     }
     .chart-legend ul {

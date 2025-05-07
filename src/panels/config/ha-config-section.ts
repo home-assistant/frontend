@@ -80,7 +80,7 @@ export class HaConfigSection extends LitElement {
       line-height: var(--ha-line-height-normal);
       width: 100%;
       opacity: var(--dark-primary-opacity);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       padding-bottom: 20px;
     }
 

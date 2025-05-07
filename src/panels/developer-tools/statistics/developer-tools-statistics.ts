@@ -762,7 +762,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           justify-content: space-between;
           padding: 8px 12px;
           box-sizing: border-box;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           --ha-assist-chip-container-color: var(--card-background-color);
         }
 

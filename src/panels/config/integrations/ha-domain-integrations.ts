@@ -332,7 +332,7 @@ class HaDomainIntegrations extends LitElement {
       h3 {
         margin: 8px 24px 0;
         color: var(--secondary-text-color);
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         font-weight: 500;
       }
       h3:first-of-type {

@@ -154,7 +154,7 @@ export class HaSelectBox extends LitElement {
     }
     .option .content .text .label {
       color: var(--primary-text-color);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       font-weight: 400;
       line-height: 20px;
       overflow: hidden;

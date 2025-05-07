@@ -228,7 +228,7 @@ export class DialogEnterCode
       height: 56px;
       --control-button-border-radius: 28px;
       --mdc-icon-size: 24px;
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
     }
     .submit {
       --control-button-background-color: var(--green-color);

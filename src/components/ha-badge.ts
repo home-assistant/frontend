@@ -95,7 +95,7 @@ export class HaBadge extends LitElement {
       text-align: center;
     }
     .label {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       font-style: normal;
       font-weight: 500;
       line-height: 10px;

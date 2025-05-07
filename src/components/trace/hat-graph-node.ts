@@ -164,7 +164,7 @@ export class HatGraphNode extends LitElement {
       stroke-width: 0;
     }
     .number text {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       fill: var(--text-primary-color);
     }
     path.icon {

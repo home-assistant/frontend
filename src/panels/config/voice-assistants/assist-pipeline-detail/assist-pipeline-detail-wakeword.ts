@@ -146,14 +146,14 @@ export class AssistPipelineDetailWakeWord extends LitElement {
     }
     h3 {
       font-weight: normal;
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       line-height: 28px;
       margin-top: 0;
       margin-bottom: 4px;
     }
     p {
       color: var(--secondary-text-color);
-      font-size: var(--mdc-typography-body2-font-size, 0.875rem);
+      font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
       margin-top: 0;
       margin-bottom: 0;
     }

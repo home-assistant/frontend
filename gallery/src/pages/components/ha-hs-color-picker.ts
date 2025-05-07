@@ -105,7 +105,7 @@ export class DemoHaHsColorPicker extends LitElement {
       width: 400px;
     }
     .value {
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       font-weight: bold;
       margin: 0 0 12px 0;
     }
