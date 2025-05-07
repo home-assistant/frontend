@@ -1118,3 +1118,88 @@ export const formatConsumptionShort = (
     pickedUnit
   );
 };
+
+export const calculateSolarConsumedGauge = (
+  hasBattery: boolean,
+  data: EnergySumData
+): number | undefined => {
+  if (!data.total.solar) {
+    return undefined;
+  }
+  const { consumption, compareConsumption: _ } = computeConsumptionData(
+    data,
+    undefined
+  );
+  if (!hasBattery) {
+    const solarProduction = data.total.solar;
+    return (consumption.total.used_solar / solarProduction) * 100;
+  }
+
+  let solarConsumed = 0;
+  let solarReturned = 0;
+  const batteryLifo: { type: "solar" | "grid"; value: number }[] = [];
+
+  // Here we will attempt to track consumed solar energy, as it routes through the battery and ultimately to consumption or grid.
+  // At each timestamp we will track energy added to the battery (and its source), and we will drain this in Last-in/First-out order.
+  // Energy leaving the battery when the stack is empty will just be ignored, as we cannot determine where it came from.
+  // This is likely energy stored during a previous period.
+
+  data.timestamps.forEach((t) => {
+    solarConsumed += consumption.used_solar[t] ?? 0;
+    solarReturned += consumption.solar_to_grid[t] ?? 0;
+
+    if (consumption.grid_to_battery[t]) {
+      batteryLifo.push({
+        type: "grid",
+        value: consumption.grid_to_battery[t],
+      });
+    }
+    if (consumption.solar_to_battery[t]) {
+      batteryLifo.push({
+        type: "solar",
+        value: consumption.solar_to_battery[t],
+      });
+    }
+
+    let batteryToGrid = consumption.battery_to_grid[t] ?? 0;
+    let usedBattery = consumption.used_battery[t] ?? 0;
+
+    const drainBattery = function (amount: number): {
+      energy: number;
+      type: "solar" | "grid";
+    } {
+      const lastLifo = batteryLifo[batteryLifo.length - 1];
+      const type = lastLifo.type;
+      if (amount >= lastLifo.value) {
+        const energy = lastLifo.value;
+        batteryLifo.pop();
+        return { energy, type };
+      }
+      lastLifo.value -= amount;
+      return { energy: amount, type };
+    };
+
+    while (usedBattery > 0 && batteryLifo.length) {
+      const { energy, type } = drainBattery(usedBattery);
+      if (type === "solar") {
+        solarConsumed += energy;
+      }
+      usedBattery -= energy;
+    }
+
+    while (batteryToGrid > 0 && batteryLifo.length) {
+      const { energy, type } = drainBattery(batteryToGrid);
+      if (type === "solar") {
+        solarReturned += energy;
+      }
+      batteryToGrid -= energy;
+    }
+  });
+
+  const totalProduction = solarConsumed + solarReturned;
+  const hasSolarProduction = !!totalProduction;
+  if (hasSolarProduction) {
+    return (solarConsumed / totalProduction) * 100;
+  }
+  return undefined;
+};
