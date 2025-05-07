@@ -44,7 +44,7 @@ class DialogSSDPRawData extends LitElement implements HassDialog {
       >
         <ha-code-editor
           mode="yaml"
-          .value=${JSON.stringify(this._params.data, null, 2)}
+          .value=${dump(this._params.data)}
           readonly
           autofocus
         ></ha-code-editor>
