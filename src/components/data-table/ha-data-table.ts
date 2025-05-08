@@ -929,8 +929,8 @@ export class HaDataTable extends LitElement {
         }
         .mdc-data-table__content {
           font-family: var(--ha-font-family-body);
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
           font-size: 0.875rem;
           line-height: 1.25rem;
           font-weight: 400;
@@ -1049,8 +1049,8 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__cell {
           font-family: var(--ha-font-family-body);
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
           font-size: 0.875rem;
           line-height: 1.25rem;
           font-weight: 400;
@@ -1171,8 +1171,8 @@ export class HaDataTable extends LitElement {
 
         .mdc-data-table__header-cell {
           font-family: var(--ha-font-family-body);
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
           font-size: 0.875rem;
           line-height: 1.375rem;
           font-weight: 500;
