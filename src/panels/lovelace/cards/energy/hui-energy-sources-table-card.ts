@@ -1178,7 +1178,7 @@ export class HuiEnergySourcesTableCard
         cursor: pointer;
       }
       .total {
-        --mdc-typography-body2-font-weight: 500;
+        --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
       }
       .total .mdc-data-table__cell {
         border-top: 1px solid var(--divider-color);

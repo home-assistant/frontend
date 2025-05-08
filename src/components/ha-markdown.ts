@@ -86,7 +86,7 @@ export class HaMarkdown extends LitElement {
     }
     h2 {
       font-size: 1.5em;
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     hr {
       border-color: var(--divider-color);

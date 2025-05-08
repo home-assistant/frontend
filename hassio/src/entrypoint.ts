@@ -13,7 +13,7 @@ body {
   font-family: ${haFontFamilyBody};
   -moz-osx-font-smoothing: ${haMozOsxFontSmoothing};
   -webkit-font-smoothing: ${haFontSmoothing};
-  font-weight: 400;
+  font-weight: var(--ha-font-weight-normal);
   margin: 0;
   padding: 0;
   height: 100vh;

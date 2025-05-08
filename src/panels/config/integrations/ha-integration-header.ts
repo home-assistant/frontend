@@ -122,7 +122,7 @@ export class HaIntegrationHeader extends LitElement {
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       font-size: 16px;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       color: var(--primary-text-color);
     }
     .has-secondary {

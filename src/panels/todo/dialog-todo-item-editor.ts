@@ -424,7 +424,7 @@ class DialogTodoItemEditor extends LitElement {
         }
         .label {
           font-size: 12px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           color: var(--input-label-ink-color);
         }
         .date-range-details-content {

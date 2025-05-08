@@ -126,7 +126,7 @@ export class CloudDiscover extends LitElement {
       justify-content: space-between;
     }
     .header {
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       font-size: 28px;
       line-height: 36px;
       text-align: center;
@@ -176,14 +176,14 @@ export class CloudDiscover extends LitElement {
       font-size: 24px;
     }
     .feature h2 {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       font-size: 16px;
       line-height: 24px;
       margin-top: 0;
       margin-bottom: 8px;
     }
     .feature p {
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       font-size: 14px;
       line-height: 20px;
       margin: 0;
@@ -196,7 +196,7 @@ export class CloudDiscover extends LitElement {
     .more a {
       text-decoration: none;
       color: var(--primary-color);
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       font-size: 14px;
     }
     .more a ha-svg-icon {
