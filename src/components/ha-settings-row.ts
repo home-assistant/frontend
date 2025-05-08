@@ -68,7 +68,8 @@ export class HaSettingsRow extends LitElement {
         --mdc-typography-body2-font-family,
         var(--mdc-typography-font-family, var(--ha-font-family-body))
       );
-      -webkit-font-smoothing: antialiased;
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       font-size: var(--mdc-typography-body2-font-size, 0.875rem);
       font-weight: var(--mdc-typography-body2-font-weight, 400);
       line-height: normal;
