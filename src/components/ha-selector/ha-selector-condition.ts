@@ -36,7 +36,7 @@ export class HaConditionSelector extends LitElement {
     label {
       display: block;
       margin-bottom: 4px;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
   `;
 }

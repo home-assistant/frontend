@@ -16,7 +16,10 @@ export const configFlowContentStyles = css`
     );
     font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
     line-height: var(--mdc-typography-headline6-line-height, 2rem);
-    font-weight: var(--mdc-typography-headline6-font-weight, 500);
+    font-weight: var(
+      --mdc-typography-headline6-font-weight,
+      var(--ha-font-weight-medium)
+    );
     letter-spacing: var(--mdc-typography-headline6-letter-spacing, 0.0125em);
     text-decoration: var(--mdc-typography-headline6-text-decoration, inherit);
     text-transform: var(--mdc-typography-headline6-text-transform, inherit);

@@ -160,14 +160,14 @@ export class CloudStepIntro extends LitElement {
         background-color: #cceffe;
       }
       .feature h2 {
-        font-weight: 500;
+        font-weight: var(--ha-font-weight-medium);
         font-size: 16px;
         line-height: 24px;
         margin-top: 0;
         margin-bottom: 8px;
       }
       .feature p {
-        font-weight: 400;
+        font-weight: var(--ha-font-weight-normal);
         font-size: 14px;
         line-height: 20px;
         margin: 0;

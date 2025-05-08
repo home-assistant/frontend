@@ -655,7 +655,7 @@ class HaConfigAreaPage extends LitElement {
         h3 {
           margin: 0;
           padding: 0 16px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           color: var(--secondary-text-color);
         }
         img {

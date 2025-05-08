@@ -48,7 +48,7 @@ export class HaCard extends LitElement {
       display: block;
       margin-block-start: 0px;
       margin-block-end: 0px;
-      font-weight: normal;
+      font-weight: var(--ha-font-weight-normal);
     }
 
     :host ::slotted(.card-content:not(:first-child)),

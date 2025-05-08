@@ -865,7 +865,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .error-message h3 {
           text-align: center;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
         }
 
         .error-message ha-svg-icon {

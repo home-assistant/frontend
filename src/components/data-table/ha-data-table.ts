@@ -933,7 +933,7 @@ export class HaDataTable extends LitElement {
           -webkit-font-smoothing: antialiased;
           font-size: 0.875rem;
           line-height: 1.25rem;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           letter-spacing: 0.0178571429em;
           text-decoration: inherit;
           text-transform: inherit;
@@ -1053,7 +1053,7 @@ export class HaDataTable extends LitElement {
           -webkit-font-smoothing: antialiased;
           font-size: 0.875rem;
           line-height: 1.25rem;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           letter-spacing: 0.0178571429em;
           text-decoration: inherit;
           text-transform: inherit;
@@ -1175,7 +1175,7 @@ export class HaDataTable extends LitElement {
           -webkit-font-smoothing: antialiased;
           font-size: 0.875rem;
           line-height: 1.375rem;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           letter-spacing: 0.0071428571em;
           text-decoration: inherit;
           text-transform: inherit;
@@ -1199,7 +1199,7 @@ export class HaDataTable extends LitElement {
           padding-inline-start: 12px;
           padding-inline-end: initial;
           width: 100%;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           display: flex;
           align-items: center;
           cursor: pointer;

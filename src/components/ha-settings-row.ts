@@ -70,7 +70,10 @@ export class HaSettingsRow extends LitElement {
       );
       -webkit-font-smoothing: antialiased;
       font-size: var(--mdc-typography-body2-font-size, 0.875rem);
-      font-weight: var(--mdc-typography-body2-font-weight, 400);
+      font-weight: var(
+        --mdc-typography-body2-font-weight,
+        var(--ha-font-weight-normal)
+      );
       line-height: normal;
       color: var(--secondary-text-color);
     }
