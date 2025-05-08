@@ -31,7 +31,7 @@ const DEFAULT_AGENTS = [];
 class HaBackupConfigAgents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
@@ -48,7 +48,10 @@ class HaBackupConfigAgents extends LitElement {
 
   private _description(agentId: string) {
     if (agentId === CLOUD_AGENT) {
-      if (this.cloudStatus.logged_in && !this.cloudStatus.active_subscription) {
+      if (
+        this.cloudStatus?.logged_in &&
+        !this.cloudStatus.active_subscription
+      ) {
         return this.hass.localize(
           "ui.panel.config.backup.agents.cloud_agent_no_subcription"
         );
@@ -106,17 +109,17 @@ class HaBackupConfigAgents extends LitElement {
   }
 
   private _availableAgents = memoizeOne(
-    (agents: BackupAgent[], cloudStatus: CloudStatus) =>
+    (agents: BackupAgent[], cloudStatus?: CloudStatus) =>
       agents.filter(
-        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus.logged_in
+        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus?.logged_in
       )
   );
 
   private _unavailableAgents = memoizeOne(
     (
       agents: BackupAgent[],
-      cloudStatus: CloudStatus,
-      selectedAgentIds: string[]
+      selectedAgentIds: string[],
+      cloudStatus?: CloudStatus
     ) => {
       const availableAgentIds = this._availableAgents(agents, cloudStatus).map(
         (agent) => agent.agent_id
@@ -167,8 +170,8 @@ class HaBackupConfigAgents extends LitElement {
     );
     const unavailableAgents = this._unavailableAgents(
       this.agents,
-      this.cloudStatus,
-      this._value
+      this._value,
+      this.cloudStatus
     );
 
     const allAgents = [...availableAgents, ...unavailableAgents];
@@ -187,7 +190,7 @@ class HaBackupConfigAgents extends LitElement {
                 const description = this._description(agentId);
                 const noCloudSubscription =
                   agentId === CLOUD_AGENT &&
-                  this.cloudStatus.logged_in &&
+                  this.cloudStatus?.logged_in &&
                   !this.cloudStatus.active_subscription;
 
                 return html`
