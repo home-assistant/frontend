@@ -9,7 +9,9 @@ export const WakeLockMixin = <T extends Constructor<ReactiveElement>>(
 
     public connectedCallback() {
       super.connectedCallback();
-      this._wakeLock = navigator.wakeLock.request();
+      if ("wakeLock" in navigator) {
+        this._wakeLock = navigator.wakeLock.request();
+      }
     }
 
     public disconnectedCallback() {
