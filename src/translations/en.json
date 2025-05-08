@@ -5587,7 +5587,9 @@
           "upnp": "Universal Plug and Play (UPnP)",
           "discovery_information": "Discovery information",
           "copy_to_clipboard": "Copy to clipboard",
-          "no_devices_found": "No matching SSDP/UPnP discoveries found"
+          "no_devices_found": "No matching SSDP/UPnP discoveries found",
+          "show_raw_data": "Show raw data",
+          "raw_data_title": "Raw data"
         },
         "zeroconf": {
           "name": "Name",

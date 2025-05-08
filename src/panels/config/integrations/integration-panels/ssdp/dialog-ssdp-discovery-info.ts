@@ -9,6 +9,7 @@ import type { SSDPDiscoveryInfoDialogParams } from "./show-dialog-ssdp-discovery
 import "../../../../../components/ha-button";
 import { showToast } from "../../../../../util/toast";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import { showSSDPRawDataDialog } from "./show-dialog-ssdp-raw-data";
 
 @customElement("dialog-ssdp-device-info")
 class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
@@ -37,6 +38,16 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  private _showRawData(key: string, data: Record<string, unknown>) {
+    return (e: Event) => {
+      e.preventDefault();
+      showSSDPRawDataDialog(this, {
+        key,
+        data,
+      });
+    };
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -83,7 +94,20 @@ class DialogSSDPDiscoveryInfo extends LitElement implements HassDialog {
               ([key, value]) => html`
                 <tr>
                   <td><b>${key}</b></td>
-                  <td>${value}</td>
+                  <td>
+                    ${typeof value === "object" && value !== null
+                      ? html`<a
+                          href="#"
+                          @click=${this._showRawData(
+                            key,
+                            value as Record<string, unknown>
+                          )}
+                          >${this.hass.localize(
+                            "ui.panel.config.ssdp.show_raw_data"
+                          )}</a
+                        >`
+                      : value}
+                  </td>
                 </tr>
               `
             )}
