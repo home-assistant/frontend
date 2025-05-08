@@ -422,15 +422,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ${this._renderSpacer()}
         ${this._renderPanels(afterSpacer, selectedPanel)}
         ${this._renderExternalConfiguration()}
-        </ha-md-list>
-        </ha-sortable>
+      </ha-md-list>
+    </ha-sortable>
     `;
   }
 
   private _renderPanels(
     panels: PanelInfo[],
     selectedPanel: string,
-    draggable = false
+    sortable = false
   ) {
     return panels.map((panel) =>
       this._renderPanel(
@@ -445,7 +445,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             ? PANEL_ICONS[panel.url_path]
             : undefined,
         selectedPanel,
-        draggable
+        sortable
       )
     );
   }
@@ -463,7 +463,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     icon: string | null | undefined,
     iconPath: string | null | undefined,
     selectedPanel: string,
-    draggable = false
+    sortable = false
   ) {
     return urlPath === "config"
       ? this._renderConfiguration(title, selectedPanel)
@@ -473,7 +473,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             type="link"
             class=${classMap({
               selected: selectedPanel === urlPath,
-              draggable: this.editMode && draggable,
+              draggable: this.editMode && sortable,
             })}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
