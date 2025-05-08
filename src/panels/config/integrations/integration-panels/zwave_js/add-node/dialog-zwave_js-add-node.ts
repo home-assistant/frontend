@@ -48,7 +48,6 @@ import "../../../../../../components/ha-dialog-header";
 import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
-import "../../../../../../components/ha-spinner";
 
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import { navigate } from "../../../../../../common/navigate";
