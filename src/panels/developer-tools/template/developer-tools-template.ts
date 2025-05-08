@@ -323,7 +323,8 @@ ${type === "object"
 
         .rendered {
           font-family: var(--ha-font-family-code);
-          -webkit-font-smoothing: antialiased;
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);

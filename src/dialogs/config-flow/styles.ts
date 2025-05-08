@@ -8,8 +8,8 @@ export const configFlowContentStyles = css`
     padding: 0 24px;
     padding-inline-start: 24px;
     padding-inline-end: 24px;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
     font-family: var(
       --mdc-typography-headline6-font-family,
       var(--mdc-typography-font-family, var(--ha-font-family-body))

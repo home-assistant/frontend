@@ -196,7 +196,8 @@ class DialogExposeEntity extends LitElement {
         .header {
           margin: 0;
           pointer-events: auto;
-          -webkit-font-smoothing: antialiased;
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
           font-weight: inherit;
           font-size: inherit;
           box-sizing: border-box;
