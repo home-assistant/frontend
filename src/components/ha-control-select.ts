@@ -207,7 +207,7 @@ export class HaControlSelect extends LitElement {
       outline: none;
       transition: box-shadow 180ms ease-in-out;
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       color: var(--primary-text-color);
       user-select: none;
       -webkit-tap-highlight-color: transparent;

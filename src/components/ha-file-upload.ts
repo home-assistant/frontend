@@ -324,7 +324,7 @@ export class HaFileUpload extends LitElement {
       box-sizing: border-box;
     }
     .header {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
     .progress {
       color: var(--secondary-text-color);

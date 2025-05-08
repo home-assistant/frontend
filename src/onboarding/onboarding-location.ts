@@ -529,7 +529,10 @@ class OnboardingLocation extends LitElement {
             var(--mdc-typography-font-family, var(--ha-font-family-body))
           );
           font-size: var(--mdc-typography-caption-font-size, 0.75rem);
-          font-weight: var(--mdc-typography-caption-font-weight, 400);
+          font-weight: var(
+            --mdc-typography-caption-font-weight,
+            var(--ha-font-weight-normal)
+          );
           letter-spacing: var(
             --mdc-typography-caption-letter-spacing,
             0.0333333333em

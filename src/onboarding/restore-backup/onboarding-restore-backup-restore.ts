@@ -342,7 +342,7 @@ class OnboardingRestoreBackupRestore extends LitElement {
           margin-top: 24px;
           margin-bottom: 8px;
           font-style: normal;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
         }
         .supervisor-warning {
           display: block;

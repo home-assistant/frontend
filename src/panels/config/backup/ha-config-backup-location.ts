@@ -125,8 +125,10 @@ class HaConfigBackupDetails extends LitElement {
                             { location: agentName }
                           )}
                           .hass=${this.hass}
-                          .retention=${this.config?.agents[this.agentId]
-                            ?.retention}
+                          .retention=${!this.config
+                            ? undefined
+                            : this.config.agents[this.agentId]?.retention ||
+                              null}
                           @value-changed=${this._retentionChanged}
                         ></ha-backup-config-retention>`}
                   </ha-card>
