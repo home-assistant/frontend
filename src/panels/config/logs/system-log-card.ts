@@ -271,7 +271,7 @@ export class SystemLogCard extends LitElement {
       line-height: 48px;
       display: block;
       margin-block-start: 0px;
-      font-weight: normal;
+      font-weight: var(--ha-font-weight-normal);
     }
 
     .system-log-intro {

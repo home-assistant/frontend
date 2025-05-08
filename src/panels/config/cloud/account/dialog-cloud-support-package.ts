@@ -193,7 +193,7 @@ export class DialogSupportPackage extends LitElement {
       border-radius: 16px;
     }
     summary {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
       cursor: pointer;
     }
   `;

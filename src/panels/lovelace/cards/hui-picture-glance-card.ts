@@ -354,7 +354,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       flex-direction: row;
     }
     .box .title {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;

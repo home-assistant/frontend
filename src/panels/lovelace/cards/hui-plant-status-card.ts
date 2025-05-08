@@ -191,7 +191,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     .has-plant-image .header {
       font-size: 16px;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       line-height: 16px;
       padding: 16px;
       color: white;
@@ -234,7 +234,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     .problem {
       color: var(--error-color);
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     .uom {
