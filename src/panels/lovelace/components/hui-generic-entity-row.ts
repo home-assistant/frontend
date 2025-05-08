@@ -163,6 +163,7 @@ export class HuiGenericEntityRow extends LitElement {
               @touchend=${stopPropagation}
               @keydown=${stopPropagation}
               @click=${stopPropagation}
+              @action=${stopPropagation}
             ></slot>`}
       </div>
     `;

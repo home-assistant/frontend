@@ -138,6 +138,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @state() private _filteredScripts?: string[] | null;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "script-table-search",
@@ -146,6 +147,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   })
   private _filter = "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "script-table-filters-full",

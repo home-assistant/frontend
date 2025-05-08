@@ -210,6 +210,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .entity ha-entity-picker {
       flex-grow: 1;
+      min-width: 0;
     }
 
     .special-row {

@@ -1,5 +1,8 @@
 import { css } from "lit";
-import { extractDerivedVars } from "../../common/style/derived-css-vars";
+import {
+  extractDerivedVars,
+  extractVar,
+} from "../../common/style/derived-css-vars";
 
 export const typographyStyles = css`
   html {
@@ -34,7 +37,23 @@ export const typographyStyles = css`
     --ha-line-height-expanded: 2;
 
     --ha-font-smoothing: antialiased;
+    --ha-moz-osx-font-smoothing: grayscale;
   }
 `;
 
 export const typographyDerivedVariables = extractDerivedVars(typographyStyles);
+
+export const haFontFamilyBody = extractVar(
+  typographyStyles,
+  "ha-font-family-body"
+);
+
+export const haFontSmoothing = extractVar(
+  typographyStyles,
+  "ha-font-smoothing"
+);
+
+export const haMozOsxFontSmoothing = extractVar(
+  typographyStyles,
+  "ha-moz-osx-font-smoothing"
+);

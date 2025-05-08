@@ -69,6 +69,7 @@ export class HaConfigApplicationCredentials extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "application-credentials-table-search",
@@ -329,7 +330,7 @@ export class HaConfigApplicationCredentials extends LitElement {
       top: -4px;
     }
     .selected-txt {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
       padding-left: 16px;
       padding-inline-start: 16px;
       direction: var(--direction);

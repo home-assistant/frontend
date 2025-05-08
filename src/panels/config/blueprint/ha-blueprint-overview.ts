@@ -9,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -118,6 +118,7 @@ class HaBlueprintOverview extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "blueprint-table-search",
@@ -499,9 +500,11 @@ class HaBlueprintOverview extends LitElement {
             list: html`<ul>
               ${[...(related.automation || []), ...(related.script || [])].map(
                 (item) => {
-                  const state = this.hass.states[item];
+                  const automationState = this.hass.states[item];
                   return html`<li>
-                    ${state ? `${computeStateName(state)} (${item})` : item}
+                    ${automationState
+                      ? `${computeStateName(automationState)} (${item})`
+                      : item}
                   </li>`;
                 }
               )}

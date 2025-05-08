@@ -1,5 +1,5 @@
-import { css, html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { clamp } from "../../../../../common/number/clamp";
 import "../../../../../components/ha-expansion-panel";
@@ -8,6 +8,7 @@ import "../../../../../components/ha-md-select";
 import type { HaMdSelect } from "../../../../../components/ha-md-select";
 import "../../../../../components/ha-md-select-option";
 import "../../../../../components/ha-md-textfield";
+import type { HaMdTextfield } from "../../../../../components/ha-md-textfield";
 import type { BackupConfig, Retention } from "../../../../../data/backup";
 import type { HomeAssistant } from "../../../../../types";
 
@@ -54,16 +55,21 @@ class HaBackupConfigRetention extends LitElement {
 
   @state() private _value = 3;
 
+  @query("#value") private _customValueField?: HaMdTextfield;
+
+  @query("#type") private _customTypeField?: HaMdSelect;
+
+  private _configLoaded = false;
+
   private presetOptions = [
     RetentionPreset.COPIES_3,
     RetentionPreset.FOREVER,
     RetentionPreset.CUSTOM,
   ];
 
-  public willUpdate(properties: PropertyValues) {
-    super.willUpdate(properties);
-
-    if (!this.hasUpdated) {
+  public willUpdate() {
+    if (!this._configLoaded && this.retention !== undefined) {
+      this._configLoaded = true;
       if (!this.retention) {
         this._preset = RetentionPreset.GLOBAL;
       } else if (
@@ -94,6 +100,10 @@ class HaBackupConfigRetention extends LitElement {
   }
 
   protected render() {
+    if (!this._configLoaded) {
+      return nothing;
+    }
+
     return html`
       <ha-md-list-item>
         <span slot="headline">
@@ -206,10 +216,12 @@ class HaBackupConfigRetention extends LitElement {
     const clamped = clamp(value, MIN_VALUE, MAX_VALUE);
     target.value = clamped.toString();
 
+    const type = this._customTypeField?.value;
+
     fireEvent(this, "value-changed", {
       value: {
-        copies: this._type === "copies" ? clamped : null,
-        days: this._type === "days" ? clamped : null,
+        copies: type === "copies" ? clamped : null,
+        days: type === "days" ? clamped : null,
       },
     });
   }
@@ -219,10 +231,12 @@ class HaBackupConfigRetention extends LitElement {
     const target = ev.currentTarget as HaMdSelect;
     const type = target.value as "copies" | "days";
 
+    const value = this._customValueField?.value;
+
     fireEvent(this, "value-changed", {
       value: {
-        copies: type === "copies" ? this._value : null,
-        days: type === "days" ? this._value : null,
+        copies: type === "copies" ? Number(value) : null,
+        days: type === "days" ? Number(value) : null,
       },
     });
   }

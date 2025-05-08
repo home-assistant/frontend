@@ -5,7 +5,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -30,50 +29,23 @@ import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 
-const FAKE_ENTITY: HassEntity = {
-  entity_id: "",
-  state: "",
-  last_changed: "",
-  last_updated: "",
-  context: { id: "", user_id: null, parent_id: null },
-  attributes: {},
-};
-
-interface EntityComboBoxItem extends HassEntity {
+interface EntityComboBoxItem {
   // Force empty label to always display empty value by default in the search field
+  id: string;
   label: "";
   primary: string;
   secondary?: string;
-  translated_domain?: string;
-  show_entity_id?: boolean;
-  entity_name?: string;
-  area_name?: string;
-  device_name?: string;
-  friendly_name?: string;
+  domain_name?: string;
+  search_labels?: string[];
   sorting_label?: string;
   icon_path?: string;
+  stateObj?: HassEntity;
 }
 
 export type HaEntityComboBoxEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const CREATE_ID = "___create-new-entity___";
 const NO_ENTITIES_ID = "___no-entities___";
-
-const DOMAIN_STYLE = styleMap({
-  fontSize: "var(--ha-font-size-s)",
-  fontWeight: "var(--ha-font-weight-normal)",
-  lineHeight: "var(--ha-line-height-normal)",
-  alignSelf: "flex-end",
-  maxWidth: "30%",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-});
-
-const ENTITY_ID_STYLE = styleMap({
-  fontFamily: "var(--ha-font-family-code)",
-  fontSize: "var(--ha-font-size-xs)",
-});
 
 @customElement("ha-entity-combo-box")
 export class HaEntityComboBox extends LitElement {
@@ -177,33 +149,41 @@ export class HaEntityComboBox extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
     item,
     { index }
-  ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
-      ${item.icon_path
-        ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
-        : html`
-            <state-badge
-              slot="start"
-              .stateObj=${item}
-              .hass=${this.hass}
-            ></state-badge>
-          `}
-      <span slot="headline">${item.primary}</span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${item.entity_id && item.show_entity_id
-        ? html`<span slot="supporting-text" style=${ENTITY_ID_STYLE}
-            >${item.entity_id}</span
-          >`
-        : nothing}
-      ${item.translated_domain && !item.show_entity_id
-        ? html`<div slot="trailing-supporting-text" style=${DOMAIN_STYLE}>
-            ${item.translated_domain}
-          </div>`
-        : nothing}
-    </ha-combo-box-item>
-  `;
+  ) => {
+    const showEntityId = this.hass.userData?.showEntityIdPicker;
+
+    return html`
+      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+        ${item.icon_path
+          ? html`
+              <ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>
+            `
+          : html`
+              <state-badge
+                slot="start"
+                .stateObj=${item.stateObj}
+                .hass=${this.hass}
+              ></state-badge>
+            `}
+        <span slot="headline">${item.primary}</span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+        ${item.stateObj && showEntityId
+          ? html`
+              <span slot="supporting-text" class="code">
+                ${item.stateObj.entity_id}
+              </span>
+            `
+          : nothing}
+        ${item.domain_name && !showEntityId
+          ? html`
+              <div slot="trailing-supporting-text">${item.domain_name}</div>
+            `
+          : nothing}
+      </ha-combo-box-item>
+    `;
+  };
 
   private _getItems = memoizeOne(
     (
@@ -218,7 +198,7 @@ export class HaEntityComboBox extends LitElement {
       excludeEntities: this["excludeEntities"],
       createDomains: this["createDomains"]
     ): EntityComboBoxItem[] => {
-      let states: EntityComboBoxItem[] = [];
+      let items: EntityComboBoxItem[] = [];
 
       let entityIds = Object.keys(hass.states);
 
@@ -236,9 +216,8 @@ export class HaEntityComboBox extends LitElement {
             );
 
             return {
-              ...FAKE_ENTITY,
+              id: CREATE_ID + domain,
               label: "",
-              entity_id: CREATE_ID + domain,
               primary: primary,
               secondary: this.hass.localize(
                 "ui.components.entity.entity-picker.new_entity"
@@ -251,9 +230,8 @@ export class HaEntityComboBox extends LitElement {
       if (!entityIds.length) {
         return [
           {
-            ...FAKE_ENTITY,
+            id: NO_ENTITIES_ID,
             label: "",
-            entity_id: NO_ENTITIES_ID,
             primary: this.hass!.localize(
               "ui.components.entity.entity-picker.no_entities"
             ),
@@ -289,7 +267,7 @@ export class HaEntityComboBox extends LitElement {
 
       const isRTL = computeRTL(this.hass);
 
-      states = entityIds
+      items = entityIds
         .map<EntityComboBoxItem>((entityId) => {
           const stateObj = hass!.states[entityId];
 
@@ -300,30 +278,32 @@ export class HaEntityComboBox extends LitElement {
           const deviceName = device ? computeDeviceName(device) : undefined;
           const areaName = area ? computeAreaName(area) : undefined;
 
+          const domainName = domainToName(
+            this.hass.localize,
+            computeDomain(entityId)
+          );
+
           const primary = entityName || deviceName || entityId;
           const secondary = [areaName, entityName ? deviceName : undefined]
             .filter(Boolean)
             .join(isRTL ? " ◂ " : " ▸ ");
 
-          const translatedDomain = domainToName(
-            this.hass.localize,
-            computeDomain(entityId)
-          );
-
           return {
-            ...hass!.states[entityId],
+            id: entityId,
             label: "",
             primary: primary,
-            secondary:
-              secondary ||
-              this.hass.localize("ui.components.device-picker.no_area"),
-            translated_domain: translatedDomain,
-            sorting_label: [deviceName, entityName].filter(Boolean).join("-"),
-            entity_name: entityName || deviceName,
-            area_name: areaName,
-            device_name: deviceName,
-            friendly_name: friendlyName,
-            show_entity_id: hass.userData?.showEntityIdPicker,
+            secondary: secondary,
+            domain_name: domainName,
+            sorting_label: [deviceName, entityName].filter(Boolean).join("_"),
+            search_labels: [
+              entityName,
+              deviceName,
+              areaName,
+              domainName,
+              friendlyName,
+              entityId,
+            ].filter(Boolean) as string[],
+            stateObj: stateObj,
           };
         })
         .sort((entityA, entityB) =>
@@ -335,41 +315,43 @@ export class HaEntityComboBox extends LitElement {
         );
 
       if (includeDeviceClasses) {
-        states = states.filter(
-          (stateObj) =>
+        items = items.filter(
+          (item) =>
             // We always want to include the entity of the current value
-            stateObj.entity_id === this.value ||
-            (stateObj.attributes.device_class &&
-              includeDeviceClasses.includes(stateObj.attributes.device_class))
+            item.id === this.value ||
+            (item.stateObj?.attributes.device_class &&
+              includeDeviceClasses.includes(
+                item.stateObj.attributes.device_class
+              ))
         );
       }
 
       if (includeUnitOfMeasurement) {
-        states = states.filter(
-          (stateObj) =>
+        items = items.filter(
+          (item) =>
             // We always want to include the entity of the current value
-            stateObj.entity_id === this.value ||
-            (stateObj.attributes.unit_of_measurement &&
+            item.id === this.value ||
+            (item.stateObj?.attributes.unit_of_measurement &&
               includeUnitOfMeasurement.includes(
-                stateObj.attributes.unit_of_measurement
+                item.stateObj.attributes.unit_of_measurement
               ))
         );
       }
 
       if (entityFilter) {
-        states = states.filter(
-          (stateObj) =>
+        items = items.filter(
+          (item) =>
             // We always want to include the entity of the current value
-            stateObj.entity_id === this.value || entityFilter!(stateObj)
+            item.id === this.value ||
+            (item.stateObj && entityFilter!(item.stateObj))
         );
       }
 
-      if (!states.length) {
+      if (!items.length) {
         return [
           {
-            ...FAKE_ENTITY,
+            id: NO_ENTITIES_ID,
             label: "",
-            entity_id: NO_ENTITIES_ID,
             primary: this.hass!.localize(
               "ui.components.entity.entity-picker.no_match"
             ),
@@ -380,10 +362,10 @@ export class HaEntityComboBox extends LitElement {
       }
 
       if (createItems?.length) {
-        states.push(...createItems);
+        items.push(...createItems);
       }
 
-      return states;
+      return items;
     }
   );
 
@@ -426,7 +408,7 @@ export class HaEntityComboBox extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-combo-box
-        item-value-path="entity_id"
+        item-value-path="id"
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined
@@ -478,17 +460,7 @@ export class HaEntityComboBox extends LitElement {
   }
 
   private _fuseIndex = memoizeOne((states: EntityComboBoxItem[]) =>
-    Fuse.createIndex(
-      [
-        "entity_name",
-        "device_name",
-        "area_name",
-        "translated_domain",
-        "friendly_name", // for backwards compatibility
-        "entity_id", // for technical search
-      ],
-      states
-    )
+    Fuse.createIndex(["search_labels"], states)
   );
 
   private _filterChanged(ev: CustomEvent): void {
@@ -505,9 +477,8 @@ export class HaEntityComboBox extends LitElement {
       if (results.length === 0) {
         target.filteredItems = [
           {
-            ...FAKE_ENTITY,
+            id: NO_ENTITIES_ID,
             label: "",
-            entity_id: NO_ENTITIES_ID,
             primary: this.hass!.localize(
               "ui.components.entity.entity-picker.no_match"
             ),

@@ -42,6 +42,7 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
+  @state()
   @storage({
     key: "deSelectedCalendars",
     state: true,
@@ -310,7 +311,7 @@ class PanelCalendar extends LitElement {
           );
           --mdc-typography-button-font-weight: var(
             --mdc-typography-headline6-font-weight,
-            500
+            var(--ha-font-weight-medium)
           );
           --mdc-typography-button-letter-spacing: var(
             --mdc-typography-headline6-letter-spacing,

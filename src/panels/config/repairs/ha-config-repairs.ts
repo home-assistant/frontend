@@ -100,13 +100,13 @@ class HaConfigRepairs extends LitElement {
                 ${(issue.severity === "critical" ||
                   issue.severity === "error") &&
                 issue.created
-                  ? " ⸱ "
+                  ? " · "
                   : ""}
                 ${createdBy
                   ? html`<span .title=${createdBy}>${createdBy}</span>`
                   : nothing}
                 ${issue.ignored
-                  ? ` ⸱ ${this.hass.localize(
+                  ? ` · ${this.hass.localize(
                       "ui.panel.config.repairs.dialog.ignored_in_version_short",
                       { version: issue.dismissed_version }
                     )}`

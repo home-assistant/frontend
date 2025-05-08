@@ -21,6 +21,7 @@ const qosLevel = ["0", "1", "2"];
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-topic-subscribe",
     state: true,
@@ -28,6 +29,7 @@ class MqttSubscribeCard extends LitElement {
   })
   private _topic = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-qos-subscribe",
     state: true,
@@ -35,6 +37,7 @@ class MqttSubscribeCard extends LitElement {
   })
   private _qos = "0";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-json-format",
     state: true,

@@ -183,7 +183,7 @@ class StateDisplay extends LitElement {
       return html`${this.hass!.formatEntityState(stateObj)}`;
     }
 
-    return join(values, " ⸱ ");
+    return join(values, " · ");
   }
 }
 

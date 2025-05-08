@@ -1023,7 +1023,7 @@ class HUIRoot extends LitElement {
           align-items: center;
           font-size: 20px;
           padding: 0px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
         @media (max-width: 599px) {
@@ -1096,6 +1096,8 @@ class HUIRoot extends LitElement {
         .edit-mode sl-tab-group {
           flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
+          --ha-tab-active-text-color: var(--app-header-edit-text-color, #fff);
+          --ha-tab-indicator-color: var(--app-header-edit-text-color, #fff);
         }
         .edit-mode sl-tab {
           height: 54px;
