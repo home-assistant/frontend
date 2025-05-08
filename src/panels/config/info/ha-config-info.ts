@@ -100,7 +100,7 @@ class HaConfigInfo extends LitElement {
 
   @state() private _hassioInfo?: HassioInfo;
 
-  @state() private _installationMethod?: installationMethod;
+  @state() private _installationMethod?: string;
 
   protected render(): TemplateResult {
     const hass = this.hass;
