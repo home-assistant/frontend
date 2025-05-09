@@ -17,9 +17,9 @@ import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
-import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-label-picker";
 import type { HaLabelPicker } from "./ha-label-picker";
+import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-combo-box";
 
 @customElement("ha-labels-picker")
 export class HaLabelsPicker extends SubscribeMixin(LitElement) {
@@ -69,7 +69,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
   public excludeLabels?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
 
   @property({ attribute: false })
   public entityFilter?: (entity: HassEntity) => boolean;
