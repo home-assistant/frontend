@@ -3553,7 +3553,8 @@
               "test_wakeword": "Test",
               "edit_pipeline": "Edit",
               "try_tts": "Try",
-              "done": "Done"
+              "done": "Done",
+              "failed_rename": "Failed to rename the voice satellite: {error}"
             }
           }
         },
