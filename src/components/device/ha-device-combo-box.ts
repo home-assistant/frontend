@@ -374,6 +374,8 @@ export class HaDeviceComboBox extends LitElement {
     return html`
       <ha-combo-box
         item-value-path="id"
+        item-label-path="label"
+        item-id-path="id"
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined && this.hass
