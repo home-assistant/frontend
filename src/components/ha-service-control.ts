@@ -895,6 +895,9 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       padding: var(--service-control-padding, 0 16px);
     }
+    ha-settings-row[narrow] {
+      padding-bottom: 8px;
+    }
     ha-settings-row {
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
