@@ -1,16 +1,16 @@
-import gulp from "gulp";
-import env from "../env";
-import "./clean.js";
-import "./compress.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./gen-icons-json.js";
-import "./rspack.js";
-import "./translations.js";
+import { series, task } from "gulp";
+import { isTestBuild } from "../env.ts";
+import "./clean.ts";
+import "./compress.ts";
+import "./entry-html.ts";
+import "./gather-static.ts";
+import "./gen-icons-json.ts";
+import "./rspack.ts";
+import "./translations.ts";
 
-gulp.task(
+task(
   "develop-hassio",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
@@ -25,9 +25,9 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "build-hassio",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
@@ -40,6 +40,6 @@ gulp.task(
     "rspack-prod-hassio",
     "gen-pages-hassio-prod",
     ...// Don't compress running tests
-    (env.isTestBuild() ? [] : ["compress-hassio"])
+    (isTestBuild() ? [] : ["compress-hassio"])
   )
 );

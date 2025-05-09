@@ -1,9 +1,8 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable max-classes-per-file */
 
 import { deleteAsync } from "del";
 import { glob } from "glob";
-import gulp from "gulp";
+import { src as glupSrc, dest as gulpDest, parallel, series, task } from "gulp";
 import rename from "gulp-rename";
 import merge from "lodash.merge";
 import { createHash } from "node:crypto";
@@ -11,8 +10,8 @@ import { mkdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { PassThrough, Transform } from "node:stream";
 import { finished } from "node:stream/promises";
-import env from "../env";
-import paths from "../paths";
+import { isProdBuild } from "../env.ts";
+import paths from "../paths.ts";
 import "./fetch-nightly-translations.ts";
 
 const inFrontendDir = "translations/frontend";
@@ -24,9 +23,9 @@ const TEST_LOCALE = "en-x-test";
 
 let mergeBackend = false;
 
-gulp.task(
+task(
   "translations-enable-merge-backend",
-  gulp.parallel(async () => {
+  parallel(async () => {
     mergeBackend = true;
   }, "allow-setup-fetch-nightly-translations")
 );
@@ -35,7 +34,11 @@ gulp.task(
 // The provided function can either return a new object, or an array of
 // [object, subdirectory] pairs for fragmentizing the JSON.
 class CustomJSON extends Transform {
-  constructor(func, reviver = null) {
+  _func: any;
+
+  _reviver: any;
+
+  constructor(func, reviver: any = null) {
     super({ objectMode: true });
     this._func = func;
     this._reviver = reviver;
@@ -57,9 +60,17 @@ class CustomJSON extends Transform {
 
 // Transform stream to merge Vinyl JSON files (buffer mode only).
 class MergeJSON extends Transform {
-  _objects = [];
+  _objects: any[] = [];
 
-  constructor(stem, startObj = {}, reviver = null) {
+  _stem: any;
+
+  _startObj: any;
+
+  _reviver: any;
+
+  _outFile: any;
+
+  constructor(stem, startObj = {}, reviver: any = null) {
     super({ objectMode: true, allowHalfOpen: false });
     this._stem = stem;
     this._startObj = structuredClone(startObj);
@@ -134,18 +145,17 @@ const lokaliseTransform = (data, path, original = data) => {
   return output;
 };
 
-gulp.task("clean-translations", () => deleteAsync([workDir]));
+task("clean-translations", () => deleteAsync([workDir]));
 
 const makeWorkDir = () => mkdir(workDir, { recursive: true });
 
 const createTestTranslation = () =>
-  env.isProdBuild()
+  isProdBuild()
     ? Promise.resolve()
-    : gulp
-        .src(EN_SRC)
+    : glupSrc(EN_SRC)
         .pipe(new CustomJSON(null, testReviver))
         .pipe(rename(`${TEST_LOCALE}.json`))
-        .pipe(gulp.dest(workDir));
+        .pipe(gulpDest(workDir));
 
 /**
  * This task will build a master translation file, to be used as the base for
@@ -157,11 +167,10 @@ const createTestTranslation = () =>
  * the Lokalise update to translations/en.json will not happen immediately.
  */
 const createMasterTranslation = () =>
-  gulp
-    .src([EN_SRC, ...(mergeBackend ? [`${inBackendDir}/en.json`] : [])])
+  glupSrc([EN_SRC, ...(mergeBackend ? [`${inBackendDir}/en.json`] : [])])
     .pipe(new CustomJSON(lokaliseTransform))
     .pipe(new MergeJSON("en"))
-    .pipe(gulp.dest(workDir));
+    .pipe(gulpDest(workDir));
 
 const FRAGMENTS = ["base"];
 
@@ -188,12 +197,12 @@ const createTranslations = async () => {
   // each locale, then fragmentizes and flattens the data for final output.
   const translationFiles = await glob([
     `${inFrontendDir}/!(en).json`,
-    ...(env.isProdBuild() ? [] : [`${workDir}/${TEST_LOCALE}.json`]),
+    ...(isProdBuild() ? [] : [`${workDir}/${TEST_LOCALE}.json`]),
   ]);
   const hashStream = new Transform({
     objectMode: true,
     transform: async (file, _, callback) => {
-      const hash = env.isProdBuild()
+      const hash = isProdBuild()
         ? createHash("md5").update(file.contents).digest("hex")
         : "dev";
       HASHES.set(file.stem, hash);
@@ -232,7 +241,7 @@ const createTranslations = async () => {
         })
       )
     )
-    .pipe(gulp.dest(outDir));
+    .pipe(gulpDest(outDir));
 
   // Send the English master downstream first, then for each other locale
   // generate merged JSON data to continue piping. It begins with the master
@@ -242,9 +251,9 @@ const createTranslations = async () => {
   // TODO: This is a naive interpretation of BCP47 that should be improved.
   //       Will be OK for now as long as we don't have anything more complicated
   // than a base translation + region.
-  const masterStream = gulp
-    .src(`${workDir}/en.json`)
-    .pipe(new PassThrough({ objectMode: true }));
+  const masterStream = glupSrc(`${workDir}/en.json`).pipe(
+    new PassThrough({ objectMode: true })
+  );
   masterStream.pipe(hashStream, { end: false });
   const mergesFinished = [finished(masterStream)];
   for (const translationFile of translationFiles) {
@@ -262,9 +271,9 @@ const createTranslations = async () => {
         }
       }
     }
-    const mergeStream = gulp
-      .src(mergeFiles, { allowEmpty: true })
-      .pipe(new MergeJSON(locale, enMaster, emptyReviver));
+    const mergeStream = glupSrc(mergeFiles, { allowEmpty: true }).pipe(
+      new MergeJSON(locale, enMaster, emptyReviver)
+    );
     mergesFinished.push(finished(mergeStream));
     mergeStream.pipe(hashStream, { end: false });
   }
@@ -277,12 +286,11 @@ const createTranslations = async () => {
 };
 
 const writeTranslationMetaData = () =>
-  gulp
-    .src([`${paths.translations_src}/translationMetadata.json`])
+  glupSrc([`${paths.translations_src}/translationMetadata.json`])
     .pipe(
       new CustomJSON((meta) => {
         // Add the test translation in development.
-        if (!env.isProdBuild()) {
+        if (!isProdBuild()) {
           meta[TEST_LOCALE] = { nativeName: "Translation Test" };
         }
         // Filter out locales without a native name, and add the hashes.
@@ -302,14 +310,14 @@ const writeTranslationMetaData = () =>
         };
       })
     )
-    .pipe(gulp.dest(workDir));
+    .pipe(gulpDest(workDir));
 
-gulp.task(
+task(
   "build-translations",
-  gulp.series(
-    gulp.parallel(
+  series(
+    parallel(
       "fetch-nightly-translations",
-      gulp.series("clean-translations", makeWorkDir)
+      series("clean-translations", makeWorkDir)
     ),
     createTestTranslation,
     createMasterTranslation,
@@ -318,12 +326,12 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "build-supervisor-translations",
-  gulp.series(setFragment("supervisor"), "build-translations")
+  series(setFragment("supervisor"), "build-translations")
 );
 
-gulp.task(
+task(
   "build-landing-page-translations",
-  gulp.series(setFragment("landing-page"), "build-translations")
+  series(setFragment("landing-page"), "build-translations")
 );

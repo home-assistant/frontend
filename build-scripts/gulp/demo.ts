@@ -1,21 +1,21 @@
-import gulp from "gulp";
-import "./clean.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./gen-icons-json.js";
-import "./service-worker.js";
-import "./translations.js";
-import "./rspack.js";
+import { parallel, series, task } from "gulp";
+import "./clean.ts";
+import "./entry-html.ts";
+import "./gather-static.ts";
+import "./gen-icons-json.ts";
+import "./rspack.ts";
+import "./service-worker.ts";
+import "./translations.ts";
 
-gulp.task(
+task(
   "develop-demo",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
     "clean-demo",
     "translations-enable-merge-backend",
-    gulp.parallel(
+    parallel(
       "gen-icons-json",
       "gen-pages-demo-dev",
       "build-translations",
@@ -26,25 +26,25 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "build-demo",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-json", "build-translations", "build-locale-data"),
+    parallel("gen-icons-json", "build-translations", "build-locale-data"),
     "copy-static-demo",
     "rspack-prod-demo",
     "gen-pages-demo-prod"
   )
 );
 
-gulp.task(
+task(
   "analyze-demo",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.STATS = "1";
     },

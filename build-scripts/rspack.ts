@@ -1,17 +1,25 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable import/no-import-module-exports */
 import filterStats from "@bundle-stats/plugin-webpack-filter";
 import { RsdoctorRspackPlugin } from "@rsdoctor/rspack-plugin";
-import * as rspack from "@rspack/core";
+import { DefinePlugin, NormalModuleReplacementPlugin } from "@rspack/core";
+import { defineConfig } from "@rspack/cli";
 import log from "fancy-log";
-import { existsSync } from "fs";
-import path from "path";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { WebpackManifestPlugin } from "rspack-manifest-plugin";
 import TerserPlugin from "terser-webpack-plugin";
 import { StatsWriterPlugin } from "webpack-stats-plugin";
+// @ts-ignore
 import WebpackBar from "webpackbar/rspack";
-import * as bundle from "./bundle";
-import * as paths from "./paths";
+import {
+  babelOptions,
+  config,
+  definedVars,
+  emptyPackages,
+  sourceMapURL,
+  swcOptions,
+  terserOptions,
+} from "./bundle.ts";
+import paths from "./paths.ts";
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -39,12 +47,23 @@ export const createRspackConfig = ({
   isTestBuild,
   isHassioBuild,
   dontHash,
+}: {
+  name: string;
+  entry: any;
+  outputPath: string;
+  publicPath: string;
+  defineOverlay?: Record<string, any>;
+  isProdBuild?: boolean;
+  latestBuild?: boolean;
+  isStatsBuild?: boolean;
+  isTestBuild?: boolean;
+  isHassioBuild?: boolean;
+  dontHash?: Set<string>;
 }) => {
   if (!dontHash) {
     dontHash = new Set();
   }
-  const ignorePackages = bundle.ignorePackages({ latestBuild });
-  return {
+  return defineConfig({
     name,
     mode: isProdBuild ? "production" : "development",
     target: `browserslist:${latestBuild ? "modern" : "legacy"}`,
@@ -67,7 +86,7 @@ export const createRspackConfig = ({
             {
               loader: "babel-loader",
               options: {
-                ...bundle.babelOptions({
+                ...babelOptions({
                   latestBuild,
                   isProdBuild,
                   isTestBuild,
@@ -79,7 +98,7 @@ export const createRspackConfig = ({
             },
             {
               loader: "builtin:swc-loader",
-              options: bundle.swcOptions(),
+              options: swcOptions(),
             },
           ],
           resolve: {
@@ -100,7 +119,7 @@ export const createRspackConfig = ({
         new TerserPlugin({
           parallel: true,
           extractComments: true,
-          terserOptions: bundle.terserOptions({ latestBuild, isTestBuild }),
+          terserOptions: terserOptions({ latestBuild, isTestBuild }),
         }),
       ],
       moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
@@ -119,7 +138,7 @@ export const createRspackConfig = ({
               !chunk.canBeInitial() &&
               !new RegExp(
                 `^.+-work${latestBuild ? "(?:let|er)" : "let"}$`
-              ).test(chunk.name),
+              ).test(chunk?.name || ""),
       },
     },
     plugins: [
@@ -128,44 +147,11 @@ export const createRspackConfig = ({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
       }),
-      new rspack.DefinePlugin(
-        bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
+      new DefinePlugin(
+        definedVars({ isProdBuild, latestBuild, defineOverlay })
       ),
-      new rspack.IgnorePlugin({
-        checkResource(resource, context) {
-          // Only use ignore to intercept imports that we don't control
-          // inside node_module dependencies.
-          if (
-            !context.includes("/node_modules/") ||
-            // calling define.amd will call require("!!webpack amd options")
-            resource.startsWith("!!webpack") ||
-            // loaded by webpack dev server but doesn't exist.
-            resource === "webpack/hot" ||
-            resource.startsWith("@swc/helpers")
-          ) {
-            return false;
-          }
-          let fullPath;
-          try {
-            fullPath = resource.startsWith(".")
-              ? path.resolve(context, resource)
-              : require.resolve(resource);
-          } catch (err) {
-            console.error(
-              "Error in Home Assistant ignore plugin",
-              resource,
-              context
-            );
-            throw err;
-          }
-
-          return ignorePackages.some((toIgnorePath) =>
-            fullPath.startsWith(toIgnorePath)
-          );
-        },
-      }),
-      new rspack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages({ isHassioBuild }).join("|")),
+      new NormalModuleReplacementPlugin(
+        new RegExp(emptyPackages({ isHassioBuild }).join("|")),
         path.resolve(paths.root_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
@@ -181,7 +167,9 @@ export const createRspackConfig = ({
       isProdBuild &&
         isStatsBuild &&
         new RsdoctorRspackPlugin({
-          reportDir: path.join(paths.build_dir, "rsdoctor"),
+          output: {
+            reportDir: path.join(paths.build_dir, "rsdoctor"),
+          },
           features: ["plugins", "bundle"],
           supports: {
             generateTileGraph: true,
@@ -216,7 +204,9 @@ export const createRspackConfig = ({
     output: {
       module: latestBuild,
       filename: ({ chunk }) =>
-        !isProdBuild || isStatsBuild || dontHash.has(chunk.name)
+        !isProdBuild ||
+        isStatsBuild ||
+        (chunk?.name && dontHash.has(chunk.name))
           ? "[name].js"
           : "[name].[contenthash].js",
       chunkFilename:
@@ -247,7 +237,7 @@ export const createRspackConfig = ({
                   // dev tools, and they stay happy getting 404s with valid requests.
                   return `/unknown${path.resolve("/", info.resourcePath)}`;
                 }
-                return new URL(info.resourcePath, bundle.sourceMapURL()).href;
+                return new URL(info.resourcePath, sourceMapURL()).href;
               }
             : undefined,
         ])
@@ -257,7 +247,7 @@ export const createRspackConfig = ({
       layers: true,
       outputModule: true,
     },
-  };
+  });
 };
 
 export const createAppConfig = ({
@@ -265,27 +255,43 @@ export const createAppConfig = ({
   latestBuild,
   isStatsBuild,
   isTestBuild,
+}: {
+  isProdBuild?: boolean;
+  latestBuild?: boolean;
+  isStatsBuild?: boolean;
+  isTestBuild?: boolean;
 }) =>
   createRspackConfig(
-    bundle.config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
+    config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
-export const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
-  createRspackConfig(
-    bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild })
-  );
+export const createDemoConfig = ({
+  isProdBuild,
+  latestBuild,
+  isStatsBuild,
+}: {
+  isProdBuild?: boolean;
+  latestBuild?: boolean;
+  isStatsBuild?: boolean;
+}) =>
+  createRspackConfig(config.demo({ isProdBuild, latestBuild, isStatsBuild }));
 
 export const createCastConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
+  createRspackConfig(config.cast({ isProdBuild, latestBuild }));
 
 export const createHassioConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
   isTestBuild,
+}: {
+  isProdBuild?: boolean;
+  latestBuild?: boolean;
+  isStatsBuild?: boolean;
+  isTestBuild?: boolean;
 }) =>
   createRspackConfig(
-    bundle.config.hassio({
+    config.hassio({
       isProdBuild,
       latestBuild,
       isStatsBuild,
@@ -294,7 +300,7 @@ export const createHassioConfig = ({
   );
 
 export const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
+  createRspackConfig(config.gallery({ isProdBuild, latestBuild }));
 
 export const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
-  createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
+  createRspackConfig(config.landingPage({ isProdBuild, latestBuild }));

@@ -1,36 +1,36 @@
 import { deleteSync } from "del";
-import gulp from "gulp";
-import paths from "../paths";
-import "./translations.js";
+import { parallel, task } from "gulp";
+import paths from "../paths.ts";
+import "./translations.ts";
 
-gulp.task(
+task(
   "clean",
-  gulp.parallel("clean-translations", async () =>
+  parallel("clean-translations", async () =>
     deleteSync([paths.app_output_root, paths.build_dir])
   )
 );
 
-gulp.task(
+task(
   "clean-demo",
-  gulp.parallel("clean-translations", async () =>
+  parallel("clean-translations", async () =>
     deleteSync([paths.demo_output_root, paths.build_dir])
   )
 );
 
-gulp.task(
+task(
   "clean-cast",
-  gulp.parallel("clean-translations", async () =>
+  parallel("clean-translations", async () =>
     deleteSync([paths.cast_output_root, paths.build_dir])
   )
 );
 
-gulp.task("clean-hassio", async () =>
+task("clean-hassio", async () =>
   deleteSync([paths.hassio_output_root, paths.build_dir])
 );
 
-gulp.task(
+task(
   "clean-gallery",
-  gulp.parallel("clean-translations", async () =>
+  parallel("clean-translations", async () =>
     deleteSync([
       paths.gallery_output_root,
       paths.gallery_build,
@@ -39,9 +39,9 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "clean-landing-page",
-  gulp.parallel("clean-translations", async () =>
+  parallel("clean-translations", async () =>
     deleteSync([
       paths.landingPage_output_root,
       paths.landingPage_build,

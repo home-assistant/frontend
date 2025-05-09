@@ -1,19 +1,19 @@
-import fs from "fs";
+import fs from "node:fs";
 import { glob } from "glob";
-import gulp from "gulp";
+import { parallel, series, task, watch } from "gulp";
 import yaml from "js-yaml";
 import { marked } from "marked";
-import path from "path";
-import paths from "../paths";
-import "./clean.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./gen-icons-json.js";
-import "./rspack";
-import "./service-worker.js";
-import "./translations.js";
+import path from "node:path";
+import paths from "../paths.ts";
+import "./clean.ts";
+import "./entry-html.ts";
+import "./gather-static.ts";
+import "./gen-icons-json.ts";
+import "./rspack.ts";
+import "./service-worker.ts";
+import "./translations.ts";
 
-gulp.task("gather-gallery-pages", async function gatherPages() {
+task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
   const files = await glob(path.resolve(pageDir, "**/*"));
 
@@ -99,7 +99,10 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
     pagesToProcess[category].add(page);
   }
 
-  for (const group of Object.values(sidebar) as Array<{ category: string; pages?: string[] }>) {
+  for (const group of Object.values(sidebar) as {
+    category: string;
+    pages?: string[];
+  }[]) {
     const toProcess = pagesToProcess[group.category];
     delete pagesToProcess[group.category];
 
@@ -143,15 +146,15 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
   );
 });
 
-gulp.task(
+task(
   "develop-gallery",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
     "clean-gallery",
     "translations-enable-merge-backend",
-    gulp.parallel(
+    parallel(
       "gen-icons-json",
       "build-translations",
       "build-locale-data",
@@ -159,30 +162,27 @@ gulp.task(
     ),
     "copy-static-gallery",
     "gen-pages-gallery-dev",
-    gulp.parallel(
-      "rspack-dev-server-gallery",
-      async function watchMarkdownFiles() {
-        gulp.watch(
-          [
-            path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
-            path.resolve(paths.gallery_dir, "sidebar.js"),
-          ],
-          gulp.series("gather-gallery-pages")
-        );
-      }
-    )
+    parallel("rspack-dev-server-gallery", async function watchMarkdownFiles() {
+      watch(
+        [
+          path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
+          path.resolve(paths.gallery_dir, "sidebar.js"),
+        ],
+        series("gather-gallery-pages")
+      );
+    })
   )
 );
 
-gulp.task(
+task(
   "build-gallery",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },
     "clean-gallery",
     "translations-enable-merge-backend",
-    gulp.parallel(
+    parallel(
       "gen-icons-json",
       "build-translations",
       "build-locale-data",

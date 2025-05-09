@@ -26,6 +26,7 @@
     // Interop with CommonJS and other tools
     "esModuleInterop": true,
     "isolatedModules": true,
+    "allowImportingTsExtensions": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",

@@ -6,4 +6,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-./node_modules/.bin/gulp setup-and-fetch-nightly-translations
+node --import ./ts-node-register.js node_modules/gulp/bin/gulp.js setup-and-fetch-nightly-translations

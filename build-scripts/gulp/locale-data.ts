@@ -1,8 +1,8 @@
 import { deleteSync } from "del";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import gulp from "gulp";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { series, task } from "gulp";
 import { join, resolve } from "node:path";
-import paths from "../paths";
+import paths from "../paths.ts";
 
 const formatjsDir = join(paths.root_dir, "node_modules", "@formatjs");
 const outDir = join(paths.build_dir, "locale-data");
@@ -54,9 +54,9 @@ const convertToJSON = async (
   await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
 };
 
-gulp.task("clean-locale-data", async () => deleteSync([outDir]));
+task("clean-locale-data", async () => deleteSync([outDir]));
 
-gulp.task("create-locale-data", async () => {
+task("create-locale-data", async () => {
   const translationMeta = JSON.parse(
     await readFile(
       resolve(paths.translations_src, "translationMetadata.json"),
@@ -83,7 +83,4 @@ gulp.task("create-locale-data", async () => {
   await Promise.all(conversions);
 });
 
-gulp.task(
-  "build-locale-data",
-  gulp.series("clean-locale-data", "create-locale-data")
-);
+task("build-locale-data", series("clean-locale-data", "create-locale-data"));

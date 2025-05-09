@@ -6,4 +6,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-./node_modules/.bin/gulp develop-app
+node --import ./ts-node-register.js node_modules/gulp/bin/gulp.js develop-app

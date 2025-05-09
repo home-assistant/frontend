@@ -6,12 +6,12 @@ import {
   getPreUserAgentRegexes,
 } from "browserslist-useragent-regexp";
 import fs from "fs-extra";
-import gulp from "gulp";
+import { task } from "gulp";
 import { minify } from "html-minifier-terser";
 import template from "lodash.template";
 import { dirname, extname, resolve } from "node:path";
-import { htmlMinifierOptions, terserOptions } from "../bundle";
-import paths from "../paths";
+import { htmlMinifierOptions, terserOptions } from "../bundle.ts";
+import paths from "../paths.ts";
 
 // macOS companion app has no way to obtain the Safari version used by WKWebView,
 // and it is not in the default user agent string. So we add an additional regex
@@ -34,9 +34,9 @@ const getCommonTemplateVars = () => {
     mobileToDesktop: true,
     throwOnMissing: true,
   });
-  const minSafariVersion = browserRegexes.find(
-    (regex) => regex.family === "safari"
-  )?.matchedVersions[0][0] ?? 18;
+  const minSafariVersion =
+    browserRegexes.find((regex) => regex.family === "safari")
+      ?.matchedVersions[0][0] ?? 18;
   const minMacOSVersion = SAFARI_TO_MACOS[minSafariVersion];
   if (!minMacOSVersion) {
     throw Error(
@@ -145,8 +145,12 @@ const genPagesProdTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
-          latestEntryJS: (entries as string[]).map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: (entries as string[]).map((entry) => es5Manifest[`${entry}.js`]),
+          latestEntryJS: (entries as string[]).map(
+            (entry) => latestManifest[`${entry}.js`]
+          ),
+          es5EntryJS: (entries as string[]).map(
+            (entry) => es5Manifest[`${entry}.js`]
+          ),
           latestCustomPanelJS: latestManifest["custom-panel.js"],
           es5CustomPanelJS: es5Manifest["custom-panel.js"],
         }
@@ -167,12 +171,12 @@ const APP_PAGE_ENTRIES = {
   "index.html": ["core", "app"],
 };
 
-gulp.task(
+task(
   "gen-pages-app-dev",
   genPagesDevTask(APP_PAGE_ENTRIES, paths.root_dir, paths.app_output_root)
 );
 
-gulp.task(
+task(
   "gen-pages-app-prod",
   genPagesProdTask(
     APP_PAGE_ENTRIES,
@@ -190,12 +194,12 @@ const CAST_PAGE_ENTRIES = {
   "receiver.html": ["receiver"],
 };
 
-gulp.task(
+task(
   "gen-pages-cast-dev",
   genPagesDevTask(CAST_PAGE_ENTRIES, paths.cast_dir, paths.cast_output_root)
 );
 
-gulp.task(
+task(
   "gen-pages-cast-prod",
   genPagesProdTask(
     CAST_PAGE_ENTRIES,
@@ -208,12 +212,12 @@ gulp.task(
 
 const DEMO_PAGE_ENTRIES = { "index.html": ["main"] };
 
-gulp.task(
+task(
   "gen-pages-demo-dev",
   genPagesDevTask(DEMO_PAGE_ENTRIES, paths.demo_dir, paths.demo_output_root)
 );
 
-gulp.task(
+task(
   "gen-pages-demo-prod",
   genPagesProdTask(
     DEMO_PAGE_ENTRIES,
@@ -226,7 +230,7 @@ gulp.task(
 
 const GALLERY_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
-gulp.task(
+task(
   "gen-pages-gallery-dev",
   genPagesDevTask(
     GALLERY_PAGE_ENTRIES,
@@ -235,7 +239,7 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "gen-pages-gallery-prod",
   genPagesProdTask(
     GALLERY_PAGE_ENTRIES,
@@ -247,7 +251,7 @@ gulp.task(
 
 const LANDING_PAGE_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
-gulp.task(
+task(
   "gen-pages-landing-page-dev",
   genPagesDevTask(
     LANDING_PAGE_PAGE_ENTRIES,
@@ -256,7 +260,7 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "gen-pages-landing-page-prod",
   genPagesProdTask(
     LANDING_PAGE_PAGE_ENTRIES,
@@ -269,7 +273,7 @@ gulp.task(
 
 const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
 
-gulp.task(
+task(
   "gen-pages-hassio-dev",
   genPagesDevTask(
     HASSIO_PAGE_ENTRIES,
@@ -280,7 +284,7 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "gen-pages-hassio-prod",
   genPagesProdTask(
     HASSIO_PAGE_ENTRIES,

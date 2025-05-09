@@ -1,15 +1,15 @@
-import gulp from "gulp";
-import "./clean.js";
-import "./compress.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./gen-icons-json.js";
-import "./rspack.js";
-import "./translations.js";
+import { series, task } from "gulp";
+import "./clean.ts";
+import "./compress.ts";
+import "./entry-html.ts";
+import "./gather-static.ts";
+import "./gen-icons-json.ts";
+import "./rspack.ts";
+import "./translations.ts";
 
-gulp.task(
+task(
   "develop-landing-page",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
     },
@@ -24,9 +24,9 @@ gulp.task(
   )
 );
 
-gulp.task(
+task(
   "build-landing-page",
-  gulp.series(
+  series(
     async function setEnv() {
       process.env.NODE_ENV = "production";
     },

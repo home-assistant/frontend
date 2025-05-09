@@ -1,17 +1,15 @@
 #!/usr/bin/env node
 // Script to print Babel plugins and Core JS polyfills that will be used by browserslist environments
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-console */
 
 import { version as babelVersion } from "@babel/core";
 import presetEnv from "@babel/preset-env";
 import compilationTargets from "@babel/helper-compilation-targets";
 import coreJSCompat from "core-js-compat";
-// eslint-disable-next-line import/extensions
+
 import { logPlugin } from "@babel/preset-env/lib/debug.js";
-// eslint-disable-next-line import/no-relative-packages, import/extensions
+// eslint-disable-next-line import/no-relative-packages
 import shippedPolyfills from "../node_modules/babel-plugin-polyfill-corejs3/lib/shipped-proposals.js";
-import { babelOptions } from "./bundle";
+import { babelOptions } from "./bundle.ts";
 
 const detailsOpen = (heading) =>
   `<details>\n<summary><h4>${heading}</h4></summary>\n`;
@@ -52,7 +50,7 @@ for (const buildType of ["Modern", "Legacy"]) {
   const browserslistEnv = buildType.toLowerCase();
   const babelOpts = babelOptions({ latestBuild: browserslistEnv === "modern" });
   const presetEnvOpts = babelOpts.presets[0][1];
-  
+
   if (typeof presetEnvOpts !== "object") {
     throw new Error(
       "The first preset in babelOptions is not an object. This is unexpected."

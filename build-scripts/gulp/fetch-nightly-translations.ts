@@ -1,14 +1,14 @@
-// Task to download the latest Lokalise translations from the nightly workflow artifacts
+// Task to download the latest 00Lokalise translations from the nightly workflow artifacts
 
 import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
 import { retry } from "@octokit/plugin-retry";
 import { Octokit } from "@octokit/rest";
 import { deleteAsync } from "del";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import gulp from "gulp";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { series, task } from "gulp";
 import jszip from "jszip";
-import path from "path";
-import process from "process";
+import path from "node:path";
+import process from "node:process";
 import { extract } from "tar";
 
 const MAX_AGE = 24; // hours
@@ -22,12 +22,12 @@ const TOKEN_FILE = path.posix.join(EXTRACT_DIR, "token.json");
 const ARTIFACT_FILE = path.posix.join(EXTRACT_DIR, "artifact.json");
 
 let allowTokenSetup = false;
-gulp.task("allow-setup-fetch-nightly-translations", (done) => {
+task("allow-setup-fetch-nightly-translations", (done) => {
   allowTokenSetup = true;
   done();
 });
 
-gulp.task("fetch-nightly-translations", async function () {
+task("fetch-nightly-translations", async function () {
   // Skip all when environment flag is set (assumes translations are already in place)
   if (process.env?.SKIP_FETCH_NIGHTLY_TRANSLATIONS) {
     console.log("Skipping fetch due to environment signal");
@@ -148,7 +148,7 @@ gulp.task("fetch-nightly-translations", async function () {
     artifact_id: latestArtifact.id,
     archive_format: "zip",
   });
-  // @ts-ignore
+  // @ts-ignore OctokitResponse<unknown, 302> doesn't allow to check for 200
   if (downloadResponse.status !== 200) {
     throw Error("Failure downloading translations artifact");
   }
@@ -163,10 +163,7 @@ gulp.task("fetch-nightly-translations", async function () {
   });
 });
 
-gulp.task(
+task(
   "setup-and-fetch-nightly-translations",
-  gulp.series(
-    "allow-setup-fetch-nightly-translations",
-    "fetch-nightly-translations"
-  )
+  series("allow-setup-fetch-nightly-translations", "fetch-nightly-translations")
 );

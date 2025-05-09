@@ -1,9 +1,9 @@
 // Gulp task to gather all static files.
 
 import fs from "fs-extra";
-import gulp from "gulp";
-import path from "path";
-import paths from "../paths";
+import { task } from "gulp";
+import path from "node:path";
+import paths from "../paths.ts";
 
 const npmPath = (...parts) =>
   path.resolve(paths.root_dir, "node_modules", ...parts);
@@ -113,33 +113,33 @@ function copyZXingWasm(staticDir) {
   );
 }
 
-gulp.task("copy-locale-data", async () => {
+task("copy-locale-data", async () => {
   const staticDir = paths.app_output_static;
   copyLocaleData(staticDir);
 });
 
-gulp.task("copy-translations-app", async () => {
+task("copy-translations-app", async () => {
   const staticDir = paths.app_output_static;
   copyTranslations(staticDir);
 });
 
-gulp.task("copy-translations-supervisor", async () => {
+task("copy-translations-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyTranslations(staticDir);
 });
 
-gulp.task("copy-translations-landing-page", async () => {
+task("copy-translations-landing-page", async () => {
   const staticDir = paths.landingPage_output_static;
   copyTranslations(staticDir);
 });
 
-gulp.task("copy-static-supervisor", async () => {
+task("copy-static-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyLocaleData(staticDir);
   copyFonts(staticDir);
 });
 
-gulp.task("copy-static-app", async () => {
+task("copy-static-app", async () => {
   const staticDir = paths.app_output_static;
   // Basic static files
   fs.copySync(polyPath("public"), paths.app_output_root);
@@ -157,7 +157,7 @@ gulp.task("copy-static-app", async () => {
   copyQrScannerWorker(staticDir);
 });
 
-gulp.task("copy-static-demo", async () => {
+task("copy-static-demo", async () => {
   // Copy app static files
   fs.copySync(
     polyPath("public/static"),
@@ -173,7 +173,7 @@ gulp.task("copy-static-demo", async () => {
   copyMdiIcons(paths.demo_output_static);
 });
 
-gulp.task("copy-static-cast", async () => {
+task("copy-static-cast", async () => {
   // Copy app static files
   fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
@@ -186,7 +186,7 @@ gulp.task("copy-static-cast", async () => {
   copyMdiIcons(paths.cast_output_static);
 });
 
-gulp.task("copy-static-gallery", async () => {
+task("copy-static-gallery", async () => {
   // Copy app static files
   fs.copySync(polyPath("public/static"), paths.gallery_output_static);
   // Copy gallery static files
@@ -202,7 +202,7 @@ gulp.task("copy-static-gallery", async () => {
   copyMdiIcons(paths.gallery_output_static);
 });
 
-gulp.task("copy-static-landing-page", async () => {
+task("copy-static-landing-page", async () => {
   // Copy landing-page static files
   fs.copySync(
     path.resolve(paths.landingPage_dir, "public"),

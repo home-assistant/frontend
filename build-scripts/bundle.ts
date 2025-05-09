@@ -1,34 +1,33 @@
-import path from "path";
-import { dependencies } from "../package.json";
-import env from "./env";
-import paths from "./paths";
+import path from "node:path";
+import packageJson from "../package.json" assert { type: "json" };
+import paths, { dirname } from "./paths.ts";
+import { version } from "./env.ts";
 
-const BABEL_PLUGINS = path.join(__dirname, "babel-plugins");
+const dependencies = packageJson.dependencies;
+
+const BABEL_PLUGINS = path.join(dirname, "babel-plugins");
 
 // GitHub base URL to use for production source maps
 // Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
 export const sourceMapURL = () => {
-  const ref = env.version().endsWith("dev")
+  const ref = version().endsWith("dev")
     ? process.env.GITHUB_SHA || "dev"
-    : env.version();
+    : version();
   return `https://raw.githubusercontent.com/home-assistant/frontend/${ref}/`;
 };
-
-// Files from NPM Packages that should not be imported
-export const ignorePackages = () => [];
 
 // Files from NPM packages that we should replace with empty file
 export const emptyPackages = ({ isHassioBuild }) =>
   [
-    require.resolve("@vaadin/vaadin-material-styles/typography.js"),
-    require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
+    import.meta.resolve("@vaadin/vaadin-material-styles/typography.js"),
+    import.meta.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
-      require.resolve(
+      import.meta.resolve(
         path.resolve(paths.root_dir, "src/components/ha-icon.ts")
       ),
     isHassioBuild &&
-      require.resolve(
+      import.meta.resolve(
         path.resolve(paths.root_dir, "src/components/ha-icon-picker.ts")
       ),
   ].filter(Boolean);
@@ -36,7 +35,7 @@ export const emptyPackages = ({ isHassioBuild }) =>
 export const definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __DEV__: !isProdBuild,
   __BUILD__: JSON.stringify(latestBuild ? "modern" : "legacy"),
-  __VERSION__: JSON.stringify(env.version()),
+  __VERSION__: JSON.stringify(version()),
   __DEMO__: false,
   __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
@@ -67,7 +66,7 @@ export const htmlMinifierOptions = {
 
 export const terserOptions = ({ latestBuild, isTestBuild }) => ({
   safari10: !latestBuild,
-  ecma: latestBuild ? 2015 : 5,
+  ecma: latestBuild ? (2015 as const) : (5 as const),
   module: latestBuild,
   format: { comments: false },
   sourceMap: !isTestBuild,
@@ -91,6 +90,11 @@ export const babelOptions = ({
   isProdBuild,
   isTestBuild,
   sw,
+}: {
+  latestBuild?: boolean;
+  isProdBuild?: boolean;
+  isTestBuild?: boolean;
+  sw?: boolean;
 }) => ({
   babelrc: false,
   compact: false,
@@ -137,7 +141,7 @@ export const babelOptions = ({
           "@polymer/polymer/lib/utils/html-tag.js": ["html"],
         },
         strictCSS: true,
-        htmlMinifier: module.exports.htmlMinifierOptions,
+        htmlMinifier: htmlMinifierOptions,
         failOnError: false, // we can turn this off in case of false positives
       },
     ],
@@ -222,7 +226,19 @@ const publicPath = (latestBuild, root = "") =>
   */
 
 export const config = {
-  app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {
+  app({
+    isProdBuild,
+    latestBuild,
+    isStatsBuild,
+    isTestBuild,
+    isWDS,
+  }: {
+    isProdBuild?: boolean;
+    latestBuild?: boolean;
+    isStatsBuild?: boolean;
+    isTestBuild?: boolean;
+    isWDS?: boolean;
+  }) {
     return {
       name: "frontend" + nameSuffix(latestBuild),
       entry: {
@@ -257,7 +273,7 @@ export const config = {
       outputPath: outputPath(paths.demo_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       defineOverlay: {
-        __VERSION__: JSON.stringify(`DEMO-${env.version()}`),
+        __VERSION__: JSON.stringify(`DEMO-${version()}`),
         __DEMO__: true,
       },
       isProdBuild,
@@ -267,13 +283,12 @@ export const config = {
   },
 
   cast({ isProdBuild, latestBuild }) {
-    const entry = {
+    const entry: Record<string, string> = {
       launcher: path.resolve(paths.cast_dir, "src/launcher/entrypoint.ts"),
       media: path.resolve(paths.cast_dir, "src/media/entrypoint.ts"),
     };
 
     if (latestBuild) {
-      // @ts-ignore
       entry.receiver = path.resolve(
         paths.cast_dir,
         "src/receiver/entrypoint.ts"

@@ -1,34 +1,21 @@
-import fs from "fs";
-import path from "path";
-import paths from "./paths";
+import fs from "node:fs";
+import path from "node:path";
+import paths from "./paths.ts";
 
 const isTrue = (value) => value === "1" || value?.toLowerCase() === "true";
 
-export default {
-  isProdBuild() {
-    return (
-      process.env.NODE_ENV === "production" || module.exports.isStatsBuild()
-    );
-  },
-  isStatsBuild() {
-    return isTrue(process.env.STATS);
-  },
-  isTestBuild() {
-    return isTrue(process.env.IS_TEST);
-  },
-  isNetlify() {
-    return isTrue(process.env.NETLIFY);
-  },
-  version() {
-    const version = fs
-      .readFileSync(path.resolve(paths.root_dir, "pyproject.toml"), "utf8")
-      .match(/version\W+=\W"(\d{8}\.\d(?:\.dev)?)"/);
-    if (!version) {
-      throw Error("Version not found");
-    }
-    return version[1];
-  },
-  isDevContainer() {
-    return isTrue(process.env.DEV_CONTAINER);
-  },
+export const isProdBuild = () =>
+  process.env.NODE_ENV === "production" || isStatsBuild();
+export const isStatsBuild = () => isTrue(process.env.STATS);
+export const isTestBuild = () => isTrue(process.env.IS_TEST);
+export const isNetlify = () => isTrue(process.env.NETLIFY);
+export const version = () => {
+  const pyProjectVersion = fs
+    .readFileSync(path.resolve(paths.root_dir, "pyproject.toml"), "utf8")
+    .match(/version\W+=\W"(\d{8}\.\d(?:\.dev)?)"/);
+  if (!pyProjectVersion) {
+    throw Error("Version not found");
+  }
+  return pyProjectVersion[1];
 };
+export const isDevContainer = () => isTrue(process.env.DEV_CONTAINER);
