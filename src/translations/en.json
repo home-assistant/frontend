@@ -372,7 +372,9 @@
       "default": "Default",
       "dont_save": "Don't save",
       "copy": "Copy",
-      "show": "Show"
+      "show": "Show",
+      "replace": "Replace",
+      "append": "Append"
     },
     "components": {
       "selectors": {
@@ -401,7 +403,8 @@
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
-          "radius": "[%key:ui::panel::config::zone::detail::radius%]"
+          "radius": "[%key:ui::panel::config::zone::detail::radius%]",
+          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
         },
         "selector": {
           "options": "Selector Options",
@@ -721,6 +724,7 @@
       },
       "statistic-picker": {
         "statistic": "Statistic",
+        "placeholder": "Select a statistic",
         "no_statistics": "You don't have any statistics",
         "no_match": "No matching statistics found",
         "no_state": "Entity without state",
@@ -917,7 +921,9 @@
           "action_play": "Say",
           "action_pick": "Select",
           "set_as_default": "Set as default options",
-          "faild_to_store_defaults": "Failed to store defaults: {error}"
+          "faild_to_store_defaults": "Failed to store defaults: {error}",
+          "selected_voice_id": "Selected voice ID",
+          "copy_voice_id": "Copy voice ID"
         },
         "pick": "Pick",
         "play": "Play",
@@ -1935,6 +1941,11 @@
           "title": "Assist",
           "open_assist": "open Assist dialog"
         },
+        "automation_script": {
+          "title": "Automations / Scripts",
+          "paste": "to paste automation/script YAML from clipboard to editor",
+          "save": "to save automation/script"
+        },
         "charts": {
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
@@ -2481,7 +2492,10 @@
             "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
-            "local_agent": "This system"
+            "local_agent": "This system",
+            "retention_all": "Keep all backups",
+            "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
+            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"
           },
           "data": {
             "ha_settings": "Home Assistant settings",
@@ -3097,6 +3111,7 @@
         },
         "info": {
           "caption": "About",
+          "installation_method": "Installation method",
           "copy_menu": "Copy menu",
           "copy_raw": "Raw text",
           "copy_github": "For GitHub",
@@ -4344,7 +4359,14 @@
               "add_category": "Add category",
               "add_labels": "Add labels",
               "add_area": "Add area"
-            }
+            },
+            "paste_confirm": {
+              "title": "Pasted automation",
+              "text": "How do you want to paste your automation?"
+            },
+            "paste_toast_message": "Pasted automation from clipboard",
+            "paste_invalid_yaml": "Pasted value is not valid YAML",
+            "paste_invalid_config": "Pasted automation is not editable in the visual editor"
           },
           "trace": {
             "refresh": "[%key:ui::common::refresh%]",
@@ -4577,7 +4599,14 @@
               "unsaved_new_text": "You can save your changes, or delete this script. You can't undo this action.",
               "unsaved_confirm_title": "Save changes?",
               "unsaved_confirm_text": "You have made some changes in this script. You can save these changes, or discard them and leave. You can't undo this action."
-            }
+            },
+            "paste_confirm": {
+              "title": "Pasted script",
+              "text": "How do you want to paste your script?"
+            },
+            "paste_toast_message": "Pasted script from clipboard",
+            "paste_invalid_yaml": "Pasted value is not valid YAML",
+            "paste_invalid_config": "Pasted script is not editable in the visual editor"
           },
           "trace": {
             "edit_script": "Edit script"
@@ -5488,6 +5517,7 @@
           "connection_monitor": "Connection monitor",
           "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
+          "no_advertisements_found": "No matching Bluetooth advertisements found",
           "no_connection_slot_allocations": "No connection slot allocations information available",
           "no_active_connection_support": "This adapter does not support making active (GATT) connections.",
           "address": "Address",
@@ -5508,7 +5538,8 @@
           "title": "DHCP discovery",
           "mac_address": "MAC Address",
           "hostname": "Hostname",
-          "ip_address": "IP Address"
+          "ip_address": "IP Address",
+          "no_devices_found": "No recent DHCP requests found; no matching discoveries detected"
         },
         "thread": {
           "other_networks": "Other networks",
@@ -5550,6 +5581,18 @@
           "thread_network_info": "Thread network information",
           "thread_network_delete_credentials": "Delete Thread network credentials"
         },
+        "ssdp": {
+          "name": "Name",
+          "ssdp_st": "Search Target (ST)",
+          "ssdp_location": "Device Description URL",
+          "ssdp_headers": "SSDP Headers",
+          "upnp": "Universal Plug and Play (UPnP)",
+          "discovery_information": "Discovery information",
+          "copy_to_clipboard": "Copy to clipboard",
+          "no_devices_found": "No matching SSDP/UPnP discoveries found",
+          "show_raw_data": "Show raw data",
+          "raw_data_title": "Raw data"
+        },
         "zeroconf": {
           "name": "Name",
           "type": "Type",
@@ -5557,7 +5600,8 @@
           "ip_addresses": "IP Addresses",
           "properties": "Properties",
           "discovery_information": "Discovery information",
-          "copy_to_clipboard": "Copy to clipboard"
+          "copy_to_clipboard": "Copy to clipboard",
+          "no_devices_found": "No matching Zeroconf discoveries found"
         },
         "zha": {
           "common": {
@@ -6365,9 +6409,14 @@
             }
           },
           "discovery": {
+            "title": "Network discovery",
+            "description": "Explore what data Home Assistant can see on the network.",
+            "dhcp": "DHCP browser",
+            "dhcp_info": "Show devices detected using methods like DHCP, ARP+PTR lookups, and router-based device trackers.",
+            "ssdp": "SSDP browser",
+            "ssdp_info": "Show devices discovered using SSDP/UPnP.",
             "zeroconf": "Zeroconf browser",
-            "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
-            "zeroconf_browser": "View Zeroconf browser"
+            "zeroconf_info": "Show services discovered using mDNS. Does not include services unknown to Home Assistant."
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
@@ -7788,6 +7837,7 @@
         },
         "warning": {
           "attribute_not_found": "Attribute {attribute} not available in: {entity}",
+          "attribute_not_numeric": "Attribute {attribute} is non-numeric",
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
           "entity_unavailable": "Entity is currently unavailable: {entity}",

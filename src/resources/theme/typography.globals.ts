@@ -1,5 +1,8 @@
 import { css } from "lit";
-import { extractDerivedVars } from "../../common/style/derived-css-vars";
+import {
+  extractDerivedVars,
+  extractVar,
+} from "../../common/style/derived-css-vars";
 
 export const typographyStyles = css`
   html {
@@ -21,20 +24,36 @@ export const typographyStyles = css`
 
     --ha-font-weight-light: 300;
     --ha-font-weight-normal: 400;
-    --ha-font-weight-semibold: 500;
-    --ha-font-weight-bold: 600;
+    --ha-font-weight-medium: 500;
+    --ha-font-weight-bold: 700;
 
     --ha-font-family-heading: var(--ha-font-family-body);
     --ha-font-weight-body: var(--ha-font-weight-normal);
     --ha-font-weight-heading: var(--ha-font-weight-bold);
-    --ha-font-weight-action: var(--ha-font-weight-semibold);
+    --ha-font-weight-action: var(--ha-font-weight-medium);
 
     --ha-line-height-condensed: 1.2;
     --ha-line-height-normal: 1.6;
     --ha-line-height-expanded: 2;
 
     --ha-font-smoothing: antialiased;
+    --ha-moz-osx-font-smoothing: grayscale;
   }
 `;
 
 export const typographyDerivedVariables = extractDerivedVars(typographyStyles);
+
+export const haFontFamilyBody = extractVar(
+  typographyStyles,
+  "ha-font-family-body"
+);
+
+export const haFontSmoothing = extractVar(
+  typographyStyles,
+  "ha-font-smoothing"
+);
+
+export const haMozOsxFontSmoothing = extractVar(
+  typographyStyles,
+  "ha-moz-osx-font-smoothing"
+);

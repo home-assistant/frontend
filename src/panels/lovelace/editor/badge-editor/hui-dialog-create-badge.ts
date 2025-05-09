@@ -4,11 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
-import memoize from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { DataTableRowData } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/sl-tab-group";
@@ -137,7 +133,6 @@ export class HuiCreateDialogBadge
                   no-label-float
                   .hass=${this.hass}
                   .narrow=${true}
-                  .entities=${this._allEntities(this.hass.states)}
                   @selected-changed=${this._handleSelectedChanged}
                 ></hui-entity-picker-table>
               `
@@ -276,20 +271,6 @@ export class HuiCreateDialogBadge
 
     this.closeDialog();
   }
-
-  private _allEntities = memoize((entities) =>
-    Object.keys(entities).map((entity) => {
-      const stateObj = this.hass.states[entity];
-      return {
-        icon: "",
-        entity_id: entity,
-        stateObj,
-        name: computeStateName(stateObj),
-        domain: computeDomain(entity),
-        last_changed: stateObj!.last_changed,
-      } as DataTableRowData;
-    })
-  );
 }
 
 declare global {

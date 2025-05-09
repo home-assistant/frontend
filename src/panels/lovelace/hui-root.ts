@@ -75,9 +75,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
+import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
-import "./views/hui-view-container";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -300,6 +300,12 @@ class HUIRoot extends LitElement {
 
     const background = curViewConfig?.background || this.config.background;
 
+    const _isTabHiddenForUser = (view: LovelaceViewConfig) =>
+      view.visible !== undefined &&
+      ((Array.isArray(view.visible) &&
+        !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
+        view.visible === false);
+
     const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
       ${views.map(
         (view, index) => html`
@@ -311,13 +317,7 @@ class HUIRoot extends LitElement {
             class=${classMap({
               icon: Boolean(view.icon),
               "hide-tab": Boolean(
-                !this._editMode &&
-                  view.visible !== undefined &&
-                  ((Array.isArray(view.visible) &&
-                    !view.visible.some(
-                      (e) => e.user === this.hass!.user?.id
-                    )) ||
-                    view.visible === false)
+                !this._editMode && (view.subview || _isTabHiddenForUser(view))
               ),
             })}
           >
@@ -1023,7 +1023,7 @@ class HUIRoot extends LitElement {
           align-items: center;
           font-size: 20px;
           padding: 0px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
         @media (max-width: 599px) {
@@ -1096,6 +1096,8 @@ class HUIRoot extends LitElement {
         .edit-mode sl-tab-group {
           flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
+          --ha-tab-active-text-color: var(--app-header-edit-text-color, #fff);
+          --ha-tab-indicator-color: var(--app-header-edit-text-color, #fff);
         }
         .edit-mode sl-tab {
           height: 54px;

@@ -234,7 +234,7 @@ export class DeveloperYamlConfig extends LitElement {
 
         .validate-result {
           color: var(--success-color);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           margin: 1em 0;
           text-align: center;
         }

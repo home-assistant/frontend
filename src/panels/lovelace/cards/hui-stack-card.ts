@@ -97,7 +97,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       text-align: var(--ha-stack-title-text-align, start);
       font-family: var(--ha-card-header-font-family, inherit);
       font-size: var(--ha-card-header-font-size, 24px);
-      font-weight: normal;
+      font-weight: var(--ha-font-weight-normal);
       margin-block-start: 0px;
       margin-block-end: 0px;
       letter-spacing: -0.012em;

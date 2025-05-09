@@ -226,7 +226,7 @@ class MoreInfoScript extends LitElement {
       margin-bottom: 16px;
     }
     .fields .title {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     ha-control-button ha-svg-icon {
       z-index: -1;

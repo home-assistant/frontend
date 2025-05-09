@@ -260,7 +260,7 @@ export class CloudRemotePref extends LitElement {
       color: var(--secondary-text-color);
     }
     .warning {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
       margin-bottom: 1em;
     }
     .break-word {

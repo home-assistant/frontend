@@ -467,7 +467,7 @@ class DialogRestart extends LitElement {
           background-color: var(--divider-color);
         }
         .section {
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           font-size: 14px;
           line-height: 20px;
           margin: 8px 0 4px 0;

@@ -18,6 +18,7 @@ export const haStyle = css`
   :host {
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
     font-size: var(--ha-font-size-m);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-normal);
@@ -36,6 +37,7 @@ export const haStyle = css`
   h1 {
     font-family: var(--ha-font-family-heading);
     -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
     font-size: var(--ha-font-size-2xl);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-condensed);
@@ -44,17 +46,19 @@ export const haStyle = css`
   h2 {
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: var(--ha-font-size-xl);
-    font-weight: var(--ha-font-weight-semibold);
+    font-weight: var(--ha-font-weight-medium);
     line-height: var(--ha-line-height-normal);
   }
 
   h3 {
     font-family: var(--ha-font-family-body);
     -webkit-font-smoothing: var(--ha-font-smoothing);
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
     font-size: var(--ha-font-size-l);
     font-weight: var(--ha-font-weight-normal);
     line-height: var(--ha-line-height-normal);

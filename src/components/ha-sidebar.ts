@@ -24,9 +24,10 @@ import {
   customElement,
   eventOptions,
   property,
-  state,
   query,
+  state,
 } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { storage } from "../common/decorators/storage";
 import { fireEvent } from "../common/dom/fire_event";
@@ -45,13 +46,13 @@ import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-md-list";
+import "./ha-md-list-item";
+import type { HaMdListItem } from "./ha-md-list-item";
 import "./ha-menu-button";
 import "./ha-sortable";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
-import "./ha-md-list";
-import "./ha-md-list-item";
-import type { HaMdListItem } from "./ha-md-list-item";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -210,6 +211,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
 
+  @state()
   @storage({
     key: "sidebarPanelOrder",
     state: true,
@@ -217,6 +219,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   })
   private _panelOrder: string[] = [];
 
+  @state()
   @storage({
     key: "sidebarHiddenPanels",
     state: true,
@@ -405,6 +408,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
     // prettier-ignore
     return html`
+    <ha-sortable .disabled=${!this.editMode} draggable-selector=".draggable" @item-moved=${this._panelMoved}>
       <ha-md-list
         class="ha-scrollbar"
         @focusin=${this._listboxFocusIn}
@@ -418,11 +422,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ${this._renderSpacer()}
         ${this._renderPanels(afterSpacer, selectedPanel)}
         ${this._renderExternalConfiguration()}
-        </ha-md-list>
+      </ha-md-list>
+    </ha-sortable>
     `;
   }
 
-  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
+  private _renderPanels(
+    panels: PanelInfo[],
+    selectedPanel: string,
+    sortable = false
+  ) {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
@@ -435,9 +444,17 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]
             : undefined,
-        selectedPanel
+        selectedPanel,
+        sortable
       )
     );
+  }
+
+  private _renderPanelsEdit(beforeSpacer: PanelInfo[], selectedPanel: string) {
+    return html`
+      ${this._renderPanels(beforeSpacer, selectedPanel, true)}
+      ${this._renderSpacer()}${this._renderHiddenPanels()}
+    `;
   }
 
   private _renderPanel(
@@ -445,7 +462,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     title: string | null,
     icon: string | null | undefined,
     iconPath: string | null | undefined,
-    selectedPanel: string
+    selectedPanel: string,
+    sortable = false
   ) {
     return urlPath === "config"
       ? this._renderConfiguration(title, selectedPanel)
@@ -453,7 +471,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           <ha-md-list-item
             .href=${this.editMode ? undefined : `/${urlPath}`}
             type="link"
-            class=${selectedPanel === urlPath ? "selected" : ""}
+            class=${classMap({
+              selected: selectedPanel === urlPath,
+              draggable: this.editMode && sortable,
+            })}
             @mouseenter=${this._itemMouseEnter}
             @mouseleave=${this._itemMouseLeave}
           >
@@ -492,15 +513,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     panelOrder.splice(newIndex, 0, panel);
 
     this._panelOrder = panelOrder;
-  }
-
-  private _renderPanelsEdit(beforeSpacer: PanelInfo[], selectedPanel: string) {
-    return html`
-      <ha-sortable .disabled=${!this.editMode} @item-moved=${this._panelMoved}
-        ><div>${this._renderPanels(beforeSpacer, selectedPanel)}</div>
-      </ha-sortable>
-      ${this._renderSpacer()}${this._renderHiddenPanels()}
-    `;
   }
 
   private _renderHiddenPanels() {
@@ -827,7 +839,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           padding: 0 4px;
           border-bottom: 1px solid transparent;
           white-space: nowrap;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           color: var(
             --sidebar-menu-button-text-color,
             var(--primary-text-color)
@@ -850,8 +862,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           color: var(--sidebar-icon-color);
         }
         .title {
-          margin-left: 19px;
-          margin-inline-start: 19px;
+          margin-left: 3px;
+          margin-inline-start: 3px;
           margin-inline-end: initial;
           width: 100%;
           display: none;
@@ -937,9 +949,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list-item .item-text {
+          font-family: var(--ha-font-family-body);
           display: none;
-          max-width: calc(100% - 56px);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           font-size: 14px;
         }
         :host([expanded]) ha-md-list-item .item-text {
@@ -962,7 +974,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           align-items: center;
           min-width: 8px;
           border-radius: 10px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           line-height: normal;
           background-color: var(--accent-color);
           padding: 2px 6px;
@@ -996,7 +1008,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         .subheader {
           color: var(--sidebar-text-color);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           font-size: 14px;
           padding: 16px;
           white-space: nowrap;
@@ -1011,7 +1023,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           color: var(--sidebar-background-color);
           background-color: var(--sidebar-text-color);
           padding: 4px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
         }
 
         .menu ha-icon-button {

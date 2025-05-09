@@ -42,7 +42,7 @@ class OnboardingWelcomeLink extends LitElement {
       flex-direction: column;
       align-items: center;
       text-align: center;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       padding: 32px 16px;
       height: 100%;
     }

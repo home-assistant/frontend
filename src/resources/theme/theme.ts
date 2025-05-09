@@ -7,10 +7,10 @@ import {
 } from "./typography.globals";
 
 export const themeStyles = [
-  fontStyles.toString(),
   mainStyles.toString(),
   typographyStyles.toString(),
   colorStyles.toString(),
+  fontStyles.toString(),
 ].join("");
 
 export const derivedStyles = {

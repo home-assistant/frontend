@@ -1,7 +1,7 @@
 import { css } from "lit";
 
 export const sidebarEditStyle = css`
-  ha-sortable ha-md-list-item:nth-child(2n) {
+  ha-sortable ha-md-list-item.draggable:nth-child(2n) {
     animation-name: keyframes1;
     animation-iteration-count: infinite;
     transform-origin: 50% 10%;
@@ -9,7 +9,7 @@ export const sidebarEditStyle = css`
     animation-duration: 0.25s;
   }
 
-  ha-sortable ha-md-list-item:nth-child(2n-1) {
+  ha-sortable ha-md-list-item.draggable:nth-child(2n-1) {
     animation-name: keyframes2;
     animation-iteration-count: infinite;
     animation-direction: alternate;
@@ -18,8 +18,7 @@ export const sidebarEditStyle = css`
     animation-duration: 0.33s;
   }
 
-  ha-sortable ha-md-list-item {
-    height: 48px;
+  ha-sortable ha-md-list-item.draggable {
     cursor: grab;
   }
 
