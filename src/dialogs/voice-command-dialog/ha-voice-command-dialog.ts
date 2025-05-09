@@ -57,14 +57,20 @@ export class HaVoiceCommandDialog extends LitElement {
   public async showDialog(
     params: Required<VoiceCommandDialogParams>
   ): Promise<void> {
+    await this._loadPipelines();
+    const pipelinesIds = this._pipelines?.map((pipeline) => pipeline.id) || [];
     if (
       params.pipeline_id === "preferred" ||
       (params.pipeline_id === "last_used" && !this._pipelineId)
     ) {
-      await this._loadPipelines();
       this._pipelineId = this._preferredPipeline;
     } else if (!["last_used", "preferred"].includes(params.pipeline_id)) {
       this._pipelineId = params.pipeline_id;
+    }
+
+    // If the pipeline id is not in the list of pipelines, set it to preferred
+    if (this._pipelineId && !pipelinesIds.includes(this._pipelineId)) {
+      this._pipelineId = this._preferredPipeline;
     }
 
     this._startListening = params.start_listening;
