@@ -208,7 +208,7 @@ class DialogDownloadDecryptedBackup extends LitElement implements HassDialog {
           background: none;
           border: none;
           padding: 0;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           color: var(--primary-color);
           text-decoration: underline;
           cursor: pointer;

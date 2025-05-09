@@ -185,7 +185,7 @@ class LightColorTempPicker extends LitElement {
             top,
             var(--gradient)
           );
-          --control-slider-tooltip-font-size: 20px;
+          --control-slider-tooltip-font-size: var(--ha-font-size-xl);
           --control-slider-background-opacity: 1;
         }
       `,

@@ -198,7 +198,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     hui-view-badges {
       display: block;
       margin: 4px 8px 4px 8px;
-      font-size: 85%;
+      font-size: var(--ha-font-size-s);
     }
 
     .container {

@@ -1021,7 +1021,7 @@ class HUIRoot extends LitElement {
           height: var(--header-height);
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
@@ -1180,7 +1180,7 @@ class HUIRoot extends LitElement {
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
           --mdc-button-outline-color: var(--app-header-edit-text-color, #fff);
-          --mdc-typography-button-font-size: 14px;
+          --mdc-typography-button-font-size: var(--ha-font-size-m);
         }
         .child-view-icon {
           opacity: 0.5;

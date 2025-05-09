@@ -125,7 +125,7 @@ class HaBackupSummaryCard extends LitElement {
       min-width: 0;
     }
     .heading {
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       font-style: normal;
       font-weight: var(--ha-font-weight-normal);
       line-height: 28px;
@@ -136,7 +136,7 @@ class HaBackupSummaryCard extends LitElement {
       white-space: nowrap;
     }
     .description {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       font-style: normal;
       font-weight: var(--ha-font-weight-normal);
       line-height: 20px;

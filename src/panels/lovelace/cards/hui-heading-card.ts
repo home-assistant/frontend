@@ -174,7 +174,7 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
       align-items: center;
       gap: 8px;
       color: var(--ha-heading-card-title-color, var(--primary-text-color));
-      font-size: var(--ha-heading-card-title-font-size, 16px);
+      font-size: var(--ha-heading-card-title-font-size, var(--ha-font-size-l));
       font-weight: var(
         --ha-heading-card-title-font-weight,
         var(--ha-font-weight-normal)
@@ -199,7 +199,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
     }
     .content.subtitle {
       color: var(--ha-heading-card-subtitle-color, var(--secondary-text-color));
-      font-size: var(--ha-heading-card-subtitle-font-size, 14px);
+      font-size: var(
+        --ha-heading-card-subtitle-font-size,
+        var(--ha-font-size-m)
+      );
       font-weight: var(
         --ha-heading-card-subtitle-font-weight,
         var(--ha-font-weight-medium)

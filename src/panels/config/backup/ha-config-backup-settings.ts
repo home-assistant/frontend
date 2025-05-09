@@ -535,7 +535,7 @@ class HaConfigBackupSettings extends LitElement {
     .cloud-info .cloud-header {
       display: flex;
       gap: 16px;
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       align-items: center;
       padding: 16px;
     }

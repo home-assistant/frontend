@@ -444,7 +444,7 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     .feature-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -463,7 +463,7 @@ export class HuiCardFeaturesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

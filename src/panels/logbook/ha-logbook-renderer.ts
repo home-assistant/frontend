@@ -636,7 +636,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .secondary {
-          font-size: 12px;
+          font-size: var(--ha-font-size-s);
           line-height: 1.7;
         }
 

@@ -1038,7 +1038,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           padding-left: 8px;
           padding-inline-start: 8px;
           padding-inline-end: 2px;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           width: max-content;
           cursor: initial;
           direction: var(--direction);

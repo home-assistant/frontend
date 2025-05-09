@@ -849,7 +849,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             --sidebar-menu-button-background-color,
             inherit
           );
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           align-items: center;
           padding-left: calc(4px + env(safe-area-inset-left));
           padding-inline-start: calc(4px + env(safe-area-inset-left));
@@ -951,8 +951,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         ha-md-list-item .item-text {
           font-family: var(--ha-font-family-body);
           display: none;
+          font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
-          font-size: 14px;
         }
         :host([expanded]) ha-md-list-item .item-text {
           display: block;
@@ -1008,8 +1008,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
         .subheader {
           color: var(--sidebar-text-color);
+          font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);
-          font-size: 14px;
           padding: 16px;
           white-space: nowrap;
         }
