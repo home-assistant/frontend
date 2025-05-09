@@ -1,6 +1,5 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import { mdiMagnifyPlus, mdiMagnifyMinus, mdiRestart } from "@mdi/js";
 import type { EChartsType } from "echarts/core";
 import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
@@ -74,8 +73,6 @@ export class HaNetworkGraph extends LitElement {
   @state()
   @consume({ context: themesContext, subscribe: true })
   _themes!: Themes;
-
-  @state() private _isZoomed = false;
 
   private _reducedMotion = false;
 
@@ -154,39 +151,8 @@ export class HaNetworkGraph extends LitElement {
           ? html`<h2 class="title">${this.graphTitle}</h2>`
           : nothing}
         <div class="chart"></div>
-        <div class="controls">
-          <ha-icon-button
-            .path=${mdiMagnifyPlus}
-            @click=${this._handleZoomIn}
-            title=${this._getZoomInLabel()}
-          ></ha-icon-button>
-          <ha-icon-button
-            .path=${mdiMagnifyMinus}
-            @click=${this._handleZoomOut}
-            title=${this._getZoomOutLabel()}
-          ></ha-icon-button>
-          ${this._isZoomed
-            ? html`<ha-icon-button
-                .path=${mdiRestart}
-                @click=${this._handleZoomReset}
-                title=${this._getResetLabel()}
-              ></ha-icon-button>`
-            : nothing}
-        </div>
       </div>
     `;
-  }
-
-  private _getZoomInLabel(): string {
-    return this.hass.localize("ui.common.zoom_in") || "Zoom in";
-  }
-
-  private _getZoomOutLabel(): string {
-    return this.hass.localize("ui.common.zoom_out") || "Zoom out";
-  }
-
-  private _getResetLabel(): string {
-    return this.hass.localize("ui.common.reset") || "Reset view";
   }
 
   private async _setupChart() {
@@ -268,6 +234,10 @@ export class HaNetworkGraph extends LitElement {
         show: !!this.data?.categories?.length,
         data: this.data?.categories?.map((cat) => cat.name) || [],
       },
+      dataZoom: {
+        type: "inside",
+        filterMode: "none",
+      },
       ...this.options,
     };
   }
@@ -279,11 +249,11 @@ export class HaNetworkGraph extends LitElement {
 
     return [
       {
+        // id: "network",
         type: "graph",
         layout: "force",
         draggable: true,
         roam: true,
-        zoom: 1.0,
         selectedMode: "single",
         label: {
           show: true,
@@ -297,7 +267,7 @@ export class HaNetworkGraph extends LitElement {
           },
         },
         force: {
-          repulsion: 500,
+          repulsion: [400, 600],
           edgeLength: 250,
           gravity: 0.1,
           layoutAnimation: !this._reducedMotion,
@@ -370,44 +340,6 @@ export class HaNetworkGraph extends LitElement {
     this._isZoomed = true;
   }
 
-  private _handleZoomIn() {
-    if (!this.chart) return;
-    const option = this.chart.getOption();
-    const series = (option.series as any)[0];
-    if (series.zoom) {
-      series.zoom *= 1.2;
-      this._setChartOptions({ series: [series] });
-      this._isZoomed = true;
-    }
-  }
-
-  private _handleZoomOut() {
-    if (!this.chart) return;
-    const option = this.chart.getOption();
-    const series = (option.series as any)[0];
-    if (series.zoom) {
-      series.zoom *= 0.8;
-      this._setChartOptions({ series: [series] });
-    }
-  }
-
-  private _handleZoomReset() {
-    if (!this.chart) return;
-    const option = this.chart.getOption();
-    const series = (option.series as any)[0];
-    if (series.zoom) {
-      series.zoom = 1.0;
-      this._setChartOptions({ series: [series] });
-      this._isZoomed = false;
-    }
-
-    // Clear node highlights
-    this.chart.dispatchAction({
-      type: "downplay",
-      seriesIndex: 0,
-    });
-  }
-
   private _centerCoordinatorNode() {
     if (!this.chart || !this.data) return;
 
@@ -420,7 +352,7 @@ export class HaNetworkGraph extends LitElement {
     const containerHeight = this.chart.getHeight();
 
     // Set the coordinator position to the center of the container
-    this.chart.setOption({
+    this._setChartOptions({
       series: this._getSeries().map((series: any) => ({
         ...series,
         data: series.data.map((item: any) => {
@@ -459,25 +391,6 @@ export class HaNetworkGraph extends LitElement {
       font-size: 16px;
       z-index: 10;
       color: var(--primary-text-color);
-    }
-    .controls {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      display: flex;
-      flex-direction: column;
-      z-index: 10;
-    }
-    ha-icon-button {
-      --mdc-icon-button-size: 36px;
-      background: var(--card-background-color);
-      border-radius: 18px;
-      margin-bottom: 8px;
-      color: var(--primary-text-color);
-      box-shadow:
-        0 2px 2px 0 rgba(0, 0, 0, 0.14),
-        0 1px 5px 0 rgba(0, 0, 0, 0.12),
-        0 3px 1px -2px rgba(0, 0, 0, 0.2);
     }
   `;
 }
