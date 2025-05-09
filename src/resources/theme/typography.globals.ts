@@ -44,6 +44,12 @@ export const typographyStyles = css`
 
     --ha-font-smoothing: antialiased;
     --ha-moz-osx-font-smoothing: grayscale;
+
+    /* Vaadin typography */
+    --material-h6-font-size: var(--ha-font-size-m);
+    --material-small-font-size: var(--ha-font-size-xs);
+    --material-caption-font-size: var(--ha-font-size-2xs);
+    --material-button-font-size: var(--ha-font-size-xs);
   }
 `;
 
