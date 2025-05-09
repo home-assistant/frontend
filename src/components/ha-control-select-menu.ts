@@ -208,7 +208,7 @@ export class HaControlSelectMenu extends SelectBase {
         width: 100%;
         user-select: none;
         font-style: normal;
-        font-weight: 400;
+        font-weight: var(--ha-font-weight-normal);
         letter-spacing: 0.25px;
       }
       .content {

@@ -776,7 +776,10 @@ class AddIntegrationDialog extends LitElement {
           var(--ha-font-size-l)
         );
         line-height: var(--mdc-typography-headline6-line-height, 2rem);
-        font-weight: var(--mdc-typography-headline6-font-weight, 500);
+        font-weight: var(
+          --mdc-typography-headline6-font-weight,
+          var(--ha-font-weight-medium)
+        );
         letter-spacing: var(
           --mdc-typography-headline6-letter-spacing,
           0.0125em

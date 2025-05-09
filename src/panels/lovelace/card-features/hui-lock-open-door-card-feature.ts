@@ -134,7 +134,7 @@ class HuiLockOpenDoorCardFeature
           justify-content: center;
           flex-direction: row;
           gap: 8px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           color: var(--success-color);
           margin: 0 12px 12px 12px;
           height: 40px;

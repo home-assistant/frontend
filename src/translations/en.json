@@ -403,7 +403,8 @@
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
-          "radius": "[%key:ui::panel::config::zone::detail::radius%]"
+          "radius": "[%key:ui::panel::config::zone::detail::radius%]",
+          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
         },
         "selector": {
           "options": "Selector Options",
@@ -5586,7 +5587,9 @@
           "upnp": "Universal Plug and Play (UPnP)",
           "discovery_information": "Discovery information",
           "copy_to_clipboard": "Copy to clipboard",
-          "no_devices_found": "No matching SSDP/UPnP discoveries found"
+          "no_devices_found": "No matching SSDP/UPnP discoveries found",
+          "show_raw_data": "Show raw data",
+          "raw_data_title": "Raw data"
         },
         "zeroconf": {
           "name": "Name",

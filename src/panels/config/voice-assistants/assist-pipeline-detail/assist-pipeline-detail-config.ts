@@ -94,8 +94,8 @@ export class AssistPipelineDetailConfig extends LitElement {
       margin-bottom: 16px;
     }
     h3 {
-      font-weight: normal;
       font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-normal);
       line-height: 28px;
       margin-top: 0;
       margin-bottom: 4px;

@@ -188,7 +188,7 @@ export class HaExpansionPanel extends LitElement {
       align-items: center;
       cursor: pointer;
       overflow: hidden;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       outline: none;
     }
     #summary.noCollapse {

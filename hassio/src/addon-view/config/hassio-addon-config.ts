@@ -434,7 +434,7 @@ class HassioAddonConfig extends LitElement {
           padding: 12px 16px 16px;
           display: block;
           margin-block: 0px;
-          font-weight: normal;
+          font-weight: var(--ha-font-weight-normal);
         }
         .card-actions.right {
           justify-content: flex-end;

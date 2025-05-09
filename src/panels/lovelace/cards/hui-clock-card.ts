@@ -205,7 +205,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     .time-title {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-m);
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 18px;
       overflow: hidden;
       text-align: center;
@@ -232,7 +232,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
         "hour minute am-pm";
 
       font-size: 2rem;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       line-height: 0.8;
       direction: ltr;
     }

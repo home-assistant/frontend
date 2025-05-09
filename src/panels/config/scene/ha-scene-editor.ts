@@ -1229,7 +1229,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         }
         .errors {
           padding: 20px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           color: var(--error-color);
         }
         ha-config-section {

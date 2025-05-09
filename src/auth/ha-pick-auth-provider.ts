@@ -58,7 +58,7 @@ export class HaPickAuthProvider extends LitElement {
       z-index: 1;
       text-align: center;
       font-size: var(--ha-font-size-m);
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 20px;
     }
     h3:before {

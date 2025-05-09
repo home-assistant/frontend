@@ -233,7 +233,7 @@ class HassTabsSubpage extends LitElement {
           font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           background-color: var(--sidebar-background-color);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           border-bottom: 1px solid var(--divider-color);
           box-sizing: border-box;
         }

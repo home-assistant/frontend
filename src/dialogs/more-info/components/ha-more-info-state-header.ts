@@ -74,14 +74,14 @@ export class HaMoreInfoStateHeader extends LitElement {
     }
     .state {
       font-style: normal;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       font-size: 36px;
       line-height: 44px;
     }
     .last-changed {
       font-style: normal;
-      font-weight: 500;
       font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
       line-height: 24px;
       letter-spacing: 0.1px;
       padding: 4px 0;

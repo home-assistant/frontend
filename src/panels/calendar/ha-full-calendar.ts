@@ -564,7 +564,7 @@ export class HAFullCalendar extends LitElement {
           background-color: var(--table-header-background-color);
           color: var(--primary-text-color);
           font-size: var(--ha-font-size-xs);
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           text-transform: uppercase;
         }
 
@@ -658,12 +658,12 @@ export class HAFullCalendar extends LitElement {
 
         .fc-list-day-text {
           font-size: var(--ha-font-size-l);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
         }
 
         .fc-list-day-side-text {
-          font-weight: 400;
           font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-normal);
           color: var(--primary-color);
         }
 
