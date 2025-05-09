@@ -496,7 +496,7 @@ class DataEntryFlowDialog extends LitElement {
           text-overflow: ellipsis;
         }
         .dialog-title.form {
-          white-space: pre-wrap;
+          white-space: normal;
         }
         .help {
           color: var(--secondary-text-color);
