@@ -20,7 +20,7 @@ import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
-import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-combo-box";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
@@ -90,7 +90,7 @@ export class HaAreaPicker extends LitElement {
   public excludeAreas?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
 
   @property({ attribute: false })
   public entityFilter?: (entity: HassEntity) => boolean;

@@ -38,7 +38,7 @@ import { subscribeLabelRegistry } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./device/ha-device-combo-box";
-import type { HaDeviceComboBoxEntityFilterFunc } from "./device/ha-device-combo-box";
+import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-combo-box";
 import "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
@@ -79,7 +79,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   public includeDeviceClasses?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDeviceComboBoxEntityFilterFunc;
+  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
 
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
