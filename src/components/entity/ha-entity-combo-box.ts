@@ -408,7 +408,9 @@ export class HaEntityComboBox extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-combo-box
+        item-id-path="id"
         item-value-path="id"
+        item-label-path="label"
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label === undefined
