@@ -386,7 +386,7 @@ export class QuickBar extends LitElement {
             `
           : nothing}
         ${item.translatedDomain && !showEntityId
-          ? html`<div slot="trailing-supporting-text">
+          ? html`<div slot="trailing-supporting-text" class="domain">
               ${item.translatedDomain}
             </div>`
           : nothing}
@@ -1027,7 +1027,7 @@ export class QuickBar extends LitElement {
           font-size: var(--ha-font-size-xs);
         }
 
-        ha-md-list-item [slot="trailing-supporting-text"] {
+        ha-md-list-item .domain {
           font-size: var(--ha-font-size-s);
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-normal);
