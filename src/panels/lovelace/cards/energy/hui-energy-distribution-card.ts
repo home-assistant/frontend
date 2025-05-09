@@ -850,7 +850,7 @@ class HuiEnergyDistrubutionCard
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       line-height: 12px;
       position: relative;
       text-decoration: none;
@@ -864,7 +864,7 @@ class HuiEnergyDistrubutionCard
     }
     .label {
       color: var(--secondary-text-color);
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       opacity: 1;
       height: 20px;
       overflow: hidden;

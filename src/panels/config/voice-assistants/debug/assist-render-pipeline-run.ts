@@ -421,7 +421,7 @@ export class AssistPipelineDebug extends LitElement {
     }
 
     .message {
-      font-size: 18px;
+      font-size: var(--ha-font-size-l);
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;

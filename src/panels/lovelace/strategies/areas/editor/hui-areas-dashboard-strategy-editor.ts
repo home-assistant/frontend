@@ -204,7 +204,7 @@ export class HuiAreasDashboardStrategyEditor
         }
         .toolbar p {
           margin: 0;
-          font-size: 18px;
+          font-size: var(--ha-font-size-l);
           line-height: 24px;
           font-weight: var(--ha-font-weight-normal);
           padding: 6px 4px;

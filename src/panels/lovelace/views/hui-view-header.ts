@@ -476,7 +476,7 @@ export class HuiViewHeader extends LitElement {
       border-color: var(--primary-color);
       --mdc-icon-size: 18px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--primary-text-color);
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;

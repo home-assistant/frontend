@@ -230,7 +230,7 @@ class HassTabsSubpage extends LitElement {
         }
 
         .toolbar {
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           background-color: var(--sidebar-background-color);
           font-weight: var(--ha-font-weight-normal);
@@ -259,7 +259,7 @@ class HassTabsSubpage extends LitElement {
 
         #tabbar {
           display: flex;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           overflow: hidden;
         }
 
@@ -278,7 +278,7 @@ class HassTabsSubpage extends LitElement {
           border-top: 1px solid var(--divider-color);
           justify-content: space-around;
           z-index: 2;
-          font-size: 12px;
+          font-size: var(--ha-font-size-s);
           width: 100%;
           padding-bottom: env(safe-area-inset-bottom);
         }

@@ -232,7 +232,7 @@ export class HuiCardOptions extends LitElement {
           border-radius: 50%;
           font-weight: var(--ha-font-weight-medium);
           text-align: center;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           background-color: var(--app-header-edit-background-color, #455a64);
           color: var(--app-header-edit-text-color, white);
         }

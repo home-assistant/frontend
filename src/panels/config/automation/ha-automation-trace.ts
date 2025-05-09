@@ -528,7 +528,7 @@ export class HaAutomationTrace extends LitElement {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 4px;
           background-color: var(--primary-background-color);

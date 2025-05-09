@@ -165,7 +165,7 @@ export class HuiCreateDialogHeaderFooter
           box-sizing: border-box;
           padding: 8px;
           color: var(--secondary-text-color);
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           cursor: pointer;
         }
 

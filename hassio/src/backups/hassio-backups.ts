@@ -401,7 +401,7 @@ export class HassioBackups extends LitElement {
           margin-top: 20px;
         }
         .header-toolbar .selected-txt {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         .header-toolbar .header-btns {
           margin-right: -12px;

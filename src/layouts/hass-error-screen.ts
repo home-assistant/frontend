@@ -64,7 +64,7 @@ class HassErrorScreen extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 8px 12px;
           pointer-events: none;

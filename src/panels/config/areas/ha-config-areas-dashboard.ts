@@ -455,7 +455,7 @@ export class HaConfigAreasDashboard extends LitElement {
       padding-inline-start: 8px;
     }
     .header h2 {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-medium);
       margin-top: 28px;
     }

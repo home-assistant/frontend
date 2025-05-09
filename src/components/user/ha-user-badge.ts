@@ -108,7 +108,7 @@ class UserBadge extends LitElement {
       overflow: hidden;
     }
     .initials.long {
-      font-size: 80%;
+      font-size: var(--ha-font-size-s);
     }
   `;
 }

@@ -42,7 +42,7 @@ class PageDescription extends HaMarkdown {
         padding-bottom: 8px;
       }
       .subtitle {
-        font-size: 18px;
+        font-size: var(--ha-font-size-l);
         line-height: 24px;
       }
       .root {

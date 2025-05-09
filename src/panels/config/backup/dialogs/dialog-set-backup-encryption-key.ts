@@ -231,8 +231,8 @@ class DialogSetBackupEncryptionKey extends LitElement implements HassDialog {
         .encryption-key p {
           margin: 0;
           flex: 1;
+          font-size: var(--ha-font-size-xl);
           font-family: var(--ha-font-family-code);
-          font-size: 20px;
           font-style: normal;
           font-weight: var(--ha-font-weight-normal);
           line-height: 28px;

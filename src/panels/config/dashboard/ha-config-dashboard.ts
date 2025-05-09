@@ -408,7 +408,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           margin: 8px 16px 16px 16px;
         }
         .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding: 16px;
           padding-bottom: 0;
         }
