@@ -2,7 +2,7 @@ import type { CSSResult } from "lit";
 
 const _extractCssVars = (
   cssString: string,
-  condition: (string) => boolean = () => true
+  condition: (string: string) => boolean = () => true
 ) => {
   const variables: Record<string, string> = {};
 

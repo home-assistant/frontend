@@ -26,12 +26,6 @@ export const mainStyles = css`
     --float-end: right;
     --margin-title-ltr: 0 0 0 24px;
     --margin-title-rtl: 0 24px 0 0;
-
-    /* Vaadin typography */
-    --material-h6-font-size: var(--ha-font-size-m);
-    --material-small-font-size: var(--ha-font-size-xs);
-    --material-caption-font-size: var(--ha-font-size-2xs);
-    --material-button-font-size: var(--ha-font-size-xs);
   }
 `;
 
