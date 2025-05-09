@@ -4,8 +4,8 @@ import "./compress.js";
 import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
-import "./translations.js";
 import "./rspack.js";
+import "./translations.js";
 
 gulp.task(
   "develop-landing-page",

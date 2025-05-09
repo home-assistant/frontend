@@ -1,10 +1,10 @@
 // Tasks to compress
 
-import { constants } from "node:zlib";
 import gulp from "gulp";
 import brotli from "gulp-brotli";
 import zopfli from "gulp-zopfli-green";
-import paths from "../paths.cjs";
+import { constants } from "node:zlib";
+import paths from "../paths";
 
 const filesGlob = "*.{js,json,css,svg,xml}";
 const brotliOptions = {

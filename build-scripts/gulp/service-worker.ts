@@ -5,7 +5,7 @@ import gulp from "gulp";
 import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
 import { basename, join, relative } from "node:path";
 import { injectManifest } from "workbox-build";
-import paths from "../paths.cjs";
+import paths from "../paths";
 
 const SW_MAP = {
   [paths.app_output_latest]: "modern",

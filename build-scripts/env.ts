@@ -1,10 +1,10 @@
-const fs = require("fs");
-const path = require("path");
-const paths = require("./paths.cjs");
+import fs from "fs";
+import path from "path";
+import paths from "./paths";
 
 const isTrue = (value) => value === "1" || value?.toLowerCase() === "true";
 
-module.exports = {
+export default {
   isProdBuild() {
     return (
       process.env.NODE_ENV === "production" || module.exports.isStatsBuild()

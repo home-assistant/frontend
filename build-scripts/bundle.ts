@@ -1,13 +1,13 @@
-const path = require("path");
-const env = require("./env.cjs");
-const paths = require("./paths.cjs");
-const { dependencies } = require("../package.json");
+import path from "path";
+import { dependencies } from "../package.json";
+import env from "./env";
+import paths from "./paths";
 
 const BABEL_PLUGINS = path.join(__dirname, "babel-plugins");
 
 // GitHub base URL to use for production source maps
 // Nightly builds use the commit SHA, otherwise assumes there is a tag that matches the version
-module.exports.sourceMapURL = () => {
+export const sourceMapURL = () => {
   const ref = env.version().endsWith("dev")
     ? process.env.GITHUB_SHA || "dev"
     : env.version();
@@ -15,10 +15,10 @@ module.exports.sourceMapURL = () => {
 };
 
 // Files from NPM Packages that should not be imported
-module.exports.ignorePackages = () => [];
+export const ignorePackages = () => [];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = ({ isHassioBuild }) =>
+export const emptyPackages = ({ isHassioBuild }) =>
   [
     require.resolve("@vaadin/vaadin-material-styles/typography.js"),
     require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
@@ -33,7 +33,7 @@ module.exports.emptyPackages = ({ isHassioBuild }) =>
       ),
   ].filter(Boolean);
 
-module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
+export const definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __DEV__: !isProdBuild,
   __BUILD__: JSON.stringify(latestBuild ? "modern" : "legacy"),
   __VERSION__: JSON.stringify(env.version()),
@@ -53,7 +53,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   ...defineOverlay,
 });
 
-module.exports.htmlMinifierOptions = {
+export const htmlMinifierOptions = {
   caseSensitive: true,
   collapseWhitespace: true,
   conservativeCollapse: true,
@@ -65,7 +65,7 @@ module.exports.htmlMinifierOptions = {
   },
 };
 
-module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
+export const terserOptions = ({ latestBuild, isTestBuild }) => ({
   safari10: !latestBuild,
   ecma: latestBuild ? 2015 : 5,
   module: latestBuild,
@@ -74,7 +74,7 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
 });
 
 /** @type {import('@rspack/core').SwcLoaderOptions} */
-module.exports.swcOptions = () => ({
+export const swcOptions = () => ({
   jsc: {
     loose: true,
     externalHelpers: true,
@@ -86,7 +86,7 @@ module.exports.swcOptions = () => ({
   },
 });
 
-module.exports.babelOptions = ({
+export const babelOptions = ({
   latestBuild,
   isProdBuild,
   isTestBuild,
@@ -221,7 +221,7 @@ const publicPath = (latestBuild, root = "") =>
   }
   */
 
-module.exports.config = {
+export const config = {
   app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild, isWDS }) {
     return {
       name: "frontend" + nameSuffix(latestBuild),
@@ -273,6 +273,7 @@ module.exports.config = {
     };
 
     if (latestBuild) {
+      // @ts-ignore
       entry.receiver = path.resolve(
         paths.cast_dir,
         "src/receiver/entrypoint.ts"

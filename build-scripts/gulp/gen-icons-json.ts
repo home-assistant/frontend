@@ -2,7 +2,7 @@ import fs from "fs";
 import gulp from "gulp";
 import hash from "object-hash";
 import path from "path";
-import paths from "../paths.cjs";
+import paths from "../paths";
 
 const ICON_PACKAGE_PATH = path.resolve("node_modules/@mdi/svg/");
 const META_PATH = path.resolve(ICON_PACKAGE_PATH, "meta.json");
@@ -21,7 +21,7 @@ const getMeta = () => {
       encoding,
     });
     return {
-      path: svg.match(/ d="([^"]+)"/)[1],
+      path: svg.match(/ d="([^"]+)"/)?.[1],
       name: icon.name,
       tags: icon.tags,
       aliases: icon.aliases,
@@ -55,14 +55,14 @@ const orderMeta = (meta) => {
 };
 
 const splitBySize = (meta) => {
-  const chunks = [];
+  const chunks: any[] = [];
   const CHUNK_SIZE = 50000;
 
   let curSize = 0;
   let startKey;
-  let icons = [];
+  let icons: any[] = [];
 
-  Object.values(meta).forEach((icon) => {
+  Object.values(meta).forEach((icon: any) => {
     if (startKey === undefined) {
       startKey = icon.name;
     }
@@ -94,7 +94,7 @@ const findDifferentiator = (curString, prevString) => {
       return curString.substring(0, i + 1);
     }
   }
-  throw new Error("Cannot find differentiator", curString, prevString);
+  throw new Error(`Cannot find differentiator; ${curString}; ${prevString}`);
 };
 
 gulp.task("gen-icons-json", (done) => {
@@ -106,7 +106,7 @@ gulp.task("gen-icons-json", (done) => {
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
-  const parts = [];
+  const parts: any[] = [];
 
   let lastEnd;
   split.forEach((chunk) => {

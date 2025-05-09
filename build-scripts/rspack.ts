@@ -1,20 +1,17 @@
-const { existsSync } = require("fs");
-const path = require("path");
-const rspack = require("@rspack/core");
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { RsdoctorRspackPlugin } = require("@rsdoctor/rspack-plugin");
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { StatsWriterPlugin } = require("webpack-stats-plugin");
-const filterStats = require("@bundle-stats/plugin-webpack-filter");
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const TerserPlugin = require("terser-webpack-plugin");
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
-const log = require("fancy-log");
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const WebpackBar = require("webpackbar/rspack");
-const paths = require("./paths.cjs");
-const bundle = require("./bundle.cjs");
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable import/no-import-module-exports */
+import filterStats from "@bundle-stats/plugin-webpack-filter";
+import { RsdoctorRspackPlugin } from "@rsdoctor/rspack-plugin";
+import * as rspack from "@rspack/core";
+import log from "fancy-log";
+import { existsSync } from "fs";
+import path from "path";
+import { WebpackManifestPlugin } from "rspack-manifest-plugin";
+import TerserPlugin from "terser-webpack-plugin";
+import { StatsWriterPlugin } from "webpack-stats-plugin";
+import WebpackBar from "webpackbar/rspack";
+import * as bundle from "./bundle";
+import * as paths from "./paths";
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -30,7 +27,7 @@ class LogStartCompilePlugin {
   }
 }
 
-const createRspackConfig = ({
+export const createRspackConfig = ({
   name,
   entry,
   outputPath,
@@ -263,7 +260,7 @@ const createRspackConfig = ({
   };
 };
 
-const createAppConfig = ({
+export const createAppConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
@@ -273,15 +270,15 @@ const createAppConfig = ({
     bundle.config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
-const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+export const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
   createRspackConfig(
     bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild })
   );
 
-const createCastConfig = ({ isProdBuild, latestBuild }) =>
+export const createCastConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({
+export const createHassioConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
@@ -296,18 +293,8 @@ const createHassioConfig = ({
     })
   );
 
-const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
+export const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
-const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
+export const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
-
-module.exports = {
-  createAppConfig,
-  createDemoConfig,
-  createCastConfig,
-  createHassioConfig,
-  createGalleryConfig,
-  createRspackConfig,
-  createLandingPageConfig,
-};

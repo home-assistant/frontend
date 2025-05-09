@@ -78,5 +78,8 @@
         "./node_modules/@lit-labs/observers/resize-controller.js"
       ]
     }
+  },
+  "ts-node": {
+    "esm": true
   }
 }

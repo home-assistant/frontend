@@ -1,6 +1,6 @@
 import { deleteSync } from "del";
 import gulp from "gulp";
-import paths from "../paths.cjs";
+import paths from "../paths";
 import "./translations.js";
 
 gulp.task(

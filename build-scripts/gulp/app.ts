@@ -1,19 +1,20 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import gulp from "gulp";
-import env from "../env.cjs";
-import "./clean.js";
-import "./compress.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./gen-icons-json.js";
-import "./locale-data.js";
-import "./service-worker.js";
-import "./translations.js";
-import "./rspack.js";
+import "./clean.ts";
+import "./compress.ts";
+import env from "../env";
+import "./entry-html.ts";
+import "./gather-static.ts";
+import "./gen-icons-json.ts";
+import "./locale-data.ts";
+import "./rspack.ts";
+import "./service-worker.ts";
+import "./translations.ts";
 
 gulp.task(
   "develop-app",
   gulp.series(
-    async function setEnv() {
+    async () => {
       process.env.NODE_ENV = "development";
     },
     "clean",
@@ -32,7 +33,7 @@ gulp.task(
 gulp.task(
   "build-app",
   gulp.series(
-    async function setEnv() {
+    async () => {
       process.env.NODE_ENV = "production";
     },
     "clean",
@@ -48,7 +49,7 @@ gulp.task(
 gulp.task(
   "analyze-app",
   gulp.series(
-    async function setEnv() {
+    async () => {
       process.env.STATS = "1";
     },
     "clean",

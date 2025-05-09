@@ -1,15 +1,16 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import gulp from "gulp";
-import "./clean.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./service-worker.js";
-import "./translations.js";
-import "./rspack.js";
+import "./clean.ts";
+import "./entry-html.ts";
+import "./gather-static.ts";
+import "./rspack.ts";
+import "./service-worker.ts";
+import "./translations.ts";
 
 gulp.task(
   "develop-cast",
   gulp.series(
-    async function setEnv() {
+    async () => {
       process.env.NODE_ENV = "development";
     },
     "clean-cast",
@@ -24,7 +25,7 @@ gulp.task(
 gulp.task(
   "build-cast",
   gulp.series(
-    async function setEnv() {
+    async () => {
       process.env.NODE_ENV = "production";
     },
     "clean-cast",

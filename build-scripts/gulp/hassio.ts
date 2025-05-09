@@ -1,12 +1,12 @@
 import gulp from "gulp";
-import env from "../env.cjs";
+import env from "../env";
 import "./clean.js";
 import "./compress.js";
 import "./entry-html.js";
 import "./gather-static.js";
 import "./gen-icons-json.js";
-import "./translations.js";
 import "./rspack.js";
+import "./translations.js";
 
 gulp.task(
   "develop-hassio",

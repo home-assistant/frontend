@@ -10,8 +10,8 @@ import gulp from "gulp";
 import { minify } from "html-minifier-terser";
 import template from "lodash.template";
 import { dirname, extname, resolve } from "node:path";
-import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
-import paths from "../paths.cjs";
+import { htmlMinifierOptions, terserOptions } from "../bundle";
+import paths from "../paths";
 
 // macOS companion app has no way to obtain the Safari version used by WKWebView,
 // and it is not in the default user agent string. So we add an additional regex
@@ -36,7 +36,7 @@ const getCommonTemplateVars = () => {
   });
   const minSafariVersion = browserRegexes.find(
     (regex) => regex.family === "safari"
-  )?.matchedVersions[0][0];
+  )?.matchedVersions[0][0] ?? 18;
   const minMacOSVersion = SAFARI_TO_MACOS[minSafariVersion];
   if (!minMacOSVersion) {
     throw Error(
@@ -106,10 +106,10 @@ const genPagesDevTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
-          latestEntryJS: entries.map(
+          latestEntryJS: (entries as string[]).map(
             (entry) => `${publicRoot}/frontend_latest/${entry}.js`
           ),
-          es5EntryJS: entries.map(
+          es5EntryJS: (entries as string[]).map(
             (entry) => `${publicRoot}/frontend_es5/${entry}.js`
           ),
           latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
@@ -128,7 +128,7 @@ const genPagesProdTask =
     inputRoot,
     outputRoot,
     outputLatest,
-    outputES5,
+    outputES5?: string,
     inputSub = "src/html"
   ) =>
   async () => {
@@ -139,14 +139,14 @@ const genPagesProdTask =
       ? fs.readJsonSync(resolve(outputES5, "manifest.json"))
       : {};
     const commonVars = getCommonTemplateVars();
-    const minifiedHTML = [];
+    const minifiedHTML: Promise<void>[] = [];
     for (const [page, entries] of Object.entries(pageEntries)) {
       const content = renderTemplate(
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
-          latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
+          latestEntryJS: (entries as string[]).map((entry) => latestManifest[`${entry}.js`]),
+          es5EntryJS: (entries as string[]).map((entry) => es5Manifest[`${entry}.js`]),
           latestCustomPanelJS: latestManifest["custom-panel.js"],
           es5CustomPanelJS: es5Manifest["custom-panel.js"],
         }

@@ -54,15 +54,6 @@ export default tseslint.config(
         },
       },
     },
-
-    settings: {
-      "import/resolver": {
-        webpack: {
-          config: "./rspack.config.cjs",
-        },
-      },
-    },
-
     rules: {
       "class-methods-use-this": "off",
       "new-cap": "off",

@@ -54,7 +54,7 @@ gulp.task("fetch-nightly-translations", async function () {
 
   // To store file writing promises
   const createExtractDir = mkdir(EXTRACT_DIR, { recursive: true });
-  const writings = [];
+  const writings: Promise<void>[] = [];
 
   // Authenticate to GitHub using GitHub action token if it exists,
   // otherwise look for a saved user token or generate a new one if none
@@ -87,7 +87,7 @@ gulp.task("fetch-nightly-translations", async function () {
       });
       tokenAuth = await auth({ type: "oauth" });
       writings.push(
-        createExtractDir.then(
+        createExtractDir.then(() =>
           writeFile(TOKEN_FILE, JSON.stringify(tokenAuth, null, 2))
         )
       );
@@ -131,13 +131,13 @@ gulp.task("fetch-nightly-translations", async function () {
     throw Error("Latest nightly workflow run has no translations artifact");
   }
   writings.push(
-    createExtractDir.then(
+    createExtractDir.then(() =>
       writeFile(ARTIFACT_FILE, JSON.stringify(latestArtifact, null, 2))
     )
   );
 
   // Remove the current translations
-  const deleteCurrent = Promise.all(writings).then(
+  const deleteCurrent = Promise.all(writings).then(() =>
     deleteAsync([`${EXTRACT_DIR}/*`, `!${ARTIFACT_FILE}`, `!${TOKEN_FILE}`])
   );
 
@@ -148,13 +148,14 @@ gulp.task("fetch-nightly-translations", async function () {
     artifact_id: latestArtifact.id,
     archive_format: "zip",
   });
+  // @ts-ignore
   if (downloadResponse.status !== 200) {
     throw Error("Failure downloading translations artifact");
   }
 
   // Artifact is a tarball, but GitHub adds it to a zip file
   console.log("Unpacking downloaded translations...");
-  const zip = await jszip.loadAsync(downloadResponse.data);
+  const zip = await jszip.loadAsync(downloadResponse.data as any);
   await deleteCurrent;
   const extractStream = zip.file(/.*/)[0].nodeStream().pipe(extract());
   await new Promise((resolve, reject) => {

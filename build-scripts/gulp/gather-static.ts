@@ -3,7 +3,7 @@
 import fs from "fs-extra";
 import gulp from "gulp";
 import path from "path";
-import paths from "../paths.cjs";
+import paths from "../paths";
 
 const npmPath = (...parts) =>
   path.resolve(paths.root_dir, "node_modules", ...parts);

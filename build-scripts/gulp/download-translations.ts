@@ -1,10 +1,10 @@
+import { LokaliseApi } from "@lokalise/node-api";
 import fs from "fs/promises";
 import gulp from "gulp";
-import path from "path";
-import mapStream from "map-stream";
 import transform from "gulp-json-transform";
-import { LokaliseApi } from "@lokalise/node-api";
 import JSZip from "jszip";
+import mapStream from "map-stream";
+import path from "path";
 
 const inDir = "translations";
 const inDirFrontend = `${inDir}/frontend`;
@@ -16,7 +16,7 @@ function hasHtml(data) {
   return /<\S*>/i.test(data);
 }
 
-function recursiveCheckHasHtml(file, data, errors, recKey) {
+function recursiveCheckHasHtml(file, data, errors: string[], recKey?: string) {
   Object.keys(data).forEach(function (key) {
     if (typeof data[key] === "object") {
       const nextRecKey = recKey ? `${recKey}.${key}` : key;
@@ -80,7 +80,7 @@ gulp.task("check-translations-html", function () {
 gulp.task("check-all-files-exist", async function () {
   const file = await fs.readFile(srcMeta, { encoding });
   const meta = JSON.parse(file);
-  const writings = [];
+  const writings: Promise<void>[] = [];
   Object.keys(meta).forEach((lang) => {
     writings.push(
       fs.writeFile(`${inDirFrontend}/${lang}.json`, JSON.stringify({}), {

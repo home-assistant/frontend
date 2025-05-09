@@ -1,6 +1,6 @@
-const path = require("path");
+import path from "path";
 
-module.exports = {
+export default {
   root_dir: path.resolve(__dirname, ".."),
 
   build_dir: path.resolve(__dirname, "../build"),

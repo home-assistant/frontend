@@ -2,7 +2,7 @@ import { deleteSync } from "del";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import gulp from "gulp";
 import { join, resolve } from "node:path";
-import paths from "../paths.cjs";
+import paths from "../paths";
 
 const formatjsDir = join(paths.root_dir, "node_modules", "@formatjs");
 const outDir = join(paths.build_dir, "locale-data");
@@ -31,7 +31,7 @@ const convertToJSON = async (
       join(formatjsDir, pkg, subDir, `${language}.js`),
       "utf-8"
     );
-  } catch (e) {
+  } catch (e: any) {
     // Ignore if language is missing (i.e. not supported by @formatjs)
     if (e.code === "ENOENT" && skipMissing) {
       console.warn(`Skipped missing data for language ${lang} from ${pkg}`);
@@ -63,7 +63,7 @@ gulp.task("create-locale-data", async () => {
       "utf-8"
     )
   );
-  const conversions = [];
+  const conversions: any[] = [];
   for (const pkg of Object.keys(INTL_POLYFILLS)) {
     // eslint-disable-next-line no-await-in-loop
     await mkdir(join(outDir, pkg), { recursive: true });

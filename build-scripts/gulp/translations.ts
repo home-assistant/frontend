@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable max-classes-per-file */
 
 import { deleteAsync } from "del";
@@ -10,9 +11,9 @@ import { mkdir, readFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { PassThrough, Transform } from "node:stream";
 import { finished } from "node:stream/promises";
-import env from "../env.cjs";
-import paths from "../paths.cjs";
-import "./fetch-nightly-translations.js";
+import env from "../env";
+import paths from "../paths";
+import "./fetch-nightly-translations.ts";
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
@@ -111,11 +112,12 @@ const testReviver = (_key, value) =>
 const KEY_REFERENCE = /\[%key:([^%]+)%\]/;
 const lokaliseTransform = (data, path, original = data) => {
   const output = {};
-  for (const [key, value] of Object.entries(data)) {
+  for (const entry of Object.entries(data)) {
+    const [key, value] = entry as [string, string];
     if (typeof value === "object") {
       output[key] = lokaliseTransform(value, path, original);
     } else {
-      output[key] = value.replace(KEY_REFERENCE, (_match, lokalise_key) => {
+      output[key] = value?.replace(KEY_REFERENCE, (_match, lokalise_key) => {
         const replace = lokalise_key.split("::").reduce((tr, k) => {
           if (!tr) {
             throw Error(`Invalid key placeholder ${lokalise_key} in ${path}`);
@@ -248,7 +250,7 @@ const createTranslations = async () => {
   for (const translationFile of translationFiles) {
     const locale = basename(translationFile, ".json");
     const subtags = locale.split("-");
-    const mergeFiles = [];
+    const mergeFiles: string[] = [];
     for (let i = 1; i <= subtags.length; i++) {
       const lang = subtags.slice(0, i).join("-");
       if (lang === TEST_LOCALE) {

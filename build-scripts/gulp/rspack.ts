@@ -1,13 +1,13 @@
 // Tasks to run rspack.
 
-import fs from "fs";
-import path from "path";
-import log from "fancy-log";
-import gulp from "gulp";
 import rspack from "@rspack/core";
 import { RspackDevServer } from "@rspack/dev-server";
-import env from "../env.cjs";
-import paths from "../paths.cjs";
+import log from "fancy-log";
+import fs from "fs";
+import gulp from "gulp";
+import path from "path";
+import env from "../env";
+import paths from "../paths";
 import {
   createAppConfig,
   createCastConfig,
@@ -15,7 +15,7 @@ import {
   createGalleryConfig,
   createHassioConfig,
   createLandingPageConfig,
-} from "../rspack.cjs";
+} from "../rspack";
 
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
@@ -28,6 +28,14 @@ const isWsl =
     .readFileSync("/proc/version", "utf-8")
     .toLocaleLowerCase()
     .includes("microsoft");
+
+interface RunDevServer {
+  compiler: any;
+  contentBase: string;
+  port: number;
+  listenHost?: string;
+  proxy: any;
+}
 
 /**
  * @param {{
@@ -43,7 +51,7 @@ const runDevServer = async ({
   port,
   listenHost = undefined,
   proxy = undefined,
-}) => {
+}: RunDevServer) => {
   if (listenHost === undefined) {
     // For dev container, we need to listen on all hosts
     listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
@@ -68,7 +76,7 @@ const runDevServer = async ({
   log("[rspack-dev-server]", `Project is running at http://localhost:${port}`);
 };
 
-const doneHandler = (done) => (err, stats) => {
+const doneHandler = (done?: (value?: unknown) => void) => (err, stats) => {
   if (err) {
     log.error(err.stack || err);
     if (err.details) {
