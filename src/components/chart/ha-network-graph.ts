@@ -41,6 +41,7 @@ export interface NetworkLink {
     color?: string;
     type?: "solid" | "dashed" | "dotted";
   };
+  symbolSize?: number | number[];
   label?: {
     show?: boolean;
     formatter?: string;
@@ -232,7 +233,7 @@ export class HaNetworkGraph extends LitElement {
       },
       legend: {
         show: !!this.data?.categories?.length,
-        data: this.data?.categories?.map((cat) => cat.name) || [],
+        data: this.data?.categories,
       },
       dataZoom: {
         type: "inside",
@@ -278,7 +279,8 @@ export class HaNetworkGraph extends LitElement {
           formatter: (params: any) => params.data.value || "",
           fontSize: 10,
         },
-        edgeSymbol: ["none", "none"],
+        edgeSymbol: ["none", "arrow"],
+        edgeSymbolSize: 10,
         data: this.data.nodes.map((node) => ({
           id: node.id,
           name: node.name,
@@ -292,14 +294,7 @@ export class HaNetworkGraph extends LitElement {
           x: node.x,
           y: node.y,
         })),
-        links: this.data.links.map((link) => ({
-          source: link.source,
-          target: link.target,
-          value: link.value,
-          lineStyle: link.lineStyle || {},
-          label: link.label || {},
-          ignoreForceLayout: link.ignoreForceLayout,
-        })),
+        links: this.data.links,
         categories: this.data.categories || [],
       },
     ] as any;
@@ -336,8 +331,6 @@ export class HaNetworkGraph extends LitElement {
       seriesIndex: 0,
       dataIndex: nodeIndex,
     });
-
-    this._isZoomed = true;
   }
 
   private _centerCoordinatorNode() {

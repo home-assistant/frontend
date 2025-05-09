@@ -168,19 +168,24 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
-      { name: "Coordinator" },
-      { name: "Router" },
-      { name: "End Device" },
-      { name: "Offline" },
+      {
+        name: "Coordinator",
+        icon: "roundRect",
+        itemStyle: { color: "#4CAF50" },
+      },
+      { name: "Router", icon: "circle", itemStyle: { color: "#2196F3" } },
+      { name: "End Device", icon: "circle", itemStyle: { color: "#9E9E9E" } },
+      { name: "Offline", icon: "circle", itemStyle: { color: "#F44336" } },
     ];
 
     // First create all the nodes and links
     devices.forEach((device) => {
+      const isCoordinator = device.device_type === "Coordinator";
       // Determine category (Coordinator, Router, End Device)
       let category: number;
       if (!device.available) {
         category = 3; // Offline
-      } else if (device.device_type === "Coordinator") {
+      } else if (isCoordinator) {
         category = 0;
       } else if (device.device_type === "Router") {
         category = 1;
@@ -193,18 +198,16 @@ export class ZHANetworkVisualizationPage extends LitElement {
         id: device.ieee,
         name: device.user_given_name || device.name || device.ieee,
         category,
-        value:
-          device.device_type === "Coordinator" ? 3 : device.available ? 2 : 1,
-        symbolSize:
-          device.device_type === "Coordinator"
-            ? 40
-            : device.device_type === "Router"
-              ? 30
-              : 20,
-        symbol: device.device_type === "Coordinator" ? "roundRect" : "circle",
+        value: isCoordinator ? 3 : device.available ? 2 : 1,
+        symbolSize: isCoordinator
+          ? 40
+          : device.device_type === "Router"
+            ? 30
+            : 20,
+        symbol: isCoordinator ? "roundRect" : "circle",
         itemStyle: {
           color: device.available
-            ? device.device_type === "Coordinator"
+            ? isCoordinator
               ? "#4CAF50"
               : device.device_type === "Router"
                 ? "#2196F3"
@@ -212,7 +215,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             : "#F44336",
         },
         label: this._buildLabel(device),
-        fixed: device.device_type === "Coordinator",
+        fixed: isCoordinator,
       });
 
       // Create links (edges)
@@ -239,6 +242,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
               existingLink.value!,
               parseInt(neighbor.lqi)
             );
+            existingLink.symbolSize = 0;
             existingLink.lineStyle = {
               ...existingLink.lineStyle,
               width: this._getLQIWidth(existingLink.value!),
@@ -252,116 +256,83 @@ export class ZHANetworkVisualizationPage extends LitElement {
             };
           } else {
             // Create a new link
+            const width = this._getLQIWidth(parseInt(neighbor.lqi));
             const link: NetworkLink = {
               source: device.ieee,
               target: neighbor.ieee,
               value: parseInt(neighbor.lqi),
               lineStyle: {
-                width: this._getLQIWidth(parseInt(neighbor.lqi)),
+                width,
                 color: route.route_status === "Active" ? "#17ab00" : "#fc4c4c",
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dashed",
               },
+              symbolSize: width * 2,
               // By default, all links should be ignored for force layout
-              ignoreForceLayout: true,
+              ignoreForceLayout: !isCoordinator,
             };
             links.push(link);
             existingLinks.push(link);
           }
         });
-      } else if (
-        existingLinks.length === 0 &&
-        device.neighbors &&
-        device.neighbors.length > 0
-      ) {
-        const closestNeighbor = device.neighbors.sort(
+      } else if (existingLinks.length === 0) {
+        // If there are no links, create a link to the closest neighbor
+        const neighbors: { ieee: string; lqi: string }[] =
+          device.neighbors ?? [];
+        if (neighbors.length === 0) {
+          // If there are no neighbors, look for links from other devices
+          devices.forEach((d) => {
+            if (d.neighbors && d.neighbors.length > 0) {
+              const neighbor = d.neighbors.find((n) => n.ieee === device.ieee);
+              if (neighbor) {
+                neighbors.push({ ieee: d.ieee, lqi: neighbor.lqi });
+              }
+            }
+          });
+        }
+        const closestNeighbor = neighbors.sort(
           (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
         )[0];
-        links.push({
-          source: device.ieee,
-          target: closestNeighbor.ieee,
-          value: parseInt(closestNeighbor.lqi),
-          lineStyle: {
-            width: 1,
-            color: "#bfbfbf",
-            type: "dotted",
-          },
-          ignoreForceLayout: true,
-        });
+        if (closestNeighbor) {
+          links.push({
+            source: device.ieee,
+            target: closestNeighbor.ieee,
+            value: parseInt(closestNeighbor.lqi),
+            lineStyle: {
+              width: 1,
+              color: "#bfbfbf",
+              type: "dotted",
+            },
+            ignoreForceLayout: false,
+          });
+        }
       }
     });
 
     // Now set ignoreForceLayout to false for the strongest connection of each device
     // Except for the coordinator which can have multiple strong connections
     devices.forEach((device) => {
-      if (device.neighbors && device.neighbors.length > 0) {
-        // Find the strongest neighbor for this device
-        const strongestNeighbor = [...device.neighbors].sort(
-          (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
-        )[0];
-
+      if (device.device_type === "Coordinator") {
+        links.forEach((link) => {
+          if (link.source === device.ieee || link.target === device.ieee) {
+            link.ignoreForceLayout = false;
+          }
+        });
+      } else {
         // Find the link that corresponds to this strongest connection
-        const strongestLink = links.find(
-          (link) =>
-            (link.source === device.ieee &&
-              link.target === strongestNeighbor.ieee) ||
-            (link.target === device.ieee &&
-              link.source === strongestNeighbor.ieee)
-        );
+        let strongestLink: NetworkLink | undefined;
+        links.forEach((link) => {
+          if (
+            (link.source === device.ieee || link.target === device.ieee) &&
+            link.value! > (strongestLink?.value ?? 0)
+          ) {
+            strongestLink = link;
+          }
+        });
 
         if (strongestLink) {
-          // For the coordinator, allow multiple strong connections
-          if (device.device_type === "Coordinator") {
-            strongestLink.ignoreForceLayout = false;
-          } else {
-            // For non-coordinators, check if they have a direct connection to the coordinator
-            const coordinatorDevice = devices.find(
-              (d) => d.device_type === "Coordinator"
-            );
-            if (coordinatorDevice) {
-              const directCoordinatorLink = links.find(
-                (link) =>
-                  (link.source === device.ieee &&
-                    link.target === coordinatorDevice.ieee) ||
-                  (link.target === device.ieee &&
-                    link.source === coordinatorDevice.ieee)
-              );
-
-              // If device has a direct connection to coordinator, prioritize that one
-              if (directCoordinatorLink) {
-                directCoordinatorLink.ignoreForceLayout = false;
-                directCoordinatorLink.lineStyle = {
-                  ...directCoordinatorLink.lineStyle,
-                  width: 4,
-                };
-              } else {
-                // Otherwise use the strongest connection
-                // If this is already the strongest connection for the neighbor, keep it
-                const neighborDevice = devices.find(
-                  (d) => d.ieee === strongestNeighbor.ieee
-                );
-                if (neighborDevice) {
-                  const neighborStrongestNeighbor = neighborDevice.neighbors
-                    ? [...neighborDevice.neighbors].sort(
-                        (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
-                      )[0]
-                    : null;
-
-                  if (
-                    neighborStrongestNeighbor &&
-                    neighborStrongestNeighbor.ieee === device.ieee
-                  ) {
-                    strongestLink.ignoreForceLayout = false;
-                    strongestLink.lineStyle = {
-                      ...strongestLink.lineStyle,
-                      width: 4,
-                    };
-                  }
-                }
-              }
-            }
-          }
+          strongestLink.ignoreForceLayout = false;
         }
       }
     });
@@ -370,7 +341,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _getLQIWidth(lqi: number): number {
-    return Math.max((lqi / 256) * 5, 1);
+    return (lqi / 256) * 4;
   }
 }
 
