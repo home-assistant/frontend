@@ -26,6 +26,7 @@
     // Interop with CommonJS and other tools
     "esModuleInterop": true,
     "isolatedModules": true,
+    "allowImportingTsExtensions": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",
@@ -78,5 +79,8 @@
         "./node_modules/@lit-labs/observers/resize-controller.js"
       ]
     }
+  },
+  "ts-node": {
+    "esm": true
   }
 }

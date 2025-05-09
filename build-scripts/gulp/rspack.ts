@@ -1,13 +1,12 @@
 // Tasks to run rspack.
 
-import fs from "fs";
-import path from "path";
-import log from "fancy-log";
-import gulp from "gulp";
 import rspack from "@rspack/core";
 import { RspackDevServer } from "@rspack/dev-server";
-import env from "../env.cjs";
-import paths from "../paths.cjs";
+import log from "fancy-log";
+import fs from "node:fs";
+import { task, watch, series } from "gulp";
+import path from "node:path";
+import paths from "../paths.ts";
 import {
   createAppConfig,
   createCastConfig,
@@ -15,7 +14,8 @@ import {
   createGalleryConfig,
   createHassioConfig,
   createLandingPageConfig,
-} from "../rspack.cjs";
+} from "../rspack.ts";
+import { isDevContainer, isStatsBuild, isTestBuild } from "../env.ts";
 
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
@@ -29,6 +29,14 @@ const isWsl =
     .toLocaleLowerCase()
     .includes("microsoft");
 
+interface RunDevServer {
+  compiler: any;
+  contentBase: string;
+  port: number;
+  listenHost?: string;
+  proxy?: any;
+}
+
 /**
  * @param {{
  *   compiler: import("@rspack/core").Compiler,
@@ -41,12 +49,12 @@ const runDevServer = async ({
   compiler,
   contentBase,
   port,
-  listenHost = undefined,
-  proxy = undefined,
-}) => {
+  listenHost,
+  proxy,
+}: RunDevServer) => {
   if (listenHost === undefined) {
     // For dev container, we need to listen on all hosts
-    listenHost = env.isDevContainer() ? "0.0.0.0" : "localhost";
+    listenHost = isDevContainer() ? "0.0.0.0" : "localhost";
   }
   const server = new RspackDevServer(
     {
@@ -68,7 +76,7 @@ const runDevServer = async ({
   log("[rspack-dev-server]", `Project is running at http://localhost:${port}`);
 };
 
-const doneHandler = (done) => (err, stats) => {
+const doneHandler = (done?: (value?: unknown) => void) => (err, stats) => {
   if (err) {
     log.error(err.stack || err);
     if (err.details) {
@@ -97,30 +105,30 @@ const prodBuild = (conf) =>
     );
   });
 
-gulp.task("rspack-watch-app", () => {
+task("rspack-watch-app", () => {
   // This command will run forever because we don't close compiler
   rspack(
     process.env.ES5
       ? bothBuilds(createAppConfig, { isProdBuild: false })
       : createAppConfig({ isProdBuild: false, latestBuild: true })
   ).watch({ poll: isWsl }, doneHandler());
-  gulp.watch(
+  watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations-app")
+    series("build-translations", "copy-translations-app")
   );
 });
 
-gulp.task("rspack-prod-app", () =>
+task("rspack-prod-app", () =>
   prodBuild(
     bothBuilds(createAppConfig, {
       isProdBuild: true,
-      isStatsBuild: env.isStatsBuild(),
-      isTestBuild: env.isTestBuild(),
+      isStatsBuild: isStatsBuild(),
+      isTestBuild: isTestBuild(),
     })
   )
 );
 
-gulp.task("rspack-dev-server-demo", () =>
+task("rspack-dev-server-demo", () =>
   runDevServer({
     compiler: rspack(
       createDemoConfig({ isProdBuild: false, latestBuild: true })
@@ -130,16 +138,16 @@ gulp.task("rspack-dev-server-demo", () =>
   })
 );
 
-gulp.task("rspack-prod-demo", () =>
+task("rspack-prod-demo", () =>
   prodBuild(
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
-      isStatsBuild: env.isStatsBuild(),
+      isStatsBuild: isStatsBuild(),
     })
   )
 );
 
-gulp.task("rspack-dev-server-cast", () =>
+task("rspack-dev-server-cast", () =>
   runDevServer({
     compiler: rspack(
       createCastConfig({ isProdBuild: false, latestBuild: true })
@@ -151,7 +159,7 @@ gulp.task("rspack-dev-server-cast", () =>
   })
 );
 
-gulp.task("rspack-prod-cast", () =>
+task("rspack-prod-cast", () =>
   prodBuild(
     bothBuilds(createCastConfig, {
       isProdBuild: true,
@@ -159,7 +167,7 @@ gulp.task("rspack-prod-cast", () =>
   )
 );
 
-gulp.task("rspack-watch-hassio", () => {
+task("rspack-watch-hassio", () => {
   // This command will run forever because we don't close compiler
   rspack(
     createHassioConfig({
@@ -168,23 +176,23 @@ gulp.task("rspack-watch-hassio", () => {
     })
   ).watch({ ignored: /build/, poll: isWsl }, doneHandler());
 
-  gulp.watch(
+  watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-supervisor-translations", "copy-translations-supervisor")
+    series("build-supervisor-translations", "copy-translations-supervisor")
   );
 });
 
-gulp.task("rspack-prod-hassio", () =>
+task("rspack-prod-hassio", () =>
   prodBuild(
     bothBuilds(createHassioConfig, {
       isProdBuild: true,
-      isStatsBuild: env.isStatsBuild(),
-      isTestBuild: env.isTestBuild(),
+      isStatsBuild: isStatsBuild(),
+      isTestBuild: isTestBuild(),
     })
   )
 );
 
-gulp.task("rspack-dev-server-gallery", () =>
+task("rspack-dev-server-gallery", () =>
   runDevServer({
     compiler: rspack(
       createGalleryConfig({ isProdBuild: false, latestBuild: true })
@@ -195,7 +203,7 @@ gulp.task("rspack-dev-server-gallery", () =>
   })
 );
 
-gulp.task("rspack-prod-gallery", () =>
+task("rspack-prod-gallery", () =>
   prodBuild(
     createGalleryConfig({
       isProdBuild: true,
@@ -204,7 +212,7 @@ gulp.task("rspack-prod-gallery", () =>
   )
 );
 
-gulp.task("rspack-watch-landing-page", () => {
+task("rspack-watch-landing-page", () => {
   // This command will run forever because we don't close compiler
   rspack(
     process.env.ES5
@@ -212,21 +220,18 @@ gulp.task("rspack-watch-landing-page", () => {
       : createLandingPageConfig({ isProdBuild: false, latestBuild: true })
   ).watch({ poll: isWsl }, doneHandler());
 
-  gulp.watch(
+  watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series(
-      "build-landing-page-translations",
-      "copy-translations-landing-page"
-    )
+    series("build-landing-page-translations", "copy-translations-landing-page")
   );
 });
 
-gulp.task("rspack-prod-landing-page", () =>
+task("rspack-prod-landing-page", () =>
   prodBuild(
     bothBuilds(createLandingPageConfig, {
       isProdBuild: true,
-      isStatsBuild: env.isStatsBuild(),
-      isTestBuild: env.isTestBuild(),
+      isStatsBuild: isStatsBuild(),
+      isTestBuild: isTestBuild(),
     })
   )
 );

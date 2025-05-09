@@ -5,10 +5,11 @@ import { version as babelVersion } from "@babel/core";
 import presetEnv from "@babel/preset-env";
 import compilationTargets from "@babel/helper-compilation-targets";
 import coreJSCompat from "core-js-compat";
+
 import { logPlugin } from "@babel/preset-env/lib/debug.js";
 // eslint-disable-next-line import/no-relative-packages
 import shippedPolyfills from "../node_modules/babel-plugin-polyfill-corejs3/lib/shipped-proposals.js";
-import { babelOptions } from "./bundle.cjs";
+import { babelOptions } from "./bundle.ts";
 
 const detailsOpen = (heading) =>
   `<details>\n<summary><h4>${heading}</h4></summary>\n`;
@@ -49,6 +50,12 @@ for (const buildType of ["Modern", "Legacy"]) {
   const browserslistEnv = buildType.toLowerCase();
   const babelOpts = babelOptions({ latestBuild: browserslistEnv === "modern" });
   const presetEnvOpts = babelOpts.presets[0][1];
+
+  if (typeof presetEnvOpts !== "object") {
+    throw new Error(
+      "The first preset in babelOptions is not an object. This is unexpected."
+    );
+  }
 
   // Invoking preset-env in debug mode will log the included plugins
   console.log(detailsOpen(`${buildType} Build Babel Plugins`));

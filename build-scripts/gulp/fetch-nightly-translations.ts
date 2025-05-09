@@ -1,14 +1,14 @@
-// Task to download the latest Lokalise translations from the nightly workflow artifacts
+// Task to download the latest 00Lokalise translations from the nightly workflow artifacts
 
 import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
 import { retry } from "@octokit/plugin-retry";
 import { Octokit } from "@octokit/rest";
 import { deleteAsync } from "del";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import gulp from "gulp";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { series, task } from "gulp";
 import jszip from "jszip";
-import path from "path";
-import process from "process";
+import path from "node:path";
+import process from "node:process";
 import { extract } from "tar";
 
 const MAX_AGE = 24; // hours
@@ -22,12 +22,12 @@ const TOKEN_FILE = path.posix.join(EXTRACT_DIR, "token.json");
 const ARTIFACT_FILE = path.posix.join(EXTRACT_DIR, "artifact.json");
 
 let allowTokenSetup = false;
-gulp.task("allow-setup-fetch-nightly-translations", (done) => {
+task("allow-setup-fetch-nightly-translations", (done) => {
   allowTokenSetup = true;
   done();
 });
 
-gulp.task("fetch-nightly-translations", async function () {
+task("fetch-nightly-translations", async function () {
   // Skip all when environment flag is set (assumes translations are already in place)
   if (process.env?.SKIP_FETCH_NIGHTLY_TRANSLATIONS) {
     console.log("Skipping fetch due to environment signal");
@@ -54,7 +54,7 @@ gulp.task("fetch-nightly-translations", async function () {
 
   // To store file writing promises
   const createExtractDir = mkdir(EXTRACT_DIR, { recursive: true });
-  const writings = [];
+  const writings: Promise<void>[] = [];
 
   // Authenticate to GitHub using GitHub action token if it exists,
   // otherwise look for a saved user token or generate a new one if none
@@ -87,7 +87,7 @@ gulp.task("fetch-nightly-translations", async function () {
       });
       tokenAuth = await auth({ type: "oauth" });
       writings.push(
-        createExtractDir.then(
+        createExtractDir.then(() =>
           writeFile(TOKEN_FILE, JSON.stringify(tokenAuth, null, 2))
         )
       );
@@ -131,13 +131,13 @@ gulp.task("fetch-nightly-translations", async function () {
     throw Error("Latest nightly workflow run has no translations artifact");
   }
   writings.push(
-    createExtractDir.then(
+    createExtractDir.then(() =>
       writeFile(ARTIFACT_FILE, JSON.stringify(latestArtifact, null, 2))
     )
   );
 
   // Remove the current translations
-  const deleteCurrent = Promise.all(writings).then(
+  const deleteCurrent = Promise.all(writings).then(() =>
     deleteAsync([`${EXTRACT_DIR}/*`, `!${ARTIFACT_FILE}`, `!${TOKEN_FILE}`])
   );
 
@@ -148,13 +148,14 @@ gulp.task("fetch-nightly-translations", async function () {
     artifact_id: latestArtifact.id,
     archive_format: "zip",
   });
+  // @ts-ignore OctokitResponse<unknown, 302> doesn't allow to check for 200
   if (downloadResponse.status !== 200) {
     throw Error("Failure downloading translations artifact");
   }
 
   // Artifact is a tarball, but GitHub adds it to a zip file
   console.log("Unpacking downloaded translations...");
-  const zip = await jszip.loadAsync(downloadResponse.data);
+  const zip = await jszip.loadAsync(downloadResponse.data as any);
   await deleteCurrent;
   const extractStream = zip.file(/.*/)[0].nodeStream().pipe(extract());
   await new Promise((resolve, reject) => {
@@ -162,10 +163,7 @@ gulp.task("fetch-nightly-translations", async function () {
   });
 });
 
-gulp.task(
+task(
   "setup-and-fetch-nightly-translations",
-  gulp.series(
-    "allow-setup-fetch-nightly-translations",
-    "fetch-nightly-translations"
-  )
+  series("allow-setup-fetch-nightly-translations", "fetch-nightly-translations")
 );

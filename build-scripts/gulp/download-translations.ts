@@ -1,10 +1,10 @@
-import fs from "fs/promises";
-import gulp from "gulp";
-import path from "path";
-import mapStream from "map-stream";
-import transform from "gulp-json-transform";
 import { LokaliseApi } from "@lokalise/node-api";
+import fs from "node:fs/promises";
+import { dest, series, src, task } from "gulp";
+import transform from "gulp-json-transform";
 import JSZip from "jszip";
+import mapStream from "map-stream";
+import path from "node:path";
 
 const inDir = "translations";
 const inDirFrontend = `${inDir}/frontend`;
@@ -16,7 +16,7 @@ function hasHtml(data) {
   return /<\S*>/i.test(data);
 }
 
-function recursiveCheckHasHtml(file, data, errors, recKey) {
+function recursiveCheckHasHtml(file, data, errors: string[], recKey?: string) {
   Object.keys(data).forEach(function (key) {
     if (typeof data[key] === "object") {
       const nextRecKey = recKey ? `${recKey}.${key}` : key;
@@ -64,23 +64,22 @@ function convertBackendTranslations(data, _file) {
   return output;
 }
 
-gulp.task("convert-backend-translations", function () {
-  return gulp
-    .src([`${inDirBackend}/*.json`])
+task("convert-backend-translations", function () {
+  return src([`${inDirBackend}/*.json`])
     .pipe(transform((data, file) => convertBackendTranslations(data, file)))
-    .pipe(gulp.dest(inDirBackend));
+    .pipe(dest(inDirBackend));
 });
 
-gulp.task("check-translations-html", function () {
-  return gulp
-    .src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`])
-    .pipe(checkHtml());
+task("check-translations-html", function () {
+  return src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`]).pipe(
+    checkHtml()
+  );
 });
 
-gulp.task("check-all-files-exist", async function () {
+task("check-all-files-exist", async function () {
   const file = await fs.readFile(srcMeta, { encoding });
   const meta = JSON.parse(file);
-  const writings = [];
+  const writings: Promise<void>[] = [];
   Object.keys(meta).forEach((lang) => {
     writings.push(
       fs.writeFile(`${inDirFrontend}/${lang}.json`, JSON.stringify({}), {
@@ -99,7 +98,7 @@ const lokaliseProjects = {
   frontend: "3420425759f6d6d241f598.13594006",
 };
 
-gulp.task("fetch-lokalise", async function () {
+task("fetch-lokalise", async function () {
   let apiKey;
   try {
     apiKey =
@@ -170,9 +169,9 @@ gulp.task("fetch-lokalise", async function () {
   );
 });
 
-gulp.task(
+task(
   "download-translations",
-  gulp.series(
+  series(
     "fetch-lokalise",
     "convert-backend-translations",
     "check-translations-html",
