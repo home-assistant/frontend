@@ -110,11 +110,7 @@ export class HuiDialogEditCard
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (
-      !this._cardConfig ||
-      this._documentationURL !== undefined ||
-      !changedProps.has("_cardConfig")
-    ) {
+    if (!this._cardConfig || !changedProps.has("_cardConfig")) {
       return;
     }
 
