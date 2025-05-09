@@ -206,6 +206,7 @@ export class HaEntityPicker extends LitElement {
               .entityFilter=${this.entityFilter}
               hide-clear-icon
               @opened-changed=${this._debounceOpenedChanged}
+              @value-changed=${this._valueChanged}
               @input=${stopPropagation}
             ></ha-entity-combo-box>`}
         ${this._renderHelper()}
@@ -223,6 +224,14 @@ export class HaEntityPicker extends LitElement {
     e.stopPropagation();
     this.value = undefined;
     fireEvent(this, "value-changed", { value: undefined });
+    fireEvent(this, "change");
+  }
+
+  private _valueChanged(e) {
+    e.stopPropagation();
+    const value = e.detail.value;
+    this.value = value;
+    fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
 
