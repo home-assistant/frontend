@@ -396,6 +396,9 @@ export class HaStatisticComboBox extends LitElement {
 
     return html`
       <ha-combo-box
+        item-id-path="id"
+        item-value-path="id"
+        item-label-path="label"
         .hass=${this.hass}
         .label=${this.label === undefined && this.hass
           ? this.hass.localize("ui.components.statistic-picker.statistic")
@@ -405,9 +408,6 @@ export class HaStatisticComboBox extends LitElement {
         .disabled=${this.disabled}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._items}
-        item-value-path="id"
-        item-id-path="id"
-        item-label-path="label"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._statisticChanged}
         @filter-changed=${this._filterChanged}
