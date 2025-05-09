@@ -313,7 +313,7 @@ export class HaAreaComboBox extends LitElement {
             label: "",
             id: NO_ITEMS_ID,
             primary: this.hass.localize("ui.components.area-picker.no_areas"),
-            icon: undefined,
+            icon: "mdi:magnify",
           },
         ];
       }
@@ -399,12 +399,12 @@ export class HaAreaComboBox extends LitElement {
 
     if (results) {
       if (results.length === 0) {
-        if (!this.noAdd) {
+        if (this.noAdd) {
           this.comboBox.filteredItems = [
             {
               id: NO_ITEMS_ID,
               primary: this.hass.localize("ui.components.area-picker.no_match"),
-              icon: "mdi:search",
+              icon: "mdi:magnify",
             },
           ] as AreaComboBoxItem[];
         } else {
@@ -420,6 +420,8 @@ export class HaAreaComboBox extends LitElement {
             },
           ] as AreaComboBoxItem[];
         }
+      } else {
+        target.filteredItems = results.map((result) => result.item);
       }
     } else {
       this.comboBox.filteredItems = target.items as AreaComboBoxItem[];
