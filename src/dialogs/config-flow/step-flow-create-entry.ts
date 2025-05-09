@@ -316,6 +316,12 @@ class StepFlowCreateEntry extends LitElement {
           overflow-y: auto;
           flex-direction: column;
         }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .devices {
+            /* header - margin content - footer */
+            max-height: calc(100vh - 52px - 20px - 52px);
+          }
+        }
         .device {
           border: 1px solid var(--divider-color);
           padding: 6px;
@@ -351,11 +357,6 @@ class StepFlowCreateEntry extends LitElement {
           margin-left: auto;
           margin-inline-start: auto;
           margin-inline-end: initial;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .device {
-            width: 100%;
-          }
         }
         .error {
           color: var(--error-color);
