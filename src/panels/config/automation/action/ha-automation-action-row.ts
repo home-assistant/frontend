@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiAlertCircleCheck,
   mdiArrowDown,
@@ -203,20 +203,24 @@ export default class HaAutomationActionRow extends LitElement {
               </div>
             `
           : nothing}
-        <ha-expansion-panel leftChevron>
-          <h3 slot="header">
-            ${type === "service" &&
-            "action" in this.action &&
-            this.action.action
-              ? html`<ha-service-icon
+        <ha-expansion-panel left-chevron>
+          ${type === "service" && "action" in this.action && this.action.action
+            ? html`
+                <ha-service-icon
+                  slot="leading-icon"
                   class="action-icon"
                   .hass=${this.hass}
                   .service=${this.action.action}
-                ></ha-service-icon>`
-              : html`<ha-svg-icon
+                ></ha-service-icon>
+              `
+            : html`
+                <ha-svg-icon
+                  slot="leading-icon"
                   class="action-icon"
                   .path=${ACTION_ICONS[type!]}
-                ></ha-svg-icon>`}
+                ></ha-svg-icon>
+              `}
+          <h3 slot="header">
             ${capitalizeFirstLetter(
               describeAction(
                 this.hass,
@@ -640,9 +644,6 @@ export default class HaAutomationActionRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {
@@ -651,8 +652,18 @@ export default class HaAutomationActionRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
         .warning ul {
           margin: 4px 0;
@@ -662,6 +673,12 @@ export default class HaAutomationActionRow extends LitElement {
         }
         ha-tooltip {
           cursor: default;
+        }
+        :host([highlight]) ha-card {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
+          border-color: var(--state-inactive-color);
+          box-shadow: var(--shadow-default), var(--shadow-focus);
         }
       `,
     ];

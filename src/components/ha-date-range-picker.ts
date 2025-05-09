@@ -1,27 +1,17 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiCalendar } from "@mdi/js";
-import {
-  addDays,
-  subHours,
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  endOfYear,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-  startOfYear,
-  isThisYear,
-} from "date-fns";
+import { isThisYear } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { calcDate, shiftDateRange } from "../common/datetime/calc_date";
+import { shiftDateRange } from "../common/datetime/calc_date";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import {
   formatShortDateTime,
@@ -35,9 +25,28 @@ import "./date-range-picker";
 import "./ha-icon-button";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
+import "./ha-list";
+import "./ha-list-item";
 import "./ha-textarea";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
+
+declare global {
+  interface HASSDomEvents {
+    "preset-selected": { index: number };
+  }
+}
+
+const RANGE_KEYS: DateRange[] = ["today", "yesterday", "this_week"];
+const EXTENDED_RANGE_KEYS: DateRange[] = [
+  "this_month",
+  "this_year",
+  "now-1h",
+  "now-12h",
+  "now-24h",
+  "now-7d",
+  "now-30d",
+];
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
@@ -84,194 +93,16 @@ export class HaDateRangePicker extends LitElement {
       (changedProps.has("hass") &&
         this.hass?.localize !== changedProps.get("hass")?.localize)
     ) {
-      const today = new Date();
-      const weekStartsOn = firstWeekdayIndex(this.hass.locale);
-      const weekStart = calcDate(
-        today,
-        startOfWeek,
-        this.hass.locale,
-        this.hass.config,
-        {
-          weekStartsOn,
-        }
-      );
-      const weekEnd = calcDate(
-        today,
-        endOfWeek,
-        this.hass.locale,
-        this.hass.config,
-        {
-          weekStartsOn,
-        }
-      );
+      const rangeKeys = this.extendedPresets
+        ? [...RANGE_KEYS, ...EXTENDED_RANGE_KEYS]
+        : RANGE_KEYS;
 
-      this._ranges = {
-        [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
-          calcDate(today, startOfDay, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-          calcDate(today, endOfDay, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.yesterday"
-        )]: [
-          calcDate(
-            addDays(today, -1),
-            startOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-          calcDate(
-            addDays(today, -1),
-            endOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_week"
-        )]: [weekStart, weekEnd],
-        ...(this.extendedPresets
-          ? {
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.this_month"
-              )]: [
-                calcDate(
-                  today,
-                  startOfMonth,
-                  this.hass.locale,
-                  this.hass.config,
-                  {
-                    weekStartsOn,
-                  }
-                ),
-                calcDate(
-                  today,
-                  endOfMonth,
-                  this.hass.locale,
-                  this.hass.config,
-                  {
-                    weekStartsOn,
-                  }
-                ),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.this_year"
-              )]: [
-                calcDate(
-                  today,
-                  startOfYear,
-                  this.hass.locale,
-                  this.hass.config,
-                  {
-                    weekStartsOn,
-                  }
-                ),
-                calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
-                  weekStartsOn,
-                }),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-1h"
-              )]: [
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  1
-                ),
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  0
-                ),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-12h"
-              )]: [
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  12
-                ),
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  0
-                ),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-24h"
-              )]: [
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  24
-                ),
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  0
-                ),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-7d"
-              )]: [
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  24 * 7
-                ),
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  0
-                ),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.now-30d"
-              )]: [
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  24 * 30
-                ),
-                calcDate(
-                  today,
-                  subHours,
-                  this.hass.locale,
-                  this.hass.config,
-                  0
-                ),
-              ],
-            }
-          : {}),
-      };
+      this._ranges = {};
+      rangeKeys.forEach((key) => {
+        this._ranges![
+          this.hass.localize(`ui.components.date-range-picker.ranges.${key}`)
+        ] = calcDateRange(this.hass, key);
+      });
     }
   }
 
@@ -358,11 +189,11 @@ export class HaDateRangePicker extends LitElement {
         </div>
         ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @action=${this._setDateRange} activatable>
+              <ha-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges || this._ranges!).map(
-                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
+                  (name) => html`<ha-list-item>${name}</ha-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             </div>`
           : nothing}
         <div slot="footer" class="date-range-footer">
@@ -410,6 +241,10 @@ export class HaDateRangePicker extends LitElement {
     const dateRange = Object.values(this.ranges || this._ranges!)[
       ev.detail.index
     ];
+
+    fireEvent(this, "preset-selected", {
+      index: ev.detail.index,
+    });
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();

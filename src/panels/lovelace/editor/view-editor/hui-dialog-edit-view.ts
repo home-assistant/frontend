@@ -1,6 +1,4 @@
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import {
   mdiClose,
   mdiDotsVertical,
@@ -18,11 +16,18 @@ import { navigate } from "../../../../common/navigate";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import {
+  fetchConfig,
+  isStrategyDashboard,
+  saveConfig,
+  type LovelaceConfig,
+} from "../../../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
 import {
@@ -32,6 +37,7 @@ import {
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../../components/hui-entity-editor";
+import type { Lovelace } from "../../types";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";
 import { getViewType } from "../../views/get-view-type";
@@ -41,19 +47,13 @@ import {
   moveViewToDashboard,
   replaceView,
 } from "../config-util";
+import { showSelectDashboardDialog } from "../select-dashboard/show-select-dashboard-dialog";
 import type { ViewEditEvent, ViewVisibilityChangeEvent } from "../types";
 import "./hui-view-background-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
-import { showSelectDashboardDialog } from "../select-dashboard/show-select-dashboard-dialog";
-import {
-  fetchConfig,
-  isStrategyDashboard,
-  saveConfig,
-  type LovelaceConfig,
-} from "../../../../data/lovelace/config/types";
-import type { Lovelace } from "../../types";
+import "../../../../components/sl-tab-group";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -271,21 +271,21 @@ export class HuiDialogEditView extends LitElement {
               `
             : nothing}
           ${!this._yamlMode
-            ? html`<mwc-tab-bar
-                .activeIndex=${TABS.indexOf(this._currTab)}
-                @MDCTabBar:activated=${this._handleTabChanged}
-              >
+            ? html`<sl-tab-group @sl-tab-show=${this._handleTabChanged}>
                 ${TABS.map(
                   (tab) => html`
-                    <mwc-tab
-                      .label=${this.hass!.localize(
+                    <sl-tab
+                      slot="nav"
+                      .panel=${tab}
+                      .active=${this._currTab === tab}
+                    >
+                      ${this.hass!.localize(
                         `ui.panel.lovelace.editor.edit_view.${tab.replace("-", "_")}`
                       )}
-                    >
-                    </mwc-tab>
+                    </sl-tab>
                   `
                 )}
-              </mwc-tab-bar>`
+              </sl-tab-group>`
             : nothing}
         </ha-dialog-header>
         ${content}
@@ -303,6 +303,7 @@ export class HuiDialogEditView extends LitElement {
             `
           : nothing}
         <ha-button
+          class="save"
           slot="primaryAction"
           ?disabled=${!this._config ||
           this._saving ||
@@ -312,11 +313,7 @@ export class HuiDialogEditView extends LitElement {
           @click=${this._save}
         >
           ${this._saving
-            ? html`<ha-circular-progress
-                indeterminate
-                size="small"
-                aria-label="Saving"
-              ></ha-circular-progress>`
+            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
             : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >
@@ -517,7 +514,7 @@ export class HuiDialogEditView extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = TABS[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
@@ -646,10 +643,12 @@ export class HuiDialogEditView extends LitElement {
           font-size: inherit;
           font-weight: inherit;
         }
-        mwc-tab-bar {
-          color: var(--primary-text-color);
-          text-transform: uppercase;
-          padding: 0 20px;
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
         ha-button.warning {
           margin-right: auto;
@@ -668,6 +667,15 @@ export class HuiDialogEditView extends LitElement {
         }
         ha-alert ha-button {
           display: block;
+        }
+        ha-button.save {
+          position: relative;
+        }
+        .save ha-spinner {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
         }
 
         @media all and (min-width: 600px) {

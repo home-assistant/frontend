@@ -14,6 +14,9 @@ import { showToast } from "../util/toast";
 import type { HassElement } from "./hass-element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
+import type { Redirects } from "../panels/my/ha-panel-my";
 
 declare global {
   interface HASSDomEvents {
@@ -50,6 +53,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
           case "a":
             this._showVoiceCommandDialog(ev.detail);
             break;
+          case "?":
+            this._showShortcutDialog(ev.detail);
         }
       });
 
@@ -64,6 +69,8 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         m: (ev) => this._createMyLink(ev),
         a: (ev) => this._showVoiceCommandDialog(ev),
         d: (ev) => this._showQuickBar(ev, QuickBarMode.Device),
+        // Workaround see https://github.com/jamiebuilds/tinykeys/issues/130
+        "Shift+?": (ev) => this._showShortcutDialog(ev),
         // Those are fallbacks for non-latin keyboards that don't have e, c, m keys (qwerty-based shortcuts)
         KeyE: (ev) => this._showQuickBar(ev),
         KeyC: (ev) => this._showQuickBar(ev, QuickBarMode.Command),
@@ -80,7 +87,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _showVoiceCommandDialog(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e) ||
+        !canOverrideAlphanumericInput(e.composedPath()) ||
         !this._conversation(this.hass.config.components)
       ) {
         return;
@@ -110,10 +117,23 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       showQuickBar(this, { mode });
     }
 
+    private _showShortcutDialog(e: KeyboardEvent) {
+      if (!this._canShowQuickBar(e)) {
+        return;
+      }
+
+      if (e.defaultPrevented) {
+        return;
+      }
+      e.preventDefault();
+
+      showShortcutsDialog(this);
+    }
+
     private async _createMyLink(e: KeyboardEvent) {
       if (
         !this.hass?.enableShortcuts ||
-        !this._canOverrideAlphanumericInput(e)
+        !canOverrideAlphanumericInput(e.composedPath())
       ) {
         return;
       }
@@ -124,49 +144,44 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e.preventDefault();
 
       const targetPath = mainWindow.location.pathname;
-      const isHassio = isComponentLoaded(this.hass, "hassio");
       const myParams = new URLSearchParams();
 
-      if (isHassio && targetPath.startsWith("/hassio")) {
+      let redirects: Redirects;
+
+      if (targetPath.startsWith("/hassio")) {
         const myPanelSupervisor = await import(
           "../../hassio/src/hassio-my-redirect"
         );
-        for (const [slug, redirect] of Object.entries(
-          myPanelSupervisor.REDIRECTS
-        )) {
-          if (targetPath.startsWith(redirect.redirect)) {
-            myParams.append("redirect", slug);
-            if (redirect.redirect === "/hassio/addon") {
-              myParams.append("addon", targetPath.split("/")[3]);
-            }
-            window.open(
-              `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-              "_blank"
-            );
-            return;
-          }
-        }
+        redirects = myPanelSupervisor.REDIRECTS;
+      } else {
+        const myPanel = await import("../panels/my/ha-panel-my");
+        redirects = myPanel.getMyRedirects();
       }
 
-      const myPanel = await import("../panels/my/ha-panel-my");
+      for (const [slug, redirect] of Object.entries(redirects)) {
+        if (!targetPath.startsWith(redirect.redirect)) {
+          continue;
+        }
+        myParams.append("redirect", slug);
 
-      for (const [slug, redirect] of Object.entries(myPanel.getMyRedirects())) {
-        if (targetPath.startsWith(redirect.redirect)) {
-          myParams.append("redirect", slug);
-          if (redirect.params) {
-            const params = extractSearchParamsObject();
-            for (const key of Object.keys(redirect.params)) {
-              if (key in params) {
-                myParams.append(key, params[key]);
-              }
+        if (redirect.params) {
+          const params = extractSearchParamsObject();
+          for (const key of Object.keys(redirect.params)) {
+            if (key in params) {
+              myParams.append(key, params[key]);
             }
           }
-          window.open(
-            `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-            "_blank"
-          );
-          return;
         }
+        if (redirect.redirect === "/config/integrations/integration") {
+          myParams.append("domain", targetPath.split("/")[4]);
+        } else if (redirect.redirect === "/hassio/addon") {
+          myParams.append("addon", targetPath.split("/")[3]);
+        }
+        window.open(
+          `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+          "_blank"
+        );
+        return;
       }
       showToast(this, {
         message: this.hass.localize(
@@ -182,34 +197,7 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       return (
         this.hass?.user?.is_admin &&
         this.hass.enableShortcuts &&
-        this._canOverrideAlphanumericInput(e)
+        canOverrideAlphanumericInput(e.composedPath())
       );
-    }
-
-    private _canOverrideAlphanumericInput(e: KeyboardEvent) {
-      const el = e.composedPath()[0] as Element;
-
-      if (el.tagName === "TEXTAREA") {
-        return false;
-      }
-
-      if (el.parentElement?.tagName === "HA-SELECT") {
-        return false;
-      }
-
-      if (el.tagName !== "INPUT") {
-        return true;
-      }
-
-      switch ((el as HTMLInputElement).type) {
-        case "button":
-        case "checkbox":
-        case "hidden":
-        case "radio":
-        case "range":
-          return true;
-        default:
-          return false;
-      }
     }
   };

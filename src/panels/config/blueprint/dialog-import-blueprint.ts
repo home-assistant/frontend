@@ -1,14 +1,16 @@
 import "@material/mwc-button";
-import { mdiOpenInNew } from "@mdi/js";
+import { mdiOpenInNew, mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-circular-progress";
-import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-spinner";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-markdown";
 import "../../../components/ha-alert";
 import "../../../components/ha-textfield";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-header";
+import "../../../components/ha-code-editor";
 import type { HaTextField } from "../../../components/ha-textfield";
 import type { BlueprintImportResult } from "../../../data/blueprint";
 import { importBlueprint, saveBlueprint } from "../../../data/blueprint";
@@ -18,6 +20,8 @@ import type { HomeAssistant } from "../../../types";
 @customElement("ha-dialog-import-blueprint")
 class DialogImportBlueprint extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean, reflect: true }) public large = false;
 
   @state() private _params?;
 
@@ -37,6 +41,7 @@ class DialogImportBlueprint extends LitElement {
     this._params = params;
     this._error = undefined;
     this._url = this._params.url;
+    this.large = false;
   }
 
   public closeDialog(): void {
@@ -51,15 +56,18 @@ class DialogImportBlueprint extends LitElement {
     if (!this._params) {
       return nothing;
     }
+    const heading = this.hass.localize("ui.panel.config.blueprint.add.header");
     return html`
-      <ha-dialog
-        open
-        @closed=${this.closeDialog}
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize("ui.panel.config.blueprint.add.header")
-        )}
-      >
+      <ha-dialog open .heading=${heading} @closed=${this.closeDialog}>
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
+          <span slot="title" @click=${this._enlarge}> ${heading} </span>
+        </ha-dialog-header>
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${this._result
@@ -102,7 +110,12 @@ class DialogImportBlueprint extends LitElement {
                     "ui.panel.config.blueprint.add.raw_blueprint"
                   )}
                 >
-                  <pre>${this._result.raw_data}</pre>
+                  <ha-code-editor
+                    mode="yaml"
+                    .value=${this._result.raw_data}
+                    read-only
+                    dir="ltr"
+                  ></ha-code-editor>
                 </ha-expansion-panel>
                 ${this._result?.exists
                   ? html`
@@ -159,13 +172,12 @@ class DialogImportBlueprint extends LitElement {
                 .disabled=${this._importing}
               >
                 ${this._importing
-                  ? html`<ha-circular-progress
-                      indeterminate
+                  ? html`<ha-spinner
                       size="small"
                       .ariaLabel=${this.hass.localize(
                         "ui.panel.config.blueprint.add.importing"
                       )}
-                    ></ha-circular-progress>`
+                    ></ha-spinner>`
                   : ""}
                 ${this.hass.localize(
                   "ui.panel.config.blueprint.add.import_btn"
@@ -179,13 +191,12 @@ class DialogImportBlueprint extends LitElement {
                 .disabled=${this._saving || this._result.validation_errors}
               >
                 ${this._saving
-                  ? html`<ha-circular-progress
-                      indeterminate
+                  ? html`<ha-spinner
                       size="small"
                       .ariaLabel=${this.hass.localize(
                         "ui.panel.config.blueprint.add.saving"
                       )}
-                    ></ha-circular-progress>`
+                    ></ha-spinner>`
                   : ""}
                 ${this._result.exists
                   ? this.hass.localize(
@@ -198,6 +209,10 @@ class DialogImportBlueprint extends LitElement {
             `}
       </ha-dialog>
     `;
+  }
+
+  private _enlarge() {
+    this.large = !this.large;
   }
 
   private async _import() {
@@ -260,6 +275,13 @@ class DialogImportBlueprint extends LitElement {
       }
       a ha-svg-icon {
         --mdc-icon-size: 16px;
+      }
+      :host([large]) ha-dialog {
+        --mdc-dialog-min-width: 90vw;
+        --mdc-dialog-max-width: 90vw;
+      }
+      ha-expansion-panel {
+        --expansion-panel-content-padding: 0px;
       }
     `,
   ];

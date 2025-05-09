@@ -5,7 +5,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-tooltip";
@@ -108,7 +108,7 @@ class DialogZHAReconfigureDevice extends LitElement {
         ${this._status === "started"
           ? html`
               <div class="flex-container">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
                 <div class="status">
                   <p>
                     <b>
@@ -125,7 +125,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
               <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
@@ -154,7 +154,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
               <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
@@ -183,7 +183,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.close")}
+                ${this.hass.localize("ui.common.close")}
               </mwc-button>
               <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
@@ -452,7 +452,7 @@ class DialogZHAReconfigureDevice extends LitElement {
           height: 48px;
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
           margin-inline-end: 20px;

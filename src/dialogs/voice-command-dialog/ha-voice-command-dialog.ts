@@ -19,7 +19,7 @@ import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
 import "../../components/ha-alert";
 import "../../components/ha-assist-chat";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
   getAssistPipeline,
@@ -36,6 +36,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @state() private _opened = false;
 
+  @state()
   @storage({
     key: "AssistPipelineId",
     state: true,
@@ -113,10 +114,7 @@ export class HaVoiceCommandDialog extends LitElement {
               </ha-button>
               ${!this._pipelines
                 ? html`<div class="pipelines-loading">
-                    <ha-circular-progress
-                      indeterminate
-                      size="small"
-                    ></ha-circular-progress>
+                    <ha-spinner size="small"></ha-spinner>
                   </div>`
                 : this._pipelines?.map(
                     (pipeline) =>
@@ -180,10 +178,7 @@ export class HaVoiceCommandDialog extends LitElement {
                 </ha-assist-chat>
               `
             : html`<div class="pipelines-loading">
-                <ha-circular-progress
-                  indeterminate
-                  size="large"
-                ></ha-circular-progress>
+                <ha-spinner size="large"></ha-spinner>
               </div>`}
       </ha-dialog>
     `;
@@ -272,7 +267,7 @@ export class HaVoiceCommandDialog extends LitElement {
           --mdc-theme-primary: var(--secondary-text-color);
           --mdc-typography-button-text-transform: none;
           --mdc-typography-button-font-size: unset;
-          --mdc-typography-button-font-weight: 400;
+          --mdc-typography-button-font-weight: var(--ha-font-weight-normal);
           --mdc-typography-button-letter-spacing: var(
             --mdc-typography-headline6-letter-spacing,
             0.0125em

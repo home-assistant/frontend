@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list";
 import type { ListItem } from "@material/mwc-list/mwc-list-item";
 import {
   mdiClose,
   mdiConsoleLine,
   mdiDevices,
   mdiEarth,
+  mdiKeyboard,
   mdiMagnify,
   mdiReload,
   mdiServerNetwork,
@@ -15,21 +15,26 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import Fuse from "fuse.js";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import {
+  computeDeviceName,
+  computeDeviceNameDisplay,
+} from "../../common/entity/compute_device_name";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-circular-progress";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
-import "../../components/ha-list-item";
+import "../../components/ha-list";
+import "../../components/ha-spinner";
 import "../../components/ha-textfield";
+import "../../components/ha-tip";
+import "../../components/ha-md-list-item";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -39,8 +44,15 @@ import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
-import { computeDeviceName } from "../../data/device_registry";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { computeAreaName } from "../../common/entity/compute_area_name";
+import { computeRTL } from "../../common/util/compute_rtl";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { HaFuse } from "../../resources/fuse";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -56,6 +68,9 @@ interface CommandItem extends QuickBarItem {
 interface EntityItem extends QuickBarItem {
   altText: string;
   icon?: TemplateResult;
+  translatedDomain: string;
+  entityId: string;
+  friendlyName: string;
 }
 
 interface DeviceItem extends QuickBarItem {
@@ -79,6 +94,7 @@ type BaseNavigationCommand = Pick<
   QuickBarNavigationItem,
   "primaryText" | "path"
 >;
+
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -134,6 +150,11 @@ export class QuickBar extends LitElement {
     if (!this.hasUpdated) {
       loadVirtualizer();
     }
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title");
   }
 
   private _getItems = memoizeOne(
@@ -237,10 +258,7 @@ export class QuickBar extends LitElement {
           </ha-textfield>
         </div>
         ${!items
-          ? html`<ha-circular-progress
-              size="small"
-              indeterminate
-            ></ha-circular-progress>`
+          ? html`<ha-spinner size="small"></ha-spinner>`
           : items.length === 0
             ? html`
                 <div class="nothing-found">
@@ -248,7 +266,7 @@ export class QuickBar extends LitElement {
                 </div>
               `
             : html`
-                <mwc-list>
+                <ha-list>
                   ${this._opened
                     ? html`<lit-virtualizer
                         tabindex="-1"
@@ -270,7 +288,7 @@ export class QuickBar extends LitElement {
                       >
                       </lit-virtualizer>`
                     : ""}
-                </mwc-list>
+                </ha-list>
               `}
         ${this._hint
           ? html`<ha-tip .hass=${this.hass}>${this._hint}</ha-tip>`
@@ -323,62 +341,67 @@ export class QuickBar extends LitElement {
 
   private _renderDeviceItem(item: DeviceItem, index?: number) {
     return html`
-      <ha-list-item
-        .twoline=${Boolean(item.area)}
+      <ha-md-list-item
+        class="two-line"
         .item=${item}
         index=${ifDefined(index)}
         tabindex="0"
+        type="button"
       >
-        <span>${item.primaryText}</span>
+        <span slot="headline">${item.primaryText}</span>
         ${item.area
-          ? html`
-              <span slot="secondary" class="item-text secondary"
-                >${item.area}</span
-              >
-            `
+          ? html` <span slot="supporting-text">${item.area}</span> `
           : nothing}
-      </ha-list-item>
+      </ha-md-list-item>
     `;
   }
 
   private _renderEntityItem(item: EntityItem, index?: number) {
+    const showEntityId = this.hass.userData?.showEntityIdPicker;
+
     return html`
-      <ha-list-item
-        .twoline=${Boolean(item.altText)}
+      <ha-md-list-item
+        class=${showEntityId ? "three-line" : "two-line"}
         .item=${item}
         index=${ifDefined(index)}
-        graphic="icon"
         tabindex="0"
+        type="button"
       >
         ${item.iconPath
           ? html`
               <ha-svg-icon
                 .path=${item.iconPath}
                 class="entity"
-                slot="graphic"
+                slot="start"
               ></ha-svg-icon>
             `
-          : html`<span slot="graphic">${item.icon}</span>`}
-        <span>${item.primaryText}</span>
+          : html`<span slot="start">${item.icon}</span>`}
+        <span slot="headline">${item.primaryText}</span>
         ${item.altText
+          ? html` <span slot="supporting-text">${item.altText}</span> `
+          : nothing}
+        ${item.entityId && showEntityId
           ? html`
-              <span slot="secondary" class="item-text secondary"
-                >${item.altText}</span
-              >
+              <span slot="supporting-text" class="code">${item.entityId}</span>
             `
           : nothing}
-      </ha-list-item>
+        ${item.translatedDomain && !showEntityId
+          ? html`<div slot="trailing-supporting-text">
+              ${item.translatedDomain}
+            </div>`
+          : nothing}
+      </ha-md-list-item>
     `;
   }
 
   private _renderCommandItem(item: CommandItem, index?: number) {
     return html`
-      <ha-list-item
+      <ha-md-list-item
         .item=${item}
         index=${ifDefined(index)}
-        class="command-item"
         hasMeta
         tabindex="0"
+        type="button"
       >
         <span>
           <ha-label
@@ -387,7 +410,10 @@ export class QuickBar extends LitElement {
           >
             ${item.iconPath
               ? html`
-                  <ha-svg-icon .path=${item.iconPath} slot="icon"></ha-svg-icon>
+                  <ha-svg-icon
+                    .path=${item.iconPath}
+                    slot="start"
+                  ></ha-svg-icon>
                 `
               : nothing}
             ${item.categoryText}
@@ -395,7 +421,7 @@ export class QuickBar extends LitElement {
         </span>
 
         <span class="command-text">${item.primaryText}</span>
-      </ha-list-item>
+      </ha-md-list-item>
     `;
   }
 
@@ -422,15 +448,16 @@ export class QuickBar extends LitElement {
   }
 
   private _getItemAtIndex(index: number): ListItem | null {
-    return this.renderRoot.querySelector(`ha-list-item[index="${index}"]`);
+    return this.renderRoot.querySelector(`ha-md-list-item[index="${index}"]`);
   }
 
   private _addSpinnerToCommandItem(index: number): void {
-    const spinner = document.createElement("ha-circular-progress");
+    const div = document.createElement("div");
+    div.slot = "meta";
+    const spinner = document.createElement("ha-spinner");
     spinner.size = "small";
-    spinner.slot = "meta";
-    spinner.indeterminate = true;
-    this._getItemAtIndex(index)?.appendChild(spinner);
+    div.appendChild(spinner);
+    this._getItemAtIndex(index)?.appendChild(div);
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
@@ -519,7 +546,7 @@ export class QuickBar extends LitElement {
   }
 
   private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-list-item");
+    const listItem = ev.target.closest("ha-md-list-item");
     this._processItemAndCloseDialog(
       listItem.item,
       Number(listItem.getAttribute("index"))
@@ -534,9 +561,7 @@ export class QuickBar extends LitElement {
           ? this.hass.areas[device.area_id]
           : undefined;
         const deviceItem = {
-          primaryText:
-            computeDeviceName(device, this.hass) ||
-            this.hass.localize("ui.components.device-picker.unnamed_device"),
+          primaryText: computeDeviceNameDisplay(device, this.hass),
           deviceId: device.id,
           area: area?.name,
           action: () => navigate(`/config/devices/device/${device.id}`),
@@ -557,18 +582,41 @@ export class QuickBar extends LitElement {
   }
 
   private _generateEntityItems(): EntityItem[] {
+    const isRTL = computeRTL(this.hass);
+
     return Object.keys(this.hass.states)
       .map((entityId) => {
-        const entityState = this.hass.states[entityId];
+        const stateObj = this.hass.states[entityId];
+
+        const { area, device } = getEntityContext(stateObj, this.hass);
+
+        const friendlyName = computeStateName(stateObj); // Keep this for search
+        const entityName = computeEntityName(stateObj, this.hass);
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+
+        const primary = entityName || deviceName || entityId;
+        const secondary = [areaName, entityName ? deviceName : undefined]
+          .filter(Boolean)
+          .join(isRTL ? " ◂ " : " ▸ ");
+
+        const translatedDomain = domainToName(
+          this.hass.localize,
+          computeDomain(entityId)
+        );
+
         const entityItem = {
-          primaryText: computeStateName(entityState),
-          altText: entityId,
+          primaryText: primary,
+          altText: secondary,
           icon: html`
             <ha-state-icon
               .hass=${this.hass}
-              .stateObj=${entityState}
+              .stateObj=${stateObj}
             ></ha-state-icon>
           `,
+          translatedDomain: translatedDomain,
+          entityId: entityId,
+          friendlyName: friendlyName,
           action: () => fireEvent(this, "hass-more-info", { entityId }),
         };
 
@@ -742,10 +790,20 @@ export class QuickBar extends LitElement {
       }
     }
 
+    const additionalItems = [
+      {
+        path: "",
+        primaryText: this.hass.localize("ui.panel.config.info.shortcuts"),
+        action: () => showShortcutsDialog(this),
+        iconPath: mdiKeyboard,
+      },
+    ];
+
     return this._finalizeNavigationCommands([
       ...panelItems,
       ...sectionItems,
       ...supervisorItems,
+      ...additionalItems,
     ]);
   }
 
@@ -822,12 +880,12 @@ export class QuickBar extends LitElement {
       const categoryKey: CommandItem["categoryKey"] = "navigation";
 
       const navItem = {
-        ...item,
         iconPath: mdiEarth,
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
         action: () => navigate(item.path),
+        ...item,
       };
 
       return {
@@ -838,9 +896,30 @@ export class QuickBar extends LitElement {
     });
   }
 
+  private _fuseIndex = memoizeOne((items: QuickBarItem[]) =>
+    Fuse.createIndex(
+      [
+        "primaryText",
+        "altText",
+        "friendlyName",
+        "translatedDomain",
+        "entityId", // for technical search
+      ],
+      items
+    )
+  );
+
   private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
-      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
+    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
+      const index = this._fuseIndex(items);
+      const fuse = new HaFuse(items, {}, index);
+
+      const results = fuse.multiTermsSearch(filter.trim());
+      if (!results || !results.length) {
+        return items;
+      }
+      return results.map((result) => result.item);
+    }
   );
 
   static get styles() {
@@ -848,7 +927,7 @@ export class QuickBar extends LitElement {
       haStyleScrollbar,
       haStyleDialog,
       css`
-        mwc-list {
+        ha-list {
           position: relative;
           --mdc-list-vertical-padding: 0;
         }
@@ -922,13 +1001,41 @@ export class QuickBar extends LitElement {
           direction: var(--direction);
         }
 
-        ha-list-item {
+        ha-md-list-item {
           width: 100%;
-          --mdc-list-item-graphic-margin: 20px;
         }
 
-        ha-list-item.command-item {
-          text-transform: capitalize;
+        /* Fixed height for items because we are use virtualizer */
+        ha-md-list-item.two-line {
+          --md-list-item-one-line-container-height: 64px;
+          --md-list-item-two-line-container-height: 64px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+        }
+
+        ha-md-list-item.three-line {
+          width: 100%;
+          --md-list-item-one-line-container-height: 72px;
+          --md-list-item-two-line-container-height: 72px;
+          --md-list-item-three-line-container-height: 72px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+        }
+
+        ha-md-list-item .code {
+          font-family: var(--ha-font-family-code);
+          font-size: var(--ha-font-size-xs);
+        }
+
+        ha-md-list-item [slot="trailing-supporting-text"] {
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-normal);
+          align-self: flex-end;
+          max-width: 30%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
 
         ha-tip {

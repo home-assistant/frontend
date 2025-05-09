@@ -9,7 +9,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-icon";
 
 type SummaryStatus = "success" | "error" | "info" | "warning" | "loading";
@@ -41,7 +41,7 @@ class HaBackupSummaryCard extends LitElement {
       <ha-card outlined>
         <div class="summary">
           ${this.status === "loading"
-            ? html`<ha-circular-progress indeterminate></ha-circular-progress>`
+            ? html`<ha-spinner></ha-spinner>`
             : html`
                 <div class="icon ${this.status}">
                   <ha-svg-icon .path=${ICONS[this.status]}></ha-svg-icon>
@@ -115,8 +115,8 @@ class HaBackupSummaryCard extends LitElement {
       width: 24px;
       height: 24px;
     }
-    ha-circular-progress {
-      --md-circular-progress-size: 40px;
+    ha-spinner {
+      --ha-spinner-size: 40px;
     }
     .content {
       display: flex;
@@ -127,7 +127,7 @@ class HaBackupSummaryCard extends LitElement {
     .heading {
       font-size: 22px;
       font-style: normal;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 28px;
       color: var(--primary-text-color);
       margin: 0;
@@ -138,7 +138,7 @@ class HaBackupSummaryCard extends LitElement {
     .description {
       font-size: 14px;
       font-style: normal;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 20px;
       letter-spacing: 0.25px;
       color: var(--secondary-text-color);

@@ -17,6 +17,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import "../components/ha-more-info-state-header";
 import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
+import "../../../components/ha-markdown";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
@@ -56,10 +57,11 @@ class MoreInfoScript extends LitElement {
     }
     const stateObj = this.stateObj;
 
-    const fields =
+    const script =
       this.hass.services.script[
         this.entry?.unique_id || computeObjectId(this.stateObj.entity_id)
-      ]?.fields;
+      ];
+    const fields = script?.fields;
 
     const hasFields = fields && Object.keys(fields).length > 0;
 
@@ -81,6 +83,13 @@ class MoreInfoScript extends LitElement {
           : this.hass.localize("ui.card.script.idle")}
         .changedOverride=${this.stateObj.attributes.last_triggered || 0}
       ></ha-more-info-state-header>
+
+      ${script?.description
+        ? html`<ha-markdown
+            breaks
+            .content=${script.description}
+          ></ha-markdown>`
+        : nothing}
 
       <div class=${`queue ${hasQueue ? "has-queue" : ""}`}>
         ${hasQueue
@@ -217,7 +226,7 @@ class MoreInfoScript extends LitElement {
       margin-bottom: 16px;
     }
     .fields .title {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     ha-control-button ha-svg-icon {
       z-index: -1;
@@ -226,6 +235,10 @@ class MoreInfoScript extends LitElement {
     ha-service-control {
       --service-control-padding: 0;
       --service-control-items-border-top: none;
+    }
+    ha-markdown {
+      text-align: center;
+      padding: 0 16px;
     }
   `;
 }

@@ -1,12 +1,12 @@
+import "@material/mwc-button";
+import type { ActionDetail } from "@material/mwc-list";
 import {
+  mdiAlphaABoxOutline,
+  mdiArrowLeft,
+  mdiDotsVertical,
   mdiGrid,
   mdiListBoxOutline,
-  mdiArrowLeft,
-  mdiAlphaABoxOutline,
-  mdiDotsVertical,
 } from "@mdi/js";
-import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -14,15 +14,21 @@ import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-menu-button";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-prev";
-import "../../components/media-player/ha-media-player-browse";
+import "../../components/ha-list-item";
+import "../../components/ha-menu-button";
+import "../../components/ha-top-app-bar-fixed";
 import "../../components/media-player/ha-media-manage-button";
+import "../../components/media-player/ha-media-player-browse";
 import type {
   HaMediaPlayerBrowse,
   MediaPlayerItemId,
 } from "../../components/media-player/ha-media-player-browse";
+import {
+  getEntityIdFromCameraMediaSource,
+  isCameraMediaSource,
+} from "../../data/camera";
 import type {
   MediaPickedEvent,
   MediaPlayerItem,
@@ -31,17 +37,12 @@ import type {
 import { BROWSER_PLAYER, mediaPlayerPlayMedia } from "../../data/media-player";
 import type { ResolvedMediaSource } from "../../data/media_source";
 import { resolveMediaSource } from "../../data/media_source";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import "./ha-bar-media-player";
 import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import {
-  getEntityIdFromCameraMediaSource,
-  isCameraMediaSource,
-} from "../../data/camera";
-import "../../components/ha-top-app-bar-fixed";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
   let path = `/media-browser/${entityId}`;
@@ -63,6 +64,7 @@ class PanelMediaBrowser extends LitElement {
 
   @state() _currentItem?: MediaPlayerItem;
 
+  @state()
   @storage({
     key: "mediaBrowserPreferredLayout",
     state: true,
@@ -77,6 +79,7 @@ class PanelMediaBrowser extends LitElement {
     },
   ];
 
+  @state()
   @storage({
     key: "mediaBrowseEntityId",
     state: true,
@@ -125,7 +128,7 @@ class PanelMediaBrowser extends LitElement {
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
-          <mwc-list-item graphic="icon">
+          <ha-list-item graphic="icon">
             ${this.hass.localize("ui.components.media-browser.auto")}
             <ha-svg-icon
               class=${this._preferredLayout === "auto"
@@ -134,8 +137,8 @@ class PanelMediaBrowser extends LitElement {
               slot="graphic"
               .path=${mdiAlphaABoxOutline}
             ></ha-svg-icon>
-          </mwc-list-item>
-          <mwc-list-item graphic="icon">
+          </ha-list-item>
+          <ha-list-item graphic="icon">
             ${this.hass.localize("ui.components.media-browser.grid")}
             <ha-svg-icon
               class=${this._preferredLayout === "grid"
@@ -144,8 +147,8 @@ class PanelMediaBrowser extends LitElement {
               slot="graphic"
               .path=${mdiGrid}
             ></ha-svg-icon>
-          </mwc-list-item>
-          <mwc-list-item graphic="icon">
+          </ha-list-item>
+          <ha-list-item graphic="icon">
             ${this.hass.localize("ui.components.media-browser.list")}
             <ha-svg-icon
               slot="graphic"
@@ -154,7 +157,7 @@ class PanelMediaBrowser extends LitElement {
                 : ""}
               .path=${mdiListBoxOutline}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
         <ha-media-player-browse
           .hass=${this.hass}
@@ -190,6 +193,14 @@ class PanelMediaBrowser extends LitElement {
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (
+      !this.hasUpdated &&
+      this._entityId !== BROWSER_PLAYER &&
+      !(this._entityId in this.hass.states)
+    ) {
+      this._entityId = BROWSER_PLAYER;
+    }
 
     if (!changedProps.has("route")) {
       return;

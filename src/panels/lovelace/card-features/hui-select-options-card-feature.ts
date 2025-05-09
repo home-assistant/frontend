@@ -2,10 +2,12 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-select-menu";
 import type { HaControlSelectMenu } from "../../../components/ha-control-select-menu";
+import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { InputSelectEntity } from "../../../data/input_select";
 import type { SelectEntity } from "../../../data/select";
@@ -84,7 +86,11 @@ class HuiSelectOptionsCardFeature
 
     const oldOption = this.stateObj!.state;
 
-    if (option === oldOption) return;
+    if (
+      option === oldOption ||
+      !this.stateObj!.attributes.options.includes(option)
+    )
+      return;
 
     this._currentOption = option;
 
@@ -115,7 +121,7 @@ class HuiSelectOptionsCardFeature
 
     const stateObj = this.stateObj;
 
-    const options = filterModes(
+    const options = this._getOptions(
       this.stateObj.attributes.options,
       this._config.options
     );
@@ -126,6 +132,7 @@ class HuiSelectOptionsCardFeature
         hide-label
         .label=${this.hass.localize("ui.card.select.option")}
         .value=${stateObj.state}
+        .options=${options}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         fixedMenuPosition
         naturalMenuWidth
@@ -142,6 +149,11 @@ class HuiSelectOptionsCardFeature
       </ha-control-select-menu>
     `;
   }
+
+  private _getOptions = memoizeOne(
+    (attributeOptions: string[], configOptions: string[] | undefined) =>
+      filterModes(attributeOptions, configOptions)
+  );
 
   static get styles() {
     return cardFeatureStyles;

@@ -1,12 +1,17 @@
 const { existsSync } = require("fs");
 const path = require("path");
 const rspack = require("@rspack/core");
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { RsdoctorRspackPlugin } = require("@rsdoctor/rspack-plugin");
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { StatsWriterPlugin } = require("webpack-stats-plugin");
-const filterStats = require("@bundle-stats/plugin-webpack-filter").default;
+const filterStats = require("@bundle-stats/plugin-webpack-filter");
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const TerserPlugin = require("terser-webpack-plugin");
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { WebpackManifestPlugin } = require("rspack-manifest-plugin");
 const log = require("fancy-log");
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const WebpackBar = require("webpackbar/rspack");
 const paths = require("./paths.cjs");
 const bundle = require("./bundle.cjs");
@@ -60,19 +65,26 @@ const createRspackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          use: (info) => ({
-            loader: "babel-loader",
-            options: {
-              ...bundle.babelOptions({
-                latestBuild,
-                isProdBuild,
-                isTestBuild,
-                sw: info.issuerLayer === "sw",
-              }),
-              cacheDirectory: !isProdBuild,
-              cacheCompression: false,
+          exclude: /node_modules[\\/]core-js/,
+          use: (info) => [
+            {
+              loader: "babel-loader",
+              options: {
+                ...bundle.babelOptions({
+                  latestBuild,
+                  isProdBuild,
+                  isTestBuild,
+                  sw: info.issuerLayer === "sw",
+                }),
+                cacheDirectory: !isProdBuild,
+                cacheCompression: false,
+              },
             },
-          }),
+            {
+              loader: "builtin:swc-loader",
+              options: bundle.swcOptions(),
+            },
+          ],
           resolve: {
             fullySpecified: false,
           },
@@ -131,7 +143,8 @@ const createRspackConfig = ({
             // calling define.amd will call require("!!webpack amd options")
             resource.startsWith("!!webpack") ||
             // loaded by webpack dev server but doesn't exist.
-            resource === "webpack/hot"
+            resource === "webpack/hot" ||
+            resource.startsWith("@swc/helpers")
           ) {
             return false;
           }
@@ -155,10 +168,8 @@ const createRspackConfig = ({
         },
       }),
       new rspack.NormalModuleReplacementPlugin(
-        new RegExp(
-          bundle.emptyPackages({ latestBuild, isHassioBuild }).join("|")
-        ),
-        path.resolve(paths.polymer_dir, "src/util/empty.js")
+        new RegExp(bundle.emptyPackages({ isHassioBuild }).join("|")),
+        path.resolve(paths.root_dir, "src/util/empty.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),
       isProdBuild &&
@@ -192,6 +203,7 @@ const createRspackConfig = ({
         "lit/directives/if-defined$": "lit/directives/if-defined.js",
         "lit/directives/guard$": "lit/directives/guard.js",
         "lit/directives/cache$": "lit/directives/cache.js",
+        "lit/directives/join$": "lit/directives/join.js",
         "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/directives/live$": "lit/directives/live.js",
         "lit/directives/keyed$": "lit/directives/keyed.js",

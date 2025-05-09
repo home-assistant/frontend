@@ -23,7 +23,7 @@ import { debounce } from "../../common/util/debounce";
 import "../../components/ha-slider";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
@@ -164,12 +164,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
             // Only show spinner after 500ms
             new Promise((resolve) => {
               setTimeout(resolve, 500);
-            }).then(
-              () =>
-                html`<ha-circular-progress
-                  indeterminate
-                ></ha-circular-progress>`
-            )
+            }).then(() => html`<ha-spinner></ha-spinner>`)
           )}
         </div>
       `;
@@ -254,7 +249,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
           : ""}"
       >
         ${stateObj.state === "buffering"
-          ? html`<ha-circular-progress indeterminate></ha-circular-progress> `
+          ? html`<ha-spinner></ha-spinner> `
           : html`
               <div class="controls">
                 ${controls === undefined
@@ -711,7 +706,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     ha-list-item[selected] {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     span[slot="icon"] {

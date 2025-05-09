@@ -36,13 +36,19 @@ export interface Statistic {
   change: number | null;
 }
 
+export enum StatisticMeanType {
+  NONE = 0,
+  ARITHMETIC = 1,
+  CIRCULAR = 2,
+}
+
 export interface StatisticsMetaData {
   statistics_unit_of_measurement: string | null;
   statistic_id: string;
   source: string;
   name?: string | null;
   has_sum: boolean;
-  has_mean: boolean;
+  mean_type: StatisticMeanType;
   unit_class: string | null;
 }
 
@@ -51,6 +57,7 @@ export const STATISTIC_TYPES: StatisticsValidationResult["type"][] = [
   "entity_no_longer_recorded",
   "state_class_removed",
   "units_changed",
+  "mean_type_changed",
   "no_state",
 ];
 
@@ -59,7 +66,8 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultEntityNotRecorded
   | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultStateClassRemoved
-  | StatisticsValidationResultUnitsChanged;
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultMeanTypeChanged;
 
 export interface StatisticsValidationResultNoState {
   type: "no_state";
@@ -88,6 +96,15 @@ export interface StatisticsValidationResultUnitsChanged {
     state_unit: string;
     metadata_unit: string;
     supported_unit: string;
+  };
+}
+
+export interface StatisticsValidationResultMeanTypeChanged {
+  type: "mean_type_changed";
+  data: {
+    statistic_id: string;
+    state_mean_type: StatisticMeanType;
+    metadata_mean_type: StatisticMeanType;
   };
 }
 
@@ -152,7 +169,6 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  // eslint-disable-next-line default-param-last
   period: "5minute" | "hour" | "day" | "week" | "month" = "hour",
   units?: StatisticsUnitConfiguration,
   types?: StatisticsTypes
@@ -279,7 +295,10 @@ export const statisticsMetaHasType = (
   metadata: StatisticsMetaData,
   type: StatisticType
 ) => {
-  if (mean_stat_types.includes(type) && metadata.has_mean) {
+  if (
+    mean_stat_types.includes(type) &&
+    metadata.mean_type !== StatisticMeanType.NONE
+  ) {
     return true;
   }
   if (sum_stat_types.includes(type) && metadata.has_sum) {

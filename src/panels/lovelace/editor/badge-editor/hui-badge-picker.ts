@@ -10,7 +10,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -43,6 +43,7 @@ export class HuiBadgePicker extends LitElement {
 
   @property({ attribute: false }) public suggestedBadges?: string[];
 
+  @state()
   @storage({
     key: "dashboardBadgeClipboard",
     state: true,
@@ -296,7 +297,7 @@ export class HuiBadgePicker extends LitElement {
         this._renderBadgeElement(badge),
         html`
           <div class="badge spinner">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
         `
       )}`,
@@ -328,7 +329,7 @@ export class HuiBadgePicker extends LitElement {
       ),
       html`
         <div class="badge spinner">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `
     )}`;
@@ -476,7 +477,7 @@ export class HuiBadgePicker extends LitElement {
 
         .badges-container-header {
           font-size: 16px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           padding: 12px 8px 4px 8px;
           margin: 0;
           grid-column: 1 / -1;
@@ -507,7 +508,7 @@ export class HuiBadgePicker extends LitElement {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: 16px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
           line-height: 20px;
           padding: 12px 16px;

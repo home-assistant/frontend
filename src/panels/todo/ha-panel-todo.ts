@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-list";
 import {
   mdiChevronDown,
   mdiCommentProcessingOutline,
@@ -10,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
@@ -26,6 +25,7 @@ import {
 import "../../components/ha-button";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button";
+import "../../components/ha-list";
 import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
@@ -55,6 +55,7 @@ class PanelTodo extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public mobile = false;
 
+  @state()
   @storage({
     key: "selectedTodoEntity",
     state: true,
@@ -209,7 +210,7 @@ class PanelTodo extends LitElement {
               </ha-button-menu>`
             : this.hass.localize("panel.todo")}
         </div>
-        <mwc-list slot="pane" activatable>${listItems}</mwc-list>
+        <ha-list slot="pane" activatable>${listItems}</ha-list>
         ${showPane && this.hass.user?.is_admin
           ? html`<ha-list-item
               graphic="icon"

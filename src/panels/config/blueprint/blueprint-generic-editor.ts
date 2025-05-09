@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
 import "../../../components/ha-settings-row";
@@ -77,7 +77,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
               : this.hass.localize(
                   "ui.panel.config.automation.editor.blueprint.no_blueprints"
                 )
-            : html`<ha-circular-progress indeterminate></ha-circular-progress>`}
+            : html`<ha-spinner></ha-spinner>`}
         </div>
 
         ${this._config.use_blueprint.path
@@ -130,13 +130,16 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       .expanded=${expanded}
       .noCollapse=${anyRequired}
     >
-      <div slot="header" role="heading" aria-level="3" class="section-header">
-        ${section?.icon
-          ? html`<ha-icon
+      ${section?.icon
+        ? html`
+            <ha-icon
+              slot="leading-icon"
               class="section-header"
               .icon=${section.icon}
-            ></ha-icon>`
-          : nothing}
+            ></ha-icon>
+          `
+        : nothing}
+      <div slot="header" role="heading" aria-level="3" class="section-header">
         <ha-markdown .content=${title}></ha-markdown>
       </div>
       <div class="content">
@@ -268,7 +271,6 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
           margin-bottom: 16px;
         }
         ha-settings-row {
-          --paper-time-input-justify-content: flex-end;
           --settings-row-content-width: 100%;
           --settings-row-prefix-display: contents;
         }

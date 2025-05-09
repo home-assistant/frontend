@@ -282,7 +282,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         .name {
           color: var(--secondary-text-color);
           line-height: 40px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           font-size: 16px;
           overflow: hidden;
           white-space: nowrap;
@@ -290,8 +290,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         }
 
         .icon {
-          color: var(--paper-item-icon-color, #44739e);
-          --state-inactive-color: var(--paper-item-icon-color, #44739e);
+          color: var(--state-icon-color);
+          --state-inactive-color: var(--state-icon-color);
           line-height: 40px;
         }
 

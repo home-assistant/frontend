@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -20,6 +20,8 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-list";
+import "../../../components/ha-spinner";
 import "../../../components/search-input";
 import { getConfigEntries } from "../../../data/config_entries";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
@@ -149,7 +151,7 @@ class AddIntegrationDialog extends LitElement {
     ) {
       // Store the width and height so that when we search, box doesn't jump
       const boundingRect =
-        this.shadowRoot!.querySelector("mwc-list")?.getBoundingClientRect();
+        this.shadowRoot!.querySelector("ha-list")?.getBoundingClientRect();
       this._width = boundingRect?.width;
       this._height = boundingRect?.height;
     }
@@ -448,7 +450,7 @@ class AddIntegrationDialog extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       ${integrations
-        ? html`<mwc-list
+        ? html`<ha-list
             dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
           >
             <lit-virtualizer
@@ -466,9 +468,9 @@ class AddIntegrationDialog extends LitElement {
               .renderItem=${this._renderRow}
             >
             </lit-virtualizer>
-          </mwc-list>`
+          </ha-list>`
         : html`<div class="flex center">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>`} `;
   }
 
@@ -740,10 +742,10 @@ class AddIntegrationDialog extends LitElement {
         justify-content: center;
         align-items: center;
       }
-      ha-circular-progress {
+      ha-spinner {
         margin: 24px 0;
       }
-      mwc-list {
+      ha-list {
         position: relative;
       }
       lit-virtualizer {
@@ -771,7 +773,10 @@ class AddIntegrationDialog extends LitElement {
         color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
         font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
         line-height: var(--mdc-typography-headline6-line-height, 2rem);
-        font-weight: var(--mdc-typography-headline6-font-weight, 500);
+        font-weight: var(
+          --mdc-typography-headline6-font-weight,
+          var(--ha-font-weight-medium)
+        );
         letter-spacing: var(
           --mdc-typography-headline6-letter-spacing,
           0.0125em

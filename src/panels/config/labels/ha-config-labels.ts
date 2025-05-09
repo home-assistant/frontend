@@ -55,6 +55,7 @@ export class HaConfigLabels extends LitElement {
 
   @state() private _labels: LabelRegistryEntry[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "labels-table-search",
@@ -138,7 +139,6 @@ export class HaConfigLabels extends LitElement {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (label) =>
           label.created_at
@@ -153,7 +153,6 @@ export class HaConfigLabels extends LitElement {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (label) =>
           label.modified_at

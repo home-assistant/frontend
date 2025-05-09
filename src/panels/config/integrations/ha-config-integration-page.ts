@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAlertCircle,
   mdiBookshelf,
@@ -399,7 +398,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                ${this._manifest?.quality_scale &&
+                ${this._manifest?.is_built_in &&
+                this._manifest.quality_scale &&
                 Object.keys(QUALITY_SCALE_MAP).includes(
                   this._manifest.quality_scale
                 )
@@ -1800,7 +1800,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           --state-message-color: var(--secondary-text-color);
         }
         .message {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           display: flex;
           align-items: center;
         }

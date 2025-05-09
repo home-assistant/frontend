@@ -1,10 +1,11 @@
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { stringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
@@ -13,15 +14,12 @@ import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
 } from "../../data/device_registry";
-import {
-  computeDeviceName,
-  getDeviceEntityDisplayLookup,
-} from "../../data/device_registry";
+import { getDeviceEntityDisplayLookup } from "../../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import "../ha-list-item";
+import "../ha-combo-box-item";
 
 interface Device {
   name: string;
@@ -37,11 +35,14 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
-const rowRenderer: ComboBoxLitRenderer<Device> = (item) =>
-  html`<ha-list-item .twoline=${!!item.area}>
-    <span>${item.name}</span>
-    <span slot="secondary">${item.area}</span>
-  </ha-list-item>`;
+const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`
+  <ha-combo-box-item type="button">
+    <span slot="headline">${item.name}</span>
+    ${item.area
+      ? html`<span slot="supporting-text">${item.area}</span>`
+      : nothing}
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {
@@ -214,7 +215,7 @@ export class HaDevicePicker extends LitElement {
       }
 
       const outputDevices = inputDevices.map((device) => {
-        const name = computeDeviceName(
+        const name = computeDeviceNameDisplay(
           device,
           this.hass,
           deviceEntityLookup[device.id]

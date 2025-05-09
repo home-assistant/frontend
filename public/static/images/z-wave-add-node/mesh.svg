@@ -1,0 +1,19 @@
+<svg width="94" height="72" viewBox="0 0 94 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M55.1358 38.5084C55.9608 38.4334 56.5688 37.7038 56.4938 36.8788C56.4188 36.0538 55.6892 35.4457 54.8642 35.5207L55.1358 38.5084ZM38.5 38.5146L38.6358 40.0084L55.1358 38.5084L55 37.0146L54.8642 35.5207L38.3642 37.0207L38.5 38.5146Z" fill="#00AFFF" fill-opacity="0.3"/>
+<path d="M30.5 22L37.9722 37.4115C38.2967 38.0807 38.223 38.8747 37.781 39.4728L30 50" stroke="#00AFFF" stroke-opacity="0.3" stroke-width="3" stroke-linecap="round" stroke-linejoin="bevel"/>
+<circle cx="39" cy="36" r="34" fill="white"/>
+<circle cx="39" cy="36" r="33.5" stroke="black" stroke-opacity="0.12"/>
+<path d="M33.8777 12.5216C35.4905 12.1798 37.1631 12 38.8777 12C50.2401 12 59.7582 19.8959 62.2445 30.5M32 59C34.1788 59.6506 36.4874 60 38.8777 60C48.9498 60 57.5728 53.7955 61.1332 45" stroke="#00AFFF" stroke-opacity="0.3" stroke-width="3" stroke-linecap="round" stroke-linejoin="bevel"/>
+<path d="M30.5 22L37.9722 37.4115C38.2967 38.0807 38.223 38.8747 37.781 39.4728L30 50" stroke="#00AFFF" stroke-opacity="0.3" stroke-width="3" stroke-linecap="round" stroke-linejoin="bevel"/>
+<mask id="mask0_2_810" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="30" y="27" width="18" height="18">
+<path d="M45.75 42.075C45.75 42.4462 45.4463 42.75 45.075 42.75H32.925C32.5538 42.75 32.25 42.4462 32.25 42.075V36.675C32.25 36.3037 32.4649 35.7851 32.7276 35.5224L38.5224 29.7275C38.7851 29.4649 39.2143 29.4649 39.477 29.7275L45.2724 35.523C45.5351 35.7857 45.75 36.3043 45.75 36.6755V42.075Z" fill="black"/>
+</mask>
+<g mask="url(#mask0_2_810)">
+<rect x="30" y="27" width="18" height="18" fill="#00AFFF"/>
+</g>
+<path d="M55.5 39.4999C56.3284 39.4999 57 38.8283 57 37.9999C57 37.1715 56.3284 36.4999 55.5 36.4999L55.5 39.4999ZM41.5 37.9999L41.5 39.4999L55.5 39.4999L55.5 37.9999L55.5 36.4999L41.5 36.4999L41.5 37.9999Z" fill="#00AFFF" fill-opacity="0.3"/>
+<rect x="23" y="11" width="8" height="8" rx="4" fill="#00AFFF" fill-opacity="0.6"/>
+<rect x="22" y="52" width="8" height="8" rx="4" fill="#00AFFF" fill-opacity="0.6"/>
+<path d="M21.5715 19.5C17.4983 23.801 15 29.6087 15 36C15 41.9085 17.1351 47.3183 20.6759 51.5" stroke="#00AFFF" stroke-opacity="0.3" stroke-width="3" stroke-linecap="round" stroke-linejoin="bevel"/>
+<path d="M63 34.9999C64.6569 34.9999 66 36.343 66 37.9999C66 39.6567 64.6569 40.9999 63 40.9999C61.3431 40.9999 60 39.6567 60 37.9999C60 36.343 61.3431 34.9999 63 34.9999Z" stroke="#00AFFF" stroke-width="2"/>
+</svg>

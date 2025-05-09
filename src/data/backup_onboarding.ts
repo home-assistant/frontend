@@ -8,7 +8,7 @@ import type {
 
 export interface BackupOnboardingInfo {
   state: BackupManagerState;
-  last_non_idle_event?: {
+  last_action_event?: {
     manager_state: BackupManagerState;
     stage: RestoreBackupStage | null;
     state: RestoreBackupState;
@@ -22,7 +22,7 @@ export interface BackupOnboardingConfig extends BackupOnboardingInfo {
 
 export const fetchBackupOnboardingInfo = async () =>
   handleFetchPromise<BackupOnboardingConfig>(
-    fetch("/api/onboarding/backup/info")
+    fetch(`${__HASS_URL__}/api/onboarding/backup/info`)
   );
 
 export interface RestoreOnboardingBackupParams {
@@ -38,7 +38,7 @@ export const restoreOnboardingBackup = async (
   params: RestoreOnboardingBackupParams
 ) =>
   handleFetchPromise(
-    fetch("/api/onboarding/backup/restore", {
+    fetch(`${__HASS_URL__}/api/onboarding/backup/restore`, {
       method: "POST",
       body: JSON.stringify(params),
     })
@@ -58,7 +58,7 @@ export const uploadOnboardingBackup = async (
   });
 
   return handleFetchPromise(
-    fetch(`/api/onboarding/backup/upload?${params.toString()}`, {
+    fetch(`${__HASS_URL__}/api/onboarding/backup/upload?${params.toString()}`, {
       method: "POST",
       body: fd,
     })

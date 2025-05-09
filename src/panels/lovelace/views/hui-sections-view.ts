@@ -531,7 +531,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     .drop-helper p {
       color: var(--primary-text-color);
       font-size: 16px;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 24px;
       text-align: center;
     }
@@ -564,7 +564,6 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     hui-view-header {
       display: block;
-      text-align: center;
       padding: 0 var(--column-gap);
       padding-top: var(--row-gap);
       margin: auto;
@@ -619,7 +618,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       margin: 0;
       color: var(--primary-text-color);
       font-size: 16px;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 24px;
       --mdc-icon-size: 18px;
       display: flex;
@@ -631,7 +630,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       margin: 0;
       color: var(--secondary-text-color);
       font-size: 14px;
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       line-height: 20px;
     }
   `;

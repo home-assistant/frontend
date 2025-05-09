@@ -27,9 +27,14 @@ import type { ToggleCardFeatureConfig } from "./types";
 
 export const supportsToggleCardFeature = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
-  return ["switch", "input_boolean", "light", "fan", "siren", "valve"].includes(
-    domain
-  );
+  return [
+    "switch",
+    "input_boolean",
+    "light",
+    "fan",
+    "siren",
+    "automation",
+  ].includes(domain);
 };
 
 const DOMAIN_ICONS: Record<string, { on: string; off: string }> = {
@@ -158,7 +163,6 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
 
     return html`
       <ha-control-switch
-        touch-action="none"
         .pathOn=${onIcon}
         .pathOff=${offIcon}
         .checked=${isOn}

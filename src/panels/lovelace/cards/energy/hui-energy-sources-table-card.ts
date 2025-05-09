@@ -134,11 +134,13 @@ export class HuiEnergySourcesTableCard
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
 
-    const gasUnit =
-      getEnergyGasUnit(this.hass, this._data.prefs, this._data.statsMetadata) ||
-      "";
+    const gasUnit = getEnergyGasUnit(
+      this.hass,
+      this._data.prefs,
+      this._data.statsMetadata
+    );
 
-    const waterUnit = getEnergyWaterUnit(this.hass) || "m³";
+    const waterUnit = getEnergyWaterUnit(this.hass);
 
     const compare = this._data.statsCompare !== undefined;
 
@@ -1176,7 +1178,7 @@ export class HuiEnergySourcesTableCard
         cursor: pointer;
       }
       .total {
-        --mdc-typography-body2-font-weight: 500;
+        --mdc-typography-body2-font-weight: var(--ha-font-weight-medium);
       }
       .total .mdc-data-table__cell {
         border-top: 1px solid var(--divider-color);

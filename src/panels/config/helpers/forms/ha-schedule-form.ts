@@ -481,7 +481,7 @@ class HaScheduleForm extends LitElement {
           background-color: var(--table-header-background-color);
           color: var(--primary-text-color);
           font-size: 11px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           text-transform: uppercase;
         }
       `,

@@ -43,13 +43,15 @@ export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
 
 interface MapEntityConfig extends EntityConfig {
-  label_mode?: "state" | "name";
+  label_mode?: "state" | "attribute" | "name";
+  attribute?: string;
   focus?: boolean;
 }
 
 interface GeoEntity {
   entity_id: string;
-  label_mode?: "state" | "name" | "icon";
+  label_mode?: "state" | "attribute" | "name" | "icon";
+  attribute?: string;
   focus: boolean;
 }
 
@@ -206,7 +208,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
-            .fitZones=${this._config.fit_zones}
+            .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
             interactive-zones
@@ -422,6 +424,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         geoEntities.push({
           entity_id: stateObj.entity_id,
           label_mode: sourceObj?.label_mode ?? allSource?.label_mode,
+          attribute: sourceObj?.attribute ?? allSource?.attribute,
           focus: sourceObj
             ? (sourceObj.focus ?? true)
             : (allSource?.focus ?? true),
@@ -437,6 +440,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         entity_id: entityConf.entity,
         color: this._getColor(entityConf.entity),
         label_mode: entityConf.label_mode,
+        attribute: entityConf.attribute,
         focus: entityConf.focus,
         name: entityConf.name,
       })),

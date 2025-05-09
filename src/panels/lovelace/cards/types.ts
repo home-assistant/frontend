@@ -22,6 +22,7 @@ import type {
 } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type { TimeFormat } from "../../../data/translation";
 
 export type AlarmPanelCardConfigState =
   | "arm_away"
@@ -200,6 +201,8 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
   title?: string;
   layout?: "vertical" | "horizontal";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -230,6 +233,7 @@ export interface GaugeSegment {
 
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
+  attribute?: string;
   name?: string;
   unit?: string;
   min?: number;
@@ -286,6 +290,7 @@ export interface HumidifierCardConfig extends LovelaceCardConfig {
 export interface IframeCardConfig extends LovelaceCardConfig {
   allow_open_top_navigation?: boolean;
   aspect_ratio?: string;
+  disable_sandbox?: boolean;
   title?: string;
   allow?: string;
   url: string;
@@ -315,7 +320,8 @@ export interface LogbookCardConfig extends LovelaceCardConfig {
 
 interface GeoLocationSourceConfig {
   source: string;
-  label_mode?: "name" | "state" | "icon";
+  label_mode?: "name" | "state" | "attribute" | "icon";
+  attribute?: string;
   focus?: boolean;
 }
 
@@ -342,6 +348,15 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   entity_ids?: string | string[];
   theme?: string;
   show_empty?: boolean;
+}
+
+export interface ClockCardConfig extends LovelaceCardConfig {
+  type: "clock";
+  title?: string;
+  clock_size?: "small" | "medium" | "large";
+  show_seconds?: boolean | undefined;
+  time_format?: TimeFormat;
+  time_zone?: string;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -428,6 +443,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
+  fit_mode?: "cover" | "contain" | "fill";
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
@@ -446,6 +462,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   state_image?: Record<string, unknown>;
   state_filter?: string[];
   aspect_ratio?: string;
+  fit_mode?: "cover" | "contain" | "fill";
   entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

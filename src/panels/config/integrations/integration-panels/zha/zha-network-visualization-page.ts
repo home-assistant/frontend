@@ -486,13 +486,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
             (e) => device.ieee === e.to && neighbor.ieee === e.from
           );
           if (idx === -1) {
+            const edge_options = this._getEdgeOptions(parseInt(neighbor.lqi));
             edges.push({
               from: device.ieee,
               to: neighbor.ieee,
               label: neighbor.lqi + "",
-              color: this._getLQI(parseInt(neighbor.lqi)).color,
-              width: this._getLQI(parseInt(neighbor.lqi)).width,
-              length: 2000 - 4 * parseInt(neighbor.lqi),
+              color: edge_options.color,
+              width: edge_options.width,
+              length: edge_options.length,
+              physics: edge_options.physics,
               arrows: {
                 from: {
                   enabled: neighbor.relationship !== "Child",
@@ -501,16 +503,14 @@ export class ZHANetworkVisualizationPage extends LitElement {
               dashes: neighbor.relationship !== "Child",
             });
           } else {
-            edges[idx].color = this._getLQI(
-              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
-            ).color;
-            edges[idx].width = this._getLQI(
-              (parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2
-            ).width;
-            edges[idx].length =
-              2000 -
-              6 * ((parseInt(edges[idx].label!) + parseInt(neighbor.lqi)) / 2);
-            edges[idx].label += "/" + neighbor.lqi;
+            const edge_options = this._getEdgeOptions(
+              Math.min(parseInt(edges[idx].label!), parseInt(neighbor.lqi))
+            );
+            edges[idx].label += " & " + neighbor.lqi;
+            edges[idx].color = edge_options.color;
+            edges[idx].width = edge_options.width;
+            edges[idx].length = edge_options.length;
+            edges[idx].physics = edge_options.physics;
             delete edges[idx].arrows;
             delete edges[idx].dashes;
           }
@@ -530,6 +530,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         label: this._buildLabel(device),
         shape: this._getShape(device),
         mass: this._getMass(device),
+        fixed: device.device_type === "Coordinator",
         color: {
           background: device.available ? "#66FF99" : "#FF9999",
         },
@@ -545,17 +546,30 @@ export class ZHANetworkVisualizationPage extends LitElement {
     }
   }
 
-  private _getLQI(lqi: number): EdgeOptions {
+  private _getEdgeOptions(lqi: number): EdgeOptions {
+    const length = 2000 - 4 * lqi;
     if (lqi > 192) {
-      return { color: { color: "#17ab00", highlight: "#17ab00" }, width: 4 };
+      return {
+        color: { color: "#17ab00", highlight: "#17ab00" },
+        width: lqi / 20,
+        length: length,
+        physics: false,
+      };
     }
     if (lqi > 128) {
-      return { color: { color: "#e6b402", highlight: "#e6b402" }, width: 3 };
+      return {
+        color: { color: "#e6b402", highlight: "#e6b402" },
+        width: 9,
+        length: length,
+        physics: false,
+      };
     }
-    if (lqi > 80) {
-      return { color: { color: "#fc4c4c", highlight: "#fc4c4c" }, width: 2 };
-    }
-    return { color: { color: "#bfbfbf", highlight: "#bfbfbf" }, width: 1 };
+    return {
+      color: { color: "#bfbfbf", highlight: "#bfbfbf" },
+      width: 1,
+      length: length,
+      physics: false,
+    };
   }
 
   private _getMass(device: ZHADevice): number {
@@ -694,16 +708,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
     this._network!.setOptions(
       this._enablePhysics
-        ? {
-            physics: {
-              barnesHut: {
-                springConstant: 0,
-                avoidOverlap: 10,
-                damping: 0.09,
-              },
-            },
-          }
-        : { physics: false }
+        ? { physics: { enabled: true } }
+        : { physics: { enabled: false } }
     );
   }
 

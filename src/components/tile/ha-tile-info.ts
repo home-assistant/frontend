@@ -26,7 +26,6 @@ export class HaTileInfo extends LitElement {
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      height: 36px;
     }
     span {
       text-overflow: ellipsis;
@@ -35,14 +34,14 @@ export class HaTileInfo extends LitElement {
       width: 100%;
     }
     .primary {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       font-size: 14px;
       line-height: 20px;
       letter-spacing: 0.1px;
       color: var(--primary-text-color);
     }
     .secondary {
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       font-size: 12px;
       line-height: 16px;
       letter-spacing: 0.4px;

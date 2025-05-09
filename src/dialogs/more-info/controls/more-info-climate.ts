@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiArrowOscillating,
   mdiFan,
@@ -539,7 +538,7 @@ class MoreInfoClimate extends LitElement {
 
         .current .value {
           font-size: 22px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           line-height: 28px;
           direction: ltr;
         }

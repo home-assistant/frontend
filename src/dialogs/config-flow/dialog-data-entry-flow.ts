@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,11 +5,13 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
-import { subscribeDataEntryFlowProgressed } from "../../data/data_entry_flow";
+import {
+  subscribeDataEntryFlowProgress,
+  subscribeDataEntryFlowProgressed,
+} from "../../data/data_entry_flow";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -53,6 +54,8 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _loading?: LoadingReason;
 
+  @state() private _progress?: number;
+
   private _instance = instance;
 
   @state() private _step:
@@ -63,7 +66,7 @@ class DataEntryFlowDialog extends LitElement {
 
   @state() private _handler?: string;
 
-  private _unsubDataEntryFlowProgressed?: Promise<UnsubscribeFunc>;
+  private _unsubDataEntryFlowProgress?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
     this._params = params;
@@ -161,11 +164,9 @@ class DataEntryFlowDialog extends LitElement {
     this._step = undefined;
     this._params = undefined;
     this._handler = undefined;
-    if (this._unsubDataEntryFlowProgressed) {
-      this._unsubDataEntryFlowProgressed.then((unsub) => {
-        unsub();
-      });
-      this._unsubDataEntryFlowProgressed = undefined;
+    if (this._unsubDataEntryFlowProgress) {
+      this._unsubDataEntryFlowProgress();
+      this._unsubDataEntryFlowProgress = undefined;
     }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -174,6 +175,17 @@ class DataEntryFlowDialog extends LitElement {
     if (!this._params) {
       return nothing;
     }
+
+    const showDocumentationLink =
+      ([
+        "form",
+        "menu",
+        "external",
+        "progress",
+        "data_entry_flow_progressed",
+      ].includes(this._step?.type as any) &&
+        this._params.manifest?.is_built_in) ||
+      !!this._params.manifest?.documentation;
 
     return html`
       <ha-dialog
@@ -189,7 +201,7 @@ class DataEntryFlowDialog extends LitElement {
                 <step-flow-loading
                   .flowConfig=${this._params.flowConfig}
                   .hass=${this.hass}
-                  .loadingReason=${this._loading}
+                  .loadingReason=${this._loading!}
                   .handler=${this._handler}
                   .step=${this._step}
                 ></step-flow-loading>
@@ -197,26 +209,18 @@ class DataEntryFlowDialog extends LitElement {
             : this._step === undefined
               ? // When we are going to next step, we render 1 round of empty
                 // to reset the element.
-                ""
+                nothing
               : html`
                   <div class="dialog-actions">
-                    ${([
-                      "form",
-                      "menu",
-                      "external",
-                      "progress",
-                      "data_entry_flow_progressed",
-                    ].includes(this._step?.type as any) &&
-                      this._params.manifest?.is_built_in) ||
-                    this._params.manifest?.documentation
+                    ${showDocumentationLink
                       ? html`
                           <a
-                            href=${this._params.manifest.is_built_in
+                            href=${this._params.manifest!.is_built_in
                               ? documentationUrl(
                                   this.hass,
-                                  `/integrations/${this._params.manifest.domain}`
+                                  `/integrations/${this._params.manifest!.domain}`
                                 )
-                              : this._params?.manifest?.documentation}
+                              : this._params.manifest!.documentation}
                             target="_blank"
                             rel="noreferrer noopener"
                           >
@@ -227,11 +231,9 @@ class DataEntryFlowDialog extends LitElement {
                             </ha-icon-button
                           ></a>
                         `
-                      : ""}
+                      : nothing}
                     <ha-icon-button
-                      .label=${this.hass.localize(
-                        "ui.panel.config.integrations.config_flow.dismiss"
-                      )}
+                      .label=${this.hass.localize("ui.common.close")}
                       .path=${mdiClose}
                       dialogAction="close"
                     ></ha-icon-button>
@@ -242,6 +244,7 @@ class DataEntryFlowDialog extends LitElement {
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}
+                          .increasePaddingEnd=${showDocumentationLink}
                         ></step-flow-form>
                       `
                     : this._step.type === "external"
@@ -250,6 +253,7 @@ class DataEntryFlowDialog extends LitElement {
                             .flowConfig=${this._params.flowConfig}
                             .step=${this._step}
                             .hass=${this.hass}
+                            .increasePaddingEnd=${showDocumentationLink}
                           ></step-flow-external>
                         `
                       : this._step.type === "abort"
@@ -258,7 +262,10 @@ class DataEntryFlowDialog extends LitElement {
                               .params=${this._params}
                               .step=${this._step}
                               .hass=${this.hass}
-                              .domain=${this._step.handler}
+                              .handler=${this._step.handler}
+                              .domain=${this._params.domain ??
+                              this._step.handler}
+                              .increasePaddingEnd=${showDocumentationLink}
                             ></step-flow-abort>
                           `
                         : this._step.type === "progress"
@@ -267,6 +274,8 @@ class DataEntryFlowDialog extends LitElement {
                                 .flowConfig=${this._params.flowConfig}
                                 .step=${this._step}
                                 .hass=${this.hass}
+                                .progress=${this._progress}
+                                .increasePaddingEnd=${showDocumentationLink}
                               ></step-flow-progress>
                             `
                           : this._step.type === "menu"
@@ -275,6 +284,7 @@ class DataEntryFlowDialog extends LitElement {
                                   .flowConfig=${this._params.flowConfig}
                                   .step=${this._step}
                                   .hass=${this.hass}
+                                  .increasePaddingEnd=${showDocumentationLink}
                                 ></step-flow-menu>
                               `
                             : html`
@@ -283,7 +293,8 @@ class DataEntryFlowDialog extends LitElement {
                                   .step=${this._step}
                                   .hass=${this.hass}
                                   .navigateToResult=${this._params
-                                    .navigateToResult}
+                                    .navigateToResult ?? false}
+                                  .increasePaddingEnd=${showDocumentationLink}
                                 ></step-flow-create-entry>
                               `}
                 `}
@@ -342,20 +353,28 @@ class DataEntryFlowDialog extends LitElement {
   }
 
   private async _subscribeDataEntryFlowProgressed() {
-    if (this._unsubDataEntryFlowProgressed) {
+    if (this._unsubDataEntryFlowProgress) {
       return;
     }
-    this._unsubDataEntryFlowProgressed = subscribeDataEntryFlowProgressed(
-      this.hass.connection,
-      async (ev) => {
+    this._progress = undefined;
+    const unsubs = [
+      subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
         if (ev.data.flow_id !== this._step?.flow_id) {
           return;
         }
         this._processStep(
           this._params!.flowConfig.fetchFlow(this.hass, this._step.flow_id)
         );
-      }
-    );
+        this._progress = undefined;
+      }),
+      subscribeDataEntryFlowProgress(this.hass.connection, (ev) => {
+        // ha-progress-ring has an issue with 0 so we round up
+        this._progress = Math.ceil(ev.data.progress * 100);
+      }),
+    ];
+    this._unsubDataEntryFlowProgress = async () => {
+      (await Promise.all(unsubs)).map((unsub) => unsub());
+    };
   }
 
   static get styles(): CSSResultGroup {

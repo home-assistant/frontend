@@ -8,9 +8,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceViewHeaderConfig } from "../../../../data/lovelace/config/view";
@@ -140,11 +141,7 @@ export class HuiDialogEditViewHeader extends LitElement {
           @click=${this._save}
         >
           ${this._saving
-            ? html`<ha-circular-progress
-                indeterminate
-                size="small"
-                aria-label="Saving"
-              ></ha-circular-progress>`
+            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
             : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >

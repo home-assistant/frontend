@@ -38,6 +38,7 @@ class HassioMarkdownDialog extends LitElement {
         open
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(this.hass, this.title)}
+        hideactions
       >
         <ha-markdown
           .content=${this.content || ""}

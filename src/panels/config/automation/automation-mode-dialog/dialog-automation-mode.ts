@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -159,7 +159,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
           : nothing}
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass.localize("ui.dialogs.generic.cancel")}
+          ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button @click=${this._save} slot="primaryAction">
           ${this.hass.localize("ui.panel.config.automation.editor.change_mode")}

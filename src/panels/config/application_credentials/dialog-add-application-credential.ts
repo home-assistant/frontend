@@ -1,17 +1,15 @@
-import "@material/mwc-list/mwc-list-item";
 import { mdiOpenInNew } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-circular-progress";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-markdown";
 import "../../../components/ha-password-field";
+import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
 import type {
   ApplicationCredential,
@@ -32,11 +30,6 @@ interface Domain {
   id: string;
   name: string;
 }
-
-const rowRenderer: ComboBoxLitRenderer<Domain> = (item) =>
-  html`<mwc-list-item>
-    <span>${item.name}</span>
-  </mwc-list-item>`;
 
 @customElement("dialog-add-application-credential")
 export class DialogAddApplicationCredential extends LitElement {
@@ -171,7 +164,6 @@ export class DialogAddApplicationCredential extends LitElement {
                   "ui.panel.config.application_credentials.editor.domain"
                 )}
                 .value=${this._domain}
-                .renderer=${rowRenderer}
                 .items=${this._domains}
                 item-id-path="id"
                 item-value-path="id"
@@ -231,7 +223,7 @@ export class DialogAddApplicationCredential extends LitElement {
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>
             `
           : html`

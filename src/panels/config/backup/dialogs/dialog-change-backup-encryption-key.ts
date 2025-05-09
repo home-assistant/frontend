@@ -108,7 +108,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
             : html`
                 <ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close")}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                   @click=${this.closeDialog}
                 ></ha-icon-button>
@@ -313,10 +313,10 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         .encryption-key p {
           margin: 0;
           flex: 1;
-          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+          font-family: var(--ha-font-family-code);
           font-size: 20px;
           font-style: normal;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           line-height: 28px;
           text-align: center;
         }

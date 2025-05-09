@@ -194,7 +194,7 @@ export class HaControlNumberButton extends LitElement {
       color: var(--primary-text-color);
       -webkit-tap-highlight-color: transparent;
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       transition: color 180ms ease-in-out;
     }
     :host([disabled]) {
@@ -254,7 +254,7 @@ export class HaControlNumberButton extends LitElement {
       bottom: 0;
       padding: 0;
       width: 35px;
-      height: 40px;
+      height: 100%;
       border: none;
       background: none;
       cursor: pointer;

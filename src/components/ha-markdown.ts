@@ -74,7 +74,7 @@ export class HaMarkdown extends LitElement {
       padding: 16px;
       overflow: auto;
       line-height: 1.45;
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
     }
     h1,
     h2,
@@ -86,7 +86,7 @@ export class HaMarkdown extends LitElement {
     }
     h2 {
       font-size: 1.5em;
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     hr {
       border-color: var(--divider-color);

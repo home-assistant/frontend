@@ -6,7 +6,7 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
@@ -27,6 +27,9 @@ class StepFlowForm extends LitElement {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean, attribute: "increase-padding-end" })
+  public increasePaddingEnd = false;
+
   @state() private _loading = false;
 
   @state() private _stepData?: Record<string, any>;
@@ -43,7 +46,9 @@ class StepFlowForm extends LitElement {
     const stepData = this._stepDataProcessed;
 
     return html`
-      <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
+      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
+        ${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}
+      </h2>
       <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
@@ -84,7 +89,7 @@ class StepFlowForm extends LitElement {
         ${this._loading
           ? html`
               <div class="submit-spinner">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner size="small"></ha-spinner>
               </div>
             `
           : html`
@@ -144,17 +149,24 @@ class StepFlowForm extends LitElement {
   private async _submitStep(): Promise<void> {
     const stepData = this._stepData || {};
 
+    const checkAllRequiredFields = (
+      schema: readonly HaFormSchema[],
+      data: Record<string, any>
+    ) =>
+      schema.every(
+        (field) =>
+          (!field.required || !["", undefined].includes(data[field.name])) &&
+          (field.type !== "expandable" ||
+            (!field.required && data[field.name] === undefined) ||
+            checkAllRequiredFields(field.schema, data[field.name]))
+      );
+
     const allRequiredInfoFilledIn =
       stepData === undefined
         ? // If no data filled in, just check that any field is required
           this.step.data_schema.find((field) => field.required) === undefined
         : // If data is filled in, make sure all required fields are
-          stepData &&
-          this.step.data_schema.every(
-            (field) =>
-              !field.required ||
-              !["", undefined].includes(stepData![field.name])
-          );
+          checkAllRequiredFields(this.step.data_schema, stepData);
 
     if (!allRequiredInfoFilledIn) {
       this._errorMsg = this.hass.localize(
@@ -256,6 +268,9 @@ class StepFlowForm extends LitElement {
         }
 
         .submit-spinner {
+          height: 36px;
+          display: flex;
+          align-items: center;
           margin-right: 16px;
           margin-inline-end: 16px;
           margin-inline-start: initial;
@@ -268,8 +283,6 @@ class StepFlowForm extends LitElement {
         }
         h2 {
           word-break: break-word;
-          padding-inline-end: 72px;
-          direction: var(--direction);
         }
       `,
     ];

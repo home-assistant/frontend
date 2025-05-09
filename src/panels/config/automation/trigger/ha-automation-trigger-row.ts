@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -34,7 +34,6 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-textfield";
-import "../../../../components/ha-list-item";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { AutomationClipboard, Trigger } from "../../../../data/automation";
 import {
@@ -159,12 +158,13 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : nothing}
 
-        <ha-expansion-panel leftChevron>
+        <ha-expansion-panel left-chevron>
+          <ha-svg-icon
+            slot="leading-icon"
+            class="trigger-icon"
+            .path=${TRIGGER_ICONS[type]}
+          ></ha-svg-icon>
           <h3 slot="header">
-            <ha-svg-icon
-              class="trigger-icon"
-              .path=${TRIGGER_ICONS[type]}
-            ></ha-svg-icon>
             ${describeTrigger(this.trigger, this.hass, this._entityReg)}
           </h3>
 
@@ -672,9 +672,6 @@ export default class HaAutomationTriggerRow extends LitElement {
             display: inline-block;
             color: var(--secondary-text-color);
             opacity: 0.9;
-            margin-right: 8px;
-            margin-inline-end: 8px;
-            margin-inline-start: initial;
           }
         }
         .card-content {
@@ -683,8 +680,18 @@ export default class HaAutomationTriggerRow extends LitElement {
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
         .triggered {
           cursor: pointer;
@@ -693,7 +700,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           right: 0px;
           left: 0px;
           text-transform: uppercase;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           font-size: 14px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
@@ -701,8 +708,18 @@ export default class HaAutomationTriggerRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, 12px);
-          border-top-left-radius: var(--ha-card-border-radius, 12px);
+          border-top-right-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
+          border-top-left-radius: calc(
+            var(--ha-card-border-radius, 12px) - var(
+                --ha-card-border-width,
+                1px
+              )
+          );
         }
         .triggered.active {
           max-height: 100px;
@@ -720,6 +737,12 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         ha-md-menu-item > ha-svg-icon {
           --mdc-icon-size: 24px;
+        }
+        :host([highlight]) ha-card {
+          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
+          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
+          border-color: var(--state-inactive-color);
+          box-shadow: var(--shadow-default), var(--shadow-focus);
         }
       `,
     ];

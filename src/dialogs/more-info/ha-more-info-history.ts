@@ -20,6 +20,7 @@ import type {
 import { fetchStatistics, getStatisticMetadata } from "../../data/recorder";
 import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import type { HomeAssistant } from "../../types";
+import { haStyle } from "../../resources/styles";
 
 declare global {
   interface HASSDomEvents {
@@ -58,9 +59,9 @@ export class MoreInfoHistory extends LitElement {
 
     return html`${isComponentLoaded(this.hass, "history")
       ? html`<div class="header">
-            <div class="title">
+            <h2>
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
-            </div>
+            </h2>
             ${__DEMO__
               ? nothing
               : html`<a href=${this._showMoreHref}
@@ -231,27 +232,25 @@ export class MoreInfoHistory extends LitElement {
     this._setRedrawTimer();
   }
 
-  static styles = css`
-    .header {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .header > a,
-    a:visited {
-      color: var(--primary-color);
-    }
-    .title {
-      font-family: var(--paper-font-title_-_font-family);
-      -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
-      font-size: var(--paper-font-subhead_-_font-size);
-      font-weight: var(--paper-font-title_-_font-weight);
-      letter-spacing: var(--paper-font-title_-_letter-spacing);
-      line-height: var(--paper-font-title_-_line-height);
-    }
-  `;
+  static styles = [
+    haStyle,
+    css`
+      .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .header > a,
+      a:visited {
+        color: var(--primary-color);
+      }
+      h2 {
+        margin: 0;
+      }
+    `,
+  ];
 }
 
 declare global {

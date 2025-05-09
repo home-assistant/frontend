@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -10,11 +11,11 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../../../components/ha-form/ha-form";
-import type { LovelacePictureElementEditor } from "../../../types";
 import type { StateIconElementConfig } from "../../../elements/types";
+import type { LovelacePictureElementEditor } from "../../../types";
 import { actionConfigStruct } from "../../structs/action-struct";
 
 const stateIconElementConfigStruct = object({
@@ -35,16 +36,43 @@ const SCHEMA = [
   { name: "title", selector: { text: {} } },
   { name: "state_color", default: true, selector: { boolean: {} } },
   {
-    name: "tap_action",
-    selector: {
-      ui_action: {},
-    },
-  },
-  {
-    name: "hold_action",
-    selector: {
-      ui_action: {},
-    },
+    name: "interactions",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiGestureTap,
+    schema: [
+      {
+        name: "tap_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "hold_action",
+        selector: {
+          ui_action: {
+            default_action: "more-info",
+          },
+        },
+      },
+      {
+        name: "",
+        type: "optional_actions",
+        flatten: true,
+        schema: [
+          {
+            name: "double_tap_action",
+            selector: {
+              ui_action: {
+                default_action: "none",
+              },
+            },
+          },
+        ],
+      },
+    ],
   },
   { name: "style", selector: { object: {} } },
 ] as const;

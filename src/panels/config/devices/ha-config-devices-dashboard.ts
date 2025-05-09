@@ -1,10 +1,11 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiChevronRight,
   mdiDotsVertical,
   mdiMenuDown,
   mdiPlus,
   mdiTextureBox,
+  mdiCancel,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -17,6 +18,7 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -39,7 +41,6 @@ import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-fab";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-floor-areas";
@@ -47,6 +48,7 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import { createAreaRegistryEntry } from "../../../data/area_registry";
@@ -62,10 +64,7 @@ import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
 } from "../../../data/device_registry";
-import {
-  computeDeviceName,
-  updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   findBatteryChargingEntity,
@@ -121,6 +120,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "devices-table-search",
@@ -129,6 +129,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   })
   private _filter: string = history.state?.filter || "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "devices-table-filters-full",
@@ -425,7 +426,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
         return {
           ...device,
-          name: computeDeviceName(
+          name: computeDeviceNameDisplay(
             device,
             this.hass,
             deviceEntityLookup[device.id]
@@ -516,19 +517,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : nothing}
         `,
       },
-      manufacturer: {
-        title: localize("ui.panel.config.devices.data_table.manufacturer"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        minWidth: "120px",
-      },
-      model: {
-        title: localize("ui.panel.config.devices.data_table.model"),
-        sortable: true,
-        filterable: true,
-        minWidth: "120px",
-      },
       area: {
         title: localize("ui.panel.config.devices.data_table.area"),
         sortable: true,
@@ -543,11 +531,23 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         groupable: true,
         minWidth: "120px",
       },
+      manufacturer: {
+        title: localize("ui.panel.config.devices.data_table.manufacturer"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        minWidth: "120px",
+      },
+      model: {
+        title: localize("ui.panel.config.devices.data_table.model"),
+        sortable: true,
+        filterable: true,
+        minWidth: "120px",
+      },
       battery_entity: {
         title: localize("ui.panel.config.devices.data_table.battery"),
         showNarrow: true,
         sortable: true,
-        filterable: true,
         type: "numeric",
         maxWidth: "101px",
         minWidth: "101px",
@@ -585,7 +585,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.created_at
@@ -600,7 +599,6 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.modified_at
@@ -612,13 +610,31 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             : "—",
       },
       disabled_by: {
-        title: "",
-        label: localize("ui.panel.config.devices.data_table.disabled_by"),
-        hidden: true,
+        title: localize("ui.panel.config.devices.picker.state"),
+        type: "icon",
+        defaultHidden: true,
+        sortable: true,
+        filterable: true,
+        minWidth: "80px",
+        maxWidth: "80px",
         template: (device) =>
           device.disabled_by
-            ? this.hass.localize("ui.panel.config.devices.disabled")
-            : "",
+            ? html`
+                <div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-tooltip
+                    placement="left"
+                    .content=${this.hass.localize(
+                      "ui.panel.config.entities.picker.status.disabled"
+                    )}
+                  >
+                    <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
+                  </ha-tooltip>
+                </div>
+              `
+            : "—",
       },
       labels: {
         title: "",
@@ -905,7 +921,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing}
               <ha-sub-menu>
@@ -920,7 +936,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
                 </ha-md-menu-item>
-                <ha-menu slot="menu">${areaItems}</ha-menu>
+                <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
               </ha-sub-menu>
             </ha-md-button-menu>`
           : nothing}

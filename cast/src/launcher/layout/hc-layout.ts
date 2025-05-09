@@ -113,7 +113,7 @@ class HcLayout extends LitElement {
     }
 
     :host ::slotted(.section-header) {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       padding: 4px 16px;
       text-transform: uppercase;
     }

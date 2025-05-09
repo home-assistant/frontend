@@ -7,6 +7,7 @@ import { navigate } from "../../../common/navigate";
 import { extractSearchParam } from "../../../common/url/search-params";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-list-item";
 import "../../../components/search-input";
 import type { LogProvider } from "../../../data/error_log";
 import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
@@ -129,13 +130,13 @@ export class HaConfigLogs extends LitElement {
                 </ha-button>
                 ${this._logProviders.map(
                   (provider) => html`
-                    <mwc-list-item
+                    <ha-list-item
                       ?selected=${provider.key === this._selectedLogProvider}
                       .provider=${provider.key}
                       @click=${this._selectProvider}
                     >
                       ${provider.name}
-                    </mwc-list-item>
+                    </ha-list-item>
                   `
                 )}
               </ha-button-menu>

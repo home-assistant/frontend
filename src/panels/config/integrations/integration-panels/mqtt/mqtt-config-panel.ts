@@ -1,11 +1,12 @@
 import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
@@ -22,6 +23,7 @@ export class MQTTConfigPanel extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-topic-ls",
     state: true,
@@ -29,6 +31,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _topic = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-payload-ls",
     state: true,
@@ -36,6 +39,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _payload = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-qos-ls",
     state: true,
@@ -43,6 +47,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _qos = "0";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-retain-ls",
     state: true,
@@ -50,6 +55,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _retain = false;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-allow-template-ls",
     state: true,
@@ -90,7 +96,7 @@ export class MQTTConfigPanel extends LitElement {
                   @selected=${this._handleQos}
                   >${qosLevel.map(
                     (qos) =>
-                      html`<mwc-list-item .value=${qos}>${qos}</mwc-list-item>`
+                      html`<ha-list-item .value=${qos}>${qos}</ha-list-item>`
                   )}
                 </ha-select>
                 <ha-formfield

@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   css,
   type CSSResultGroup,
@@ -15,6 +14,7 @@ import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-spinner";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-faded";
 import "../../../src/components/ha-icon-button";
@@ -192,12 +192,10 @@ class UpdateAvailableCard extends LitElement {
                       `
                     : nothing}
                 `
-              : html`<ha-circular-progress
+              : html`<ha-spinner
                     aria-label="Updating"
                     size="large"
-                    indeterminate
-                  >
-                  </ha-circular-progress>
+                  ></ha-spinner>
                   <p class="progress-text">
                     ${this.supervisor.localize("update_available.updating", {
                       name: this._name,
@@ -465,7 +463,7 @@ class UpdateAvailableCard extends LitElement {
           justify-content: space-between;
         }
 
-        ha-circular-progress {
+        ha-spinner {
           display: block;
           margin: 32px;
           text-align: center;

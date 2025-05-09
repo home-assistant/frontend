@@ -2,12 +2,13 @@ import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
+import { fetchStreamUrl } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
-import { fetchStreamUrl } from "../data/camera";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 type HlsLite = Omit<
   HlsType,
@@ -23,6 +24,10 @@ class HaHLSPlayer extends LitElement {
   @property() public url?: string;
 
   @property({ attribute: "poster-url" }) public posterUrl?: string;
+
+  @property({ attribute: false }) public aspectRatio?: number;
+
+  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
 
   @property({ type: Boolean, attribute: "controls" })
   public controls = false;
@@ -87,6 +92,11 @@ class HaHLSPlayer extends LitElement {
             ?playsinline=${this.playsInline}
             ?controls=${this.controls}
             @loadeddata=${this._loadedData}
+            style=${styleMap({
+              height: this.aspectRatio == null ? "100%" : "auto",
+              aspectRatio: this.aspectRatio,
+              objectFit: this.fitMode,
+            })}
           ></video>`
         : ""}
     `;
@@ -123,7 +133,7 @@ class HaHLSPlayer extends LitElement {
     try {
       const { url } = await fetchStreamUrl(this.hass!, this.entityid);
 
-      this._url = url;
+      this._url = this.hass.hassUrl(url);
       this._cleanUp();
       this._resetError();
       this._startHls();
@@ -181,15 +191,7 @@ class HaHLSPlayer extends LitElement {
     let playlist_url: string;
     if (match !== null && matchTwice === null) {
       // Only send the regular playlist url if we match exactly once
-      // In case we arrive here with a relative URL, we need to provide a valid
-      // base/absolute URL to avoid the URL() constructor throwing an error.
-      let base_url: string;
-      try {
-        base_url = new URL(this._url).href;
-      } catch (_error) {
-        base_url = new URL(this._url, window.location.href).href;
-      }
-      playlist_url = new URL(match[3], base_url).href;
+      playlist_url = new URL(match[3], this._url).href;
     } else {
       playlist_url = this._url;
     }
@@ -219,7 +221,7 @@ class HaHLSPlayer extends LitElement {
     await this.hass!.auth.external!.fireMessage({
       type: "exoplayer/play_hls",
       payload: {
-        url: new URL(url, window.location.href).toString(),
+        url,
         muted: this.muted,
       },
     });

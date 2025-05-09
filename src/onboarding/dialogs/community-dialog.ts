@@ -1,10 +1,10 @@
-import "@material/mwc-list/mwc-list";
 import { mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { createCloseHeading } from "../../components/ha-dialog";
+import "../../components/ha-list";
 import "../../components/ha-list-item";
 
 @customElement("community-dialog")
@@ -33,7 +33,7 @@ class DialogCommunity extends LitElement {
         this.localize("ui.panel.page-onboarding.welcome.community")
       )}
     >
-      <mwc-list>
+      <ha-list>
         <a
           target="_blank"
           rel="noreferrer noopener"
@@ -96,7 +96,7 @@ class DialogCommunity extends LitElement {
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
         </a>
-      </mwc-list>
+      </ha-list>
     </ha-dialog>`;
   }
 
