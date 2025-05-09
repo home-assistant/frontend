@@ -5340,7 +5340,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "assign_area": "Assign {number, plural,\n  one {device}\n  other {devices}\n} to area",
+            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",

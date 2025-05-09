@@ -36,8 +36,7 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
-  @property({ type: Boolean, attribute: "increase-padding-end" })
-  public increasePaddingEnd = false;
+  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
   public navigateToResult = false;
 
@@ -45,17 +44,6 @@ class StepFlowCreateEntry extends LitElement {
     string,
     { name?: string; area?: string }
   > = {};
-
-  private _devices = memoizeOne(
-    (
-      showDevices: boolean,
-      devices: DeviceRegistryEntry[],
-      entry_id?: string
-    ) =>
-      showDevices && entry_id
-        ? devices.filter((device) => device.config_entries.includes(entry_id))
-        : []
-  );
 
   private _deviceEntities = memoizeOne(
     (
@@ -75,22 +63,16 @@ class StepFlowCreateEntry extends LitElement {
       return;
     }
 
-    const devices = this._devices(
-      this.flowConfig.showDevices,
-      Object.values(this.hass.devices),
-      this.step.result?.entry_id
-    );
-
     if (
-      devices.length !== 1 ||
-      devices[0].primary_config_entry !== this.step.result?.entry_id ||
+      this.devices.length !== 1 ||
+      this.devices[0].primary_config_entry !== this.step.result?.entry_id ||
       this.step.result.domain === "voip"
     ) {
       return;
     }
 
     const assistSatellites = this._deviceEntities(
-      devices[0].id,
+      this.devices[0].id,
       Object.values(this.hass.entities),
       "assist_satellite"
     );
@@ -103,26 +85,14 @@ class StepFlowCreateEntry extends LitElement {
       this.navigateToResult = false;
       this._flowDone();
       showVoiceAssistantSetupDialog(this, {
-        deviceId: devices[0].id,
+        deviceId: this.devices[0].id,
       });
     }
   }
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
-    const devices = this._devices(
-      this.flowConfig.showDevices,
-      Object.values(this.hass.devices),
-      this.step.result?.entry_id
-    );
     return html`
-      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
-        ${devices.length
-          ? localize("ui.panel.config.integrations.config_flow.assign_area", {
-              number: devices.length,
-            })
-          : `${localize("ui.panel.config.integrations.config_flow.success")}!`}
-      </h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
         ${this.step.result?.state === "not_loaded"
@@ -132,10 +102,10 @@ class StepFlowCreateEntry extends LitElement {
               )}</span
             >`
           : nothing}
-        ${devices.length === 0 &&
+        ${this.devices.length === 0 &&
         ["options_flow", "repair_flow"].includes(this.flowConfig.flowType)
           ? nothing
-          : devices.length === 0
+          : this.devices.length === 0
             ? html`<p>
                 ${localize(
                   "ui.panel.config.integrations.config_flow.created_config",
@@ -144,7 +114,7 @@ class StepFlowCreateEntry extends LitElement {
               </p>`
             : html`
                 <div class="devices">
-                  ${devices.map(
+                  ${this.devices.map(
                     (device) => html`
                       <div class="device">
                         <div class="device-info">
@@ -203,7 +173,7 @@ class StepFlowCreateEntry extends LitElement {
       <div class="buttons">
         <mwc-button @click=${this._flowDone}
           >${localize(
-            `ui.panel.config.integrations.config_flow.${!devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
+            `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
           )}</mwc-button
         >
       </div>
