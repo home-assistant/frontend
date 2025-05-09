@@ -38,6 +38,7 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 import { getSupportedFeaturesType } from "./hui-card-features-editor";
+import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -58,6 +59,7 @@ const cardConfigStruct = assign(
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
+    format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
   })
 );
 
