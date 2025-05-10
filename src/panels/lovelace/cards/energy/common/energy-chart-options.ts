@@ -20,6 +20,7 @@ import type { FrontendLocaleData } from "../../../../../data/translation";
 import { formatNumber } from "../../../../../common/number/format_number";
 import {
   formatDateMonthYear,
+  formatDateShort,
   formatDateVeryShort,
 } from "../../../../../common/datetime/format_date";
 import { formatTime } from "../../../../../common/datetime/format_time";
@@ -61,7 +62,10 @@ export function getCommonOptions(
   formatTotal?: (total: number) => string
 ): ECOption {
   const dayDifference = differenceInDays(end, start);
+
   const compare = compareStart !== undefined && compareEnd !== undefined;
+  const showCompareYear =
+    compare && start.getFullYear() !== compareStart.getFullYear();
 
   const options: ECOption = {
     xAxis: {
@@ -112,6 +116,7 @@ export function getCommonOptions(
                 config,
                 dayDifference,
                 compare,
+                showCompareYear,
                 unit,
                 formatTotal
               )
@@ -125,6 +130,7 @@ export function getCommonOptions(
           config,
           dayDifference,
           compare,
+          showCompareYear,
           unit,
           formatTotal
         );
@@ -140,6 +146,7 @@ function formatTooltip(
   config: HassConfig,
   dayDifference: number,
   compare: boolean | null,
+  showCompareYear: boolean,
   unit?: string,
   formatTotal?: (total: number) => string
 ) {
@@ -150,13 +157,16 @@ function formatTooltip(
   // and the real date is in the third value
   const date = new Date(params[0].value?.[2] ?? params[0].value?.[0]);
   let period: string;
-  if (dayDifference > 89) {
+
+  if (dayDifference >= 89) {
     period = `${formatDateMonthYear(date, locale, config)}`;
   } else if (dayDifference > 0) {
-    period = `${formatDateVeryShort(date, locale, config)}`;
+    period = `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}`;
   } else {
     period = `${
-      compare ? `${formatDateVeryShort(date, locale, config)}: ` : ""
+      compare
+        ? `${(showCompareYear ? formatDateShort : formatDateVeryShort)(date, locale, config)}: `
+        : ""
     }${formatTime(date, locale, config)} – ${formatTime(
       addHours(date, 1),
       locale,
