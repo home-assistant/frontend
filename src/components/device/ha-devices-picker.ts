@@ -1,12 +1,12 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { ValueChangedEvent, HomeAssistant } from "../../types";
-import "./ha-device-picker";
+import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import type {
-  HaDevicePickerDeviceFilterFunc,
-  HaDevicePickerEntityFilterFunc,
-} from "./ha-device-picker";
+  HaDeviceComboBoxDeviceFilterFunc,
+  HaDeviceComboBoxEntityFilterFunc,
+} from "./ha-device-combo-box";
+import "./ha-device-picker";
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {
@@ -45,10 +45,10 @@ class HaDevicesPicker extends LitElement {
   @property({ attribute: "pick-device-label" }) public pickDeviceLabel?: string;
 
   @property({ attribute: false })
-  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
+  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
 
   @property({ attribute: false })
-  public entityFilter?: HaDevicePickerEntityFilterFunc;
+  public entityFilter?: HaDeviceComboBoxEntityFilterFunc;
 
   protected render() {
     if (!this.hass) {
