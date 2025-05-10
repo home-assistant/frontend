@@ -58,6 +58,7 @@ const cardConfigStruct = assign(
     icon_double_tap_action: optional(actionConfigStruct),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
+    areas: optional(any()),
   })
 );
 
@@ -82,6 +83,14 @@ export class HuiTileCardEditor
       hideState: boolean
     ) =>
       [
+        {
+          name: "areas",
+          selector: {
+            area: {
+              multiple: true,
+            },
+          },
+        },
         { name: "entity", selector: { entity: {} } },
         {
           name: "content",
