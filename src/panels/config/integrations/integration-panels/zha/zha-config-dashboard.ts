@@ -5,6 +5,8 @@ import {
   mdiNetwork,
   mdiPlus,
   mdiPencil,
+  mdiCheckCircle,
+  mdiAlertCircle,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -30,12 +32,14 @@ import type {
   ZHAConfiguration,
   ZHANetworkSettings,
   ZHANetworkBackupAndMetadata,
+  ZHADevice,
 } from "../../../../../data/zha";
 import {
   fetchZHAConfiguration,
   updateZHAConfiguration,
   fetchZHANetworkSettings,
   createZHANetworkBackup,
+  fetchDevices,
 } from "../../../../../data/zha";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
@@ -75,14 +79,25 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _networkSettings?: ZHANetworkSettings;
 
+  @state() private _devices: ZHADevice[] = [];
+
   @state() private _generatingBackup = false;
 
-  protected firstUpdated(changedProperties: PropertyValues): void {
+  @state() private _statusIcon = mdiCheckCircle;
+
+  @state() private _statusClass = "connected";
+
+  @state() private _total = 0;
+
+  @state() private _offline = 0;
+
+  protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this.hass.loadBackendTranslation("config_panel", "zha", false);
       this._fetchConfiguration();
       this._fetchSettings();
+      this._fetchDevices();
     }
   }
 
@@ -95,11 +110,42 @@ class ZHAConfigDashboard extends LitElement {
         .tabs=${zhaTabs}
         back-path="/config/integrations"
       >
-        <ha-card
-          header=${this.hass.localize(
-            "ui.panel.config.zha.configuration_page.shortcuts_title"
-          )}
-        >
+        <ha-card>
+          <div class="card-content zha-status-card">
+            <div class="heading">
+              <div class="icon">
+                <ha-svg-icon
+                  .path=${this._statusIcon}
+                  class=${this._statusClass}
+                ></ha-svg-icon>
+              </div>
+              <div class="details">
+                ZHA
+                ${this.hass.localize(
+                  "ui.panel.config.zha.configuration_page.status_title"
+                )}:
+                ${this._statusClass === "online"
+                  ? this.hass.localize(
+                      "ui.panel.config.zha.configuration_page.status_online"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.zha.configuration_page.status_offline"
+                    )} <br />
+                <small>
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.configuration_page.devices",
+                    { count: this._total }
+                  )}
+                  ${this._offline > 0
+                    ? html`(${this.hass.localize(
+                        "ui.panel.config.zha.configuration_page.devices_offline",
+                        { count: this._offline }
+                      )})`
+                    : ""}
+                </small>
+              </div>
+            </div>
+          </div>
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
@@ -268,6 +314,33 @@ class ZHAConfigDashboard extends LitElement {
     this._networkSettings = await fetchZHANetworkSettings(this.hass!);
   }
 
+  private async _fetchDevices() {
+    try {
+      this._devices = await fetchDevices(this.hass!);
+    } finally {
+      this._updateStatus();
+    }
+  }
+
+  private _updateStatus() {
+    const total = this._devices.length;
+    const online = this._devices.filter((d) => d.available).length;
+    const offline = total - online;
+    let statusIcon = mdiCheckCircle;
+    let statusClass = "online";
+    if (offline === total) {
+      statusIcon = mdiAlertCircle;
+      statusClass = "offline";
+    } else {
+      statusIcon = mdiCheckCircle;
+      statusClass = "online";
+    }
+    this._statusIcon = statusIcon;
+    this._statusClass = statusClass;
+    this._total = total;
+    this._offline = offline;
+  }
+
   private async _showChannelMigrationDialog(): Promise<void> {
     if (this._networkSettings!.device.path === MULTIPROTOCOL_ADDON_URL) {
       showAlertDialog(this, {
@@ -387,6 +460,40 @@ class ZHAConfigDashboard extends LitElement {
         .network-settings ha-settings-row ha-icon-button {
           margin-top: -16px;
           margin-bottom: -16px;
+        }
+
+        .zha-status-card {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 16px 24px 16px 24px;
+        }
+        .zha-status-card .heading {
+          display: flex;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .zha-status-card .icon {
+          width: 56px;
+          height: 56px;
+          margin-right: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .zha-status-card ha-svg-icon {
+          width: 56px;
+          height: 56px;
+        }
+        .zha-status-card .details {
+          display: flex;
+          flex-direction: column;
+        }
+        .zha-status-card .online {
+          color: var(--state-on-color, #43a047);
+        }
+        .zha-status-card .offline {
+          color: var(--error-color, #db4437);
         }
       `,
     ];
