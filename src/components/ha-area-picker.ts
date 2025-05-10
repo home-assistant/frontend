@@ -25,7 +25,6 @@ import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-svg-icon";
 
 type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;

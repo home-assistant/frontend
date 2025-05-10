@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
   mdiCheckCircle,
@@ -12,15 +10,17 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-progress-ring";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -43,17 +43,17 @@ import {
   subscribeZwaveControllerStatistics,
   subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { fileDownload } from "../../../../../util/file_download";
 import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
-import { fileDownload } from "../../../../../util/file_download";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -263,8 +263,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       "ui.panel.config.zwave_js.dashboard.statistics.title"
                     )}
                   >
-                    <mwc-list noninteractive>
-                      <mwc-list-item twoline hasmeta>
+                    <ha-list noninteractive>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
@@ -278,8 +278,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_tx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
@@ -293,8 +293,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_rx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
@@ -308,8 +308,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_dropped_tx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
@@ -323,8 +323,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_dropped_rx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
@@ -336,8 +336,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </span>
                         <span slot="meta">${this._statistics?.nak ?? 0}</span>
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.can.label"
@@ -349,8 +349,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </span>
                         <span slot="meta">${this._statistics?.can ?? 0}</span>
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
@@ -364,8 +364,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.timeout_ack ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.label"
@@ -379,8 +379,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.timeout_response ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
@@ -394,8 +394,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.timeout_callback ?? 0}</span
                         >
-                      </mwc-list-item>
-                    </mwc-list>
+                      </ha-list-item>
+                    </ha-list>
                   </ha-expansion-panel>
                 </div>
                 <div class="card-actions">
@@ -505,7 +505,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             />
                           </div>
                           <ha-button
-                            @click=${this._openOptionFlow}
+                            @click=${this._openConfigFlow}
                             class="warning migrate-button"
                           >
                             ${this.hass.localize(
@@ -661,17 +661,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _openOptionFlow() {
+  private async _openConfigFlow() {
     if (!this.configEntryId) {
       return;
     }
-    const configEntries = await getConfigEntries(this.hass, {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "zwave_js",
       domain: "zwave_js",
+      entryId: this.configEntryId,
     });
-    const configEntry = configEntries.find(
-      (entry) => entry.entry_id === this.configEntryId
-    );
-    showOptionsFlowDialog(this, configEntry!);
   }
 
   private async _downloadBackup() {
@@ -867,7 +865,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .error-message h3 {
           text-align: center;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
         }
 
         .error-message ha-svg-icon {
@@ -921,7 +919,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           font-size: 1rem;
         }
 
-        mwc-list-item {
+        ha-list-item {
           height: 60px;
         }
 

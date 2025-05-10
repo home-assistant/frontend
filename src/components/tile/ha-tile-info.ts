@@ -34,15 +34,15 @@ export class HaTileInfo extends LitElement {
       width: 100%;
     }
     .primary {
-      font-weight: 500;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
       line-height: 20px;
       letter-spacing: 0.1px;
       color: var(--primary-text-color);
     }
     .secondary {
-      font-weight: 400;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
+      font-weight: var(--ha-font-weight-normal);
       line-height: 16px;
       letter-spacing: 0.4px;
       color: var(--primary-text-color);

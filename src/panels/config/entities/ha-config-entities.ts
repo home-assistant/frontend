@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -159,6 +159,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-search",
@@ -169,6 +170,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
@@ -901,7 +903,7 @@ ${
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
             </ha-md-menu-item>
-            <ha-menu slot="menu">${labelItems}</ha-menu>
+            <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
           </ha-sub-menu>
           <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
       : nothing
@@ -1541,7 +1543,7 @@ ${rejected
           top: -4px;
         }
         .selected-txt {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           padding-left: 16px;
           padding-inline-start: 16px;
           padding-inline-end: initial;
@@ -1551,7 +1553,7 @@ ${rejected
           margin-top: 20px;
         }
         .header-toolbar .selected-txt {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         .header-toolbar .header-btns {
           margin-right: -12px;

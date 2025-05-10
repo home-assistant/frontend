@@ -636,7 +636,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .secondary {
-          font-size: 12px;
+          font-size: var(--ha-font-size-s);
           line-height: 1.7;
         }
 
@@ -682,7 +682,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         button.link {
-          color: var(--paper-item-icon-color);
+          color: var(--state-icon-color);
           text-decoration: none;
         }
 

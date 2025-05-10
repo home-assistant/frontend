@@ -7,8 +7,10 @@ import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-spinner";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
   addMembersToGroup,
@@ -24,8 +26,6 @@ import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
-import "@material/mwc-list/mwc-list";
-import "../../../../../components/ha-list-item";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -126,7 +126,7 @@ export class ZHAGroupPage extends LitElement {
             ${this.hass.localize("ui.panel.config.zha.groups.members")}
           </div>
           <ha-card>
-            <mwc-list>
+            <ha-list>
               ${this.group.members.length
                 ? this.group.members.map(
                     (member) =>
@@ -143,7 +143,7 @@ export class ZHAGroupPage extends LitElement {
                 : html`
                     <ha-list-item> This group has no members </ha-list-item>
                   `}
-            </mwc-list>
+            </ha-list>
           </ha-card>
           ${this.group.members.length
             ? html`
@@ -293,14 +293,12 @@ export class ZHAGroupPage extends LitElement {
           --app-header-text-color: var(--sidebar-icon-color);
         }
         .header {
-          font-family: var(--paper-font-display1_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-display1_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-display1_-_font-size);
-          font-weight: var(--paper-font-display1_-_font-weight);
-          letter-spacing: var(--paper-font-display1_-_letter-spacing);
-          line-height: var(--paper-font-display1_-_line-height);
+          font-family: var(--ha-font-family-body);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          font-size: var(--ha-font-size-4xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           opacity: var(--dark-primary-opacity);
         }
 

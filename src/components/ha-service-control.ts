@@ -83,7 +83,7 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
     false;
@@ -895,8 +895,10 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       padding: var(--service-control-padding, 0 16px);
     }
+    ha-settings-row[narrow] {
+      padding-bottom: 8px;
+    }
     ha-settings-row {
-      --paper-time-input-justify-content: flex-end;
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
       border-top: var(
@@ -917,7 +919,7 @@ export class HaServiceControl extends LitElement {
       margin: var(--service-control-padding, 0 16px);
       padding: 16px 0;
     }
-    :host([hidePicker]) p {
+    :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {

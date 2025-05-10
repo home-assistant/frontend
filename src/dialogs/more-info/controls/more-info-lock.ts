@@ -165,7 +165,7 @@ class MoreInfoLock extends LitElement {
       moreInfoControlStyle,
       css`
         ha-control-button {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           height: 60px;
           --control-button-border-radius: 24px;
         }
@@ -182,7 +182,7 @@ class MoreInfoLock extends LitElement {
           align-items: center;
           flex-direction: row;
           gap: 8px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           color: var(--success-color);
         }
         ha-control-button-group.jammed {

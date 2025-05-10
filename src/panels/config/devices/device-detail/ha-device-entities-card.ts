@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +8,7 @@ import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefi
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-list";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
@@ -91,13 +91,13 @@ export class HaDeviceEntitiesCard extends LitElement {
         ${shownEntities.length
           ? html`
               <div id="entities" class="move-up">
-                <mwc-list>
+                <ha-list>
                   ${shownEntities.map((entry) =>
                     this.hass.states[entry.entity_id]
                       ? this._renderEntity(entry)
                       : this._renderEntry(entry)
                   )}
-                </mwc-list>
+                </ha-list>
               </div>
             `
           : nothing}
@@ -113,9 +113,9 @@ export class HaDeviceEntitiesCard extends LitElement {
                     </button>
                   `
                 : html`
-                    <mwc-list>
+                    <ha-list>
                       ${hiddenEntities.map((entry) => this._renderEntry(entry))}
-                    </mwc-list>
+                    </ha-list>
                     <button class="show-more" @click=${this._toggleShowHidden}>
                       ${this.hass.localize(
                         "ui.panel.config.devices.entities.show_less"
@@ -255,30 +255,21 @@ export class HaDeviceEntitiesCard extends LitElement {
     .move-up {
       margin-top: -13px;
     }
-    .move-up:has(> mwc-list) {
+    .move-up:has(> ha-list) {
       margin-top: -24px;
     }
-    :not(.move-up) > mwc-list {
+    :not(.move-up) > ha-list {
       margin-top: -24px;
     }
-    mwc-list + button.show-more,
-    .move-up + :not(:has(mwc-list)) > button.show-more {
+    ha-list + button.show-more,
+    .move-up + :not(:has(ha-list)) > button.show-more {
       margin-top: -12px;
     }
-    #entities > mwc-list {
+    #entities > ha-list {
       margin: 0 16px 0 8px;
     }
-    #entities > paper-icon-item {
-      margin: 0;
-    }
-    paper-icon-item {
-      min-height: 40px;
-      padding: 0 16px;
-      cursor: pointer;
-      --paper-item-icon-width: 48px;
-    }
     .name {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
     }
     .name:dir(rtl) {
       margin-inline-start: 8px;
@@ -302,7 +293,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    mwc-list > * {
+    ha-list > * {
       margin: 8px 0px;
     }
     ha-list-item {

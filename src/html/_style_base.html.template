@@ -1,7 +1,7 @@
 <meta name="viewport" content="width=device-width, user-scalable=no, viewport-fit=cover, initial-scale=1">
 <style>
   body {
-    font-family: Roboto, Noto, Noto Sans, sans-serif;
+    font-family: Roboto, Noto, sans-serif;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     font-weight: 400;

@@ -340,12 +340,12 @@ class HassioIngressView extends LitElement {
     .header {
       display: flex;
       align-items: center;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       height: 40px;
       padding: 0 16px;
       pointer-events: none;
       background-color: var(--app-header-background-color);
-      font-weight: 400;
+      font-weight: var(--ha-font-weight-normal);
       color: var(--app-header-text-color, white);
       border-bottom: var(--app-header-border-bottom, none);
       box-sizing: border-box;

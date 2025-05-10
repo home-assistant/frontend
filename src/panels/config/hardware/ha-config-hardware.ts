@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -14,7 +12,7 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
@@ -32,7 +30,7 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { DEFAULT_PRIMARY_COLOR } from "../../../resources/styles-data";
+import { DefaultPrimaryColor } from "../../../resources/theme/color.globals";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
@@ -44,9 +42,9 @@ const DATASAMPLES = 60;
 
 const DATA_SET_CONFIG: SeriesOption = {
   type: "line",
-  color: DEFAULT_PRIMARY_COLOR,
+  color: DefaultPrimaryColor,
   areaStyle: {
-    color: DEFAULT_PRIMARY_COLOR + "2B",
+    color: DefaultPrimaryColor + "2B",
   },
   symbolSize: 0,
   lineStyle: {
@@ -288,26 +286,24 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   ${documentationURL
                     ? html`
-                        <mwc-list>
-                          <ha-clickable-list-item
-                            .href=${documentationURL}
-                            open-new-tab
-                            twoline
-                            hasMeta
+                        <ha-md-list-item
+                          .href=${documentationURL}
+                          type="link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation"
+                            )}</span
                           >
-                            <span
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation"
-                              )}</span
-                            >
-                            <span slot="secondary"
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation_description"
-                              )}</span
-                            >
-                            <ha-icon-next slot="meta"></ha-icon-next>
-                          </ha-clickable-list-item>
-                        </mwc-list>
+                          <span slot="supporting-text"
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation_description"
+                            )}</span
+                          >
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-md-list-item>
                       `
                     : ""}
                   ${boardConfigEntries.length ||
@@ -506,11 +502,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         text-align: center;
       }
       .primary-text {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
         margin: 0;
       }
       .secondary-text {
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         margin-bottom: 0;
         color: var(--secondary-text-color);
       }
@@ -523,11 +519,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
       .header .title {
         color: var(--secondary-text-color);
-        font-size: 18px;
+        font-size: var(--ha-font-size-l);
       }
 
       .header .value {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
       }
       .row {
         display: flex;

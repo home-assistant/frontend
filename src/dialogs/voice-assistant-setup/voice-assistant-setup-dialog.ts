@@ -285,6 +285,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
                                     .assistConfiguration=${this
                                       ._assistConfiguration}
                                     .assistEntityId=${assistSatelliteEntityId}
+                                    .deviceId=${this._params.deviceId}
                                   ></ha-voice-assistant-setup-step-success>`
                                 : nothing}
         </div>
@@ -407,6 +408,7 @@ export class HaVoiceAssistantSetupDialog extends LitElement {
           align-items: center;
           margin-right: 12px;
           margin-inline-end: 12px;
+          margin-inline-start: initial;
         }
       `,
     ];

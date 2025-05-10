@@ -118,7 +118,7 @@ class HuiLockOpenDoorCardFeature
       cardFeatureStyles,
       css`
         ha-control-button {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
         }
         .open-button {
           width: 130px;
@@ -127,14 +127,14 @@ class HuiLockOpenDoorCardFeature
           --control-button-background-color: var(--warning-color);
         }
         .open-done {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           line-height: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-direction: row;
           gap: 8px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           color: var(--success-color);
           margin: 0 12px 12px 12px;
           height: 40px;

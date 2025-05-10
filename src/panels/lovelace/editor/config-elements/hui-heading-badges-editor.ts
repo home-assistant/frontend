@@ -1,3 +1,4 @@
+import "@material/mwc-menu/mwc-menu-surface";
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { LitElement, css, html, nothing } from "lit";
@@ -7,11 +8,10 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import type { HaEntityComboBox } from "../../../../components/entity/ha-entity-combo-box";
 import "../../../../components/entity/ha-entity-picker";
-import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
@@ -33,7 +33,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
-  @query("ha-entity-picker") private _entityPicker?: HaEntityPicker;
+  @query("ha-entity-combo-box") private _entityCombobox?: HaEntityComboBox;
 
   @state() private _addMode = false;
 
@@ -144,17 +144,16 @@ export class HuiHeadingBadgesEditor extends LitElement {
         @opened-changed=${this._openedChanged}
         @input=${stopPropagation}
       >
-        <ha-entity-picker
+        <ha-entity-combo-box
           .hass=${this.hass}
           id="input"
-          .type=${"entity_id"}
           .label=${this.hass.localize(
             "ui.components.target-picker.add_entity_id"
           )}
           @value-changed=${this._entityPicked}
           @click=${preventDefault}
           allow-custom-entity
-        ></ha-entity-picker>
+        ></ha-entity-combo-box>
       </mwc-menu-surface>
     `;
   }
@@ -168,8 +167,8 @@ export class HuiHeadingBadgesEditor extends LitElement {
     if (!this._addMode) {
       return;
     }
-    await this._entityPicker?.focus();
-    await this._entityPicker?.open();
+    await this._entityCombobox?.focus();
+    await this._entityCombobox?.open();
     this._opened = true;
   }
 
@@ -251,7 +250,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .badge-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -270,7 +269,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

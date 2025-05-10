@@ -595,7 +595,7 @@ export class HaAssistChat extends LitElement {
     }
     .message {
       white-space: pre-line;
-      font-size: 18px;
+      font-size: var(--ha-font-size-l);
       clear: both;
       margin: 8px 0;
       padding: 8px;
@@ -604,7 +604,7 @@ export class HaAssistChat extends LitElement {
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
       .message {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
       }
     }
 

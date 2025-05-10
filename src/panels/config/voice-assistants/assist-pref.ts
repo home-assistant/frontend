@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
   mdiCommentProcessingOutline,
@@ -12,15 +11,20 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { formatLanguageCode } from "../../../common/language/format_language";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { AssistPipeline } from "../../../data/assist_pipeline";
 import {
   createAssistPipeline,
@@ -39,15 +43,11 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showVoiceAssistantPipelineDetailDialog } from "./show-dialog-voice-assistant-pipeline-detail";
-import { showVoiceCommandDialog } from "../../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import type { HaSwitch } from "../../../components/ha-switch";
-import { navigate } from "../../../common/navigate";
 
 @customElement("assist-pref")
 export class AssistPref extends LitElement {
@@ -128,7 +128,7 @@ export class AssistPref extends LitElement {
             ></ha-icon-button>
           </a>
         </div>
-        <mwc-list>
+        <ha-list>
           ${this._pipelines.map(
             (pipeline) => html`
               <ha-list-item
@@ -205,7 +205,7 @@ export class AssistPref extends LitElement {
               </ha-list-item>
             `
           )}
-        </mwc-list>
+        </ha-list>
         <ha-button @click=${this._addPipeline} class="add" outlined>
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"

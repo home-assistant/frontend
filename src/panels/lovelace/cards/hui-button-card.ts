@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type {
   HassConfig,
   HassEntities,
@@ -86,6 +86,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: ButtonCardConfig;
 
+  @state()
   @consume<any>({ context: statesContext, subscribe: true })
   @transform({
     transformer: function (this: HuiButtonCard, value: HassEntities) {
@@ -93,7 +94,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     },
     watch: ["_config"],
   })
-  _stateObj?: HassEntity;
+  private _stateObj?: HassEntity;
 
   @state()
   @consume({ context: themesContext, subscribe: true })
@@ -111,6 +112,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @consume({ context: configContext, subscribe: true })
   _hassConfig!: HassConfig;
 
+  @state()
   @consume<any>({ context: entitiesContext, subscribe: true })
   @transform<HomeAssistant["entities"], EntityRegistryDisplayEntry>({
     transformer: function (this: HuiButtonCard, value) {
@@ -269,8 +271,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       iconColorCSS,
       css`
         ha-card {
-          --state-inactive-color: var(--paper-item-icon-color, #44739e);
-          --state-color: var(--paper-item-icon-color, #44739e);
+          --state-inactive-color: var(--state-icon-color);
+          --state-color: var(--state-icon-color);
           --ha-ripple-color: var(--state-color);
           --ha-ripple-hover-opacity: 0.04;
           --ha-ripple-pressed-opacity: 0.12;
@@ -313,12 +315,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
         ha-card:focus-visible {
           --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px
-            var(--state-color, var(--paper-item-icon-color, #44739e));
-          border-color: var(
-            --state-color,
-            var(--paper-item-icon-color, #44739e)
-          );
+          --shadow-focus: 0 0 0 1px var(--state-color, var(--state-icon-color));
+          border-color: var(--state-color, var(--state-icon-color));
           box-shadow: var(--shadow-default), var(--shadow-focus);
         }
 

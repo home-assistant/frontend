@@ -4,6 +4,7 @@
     "target": "ES2021",
     "lib": ["ES2021", "DOM", "DOM.Iterable", "WebWorker"],
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     // Modules
     "module": "ESNext",
     "moduleResolution": "node",

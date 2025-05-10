@@ -109,12 +109,18 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (isNaN(entityState)) {
+    const valueToDisplay = this._config.attribute
+      ? stateObj.attributes[this._config.attribute]
+      : stateObj.state;
+
+    if (isNaN(valueToDisplay)) {
       return html`
         <hui-warning
           >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_non_numeric",
-            { entity: this._config.entity }
+            this._config.attribute
+              ? "ui.panel.lovelace.warning.attribute_not_numeric"
+              : "ui.panel.lovelace.warning.entity_non_numeric",
+            { entity: this._config.entity, attribute: this._config.attribute }
           )}</hui-warning
         >
       `;
@@ -141,7 +147,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         <ha-gauge
           .min=${this._config.min!}
           .max=${this._config.max!}
-          .value=${stateObj.state}
+          .value=${valueToDisplay}
           .formatOptions=${getNumberFormatOptions(
             stateObj,
             this.hass.entities[stateObj.entity_id]
@@ -301,7 +307,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
   `;

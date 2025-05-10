@@ -267,7 +267,7 @@ export class HaStateLabelBadge extends LitElement {
       cursor: pointer;
     }
     .big {
-      font-size: 70%;
+      font-size: var(--ha-font-size-xs);
     }
     ha-label-badge {
       --ha-label-badge-color: var(--label-badge-red);

@@ -22,6 +22,9 @@ class StepFlowAbort extends LitElement {
 
   @property({ attribute: false }) public handler!: string;
 
+  @property({ type: Boolean, attribute: "increase-padding-end" })
+  public increasePaddingEnd = false;
+
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
     if (this.step.reason === "missing_credentials") {
@@ -34,7 +37,7 @@ class StepFlowAbort extends LitElement {
       return nothing;
     }
     return html`
-      <h2>
+      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
         ${this.params.flowConfig.renderAbortHeader
           ? this.params.flowConfig.renderAbortHeader(this.hass, this.step)
           : this.hass.localize(`component.${this.domain}.title`)}

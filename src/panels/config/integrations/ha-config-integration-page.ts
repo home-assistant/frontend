@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAlertCircle,
   mdiBookshelf,
@@ -1801,7 +1800,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           --state-message-color: var(--secondary-text-color);
         }
         .message {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           display: flex;
           align-items: center;
         }

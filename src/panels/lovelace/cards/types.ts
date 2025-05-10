@@ -201,6 +201,8 @@ export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
   title?: string;
   layout?: "vertical" | "horizontal";
+  group_by_floor?: boolean;
+  group_by_area?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -231,6 +233,7 @@ export interface GaugeSegment {
 
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
+  attribute?: string;
   name?: string;
   unit?: string;
   min?: number;

@@ -623,8 +623,8 @@ class DialogCalendarEventEditor extends LitElement {
           justify-content: space-between;
         }
         .label {
-          font-size: 12px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-medium);
           color: var(--input-label-ink-color);
         }
         .date-range-details-content {

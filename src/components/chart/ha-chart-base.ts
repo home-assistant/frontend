@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
 import { differenceInMinutes } from "date-fns";
@@ -590,18 +590,42 @@ export class HaChartBase extends LitElement {
           lineStyle: { color: style.getPropertyValue("--info-color") },
           crossStyle: { color: style.getPropertyValue("--info-color") },
         },
+        extraCssText:
+          "direction:" +
+          style.getPropertyValue("--direction") +
+          ";margin-inline-start:3px;margin-inline-end:8px;",
       },
       timeline: {},
     };
   }
 
   private _getSeries() {
-    if (!Array.isArray(this.data)) {
-      return this.data;
-    }
-    return this.data.filter(
+    const series = ensureArray(this.data).filter(
       (d) => !this._hiddenDatasets.has(String(d.name ?? d.id))
     );
+    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+      | YAXisOption
+      | undefined;
+    if (yAxis?.type === "log") {
+      // set <=0 values to null so they render as gaps on a log graph
+      return series.map((d) =>
+        d.type === "line"
+          ? {
+              ...d,
+              data: d.data?.map((v) =>
+                Array.isArray(v)
+                  ? [
+                      v[0],
+                      typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
+                      ...v.slice(2),
+                    ]
+                  : v
+              ),
+            }
+          : d
+      );
+    }
+    return series;
   }
 
   private _getDefaultHeight() {
@@ -715,7 +739,7 @@ export class HaChartBase extends LitElement {
       max-height: 60%;
       overflow-y: auto;
       padding: 12px 0 0;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--primary-text-color);
     }
     .chart-legend ul {

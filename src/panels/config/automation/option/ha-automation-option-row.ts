@@ -1,6 +1,6 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -21,8 +21,7 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
-import "../condition/ha-automation-condition";
-import "../action/ha-automation-action";
+import "../../../../components/ha-list-item";
 import type { Condition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -34,6 +33,8 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../action/ha-automation-action";
+import "../condition/ha-automation-condition";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -119,14 +120,14 @@ export default class HaAutomationOptionRow extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item graphic="icon" .disabled=${this.disabled}>
+            <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.duplicate"
               )}
@@ -134,17 +135,17 @@ export default class HaAutomationOptionRow extends LitElement {
                 slot="graphic"
                 .path=${mdiContentDuplicate}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item
+            <ha-list-item
               graphic="icon"
               .disabled=${this.disabled || this.first}
             >
               ${this.hass.localize("ui.panel.config.automation.editor.move_up")}
               <ha-svg-icon slot="graphic" .path=${mdiArrowUp}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item
+            <ha-list-item
               graphic="icon"
               .disabled=${this.disabled || this.last}
             >
@@ -152,9 +153,9 @@ export default class HaAutomationOptionRow extends LitElement {
                 "ui.panel.config.automation.editor.move_down"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
 
-            <mwc-list-item
+            <ha-list-item
               class="warning"
               graphic="icon"
               .disabled=${this.disabled}
@@ -167,7 +168,7 @@ export default class HaAutomationOptionRow extends LitElement {
                 slot="graphic"
                 .path=${mdiDelete}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
 
           <div class="card-content">
@@ -182,6 +183,7 @@ export default class HaAutomationOptionRow extends LitElement {
               )}
               .disabled=${this.disabled}
               .hass=${this.hass}
+              .narrow=${this.narrow}
               @value-changed=${this._conditionChanged}
             ></ha-automation-condition>
             <h4>
@@ -193,6 +195,7 @@ export default class HaAutomationOptionRow extends LitElement {
               .actions=${ensureArray(this.option.sequence) || []}
               .disabled=${this.disabled}
               .hass=${this.hass}
+              .narrow=${this.narrow}
               @value-changed=${this._actionChanged}
             ></ha-automation-action>
           </div>
@@ -314,10 +317,10 @@ export default class HaAutomationOptionRow extends LitElement {
           padding: 16px;
         }
 
-        mwc-list-item[disabled] {
+        ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
-        mwc-list-item.hidden {
+        ha-list-item.hidden {
           display: none;
         }
         .warning ul {

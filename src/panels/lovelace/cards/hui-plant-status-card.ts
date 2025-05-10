@@ -178,22 +178,20 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     }
 
     .header {
-      font-family: var(--paper-font-headline_-_font-family);
-      -webkit-font-smoothing: var(
-        --paper-font-headline_-_-webkit-font-smoothing
-      );
-      font-size: var(--paper-font-headline_-_font-size);
-      font-weight: var(--paper-font-headline_-_font-weight);
-      letter-spacing: var(--paper-font-headline_-_letter-spacing);
-      line-height: var(--paper-font-headline_-_line-height);
+      font-family: var(--ha-font-family-body);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      font-size: var(--ha-font-size-2xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
 
       line-height: 40px;
       padding: 8px 16px;
     }
 
     .has-plant-image .header {
-      font-size: 16px;
-      font-weight: 500;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
       line-height: 16px;
       padding: 16px;
       color: white;
@@ -217,7 +215,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     ha-icon,
     ha-svg-icon {
-      color: var(--paper-item-icon-color);
+      color: var(--state-icon-color);
     }
 
     .attributes {
@@ -236,7 +234,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     .problem {
       color: var(--error-color);
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     .uom {

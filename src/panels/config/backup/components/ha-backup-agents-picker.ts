@@ -120,8 +120,8 @@ class HaBackupAgentsPicker extends LitElement {
       flex-direction: row;
       align-items: center;
       gap: 16px;
-      font-size: 16px;
-      font-weight: 400;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
       line-height: 24px;
       letter-spacing: 0.5px;
     }

@@ -21,6 +21,7 @@ import { formatListWithAnds } from "../../../common/string/format-list";
 import "../../../components/ha-fab";
 import "../../../components/ha-floor-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
@@ -454,8 +455,8 @@ export class HaConfigAreasDashboard extends LitElement {
       padding-inline-start: 8px;
     }
     .header h2 {
-      font-size: 14px;
-      font-weight: 500;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
       margin-top: 28px;
     }
     .header ha-icon {

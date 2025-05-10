@@ -98,6 +98,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "backups-table-filters",
@@ -235,7 +236,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
               ${agentsMore
                 ? html`
                     <span
-                      style="display: flex; align-items: center; font-size: 14px;"
+                      style="display: flex; align-items: center; font-size: var(--ha-font-size-m);"
                     >
                       +${agentsMore}
                     </span>

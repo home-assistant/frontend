@@ -1,13 +1,13 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import "../../../components/ha-spinner";
-import "../../../components/ha-select";
 import "../../../components/ha-dialog";
+import "../../../components/ha-list-item";
+import "../../../components/ha-select";
+import "../../../components/ha-spinner";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -137,7 +137,7 @@ class MoveDatadiskDialog extends LitElement {
               >
                 ${this._disks.map(
                   (disk) =>
-                    html`<mwc-list-item twoline .value=${disk.id}>
+                    html`<ha-list-item twoline .value=${disk.id}>
                       <span>${disk.vendor} ${disk.model}</span>
                       <span slot="secondary">
                         ${this.hass.localize(
@@ -148,7 +148,7 @@ class MoveDatadiskDialog extends LitElement {
                           }
                         )}
                       </span>
-                    </mwc-list-item>`
+                    </ha-list-item>`
                 )}
               </ha-select>
 

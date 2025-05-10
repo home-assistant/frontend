@@ -1,16 +1,16 @@
+import { mdiClose, mdiContentDuplicate, mdiPencil } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import { mdiClose, mdiPencil, mdiContentDuplicate } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import type { HaSelect } from "../../../components/ha-select";
+import "../../../components/ha-svg-icon";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { getElementStubConfig } from "./get-element-stub-config";
+import type { HomeAssistant } from "../../../types";
 import type {
   ConditionalElementConfig,
   IconElementConfig,
@@ -21,6 +21,7 @@ import type {
   StateIconElementConfig,
   StateLabelElementConfig,
 } from "../elements/types";
+import { getElementStubConfig } from "./get-element-stub-config";
 
 declare global {
   interface HASSDomEvents {
@@ -115,10 +116,10 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
         >
           ${elementTypes.map(
             (element) => html`
-              <mwc-list-item .value=${element}
+              <ha-list-item .value=${element}
                 >${this.hass?.localize(
                   `ui.panel.lovelace.editor.card.picture-elements.element_types.${element}`
-                )}</mwc-list-item
+                )}</ha-list-item
               >
             `
           )}
@@ -237,7 +238,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
 
     .element-row {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -257,7 +258,7 @@ export class HuiPictureElementsCardRowEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 
