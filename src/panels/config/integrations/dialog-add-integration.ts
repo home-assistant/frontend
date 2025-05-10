@@ -67,6 +67,7 @@ export interface IntegrationListItem {
   overwrites_built_in?: boolean;
   is_add?: boolean;
   single_config_entry?: boolean;
+  virtual_domain?: string;
 }
 
 @customElement("dialog-add-integration")
@@ -427,6 +428,7 @@ class AddIntegrationDialog extends LitElement {
               domainToName(this.hass.localize, integration.supported_by),
             config_flow: supportIntegration.config_flow,
             iot_standards: supportIntegration.iot_standards,
+            virtual_domain: integration.domain,
           });
         } else {
           showAlertDialog(this, {
@@ -619,7 +621,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (integration.config_flow) {
-      this._createFlow(integration.domain);
+      this._createFlow(integration.domain, integration.virtual_domain);
       return;
     }
 
@@ -648,7 +650,7 @@ class AddIntegrationDialog extends LitElement {
     showYamlIntegrationDialog(this, { manifest });
   }
 
-  private async _createFlow(domain: string) {
+  private async _createFlow(domain: string, virtualDomain?: string) {
     const flowsInProgress = await this._fetchFlowsInProgress([domain]);
 
     if (flowsInProgress?.length) {
@@ -665,6 +667,7 @@ class AddIntegrationDialog extends LitElement {
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
       navigateToResult: true,
+      virtualDomain: virtualDomain,
     });
   }
 
