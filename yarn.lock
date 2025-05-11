@@ -9492,7 +9492,7 @@ __metadata:
     home-assistant-js-websocket: "npm:9.5.0"
     html-minifier-terser: "npm:7.2.0"
     husky: "npm:9.1.7"
-    idb-keyval: "npm:6.2.1"
+    idb-keyval: "npm:6.2.2"
     intl-messageformat: "npm:10.7.16"
     js-yaml: "npm:4.1.0"
     jsdom: "npm:26.1.0"
@@ -9785,10 +9785,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"idb-keyval@npm:6.2.1":
-  version: 6.2.1
-  resolution: "idb-keyval@npm:6.2.1"
-  checksum: 10/9a1416ff5e2ceff3832f5645518f438833a5ff6ee316fe3ec111d580db120425991d64d8098a847be7541bbbb7cc941984b4d0d62d541c39f7a0f415594837c2
+"idb-keyval@npm:6.2.2":
+  version: 6.2.2
+  resolution: "idb-keyval@npm:6.2.2"
+  checksum: 10/8c22342d94deba01066460fe6593f29c78027d0935a6ed7a1da68b28a7a68b89d0830dada4b30d51b779ed1dc1e362007a8939cda651b9ad0807176bd841e8cb
   languageName: node
   linkType: hard
 
