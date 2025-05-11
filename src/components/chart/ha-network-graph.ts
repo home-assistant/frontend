@@ -1,12 +1,10 @@
 import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { EChartsType } from "echarts/core";
-import type { ECElementEvent } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { themesContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
@@ -36,6 +34,7 @@ export interface NetworkLink {
   source: string;
   target: string;
   value?: number;
+  reverseValue?: number;
   lineStyle?: {
     width?: number;
     color?: string;
@@ -66,8 +65,6 @@ export class HaNetworkGraph extends LitElement {
   @property({ attribute: false }) public options?: ECOption;
 
   @property({ type: String }) public height?: string;
-
-  @property({ attribute: "selected-node" }) public selectedNode?: string;
 
   @property({ attribute: "graph-title" }) public graphTitle?: string;
 
@@ -134,9 +131,6 @@ export class HaNetworkGraph extends LitElement {
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
     }
-    if (changedProps.has("selectedNode")) {
-      this._focusOnNode();
-    }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
     }
@@ -169,15 +163,6 @@ export class HaNetworkGraph extends LitElement {
       echarts.registerTheme("network", this._createTheme());
 
       this.chart = echarts.init(container, "network");
-      this.chart.on("click", (e: ECElementEvent) => {
-        if (e.dataType === "node") {
-          const nodeId = this.data?.nodes[e.dataIndex!]?.id;
-          if (nodeId) {
-            fireEvent(this, "node-selected", { id: nodeId });
-            this.selectedNode = nodeId;
-          }
-        }
-      });
 
       this.chart.setOption({
         ...this._createOptions(),
@@ -186,10 +171,6 @@ export class HaNetworkGraph extends LitElement {
 
       // Center the coordinator node if it exists
       this._centerCoordinatorNode();
-
-      if (this.selectedNode) {
-        this._focusOnNode();
-      }
     } finally {
       this._loading = false;
     }
@@ -224,9 +205,22 @@ export class HaNetworkGraph extends LitElement {
         confine: true,
         formatter: (params: any) => {
           if (params.dataType === "edge") {
-            return `${params.data.source} → ${params.data.target}${
-              params.data.value ? `<br>LQI: ${params.data.value}` : ""
-            }`;
+            const { source, target, value } = params.data;
+            const targetName = this.data!.nodes.find(
+              (node) => node.id === target
+            )!.name;
+            const sourceName = this.data!.nodes.find(
+              (node) => node.id === source
+            )!.name;
+            const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
+
+            const reverseValue = this.data!.links.find(
+              (link) => link.source === source && link.target === target
+            )?.reverseValue;
+            if (reverseValue) {
+              return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
+            }
+            return tooltipText;
           }
           return params.data.label || params.name;
         },
@@ -269,16 +263,11 @@ export class HaNetworkGraph extends LitElement {
         },
         force: {
           repulsion: [400, 600],
-          edgeLength: 250,
+          edgeLength: [200, 300],
           gravity: 0.1,
           layoutAnimation: !this._reducedMotion,
         },
         autoCurveness: true,
-        edgeLabel: {
-          show: true,
-          formatter: (params: any) => params.data.value || "",
-          fontSize: 10,
-        },
         edgeSymbol: ["none", "arrow"],
         edgeSymbolSize: 10,
         data: this.data.nodes.map((node) => ({
@@ -294,7 +283,12 @@ export class HaNetworkGraph extends LitElement {
           x: node.x,
           y: node.y,
         })),
-        links: this.data.links,
+        links: this.data.links.map((link) => ({
+          ...link,
+          value: link.reverseValue
+            ? Math.max(link.value ?? 0, link.reverseValue)
+            : link.value,
+        })),
         categories: this.data.categories || [],
       },
     ] as any;
@@ -306,31 +300,6 @@ export class HaNetworkGraph extends LitElement {
     }
     const replaceMerge = options.series ? ["series"] : [];
     this.chart.setOption(options, { replaceMerge });
-  }
-
-  private _focusOnNode() {
-    if (!this.chart || !this.selectedNode || !this.data) {
-      return;
-    }
-
-    const node = this.data.nodes.find((n) => n.id === this.selectedNode);
-    if (!node) return;
-
-    const nodeIndex = this.data.nodes.indexOf(node);
-
-    // Highlight the selected node
-    this.chart.dispatchAction({
-      type: "highlight",
-      seriesIndex: 0,
-      dataIndex: nodeIndex,
-    });
-
-    // Center view on the node
-    this.chart.dispatchAction({
-      type: "focusNodeAdjacency",
-      seriesIndex: 0,
-      dataIndex: nodeIndex,
-    });
   }
 
   private _centerCoordinatorNode() {

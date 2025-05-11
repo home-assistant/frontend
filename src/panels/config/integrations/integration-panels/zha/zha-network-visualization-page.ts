@@ -25,28 +25,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false })
-  public zoomedDeviceIdFromURL?: string;
-
-  @state()
-  private zoomedDeviceId?: string;
-
-  @state()
-  private _devices = new Map<string, ZHADevice>();
-
-  @state()
-  private _devicesByDeviceId = new Map<string, ZHADevice>();
-
   @state()
   private _networkData?: NetworkData;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
-
-    // prevent zoomedDeviceIdFromURL from being restored to zoomedDeviceId after the user clears it
-    if (this.zoomedDeviceIdFromURL) {
-      this.zoomedDeviceId = this.zoomedDeviceIdFromURL;
-    }
 
     if (this.hass) {
       this._fetchData();
@@ -76,48 +59,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
         <ha-network-graph
           .hass=${this.hass}
           .data=${this._networkData}
-          .selectedNode=${this._getSelectedNodeIEEE()}
-          @node-selected=${this._handleNodeSelected}
           height="calc(100vh - 112px)"
         ></ha-network-graph>
       </hass-tabs-subpage>
     `;
   }
 
-  private _getSelectedNodeIEEE(): string | undefined {
-    if (
-      !this.zoomedDeviceId ||
-      !this._devicesByDeviceId.has(this.zoomedDeviceId)
-    ) {
-      return undefined;
-    }
-    return this._devicesByDeviceId.get(this.zoomedDeviceId)?.ieee;
-  }
-
-  private _handleNodeSelected(ev: CustomEvent): void {
-    const ieee = ev.detail.id;
-    if (ieee) {
-      const device = this._devices.get(ieee);
-      if (device) {
-        this.zoomedDeviceId = device.device_reg_id;
-      }
-    }
-  }
-
   private async _fetchData() {
     const devices = await fetchDevices(this.hass!);
-    this._devices = new Map(
-      devices.map((device: ZHADevice) => [device.ieee, device])
-    );
-    this._devicesByDeviceId = new Map(
-      devices.map((device: ZHADevice) => [device.device_reg_id, device])
-    );
-    this._updateDevices(devices);
-  }
-
-  private _updateDevices(devices: ZHADevice[]) {
-    // Create network data for ECharts
-    this._networkData = this._createEChartsData(devices);
+    this._networkData = this._createChartData(devices);
   }
 
   private _buildLabel(device: ZHADevice): string {
@@ -164,7 +114,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     ];
   }
 
-  private _createEChartsData(devices: ZHADevice[]): NetworkData {
+  private _createChartData(devices: ZHADevice[]): NetworkData {
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
@@ -198,7 +148,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         id: device.ieee,
         name: device.user_given_name || device.name || device.ieee,
         category,
-        value: isCoordinator ? 3 : device.available ? 2 : 1,
+        value: isCoordinator ? 3 : device.device_type === "Router" ? 2 : 1,
         symbolSize: isCoordinator
           ? 40
           : device.device_type === "Router"
@@ -237,12 +187,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
           );
 
           if (existingLink) {
-            // Update the existing link to be bidirectional
-            existingLink.value = Math.max(
-              existingLink.value!,
-              parseInt(neighbor.lqi)
-            );
-            existingLink.symbolSize = 0;
+            if (existingLink.source === device.ieee) {
+              existingLink.value = Math.max(
+                existingLink.value!,
+                parseInt(neighbor.lqi)
+              );
+            } else {
+              existingLink.reverseValue = Math.max(
+                existingLink.reverseValue ?? 0,
+                parseInt(neighbor.lqi)
+              );
+              existingLink.symbolSize = 1; // 0 doesn't work
+            }
             existingLink.lineStyle = {
               ...existingLink.lineStyle,
               width: this._getLQIWidth(existingLink.value!),
