@@ -38,6 +38,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig } from "./types";
+import { storage } from "../../../common/decorators/storage";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -79,7 +80,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: { code: string; message: string };
 
-  @state() private _clusterMarkers = true;
+  @storage({ key: "map-card-clustering", state: true, subscribe: false })
+  private _clusterMarkers = true;
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
