@@ -4,32 +4,32 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-card";
-import "../../layouts/hass-tabs-subpage";
-import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
-import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
+import { subscribeFrontendUserData } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import { isMobileClient } from "../../util/is_mobile";
+import "../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
+import { isMobileClient } from "../../util/is_mobile";
 import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
 import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
+import { profileSections } from "./ha-panel-profile";
 import "./ha-pick-dashboard-row";
+import "./ha-pick-date-format-row";
 import "./ha-pick-first-weekday-row";
 import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
 import "./ha-pick-time-format-row";
-import "./ha-pick-date-format-row";
 import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
-import { nextRender } from "../../common/util/render-status";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -41,15 +41,16 @@ class HaProfileSectionGeneral extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  private _unsubCoreData?: UnsubscribeFunc;
+  private _unsubCoreData?: Promise<UnsubscribeFunc>;
 
   private _getCoreData() {
-    this._unsubCoreData = getOptimisticFrontendUserDataCollection(
+    this._unsubCoreData = subscribeFrontendUserData(
       this.hass.connection,
-      "core"
-    ).subscribe((coreUserData) => {
-      this._coreUserData = coreUserData;
-    });
+      "core",
+      ({ value }) => {
+        this._coreUserData = value;
+      }
+    );
   }
 
   public connectedCallback() {
@@ -70,7 +71,7 @@ class HaProfileSectionGeneral extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubCoreData) {
-      this._unsubCoreData();
+      this._unsubCoreData.then((unsub) => unsub());
       this._unsubCoreData = undefined;
     }
   }
