@@ -5613,7 +5613,7 @@
             "status_title": "status",
             "status_online": "online",
             "status_offline": "offline",
-            "devices": "{count} devices",
+            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
             "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
