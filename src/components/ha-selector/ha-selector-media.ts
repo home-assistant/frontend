@@ -247,7 +247,7 @@ export class HaMediaSelector extends LitElement {
       --mdc-icon-size: calc(var(--media-browse-item-size, 175px) * 0.4);
     }
     .title {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       padding-top: 16px;
       overflow: hidden;
       text-overflow: ellipsis;

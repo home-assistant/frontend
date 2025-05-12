@@ -42,8 +42,8 @@ class SupervisorFormfieldLabel extends LitElement {
       margin-right: 4px;
       margin-inline-end: 4px;
       margin-inline-start: initial;
-      font-size: 14px;
-      font-weight: 400;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
       line-height: 24px;
       letter-spacing: 0.5px;
     }

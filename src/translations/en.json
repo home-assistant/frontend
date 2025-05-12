@@ -403,7 +403,8 @@
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
-          "radius": "[%key:ui::panel::config::zone::detail::radius%]"
+          "radius": "[%key:ui::panel::config::zone::detail::radius%]",
+          "radius_meters": "[%key:ui::panel::config::core::section::core::core_config::elevation_meters%]"
         },
         "selector": {
           "options": "Selector Options",
@@ -920,7 +921,9 @@
           "action_play": "Say",
           "action_pick": "Select",
           "set_as_default": "Set as default options",
-          "faild_to_store_defaults": "Failed to store defaults: {error}"
+          "faild_to_store_defaults": "Failed to store defaults: {error}",
+          "selected_voice_id": "Selected voice ID",
+          "copy_voice_id": "Copy voice ID"
         },
         "pick": "Pick",
         "play": "Play",
@@ -2016,9 +2019,7 @@
       "sidebar_toggle": "Sidebar toggle",
       "done": "Done",
       "hide_panel": "Hide panel",
-      "show_panel": "Show panel",
-      "change_position": "Change panel position",
-      "change_position_dialog_text": "What position do you want to move your ''{name}'' panel to?"
+      "show_panel": "Show panel"
     },
     "panel": {
       "my": {
@@ -2491,7 +2492,10 @@
             "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
-            "local_agent": "This system"
+            "local_agent": "This system",
+            "retention_all": "Keep all backups",
+            "retention_backups": "Keep {count} {count, plural,\n one {backup}\n other {backups}\n}",
+            "retention_days": "Keep {count} {count, plural,\n one {day}\n other {days}\n}"
           },
           "data": {
             "ha_settings": "Home Assistant settings",
@@ -3107,6 +3111,7 @@
         },
         "info": {
           "caption": "About",
+          "installation_method": "Installation method",
           "copy_menu": "Copy menu",
           "copy_raw": "Raw text",
           "copy_github": "For GitHub",
@@ -3548,7 +3553,8 @@
               "test_wakeword": "Test",
               "edit_pipeline": "Edit",
               "try_tts": "Try",
-              "done": "Done"
+              "done": "Done",
+              "failed_rename": "Failed to rename the voice satellite: {error}"
             }
           }
         },
@@ -5583,7 +5589,9 @@
           "upnp": "Universal Plug and Play (UPnP)",
           "discovery_information": "Discovery information",
           "copy_to_clipboard": "Copy to clipboard",
-          "no_devices_found": "No matching SSDP/UPnP discoveries found"
+          "no_devices_found": "No matching SSDP/UPnP discoveries found",
+          "show_raw_data": "Show raw data",
+          "raw_data_title": "Raw data"
         },
         "zeroconf": {
           "name": "Name",
@@ -6401,15 +6409,14 @@
             }
           },
           "discovery": {
+            "title": "Network discovery",
+            "description": "Explore what data Home Assistant can see on the network.",
             "dhcp": "DHCP browser",
-            "dhcp_info": "The DHCP browser shows devices detected by Home Assistant using methods like DHCP, ARP+PTR lookups, and router-based device trackers. DHCP (Dynamic Host Configuration Protocol) data is received when devices join the network and request an IP address, allowing Home Assistant to discover them automatically. All devices found through these methods will appear here.",
-            "dhcp_browser": "View DHCP browser",
+            "dhcp_info": "Show devices detected using methods like DHCP, ARP+PTR lookups, and router-based device trackers.",
             "ssdp": "SSDP browser",
-            "ssdp_info": "The SSDP browser shows devices discovered by Home Assistant using SSDP/UPnP. Devices that Home Assistant has discovered will appear here.",
-            "ssdp_browser": "View SSDP browser",
+            "ssdp_info": "Show devices discovered using SSDP/UPnP.",
             "zeroconf": "Zeroconf browser",
-            "zeroconf_info": "The Zeroconf browser shows devices discovered by Home Assistant using mDNS. Only devices that Home Assistant is actively searching for will appear here.",
-            "zeroconf_browser": "View Zeroconf browser"
+            "zeroconf_info": "Show services discovered using mDNS. Does not include services unknown to Home Assistant."
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",

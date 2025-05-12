@@ -95,9 +95,9 @@ export class HaBadge extends LitElement {
       text-align: center;
     }
     .label {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       line-height: 10px;
       letter-spacing: 0.1px;
       color: var(--secondary-text-color);
@@ -105,7 +105,7 @@ export class HaBadge extends LitElement {
     .content {
       font-size: var(--ha-badge-font-size, var(--ha-font-size-s));
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       line-height: 16px;
       letter-spacing: 0.1px;
       color: var(--primary-text-color);

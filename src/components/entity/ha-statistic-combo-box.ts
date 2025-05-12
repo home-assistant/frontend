@@ -1,11 +1,10 @@
-import { mdiChartLine, mdiShape } from "@mdi/js";
+import { mdiChartLine, mdiHelpCircle, mdiShape } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import Fuse from "fuse.js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -26,31 +25,27 @@ import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box-item";
 import "../ha-svg-icon";
 import "./state-badge";
+import { documentationUrl } from "../../util/documentation-url";
 
 type StatisticItemType = "entity" | "external" | "no_state";
 
 interface StatisticItem {
+  // Force empty label to always display empty value by default in the search field
   id: string;
+  statistic_id?: string;
   label: "";
   primary: string;
   secondary?: string;
-  show_entity_id?: boolean;
-  entity_name?: string;
-  area_name?: string;
-  device_name?: string;
-  friendly_name?: string;
+  search_labels?: string[];
   sorting_label?: string;
-  state?: HassEntity;
+  icon_path?: string;
   type?: StatisticItemType;
-  iconPath?: string;
+  stateObj?: HassEntity;
 }
 
-const TYPE_ORDER = ["entity", "external", "no_state"] as StatisticItemType[];
+const MISSING_ID = "___missing-entity___";
 
-const ENTITY_ID_STYLE = styleMap({
-  fontFamily: "var(--ha-font-family-code)",
-  fontSize: "11px",
-});
+const TYPE_ORDER = ["entity", "external", "no_state"] as StatisticItemType[];
 
 @customElement("ha-statistic-combo-box")
 export class HaStatisticComboBox extends LitElement {
@@ -131,37 +126,39 @@ export class HaStatisticComboBox extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<StatisticItem> = (
     item,
     { index }
-  ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
-      ${!item.state
-        ? html`
-            <ha-svg-icon
-              style="margin: 0 4px"
-              slot="start"
-              .path=${item.iconPath}
-            ></ha-svg-icon>
-          `
-        : html`
-            <state-badge
-              slot="start"
-              .stateObj=${item.state}
-              .hass=${this.hass}
-            ></state-badge>
-          `}
-
-      <span slot="headline">${item.primary} </span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${item.id && item.show_entity_id
-        ? html`
-            <span slot="supporting-text" style=${ENTITY_ID_STYLE}>
-              ${item.id}
-            </span>
-          `
-        : nothing}
-    </ha-combo-box-item>
-  `;
+  ) => {
+    const showEntityId = this.hass.userData?.showEntityIdPicker;
+    return html`
+      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+        ${item.icon_path
+          ? html`
+              <ha-svg-icon
+                style="margin: 0 4px"
+                slot="start"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
+            `
+          : item.stateObj
+            ? html`
+                <state-badge
+                  slot="start"
+                  .stateObj=${item.stateObj}
+                  .hass=${this.hass}
+                ></state-badge>
+              `
+            : nothing}
+        <span slot="headline">${item.primary} </span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+        ${item.id && showEntityId
+          ? html`<span slot="supporting-text" class="code">
+              ${item.statistic_id}
+            </span>`
+          : nothing}
+      </ha-combo-box-item>
+    `;
+  };
 
   private _getItems = memoizeOne(
     (
@@ -249,19 +246,22 @@ export class HaStatisticComboBox extends LitElement {
                 label: "",
                 type,
                 sorting_label: label,
-                iconPath: mdiShape,
+                search_labels: [label, id],
+                icon_path: mdiShape,
               });
             } else if (type === "external") {
               const domain = id.split(":")[0];
               const domainName = domainToName(this.hass.localize, domain);
               output.push({
                 id,
+                statistic_id: id,
                 primary: label,
                 secondary: domainName,
                 label: "",
                 type,
                 sorting_label: label,
-                iconPath: mdiChartLine,
+                search_labels: [label, domainName, id],
+                icon_path: mdiChartLine,
               });
             }
           }
@@ -283,17 +283,20 @@ export class HaStatisticComboBox extends LitElement {
 
         output.push({
           id,
+          statistic_id: id,
+          label: "",
           primary,
           secondary,
-          label: "",
-          state: stateObj,
+          stateObj: stateObj,
           type: "entity",
           sorting_label: [deviceName, entityName].join("_"),
-          entity_name: entityName || deviceName,
-          area_name: areaName,
-          device_name: deviceName,
-          friendly_name: friendlyName,
-          show_entity_id: hass.userData?.showEntityIdPicker,
+          search_labels: [
+            entityName,
+            deviceName,
+            areaName,
+            friendlyName,
+            id,
+          ].filter(Boolean) as string[],
         });
       });
 
@@ -323,11 +326,12 @@ export class HaStatisticComboBox extends LitElement {
       }
 
       output.push({
-        id: "__missing",
+        id: MISSING_ID,
         primary: this.hass.localize(
           "ui.components.statistic-picker.missing_entity"
         ),
         label: "",
+        icon_path: mdiHelpCircle,
       });
 
       return output;
@@ -392,6 +396,9 @@ export class HaStatisticComboBox extends LitElement {
 
     return html`
       <ha-combo-box
+        item-id-path="id"
+        item-value-path="id"
+        item-label-path="label"
         .hass=${this.hass}
         .label=${this.label === undefined && this.hass
           ? this.hass.localize("ui.components.statistic-picker.statistic")
@@ -401,9 +408,6 @@ export class HaStatisticComboBox extends LitElement {
         .disabled=${this.disabled}
         .allowCustomValue=${this.allowCustomEntity}
         .filteredItems=${this._items}
-        item-value-path="id"
-        item-id-path="id"
-        item-label-path="label"
         @opened-changed=${this._openedChanged}
         @value-changed=${this._statisticChanged}
         @filter-changed=${this._filterChanged}
@@ -422,8 +426,12 @@ export class HaStatisticComboBox extends LitElement {
   private _statisticChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     let newValue = ev.detail.value;
-    if (newValue === "__missing") {
+    if (newValue === MISSING_ID) {
       newValue = "";
+      window.open(
+        documentationUrl(this.hass, this.helpMissingEntityUrl),
+        "_blank"
+      );
     }
 
     if (newValue !== this._value) {
@@ -436,16 +444,7 @@ export class HaStatisticComboBox extends LitElement {
   }
 
   private _fuseIndex = memoizeOne((states: StatisticItem[]) =>
-    Fuse.createIndex(
-      [
-        "entity_name",
-        "device_name",
-        "area_name",
-        "friendly_name", // for backwards compatibility
-        "id", // for technical search
-      ],
-      states
-    )
+    Fuse.createIndex(["search_labels"], states)
   );
 
   private _filterChanged(ev: CustomEvent): void {

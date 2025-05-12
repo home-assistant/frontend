@@ -307,11 +307,11 @@ class PanelCalendar extends LitElement {
           --mdc-typography-button-text-transform: none;
           --mdc-typography-button-font-size: var(
             --mdc-typography-headline6-font-size,
-            1.25rem
+            var(--ha-font-size-l)
           );
           --mdc-typography-button-font-weight: var(
             --mdc-typography-headline6-font-weight,
-            500
+            var(--ha-font-weight-medium)
           );
           --mdc-typography-button-letter-spacing: var(
             --mdc-typography-headline6-letter-spacing,

@@ -159,7 +159,7 @@ class HaAlert extends LitElement {
     }
     .title {
       margin-top: 2px;
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     .action mwc-button,
     .action ha-icon-button {

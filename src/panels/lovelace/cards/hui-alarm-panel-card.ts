@@ -440,7 +440,10 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     mwc-button.numberkey {
-      --mdc-typography-button-font-size: var(--keypad-font-size, 0.875rem);
+      --mdc-typography-button-font-size: var(
+        --keypad-font-size,
+        var(--ha-font-size-s)
+      );
     }
   `;
 }

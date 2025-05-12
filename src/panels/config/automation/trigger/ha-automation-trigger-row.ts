@@ -700,8 +700,8 @@ export default class HaAutomationTriggerRow extends LitElement {
           right: 0px;
           left: 0px;
           text-transform: uppercase;
-          font-weight: bold;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-bold);
           background-color: var(--primary-color);
           color: var(--text-primary-color);
           max-height: 0px;

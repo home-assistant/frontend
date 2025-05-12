@@ -24,9 +24,12 @@ class StepFlowProgress extends LitElement {
   @property({ type: Number })
   public progress?: number;
 
+  @property({ type: Boolean, attribute: "increase-padding-end" })
+  public increasePaddingEnd = false;
+
   protected render(): TemplateResult {
     return html`
-      <h2>
+      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
         ${this.flowConfig.renderShowFormProgressHeader(this.hass, this.step)}
       </h2>
       <div class="content">

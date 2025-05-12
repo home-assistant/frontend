@@ -95,22 +95,6 @@ type BaseNavigationCommand = Pick<
   "primaryText" | "path"
 >;
 
-const DOMAIN_STYLE = styleMap({
-  fontSize: "var(--ha-font-size-s)",
-  fontWeight: "var(--ha-font-weight-normal)",
-  lineHeight: "var(--ha-line-height-normal)",
-  alignSelf: "flex-end",
-  maxWidth: "30%",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-});
-
-const ENTITY_ID_STYLE = styleMap({
-  fontFamily: "var(--ha-font-family-code)",
-  fontSize: "var(--ha-font-size-xs)",
-});
-
 @customElement("ha-quick-bar")
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -358,6 +342,7 @@ export class QuickBar extends LitElement {
   private _renderDeviceItem(item: DeviceItem, index?: number) {
     return html`
       <ha-md-list-item
+        class="two-line"
         .item=${item}
         index=${ifDefined(index)}
         tabindex="0"
@@ -376,6 +361,7 @@ export class QuickBar extends LitElement {
 
     return html`
       <ha-md-list-item
+        class=${showEntityId ? "three-line" : "two-line"}
         .item=${item}
         index=${ifDefined(index)}
         tabindex="0"
@@ -395,12 +381,12 @@ export class QuickBar extends LitElement {
           ? html` <span slot="supporting-text">${item.altText}</span> `
           : nothing}
         ${item.entityId && showEntityId
-          ? html`<span slot="supporting-text" style=${ENTITY_ID_STYLE}
-              >${item.entityId}</span
-            >`
+          ? html`
+              <span slot="supporting-text" class="code">${item.entityId}</span>
+            `
           : nothing}
         ${item.translatedDomain && !showEntityId
-          ? html`<div slot="trailing-supporting-text" style=${DOMAIN_STYLE}>
+          ? html`<div slot="trailing-supporting-text" class="domain">
               ${item.translatedDomain}
             </div>`
           : nothing}
@@ -621,9 +607,7 @@ export class QuickBar extends LitElement {
 
         const entityItem = {
           primaryText: primary,
-          altText:
-            secondary ||
-            this.hass.localize("ui.components.device-picker.no_area"),
+          altText: secondary,
           icon: html`
             <ha-state-icon
               .hass=${this.hass}
@@ -1019,6 +1003,39 @@ export class QuickBar extends LitElement {
 
         ha-md-list-item {
           width: 100%;
+        }
+
+        /* Fixed height for items because we are use virtualizer */
+        ha-md-list-item.two-line {
+          --md-list-item-one-line-container-height: 64px;
+          --md-list-item-two-line-container-height: 64px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+        }
+
+        ha-md-list-item.three-line {
+          width: 100%;
+          --md-list-item-one-line-container-height: 72px;
+          --md-list-item-two-line-container-height: 72px;
+          --md-list-item-three-line-container-height: 72px;
+          --md-list-item-top-space: 8px;
+          --md-list-item-bottom-space: 8px;
+        }
+
+        ha-md-list-item .code {
+          font-family: var(--ha-font-family-code);
+          font-size: var(--ha-font-size-xs);
+        }
+
+        ha-md-list-item .domain {
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-normal);
+          align-self: flex-end;
+          max-width: 30%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
 
         ha-tip {

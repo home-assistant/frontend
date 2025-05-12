@@ -202,7 +202,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     .title {
       width: 100%;
-      font-size: 18px;
+      font-size: var(--ha-font-size-l);
       line-height: 36px;
       padding: 8px 30px 8px 30px;
       margin: 0;

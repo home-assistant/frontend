@@ -250,7 +250,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .badge-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -269,7 +269,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

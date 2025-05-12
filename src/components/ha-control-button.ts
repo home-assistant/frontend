@@ -58,8 +58,8 @@ export class HaControlButton extends LitElement {
       padding: var(--control-button-padding);
       box-sizing: border-box;
       line-height: inherit;
-      font-family: Roboto;
-      font-weight: 500;
+      font-family: var(--ha-font-family-body);
+      font-weight: var(--ha-font-weight-medium);
       outline: none;
       overflow: hidden;
       background: none;

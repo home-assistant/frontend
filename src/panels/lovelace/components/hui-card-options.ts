@@ -230,9 +230,9 @@ export class HuiCardOptions extends LitElement {
           line-height: 24px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           text-align: center;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           background-color: var(--app-header-edit-background-color, #455a64);
           color: var(--app-header-edit-text-color, white);
         }

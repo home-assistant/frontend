@@ -264,7 +264,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           margin-bottom: 16px;
         }
         .sentence {
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           margin-bottom: 8px;
           display: flex;
           flex-direction: row;
