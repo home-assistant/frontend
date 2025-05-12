@@ -141,7 +141,7 @@ class ZHAConfigDashboard extends LitElement {
                         "ui.panel.config.zha.configuration_page.devices_offline",
                         { count: this._offline }
                       )})`
-                    : ""}
+                    : nothing}
                 </small>
               </div>
             </div>
