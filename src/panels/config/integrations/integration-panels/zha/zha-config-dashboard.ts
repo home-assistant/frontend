@@ -482,8 +482,7 @@ class ZHAConfigDashboard extends LitElement {
           justify-content: center;
         }
         .zha-status-card ha-svg-icon {
-          width: 56px;
-          height: 56px;
+          --mdc-icon-size: 56px;
         }
         .zha-status-card .details {
           display: flex;
