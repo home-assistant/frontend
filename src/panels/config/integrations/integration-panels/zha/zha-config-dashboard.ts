@@ -493,7 +493,7 @@ class ZHAConfigDashboard extends LitElement {
           color: var(--state-on-color, var(--success-color));
         }
         .zha-status-card .offline {
-          color: var(--error-color, #db4437);
+          color: var(--error-color, var(--error-color));
         }
       `,
     ];
