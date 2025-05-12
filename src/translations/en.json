@@ -5615,6 +5615,7 @@
             "status_offline": "offline",
             "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
             "devices_offline": "{count} offline",
+            "fetch_devices_error_title": "Failed to fetch ZHA devices",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
             "migrate_radio": "Migrate radio",

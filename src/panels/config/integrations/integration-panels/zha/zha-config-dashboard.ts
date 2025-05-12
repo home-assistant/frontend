@@ -9,7 +9,7 @@ import {
   mdiAlertCircle,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -32,7 +32,6 @@ import type {
   ZHAConfiguration,
   ZHANetworkSettings,
   ZHANetworkBackupAndMetadata,
-  ZHADevice,
 } from "../../../../../data/zha";
 import {
   fetchZHAConfiguration,
@@ -79,17 +78,11 @@ class ZHAConfigDashboard extends LitElement {
 
   @state() private _networkSettings?: ZHANetworkSettings;
 
-  @state() private _devices: ZHADevice[] = [];
+  @state() private _totalDevices = 0;
+
+  @state() private _offlineDevices = 0;
 
   @state() private _generatingBackup = false;
-
-  @state() private _statusIcon = mdiCheckCircle;
-
-  @state() private _statusClass = "connected";
-
-  @state() private _total = 0;
-
-  @state() private _offline = 0;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
@@ -97,11 +90,17 @@ class ZHAConfigDashboard extends LitElement {
       this.hass.loadBackendTranslation("config_panel", "zha", false);
       this._fetchConfiguration();
       this._fetchSettings();
-      this._fetchDevices();
+      this._fetchDevicesAndUpdateStatus();
     }
   }
 
   protected render(): TemplateResult {
+    let statusIcon = mdiCheckCircle;
+    let statusClass = "online";
+    if (this._offlineDevices === this._totalDevices && this._totalDevices > 0) {
+      statusIcon = mdiAlertCircle;
+      statusClass = "offline";
+    }
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -113,18 +112,16 @@ class ZHAConfigDashboard extends LitElement {
         <ha-card>
           <div class="card-content zha-status-card">
             <div class="heading">
-              <div class="icon">
-                <ha-svg-icon
-                  .path=${this._statusIcon}
-                  class=${this._statusClass}
-                ></ha-svg-icon>
-              </div>
+              <ha-svg-icon
+                .path=${statusIcon}
+                class=${statusClass}
+              ></ha-svg-icon>
               <div class="details">
                 ZHA
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.status_title"
                 )}:
-                ${this._statusClass === "online"
+                ${statusClass === "online"
                   ? this.hass.localize(
                       "ui.panel.config.zha.configuration_page.status_online"
                     )
@@ -134,12 +131,12 @@ class ZHAConfigDashboard extends LitElement {
                 <small>
                   ${this.hass.localize(
                     "ui.panel.config.zha.configuration_page.devices",
-                    { count: this._total }
+                    { count: this._totalDevices }
                   )}
-                  ${this._offline > 0
+                  ${this._offlineDevices > 0
                     ? html`(${this.hass.localize(
                         "ui.panel.config.zha.configuration_page.devices_offline",
-                        { count: this._offline }
+                        { count: this._offlineDevices }
                       )})`
                     : nothing}
                 </small>
@@ -314,31 +311,25 @@ class ZHAConfigDashboard extends LitElement {
     this._networkSettings = await fetchZHANetworkSettings(this.hass!);
   }
 
-  private async _fetchDevices() {
+  private async _fetchDevicesAndUpdateStatus(): Promise<void> {
     try {
-      this._devices = await fetchDevices(this.hass!);
-    } finally {
-      this._updateStatus();
+      const devices = await fetchDevices(this.hass!);
+      const total = devices.length;
+      const online = devices.filter((d) => d.available).length;
+      const offline = total - online;
+      this._totalDevices = total;
+      this._offlineDevices = offline;
+    } catch (err: any) {
+      this._totalDevices = 0;
+      this._offlineDevices = 0;
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.zha.configuration_page.fetch_devices_error_title"
+        ),
+        text: err.message,
+        warning: true,
+      });
     }
-  }
-
-  private _updateStatus() {
-    const total = this._devices.length;
-    const online = this._devices.filter((d) => d.available).length;
-    const offline = total - online;
-    let statusIcon = mdiCheckCircle;
-    let statusClass = "online";
-    if (offline === total) {
-      statusIcon = mdiAlertCircle;
-      statusClass = "offline";
-    } else {
-      statusIcon = mdiCheckCircle;
-      statusClass = "online";
-    }
-    this._statusIcon = statusIcon;
-    this._statusClass = statusClass;
-    this._total = total;
-    this._offline = offline;
   }
 
   private async _showChannelMigrationDialog(): Promise<void> {
@@ -473,16 +464,9 @@ class ZHAConfigDashboard extends LitElement {
           align-items: center;
           margin-bottom: 8px;
         }
-        .zha-status-card .icon {
-          width: 56px;
-          height: 56px;
-          margin-right: 24px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
         .zha-status-card ha-svg-icon {
           --mdc-icon-size: 56px;
+          margin-right: 24px;
         }
         .zha-status-card .details {
           display: flex;
