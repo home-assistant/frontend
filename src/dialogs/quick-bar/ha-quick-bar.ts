@@ -185,8 +185,7 @@ export class QuickBar extends LitElement {
       this._commandItems,
       this._entityItems,
       this._deviceItems,
-      this._filter,
-      this.hass.localize
+      this._filter
     );
 
     const translationKey =
