@@ -490,7 +490,7 @@ class ZHAConfigDashboard extends LitElement {
           flex-direction: column;
         }
         .zha-status-card .online {
-          color: var(--state-on-color, #43a047);
+          color: var(--state-on-color, var(--success-color));
         }
         .zha-status-card .offline {
           color: var(--error-color, #db4437);
