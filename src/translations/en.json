@@ -4725,7 +4725,7 @@
             "check_your_email": "Check your email for instructions on how to reset your password."
           },
           "register": {
-            "title": "Register Account",
+            "title": "Register account",
             "headline": "Start your free trial",
             "information": "Create an account to start your free one month trial with Home Assistant Cloud. No payment information necessary.",
             "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
