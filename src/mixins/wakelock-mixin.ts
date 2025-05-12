@@ -3,7 +3,7 @@ import type { Constructor } from "../types";
 
 export const WakeLockMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
-) => {
+) => 
   class WakeLockClass extends superClass {
     private _wakeLock?: Promise<WakeLockSentinel>;
 
@@ -18,7 +18,4 @@ export const WakeLockMixin = <T extends Constructor<ReactiveElement>>(
       super.disconnectedCallback();
       this._wakeLock?.then((wakeLock) => wakeLock.release());
     }
-  }
-
-  return WakeLockClass;
-};
+  };
