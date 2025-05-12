@@ -59,6 +59,7 @@ const LAZY_LOAD_TYPES = {
   buttons: () => import("../special-rows/hui-buttons-row"),
   attribute: () => import("../special-rows/hui-attribute-row"),
   text: () => import("../special-rows/hui-text-row"),
+  label: () => import("../special-rows/hui-label-row"),
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "simple",

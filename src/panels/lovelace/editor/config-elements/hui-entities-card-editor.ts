@@ -37,7 +37,10 @@ import "../header-footer-editor/hui-header-footer-editor";
 import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
-import { actionConfigStruct } from "../structs/action-struct";
+import {
+  actionConfigStruct,
+  actionConfigStructConfirmation,
+} from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { buttonEntityConfigStruct } from "../structs/button-entity-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
@@ -126,6 +129,20 @@ const textEntitiesRowConfigStruct = object({
   icon: optional(string()),
 });
 
+const labelEntitiesRowConfigStruct = object({
+  type: literal("label"),
+  label: string(),
+  icon: optional(string()),
+  image: optional(string()),
+  secondary_info: optional(string()),
+  format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
+  state_color: optional(boolean()),
+  tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
 const customEntitiesRowConfigStruct = type({
   type: customType(),
 });
@@ -167,6 +184,9 @@ const entitiesRowConfigStruct = dynamic<any>((value) => {
       }
       case "weblink": {
         return webLinkEntitiesRowConfigStruct;
+      }
+      case "label": {
+        return labelEntitiesRowConfigStruct;
       }
     }
   }
