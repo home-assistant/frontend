@@ -7166,7 +7166,8 @@
                 "buttons": "Buttons",
                 "conditional": "Conditional",
                 "cast": "Cast",
-                "button": "Button"
+                "button": "Button",
+                "label": "Label"
               }
             },
             "entity": {
