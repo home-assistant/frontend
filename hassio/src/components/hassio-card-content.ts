@@ -101,7 +101,7 @@ class HassioCardContent extends LitElement {
       overflow: hidden;
       position: relative;
       height: 2.4em;
-      line-height: 1.2em;
+      line-height: var(--ha-line-height-condensed);
     }
     .icon_image img {
       max-height: 40px;

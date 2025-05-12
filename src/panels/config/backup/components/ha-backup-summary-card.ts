@@ -128,7 +128,7 @@ class HaBackupSummaryCard extends LitElement {
       font-size: var(--ha-font-size-xl);
       font-style: normal;
       font-weight: var(--ha-font-weight-normal);
-      line-height: 28px;
+      line-height: var(--ha-line-height-condensed);
       color: var(--primary-text-color);
       margin: 0;
       text-overflow: ellipsis;

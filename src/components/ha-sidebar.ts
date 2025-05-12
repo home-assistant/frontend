@@ -987,7 +987,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           left: 26px;
           border-radius: 10px;
           font-size: 0.65em;
-          line-height: 2;
+          line-height: var(--ha-line-height-expanded);
           padding: 0 4px;
         }
 

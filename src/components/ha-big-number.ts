@@ -92,7 +92,7 @@ export class HaBigNumber extends LitElement {
         }
         .value .unit {
           font-size: 0.33em;
-          line-height: 1.26;
+          line-height: var(--ha-line-height-condensed);
         }
         /* Accessibility */
         .visually-hidden {

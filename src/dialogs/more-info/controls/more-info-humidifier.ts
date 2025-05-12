@@ -241,7 +241,7 @@ class MoreInfoHumidifier extends LitElement {
         .current .value {
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-medium);
-          line-height: 28px;
+          line-height: var(--ha-line-height-condensed);
           direction: ltr;
         }
       `,

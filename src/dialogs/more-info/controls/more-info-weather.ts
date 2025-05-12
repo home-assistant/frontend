@@ -519,7 +519,7 @@ class MoreInfoWeather extends LitElement {
         .state,
         .temp-attribute .temp {
           font-size: var(--ha-font-size-3xl);
-          line-height: 1.2;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .attribute {
