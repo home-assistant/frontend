@@ -9,50 +9,50 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
+import Fuse from "fuse.js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import Fuse from "fuse.js";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeAreaName } from "../../common/entity/compute_area_name";
 import {
   computeDeviceName,
   computeDeviceNameDisplay,
 } from "../../common/entity/compute_device_name";
+import { computeDomain } from "../../common/entity/compute_domain";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { ScorableTextItem } from "../../common/string/filter/sequence-matching";
+import { computeRTL } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
 import "../../components/ha-list";
+import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import "../../components/ha-tip";
-import "../../components/ha-md-list-item";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
+import { HaFuse } from "../../resources/fuse";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeRTL } from "../../common/util/compute_rtl";
-import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { HaFuse } from "../../resources/fuse";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -150,11 +150,6 @@ export class QuickBar extends LitElement {
     if (!this.hasUpdated) {
       loadVirtualizer();
     }
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.hass.loadBackendTranslation("title");
   }
 
   private _getItems = memoizeOne(
@@ -304,7 +299,8 @@ export class QuickBar extends LitElement {
     } else if (this._mode === QuickBarMode.Device) {
       this._deviceItems = this._deviceItems || this._generateDeviceItems();
     } else {
-      this._entityItems = this._entityItems || this._generateEntityItems();
+      this._entityItems =
+        this._entityItems || (await this._generateEntityItems());
     }
   }
 
@@ -581,8 +577,10 @@ export class QuickBar extends LitElement {
       );
   }
 
-  private _generateEntityItems(): EntityItem[] {
+  private async _generateEntityItems(): Promise<EntityItem[]> {
     const isRTL = computeRTL(this.hass);
+
+    await this.hass.loadBackendTranslation("title");
 
     return Object.keys(this.hass.states)
       .map((entityId) => {
