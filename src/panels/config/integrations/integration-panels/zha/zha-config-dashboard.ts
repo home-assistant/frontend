@@ -95,12 +95,7 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    let statusIcon = mdiCheckCircle;
-    let statusClass = "online";
-    if (this._offlineDevices === this._totalDevices && this._totalDevices > 0) {
-      statusIcon = mdiAlertCircle;
-      statusClass = "offline";
-    }
+    const deviceOnline = this._offlineDevices < this._totalDevices || this._totalDevices === 0
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
