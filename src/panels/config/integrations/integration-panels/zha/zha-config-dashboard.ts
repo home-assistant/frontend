@@ -116,12 +116,8 @@ class ZHAConfigDashboard extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.status_title"
                 )}:
-                ${statusClass === "online"
-                  ? this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.status_online"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.zha.configuration_page.status_offline"
+                ${this.hass.localize(
+                      `ui.panel.config.zha.configuration_page.status_${deviceOnline ? "online" : "offline"}`
                     )} <br />
                 <small>
                   ${this.hass.localize(
