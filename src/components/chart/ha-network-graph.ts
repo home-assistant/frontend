@@ -109,6 +109,7 @@ export class HaNetworkGraph extends LitElement {
       legend: {
         show: !!this.data?.categories?.length,
         data: this.data?.categories,
+        top: 8,
       },
       dataZoom: {
         type: "inside",
@@ -139,9 +140,6 @@ export class HaNetworkGraph extends LitElement {
         },
         emphasis: {
           focus: "adjacency",
-          lineStyle: {
-            width: 4,
-          },
         },
         force: {
           repulsion: [400, 600],

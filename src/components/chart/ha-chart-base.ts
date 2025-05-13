@@ -214,7 +214,7 @@ export class HaChartBase extends LitElement {
       return nothing;
     }
     const legend = ensureArray(this.options.legend)[0] as LegendComponentOption;
-    if (!legend.show) {
+    if (!legend.show || legend.type !== "custom") {
       return nothing;
     }
     const datasets = ensureArray(this.data);
@@ -414,6 +414,12 @@ export class HaChartBase extends LitElement {
         } as XAXisOption;
       });
     }
+    let legend = this.options?.legend;
+    if (legend) {
+      legend = ensureArray(legend).map((l) =>
+        l.type === "custom" ? { show: false } : l
+      );
+    }
     const options = {
       animation: !this._reducedMotion,
       darkMode: this._themes.darkMode ?? false,
@@ -428,7 +434,7 @@ export class HaChartBase extends LitElement {
         iconStyle: { opacity: 0 },
       },
       ...this.options,
-      legend: { show: false },
+      legend,
       xAxis,
     };
 
