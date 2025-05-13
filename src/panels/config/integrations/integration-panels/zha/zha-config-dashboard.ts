@@ -108,8 +108,8 @@ class ZHAConfigDashboard extends LitElement {
           <div class="card-content zha-status-card">
             <div class="heading">
               <ha-svg-icon
-                .path=${statusIcon}
-                class=${statusClass}
+                .path=${deviceOnline ? mdiCheckCircle : mdiAlertCircle}
+                class=${deviceOnline ? "online" : "offline"}
               ></ha-svg-icon>
               <div class="details">
                 ZHA
