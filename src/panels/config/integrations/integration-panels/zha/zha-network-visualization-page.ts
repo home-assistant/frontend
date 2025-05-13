@@ -2,6 +2,11 @@ import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
+import { mdiRefresh } from "@mdi/js";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
@@ -28,6 +33,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @state()
   private _networkData?: NetworkData;
 
+  @state()
+  private _devices: ZHADevice[] = [];
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
 
@@ -48,29 +56,54 @@ export class ZHANetworkVisualizationPage extends LitElement {
           "ui.panel.config.zha.visualization.header"
         )}
       >
-        <div class="header">
-          <mwc-button @click=${this._refreshTopology}>
-            ${this.hass!.localize(
-              "ui.panel.config.zha.visualization.refresh_topology"
-            )}
-          </mwc-button>
-        </div>
-
         <ha-network-graph
           .hass=${this.hass}
           .data=${this._networkData}
-          height="calc(100vh - 112px)"
-        ></ha-network-graph>
+          .tooltipFormatter=${this._tooltipFormatter}
+        >
+          <ha-icon-button
+            slot="button"
+            class="refresh-button"
+            .path=${mdiRefresh}
+            @click=${this._refreshTopology}
+            title=${this.hass.localize(
+              "ui.panel.config.zha.visualization.refresh_topology"
+            )}
+          ></ha-icon-button>
+        </ha-network-graph>
       </hass-tabs-subpage>
     `;
   }
 
   private async _fetchData() {
-    const devices = await fetchDevices(this.hass!);
-    this._networkData = this._createChartData(devices);
+    this._devices = await fetchDevices(this.hass!);
+    this._networkData = this._createChartData(this._devices);
   }
 
-  private _buildLabel(device: ZHADevice): string {
+  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+    const { dataType, data, name } = params as CallbackDataParams;
+    if (dataType === "edge") {
+      const { source, target, value } = data as any;
+      const targetName = this._networkData!.nodes.find(
+        (node) => node.id === target
+      )!.name;
+      const sourceName = this._networkData!.nodes.find(
+        (node) => node.id === source
+      )!.name;
+      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
+
+      const reverseValue = this._networkData!.links.find(
+        (link) => link.source === source && link.target === target
+      )?.reverseValue;
+      if (reverseValue) {
+        return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
+      }
+      return tooltipText;
+    }
+    const device = this._devices.find((d) => d.ieee === (data as any).id);
+    if (!device) {
+      return name;
+    }
     let label = `<b>IEEE: </b>${device.ieee}`;
     label += `<br><b>Device Type: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
@@ -88,27 +121,22 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     }
     return label;
-  }
+  };
 
   private async _refreshTopology(): Promise<void> {
     await refreshTopology(this.hass);
+    await this._fetchData();
   }
 
   static get styles(): CSSResultGroup {
     return [
       css`
-        .header {
-          border-bottom: 1px solid var(--divider-color);
-          padding: 0 8px;
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          height: var(--header-height);
-          box-sizing: border-box;
+        ha-network-graph {
+          height: calc(100vh - 112px);
         }
 
-        .header > * {
-          padding: 0 8px;
+        .refresh-button {
+          margin-right: 12px;
         }
       `,
     ];
@@ -128,10 +156,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
       { name: "Offline", icon: "circle", itemStyle: { color: "#F44336" } },
     ];
 
-    // First create all the nodes and links
+    // Create all the nodes and links
     devices.forEach((device) => {
       const isCoordinator = device.device_type === "Coordinator";
-      // Determine category (Coordinator, Router, End Device)
       let category: number;
       if (!device.available) {
         category = 3; // Offline
@@ -164,8 +191,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 : "#9E9E9E"
             : "#F44336",
         },
-        label: this._buildLabel(device),
-        fixed: isCoordinator,
+        polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
       });
 
       // Create links (edges)
@@ -173,7 +199,6 @@ export class ZHANetworkVisualizationPage extends LitElement {
         (link) => link.source === device.ieee || link.target === device.ieee
       );
       if (device.routes && device.routes.length > 0) {
-        // Add all links, but mark only the strongest as non-ignored for force layout
         device.routes.forEach((route) => {
           const neighbor = device.neighbors.find(
             (n) => n.nwk === route.next_hop
@@ -199,9 +224,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
               );
               existingLink.symbolSize = 1; // 0 doesn't work
             }
+            const width = this._getLQIWidth(parseInt(neighbor.lqi));
+            existingLink.symbolSize = (width / 4) * 10;
             existingLink.lineStyle = {
               ...existingLink.lineStyle,
-              width: this._getLQIWidth(existingLink.value!),
+              width,
               color:
                 route.route_status === "Active"
                   ? "#17ab00"
@@ -224,9 +251,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
                   ? "solid"
                   : "dashed",
               },
-              symbolSize: width * 2,
+              symbolSize: (width / 4) * 6 + 4, // range 4-10
               // By default, all links should be ignored for force layout
-              ignoreForceLayout: !isCoordinator,
+              ignoreForceLayout: true,
             };
             links.push(link);
             existingLinks.push(link);
@@ -255,12 +282,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
             source: device.ieee,
             target: closestNeighbor.ieee,
             value: parseInt(closestNeighbor.lqi),
+            symbolSize: 5,
             lineStyle: {
               width: 1,
               color: "#bfbfbf",
               type: "dotted",
             },
-            ignoreForceLayout: false,
+            ignoreForceLayout: true,
           });
         }
       }

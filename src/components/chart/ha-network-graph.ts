@@ -1,16 +1,12 @@
-import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { EChartsType } from "echarts/core";
-import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import type { GraphSeriesOption } from "echarts/charts";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
+import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import { themesContext } from "../../data/context";
-import type { Themes } from "../../data/ws-themes";
 import type { ECOption } from "../../resources/echarts";
-import type { HomeAssistant } from "../../types";
-import "../ha-icon-button";
+import "./ha-chart-base";
 
 export interface NetworkNode {
   id: string;
@@ -26,8 +22,7 @@ export interface NetworkNode {
     borderWidth?: number;
   };
   fixed?: boolean;
-  x?: number;
-  y?: number;
+  polarDistance?: number; // distance from the center, where 0 is the center and 1 is the edge
 }
 
 export interface NetworkLink {
@@ -58,172 +53,58 @@ export interface NetworkData {
 export class HaNetworkGraph extends LitElement {
   public chart?: EChartsType;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data?: NetworkData;
 
-  @property({ attribute: false }) public options?: ECOption;
+  @property({ attribute: false }) public tooltipFormatter?: (
+    params: TopLevelFormatterParams
+  ) => string;
 
-  @property({ type: String }) public height?: string;
-
-  @property({ attribute: "graph-title" }) public graphTitle?: string;
-
-  @state()
-  @consume({ context: themesContext, subscribe: true })
-  _themes!: Themes;
-
-  private _reducedMotion = false;
+  @state() private _reducedMotion = false;
 
   private _listeners: (() => void)[] = [];
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
     callback: () => {
-      this.chart?.resize();
-      setTimeout(() => this._centerCoordinatorNode(), 100);
+      this.requestUpdate();
     },
   });
-
-  private _loading = false;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
-    this.chart?.dispose();
-    this.chart = undefined;
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.hasUpdated) {
-      this._setupChart();
-    }
-
     this._listeners.push(
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
         if (this._reducedMotion !== matches) {
           this._reducedMotion = matches;
-          this._setChartOptions({ animation: !this._reducedMotion });
         }
       })
     );
   }
 
-  protected firstUpdated() {
-    this._setupChart();
-  }
-
-  public willUpdate(changedProps: PropertyValues): void {
-    if (!this.chart) {
-      return;
-    }
-    if (changedProps.has("_themes")) {
-      this._setupChart();
-      return;
-    }
-
-    let chartOptions: ECOption = {};
-    if (changedProps.has("data")) {
-      chartOptions.series = this._getSeries();
-    }
-    if (changedProps.has("options")) {
-      chartOptions = { ...chartOptions, ...this._createOptions() };
-    }
-    if (Object.keys(chartOptions).length > 0) {
-      this._setChartOptions(chartOptions);
-    }
-  }
-
   protected render() {
-    return html`
-      <div
-        class="container"
-        style=${styleMap({ height: this.height || "400px" })}
-      >
-        ${this.graphTitle
-          ? html`<h2 class="title">${this.graphTitle}</h2>`
-          : nothing}
-        <div class="chart"></div>
-      </div>
-    `;
-  }
-
-  private async _setupChart() {
-    if (this._loading) return;
-    const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
-    this._loading = true;
-    try {
-      if (this.chart) {
-        this.chart.dispose();
-      }
-      const echarts = (await import("../../resources/echarts")).default;
-
-      echarts.registerTheme("network", this._createTheme());
-
-      this.chart = echarts.init(container, "network");
-
-      this.chart.setOption({
-        ...this._createOptions(),
-        series: this._getSeries(),
-      });
-
-      // Center the coordinator node if it exists
-      this._centerCoordinatorNode();
-    } finally {
-      this._loading = false;
-    }
-  }
-
-  private _createTheme() {
-    const style = getComputedStyle(this);
-    return {
-      backgroundColor: "transparent",
-      textStyle: {
-        color: style.getPropertyValue("--primary-text-color"),
-        fontFamily: "Roboto, Noto, sans-serif",
-      },
-      tooltip: {
-        backgroundColor: style.getPropertyValue("--card-background-color"),
-        borderColor: style.getPropertyValue("--divider-color"),
-        textStyle: {
-          color: style.getPropertyValue("--primary-text-color"),
-          fontSize: 12,
-        },
-      },
-    };
+    return html`<ha-chart-base
+      .data=${this._getSeries()}
+      .options=${this._createOptions()}
+      height="100%"
+      .extraComponents=${[]}
+    >
+      <slot name="button" slot="button"></slot>
+    </ha-chart-base>`;
   }
 
   private _createOptions(): ECOption {
     return {
-      animation: !this._reducedMotion,
-      darkMode: this._themes.darkMode ?? false,
-      aria: { show: true },
       tooltip: {
         trigger: "item",
         confine: true,
-        formatter: (params: any) => {
-          if (params.dataType === "edge") {
-            const { source, target, value } = params.data;
-            const targetName = this.data!.nodes.find(
-              (node) => node.id === target
-            )!.name;
-            const sourceName = this.data!.nodes.find(
-              (node) => node.id === source
-            )!.name;
-            const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
-
-            const reverseValue = this.data!.links.find(
-              (link) => link.source === source && link.target === target
-            )?.reverseValue;
-            if (reverseValue) {
-              return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
-            }
-            return tooltipText;
-          }
-          return params.data.label || params.name;
-        },
+        formatter: this.tooltipFormatter,
       },
       legend: {
         show: !!this.data?.categories?.length,
@@ -233,7 +114,6 @@ export class HaNetworkGraph extends LitElement {
         type: "inside",
         filterMode: "none",
       },
-      ...this.options,
     };
   }
 
@@ -242,9 +122,11 @@ export class HaNetworkGraph extends LitElement {
       return [];
     }
 
+    const containerWidth = this.clientWidth;
+    const containerHeight = this.clientHeight;
     return [
       {
-        // id: "network",
+        id: "network",
         type: "graph",
         layout: "force",
         draggable: true,
@@ -267,22 +149,31 @@ export class HaNetworkGraph extends LitElement {
           gravity: 0.1,
           layoutAnimation: !this._reducedMotion,
         },
-        autoCurveness: true,
         edgeSymbol: ["none", "arrow"],
         edgeSymbolSize: 10,
-        data: this.data.nodes.map((node) => ({
-          id: node.id,
-          name: node.name,
-          category: node.category,
-          value: node.value,
-          symbolSize: node.symbolSize || 30,
-          symbol: node.symbol || "circle",
-          label: node.label || node.name,
-          itemStyle: node.itemStyle || {},
-          fixed: node.fixed,
-          x: node.x,
-          y: node.y,
-        })),
+        data: this.data.nodes.map((node) => {
+          const echartsNode: NonNullable<GraphSeriesOption["data"]>[number] = {
+            id: node.id,
+            name: node.name,
+            category: node.category,
+            value: node.value,
+            symbolSize: node.symbolSize || 30,
+            symbol: node.symbol || "circle",
+            itemStyle: node.itemStyle || {},
+            fixed: node.fixed,
+          };
+          if (typeof node.polarDistance === "number") {
+            // set the position of the node at polarDistance from the center in a random direction
+            const angle = Math.random() * 2 * Math.PI;
+            echartsNode.x =
+              containerWidth / 2 +
+              ((Math.cos(angle) * containerWidth) / 2) * node.polarDistance;
+            echartsNode.y =
+              containerHeight / 2 +
+              ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance;
+          }
+          return echartsNode;
+        }),
         links: this.data.links.map((link) => ({
           ...link,
           value: link.reverseValue
@@ -294,65 +185,14 @@ export class HaNetworkGraph extends LitElement {
     ] as any;
   }
 
-  private _setChartOptions(options: ECOption) {
-    if (!this.chart) {
-      return;
-    }
-    const replaceMerge = options.series ? ["series"] : [];
-    this.chart.setOption(options, { replaceMerge });
-  }
-
-  private _centerCoordinatorNode() {
-    if (!this.chart || !this.data) return;
-
-    // Find the coordinator node (the one that's fixed)
-    const coordinatorNode = this.data.nodes.find((node) => node.fixed);
-    if (!coordinatorNode) return;
-
-    // Get the container dimensions
-    const containerWidth = this.chart.getWidth();
-    const containerHeight = this.chart.getHeight();
-
-    // Set the coordinator position to the center of the container
-    this._setChartOptions({
-      series: this._getSeries().map((series: any) => ({
-        ...series,
-        data: series.data.map((item: any) => {
-          if (item.id === coordinatorNode.id) {
-            return {
-              ...item,
-              x: containerWidth / 2,
-              y: containerHeight / 2,
-            };
-          }
-          return item;
-        }),
-      })),
-    });
-  }
-
   static styles = css`
     :host {
       display: block;
       position: relative;
     }
-    .container {
-      position: relative;
-      width: 100%;
-      height: 400px;
-    }
-    .chart {
+    ha-chart-base {
       height: 100%;
-      width: 100%;
-    }
-    .title {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      margin: 0;
-      font-size: 16px;
-      z-index: 10;
-      color: var(--primary-text-color);
+      --chart-max-height: 100%;
     }
   `;
 }

@@ -106,48 +106,49 @@ export class HaChartBase extends LitElement {
       })
     );
 
-    // Add keyboard event listeners
-    const handleKeyDown = (ev: KeyboardEvent) => {
-      if (
-        !this._modifierPressed &&
-        ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
-      ) {
-        this._modifierPressed = true;
-        if (!this.options?.dataZoom) {
-          this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
+    if (!this.options?.dataZoom) {
+      // Add keyboard event listeners
+      const handleKeyDown = (ev: KeyboardEvent) => {
+        if (
+          !this._modifierPressed &&
+          ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
+        ) {
+          this._modifierPressed = true;
+          if (!this.options?.dataZoom) {
+            this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
+          }
+          // drag to zoom
+          this.chart?.dispatchAction({
+            type: "takeGlobalCursor",
+            key: "dataZoomSelect",
+            dataZoomSelectActive: true,
+          });
         }
-        // drag to zoom
-        this.chart?.dispatchAction({
-          type: "takeGlobalCursor",
-          key: "dataZoomSelect",
-          dataZoomSelectActive: true,
-        });
-      }
-    };
+      };
 
-    const handleKeyUp = (ev: KeyboardEvent) => {
-      if (
-        this._modifierPressed &&
-        ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
-      ) {
-        this._modifierPressed = false;
-        if (!this.options?.dataZoom) {
-          this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
+      const handleKeyUp = (ev: KeyboardEvent) => {
+        if (
+          this._modifierPressed &&
+          ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
+        ) {
+          this._modifierPressed = false;
+          if (!this.options?.dataZoom) {
+            this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
+          }
+          this.chart?.dispatchAction({
+            type: "takeGlobalCursor",
+            key: "dataZoomSelect",
+            dataZoomSelectActive: false,
+          });
         }
-        this.chart?.dispatchAction({
-          type: "takeGlobalCursor",
-          key: "dataZoomSelect",
-          dataZoomSelectActive: false,
-        });
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-    this._listeners.push(
-      () => window.removeEventListener("keydown", handleKeyDown),
-      () => window.removeEventListener("keyup", handleKeyUp)
-    );
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
+      this._listeners.push(
+        () => window.removeEventListener("keydown", handleKeyDown),
+        () => window.removeEventListener("keyup", handleKeyUp)
+      );
+    }
   }
 
   protected firstUpdated() {
@@ -191,16 +192,19 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        ${this._isZoomed
-          ? html`<ha-icon-button
-              class="zoom-reset"
-              .path=${mdiRestart}
-              @click=${this._handleZoomReset}
-              title=${this.hass.localize(
-                "ui.components.history_charts.zoom_reset"
-              )}
-            ></ha-icon-button>`
-          : nothing}
+        <div class="chart-controls">
+          ${this._isZoomed
+            ? html`<ha-icon-button
+                class="zoom-reset"
+                .path=${mdiRestart}
+                @click=${this._handleZoomReset}
+                title=${this.hass.localize(
+                  "ui.components.history_charts.zoom_reset"
+                )}
+              ></ha-icon-button>`
+            : nothing}
+          <slot name="button"></slot>
+        </div>
       </div>
     `;
   }
@@ -725,10 +729,16 @@ export class HaChartBase extends LitElement {
       height: 100%;
       width: 100%;
     }
-    .zoom-reset {
+    .chart-controls {
       position: absolute;
       top: 16px;
       right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .chart-controls ha-icon-button,
+    .chart-controls ::slotted(ha-icon-button) {
       background: var(--card-background-color);
       border-radius: 4px;
       --mdc-icon-button-size: 32px;
