@@ -305,11 +305,8 @@ class ZHAConfigDashboard extends LitElement {
   private async _fetchDevicesAndUpdateStatus(): Promise<void> {
     try {
       const devices = await fetchDevices(this.hass);
-      const total = devices.length;
-      const online = devices.filter((d) => d.available).length;
-      const offline = total - online;
-      this._totalDevices = total;
-      this._offlineDevices = offline;
+      this._totalDevices = devices.length;
+      this._offlineDevices = total - devices.filter((d) => d.available).length;
     } catch (err: any) {
       this._totalDevices = 0;
       this._offlineDevices = 0;
