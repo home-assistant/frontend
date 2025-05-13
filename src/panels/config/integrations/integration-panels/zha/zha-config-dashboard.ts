@@ -81,7 +81,7 @@ class ZHAConfigDashboard extends LitElement {
   @state() private _totalDevices = 0;
 
   @state() private _offlineDevices = 0;
-  
+
   @state() private _error?: string;
 
   @state() private _generatingBackup = false;
@@ -97,7 +97,8 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const deviceOnline = this._offlineDevices < this._totalDevices || this._totalDevices === 0
+    const deviceOnline =
+      this._offlineDevices < this._totalDevices || this._totalDevices === 0;
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -106,28 +107,32 @@ class ZHAConfigDashboard extends LitElement {
         .tabs=${zhaTabs}
         back-path="/config/integrations"
       >
-        <ha-card>
-        ${this._error ? html`<ha-alert alert-type="error">${this._error}</ha-alert>` : nothing}
-          <div class="card-content zha-status-card">
+        <ha-card class="content network-status">
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing}
+          <div class="card-content">
             <div class="heading">
-              <ha-svg-icon
-                .path=${deviceOnline ? mdiCheckCircle : mdiAlertCircle}
-                class=${deviceOnline ? "online" : "offline"}
-              ></ha-svg-icon>
+              <div class="icon">
+                <ha-svg-icon
+                  .path=${deviceOnline ? mdiCheckCircle : mdiAlertCircle}
+                  class=${deviceOnline ? "online" : "offline"}
+                ></ha-svg-icon>
+              </div>
               <div class="details">
                 ZHA
                 ${this.hass.localize(
                   "ui.panel.config.zha.configuration_page.status_title"
                 )}:
                 ${this.hass.localize(
-                      `ui.panel.config.zha.configuration_page.status_${deviceOnline ? "online" : "offline"}`
-                    )} <br />
+                  `ui.panel.config.zha.configuration_page.status_${deviceOnline ? "online" : "offline"}`
+                )} <br />
                 <small>
                   ${this.hass.localize(
                     "ui.panel.config.zha.configuration_page.devices",
                     { count: this._totalDevices }
                   )}
-                  ${!deviceOnline
+                  ${this._offlineDevices > 0
                     ? html`(${this.hass.localize(
                         "ui.panel.config.zha.configuration_page.devices_offline",
                         { count: this._offlineDevices }
@@ -309,11 +314,12 @@ class ZHAConfigDashboard extends LitElement {
     try {
       const devices = await fetchDevices(this.hass);
       this._totalDevices = devices.length;
-      this._offlineDevices = total - devices.filter((d) => d.available).length;
+      this._offlineDevices =
+        this._totalDevices - devices.filter((d) => d.available).length;
     } catch (err: any) {
       this._totalDevices = 0;
       this._offlineDevices = 0;
-      this._error = err.message || error;
+      this._error = err.message || this._error;
     }
   }
 
@@ -438,29 +444,41 @@ class ZHAConfigDashboard extends LitElement {
           margin-bottom: -16px;
         }
 
-        .zha-status-card {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          padding: 16px 24px 16px 24px;
+        .content {
+          margin-top: 24px;
         }
-        .zha-status-card .heading {
+
+        .network-status div.heading {
           display: flex;
           align-items: center;
-          margin-bottom: 8px;
         }
-        .zha-status-card ha-svg-icon {
-          --mdc-icon-size: 56px;
-          margin-right: 24px;
+
+        .network-status div.heading .icon {
+          width: 48px;
+          height: 48px;
+          margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
         }
-        .zha-status-card .details {
-          display: flex;
-          flex-direction: column;
+
+        .network-status div.heading ha-svg-icon {
+          width: 48px;
+          height: 48px;
         }
-        .zha-status-card .online {
+
+        .network-status div.heading .details {
+          font-size: 1.5rem;
+        }
+
+        .network-status small {
+          font-size: 1rem;
+        }
+
+        .network-status .online {
           color: var(--state-on-color, var(--success-color));
         }
-        .zha-status-card .offline {
+
+        .network-status .offline {
           color: var(--error-color, var(--error-color));
         }
       `,
