@@ -337,6 +337,7 @@
       "remove": "Remove",
       "enable": "Enable",
       "disable": "Disable",
+      "update": "Update",
       "hide": "Hide",
       "close": "Close",
       "clear": "Clear",
@@ -1531,6 +1532,17 @@
           "voice_assistants": "[%key:ui::panel::config::dashboard::voice_assistants::main%]",
           "no_aliases": "Configure aliases and expose settings for voice assistants"
         }
+      },
+      "recreate_entity_ids": {
+        "confirm_rename_title": "Are you sure you want to recreate your entity IDs?",
+        "confirm_rename_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to manually edit them yourself to use the new entity IDs!",
+        "will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
+        "new": "New",
+        "old": "Old",
+        "cant_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} can not be regenerated because they are not available",
+        "wont_change": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not change",
+        "update_entity_error": "Updating the entity ID of {entityId} failed",
+        "confirm_no_renamable_entity_ids": "No renamable entity IDs"
       },
       "device-registry-detail": {
         "name": "[%key:ui::panel::config::devices::name%]",
@@ -4924,6 +4936,7 @@
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
           "device_info": "{type} info",
           "edit_settings": "Edit settings",
+          "restore_entity_ids": "Recreate entity IDs",
           "unnamed_device": "Unnamed {type}",
           "unknown_error": "Unknown error",
           "name": "Name",
@@ -5023,13 +5036,6 @@
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
             "hidden": "Hidden"
           },
-          "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
-          "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to manually edit them yourself to use the new entity IDs!",
-          "confirm_rename_entity_will_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will be renamed",
-          "confirm_rename_new": "New",
-          "confirm_rename_old": "Old",
-          "confirm_rename_entity_wont_rename": "{count} {count, plural,\n  one {entity ID}\n  other {entity IDs}\n} will not be renamed as they do not contain the current device name ({deviceSlug})",
-          "confirm_rename_entity_no_renamable_entity_ids": "No renamable entity IDs",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
@@ -5104,6 +5110,12 @@
               "button": "Disable selected",
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
+            },
+            "restore_entity_id_selected": {
+              "button": "Recreate entity IDs of selected",
+              "confirm_title": "Recreate entity IDs?",
+              "confirm_text": "Are you sure you want to change the entity IDs of these entities? You will have to change you dashboards, automations and scripts to use the new entity IDs.",
+              "changes": "The following entity IDs will be updated:"
             },
             "delete_selected": {
               "button": "Delete selected",
@@ -9063,7 +9075,6 @@
       "yes": "[%key:ui::common::yes%]",
       "no": "[%key:ui::common::no%]",
       "add": "[%key:supervisor::dialog::repositories::add%]",
-      "description": "Description",
       "failed_to_restart_name": "Failed to restart {name}",
       "failed_to_update_name": "Failed to update {name}",
       "learn_more": "Learn more",

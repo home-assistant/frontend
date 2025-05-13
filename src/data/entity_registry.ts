@@ -2,12 +2,12 @@ import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import memoizeOne from "memoize-one";
+import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import type { HomeAssistant } from "../types";
 import type { LightColor } from "./light";
-import { computeDomain } from "../common/entity/compute_domain";
 import type { RegistryEntry } from "./registry";
 
 type EntityCategory = "config" | "diagnostic";
@@ -315,3 +315,12 @@ export const getEntityPlatformLookup = (
   }
   return entityLookup;
 };
+
+export const getAutomaticEntityIds = (
+  hass: HomeAssistant,
+  entity_ids: string[]
+) =>
+  hass.callWS<Record<string, string>>({
+    type: "config/entity_registry/get_automatic_entity_ids",
+    entity_ids,
+  });

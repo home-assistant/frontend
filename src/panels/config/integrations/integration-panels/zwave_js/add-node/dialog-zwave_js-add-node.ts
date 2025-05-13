@@ -49,11 +49,10 @@ import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-icon-button";
 import "../../../../../../components/ha-qr-scanner";
 
-import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import { navigate } from "../../../../../../common/navigate";
-import { slugify } from "../../../../../../common/string/slugify";
 import type { EntityRegistryEntry } from "../../../../../../data/entity_registry";
 import {
+  getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../../../../data/entity_registry";
@@ -874,42 +873,47 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
 
           if (nameChanged) {
             // rename entities
-            const oldDeviceEntityId = slugify(oldDeviceName);
-            const newDeviceEntityId = slugify(newDeviceName);
+
+            const entities = this._entities.filter(
+              (entity) => entity.device_id === this._device!.id
+            );
+
+            const entityIdsMapping = getAutomaticEntityIds(
+              this.hass,
+              entities.map((entity) => entity.entity_id)
+            );
 
             await Promise.all(
-              this._entities
-                .filter((entity) => entity.device_id === this._device!.id)
-                .map((entity) => {
-                  const entityState = this.hass.states[entity.entity_id];
-                  const name =
-                    entity.name ||
-                    (entityState && computeStateName(entityState));
-                  let newEntityId: string | null = null;
-                  let newName: string | null = null;
+              entities.map((entity) => {
+                const name = entity.name;
+                let newName: string | null | undefined;
+                const newEntityId = entityIdsMapping[entity.entity_id];
 
-                  if (name && name.includes(oldDeviceName)) {
-                    newName = name.replace(oldDeviceName, newDeviceName);
-                  }
+                if (entity.has_entity_name && !entity.name) {
+                  newName = undefined;
+                } else if (
+                  entity.has_entity_name &&
+                  (entity.name === oldDeviceName ||
+                    entity.name === newDeviceName)
+                ) {
+                  // clear name if it matches the device name and it uses the device name (entity naming)
+                  newName = null;
+                } else if (name && name.includes(oldDeviceName)) {
+                  newName = name.replace(oldDeviceName, newDeviceName);
+                }
 
-                  newEntityId = entity.entity_id.replace(
-                    oldDeviceEntityId,
-                    newDeviceEntityId
-                  );
+                if (
+                  (newName === undefined && !newEntityId) ||
+                  newEntityId === entity.entity_id
+                ) {
+                  return undefined;
+                }
 
-                  if (!newName && newEntityId === entity.entity_id) {
-                    return undefined;
-                  }
-
-                  return updateEntityRegistryEntry(
-                    this.hass!,
-                    entity.entity_id,
-                    {
-                      name: newName || name,
-                      new_entity_id: newEntityId || entity.entity_id,
-                    }
-                  );
-                })
+                return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+                  name: newName || name,
+                  new_entity_id: newEntityId || undefined,
+                });
+              })
             );
           }
         } catch (_err: any) {
