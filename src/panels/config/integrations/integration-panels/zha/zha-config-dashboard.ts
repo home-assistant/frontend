@@ -124,7 +124,7 @@ class ZHAConfigDashboard extends LitElement {
                     "ui.panel.config.zha.configuration_page.devices",
                     { count: this._totalDevices }
                   )}
-                  ${this._offlineDevices > 0
+                  ${!deviceOnline
                     ? html`(${this.hass.localize(
                         "ui.panel.config.zha.configuration_page.devices_offline",
                         { count: this._offlineDevices }
