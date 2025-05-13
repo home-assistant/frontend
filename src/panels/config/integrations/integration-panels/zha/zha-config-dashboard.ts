@@ -81,6 +81,8 @@ class ZHAConfigDashboard extends LitElement {
   @state() private _totalDevices = 0;
 
   @state() private _offlineDevices = 0;
+  
+  @state() private _error?: string;
 
   @state() private _generatingBackup = false;
 
