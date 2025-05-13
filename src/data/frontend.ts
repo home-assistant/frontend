@@ -1,5 +1,4 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { getOptimisticCollection } from "./collection";
 
 export interface CoreFrontendUserData {
   showAdvanced?: boolean;
@@ -42,30 +41,15 @@ export const saveFrontendUserData = async <
     value,
   });
 
-export const getOptimisticFrontendUserDataCollection = <
-  UserDataKey extends ValidUserDataKey,
->(
-  conn: Connection,
-  userDataKey: UserDataKey
-) =>
-  getOptimisticCollection(
-    (_conn, data) =>
-      saveFrontendUserData(
-        conn,
-        userDataKey,
-        // @ts-ignore
-        data
-      ),
-    conn,
-    `_frontendUserData-${userDataKey}`,
-    () => fetchFrontendUserData(conn, userDataKey)
-  );
-
 export const subscribeFrontendUserData = <UserDataKey extends ValidUserDataKey>(
   conn: Connection,
   userDataKey: UserDataKey,
-  onChange: (state: FrontendUserData[UserDataKey] | null) => void
+  onChange: (data: { value: FrontendUserData[UserDataKey] | null }) => void
 ) =>
-  getOptimisticFrontendUserDataCollection(conn, userDataKey).subscribe(
-    onChange
+  conn.subscribeMessage<{ value: FrontendUserData[UserDataKey] | null }>(
+    onChange,
+    {
+      type: "frontend/subscribe_user_data",
+      key: userDataKey,
+    }
   );
