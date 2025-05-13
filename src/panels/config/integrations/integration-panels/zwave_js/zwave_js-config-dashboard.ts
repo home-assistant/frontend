@@ -468,7 +468,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           .value=${this._backupProgress}
                         ></ha-progress-ring>
                         ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.nvm_backup.downloading"
+                          "ui.panel.config.zwave_js.dashboard.nvm_backup.creating"
                         )}
                         ${this._backupProgress}%`
                     : this._restoreProgress !== undefined
