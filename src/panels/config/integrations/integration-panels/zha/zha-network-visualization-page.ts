@@ -19,6 +19,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
+import { colorVariables } from "../../../../../resources/theme/color.globals";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -143,11 +144,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _createChartData(devices: ZHADevice[]): NetworkData {
-    const computedStyle = getComputedStyle(this);
-    const primaryColor = computedStyle.getPropertyValue("--primary-color");
-    const routerColor = computedStyle.getPropertyValue("--cyan-color");
-    const endDeviceColor = computedStyle.getPropertyValue("--teal-color");
-    const offlineColor = computedStyle.getPropertyValue("--error-color");
+    const primaryColor = colorVariables["primary-color"];
+    const routerColor = colorVariables["cyan-color"];
+    const endDeviceColor = colorVariables["teal-color"];
+    const offlineColor = colorVariables["error-color"];
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
