@@ -136,7 +136,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _deviceAlerts?: DeviceAlert[];
 
-  private _deviceAlertsTimeout?: number;
+  private _deviceAlertsTimeout?: NodeJS.Timeout;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
