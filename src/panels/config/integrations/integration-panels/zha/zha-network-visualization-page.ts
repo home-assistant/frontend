@@ -143,17 +143,26 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _createChartData(devices: ZHADevice[]): NetworkData {
+    const computedStyle = getComputedStyle(this);
+    const primaryColor = computedStyle.getPropertyValue("--primary-color");
+    const routerColor = computedStyle.getPropertyValue("--cyan-color");
+    const endDeviceColor = computedStyle.getPropertyValue("--teal-color");
+    const offlineColor = computedStyle.getPropertyValue("--error-color");
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
       {
         name: "Coordinator",
         icon: "roundRect",
-        itemStyle: { color: "#4CAF50" },
+        itemStyle: { color: primaryColor },
       },
-      { name: "Router", icon: "circle", itemStyle: { color: "#2196F3" } },
-      { name: "End Device", icon: "circle", itemStyle: { color: "#9E9E9E" } },
-      { name: "Offline", icon: "circle", itemStyle: { color: "#F44336" } },
+      { name: "Router", icon: "circle", itemStyle: { color: routerColor } },
+      {
+        name: "End Device",
+        icon: "circle",
+        itemStyle: { color: endDeviceColor },
+      },
+      { name: "Offline", icon: "circle", itemStyle: { color: offlineColor } },
     ];
 
     // Create all the nodes and links
@@ -185,11 +194,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
         itemStyle: {
           color: device.available
             ? isCoordinator
-              ? "#4CAF50"
+              ? primaryColor
               : device.device_type === "Router"
-                ? "#2196F3"
-                : "#9E9E9E"
-            : "#F44336",
+                ? routerColor
+                : endDeviceColor
+            : offlineColor,
         },
         polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
       });
@@ -231,7 +240,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
               width,
               color:
                 route.route_status === "Active"
-                  ? "#17ab00"
+                  ? primaryColor
                   : existingLink.lineStyle!.color,
               type: ["Child", "Parent"].includes(neighbor.relationship)
                 ? "solid"
@@ -246,7 +255,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
               value: parseInt(neighbor.lqi),
               lineStyle: {
                 width,
-                color: route.route_status === "Active" ? "#17ab00" : "#fc4c4c",
+                color:
+                  route.route_status === "Active"
+                    ? primaryColor
+                    : computedStyle.getPropertyValue("--disabled-color"),
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dashed",
