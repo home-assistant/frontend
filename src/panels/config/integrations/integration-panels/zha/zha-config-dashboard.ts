@@ -313,13 +313,7 @@ class ZHAConfigDashboard extends LitElement {
     } catch (err: any) {
       this._totalDevices = 0;
       this._offlineDevices = 0;
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.zha.configuration_page.fetch_devices_error_title"
-        ),
-        text: err.message,
-        warning: true,
-      });
+      this._error = err.message || error;
     }
   }
 
