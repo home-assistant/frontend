@@ -39,12 +39,13 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./entity/ha-entity-combo-box";
-import type { HaEntityComboBoxEntityFilterFunc } from "./entity/ha-entity-combo-box";
+import "./entity/ha-entity-picker";
+import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-floor-picker";
 import { floorDefaultIconPath } from "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
+import "./ha-label-picker";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 
@@ -80,7 +81,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
-  public entityFilter?: HaEntityComboBoxEntityFilterFunc;
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
@@ -384,12 +385,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!this._addMode) {
       return nothing;
     }
+
     return html`<mwc-menu-surface
       open
       .anchor=${this._addContainer}
       @closed=${this._onClosed}
       @opened=${this._onOpened}
-      @opened-changed=${this._openedChanged}
       @input=${stopPropagation}
       >${this._addMode === "area_id"
         ? html`
@@ -408,6 +409,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .excludeAreas=${ensureArray(this.value?.area_id)}
               .excludeFloors=${ensureArray(this.value?.floor_id)}
               @value-changed=${this._targetPicked}
+              @opened-changed=${this._openedChanged}
               @click=${this._preventDefault}
             ></ha-area-floor-picker>
           `
@@ -426,6 +428,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .includeDomains=${this.includeDomains}
                 .excludeDevices=${ensureArray(this.value?.device_id)}
                 @value-changed=${this._targetPicked}
+                @opened-changed=${this._openedChanged}
                 @click=${this._preventDefault}
               ></ha-device-picker>
             `
@@ -445,15 +448,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .includeDomains=${this.includeDomains}
                   .excludeLabels=${ensureArray(this.value?.label_id)}
                   @value-changed=${this._targetPicked}
+                  @opened-changed=${this._openedChanged}
                   @click=${this._preventDefault}
                 ></ha-label-picker>
               `
             : html`
-                <ha-entity-combo-box
+                <ha-entity-picker
                   .hass=${this.hass}
                   id="input"
                   .type=${"entity_id"}
-                  .label=${this.hass.localize(
+                  .placeholder=${this.hass.localize(
+                    "ui.components.target-picker.add_entity_id"
+                  )}
+                  .searchLabel=${this.hass.localize(
                     "ui.components.target-picker.add_entity_id"
                   )}
                   .entityFilter=${this.entityFilter}
@@ -462,11 +469,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .excludeEntities=${ensureArray(this.value?.entity_id)}
                   .createDomains=${this.createDomains}
                   @value-changed=${this._targetPicked}
+                  @opened-changed=${this._openedChanged}
                   @click=${this._preventDefault}
                   allow-custom-entity
-                ></ha-entity-combo-box>
+                ></ha-entity-picker>
               `}</mwc-menu-surface
-    >`;
+    > `;
   }
 
   private _targetPicked(ev) {
@@ -839,7 +847,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       mwc-menu-surface {
         --mdc-menu-min-width: 100%;
       }
-      ha-entity-combo-box,
+      ha-entity-picker,
       ha-device-picker,
       ha-area-floor-picker {
         display: block;

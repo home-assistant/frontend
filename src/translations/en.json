@@ -1150,6 +1150,9 @@
       },
       "form-optional-actions": {
         "add": "Add interaction"
+      },
+      "combo-box": {
+        "no_match": "No matching items found"
       }
     },
     "dialogs": {

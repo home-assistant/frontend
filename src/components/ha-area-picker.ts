@@ -369,7 +369,7 @@ export class HaAreaPicker extends LitElement {
       ) || []
     );
     if (filteredItems.length === 0) {
-      if (!this.noAdd) {
+      if (this.noAdd) {
         this.comboBox.filteredItems = [
           {
             area_id: NO_ITEMS_ID,

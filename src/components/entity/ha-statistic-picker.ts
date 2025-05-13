@@ -28,11 +28,11 @@ import {
 import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-icon-button";
+import "../ha-input-helper-text";
 import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-svg-icon";
-import "./ha-entity-combo-box";
-import type { HaEntityComboBox } from "./ha-entity-combo-box";
 import "./ha-statistic-combo-box";
+import type { HaStatisticComboBox } from "./ha-statistic-combo-box";
 import "./state-badge";
 
 interface StatisticItem {
@@ -116,7 +116,7 @@ export class HaStatisticPicker extends LitElement {
 
   @query("#anchor") private _anchor?: HaMdListItem;
 
-  @query("#input") private _input?: HaEntityComboBox;
+  @query("#input") private _input?: HaStatisticComboBox;
 
   @state() private _opened = false;
 
