@@ -10,6 +10,7 @@ import {
   mdiMenuDown,
   mdiPencilOff,
   mdiPlus,
+  mdiRestore,
   mdiRestoreAlert,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -81,7 +82,10 @@ import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  getAutomaticEntityIds,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
@@ -952,6 +956,21 @@ ${
       )}
     </div>
   </ha-md-menu-item>
+
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
+    <ha-svg-icon
+      slot="start"
+      .path=${mdiRestore}
+    ></ha-svg-icon>
+    <div slot="headline">
+      ${this.hass.localize(
+        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+      )}
+    </div>
+  </ha-md-menu-item>
+
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
@@ -1368,6 +1387,63 @@ ${rejected
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
         return label;
+      },
+    });
+  };
+
+  private _restoreEntityIdSelected = async () => {
+    const entityIds = await getAutomaticEntityIds(this.hass, this._selected);
+
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.entities.picker.restore_entity_id_selected.confirm_title"
+      ),
+      text: html`<p>
+          ${this.hass.localize(
+            "ui.panel.config.entities.picker.restore_entity_id_selected.confirm_text"
+          )}
+        </p>
+
+        <ha-expansion-panel outlined expanded>
+          <span slot="header"
+            >${this.hass.localize(
+              "ui.panel.config.entities.picker.restore_entity_id_selected.changes"
+            )}</span
+          >
+          <div style="overflow: auto;">
+            <table style="width: 100%; text-align: var(--float-start);">
+              <tr>
+                <th>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.confirm_rename_old"
+                  )}
+                </th>
+                <th>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.confirm_rename_new"
+                  )}
+                </th>
+              </tr>
+              ${Object.entries(entityIds).map(
+                ([oldEntityId, newEntityId]) =>
+                  html`<tr>
+                    <td>${oldEntityId}</td>
+                    <td>${newEntityId}</td>
+                  </tr>`
+              )}
+            </table>
+          </div>
+        </ha-expansion-panel>`,
+      confirmText: this.hass.localize("ui.common.update"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      confirm: () => {
+        Object.entries(entityIds).forEach(([oldEntityId, newEntityId]) =>
+          updateEntityRegistryEntry(this.hass, oldEntityId, {
+            new_entity_id: newEntityId,
+          })
+        );
+        this._clearSelection();
       },
     });
   };

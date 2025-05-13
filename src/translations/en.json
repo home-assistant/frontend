@@ -337,6 +337,7 @@
       "remove": "Remove",
       "enable": "Enable",
       "disable": "Disable",
+      "update": "Update",
       "hide": "Hide",
       "close": "Close",
       "clear": "Clear",
@@ -5098,6 +5099,12 @@
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
+            "restore_entity_id_selected": {
+              "button": "Restore entity ids of selected",
+              "confirm_title": "Restore entity ids?",
+              "confirm_text": "Are you sure you want to change the entity ids of these entities? You will have to change you dashboards, automations and scripts to use the new entity ids.",
+              "changes": "The following entity ids will be updated:"
+            },
             "delete_selected": {
               "button": "Delete selected",
               "confirm_title": "Delete selected entities?",
@@ -9042,7 +9049,6 @@
       "yes": "[%key:ui::common::yes%]",
       "no": "[%key:ui::common::no%]",
       "add": "[%key:supervisor::dialog::repositories::add%]",
-      "description": "Description",
       "failed_to_restart_name": "Failed to restart {name}",
       "failed_to_update_name": "Failed to update {name}",
       "learn_more": "Learn more",
