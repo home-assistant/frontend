@@ -1,6 +1,13 @@
 import { mdiClose, mdiMenuDown, mdiShape } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type CSSResultGroup,
+  type PropertyValues,
+} from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -105,6 +112,12 @@ export class HaEntityPicker extends LitElement {
   @query("#input") private _input?: HaEntityComboBox;
 
   @state() private _opened = false;
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    // Load title translations so it is available when the combo-box opens
+    this.hass.loadBackendTranslation("title");
+  }
 
   private _renderContent() {
     const entityId = this.value || "";
