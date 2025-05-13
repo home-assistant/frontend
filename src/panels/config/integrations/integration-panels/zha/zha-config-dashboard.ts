@@ -105,6 +105,7 @@ class ZHAConfigDashboard extends LitElement {
         back-path="/config/integrations"
       >
         <ha-card>
+        ${this._error ? html`<ha-alert alert-type="error">${this._error}</ha-alert>` : nothing}
           <div class="card-content zha-status-card">
             <div class="heading">
               <ha-svg-icon
