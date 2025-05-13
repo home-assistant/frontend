@@ -20,8 +20,7 @@
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
     "test": "vitest run --config test/vitest.config.ts",
-    "test:coverage": "vitest run --config test/vitest.config.ts --coverage",
-    "doc": "gulp generate-component-docs"
+    "test:coverage": "vitest run --config test/vitest.config.ts --coverage"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",

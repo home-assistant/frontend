@@ -3,9 +3,6 @@ import { glob } from "glob";
 import gulp from "gulp";
 import yaml from "js-yaml";
 import { marked } from "marked";
-import ts from "typescript";
-import { create } from "@custom-elements-manifest/analyzer";
-import { litPlugin } from "@custom-elements-manifest/analyzer/src/features/framework-plugins/lit/lit.js";
 import path from "path";
 import paths from "../paths.cjs";
 import "./clean.js";
@@ -15,30 +12,6 @@ import "./gen-icons-json.js";
 import "./service-worker.js";
 import "./translations.js";
 import "./rspack.js";
-
-gulp.task("generate-component-docs", async function generateComponentDocs() {
-  const filePaths = ["src/components/ha-alert.ts"];
-
-  const modules = await Promise.all(
-    filePaths.map(async (file) => {
-      const filePath = path.resolve(file);
-      return ts.createSourceFile(
-        filePath,
-        await fs.promises.readFile(filePath, "utf-8"),
-        ts.ScriptTarget.ES2015,
-        true
-      );
-    })
-  );
-
-  const manifest = create({
-    modules,
-    plugins: [...litPlugin()],
-    context: { dev: false },
-  });
-
-  console.log(manifest);
-});
 
 gulp.task("gather-gallery-pages", async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
