@@ -9533,7 +9533,7 @@ __metadata:
     typescript-eslint: "npm:8.32.0"
     ua-parser-js: "npm:2.0.3"
     vis-data: "npm:7.1.9"
-    vis-network: "npm:9.1.9"
+    vis-network: "npm:9.1.10"
     vite-tsconfig-paths: "npm:5.1.4"
     vitest: "npm:3.1.3"
     vue: "npm:2.7.16"
@@ -15102,17 +15102,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vis-network@npm:9.1.9":
-  version: 9.1.9
-  resolution: "vis-network@npm:9.1.9"
+"vis-network@npm:9.1.10":
+  version: 9.1.10
+  resolution: "vis-network@npm:9.1.10"
   peerDependencies:
     "@egjs/hammerjs": ^2.0.0
     component-emitter: ^1.3.0
     keycharm: ^0.2.0 || ^0.3.0 || ^0.4.0
-    uuid: ^3.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
+    uuid: ^3.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
     vis-data: ^6.3.0 || ^7.0.0
     vis-util: ^5.0.1
-  checksum: 10/929b2645ff62645d030e6a03f2f618d0e66c9a83782c4f6f3257160d48ea49fc06eb62403762b010eb07d137bee72a1bd62e5c58ebbfb9091dbb3ca1f8f1887d
+  checksum: 10/e9755536ea3cff195869ac6fdaadf86137ac6ef4efd6658953c7e8d3504d82ed9f6f60ddaeb780e5dbe82323285f02039fee70132a58a93e02417e327fba7940
   languageName: node
   linkType: hard
 
