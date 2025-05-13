@@ -258,7 +258,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 color:
                   route.route_status === "Active"
                     ? primaryColor
-                    : computedStyle.getPropertyValue("--disabled-color"),
+                    : colorVariables["disabled-color"],
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dashed",
