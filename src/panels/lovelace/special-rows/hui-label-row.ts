@@ -53,9 +53,6 @@ class HuiLabelRow extends SubscribeMixin(LitElement) implements LovelaceRow {
           if (!(id in this._elements)) {
             changed = true;
             this._elements[id] = createRowElement({
-              ...("state_color" in this._config!
-                ? { state_color: this._config.state_color }
-                : {}),
               entity: id,
               ...configExtra,
             });
