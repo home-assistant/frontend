@@ -3,7 +3,7 @@ import type { Constructor } from "../types";
 
 export const WakeLockMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
-) => 
+) =>
   class WakeLockClass extends superClass {
     private _wakeLock?: Promise<WakeLockSentinel>;
 
