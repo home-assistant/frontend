@@ -27,6 +27,8 @@ import "../../../ha-config-section";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-alert";
 import { showZHAChangeChannelDialog } from "./show-dialog-zha-change-channel";
 import type {
   ZHAConfiguration,
@@ -132,6 +134,8 @@ class ZHAConfigDashboard extends LitElement {
                     "ui.panel.config.zha.configuration_page.devices",
                     { count: this._totalDevices }
                   )}
+                </small>
+                <small class="offline">
                   ${this._offlineDevices > 0
                     ? html`(${this.hass.localize(
                         "ui.panel.config.zha.configuration_page.devices_offline",
@@ -465,6 +469,10 @@ class ZHAConfigDashboard extends LitElement {
 
         .network-status small {
           font-size: var(--ha-font-size-m);
+        }
+
+        .network-status small.offline {
+          color: var(--secondary-text-color);
         }
 
         .network-status .online {
