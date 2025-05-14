@@ -5,7 +5,6 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -375,23 +374,28 @@ export class HaEntityPicker extends LitElement {
   );
 
   protected render() {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.entity.entity-picker.placeholder");
+    const notFoundLabel = this.hass.localize(
+      "ui.components.entity.entity-picker.no_match"
+    );
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
-        .label=${this.searchLabel}
-        .placeholder=${this.placeholder}
+        .label=${this.label}
+        .searchLabel=${this.searchLabel}
+        .notFoundLabel=${notFoundLabel}
+        .placeholder=${placeholder}
         .value=${this.value}
-        @input=${stopPropagation}
-        @value-changed=${this._valueChanged}
-        .notFoundLabel=${this.hass.localize(
-          "ui.components.entity.entity-picker.no_match"
-        )}
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .valueRenderer=${this._valueRenderer}
+        @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;

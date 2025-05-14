@@ -2,7 +2,7 @@ import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { stopPropagation } from "../common/dom/stop_propagation";
+import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import "./ha-icon-button";
@@ -15,7 +15,6 @@ import type {
 import "./ha-picker-field";
 import type { HaPickerField, PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
-import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends LitElement {
@@ -77,18 +76,13 @@ export class HaGenericPicker extends LitElement {
                 compact
                 @click=${this.open}
                 @clear=${this._clear}
-                .placeholder=${this.placeholder ||
-                this.hass.localize(
-                  "ui.components.entity.entity-picker.placeholder"
-                )}
+                .placeholder=${this.placeholder}
                 .value=${this.value}
                 .required=${this.required}
                 .disabled=${this.disabled}
+                .hideClearIcon=${this.hideClearIcon}
                 .valueRenderer=${this.valueRenderer}
               >
-                <slot name="start" slot="start"></slot>
-                <slot name="headline" slot="headline"></slot>
-                <slot name="supporting-text" slot="supporting-text"></slot>
               </ha-picker-field>
             `
           : html`
@@ -96,13 +90,12 @@ export class HaGenericPicker extends LitElement {
                 .hass=${this.hass}
                 .autofocus=${this.autofocus}
                 .allowCustomValue=${this.allowCustomValue}
-                .label=${this.searchLabel ||
+                .label=${this.searchLabel ??
                 this.hass.localize("ui.common.search")}
                 .value=${this.value}
                 hide-clear-icon
                 @opened-changed=${this._openedChanged}
                 @value-changed=${this._valueChanged}
-                @input=${stopPropagation}
                 .rowRenderer=${this.rowRenderer}
                 .notFoundLabel=${this.notFoundLabel}
                 .getItems=${this.getItems}

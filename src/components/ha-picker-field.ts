@@ -58,7 +58,7 @@ export class HaPickerField extends LitElement {
             : html`<slot name="headline">${this.value}</slot>`
           : html`
               <span slot="headline" class="placeholder">
-                <slot name="placeholder">${this.placeholder}</slot>
+                ${this.placeholder}
               </span>
             `}
         ${showClearIcon
