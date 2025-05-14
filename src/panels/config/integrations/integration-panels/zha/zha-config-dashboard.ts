@@ -471,7 +471,7 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .network-status small {
-          font-size: 1rem;
+          font-size: var(--ha-font-size-m);
         }
 
         .network-status .online {
