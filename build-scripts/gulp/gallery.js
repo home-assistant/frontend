@@ -17,8 +17,6 @@ import "./translations.js";
 import "./rspack.js";
 
 gulp.task("generate-component-docs", async function generateComponentDocs() {
-  // npx @custom-elements-manifest/analyzer analyze --litelement --globs "src/components/ha-alert.ts --dev"
-
   const filePaths = ["src/components/ha-alert.ts"];
 
   const modules = await Promise.all(
