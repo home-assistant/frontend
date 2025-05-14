@@ -227,7 +227,7 @@ export class HuiCardOptions extends LitElement {
         .position-badge {
           display: block;
           width: 24px;
-          line-height: 24px;
+          line-height: var(--ha-line-height-normal);
           box-sizing: border-box;
           border-radius: 50%;
           font-weight: var(--ha-font-weight-medium);

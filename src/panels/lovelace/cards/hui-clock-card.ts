@@ -206,7 +206,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 18px;
+      line-height: var(--ha-line-height-condensed);
       overflow: hidden;
       text-align: center;
       text-overflow: ellipsis;
