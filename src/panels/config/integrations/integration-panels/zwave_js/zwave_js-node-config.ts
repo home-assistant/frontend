@@ -618,7 +618,7 @@ class ZWaveJSNodeConfig extends LitElement {
           padding-right: 24px;
           padding-inline-end: 24px;
           padding-inline-start: initial;
-          line-height: 1.5em;
+          line-height: var(--ha-line-height-normal);
         }
 
         .prefix span {

@@ -1063,20 +1063,18 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         .badge {
           min-width: 20px;
-          box-sizing: border-box;
+          min-height: 20px;
           border-radius: 50%;
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 20px;
-          text-align: center;
-          padding: 0px 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           color: var(--text-primary-color);
           position: absolute;
           right: 0px;
-          inset-inline-end: 0px;
-          inset-inline-start: initial;
           top: 4px;
-          font-size: 0.65em;
+          font-size: var(--ha-font-size-s);
         }
         .menu-badge-container {
           position: relative;

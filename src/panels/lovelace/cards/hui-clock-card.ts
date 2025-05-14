@@ -216,7 +216,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     .time-wrapper.size-medium .time-title {
       font-size: var(--ha-font-size-l);
-      line-height: 21px;
+      line-height: var(--ha-line-height-condensed);
     }
 
     .time-wrapper.size-large .time-title {
