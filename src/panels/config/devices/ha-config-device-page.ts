@@ -136,7 +136,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _deviceAlerts?: DeviceAlert[];
 
-  private _deviceAlertsTimeout?: NodeJS.Timeout;
+  private _deviceAlertsTimeout?: number;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -1163,7 +1163,7 @@ export class HaConfigDevicePage extends LitElement {
 
     if (deviceAlerts.length) {
       this._deviceAlerts = deviceAlerts;
-      this._deviceAlertsTimeout = setTimeout(
+      this._deviceAlertsTimeout = window.setTimeout(
         () => this._getDeviceAlerts(),
         DEVICE_ALERTS_INTERVAL
       );
