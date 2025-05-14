@@ -12,8 +12,8 @@ declare global {
   }
 }
 
-@customElement("ha-combo-box-field")
-export class HaComboBoxField extends LitElement {
+@customElement("ha-picker-field")
+export class HaPickerField extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -141,6 +141,6 @@ export class HaComboBoxField extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-combo-box-field": HaComboBoxField;
+    "ha-picker-field": HaPickerField;
   }
 }

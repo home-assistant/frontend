@@ -14,7 +14,7 @@ import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
 import type { LocalizeFunc } from "../common/translations/localize";
 
-export interface GenericComboBoxItem {
+export interface PickerComboBoxItem {
   id: string;
   primary: string;
   secondary?: string;
@@ -24,13 +24,13 @@ export interface GenericComboBoxItem {
 }
 
 // Hack to force empty label to always display empty value by default in the search field
-export interface GenericComboBoxItemWithLabel extends GenericComboBoxItem {
+export interface PickerComboBoxItemWithLabel extends PickerComboBoxItem {
   label: "";
 }
 
 const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
 
-const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<GenericComboBoxItem> = (
+const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
   item
 ) => html`
   <ha-combo-box-item type="button" compact>
@@ -42,8 +42,8 @@ const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<GenericComboBoxItem> = (
   </ha-combo-box-item>
 `;
 
-@customElement("ha-generic-combo-box")
-export class HaGenericComboBox extends LitElement {
+@customElement("ha-picker-combo-box")
+export class HaPickerComboBox extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   // eslint-disable-next-line lit/no-native-attributes
@@ -63,16 +63,16 @@ export class HaGenericComboBox extends LitElement {
   @property() public helper?: string;
 
   @property({ attribute: false, type: Array })
-  public items?: GenericComboBoxItem[];
+  public items?: PickerComboBoxItem[];
 
   @property({ attribute: false, type: Array })
-  public getItems?: () => GenericComboBoxItem[];
+  public getItems?: () => PickerComboBoxItem[];
 
   @property({ attribute: false, type: Array })
-  public getAdditionalItems?: (searchString: string) => GenericComboBoxItem[];
+  public getAdditionalItems?: (searchString: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
-  public rowRenderer?: ComboBoxLitRenderer<GenericComboBoxItem>;
+  public rowRenderer?: ComboBoxLitRenderer<PickerComboBoxItem>;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
@@ -96,13 +96,13 @@ export class HaGenericComboBox extends LitElement {
 
   private _initialItems = false;
 
-  private _items: GenericComboBoxItemWithLabel[] = [];
+  private _items: PickerComboBoxItemWithLabel[] = [];
 
   private _defaultNotFoundItem = memoizeOne(
     (
       label: this["notFoundLabel"],
       localize: LocalizeFunc
-    ): GenericComboBoxItemWithLabel => ({
+    ): PickerComboBoxItemWithLabel => ({
       id: NO_MATCHING_ITEMS_FOUND_ID,
       primary: label || localize("ui.components.combo-box.no_match"),
       icon_path: mdiMagnify,
@@ -113,17 +113,17 @@ export class HaGenericComboBox extends LitElement {
   private _getAdditionalItems = (searchString: string) => {
     const items = this.getAdditionalItems?.(searchString) || [];
 
-    return items.map<GenericComboBoxItemWithLabel>((item) => ({
+    return items.map<PickerComboBoxItemWithLabel>((item) => ({
       ...item,
       label: "",
     }));
   };
 
-  private _getItems = (): GenericComboBoxItemWithLabel[] => {
+  private _getItems = (): PickerComboBoxItemWithLabel[] => {
     const items = this.getItems ? this.getItems() : [];
 
     const sortedItems = items
-      .map<GenericComboBoxItemWithLabel>((item) => ({
+      .map<PickerComboBoxItemWithLabel>((item) => ({
         ...item,
         label: "",
       }))
@@ -214,7 +214,7 @@ export class HaGenericComboBox extends LitElement {
     }
   }
 
-  private _fuseIndex = memoizeOne((states: GenericComboBoxItem[]) =>
+  private _fuseIndex = memoizeOne((states: PickerComboBoxItem[]) =>
     Fuse.createIndex(["search_labels"], states)
   );
 
@@ -252,6 +252,6 @@ export class HaGenericComboBox extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-generic-combo-box": HaGenericComboBox;
+    "ha-picker-combo-box": HaPickerComboBox;
   }
 }

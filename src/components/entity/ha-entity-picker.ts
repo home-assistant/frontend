@@ -29,20 +29,20 @@ import {
 } from "../../panels/config/helpers/const";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
 import type { HomeAssistant } from "../../types";
-import "../ha-combo-box-field";
 import "../ha-combo-box-item";
-import "../ha-generic-combo-box";
-import type {
-  GenericComboBoxItem,
-  HaGenericComboBox,
-} from "../ha-generic-combo-box";
 import "../ha-icon-button";
 import "../ha-input-helper-text";
-import type { HaMdListItem } from "../ha-md-list-item";
+import "../ha-picker-combo-box";
+import type {
+  PickerComboBoxItem,
+  HaPickerComboBox,
+} from "../ha-picker-combo-box";
+import "../ha-picker-field";
+import type { HaPickerField } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
 
-interface EntityComboBoxItem extends GenericComboBoxItem {
+interface EntityComboBoxItem extends PickerComboBoxItem {
   domain_name?: string;
   stateObj?: HassEntity;
 }
@@ -132,9 +132,9 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @query("#anchor") private _anchor?: HaMdListItem;
+  @query("ha-picker-field") private _field?: HaPickerField;
 
-  @query("#input") private _input?: HaGenericComboBox;
+  @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   @state() private _opened = false;
 
@@ -393,8 +393,7 @@ export class HaEntityPicker extends LitElement {
       <div class="container">
         ${!this._opened
           ? html`
-              <ha-combo-box-field
-                id="anchor"
+              <ha-picker-field
                 type="button"
                 compact
                 @click=${this.open}
@@ -408,11 +407,10 @@ export class HaEntityPicker extends LitElement {
                 .disabled=${this.disabled}
               >
                 ${this._renderContent()}
-              </ha-combo-box-field>
+              </ha-picker-field>
             `
           : html`
-              <ha-generic-combo-box
-                id="input"
+              <ha-picker-combo-box
                 .hass=${this.hass}
                 .autofocus=${this.autofocus}
                 .allowCustomValue=${this.allowCustomEntity}
@@ -429,7 +427,7 @@ export class HaEntityPicker extends LitElement {
                 )}
                 .getItems=${this._getItems}
                 .getAdditionalItems=${this._getAdditionalItems}
-              ></ha-generic-combo-box>
+              ></ha-picker-combo-box>
             `}
         ${this._renderHelper()}
       </div>
@@ -453,8 +451,8 @@ export class HaEntityPicker extends LitElement {
     }
     this._opened = true;
     await this.updateComplete;
-    this._input?.focus();
-    this._input?.open();
+    this._comboBox?.focus();
+    this._comboBox?.open();
   }
 
   private async _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
@@ -462,7 +460,7 @@ export class HaEntityPicker extends LitElement {
     if (this._opened && !opened) {
       this._opened = false;
       await this.updateComplete;
-      this._anchor?.focus();
+      this._field?.focus();
     }
   }
 
