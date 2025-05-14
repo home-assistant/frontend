@@ -5610,7 +5610,11 @@
             "value": "Value"
           },
           "configuration_page": {
-            "shortcuts_title": "Shortcuts",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+            "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
             "migrate_radio": "Migrate radio",
