@@ -208,7 +208,7 @@ class DialogExposeEntity extends LitElement {
         .subtitle {
           color: var(--secondary-text-color);
           font-size: var(--ha-font-size-m);
-          line-height: var(--ha-line-height-normal);
+          line-height: var(--ha-line-height-condensed);
         }
         lit-virtualizer {
           width: 100%;
