@@ -38,7 +38,6 @@ import { processConfigEntities } from "../common/process-config-entities";
 import type { EntityConfig } from "../entity-rows/types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig } from "./types";
-import { storage } from "../../../common/decorators/storage";
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -80,8 +79,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: { code: string; message: string };
 
-  @storage({ key: "map-card-clustering", state: true, subscribe: false })
-  private _clusterMarkers = true;
+  @state() private _clusterMarkers = true;
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
@@ -141,6 +139,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ? processConfigEntities<MapEntityConfig>(this._config.entities)
       : [];
     this._mapEntities = this._getMapEntities();
+    this._clusterMarkers = this._config.cluster ?? true;
   }
 
   public getCardSize(): number {
