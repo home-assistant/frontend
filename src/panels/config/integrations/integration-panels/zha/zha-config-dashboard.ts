@@ -467,7 +467,7 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .network-status div.heading .details {
-          font-size: 1.5rem;
+          font-size: var(--ha-font-size-xl);
         }
 
         .network-status small {
