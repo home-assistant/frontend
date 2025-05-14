@@ -317,8 +317,6 @@ class ZHAConfigDashboard extends LitElement {
       this._offlineDevices =
         this._totalDevices - devices.filter((d) => d.available).length;
     } catch (err: any) {
-      this._totalDevices = 0;
-      this._offlineDevices = 0;
       this._error = err.message || err;
     }
   }
