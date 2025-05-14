@@ -107,6 +107,8 @@ export interface DeviceAlert {
   text: string;
 }
 
+const DEVICE_ALERTS_INTERVAL = 30000;
+
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -133,6 +135,8 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceActions?: DeviceAction[];
 
   @state() private _deviceAlerts?: DeviceAlert[];
+
+  private _deviceAlertsTimeout?: number;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -280,6 +284,7 @@ export class HaConfigDevicePage extends LitElement {
     this._getDiagnosticButtons(this._diagnosticDownloadLinks);
     this._getDeleteActions();
     this._getDeviceActions();
+    clearTimeout(this._deviceAlertsTimeout);
     this._getDeviceAlerts();
   }
 
@@ -293,6 +298,11 @@ export class HaConfigDevicePage extends LitElement {
     if (changedProps.has("deviceId")) {
       this._findRelated();
     }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    clearTimeout(this._deviceAlertsTimeout);
   }
 
   protected render() {
@@ -1153,6 +1163,10 @@ export class HaConfigDevicePage extends LitElement {
 
     if (deviceAlerts.length) {
       this._deviceAlerts = deviceAlerts;
+      this._deviceAlertsTimeout = window.setTimeout(
+        () => this._getDeviceAlerts(),
+        DEVICE_ALERTS_INTERVAL
+      );
     }
   }
 
