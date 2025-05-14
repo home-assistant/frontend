@@ -17,9 +17,6 @@ class StepFlowMenu extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepMenu;
 
-  @property({ type: Boolean, attribute: "increase-padding-end" })
-  public increasePaddingEnd = false;
-
   protected render(): TemplateResult {
     let options: string[];
     let translations: Record<string, string>;
@@ -45,9 +42,6 @@ class StepFlowMenu extends LitElement {
     );
 
     return html`
-      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
-        ${this.flowConfig.renderMenuHeader(this.hass, this.step)}
-      </h2>
       ${description ? html`<div class="content">${description}</div>` : ""}
       <div class="options">
         ${options.map(

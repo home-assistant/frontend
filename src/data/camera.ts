@@ -190,7 +190,6 @@ export const fetchCameraCapabilities = async (
 export interface WebRTCClientConfiguration {
   configuration: RTCConfiguration;
   dataChannel?: string;
-  getCandidatesUpfront: boolean;
 }
 
 export const fetchWebRtcClientConfiguration = async (

@@ -4725,7 +4725,7 @@
             "check_your_email": "Check your email for instructions on how to reset your password."
           },
           "register": {
-            "title": "Register Account",
+            "title": "Register account",
             "headline": "Start your free trial",
             "information": "Create an account to start your free one month trial with Home Assistant Cloud. No payment information necessary.",
             "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
@@ -5340,7 +5340,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "assign_area": "Assign {number, plural,\n  one {device}\n  other {devices}\n} to area",
+            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
@@ -5610,7 +5610,11 @@
             "value": "Value"
           },
           "configuration_page": {
-            "shortcuts_title": "Shortcuts",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+            "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
             "migrate_radio": "Migrate radio",
@@ -5761,7 +5765,7 @@
               "backup_failed": "Failed to download backup",
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
-              "downloading": "Downloading backup",
+              "creating": "Creating backup",
               "restoring": "Restoring backup",
               "migrate": "Migrate controller"
             },
@@ -6419,7 +6423,7 @@
             "zeroconf_info": "Show services discovered using mDNS. Does not include services unknown to Home Assistant."
           },
           "network_adapter": "Network adapter",
-          "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
+          "network_adapter_info": "Configure which network adapters integrations will use. A restart is required for these settings to apply.",
           "ip_information": "IP Information",
           "adapter": {
             "auto_configure": "Auto configure",
