@@ -3,10 +3,7 @@ import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type {
-  TopLevelFormatterParams,
-  EChartsExtensionInstaller,
-} from "echarts/types/dist/shared";
+import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { mdiGoogleCirclesGroup } from "@mdi/js";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts";
@@ -56,7 +53,7 @@ export interface NetworkData {
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-let GraphChart: EChartsExtensionInstaller;
+let GraphChart: any;
 
 @customElement("ha-network-graph")
 export class HaNetworkGraph extends LitElement {
@@ -84,7 +81,7 @@ export class HaNetworkGraph extends LitElement {
     super();
     if (!GraphChart) {
       import("echarts/lib/chart/graph/install").then((module) => {
-        GraphChart = module.install;
+        GraphChart = module;
         this.requestUpdate();
       });
     }
