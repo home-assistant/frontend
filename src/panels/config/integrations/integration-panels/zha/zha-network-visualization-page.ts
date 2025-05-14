@@ -257,7 +257,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                     : colorVariables["disabled-color"],
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
-                  : "dashed",
+                  : "dotted",
               },
               symbolSize: (width / 4) * 6 + 4, // range 4-10
               // By default, all links should be ignored for force layout
@@ -333,7 +333,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _getLQIWidth(lqi: number): number {
-    return (lqi / 256) * 4;
+    return Math.max(1, Math.floor((lqi / 256) * 4));
   }
 }
 
