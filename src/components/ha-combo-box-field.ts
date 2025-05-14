@@ -1,8 +1,9 @@
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-combo-box-item";
+import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon-button";
 
 declare global {
@@ -26,17 +27,19 @@ export class HaComboBoxField extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
+
+  public async focus() {
+    await this.updateComplete;
+    await this.item?.focus();
+  }
+
   protected render() {
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
     return html`
-      <ha-combo-box-item
-        .disabled=${this.disabled}
-        id="anchor"
-        type="button"
-        compact
-      >
+      <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
         ${this.value
           ? html`
               <slot name="start" slot="start"></slot>

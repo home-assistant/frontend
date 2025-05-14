@@ -458,7 +458,12 @@ export class HaEntityPicker extends LitElement {
   }
 
   private async _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    this._opened = ev.detail.value;
+    const opened = ev.detail.value;
+    if (this._opened && !opened) {
+      this._opened = false;
+      await this.updateComplete;
+      this._anchor?.focus();
+    }
   }
 
   private _valueChanged(ev) {
