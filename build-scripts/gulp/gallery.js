@@ -17,24 +17,24 @@ import "./translations.js";
 import "./rspack.js";
 
 gulp.task("generate-component-docs", async function generateComponentDocs() {
+  // npx @custom-elements-manifest/analyzer analyze --litelement --globs "src/components/ha-alert.ts --dev"
+
   const filePaths = ["src/components/ha-alert.ts"];
 
   const modules = await Promise.all(
     filePaths.map(async (file) => {
       const filePath = path.resolve(file);
-      return ts.createSourceFile(
-        filePath,
-        await fs.promises.readFile(filePath, "utf-8"),
-        ts.ScriptTarget.ES2015,
-        true
-      );
+      console.log(`Reading ${file} -> ${filePath}`);
+      const source = fs.readFileSync(filePath).toString();
+
+      return ts.createSourceFile(file, source, ts.ScriptTarget.ES2015, true);
     })
   );
 
   const manifest = create({
     modules,
-    plugins: [...litPlugin()],
-    context: { dev: false },
+    plugins: litPlugin(),
+    context: { dev: true },
   });
 
   console.log(manifest);
