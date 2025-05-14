@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/components/ha-alert.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "A custom alert component for displaying messages with various alert types.",
+          "name": "HaAlert",
+          "cssProperties": [
+            {
+              "description": "The color used for \"info\" alerts.",
+              "name": "--info-color"
+            },
+            {
+              "description": "The color used for \"warning\" alerts.",
+              "name": "--warning-color"
+            },
+            {
+              "description": "The color used for \"error\" alerts.",
+              "name": "--error-color"
+            },
+            {
+              "description": "The color used for \"success\" alerts.",
+              "name": "--success-color"
+            },
+            {
+              "description": "The primary text color used in the alert.",
+              "name": "--primary-text-color"
+            }
+          ],
+          "cssParts": [
+            {
+              "description": "The container for the alert.",
+              "name": "issue-type"
+            },
+            {
+              "description": "The container for the alert icon.",
+              "name": "icon"
+            },
+            {
+              "description": "The container for the alert content.",
+              "name": "content"
+            },
+            {
+              "description": "The container for the alert actions.",
+              "name": "action"
+            },
+            {
+              "description": "The container for the alert title.",
+              "name": "title"
+            }
+          ],
+          "slots": [
+            {
+              "description": "The main content of the alert.",
+              "name": ""
+            },
+            {
+              "description": "Slot for providing a custom icon for the alert.",
+              "name": "icon"
+            },
+            {
+              "description": "Slot for providing custom actions or buttons for the alert.",
+              "name": "action"
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "privacy": "public",
+              "default": "\"\"",
+              "description": "The title of the alert. Defaults to an empty string.",
+              "attribute": "title"
+            },
+            {
+              "kind": "field",
+              "name": "alertType",
+              "type": {
+                "text": "\"info\" | \"warning\" | \"error\" | \"success\""
+              },
+              "privacy": "public",
+              "default": "\"info\"",
+              "description": "The type of alert to display. Defaults to \"info\". Determines the styling and icon used.",
+              "attribute": "alert-type"
+            },
+            {
+              "kind": "field",
+              "name": "dismissable",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "public",
+              "default": "false",
+              "description": "Whether the alert can be dismissed. Defaults to `false`. If `true`, a dismiss button is displayed.",
+              "attribute": "dismissable"
+            },
+            {
+              "kind": "field",
+              "name": "narrow",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "public",
+              "default": "false",
+              "description": "Whether the alert should use a narrow layout. Defaults to `false`.",
+              "attribute": "narrow"
+            },
+            {
+              "kind": "method",
+              "name": "_dismissClicked",
+              "privacy": "private"
+            }
+          ],
+          "events": [
+            {
+              "description": "Fired when the dismiss button is clicked.",
+              "name": "alert-dismissed-clicked"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "default": "\"\"",
+              "description": "The title of the alert. Defaults to an empty string.",
+              "fieldName": "title"
+            },
+            {
+              "name": "alert-type",
+              "type": {
+                "text": "\"info\" | \"warning\" | \"error\" | \"success\""
+              },
+              "default": "\"info\"",
+              "description": "The type of alert to display. Defaults to \"info\". Determines the styling and icon used.",
+              "fieldName": "alertType"
+            },
+            {
+              "name": "dismissable",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Whether the alert can be dismissed. Defaults to `false`. If `true`, a dismiss button is displayed.",
+              "fieldName": "dismissable"
+            },
+            {
+              "name": "narrow",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "Whether the alert should use a narrow layout. Defaults to `false`.",
+              "fieldName": "narrow"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "ha-alert",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "custom-element-definition",
+          "name": "ha-alert",
+          "declaration": {
+            "name": "HaAlert",
+            "module": "src/components/ha-alert.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
