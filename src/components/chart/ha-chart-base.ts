@@ -751,6 +751,10 @@ export class HaChartBase extends LitElement {
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
     }
+    .chart-controls ha-icon-button.inactive,
+    .chart-controls ::slotted(ha-icon-button.inactive) {
+      color: var(--state-inactive-color);
+    }
     .chart-legend {
       max-height: 60%;
       overflow-y: auto;

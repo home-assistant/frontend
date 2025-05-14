@@ -133,11 +133,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return [
       css`
         ha-network-graph {
-          height: calc(100vh - 112px);
-        }
-
-        .refresh-button {
-          margin-right: 12px;
+          height: calc(100vh - 56px);
         }
       `,
     ];
@@ -297,7 +293,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             symbolSize: 5,
             lineStyle: {
               width: 1,
-              color: "#bfbfbf",
+              color: colorVariables["disabled-color"],
               type: "dotted",
             },
             ignoreForceLayout: true,

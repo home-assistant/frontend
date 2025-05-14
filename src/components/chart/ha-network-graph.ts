@@ -2,11 +2,15 @@ import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { PropertyValues } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
+import { mdiGoogleCirclesGroup } from "@mdi/js";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts";
 import "./ha-chart-base";
+import type { HaChartBase } from "./ha-chart-base";
+import type { HomeAssistant } from "../../types";
 
 export interface NetworkNode {
   id: string;
@@ -59,9 +63,17 @@ export class HaNetworkGraph extends LitElement {
     params: TopLevelFormatterParams
   ) => string;
 
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @state() private _reducedMotion = false;
 
+  @state() private _physicsEnabled = true;
+
   private _listeners: (() => void)[] = [];
+
+  private _nodePositions: Record<string, { x: number; y: number }> = {};
+
+  @query("ha-chart-base") private _baseChart?: HaChartBase;
 
   // @ts-ignore
   private _resizeController = new ResizeController(this, {
@@ -88,6 +100,11 @@ export class HaNetworkGraph extends LitElement {
     );
   }
 
+  shouldUpdate(changedProperties: PropertyValues) {
+    // don't update if only hass changes
+    return changedProperties.size > 1 || !changedProperties.has("hass");
+  }
+
   protected render() {
     return html`<ha-chart-base
       .data=${this._getSeries()}
@@ -96,6 +113,15 @@ export class HaNetworkGraph extends LitElement {
       .extraComponents=${[]}
     >
       <slot name="button" slot="button"></slot>
+      <ha-icon-button
+        slot="button"
+        class="refresh-button ${this._physicsEnabled ? "active" : "inactive"}"
+        .path=${mdiGoogleCirclesGroup}
+        @click=${this._togglePhysics}
+        title=${this.hass!.localize(
+          "ui.panel.config.common.graph.toggle_physics"
+        )}
+      ></ha-icon-button>
     </ha-chart-base>`;
   }
 
@@ -129,7 +155,7 @@ export class HaNetworkGraph extends LitElement {
       {
         id: "network",
         type: "graph",
-        layout: "force",
+        layout: this._physicsEnabled ? "force" : "none",
         draggable: true,
         roam: true,
         selectedMode: "single",
@@ -160,7 +186,10 @@ export class HaNetworkGraph extends LitElement {
             itemStyle: node.itemStyle || {},
             fixed: node.fixed,
           };
-          if (typeof node.polarDistance === "number") {
+          if (this._nodePositions[node.id]) {
+            echartsNode.x = this._nodePositions[node.id].x;
+            echartsNode.y = this._nodePositions[node.id].y;
+          } else if (typeof node.polarDistance === "number") {
             // set the position of the node at polarDistance from the center in a random direction
             const angle = Math.random() * 2 * Math.PI;
             echartsNode.x =
@@ -169,6 +198,10 @@ export class HaNetworkGraph extends LitElement {
             echartsNode.y =
               containerHeight / 2 +
               ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance;
+            this._nodePositions[node.id] = {
+              x: echartsNode.x,
+              y: echartsNode.y,
+            };
           }
           return echartsNode;
         }),
@@ -183,6 +216,26 @@ export class HaNetworkGraph extends LitElement {
     ] as any;
   }
 
+  private _togglePhysics() {
+    if (this._baseChart?.chart) {
+      this._baseChart.chart
+        // @ts-ignore private method but no other way to get the graph positions
+        .getModel()
+        .getSeriesByIndex(0)
+        .getGraph()
+        .eachNode((node: any) => {
+          const layout = node.getLayout();
+          if (layout) {
+            this._nodePositions[node.id] = {
+              x: layout[0],
+              y: layout[1],
+            };
+          }
+        });
+    }
+    this._physicsEnabled = !this._physicsEnabled;
+  }
+
   static styles = css`
     :host {
       display: block;
@@ -191,6 +244,11 @@ export class HaNetworkGraph extends LitElement {
     ha-chart-base {
       height: 100%;
       --chart-max-height: 100%;
+    }
+
+    ha-icon-button,
+    ::slotted(ha-icon-button) {
+      margin-right: 12px;
     }
   `;
 }
