@@ -227,10 +227,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 existingLink.reverseValue ?? 0,
                 parseInt(neighbor.lqi)
               );
-              existingLink.symbolSize = 1; // 0 doesn't work
             }
             const width = this._getLQIWidth(parseInt(neighbor.lqi));
-            existingLink.symbolSize = (width / 4) * 10;
+            existingLink.symbolSize = (width / 4) * 6 + 3; // range 3-9
             existingLink.lineStyle = {
               ...existingLink.lineStyle,
               width,
@@ -259,7 +258,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                   ? "solid"
                   : "dotted",
               },
-              symbolSize: (width / 4) * 6 + 4, // range 4-10
+              symbolSize: (width / 4) * 6 + 3, // range 3-9
               // By default, all links should be ignored for force layout
               ignoreForceLayout: true,
             };

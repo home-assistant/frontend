@@ -1,4 +1,3 @@
-import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement } from "lit";
@@ -74,13 +73,6 @@ export class HaNetworkGraph extends LitElement {
   private _nodePositions: Record<string, { x: number; y: number }> = {};
 
   @query("ha-chart-base") private _baseChart?: HaChartBase;
-
-  // @ts-ignore
-  private _resizeController = new ResizeController(this, {
-    callback: () => {
-      this.requestUpdate();
-    },
-  });
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -162,7 +154,6 @@ export class HaNetworkGraph extends LitElement {
         label: {
           show: true,
           position: "right",
-          formatter: (params: any) => params.data.name,
         },
         emphasis: {
           focus: "adjacency",
@@ -210,6 +201,8 @@ export class HaNetworkGraph extends LitElement {
           value: link.reverseValue
             ? Math.max(link.value ?? 0, link.reverseValue)
             : link.value,
+          // remove arrow for bidirectional links
+          symbolSize: link.reverseValue ? 1 : link.symbolSize, // 0 doesn't work
         })),
         categories: this.data.categories || [],
       },
