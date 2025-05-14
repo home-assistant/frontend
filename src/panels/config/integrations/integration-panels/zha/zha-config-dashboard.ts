@@ -454,11 +454,7 @@ class ZHAConfigDashboard extends LitElement {
         }
 
         .network-status div.heading .icon {
-          width: 48px;
-          height: 48px;
-          margin-right: 16px;
           margin-inline-end: 16px;
-          margin-inline-start: initial;
         }
 
         .network-status div.heading ha-svg-icon {
