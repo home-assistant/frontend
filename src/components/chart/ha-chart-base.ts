@@ -319,7 +319,9 @@ export class HaChartBase extends LitElement {
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
-      this.chart.getZr().on("dblclick", this._handleClickZoom);
+      if (!this.options?.dataZoom) {
+        this.chart.getZr().on("dblclick", this._handleClickZoom);
+      }
       if (this._isTouchDevice) {
         this.chart.getZr().on("click", (e: ECElementEvent) => {
           if (!e.zrByTouch) {

@@ -20,6 +20,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
 import { colorVariables } from "../../../../../resources/theme/color.globals";
+import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -61,6 +62,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           .hass=${this.hass}
           .data=${this._networkData}
           .tooltipFormatter=${this._tooltipFormatter}
+          @chart-click=${this._handleChartClick}
         >
           <ha-icon-button
             slot="button"
@@ -127,6 +129,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
   private async _refreshTopology(): Promise<void> {
     await refreshTopology(this.hass);
     await this._fetchData();
+  }
+
+  private _handleChartClick(e: CustomEvent): void {
+    if (
+      e.detail.dataType === "node" &&
+      e.detail.event.target.cursor === "pointer"
+    ) {
+      const { id } = e.detail.data;
+      const device = this._devices.find((d) => d.ieee === id);
+      if (device) {
+        navigate(`/config/devices/device/${device.device_reg_id}`);
+      }
+    }
   }
 
   static get styles(): CSSResultGroup {

@@ -65,7 +65,7 @@ export class HaNetworkGraph extends LitElement {
     params: TopLevelFormatterParams
   ) => string;
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _reducedMotion = false;
 
@@ -115,6 +115,7 @@ export class HaNetworkGraph extends LitElement {
       return nothing;
     }
     return html`<ha-chart-base
+      .hass=${this.hass}
       .data=${this._getSeries()}
       .options=${this._createOptions()}
       height="100%"
@@ -126,7 +127,7 @@ export class HaNetworkGraph extends LitElement {
         class="refresh-button ${this._physicsEnabled ? "active" : "inactive"}"
         .path=${mdiGoogleCirclesGroup}
         @click=${this._togglePhysics}
-        title=${this.hass!.localize(
+        title=${this.hass.localize(
           "ui.panel.config.common.graph.toggle_physics"
         )}
       ></ha-icon-button>
