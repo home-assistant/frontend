@@ -25,36 +25,6 @@ declare global {
   }
 }
 
-/**
- * A custom alert component for displaying messages with various alert types.
- * 
- * @element ha-alert
- * 
- * @property {string} title - The title of the alert. Defaults to an empty string.
- * @property {"info" | "warning" | "error" | "success"} alertType - The type of alert to display.
- * Defaults to "info". Determines the styling and icon used.
- * @property {boolean} dismissable - Whether the alert can be dismissed. Defaults to `false`.
- * If `true`, a dismiss button is displayed.
- * @property {boolean} narrow - Whether the alert should use a narrow layout. Defaults to `false`.
- * 
- * @slot - The main content of the alert.
- * @slot icon - Slot for providing a custom icon for the alert.
- * @slot action - Slot for providing custom actions or buttons for the alert.
- * 
- * @fires alert-dismissed-clicked - Fired when the dismiss button is clicked.
- * 
- * @csspart issue-type - The container for the alert.
- * @csspart icon - The container for the alert icon.
- * @csspart content - The container for the alert content.
- * @csspart action - The container for the alert actions.
- * @csspart title - The container for the alert title.
- * 
- * @cssprop --info-color - The color used for "info" alerts.
- * @cssprop --warning-color - The color used for "warning" alerts.
- * @cssprop --error-color - The color used for "error" alerts.
- * @cssprop --success-color - The color used for "success" alerts.
- * @cssprop --primary-text-color - The primary text color used in the alert.
- */
 @customElement("ha-alert")
 class HaAlert extends LitElement {
   // eslint-disable-next-line lit/no-native-attributes
@@ -65,7 +35,7 @@ class HaAlert extends LitElement {
     | "warning"
     | "error"
     | "success" = "info";
-    
+
   @property({ type: Boolean }) public dismissable = false;
 
   @property({ type: Boolean }) public narrow = false;
