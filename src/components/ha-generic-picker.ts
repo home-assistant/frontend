@@ -77,7 +77,7 @@ export class HaGenericPicker extends LitElement {
                 compact
                 @click=${this.open}
                 @clear=${this._clear}
-                .placeholder=${this.placeholder ??
+                .placeholder=${this.placeholder ||
                 this.hass.localize(
                   "ui.components.entity.entity-picker.placeholder"
                 )}

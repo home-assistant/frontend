@@ -381,6 +381,7 @@ export class HaEntityPicker extends LitElement {
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .label=${this.searchLabel}
+        .placeholder=${this.placeholder}
         .value=${this.value}
         @input=${stopPropagation}
         @value-changed=${this._valueChanged}
@@ -404,7 +405,12 @@ export class HaEntityPicker extends LitElement {
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    if (value && value.startsWith(CREATE_ID)) {
+    if (!value) {
+      this._setValue(undefined);
+      return;
+    }
+
+    if (value.startsWith(CREATE_ID)) {
       const domain = value.substring(CREATE_ID.length);
 
       showHelperDetailDialog(this, {
@@ -416,7 +422,7 @@ export class HaEntityPicker extends LitElement {
       return;
     }
 
-    if (!value || !isValidEntityId(value)) {
+    if (!isValidEntityId(value)) {
       return;
     }
 
