@@ -7,12 +7,13 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { HaFuse } from "../resources/fuse";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
-import type { LocalizeFunc } from "../common/translations/localize";
+import "./ha-icon";
 
 export interface PickerComboBoxItem {
   id: string;
@@ -21,6 +22,7 @@ export interface PickerComboBoxItem {
   search_labels?: string[];
   sorting_label?: string;
   icon_path?: string;
+  icon?: string;
 }
 
 // Hack to force empty label to always display empty value by default in the search field
@@ -34,7 +36,9 @@ const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
   item
 ) => html`
   <ha-combo-box-item type="button" compact>
-    <ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>
+    ${item.icon_path
+      ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
+      : html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`}
     <span slot="headline">${item.primary}</span>
     ${item.secondary
       ? html`<span slot="supporting-text">${item.secondary}</span>`
@@ -61,9 +65,6 @@ export class HaPickerComboBox extends LitElement {
   @property() public value?: string;
 
   @property() public helper?: string;
-
-  @property({ attribute: false, type: Array })
-  public items?: PickerComboBoxItem[];
 
   @property({ attribute: false, type: Array })
   public getItems?: () => PickerComboBoxItem[];

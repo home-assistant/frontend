@@ -1,5 +1,12 @@
 import { mdiClose, mdiMenuDown } from "@mdi/js";
-import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type CSSResultGroup,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-combo-box-item";
@@ -11,6 +18,8 @@ declare global {
     clear: undefined;
   }
 }
+
+export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 
 @customElement("ha-picker-field")
 export class HaPickerField extends LitElement {
@@ -27,6 +36,9 @@ export class HaPickerField extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
+  @property({ attribute: false })
+  public valueRenderer?: PickerValueRenderer;
+
   @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
 
   public async focus() {
@@ -41,11 +53,9 @@ export class HaPickerField extends LitElement {
     return html`
       <ha-combo-box-item .disabled=${this.disabled} type="button" compact>
         ${this.value
-          ? html`
-              <slot name="start" slot="start"></slot>
-              <slot name="headline" slot="headline"></slot>
-              <slot name="supporting-text" slot="supporting-text"></slot>
-            `
+          ? this.valueRenderer
+            ? this.valueRenderer(this.value)
+            : html`<slot name="headline">${this.value}</slot>`
           : html`
               <span slot="headline" class="placeholder">
                 <slot name="placeholder">${this.placeholder}</slot>

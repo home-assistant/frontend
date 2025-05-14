@@ -1,16 +1,8 @@
 import { mdiPlus, mdiShape } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  html,
-  LitElement,
-  nothing,
-  type CSSResultGroup,
-  type PropertyValues,
-} from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -30,15 +22,10 @@ import {
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
 import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
-import "../ha-icon-button";
-import "../ha-input-helper-text";
-import "../ha-picker-combo-box";
-import type {
-  PickerComboBoxItem,
-  HaPickerComboBox,
-} from "../ha-picker-combo-box";
-import "../ha-picker-field";
-import type { HaPickerField } from "../ha-picker-field";
+import "../ha-generic-picker";
+import type { HaGenericPicker } from "../ha-generic-picker";
+import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
 
@@ -132,11 +119,7 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @query("ha-picker-field") private _field?: HaPickerField;
-
-  @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
-
-  @state() private _opened = false;
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
@@ -144,18 +127,18 @@ export class HaEntityPicker extends LitElement {
     this.hass.loadBackendTranslation("title");
   }
 
-  private _renderContent() {
-    const entityId = this.value || "";
-
-    if (!this.value) {
-      return nothing;
-    }
+  private _valueRenderer: PickerValueRenderer = (value) => {
+    const entityId = value || "";
 
     const stateObj = this.hass.states[entityId];
 
     if (!stateObj) {
       return html`
-        <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
+        <ha-svg-icon
+          slot="start"
+          .path=${mdiShape}
+          style="margin: 0 4px"
+        ></ha-svg-icon>
         <span slot="headline">${entityId}</span>
       `;
     }
@@ -182,7 +165,7 @@ export class HaEntityPicker extends LitElement {
       <span slot="headline">${primary}</span>
       <span slot="supporting-text">${secondary}</span>
     `;
-  }
+  };
 
   private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
     item,
@@ -194,7 +177,11 @@ export class HaEntityPicker extends LitElement {
       <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
         ${item.icon_path
           ? html`
-              <ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>
+              <ha-svg-icon
+                slot="start"
+                style="margin: 0 4px"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
             `
           : html`
               <state-badge
@@ -389,79 +376,28 @@ export class HaEntityPicker extends LitElement {
 
   protected render() {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : nothing}
-      <div class="container">
-        ${!this._opened
-          ? html`
-              <ha-picker-field
-                type="button"
-                compact
-                @click=${this.open}
-                @clear=${this._clear}
-                .placeholder=${this.placeholder ??
-                this.hass.localize(
-                  "ui.components.entity.entity-picker.placeholder"
-                )}
-                .value=${this.value}
-                .required=${this.required}
-                .disabled=${this.disabled}
-              >
-                ${this._renderContent()}
-              </ha-picker-field>
-            `
-          : html`
-              <ha-picker-combo-box
-                .hass=${this.hass}
-                .autofocus=${this.autofocus}
-                .allowCustomValue=${this.allowCustomEntity}
-                .label=${this.searchLabel ??
-                this.hass.localize("ui.common.search")}
-                .value=${this.value}
-                hide-clear-icon
-                @opened-changed=${this._openedChanged}
-                @input=${stopPropagation}
-                @value-changed=${this._valueChanged}
-                .rowRenderer=${this._rowRenderer}
-                .notFoundLabel=${this.hass.localize(
-                  "ui.components.entity.entity-picker.no_match"
-                )}
-                .getItems=${this._getItems}
-                .getAdditionalItems=${this._getAdditionalItems}
-              ></ha-picker-combo-box>
-            `}
-        ${this._renderHelper()}
-      </div>
+      <ha-generic-picker
+        .hass=${this.hass}
+        .autofocus=${this.autofocus}
+        .allowCustomValue=${this.allowCustomEntity}
+        .label=${this.searchLabel}
+        .value=${this.value}
+        @input=${stopPropagation}
+        @value-changed=${this._valueChanged}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.entity.entity-picker.no_match"
+        )}
+        .rowRenderer=${this._rowRenderer}
+        .getItems=${this._getItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .valueRenderer=${this._valueRenderer}
+      >
+      </ha-generic-picker>
     `;
   }
 
-  private _renderHelper() {
-    return this.helper
-      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
-      : nothing;
-  }
-
-  private _clear(e) {
-    e.stopPropagation();
-    this._setValue(undefined);
-  }
-
   public async open() {
-    if (this.disabled) {
-      return;
-    }
-    this._opened = true;
-    await this.updateComplete;
-    this._comboBox?.focus();
-    this._comboBox?.open();
-  }
-
-  private async _openedChanged(ev: ComboBoxLightOpenedChangedEvent) {
-    const opened = ev.detail.value;
-    if (this._opened && !opened) {
-      this._opened = false;
-      await this.updateComplete;
-      this._field?.focus();
-    }
+    this._picker?.open();
   }
 
   private _valueChanged(ev) {
@@ -492,24 +428,6 @@ export class HaEntityPicker extends LitElement {
 
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
-  }
-
-  static get styles(): CSSResultGroup {
-    return [
-      css`
-        .container {
-          position: relative;
-          display: block;
-        }
-        ha-svg-icon {
-          margin: 0 4px;
-        }
-        label {
-          display: block;
-          margin: 0 0 8px;
-        }
-      `,
-    ];
   }
 }
 
