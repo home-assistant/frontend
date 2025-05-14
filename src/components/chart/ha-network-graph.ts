@@ -1,9 +1,12 @@
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
+import type {
+  TopLevelFormatterParams,
+  EChartsExtensionInstaller,
+} from "echarts/types/dist/shared";
 import { mdiGoogleCirclesGroup } from "@mdi/js";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts";
@@ -52,6 +55,9 @@ export interface NetworkData {
   categories?: { name: string }[];
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
+let GraphChart: EChartsExtensionInstaller;
+
 @customElement("ha-network-graph")
 export class HaNetworkGraph extends LitElement {
   public chart?: EChartsType;
@@ -74,14 +80,17 @@ export class HaNetworkGraph extends LitElement {
 
   @query("ha-chart-base") private _baseChart?: HaChartBase;
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    while (this._listeners.length) {
-      this._listeners.pop()!();
+  constructor() {
+    super();
+    if (!GraphChart) {
+      import("echarts/lib/chart/graph/install").then((module) => {
+        GraphChart = module.install;
+        this.requestUpdate();
+      });
     }
   }
 
-  public connectedCallback() {
+  public async connectedCallback() {
     super.connectedCallback();
     this._listeners.push(
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
@@ -92,17 +101,27 @@ export class HaNetworkGraph extends LitElement {
     );
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    while (this._listeners.length) {
+      this._listeners.pop()!();
+    }
+  }
+
   shouldUpdate(changedProperties: PropertyValues) {
     // don't update if only hass changes
     return changedProperties.size > 1 || !changedProperties.has("hass");
   }
 
   protected render() {
+    if (!GraphChart) {
+      return nothing;
+    }
     return html`<ha-chart-base
       .data=${this._getSeries()}
       .options=${this._createOptions()}
       height="100%"
-      .extraComponents=${[]}
+      .extraComponents=${[GraphChart]}
     >
       <slot name="button" slot="button"></slot>
       <ha-icon-button
