@@ -6,18 +6,18 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
-import "../../components/ha-spinner";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
+import "../../components/ha-spinner";
 import { autocompleteLoginFields } from "../../data/auth";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
+import { previewModule } from "../../data/preview";
+import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { haStyle } from "../../resources/styles";
-import { previewModule } from "../../data/preview";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -26,9 +26,6 @@ class StepFlowForm extends LitElement {
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ type: Boolean, attribute: "increase-padding-end" })
-  public increasePaddingEnd = false;
 
   @state() private _loading = false;
 
@@ -46,9 +43,6 @@ class StepFlowForm extends LitElement {
     const stepData = this._stepDataProcessed;
 
     return html`
-      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
-        ${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}
-      </h2>
       <div class="content" @click=${this._clickHandler}>
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
@@ -280,9 +274,6 @@ class StepFlowForm extends LitElement {
         ha-form {
           margin-top: 24px;
           display: block;
-        }
-        h2 {
-          word-break: break-word;
         }
       `,
     ];
