@@ -133,8 +133,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return [
       css`
         ha-network-graph {
-          /* @TODO fix height */
-          height: calc(100vh - 56px);
+          height: 100%;
         }
       `,
     ];
