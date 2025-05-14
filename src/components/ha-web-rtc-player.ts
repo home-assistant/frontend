@@ -1,9 +1,19 @@
+import "./ha-circular-progress";
+import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import {
+  mdiMicrophone,
+  mdiMicrophoneOff,
+  mdiVolumeHigh,
+  mdiVolumeOff,
+  mdiPlay,
+  mdiPause,
+} from "@mdi/js";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   addWebRtcCandidate,
@@ -37,6 +47,9 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "muted" })
   public muted = false;
 
+  @property({ type: Boolean, attribute: "twowayaudio" })
+  public twowayaudio = false;
+
   @property({ type: Boolean, attribute: "autoplay" })
   public autoPlay = false;
 
@@ -55,6 +68,83 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
+  private _localReturnTrackAdded: boolean = false;
+
+  private _localReturnAudioTrack?: MediaStreamTrack;
+
+  private _paused: boolean = false;
+
+  private _twoWayAudio: boolean = false;
+
+  private async _addLocalReturnAudio() {
+    const tracks = await this._getMediaTracks("user", {
+      video: false,
+      audio: true,
+    });
+    if (tracks && tracks.length > 0) {
+      this._localReturnAudioTrack = tracks[0];
+
+      // Transceivers are in the order they were added
+      const audio_transceiver = this._peerConnection?.getTransceivers()[0];
+      audio_transceiver!.direction = "sendrecv";
+      audio_transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
+
+      this._localReturnTrackAdded = true;
+    } else {
+      this._logEvent("unable to add audio send track");
+      this._twoWayAudio = false;
+      this.requestUpdate();
+    }
+  }
+
+  public async toggleMic() {
+    if (!this._localReturnTrackAdded) {
+      await this._addLocalReturnAudio();
+    } else {
+      this._localReturnAudioTrack!.enabled =
+        !this._localReturnAudioTrack!.enabled;
+    }
+    this.requestUpdate();
+  }
+
+  public toggleMute() {
+    this._videoEl.muted = !this._videoEl.muted;
+    this.requestUpdate();
+  }
+
+  public togglePause() {
+    const pause = () => {
+      if (this._remoteStream && this._remoteStream.active) {
+        this._remoteStream.getAudioTracks().forEach((track) => {
+          track.enabled = false;
+        });
+        this._remoteStream.getVideoTracks().forEach((track) => {
+          track.enabled = false;
+        });
+        this._paused = true;
+      }
+    };
+
+    const resume = () => {
+      if (this._remoteStream && this._remoteStream.active) {
+        this._remoteStream.getAudioTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        this._remoteStream.getVideoTracks().forEach((track) => {
+          track.enabled = true;
+        });
+        this._paused = false;
+      }
+    };
+
+    if (this._paused) {
+      resume();
+    } else {
+      pause();
+    }
+    this.requestUpdate();
+  }
+
   private _unsub?: Promise<UnsubscribeFunc>;
 
   private _sessionId?: string;
@@ -65,21 +155,77 @@ class HaWebRtcPlayer extends LitElement {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
+    // The standard controls will still be disabled until the remoteStream is
+    // created so they don't appear and disappear once twoWayAudio is requested
+    // and enabled.
+    const standardControls = this._twoWayAudio ? false : this.controls;
+
+    const videoHtml = html` <video
+      id="remote-stream"
+      ?autoplay=${this.autoPlay}
+      .muted=${this.muted}
+      ?playsinline=${this.playsInline}
+      ?controls=${standardControls && this._remoteStream !== undefined}
+      poster=${ifDefined(this.posterUrl)}
+      @loadeddata=${this._loadedData}
+      style=${styleMap({
+        height: this.aspectRatio == null ? "100%" : "auto",
+        aspectRatio: this.aspectRatio,
+        objectFit: this.fitMode,
+      })}
+    ></video>`;
+    const progressHtml =
+      this._remoteStream !== undefined
+        ? nothing
+        : html`
+            <div class="video-progress">
+              <ha-circular-progress
+                class="render-spinner"
+                indeterminate
+                size="medium"
+              ></ha-circular-progress>
+            </div>
+          `;
+    // Custom controls are required for two way audio to allow muting/unmuting
+    // the microphone
+    const customControls = standardControls
+      ? nothing
+      : html`
+          <div class="video-controls">
+            <mwc-button @click=${this.togglePause} halign id="toggle_pause">
+              <ha-svg-icon
+                .path=${this._paused ? mdiPlay : mdiPause}
+              ></ha-svg-icon>
+            </mwc-button>
+            <mwc-button
+              @click=${this.toggleMute}
+              halign
+              id="toggle_mute"
+              class="video-controls-right"
+            >
+              <ha-svg-icon
+                .path=${this._videoEl.muted ? mdiVolumeOff : mdiVolumeHigh}
+              ></ha-svg-icon>
+            </mwc-button>
+            <mwc-button
+              @click=${this.toggleMic}
+              halign
+              id="toggle_mic"
+              class="video-controls-right"
+            >
+              <ha-svg-icon
+                .path=${this._localReturnAudioTrack &&
+                this._localReturnAudioTrack!.enabled
+                  ? mdiMicrophone
+                  : mdiMicrophoneOff}
+              ></ha-svg-icon>
+            </mwc-button>
+          </div>
+        `;
     return html`
-      <video
-        id="remote-stream"
-        ?autoplay=${this.autoPlay}
-        .muted=${this.muted}
-        ?playsinline=${this.playsInline}
-        ?controls=${this.controls}
-        poster=${ifDefined(this.posterUrl)}
-        @loadeddata=${this._loadedData}
-        style=${styleMap({
-          height: this.aspectRatio == null ? "100%" : "auto",
-          aspectRatio: this.aspectRatio,
-          objectFit: this.fitMode,
-        })}
-      ></video>
+      <div class="video-container">
+        ${videoHtml}${progressHtml}${customControls}
+      </div>
     `;
   }
 
@@ -129,6 +275,10 @@ class HaWebRtcPlayer extends LitElement {
     );
 
     this._logEvent("end clientConfig", this._clientConfig);
+
+    // On most platforms mediaDevices will be undefined if not running in a secure context
+    this._twoWayAudio =
+      this.twowayaudio && navigator.mediaDevices !== undefined;
 
     this._peerConnection = new RTCPeerConnection(
       this._clientConfig.configuration
@@ -213,8 +363,12 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
-      this._unsub = webRtcOffer(this.hass, this.entityid, offer_sdp, (event) =>
-        this._handleOfferEvent(event)
+      this._unsub = webRtcOffer(
+        this.hass,
+        this.entityid,
+        offer_sdp,
+        (event) => this._handleOfferEvent(event),
+        this._sessionId
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
@@ -227,6 +381,9 @@ class HaWebRtcPlayer extends LitElement {
       "ice connection state change",
       this._peerConnection?.iceConnectionState
     );
+    if (this._peerConnection?.iceConnectionState === "connected") {
+      this.requestUpdate();
+    }
     if (this._peerConnection?.iceConnectionState === "failed") {
       this._peerConnection.restartIce();
     }
@@ -338,6 +495,19 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("end setRemoteDescription");
   }
 
+  private async _getMediaTracks(media, constraints) {
+    try {
+      const stream =
+        media === "user"
+          ? await navigator.mediaDevices.getUserMedia(constraints)
+          : await navigator.mediaDevices.getDisplayMedia(constraints);
+      return stream.getTracks();
+    } catch (err: any) {
+      this._error = "Failed to get media tracks: " + err.message;
+      return [];
+    }
+  }
+
   private _cleanUp() {
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
@@ -345,6 +515,9 @@ class HaWebRtcPlayer extends LitElement {
       });
 
       this._remoteStream = undefined;
+    }
+    if (this._localReturnAudioTrack) {
+      this._localReturnAudioTrack.stop();
     }
     const videoEl = this._videoEl;
     if (videoEl) {
@@ -425,6 +598,36 @@ class HaWebRtcPlayer extends LitElement {
       max-height: var(--video-max-height, calc(100vh - 97px));
     }
   `;
+
+      .video-container {
+        position: relative;
+      }
+
+      .video-controls {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.35);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 10;
+      }
+
+      .video-progress {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: 10;
+      }
+
+      .video-controls-right {
+        float: right;
+      }
+
+      mwc-button {
+        --mdc-theme-primary: white;
+      }
+    `;
+  }
 }
 
 declare global {

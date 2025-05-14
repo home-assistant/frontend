@@ -136,6 +136,7 @@ export class HaCameraStream extends LitElement {
         autoplay
         playsinline
         .muted=${this.muted}
+        .twowayaudio=${this._capabilities?.two_way_audio}
         .controls=${this.controls}
         .hass=${this.hass}
         .entityid=${this.stateObj.entity_id}
@@ -155,7 +156,7 @@ export class HaCameraStream extends LitElement {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
     if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
-      this._capabilities = { frontend_stream_types: [] };
+      this._capabilities = { frontend_stream_types: [], two_way_audio: false };
       return;
     }
     this._capabilities = await fetchCameraCapabilities(
