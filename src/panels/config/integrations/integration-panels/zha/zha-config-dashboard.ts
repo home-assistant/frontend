@@ -319,7 +319,7 @@ class ZHAConfigDashboard extends LitElement {
     } catch (err: any) {
       this._totalDevices = 0;
       this._offlineDevices = 0;
-      this._error = err.message || this._error;
+      this._error = err.message || err;
     }
   }
 
