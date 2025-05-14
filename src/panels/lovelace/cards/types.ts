@@ -337,6 +337,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
+  cluster?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

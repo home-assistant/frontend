@@ -139,6 +139,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ? processConfigEntities<MapEntityConfig>(this._config.entities)
       : [];
     this._mapEntities = this._getMapEntities();
+    this._clusterMarkers = this._config.cluster ?? true;
   }
 
   public getCardSize(): number {
