@@ -403,7 +403,8 @@ export class HaEntityPicker extends LitElement {
   }
 
   public async open() {
-    this._picker?.open();
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
   private _valueChanged(ev) {
