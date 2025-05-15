@@ -388,7 +388,10 @@ export class HaBaseTimeInput extends LitElement {
         var(--mdc-typography-font-family, var(--ha-font-family-body))
       );
       font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
-      line-height: var(--mdc-typography-body2-line-height, 1.25rem);
+      line-height: var(
+        --mdc-typography-body2-line-height,
+        var(--ha-line-height-condensed)
+      );
       font-weight: var(
         --mdc-typography-body2-font-weight,
         var(--ha-font-weight-normal)
@@ -406,7 +409,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     ha-input-helper-text {
       padding-top: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-condensed);
     }
   `;
 }

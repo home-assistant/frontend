@@ -617,7 +617,7 @@ export class HAFullCalendar extends LitElement {
 
         .fc-event {
           border-radius: 4px;
-          line-height: 1.7;
+          line-height: var(--ha-line-height-normal);
           cursor: pointer;
         }
 
