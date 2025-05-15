@@ -4,8 +4,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import type { HaEntityComboBoxEntityFilterFunc } from "./ha-entity-combo-box";
 import "./ha-entity-picker";
+import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPicker extends LitElement {
@@ -72,7 +72,7 @@ class HaEntitiesPicker extends LitElement {
   public excludeEntities?: string[];
 
   @property({ attribute: false })
-  public entityFilter?: HaEntityComboBoxEntityFilterFunc;
+  public entityFilter?: HaEntityPickerEntityFilterFunc;
 
   @property({ attribute: false, type: Array }) public createDomains?: string[];
 

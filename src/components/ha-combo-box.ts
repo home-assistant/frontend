@@ -246,8 +246,8 @@ export class HaComboBox extends LitElement {
     // delay this so we can handle click event for toggle button before setting _opened
     setTimeout(() => {
       this.opened = opened;
+      fireEvent(this, "opened-changed", { value: ev.detail.value });
     }, 0);
-    fireEvent(this, "opened-changed", { value: ev.detail.value });
 
     if (opened) {
       const overlay = document.querySelector<HTMLElement>(
