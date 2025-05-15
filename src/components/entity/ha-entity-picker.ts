@@ -394,6 +394,7 @@ export class HaEntityPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
       >
