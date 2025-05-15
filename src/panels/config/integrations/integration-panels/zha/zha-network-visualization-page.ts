@@ -54,7 +54,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .route=${this.route}
-        .header=${this.hass.localize(
+        header=${this.hass.localize(
           "ui.panel.config.zha.visualization.header"
         )}
       >
@@ -164,16 +164,16 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const categories = [
       {
         name: "Coordinator",
-        icon: "roundRect",
+        symbol: "roundRect",
         itemStyle: { color: primaryColor },
       },
-      { name: "Router", icon: "circle", itemStyle: { color: routerColor } },
+      { name: "Router", symbol: "circle", itemStyle: { color: routerColor } },
       {
         name: "End Device",
-        icon: "circle",
+        symbol: "circle",
         itemStyle: { color: endDeviceColor },
       },
-      { name: "Offline", icon: "circle", itemStyle: { color: offlineColor } },
+      { name: "Offline", symbol: "circle", itemStyle: { color: offlineColor } },
     ];
 
     // Create all the nodes and links
@@ -347,7 +347,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _getLQIWidth(lqi: number): number {
-    return Math.max(1, Math.floor((lqi / 256) * 4));
+    return lqi > 200 ? 3 : lqi > 100 ? 2 : 1;
   }
 }
 

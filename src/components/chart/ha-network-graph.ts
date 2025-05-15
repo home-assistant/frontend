@@ -39,6 +39,7 @@ export interface NetworkLink {
     type?: "solid" | "dashed" | "dotted";
   };
   symbolSize?: number | number[];
+  symbol?: string;
   label?: {
     show?: boolean;
     formatter?: string;
@@ -49,7 +50,7 @@ export interface NetworkLink {
 export interface NetworkData {
   nodes: NetworkNode[];
   links: NetworkLink[];
-  categories?: { name: string }[];
+  categories?: { name: string, symbol: string }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -143,7 +144,10 @@ export class HaNetworkGraph extends LitElement {
       },
       legend: {
         show: !!this.data?.categories?.length,
-        data: this.data?.categories,
+        data: this.data?.categories?.map((category) => ({
+          ...category,
+          icon: category.symbol,
+        })),
         top: 8,
       },
       dataZoom: {

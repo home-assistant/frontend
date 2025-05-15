@@ -119,6 +119,10 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth/connection-monitor",
   },
+  bluetooth_visualization: {
+    component: "bluetooth",
+    redirect: "/config/bluetooth/visualization",
+  },
   config_bluetooth: {
     component: "bluetooth",
     redirect: "/config/bluetooth",
