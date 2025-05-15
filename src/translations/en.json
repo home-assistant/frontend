@@ -6201,7 +6201,7 @@
             "capability_controls": {
               "thermostat_setback": {
                 "title": "Thermostat Setback",
-                "setback_state_label": "Setback in 1/10 degrees (Kelvin)",
+                "setback_state_label": "Setback in Kelvin",
                 "setback_state_helper": "Min: -12.8, max: 12.0",
                 "setback_special_state": {
                   "label": "Setback special state",
