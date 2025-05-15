@@ -69,7 +69,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             class="refresh-button"
             .path=${mdiRefresh}
             @click=${this._refreshTopology}
-            title=${this.hass.localize(
+            label=${this.hass.localize(
               "ui.panel.config.zha.visualization.refresh_topology"
             )}
           ></ha-icon-button>
