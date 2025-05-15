@@ -9,6 +9,9 @@ export const typographyStyles = css`
     --ha-font-family-body: Roboto, Noto, sans-serif;
     --ha-font-family-code: monospace;
     --ha-font-family-longform: ui-sans-serif, system-ui, sans-serif;
+    --md-list-item-label-text-font: var(--ha-font-family-body);
+    --md-list-item-supporting-text-font: var(--ha-font-family-body);
+    --md-list-item-trailing-supporting-text-font: var(--ha-font-family-body);
 
     font-size: 14px;
     --ha-font-size-scale: 1;
