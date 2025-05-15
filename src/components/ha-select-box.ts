@@ -156,16 +156,16 @@ export class HaSelectBox extends LitElement {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
     .option .content .text .description {
       color: var(--secondary-text-color);
-      font-size: 13px;
+      font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 16px;
+      line-height: var(--ha-line-height-condensed);
     }
     img {
       position: relative;

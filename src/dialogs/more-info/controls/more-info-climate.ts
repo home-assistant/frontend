@@ -531,7 +531,7 @@ class MoreInfoClimate extends LitElement {
         .current .label {
           opacity: 0.8;
           font-size: var(--ha-font-size-m);
-          line-height: 16px;
+          line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.4px;
           margin-bottom: 4px;
         }
@@ -539,7 +539,7 @@ class MoreInfoClimate extends LitElement {
         .current .value {
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-medium);
-          line-height: 28px;
+          line-height: var(--ha-line-height-condensed);
           direction: ltr;
         }
         ha-select {

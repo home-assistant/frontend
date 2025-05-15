@@ -301,7 +301,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 28px;
+          line-height: var(--ha-line-height-expanded);
         }
 
         .value {

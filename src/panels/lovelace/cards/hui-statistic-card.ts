@@ -369,7 +369,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
         .name {
           color: var(--secondary-text-color);
-          line-height: 40px;
+          line-height: var(--ha-line-height-expanded);
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
           overflow: hidden;
@@ -388,7 +388,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 28px;
+          line-height: var(--ha-line-height-expanded);
         }
 
         .value {

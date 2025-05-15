@@ -430,7 +430,7 @@ class HassioAddonConfig extends LitElement {
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
           letter-spacing: -0.012em;
-          line-height: 48px;
+          line-height: var(--ha-line-height-expanded);
           padding: 12px 16px 16px;
           display: block;
           margin-block: 0px;
