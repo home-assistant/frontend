@@ -5,6 +5,7 @@ import type { PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { mdiGoogleCirclesGroup } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts";
 import "./ha-chart-base";
@@ -52,8 +53,8 @@ export interface NetworkData {
   categories?: { name: string }[];
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-let GraphChart: any;
+// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
+let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
 @customElement("ha-network-graph")
 export class HaNetworkGraph extends LitElement {
@@ -116,8 +117,8 @@ export class HaNetworkGraph extends LitElement {
     }
     return html`<ha-chart-base
       .hass=${this.hass}
-      .data=${this._getSeries()}
-      .options=${this._createOptions()}
+      .data=${this._getSeries(this.data)}
+      .options=${this._createOptions(this.data?.categories)}
       height="100%"
       .extraComponents=${[GraphChart]}
     >
@@ -127,34 +128,34 @@ export class HaNetworkGraph extends LitElement {
         class="refresh-button ${this._physicsEnabled ? "active" : "inactive"}"
         .path=${mdiGoogleCirclesGroup}
         @click=${this._togglePhysics}
-        title=${this.hass.localize(
+        label=${this.hass.localize(
           "ui.panel.config.common.graph.toggle_physics"
         )}
       ></ha-icon-button>
     </ha-chart-base>`;
   }
 
-  private _createOptions(): ECOption {
-    return {
+  private _createOptions = memoizeOne(
+    (categories?: NetworkData["categories"]): ECOption => ({
       tooltip: {
         trigger: "item",
         confine: true,
         formatter: this.tooltipFormatter,
       },
       legend: {
-        show: !!this.data?.categories?.length,
-        data: this.data?.categories,
+        show: !!categories?.length,
+        data: categories,
         top: 8,
       },
       dataZoom: {
         type: "inside",
         filterMode: "none",
       },
-    };
-  }
+    })
+  );
 
-  private _getSeries() {
-    if (!this.data) {
+  private _getSeries = memoizeOne((data?: NetworkData) => {
+    if (!data) {
       return [];
     }
 
@@ -183,7 +184,7 @@ export class HaNetworkGraph extends LitElement {
         },
         edgeSymbol: ["none", "arrow"],
         edgeSymbolSize: 10,
-        data: this.data.nodes.map((node) => {
+        data: data.nodes.map((node) => {
           const echartsNode: NonNullable<GraphSeriesOption["data"]>[number] = {
             id: node.id,
             name: node.name,
@@ -213,7 +214,7 @@ export class HaNetworkGraph extends LitElement {
           }
           return echartsNode;
         }),
-        links: this.data.links.map((link) => ({
+        links: data.links.map((link) => ({
           ...link,
           value: link.reverseValue
             ? Math.max(link.value ?? 0, link.reverseValue)
@@ -221,10 +222,10 @@ export class HaNetworkGraph extends LitElement {
           // remove arrow for bidirectional links
           symbolSize: link.reverseValue ? 1 : link.symbolSize, // 0 doesn't work
         })),
-        categories: this.data.categories || [],
+        categories: data.categories || [],
       },
     ] as any;
-  }
+  });
 
   private _togglePhysics() {
     if (this._baseChart?.chart) {
