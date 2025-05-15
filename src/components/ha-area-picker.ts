@@ -20,7 +20,7 @@ import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
-import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-combo-box";
+import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";

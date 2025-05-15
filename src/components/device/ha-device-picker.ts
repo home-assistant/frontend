@@ -1,5 +1,6 @@
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -15,20 +16,23 @@ import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { debounce } from "../../common/util/debounce";
+import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
 import "../ha-combo-box-item";
 import "../ha-icon-button";
 import "../ha-input-helper-text";
 import type { HaMdListItem } from "../ha-md-list-item";
 import "../ha-svg-icon";
 import "./ha-device-combo-box";
-import type {
-  HaDeviceComboBox,
-  HaDeviceComboBoxDeviceFilterFunc,
-  HaDeviceComboBoxEntityFilterFunc,
-} from "./ha-device-combo-box";
-import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
-import { brandsUrl } from "../../util/brands-url";
+import type { HaDeviceComboBox } from "./ha-device-combo-box";
+
+export type HaDeviceComboBoxDeviceFilterFunc = (
+  device: DeviceRegistryEntry
+) => boolean;
+
+export type HaDeviceComboBoxEntityFilterFunc = (entity: HassEntity) => boolean;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {

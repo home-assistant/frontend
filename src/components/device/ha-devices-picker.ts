@@ -2,11 +2,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import "./ha-device-picker";
 import type {
   HaDeviceComboBoxDeviceFilterFunc,
   HaDeviceComboBoxEntityFilterFunc,
-} from "./ha-device-combo-box";
-import "./ha-device-picker";
+} from "./ha-device-picker";
 
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {

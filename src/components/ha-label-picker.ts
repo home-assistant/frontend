@@ -22,7 +22,7 @@ import {
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
-import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-combo-box";
+import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";

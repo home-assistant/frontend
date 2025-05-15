@@ -1,6 +1,5 @@
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import Fuse from "fuse.js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -11,20 +10,24 @@ import { computeDeviceNameDisplay } from "../../common/entity/compute_device_nam
 import { computeDomain } from "../../common/entity/compute_domain";
 import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
 import type {
   DeviceEntityDisplayLookup,
   DeviceRegistryEntry,
 } from "../../data/device_registry";
 import { getDeviceEntityDisplayLookup } from "../../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../data/entity_registry";
+import { domainToName } from "../../data/integration";
 import { HaFuse } from "../../resources/fuse";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box-item";
-import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
-import { brandsUrl } from "../../util/brands-url";
-import { domainToName } from "../../data/integration";
+import type {
+  HaDeviceComboBoxDeviceFilterFunc,
+  HaDeviceComboBoxEntityFilterFunc,
+} from "./ha-device-picker";
 
 interface DeviceComboBoxItem {
   // Force empty label to always display empty value by default in the search field
@@ -37,12 +40,6 @@ interface DeviceComboBoxItem {
   search_labels?: string[];
   sorting_label?: string;
 }
-
-export type HaDeviceComboBoxDeviceFilterFunc = (
-  device: DeviceRegistryEntry
-) => boolean;
-
-export type HaDeviceComboBoxEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const NO_DEVICES = "___no-devices___";
 

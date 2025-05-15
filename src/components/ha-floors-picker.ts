@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
-import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-combo-box";
+import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-floor-picker";
 
 @customElement("ha-floors-picker")
