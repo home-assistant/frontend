@@ -48,7 +48,7 @@ export class HaGenericPicker extends LitElement {
   public getItems?: () => PickerComboBoxItem[];
 
   @property({ attribute: false, type: Array })
-  public getAdditionalItems?: (searchString: string) => PickerComboBoxItem[];
+  public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
   public rowRenderer?: ComboBoxLitRenderer<PickerComboBoxItem>;

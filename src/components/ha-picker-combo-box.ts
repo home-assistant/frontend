@@ -72,7 +72,7 @@ export class HaPickerComboBox extends LitElement {
   public getItems?: () => PickerComboBoxItem[];
 
   @property({ attribute: false, type: Array })
-  public getAdditionalItems?: (searchString: string) => PickerComboBoxItem[];
+  public getAdditionalItems?: (searchString?: string) => PickerComboBoxItem[];
 
   @property({ attribute: false })
   public rowRenderer?: ComboBoxLitRenderer<PickerComboBoxItem>;
@@ -113,7 +113,7 @@ export class HaPickerComboBox extends LitElement {
     })
   );
 
-  private _getAdditionalItems = (searchString: string) => {
+  private _getAdditionalItems = (searchString?: string) => {
     const items = this.getAdditionalItems?.(searchString) || [];
 
     return items.map<PickerComboBoxItemWithLabel>((item) => ({
@@ -144,7 +144,7 @@ export class HaPickerComboBox extends LitElement {
       );
     }
 
-    const additionalItems = this._getAdditionalItems("");
+    const additionalItems = this._getAdditionalItems();
     sortedItems.push(...additionalItems);
     return sortedItems;
   };
