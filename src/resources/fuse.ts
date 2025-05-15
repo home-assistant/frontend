@@ -50,7 +50,7 @@ export class HaFuse<T> extends Fuse<T> {
     search: string,
     options?: FuseSearchOptions
   ): FuseResult<T>[] | null {
-    const terms = search.split(" ");
+    const terms = search.toLowerCase().split(" ");
 
     // @ts-expect-error options is not part of the Fuse type
     const { minMatchCharLength } = this.options as IFuseOptions<T>;
