@@ -10,7 +10,7 @@ import {
   mdiServerNetwork,
 } from "@mdi/js";
 import Fuse from "fuse.js";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
