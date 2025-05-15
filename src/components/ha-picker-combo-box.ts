@@ -36,9 +36,11 @@ const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
   item
 ) => html`
   <ha-combo-box-item type="button" compact>
-    ${item.icon_path
-      ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
-      : html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`}
+    ${item.icon
+      ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+      : item.icon_path
+        ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
+        : nothing}
     <span slot="headline">${item.primary}</span>
     ${item.secondary
       ? html`<span slot="supporting-text">${item.secondary}</span>`
@@ -223,12 +225,12 @@ export class HaPickerComboBox extends LitElement {
     if (!this._opened) return;
 
     const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value.trim().toLowerCase() as string;
+    const searchString = ev.detail.value.trim() as string;
 
     const index = this._fuseIndex(this._items);
     const fuse = new HaFuse(this._items, {}, index);
 
-    const results = fuse.multiTermsSearch(filterString);
+    const results = fuse.multiTermsSearch(searchString);
     if (results) {
       const items = results.map((result) => result.item);
       if (items.length === 0) {
@@ -236,7 +238,7 @@ export class HaPickerComboBox extends LitElement {
           this._defaultNotFoundItem(this.notFoundLabel, this.hass.localize)
         );
       }
-      const additionalItems = this._getAdditionalItems(filterString);
+      const additionalItems = this._getAdditionalItems(searchString);
       items.push(...additionalItems);
       target.filteredItems = items;
     } else {
