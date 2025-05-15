@@ -212,6 +212,10 @@ export class HaPickerComboBox extends LitElement {
     this.comboBox.setTextFieldValue("");
     const newValue = ev.detail.value?.trim();
 
+    if (newValue === NO_MATCHING_ITEMS_FOUND_ID) {
+      return;
+    }
+
     if (newValue !== this._value) {
       this._setValue(newValue);
     }

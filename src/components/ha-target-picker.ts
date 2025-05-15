@@ -37,7 +37,6 @@ import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
-import "./device/ha-device-combo-box";
 import "./device/ha-device-picker";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
@@ -416,11 +415,14 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           `
         : this._addMode === "device_id"
           ? html`
-              <ha-device-combo-box
+              <ha-device-picker
                 .hass=${this.hass}
                 id="input"
                 .type=${"device_id"}
-                .label=${this.hass.localize(
+                .placeholder=${this.hass.localize(
+                  "ui.components.target-picker.add_device_id"
+                )}
+                .searchLabel=${this.hass.localize(
                   "ui.components.target-picker.add_device_id"
                 )}
                 .deviceFilter=${this.deviceFilter}
@@ -431,7 +433,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 @value-changed=${this._targetPicked}
                 @opened-changed=${this._openedChanged}
                 @click=${this._preventDefault}
-              ></ha-device-combo-box>
+              ></ha-device-picker>
             `
           : this._addMode === "label_id"
             ? html`
