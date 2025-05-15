@@ -28,11 +28,11 @@ import "../ha-svg-icon";
 import "./ha-device-combo-box";
 import type { HaDeviceComboBox } from "./ha-device-combo-box";
 
-export type HaDeviceComboBoxDeviceFilterFunc = (
+export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
 
-export type HaDeviceComboBoxEntityFilterFunc = (entity: HassEntity) => boolean;
+export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {
@@ -88,10 +88,10 @@ export class HaDevicePicker extends LitElement {
   public excludeDevices?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
-  public entityFilter?: HaDeviceComboBoxEntityFilterFunc;
+  public entityFilter?: HaDevicePickerEntityFilterFunc;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;

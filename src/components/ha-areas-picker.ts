@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../types";
-import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-picker";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-area-picker";
 
 @customElement("ha-areas-picker")
@@ -47,7 +47,7 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   public includeDeviceClasses?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
   public entityFilter?: (entity: HassEntity) => boolean;

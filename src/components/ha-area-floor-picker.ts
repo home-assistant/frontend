@@ -22,7 +22,7 @@ import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import type { FloorRegistryEntry } from "../data/floor_registry";
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
-import type { HaDeviceComboBoxDeviceFilterFunc } from "./device/ha-device-picker";
+import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
@@ -97,7 +97,7 @@ export class HaAreaFloorPicker extends LitElement {
   public excludeFloors?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
   public entityFilter?: (entity: HassEntity) => boolean;

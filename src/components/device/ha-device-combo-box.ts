@@ -25,8 +25,8 @@ import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box-item";
 import type {
-  HaDeviceComboBoxDeviceFilterFunc,
-  HaDeviceComboBoxEntityFilterFunc,
+  HaDevicePickerDeviceFilterFunc,
+  HaDevicePickerEntityFilterFunc,
 } from "./ha-device-picker";
 
 interface DeviceComboBoxItem {
@@ -86,10 +86,10 @@ export class HaDeviceComboBox extends LitElement {
   public excludeDevices?: string[];
 
   @property({ attribute: false })
-  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
-  public entityFilter?: HaDeviceComboBoxEntityFilterFunc;
+  public entityFilter?: HaDevicePickerEntityFilterFunc;
 
   public async open() {
     await this.updateComplete;

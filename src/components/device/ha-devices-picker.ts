@@ -4,8 +4,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "./ha-device-picker";
 import type {
-  HaDeviceComboBoxDeviceFilterFunc,
-  HaDeviceComboBoxEntityFilterFunc,
+  HaDevicePickerDeviceFilterFunc,
+  HaDevicePickerEntityFilterFunc,
 } from "./ha-device-picker";
 
 @customElement("ha-devices-picker")
@@ -45,10 +45,10 @@ class HaDevicesPicker extends LitElement {
   @property({ attribute: "pick-device-label" }) public pickDeviceLabel?: string;
 
   @property({ attribute: false })
-  public deviceFilter?: HaDeviceComboBoxDeviceFilterFunc;
+  public deviceFilter?: HaDevicePickerDeviceFilterFunc;
 
   @property({ attribute: false })
-  public entityFilter?: HaDeviceComboBoxEntityFilterFunc;
+  public entityFilter?: HaDevicePickerEntityFilterFunc;
 
   protected render() {
     if (!this.hass) {
