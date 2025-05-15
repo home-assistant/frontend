@@ -9,7 +9,6 @@ import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
-import type { AreaRegistryEntry } from "../data/area_registry";
 import { createAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
@@ -91,6 +90,7 @@ export class HaAreaPicker extends LitElement {
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
+    await this.updateComplete;
     await this._picker?.open();
   }
 
@@ -124,9 +124,9 @@ export class HaAreaPicker extends LitElement {
 
   private _getAreas = memoizeOne(
     (
-      areas: AreaRegistryEntry[],
-      devices: DeviceRegistryEntry[],
-      entities: EntityRegistryDisplayEntry[],
+      haAreas: HomeAssistant["areas"],
+      haDevices: HomeAssistant["devices"],
+      haEntities: HomeAssistant["entities"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
@@ -137,6 +137,10 @@ export class HaAreaPicker extends LitElement {
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
+
+      const areas = Object.values(haAreas);
+      const devices = Object.values(haDevices);
+      const entities = Object.values(haEntities);
 
       if (
         includeDomains ||
@@ -293,9 +297,9 @@ export class HaAreaPicker extends LitElement {
 
   private _getItems = () =>
     this._getAreas(
-      Object.values(this.hass.areas),
-      Object.values(this.hass.devices),
-      Object.values(this.hass.entities),
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
       this.includeDomains,
       this.excludeDomains,
       this.includeDeviceClasses,
@@ -304,7 +308,7 @@ export class HaAreaPicker extends LitElement {
       this.excludeAreas
     );
 
-  private _allAreas = memoizeOne(
+  private _allAreaNames = memoizeOne(
     (areas: HomeAssistant["areas"]) =>
       Object.values(areas)
         .map((area) => computeAreaName(area)?.toLowerCase())
@@ -318,7 +322,7 @@ export class HaAreaPicker extends LitElement {
       return [];
     }
 
-    const allAreas = this._allAreas(this.hass.areas);
+    const allAreas = this._allAreaNames(this.hass.areas);
 
     if (searchString && !allAreas.includes(searchString.toLowerCase())) {
       return [
