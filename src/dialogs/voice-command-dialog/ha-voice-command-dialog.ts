@@ -248,6 +248,7 @@ export class HaVoiceCommandDialog extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
+          --mdc-dialog-min-width: var(--mdc-dialog-max-width);
           --mdc-dialog-max-height: 500px;
           --dialog-content-padding: 0;
         }

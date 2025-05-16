@@ -109,25 +109,24 @@ export class HaAssistChat extends LitElement {
     const supportsSTT = this.pipeline?.stt_engine && !this.disableSpeech;
 
     return html`
-      ${controlHA
-        ? nothing
-        : html`
-            <ha-alert>
-              ${this.hass.localize(
-                "ui.dialogs.voice_command.conversation_no_control"
-              )}
-            </ha-alert>
-          `}
-      <div class="messages">
-        <div class="messages-container" id="scroll-container">
-          ${this._conversation!.map(
-            // New lines matter for messages
-            // prettier-ignore
-            (message) => html`
+      <div class="messages" id="scroll-container">
+        ${controlHA
+          ? nothing
+          : html`
+              <ha-alert>
+                ${this.hass.localize(
+                  "ui.dialogs.voice_command.conversation_no_control"
+                )}
+              </ha-alert>
+              <div class="spacer"></div>
+            `}
+        ${this._conversation!.map(
+          // New lines matter for messages
+          // prettier-ignore
+          (message) => html`
                 <div class="message ${classMap({ error: !!message.error, [message.who]: true })}">${message.text}</div>
               `
-          )}
-        </div>
+        )}
       </div>
       <div class="input" slot="primaryAction">
         <ha-textfield
@@ -574,6 +573,9 @@ export class HaAssistChat extends LitElement {
       display: flex;
       flex-direction: column;
     }
+    ha-alert {
+      margin-bottom: 8px;
+    }
     ha-textfield {
       display: block;
     }
@@ -581,17 +583,14 @@ export class HaAssistChat extends LitElement {
       flex: 1;
       display: block;
       box-sizing: border-box;
-      position: relative;
-    }
-    .messages-container {
-      position: absolute;
-      bottom: 0px;
-      right: 0px;
-      left: 0px;
-      padding: 0px 10px 16px;
-      box-sizing: border-box;
       overflow-y: auto;
       max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 0 12px 16px;
+    }
+    .spacer {
+      flex: 1;
     }
     .message {
       white-space: pre-line;
@@ -600,6 +599,9 @@ export class HaAssistChat extends LitElement {
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;
+    }
+    .message:last-child {
+      margin-bottom: 0;
     }
 
     @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -619,7 +621,7 @@ export class HaAssistChat extends LitElement {
       margin-left: 24px;
       margin-inline-start: 24px;
       margin-inline-end: initial;
-      float: var(--float-end);
+      align-self: flex-end;
       text-align: right;
       border-bottom-right-radius: 0px;
       background-color: var(--chat-background-color-user, var(--primary-color));
@@ -631,7 +633,7 @@ export class HaAssistChat extends LitElement {
       margin-right: 24px;
       margin-inline-end: 24px;
       margin-inline-start: initial;
-      float: var(--float-start);
+      align-self: flex-start;
       border-bottom-left-radius: 0px;
       background-color: var(
         --chat-background-color-hass,
