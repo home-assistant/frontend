@@ -117,7 +117,11 @@ export class HaNetworkGraph extends LitElement {
     }
     return html`<ha-chart-base
       .hass=${this.hass}
-      .data=${this._getSeries(this.data)}
+      .data=${this._getSeries(
+        this.data,
+        this._physicsEnabled,
+        this._reducedMotion
+      )}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
       .extraComponents=${[GraphChart]}
