@@ -50,6 +50,11 @@ export const typographyStyles = css`
     --material-small-font-size: var(--ha-font-size-xs);
     --material-caption-font-size: var(--ha-font-size-2xs);
     --material-button-font-size: var(--ha-font-size-xs);
+
+    /* Add font to lists since default does not handle non-latin characters */
+    --md-list-item-label-text-font: var(--ha-font-family-body);
+    --md-list-item-supporting-text-font: var(--ha-font-family-body);
+    --md-list-item-trailing-supporting-text-font: var(--ha-font-family-body);
   }
 `;
 
