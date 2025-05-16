@@ -25,6 +25,7 @@ import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-subpage";
 import { colorVariables } from "../../../../../resources/theme/color.globals";
 import { navigate } from "../../../../../common/navigate";
+import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
 
 @customElement("bluetooth-network-visualization")
 export class BluetoothNetworkVisualization extends LitElement {
@@ -111,10 +112,11 @@ export class BluetoothNetworkVisualization extends LitElement {
 
   protected render() {
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        header=${this.hass.localize("ui.panel.config.zha.visualization.header")}
+        header=${this.hass.localize("ui.panel.config.bluetooth.visualization")}
+        .tabs=${bluetoothAdvertisementMonitorTabs}
       >
         <ha-network-graph
           .hass=${this.hass}
@@ -122,7 +124,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         ></ha-network-graph>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
