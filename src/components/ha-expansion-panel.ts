@@ -202,6 +202,7 @@ export class HaExpansionPanel extends LitElement {
     .header,
     ::slotted([slot="header"]) {
       flex: 1;
+      overflow-wrap: anywhere;
     }
 
     .container {
