@@ -214,6 +214,7 @@ class BrowseMediaTTS extends LitElement {
     item.media_content_id = `${
       item.media_content_id.split("?")[0]
     }?${query.toString()}`;
+    item.media_content_type = "audio/mp3";
     item.can_play = true;
     item.title = message;
     fireEvent(this, "tts-picked", { item });
