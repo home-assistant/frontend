@@ -43,7 +43,10 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     area: () => import("./areas/area-view-strategy"),
     "areas-overview": () => import("./areas/areas-overview-view-strategy"),
   },
-  section: {},
+  section: {
+    "entities-filter": () =>
+      import("./entities-filter/entities-filter-section-strategy"),
+  },
 };
 
 export type LovelaceStrategyConfigType = "dashboard" | "view" | "section";
