@@ -29,6 +29,7 @@ import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { subscribeSystemHealthInfo } from "../../../data/system_health";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -99,6 +100,8 @@ class HaConfigInfo extends LitElement {
 
   @state() private _hassioInfo?: HassioInfo;
 
+  @state() private _installationMethod?: string;
+
   protected render(): TemplateResult {
     const hass = this.hass;
     const customUiList: { name: string; url: string; version: string }[] =
@@ -127,6 +130,14 @@ class HaConfigInfo extends LitElement {
             </a>
             <p>Home Assistant</p>
             <ul class="versions">
+              <li>
+                <span class="version-label"
+                  >${this.hass.localize(
+                    `ui.panel.config.info.installation_method`
+                  )}</span
+                >
+                <span class="version">${this._installationMethod || "…"}</span>
+              </li>
               <li>
                 <span class="version-label">Core</span>
                 <span class="version">${hass.connection.haVersion}</span>
@@ -249,6 +260,13 @@ class HaConfigInfo extends LitElement {
     if (isComponentLoaded(this.hass, "hassio")) {
       this._loadSupervisorInfo();
     }
+
+    const unsubSystemHealth = subscribeSystemHealthInfo(this.hass, (info) => {
+      if (info?.homeassistant) {
+        this._installationMethod = info.homeassistant.info.installation_type;
+        unsubSystemHealth.then((unsub) => unsub());
+      }
+    });
   }
 
   private async _loadSupervisorInfo(): Promise<void> {
