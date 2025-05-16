@@ -244,7 +244,10 @@ export class HuiEnergyDevicesGraphCard
 
     chartData.sort((a: any, b: any) => b.value[0] - a.value[0]);
 
-    chartData.length = this._config?.max_devices || chartData.length;
+    chartData.length = Math.min(
+      this._config?.max_devices || Infinity,
+      chartData.length
+    );
 
     this._chartData = datasets;
     await this.updateComplete;
