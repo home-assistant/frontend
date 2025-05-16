@@ -53,9 +53,15 @@ interface PipelineRunStartEvent extends PipelineEventBase {
   data: {
     pipeline: string;
     language: string;
+    conversation_id: string;
     runner_data: {
       stt_binary_handler_id: number | null;
       timeout: number;
+    };
+    tts_output?: {
+      token: string;
+      url: string;
+      mime_type: string;
     };
   };
 }
@@ -156,7 +162,12 @@ interface PipelineTTSStartEvent extends PipelineEventBase {
 interface PipelineTTSEndEvent extends PipelineEventBase {
   type: "tts-end";
   data: {
-    tts_output: ResolvedMediaSource;
+    tts_output: {
+      media_id: string;
+      token: string;
+      url: string;
+      mime_type: string;
+    };
   };
 }
 

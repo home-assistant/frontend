@@ -91,7 +91,7 @@ export class HaAssistChat extends LitElement {
     super.disconnectedCallback();
     this._audioRecorder?.close();
     this._audioRecorder = undefined;
-    this._audio?.pause();
+    this._unloadAudio();
     this._conversation = [];
     this._conversationId = null;
   }
@@ -273,8 +273,8 @@ export class HaAssistChat extends LitElement {
   }
 
   private async _startListening() {
+    this._unloadAudio();
     this._processing = true;
-    this._audio?.pause();
     if (!this._audioRecorder) {
       this._audioRecorder = new AudioRecorder((audio) => {
         if (this._audioBuffer) {
@@ -294,7 +294,7 @@ export class HaAssistChat extends LitElement {
 
     this._addMessage(userMessage);
 
-    const hassMessageProcesser = this._startAddHassMessage();
+    const hassMessageProcesser = this._createAddHassMessageProcessor();
 
     try {
       const unsub = await runAssistPipeline(
@@ -303,6 +303,22 @@ export class HaAssistChat extends LitElement {
           if (event.type === "run-start") {
             this._stt_binary_handler_id =
               event.data.runner_data.stt_binary_handler_id;
+            this._audio = new Audio(event.data.tts_output!.url);
+            this._audio.play();
+            this._audio.addEventListener("ended", () => {
+              this._unloadAudio();
+              if (hassMessageProcesser.continueConversation) {
+                this._startListening();
+              }
+            });
+            this._audio.addEventListener("pause", this._unloadAudio);
+            this._audio.addEventListener("canplaythrough", () =>
+              this._audio?.play()
+            );
+            this._audio.addEventListener("error", () => {
+              this._unloadAudio();
+              showAlertDialog(this, { title: "Error playing audio." });
+            });
           }
 
           // When we start STT stage, the WS has a binary handler
@@ -324,23 +340,11 @@ export class HaAssistChat extends LitElement {
             hassMessageProcesser.addMessage();
           } else if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
-          } else if (event.type === "tts-end") {
-            const url = event.data.tts_output.url;
-            this._audio = new Audio(url);
-            this._audio.play();
-            this._audio.addEventListener("ended", () => {
-              this._unloadAudio();
-              if (hassMessageProcesser.continueConversation) {
-                this._startListening();
-              }
-            });
-            this._audio.addEventListener("pause", this._unloadAudio);
-            this._audio.addEventListener("canplaythrough", this._playAudio);
-            this._audio.addEventListener("error", this._audioError);
           } else if (event.type === "run-end") {
             this._stt_binary_handler_id = undefined;
             unsub();
           } else if (event.type === "error") {
+            this._unloadAudio();
             this._stt_binary_handler_id = undefined;
             if (userMessage.text === "…") {
               userMessage.text = event.data.message;
@@ -404,25 +408,20 @@ export class HaAssistChat extends LitElement {
     this.hass.connection.socket!.send(data);
   }
 
-  private _playAudio = () => {
-    this._audio?.play();
-  };
-
-  private _audioError = () => {
-    showAlertDialog(this, { title: "Error playing audio." });
-    this._audio?.removeAttribute("src");
-  };
-
   private _unloadAudio = () => {
-    this._audio?.removeAttribute("src");
+    if (!this._audio) {
+      return;
+    }
+    this._audio.pause();
+    this._audio.removeAttribute("src");
     this._audio = undefined;
   };
 
   private async _processText(text: string) {
+    this._unloadAudio();
     this._processing = true;
-    this._audio?.pause();
     this._addMessage({ who: "user", text });
-    const hassMessageProcesser = this._startAddHassMessage();
+    const hassMessageProcesser = this._createAddHassMessageProcessor();
     hassMessageProcesser.addMessage();
     try {
       const unsub = await runAssistPipeline(
@@ -456,7 +455,7 @@ export class HaAssistChat extends LitElement {
     }
   }
 
-  private _startAddHassMessage() {
+  private _createAddHassMessageProcessor() {
     let currentDeltaRole = "";
 
     const progress = {
