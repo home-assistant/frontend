@@ -49,7 +49,6 @@ export class HaChartBase extends LitElement {
   public expandLegend?: boolean;
 
   // extraComponents is not reactive and should not trigger updates
-  @property({ attribute: false, hasChanged: () => false })
   public extraComponents?: any[];
 
   @state()
