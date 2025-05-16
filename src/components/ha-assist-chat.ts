@@ -5,6 +5,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { HomeAssistant } from "../types";
 import {
+  type PipelineRunEvent,
   runAssistPipeline,
   type AssistPipeline,
 } from "../data/assist_pipeline";
@@ -118,8 +119,8 @@ export class HaAssistChat extends LitElement {
                   "ui.dialogs.voice_command.conversation_no_control"
                 )}
               </ha-alert>
-              <div class="spacer"></div>
             `}
+        <div class="spacer"></div>
         ${this._conversation!.map(
           // New lines matter for messages
           // prettier-ignore
@@ -292,27 +293,20 @@ export class HaAssistChat extends LitElement {
     await this._audioRecorder.start();
 
     this._addMessage(userMessage);
-    this.requestUpdate("_audioRecorder");
 
-    let continueConversation = false;
-    let hassMessage = {
-      who: "hass",
-      text: "…",
-      error: false,
-    };
-    let currentDeltaRole = "";
-    // To make sure the answer is placed at the right user text, we add it before we process it
+    const hassMessageProcesser = this._startAddHassMessage();
+
     try {
       const unsub = await runAssistPipeline(
         this.hass,
-        (event) => {
+        (event: PipelineRunEvent) => {
           if (event.type === "run-start") {
             this._stt_binary_handler_id =
               event.data.runner_data.stt_binary_handler_id;
           }
 
           // When we start STT stage, the WS has a binary handler
-          if (event.type === "stt-start" && this._audioBuffer) {
+          else if (event.type === "stt-start" && this._audioBuffer) {
             // Send the buffer over the WS to the STT engine.
             for (const buffer of this._audioBuffer) {
               this._sendAudioChunk(buffer);
@@ -321,91 +315,38 @@ export class HaAssistChat extends LitElement {
           }
 
           // Stop recording if the server is done with STT stage
-          if (event.type === "stt-end") {
+          else if (event.type === "stt-end") {
             this._stt_binary_handler_id = undefined;
             this._stopListening();
             userMessage.text = event.data.stt_output.text;
             this.requestUpdate("_conversation");
-            // To make sure the answer is placed at the right user text, we add it before we process it
-            this._addMessage(hassMessage);
-          }
-
-          if (event.type === "intent-progress") {
-            const delta = event.data.chat_log_delta;
-
-            // new message
-            if (delta.role) {
-              // If currentDeltaRole exists, it means we're receiving our
-              // second or later message. Let's add it to the chat.
-              if (currentDeltaRole && delta.role && hassMessage.text !== "…") {
-                // Remove progress indicator of previous message
-                hassMessage.text = hassMessage.text.substring(
-                  0,
-                  hassMessage.text.length - 1
-                );
-
-                hassMessage = {
-                  who: "hass",
-                  text: "…",
-                  error: false,
-                };
-                this._addMessage(hassMessage);
-              }
-              currentDeltaRole = delta.role;
-            }
-
-            if (
-              currentDeltaRole === "assistant" &&
-              "content" in delta &&
-              delta.content
-            ) {
-              hassMessage.text =
-                hassMessage.text.substring(0, hassMessage.text.length - 1) +
-                delta.content +
-                "…";
-              this.requestUpdate("_conversation");
-            }
-          }
-
-          if (event.type === "intent-end") {
-            this._conversationId = event.data.intent_output.conversation_id;
-            continueConversation =
-              event.data.intent_output.continue_conversation;
-            const plain = event.data.intent_output.response.speech?.plain;
-            if (plain) {
-              hassMessage.text = plain.speech;
-            }
-            this.requestUpdate("_conversation");
-          }
-
-          if (event.type === "tts-end") {
+            // Add the response message placeholder to the chat when we know the STT is done
+            hassMessageProcesser.addMessage();
+          } else if (event.type.startsWith("intent-")) {
+            hassMessageProcesser.processEvent(event);
+          } else if (event.type === "tts-end") {
             const url = event.data.tts_output.url;
             this._audio = new Audio(url);
             this._audio.play();
             this._audio.addEventListener("ended", () => {
               this._unloadAudio();
-              if (continueConversation) {
+              if (hassMessageProcesser.continueConversation) {
                 this._startListening();
               }
             });
             this._audio.addEventListener("pause", this._unloadAudio);
             this._audio.addEventListener("canplaythrough", this._playAudio);
             this._audio.addEventListener("error", this._audioError);
-          }
-
-          if (event.type === "run-end") {
+          } else if (event.type === "run-end") {
             this._stt_binary_handler_id = undefined;
             unsub();
-          }
-
-          if (event.type === "error") {
+          } else if (event.type === "error") {
             this._stt_binary_handler_id = undefined;
             if (userMessage.text === "…") {
               userMessage.text = event.data.message;
               userMessage.error = true;
             } else {
-              hassMessage.text = event.data.message;
-              hassMessage.error = true;
+              hassMessageProcesser.setError(event.data.message);
             }
             this._stopListening();
             this.requestUpdate("_conversation");
@@ -481,72 +422,20 @@ export class HaAssistChat extends LitElement {
     this._processing = true;
     this._audio?.pause();
     this._addMessage({ who: "user", text });
-    let hassMessage = {
-      who: "hass",
-      text: "…",
-      error: false,
-    };
-    let currentDeltaRole = "";
-    // To make sure the answer is placed at the right user text, we add it before we process it
-    this._addMessage(hassMessage);
+    const hassMessageProcesser = this._startAddHassMessage();
+    hassMessageProcesser.addMessage();
     try {
       const unsub = await runAssistPipeline(
         this.hass,
         (event) => {
-          if (event.type === "intent-progress") {
-            const delta = event.data.chat_log_delta;
-
-            // new message and previous message has content
-            if (delta.role) {
-              // If currentDeltaRole exists, it means we're receiving our
-              // second or later message. Let's add it to the chat.
-              if (
-                currentDeltaRole &&
-                delta.role === "assistant" &&
-                hassMessage.text !== "…"
-              ) {
-                // Remove progress indicator of previous message
-                hassMessage.text = hassMessage.text.substring(
-                  0,
-                  hassMessage.text.length - 1
-                );
-
-                hassMessage = {
-                  who: "hass",
-                  text: "…",
-                  error: false,
-                };
-                this._addMessage(hassMessage);
-              }
-              currentDeltaRole = delta.role;
-            }
-
-            if (
-              currentDeltaRole === "assistant" &&
-              "content" in delta &&
-              delta.content
-            ) {
-              hassMessage.text =
-                hassMessage.text.substring(0, hassMessage.text.length - 1) +
-                delta.content +
-                "…";
-              this.requestUpdate("_conversation");
-            }
+          if (event.type.startsWith("intent-")) {
+            hassMessageProcesser.processEvent(event);
           }
-
           if (event.type === "intent-end") {
-            this._conversationId = event.data.intent_output.conversation_id;
-            const plain = event.data.intent_output.response.speech?.plain;
-            if (plain) {
-              hassMessage.text = plain.speech;
-            }
-            this.requestUpdate("_conversation");
             unsub();
           }
           if (event.type === "error") {
-            hassMessage.text = event.data.message;
-            hassMessage.error = true;
-            this.requestUpdate("_conversation");
+            hassMessageProcesser.setError(event.data.message);
             unsub();
           }
         },
@@ -559,12 +448,90 @@ export class HaAssistChat extends LitElement {
         }
       );
     } catch {
-      hassMessage.text = this.hass.localize("ui.dialogs.voice_command.error");
-      hassMessage.error = true;
-      this.requestUpdate("_conversation");
+      hassMessageProcesser.setError(
+        this.hass.localize("ui.dialogs.voice_command.error")
+      );
     } finally {
       this._processing = false;
     }
+  }
+
+  private _startAddHassMessage() {
+    let currentDeltaRole = "";
+
+    const progress = {
+      continueConversation: false,
+      hassMessage: {
+        who: "hass",
+        text: "…",
+        error: false,
+      },
+      addMessage: () => {
+        this._addMessage(progress.hassMessage);
+      },
+      setError: (error: string) => {
+        progress.hassMessage.text = error;
+        progress.hassMessage.error = true;
+        this.requestUpdate("_conversation");
+      },
+      processEvent: (event: PipelineRunEvent) => {
+        if (event.type === "intent-progress") {
+          const delta = event.data.chat_log_delta;
+
+          // new message
+          if (delta.role) {
+            // If currentDeltaRole exists, it means we're receiving our
+            // second or later message. Let's add it to the chat.
+            if (
+              currentDeltaRole &&
+              delta.role &&
+              progress.hassMessage.text !== "…"
+            ) {
+              // Remove progress indicator of previous message
+              progress.hassMessage.text = progress.hassMessage.text.substring(
+                0,
+                progress.hassMessage.text.length - 1
+              );
+
+              progress.hassMessage = {
+                who: "hass",
+                text: "…",
+                error: false,
+              };
+              this._addMessage(progress.hassMessage);
+            }
+            currentDeltaRole = delta.role;
+          }
+
+          if (
+            currentDeltaRole === "assistant" &&
+            "content" in delta &&
+            delta.content
+          ) {
+            progress.hassMessage.text =
+              progress.hassMessage.text.substring(
+                0,
+                progress.hassMessage.text.length - 1
+              ) +
+              delta.content +
+              "…";
+            this.requestUpdate("_conversation");
+          }
+        }
+
+        if (event.type === "intent-end") {
+          this._conversationId = event.data.intent_output.conversation_id;
+          progress.continueConversation =
+            event.data.intent_output.continue_conversation;
+          const plain = event.data.intent_output.response.speech?.plain;
+          if (plain) {
+            progress.hassMessage.text = plain.speech;
+          }
+          this.requestUpdate("_conversation");
+        }
+      },
+    };
+    return progress;
   }
 
   static styles = css`
