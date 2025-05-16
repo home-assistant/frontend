@@ -54,9 +54,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .route=${this.route}
-        header=${this.hass.localize(
-          "ui.panel.config.zha.visualization.header"
-        )}
+        header=${this.hass.localize("ui.panel.config.zha.visualization.header")}
       >
         <ha-network-graph
           .hass=${this.hass}
@@ -69,7 +67,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             class="refresh-button"
             .path=${mdiRefresh}
             @click=${this._refreshTopology}
-            title=${this.hass.localize(
+            label=${this.hass.localize(
               "ui.panel.config.zha.visualization.refresh_topology"
             )}
           ></ha-icon-button>
