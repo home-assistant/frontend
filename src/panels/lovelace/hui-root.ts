@@ -307,18 +307,19 @@ class HUIRoot extends LitElement {
         view.visible === false);
 
     const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
-      ${views.map(
-        (view, index) => html`
+      ${views.map((view, index) => {
+        const hidden =
+          !this._editMode && (view.subview || _isTabHiddenForUser(view));
+        return html`
           <sl-tab
             slot="nav"
             panel=${index}
             .active=${this._curView === index}
+            .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
             class=${classMap({
               icon: Boolean(view.icon),
-              "hide-tab": Boolean(
-                !this._editMode && (view.subview || _isTabHiddenForUser(view))
-              ),
+              "hide-tab": Boolean(hidden),
             })}
           >
             ${this._editMode
@@ -368,8 +369,8 @@ class HUIRoot extends LitElement {
                 `
               : nothing}
           </sl-tab>
-        `
-      )}
+        `;
+      })}
     </sl-tab-group>`;
 
     return html`
