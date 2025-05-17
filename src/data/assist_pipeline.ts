@@ -114,7 +114,7 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
   };
 }
 
-interface ConversationChatLogAssistantDelta {
+export interface ConversationChatLogAssistantDelta {
   role: "assistant";
   content: string;
   tool_calls: {
@@ -124,7 +124,7 @@ interface ConversationChatLogAssistantDelta {
   }[];
 }
 
-interface ConversationChatLogToolResultDelta {
+export interface ConversationChatLogToolResultDelta {
   role: "tool_result";
   agent_id: string;
   tool_call_id: string;

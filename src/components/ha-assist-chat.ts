@@ -8,6 +8,8 @@ import {
   type PipelineRunEvent,
   runAssistPipeline,
   type AssistPipeline,
+  type ConversationChatLogAssistantDelta,
+  type ConversationChatLogToolResultDelta,
 } from "../data/assist_pipeline";
 import { supportsFeature } from "../common/entity/supports-feature";
 import { ConversationEntityFeature } from "../data/conversation";
@@ -459,6 +461,9 @@ export class HaAssistChat extends LitElement {
     let currentDeltaRole = "";
 
     const progressToNextMessage = () => {
+      if (progress.hassMessage.text === "…") {
+        return;
+      }
       progress.hassMessage.text = progress.hassMessage.text.substring(
         0,
         progress.hassMessage.text.length - 1
@@ -472,6 +477,16 @@ export class HaAssistChat extends LitElement {
       this._addMessage(progress.hassMessage);
     };
 
+    const isAssistantDelta = (
+      _delta: any
+    ): _delta is Partial<ConversationChatLogAssistantDelta> =>
+      currentDeltaRole === "assistant";
+
+    const isToolResult = (
+      _delta: any
+    ): _delta is ConversationChatLogToolResultDelta =>
+      currentDeltaRole === "tool_result";
+
     const progress = {
       continueConversation: false,
       hassMessage: {
@@ -483,9 +498,7 @@ export class HaAssistChat extends LitElement {
         this._addMessage(progress.hassMessage);
       },
       setError: (error: string) => {
-        if (progress.hassMessage.text !== "…") {
-          progressToNextMessage();
-        }
+        progressToNextMessage();
         progress.hassMessage.text = error;
         progress.hassMessage.error = true;
         this.requestUpdate("_conversation");
@@ -496,31 +509,23 @@ export class HaAssistChat extends LitElement {
 
           // new message
           if (delta.role) {
-            // If currentDeltaRole exists, it means we're receiving our
-            // second or later message. Let's add it to the chat.
-            if (
-              currentDeltaRole &&
-              delta.role &&
-              progress.hassMessage.text !== "…"
-            ) {
-              progressToNextMessage();
-            }
+            progressToNextMessage();
             currentDeltaRole = delta.role;
           }
 
-          if (
-            currentDeltaRole === "assistant" &&
-            "content" in delta &&
-            delta.content
-          ) {
-            progress.hassMessage.text =
-              progress.hassMessage.text.substring(
-                0,
-                progress.hassMessage.text.length - 1
-              ) +
-              delta.content +
-              "…";
-            this.requestUpdate("_conversation");
+          if (isAssistantDelta(delta)) {
+            if (delta.content) {
+              progress.hassMessage.text =
+                progress.hassMessage.text.substring(
+                  0,
+                  progress.hassMessage.text.length - 1
+                ) +
+                delta.content +
+                "…";
+              this.requestUpdate("_conversation");
+            }
+          } else if (isToolResult(delta)) {
+            // These always come in 1 chunk
           }
         }
 
