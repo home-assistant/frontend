@@ -184,13 +184,11 @@ export class HuiEnergyDevicesDetailGraphCard
         ...commonOptions,
         legend: {
           show: true,
-          type: "scroll",
-          animationDurationUpdate: 400,
+          type: "custom",
           selected: this._hiddenStats.reduce((acc, stat) => {
             acc[stat] = false;
             return acc;
           }, {}),
-          icon: "circle",
         },
         grid: {
           top: 15,
