@@ -28,6 +28,7 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { getDeviceContext } from "../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { navigate } from "../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
@@ -41,6 +42,7 @@ import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-textfield";
 import "../../components/ha-tip";
+import { getConfigEntries } from "../../data/config_entries";
 import { fetchHassioAddonsInfo } from "../../data/hassio/addon";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
@@ -50,6 +52,7 @@ import { HaFuse } from "../../resources/fuse";
 import { haStyleDialog, haStyleScrollbar } from "../../resources/styles";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
+import { brandsUrl } from "../../util/brands-url";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showShortcutsDialog } from "../shortcuts/show-shortcuts-dialog";
 import { QuickBarMode, type QuickBarParams } from "./show-dialog-quick-bar";
@@ -75,6 +78,8 @@ interface EntityItem extends QuickBarItem {
 
 interface DeviceItem extends QuickBarItem {
   deviceId: string;
+  domain?: string;
+  translatedDomain?: string;
   area?: string;
 }
 
@@ -297,7 +302,8 @@ export class QuickBar extends LitElement {
       this._commandItems =
         this._commandItems || (await this._generateCommandItems());
     } else if (this._mode === QuickBarMode.Device) {
-      this._deviceItems = this._deviceItems || this._generateDeviceItems();
+      this._deviceItems =
+        this._deviceItems || (await this._generateDeviceItems());
     } else {
       this._entityItems =
         this._entityItems || (await this._generateEntityItems());
@@ -344,9 +350,27 @@ export class QuickBar extends LitElement {
         tabindex="0"
         type="button"
       >
+        ${item.domain
+          ? html`<img
+              slot="start"
+              alt=""
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              src=${brandsUrl({
+                domain: item.domain,
+                type: "icon",
+                darkOptimized: this.hass.themes?.darkMode,
+              })}
+            />`
+          : nothing}
         <span slot="headline">${item.primaryText}</span>
         ${item.area
           ? html` <span slot="supporting-text">${item.area}</span> `
+          : nothing}
+        ${item.translatedDomain
+          ? html`<div slot="trailing-supporting-text" class="domain">
+              ${item.translatedDomain}
+            </div>`
           : nothing}
       </ha-md-list-item>
     `;
@@ -549,23 +573,44 @@ export class QuickBar extends LitElement {
     );
   }
 
-  private _generateDeviceItems(): DeviceItem[] {
+  private async _generateDeviceItems(): Promise<DeviceItem[]> {
+    const configEntries = await getConfigEntries(this.hass);
+    const configEntryLookup = Object.fromEntries(
+      configEntries.map((entry) => [entry.entry_id, entry])
+    );
+
     return Object.values(this.hass.devices)
       .filter((device) => !device.disabled_by)
       .map((device) => {
-        const area = device.area_id
-          ? this.hass.areas[device.area_id]
-          : undefined;
+        const deviceName = computeDeviceNameDisplay(device, this.hass);
+
+        const { area } = getDeviceContext(device, this.hass);
+
+        const areaName = area ? computeAreaName(area) : undefined;
+
         const deviceItem = {
-          primaryText: computeDeviceNameDisplay(device, this.hass),
+          primaryText: deviceName,
           deviceId: device.id,
-          area: area?.name,
+          area: areaName,
           action: () => navigate(`/config/devices/device/${device.id}`),
         };
 
+        const configEntry = device.primary_config_entry
+          ? configEntryLookup[device.primary_config_entry]
+          : undefined;
+
+        const domain = configEntry?.domain;
+        const translatedDomain = domain
+          ? domainToName(this.hass.localize, domain)
+          : undefined;
+
         return {
           ...deviceItem,
-          strings: [deviceItem.primaryText],
+          domain,
+          translatedDomain,
+          strings: [deviceName, areaName, domain, domainToName].filter(
+            Boolean
+          ) as string[],
         };
       })
       .sort((a, b) =>
@@ -1034,6 +1079,11 @@ export class QuickBar extends LitElement {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
+        }
+
+        ha-md-list-item img {
+          width: 32px;
+          height: 32px;
         }
 
         ha-tip {
