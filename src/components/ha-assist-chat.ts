@@ -458,6 +458,20 @@ export class HaAssistChat extends LitElement {
   private _createAddHassMessageProcessor() {
     let currentDeltaRole = "";
 
+    const progressToNextMessage = () => {
+      progress.hassMessage.text = progress.hassMessage.text.substring(
+        0,
+        progress.hassMessage.text.length - 1
+      );
+
+      progress.hassMessage = {
+        who: "hass",
+        text: "…",
+        error: false,
+      };
+      this._addMessage(progress.hassMessage);
+    };
+
     const progress = {
       continueConversation: false,
       hassMessage: {
@@ -469,6 +483,9 @@ export class HaAssistChat extends LitElement {
         this._addMessage(progress.hassMessage);
       },
       setError: (error: string) => {
+        if (progress.hassMessage.text !== "…") {
+          progressToNextMessage();
+        }
         progress.hassMessage.text = error;
         progress.hassMessage.error = true;
         this.requestUpdate("_conversation");
@@ -486,18 +503,7 @@ export class HaAssistChat extends LitElement {
               delta.role &&
               progress.hassMessage.text !== "…"
             ) {
-              // Remove progress indicator of previous message
-              progress.hassMessage.text = progress.hassMessage.text.substring(
-                0,
-                progress.hassMessage.text.length - 1
-              );
-
-              progress.hassMessage = {
-                who: "hass",
-                text: "…",
-                error: false,
-              };
-              this._addMessage(progress.hassMessage);
+              progressToNextMessage();
             }
             currentDeltaRole = delta.role;
           }
