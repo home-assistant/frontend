@@ -142,6 +142,9 @@ class DialogAreaDetail extends LitElement {
         .hass=${this.hass}
         .value=${this._labels}
         @value-changed=${this._labelsChanged}
+        .placeholder=${this.hass.localize(
+          "ui.panel.config.areas.editor.add_labels"
+        )}
       ></ha-labels-picker>
 
       <ha-picture-upload

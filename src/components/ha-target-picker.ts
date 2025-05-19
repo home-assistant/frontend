@@ -441,7 +441,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   id="input"
                   .type=${"label_id"}
-                  .label=${this.hass.localize(
+                  .placeholder=${this.hass.localize(
+                    "ui.components.target-picker.add_label_id"
+                  )}
+                  .searchLabel=${this.hass.localize(
                     "ui.components.target-picker.add_label_id"
                   )}
                   no-add
