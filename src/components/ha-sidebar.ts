@@ -40,6 +40,7 @@ import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
 import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
+import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
@@ -67,7 +68,7 @@ const SORT_VALUE_URL_PATHS = {
   config: 11,
 };
 
-const PANEL_ICONS = {
+export const PANEL_ICONS = {
   calendar: mdiCalendar,
   "developer-tools": mdiHammer,
   energy: mdiLightningBolt,
@@ -140,7 +141,7 @@ const defaultPanelSorter = (
   return stringCompare(a.title!, b.title!, language);
 };
 
-const computePanels = memoizeOne(
+export const computePanels = memoizeOne(
   (
     panels: HomeAssistant["panels"],
     defaultPanel: HomeAssistant["defaultPanel"],
@@ -389,11 +390,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `
         : ""}
-      ${this.editMode
-        ? html`<mwc-button outlined @click=${this._closeEditMode}>
-            ${this.hass.localize("ui.sidebar.done")}
-          </mwc-button>`
-        : html`<div class="title">Home Assistant</div>`}
+      <div class="title">Home Assistant</div>
     </div>`;
   }
 
@@ -677,8 +674,18 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return;
     }
 
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
+    showEditSidebarDialog(this, {
+      order: this._panelOrder,
+      hidden: this._hiddenPanels,
+      saveCallback: this._saveSidebar,
+    });
+    // fireEvent(this, "hass-edit-sidebar", { editMode: true });
   }
+
+  private _saveSidebar = (order: string[], hidden: string[]) => {
+    this._panelOrder = order;
+    this._hiddenPanels = hidden;
+  };
 
   private async _editModeActivated() {
     await this._loadEditStyle();
@@ -694,10 +701,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     this.shadowRoot!.appendChild(style);
 
     await this.updateComplete;
-  }
-
-  private _closeEditMode() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: false });
   }
 
   private async _hidePanel(ev: Event) {
