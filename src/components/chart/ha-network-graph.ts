@@ -123,7 +123,7 @@ export class HaNetworkGraph extends LitElement {
       <slot name="button" slot="button"></slot>
       <ha-icon-button
         slot="button"
-        class="refresh-button ${this._physicsEnabled ? "active" : "inactive"}"
+        class=${this._physicsEnabled ? "active" : "inactive"}
         .path=${mdiGoogleCirclesGroup}
         @click=${this._togglePhysics}
         label=${this.hass.localize(
