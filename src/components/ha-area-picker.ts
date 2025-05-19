@@ -94,33 +94,40 @@ export class HaAreaPicker extends LitElement {
     await this._picker?.open();
   }
 
-  private _valueRenderer: PickerValueRenderer = (value) => {
-    const area = this.hass.areas[value];
+  // Recompute value renderer when the areas change
+  private _computeValueRenderer = memoizeOne(
+    (_haAreas: HomeAssistant["areas"]): PickerValueRenderer =>
+      (value) => {
+        const area = this.hass.areas[value];
 
-    if (!area) {
-      return html`
-        <ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>
-        <span slot="headline">${area}</span>
-      `;
-    }
+        if (!area) {
+          return html`
+            <ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>
+            <span slot="headline">${area}</span>
+          `;
+        }
 
-    const { floor } = getAreaContext(area, this.hass);
+        const { floor } = getAreaContext(area, this.hass);
 
-    const areaName = area ? computeAreaName(area) : undefined;
-    const floorName = floor ? computeFloorName(floor) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+        const floorName = floor ? computeFloorName(floor) : undefined;
 
-    const icon = area.icon;
+        const icon = area.icon;
 
-    return html`
-      ${icon
-        ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
-        : html`<ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>`}
-      <span slot="headline">${areaName}</span>
-      ${floorName
-        ? html`<span slot="supporting-text">${floorName}</span>`
-        : nothing}
-    `;
-  };
+        return html`
+          ${icon
+            ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
+            : html`<ha-svg-icon
+                slot="start"
+                .path=${mdiTextureBox}
+              ></ha-svg-icon>`}
+          <span slot="headline">${areaName}</span>
+          ${floorName
+            ? html`<span slot="supporting-text">${floorName}</span>`
+            : nothing}
+        `;
+      }
+  );
 
   private _getAreas = memoizeOne(
     (
@@ -352,6 +359,8 @@ export class HaAreaPicker extends LitElement {
     const placeholder =
       this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
 
+    const valueRenderer = this._computeValueRenderer(this.hass.areas);
+
     return html`
       <ha-generic-picker
         .hass=${this.hass}
@@ -364,7 +373,7 @@ export class HaAreaPicker extends LitElement {
         .value=${this.value}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
-        .valueRenderer=${this._valueRenderer}
+        .valueRenderer=${valueRenderer}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
