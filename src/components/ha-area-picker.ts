@@ -375,33 +375,35 @@ export class HaAreaPicker extends LitElement {
     ev.stopPropagation();
     const value = ev.detail.value;
 
-    if (!value.startsWith(ADD_NEW_ID)) {
-      if (value !== this.value) {
-        this._setValue(value);
-      }
+    if (!value) {
+      this._setValue(undefined);
       return;
     }
 
-    this.hass.loadFragmentTranslation("config");
+    if (value.startsWith(ADD_NEW_ID)) {
+      this.hass.loadFragmentTranslation("config");
 
-    const suggestedName = value.substring(ADD_NEW_ID.length);
+      const suggestedName = value.substring(ADD_NEW_ID.length);
 
-    showAreaRegistryDetailDialog(this, {
-      suggestedName: suggestedName,
-      createEntry: async (values) => {
-        try {
-          const area = await createAreaRegistryEntry(this.hass, values);
-          this._setValue(area.area_id);
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.components.area-picker.failed_create_area"
-            ),
-            text: err.message,
-          });
-        }
-      },
-    });
+      showAreaRegistryDetailDialog(this, {
+        suggestedName: suggestedName,
+        createEntry: async (values) => {
+          try {
+            const area = await createAreaRegistryEntry(this.hass, values);
+            this._setValue(area.area_id);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.components.area-picker.failed_create_area"
+              ),
+              text: err.message,
+            });
+          }
+        },
+      });
+    }
+
+    this._setValue(value);
   }
 
   private _setValue(value?: string) {
