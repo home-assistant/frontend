@@ -219,7 +219,7 @@ export class HuiStackCardEditor
   }
 
   private _getKey(cards: LovelaceCardConfig[], index: number): string {
-    const key = `${index}${cards.length}`;
+    const key = `${index}-${cards.length}`;
     if (!this._keys.has(key)) {
       this._keys.set(key, Math.random().toString());
     }
