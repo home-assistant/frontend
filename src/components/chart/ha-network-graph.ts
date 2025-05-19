@@ -1,7 +1,6 @@
 import type { EChartsType } from "echarts/core";
 import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
-import type { PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { mdiGoogleCirclesGroup } from "@mdi/js";
@@ -66,7 +65,7 @@ export class HaNetworkGraph extends LitElement {
     params: TopLevelFormatterParams
   ) => string;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  public hass!: HomeAssistant;
 
   @state() private _reducedMotion = false;
 
@@ -104,11 +103,6 @@ export class HaNetworkGraph extends LitElement {
     while (this._listeners.length) {
       this._listeners.pop()!();
     }
-  }
-
-  shouldUpdate(changedProperties: PropertyValues) {
-    // don't update if only hass changes
-    return changedProperties.size > 1 || !changedProperties.has("hass");
   }
 
   protected render() {
