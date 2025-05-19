@@ -81,27 +81,27 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * Label for the day input
    */
-  @property({ attribute: false }) dayLabel = "";
+  @property({ type: String, attribute: "day-label" }) dayLabel = "";
 
   /**
    * Label for the hour input
    */
-  @property({ attribute: false }) hourLabel = "";
+  @property({ type: String, attribute: "hour-label" }) hourLabel = "";
 
   /**
    * Label for the min input
    */
-  @property({ attribute: false }) minLabel = "";
+  @property({ type: String, attribute: "min-label" }) minLabel = "";
 
   /**
    * Label for the sec input
    */
-  @property({ attribute: false }) secLabel = "";
+  @property({ type: String, attribute: "sec-label" }) secLabel = "";
 
   /**
    * Label for the milli sec input
    */
-  @property({ attribute: false }) millisecLabel = "";
+  @property({ type: String, attribute: "ms-label" }) millisecLabel = "";
 
   /**
    * show the sec field
@@ -342,7 +342,7 @@ export class HaBaseTimeInput extends LitElement {
       padding-right: 3px;
     }
     ha-textfield {
-      width: 55px;
+      width: 60px;
       flex-grow: 1;
       text-align: center;
       --mdc-shape-small: 0;

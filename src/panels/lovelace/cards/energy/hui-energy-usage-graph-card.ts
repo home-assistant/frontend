@@ -465,7 +465,7 @@ export class HuiEnergyUsageGraphCard
         }
 
         data.push({
-          id: compare ? "compare-" + statId : statId,
+          id: `${compare ? "compare-" : ""}${statId}-${type}`,
           type: "bar",
           cursor: "default",
           name:

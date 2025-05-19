@@ -949,7 +949,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         }
 
         ha-md-list-item .item-text {
-          font-family: var(--ha-font-family-body);
           display: none;
           font-size: var(--ha-font-size-m);
           font-weight: var(--ha-font-weight-medium);

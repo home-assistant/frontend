@@ -647,9 +647,9 @@
         "none": "None"
       },
       "user-picker": {
-        "no_user": "No user",
-        "add_user": "Add user",
-        "remove_user": "Remove user"
+        "no_match": "No matching users found",
+        "user": "User",
+        "add_user": "Add user"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -662,7 +662,8 @@
         "no_match": "No matching devices found",
         "device": "Device",
         "unnamed_device": "Unnamed device",
-        "no_area": "No area"
+        "no_area": "No area",
+        "placeholder": "Select a device"
       },
       "category-picker": {
         "clear": "Clear",
