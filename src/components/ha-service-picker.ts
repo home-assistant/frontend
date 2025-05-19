@@ -1,15 +1,23 @@
+import { mdiRoomService } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { html, LitElement, nothing, type TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { domainToName } from "../data/integration";
-import type { HomeAssistant } from "../types";
-import "./ha-combo-box";
-import "./ha-combo-box-item";
-import "./ha-service-icon";
 import { getServiceIcons } from "../data/icons";
+import { domainToName } from "../data/integration";
+import type { HomeAssistant, ValueChangedEvent } from "../types";
+import "./ha-combo-box-item";
+import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import type { PickerValueRenderer } from "./ha-picker-field";
+import "./ha-service-icon";
+
+interface ServiceComboBoxItem extends PickerComboBoxItem {
+  domain_name?: string;
+}
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
@@ -17,66 +25,117 @@ class HaServicePicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property() public label?: string;
+
+  @property() public placeholder?: string;
+
   @property() public value?: string;
 
-  @state() private _filter?: string;
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
-  protected willUpdate() {
-    if (!this.hasUpdated) {
-      this.hass.loadBackendTranslation("services");
-      getServiceIcons(this.hass);
-    }
+  public async open() {
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> =
-    (item) => html`
-      <ha-combo-box-item type="button">
-        <ha-service-icon
-          slot="start"
-          .hass=${this.hass}
-          .service=${item.service}
-        ></ha-service-icon>
-        <span slot="headline">${item.name}</span>
-        <span slot="supporting-text"
-          >${item.name === item.service ? "" : item.service}</span
-        >
-      </ha-combo-box-item>
-    `;
+  protected firstUpdated(props) {
+    super.firstUpdated(props);
+    this.hass.loadBackendTranslation("services");
+    getServiceIcons(this.hass);
+  }
 
-  protected render() {
-    return html`
-      <ha-combo-box
+  private _rowRenderer: ComboBoxLitRenderer<ServiceComboBoxItem> = (
+    item
+  ) => html`
+    <ha-combo-box-item type="button">
+      <ha-service-icon
+        slot="start"
         .hass=${this.hass}
-        .label=${this.hass.localize("ui.components.service-picker.action")}
-        .filteredItems=${this._filteredServices(
-          this.hass.localize,
-          this.hass.services,
-          this._filter
-        )}
-        .value=${this.value}
-        .disabled=${this.disabled}
-        .renderer=${this._rowRenderer}
-        item-value-path="service"
-        item-label-path="name"
+        .service=${item.id}
+      ></ha-service-icon>
+      <span slot="headline">${item.primary}</span>
+      <span slot="supporting-text">${item.secondary}</span>
+      ${item.domain_name
+        ? html`
+            <div slot="trailing-supporting-text" class="domain">
+              ${item.domain_name}
+            </div>
+          `
+        : nothing}
+    </ha-combo-box-item>
+  `;
+
+  private _valueRenderer: PickerValueRenderer = (value) => {
+    const serviceId = value;
+    const [domain, service] = serviceId.split(".");
+
+    if (!service) {
+      return html`
+        <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
+        <span slot="headline">${value}</span>
+      `;
+    }
+
+    const serviceName =
+      this.hass.localize(`component.${domain}.services.${service}.name`) ||
+      this.hass.services[domain][service].name ||
+      service;
+
+    const serviceDescription =
+      this.hass.localize(
+        `component.${domain}.services.${service}.description`
+      ) || this.hass.services[domain][service].description;
+
+    return html`
+      <ha-service-icon
+        slot="start"
+        .hass=${this.hass}
+        .service=${serviceId}
+      ></ha-service-icon>
+      <span slot="headline">${serviceName}</span>
+      ${serviceDescription
+        ? html` <span slot="supporting-text">${serviceDescription}</span> `
+        : nothing}
+    `;
+  };
+
+  protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.service-picker.action");
+
+    return html`
+      <ha-generic-picker
+        .hass=${this.hass}
+        .autofocus=${this.autofocus}
         allow-custom-value
-        @filter-changed=${this._filterChanged}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.service-picker.no_match"
+        )}
+        .label=${this.label}
+        .placeholder=${placeholder}
+        .value=${this.value}
+        .getItems=${this._getItems}
+        .rowRenderer=${this._rowRenderer}
+        .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
-      ></ha-combo-box>
+      >
+      </ha-generic-picker>
     `;
   }
+
+  private _getItems = () =>
+    this._services(this.hass.localize, this.hass.services);
 
   private _services = memoizeOne(
     (
       localize: LocalizeFunc,
       services: HomeAssistant["services"]
-    ): {
-      service: string;
-      name: string;
-    }[] => {
+    ): ServiceComboBoxItem[] => {
       if (!services) {
         return [];
       }
-      const result: { service: string; name: string }[] = [];
+      const items: ServiceComboBoxItem[] = [];
 
       Object.keys(services)
         .sort()
@@ -84,56 +143,44 @@ class HaServicePicker extends LitElement {
           const services_keys = Object.keys(services[domain]).sort();
 
           for (const service of services_keys) {
-            result.push({
-              service: `${domain}.${service}`,
-              name: `${domainToName(localize, domain)}: ${
-                this.hass.localize(
-                  `component.${domain}.services.${service}.name`
-                ) ||
-                services[domain][service].name ||
-                service
-              }`,
+            const serviceId = `${domain}.${service}`;
+            const domainName = domainToName(localize, domain);
+
+            const name =
+              this.hass.localize(
+                `component.${domain}.services.${service}.name`
+              ) ||
+              services[domain][service].name ||
+              service;
+
+            const description =
+              this.hass.localize(
+                `component.${domain}.services.${service}.description`
+              ) || services[domain][service].description;
+
+            items.push({
+              id: serviceId,
+              primary: name,
+              secondary: description,
+              domain_name: domainName,
+              search_labels: [serviceId, domainName, name, description].filter(
+                Boolean
+              ),
+              sorting_label: serviceId,
             });
           }
         });
 
-      return result;
+      return items;
     }
   );
 
-  private _filteredServices = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      services: HomeAssistant["services"],
-      filter?: string
-    ) => {
-      if (!services) {
-        return [];
-      }
-      const processedServices = this._services(localize, services);
-
-      if (!filter) {
-        return processedServices;
-      }
-      const split_filter = filter.split(" ");
-      return processedServices.filter((service) => {
-        const lower_service_name = service.name.toLowerCase();
-        const lower_service = service.service.toLowerCase();
-        return split_filter.every(
-          (f) => lower_service_name.includes(f) || lower_service.includes(f)
-        );
-      });
-    }
-  );
-
-  private _filterChanged(ev: CustomEvent): void {
-    this._filter = ev.detail.value.toLowerCase();
-  }
-
-  private _valueChanged(ev) {
-    this.value = ev.detail.value;
+  private _valueChanged(ev: ValueChangedEvent<string>) {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    this.value = value;
+    fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
-    fireEvent(this, "value-changed", { value: this.value });
   }
 }
 
