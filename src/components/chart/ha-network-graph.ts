@@ -25,7 +25,10 @@ export interface NetworkNode {
     borderWidth?: number;
   };
   fixed?: boolean;
-  polarDistance?: number; // distance from the center, where 0 is the center and 1 is the edge
+  /**
+   * Distance from the center, where 0 is the center and 1 is the edge
+   */
+  polarDistance?: number;
 }
 
 export interface NetworkLink {
