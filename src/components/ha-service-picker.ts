@@ -4,6 +4,7 @@ import { html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { isValidServiceId } from "../common/entity/valid_service_id";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { getServiceIcons } from "../data/icons";
 import { domainToName } from "../data/integration";
@@ -69,7 +70,7 @@ class HaServicePicker extends LitElement {
     const serviceId = value;
     const [domain, service] = serviceId.split(".");
 
-    if (!service) {
+    if (!this.hass.services[domain]?.[service]) {
       return html`
         <ha-svg-icon slot="start" .path=${mdiRoomService}></ha-svg-icon>
         <span slot="headline">${value}</span>
@@ -178,7 +179,22 @@ class HaServicePicker extends LitElement {
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
     const value = ev.detail.value;
+
+    if (!value) {
+      this._setValue(undefined);
+      return;
+    }
+
+    if (!isValidServiceId(value)) {
+      return;
+    }
+
+    this._setValue(value);
+  }
+
+  private _setValue(value: string | undefined) {
     this.value = value;
+
     fireEvent(this, "value-changed", { value });
     fireEvent(this, "change");
   }
