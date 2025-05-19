@@ -158,7 +158,10 @@ export class HaNetworkGraph extends LitElement {
       },
       legend: {
         show: !!categories?.length,
-        data: categories,
+        data: categories?.map((category) => ({
+          ...category,
+          icon: category.symbol,
+        })),
         top: 8,
       },
       dataZoom: {
