@@ -156,6 +156,17 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             name="description"
             autogrow
             .value=${this._newDescription}
+            .helper=${this.hass.localize(
+              "ui.panel.config.automation.editor.dialog.supports_markdown",
+              {
+                markdown: html`<a
+                      href=https://commonmark.org/help/
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize("ui.panel.config.automation.editor.dialog.markdown")}</a
+                    >`,
+              }
+            )}
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}

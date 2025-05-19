@@ -146,6 +146,17 @@ class DialogTodoItemEditor extends LitElement {
                 .label=${this.hass.localize(
                   "ui.components.todo.item.description"
                 )}
+                .helper=${this.hass.localize(
+                  "ui.components.todo.item.supports_markdown",
+                  {
+                    markdown: html`<a
+                          href=https://commonmark.org/help/
+                          target="_blank"
+                          rel="noreferrer"
+                          >${this.hass.localize("ui.components.todo.item.markdown")}</a
+                        >`,
+                  }
+                )}
                 .value=${this._description}
                 @input=${this._handleDescriptionChanged}
                 autogrow
