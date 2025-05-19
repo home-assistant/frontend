@@ -355,6 +355,7 @@ const darkColorStyles = css`
   }
 `;
 export const colorDerivedVariables = extractDerivedVars(colorStyles);
+export const colorVariables = extractVars(colorStyles);
 export const darkColorVariables = extractVars(darkColorStyles);
 
 export const DefaultPrimaryColor = extractVar(colorStyles, "primary-color");

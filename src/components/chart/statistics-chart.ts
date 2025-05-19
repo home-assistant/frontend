@@ -308,6 +308,7 @@ export class StatisticsChart extends LitElement {
         },
       },
       legend: {
+        type: "custom",
         show: !this.hideLegend,
         data: this._legendData,
       },

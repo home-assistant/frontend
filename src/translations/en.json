@@ -2113,7 +2113,10 @@
           "learn_more": "Learn more",
           "show_url": "Show full URL",
           "hide_url": "Hide URL",
-          "copy_link": "Copy link"
+          "copy_link": "Copy link",
+          "graph": {
+            "toggle_physics": "Toggle physics"
+          }
         },
         "updates": {
           "caption": "Updates",
@@ -5696,10 +5699,6 @@
           "visualization": {
             "header": "Network visualization",
             "caption": "Visualization",
-            "highlight_label": "Highlight devices",
-            "zoom_label": "Zoom to device",
-            "auto_zoom": "Auto zoom",
-            "enable_physics": "Enable physics",
             "refresh_topology": "Refresh topology"
           },
           "device_binding": {
