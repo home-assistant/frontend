@@ -3,7 +3,7 @@ import type { GraphSeriesOption } from "echarts/charts";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
-import { mdiGoogleCirclesGroup } from "@mdi/js";
+import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import type { ECOption } from "../../resources/echarts";
@@ -42,6 +42,7 @@ export interface NetworkLink {
     type?: "solid" | "dashed" | "dotted";
   };
   symbolSize?: number | number[];
+  symbol?: string;
   label?: {
     show?: boolean;
     formatter?: string;
@@ -52,7 +53,7 @@ export interface NetworkLink {
 export interface NetworkData {
   nodes: NetworkNode[];
   links: NetworkLink[];
-  categories?: { name: string }[];
+  categories?: { name: string; symbol: string }[];
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
@@ -62,7 +63,7 @@ let GraphChart: typeof import("echarts/lib/chart/graph/install");
 export class HaNetworkGraph extends LitElement {
   public chart?: EChartsType;
 
-  @property({ attribute: false }) public data?: NetworkData;
+  @property({ attribute: false }) public data!: NetworkData;
 
   @property({ attribute: false }) public tooltipFormatter?: (
     params: TopLevelFormatterParams
@@ -73,6 +74,8 @@ export class HaNetworkGraph extends LitElement {
   @state() private _reducedMotion = false;
 
   @state() private _physicsEnabled = true;
+
+  @state() private _showLabels = true;
 
   private _listeners: (() => void)[] = [];
 
@@ -117,7 +120,8 @@ export class HaNetworkGraph extends LitElement {
       .data=${this._getSeries(
         this.data,
         this._physicsEnabled,
-        this._reducedMotion
+        this._reducedMotion,
+        this._showLabels
       )}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
@@ -131,6 +135,15 @@ export class HaNetworkGraph extends LitElement {
         @click=${this._togglePhysics}
         label=${this.hass.localize(
           "ui.panel.config.common.graph.toggle_physics"
+        )}
+      ></ha-icon-button>
+      <ha-icon-button
+        slot="button"
+        class=${this._showLabels ? "active" : "inactive"}
+        .path=${mdiFormatTextVariant}
+        @click=${this._toggleLabels}
+        label=${this.hass.localize(
+          "ui.panel.config.common.graph.toggle_labels"
         )}
       ></ha-icon-button>
     </ha-chart-base>`;
@@ -156,11 +169,12 @@ export class HaNetworkGraph extends LitElement {
   );
 
   private _getSeries = memoizeOne(
-    (data?: NetworkData, physicsEnabled?: boolean, reducedMotion?: boolean) => {
-      if (!data) {
-        return [];
-      }
-
+    (
+      data: NetworkData,
+      physicsEnabled: boolean,
+      reducedMotion: boolean,
+      showLabels: boolean
+    ) => {
       const containerWidth = this.clientWidth;
       const containerHeight = this.clientHeight;
       return [
@@ -172,7 +186,7 @@ export class HaNetworkGraph extends LitElement {
           roam: true,
           selectedMode: "single",
           label: {
-            show: true,
+            show: showLabels,
             position: "right",
           },
           emphasis: {
@@ -182,7 +196,7 @@ export class HaNetworkGraph extends LitElement {
             repulsion: [400, 600],
             edgeLength: [200, 300],
             gravity: 0.1,
-            layoutAnimation: !reducedMotion,
+            layoutAnimation: !reducedMotion && data.nodes.length < 100,
           },
           edgeSymbol: ["none", "arrow"],
           edgeSymbolSize: 10,
@@ -249,6 +263,10 @@ export class HaNetworkGraph extends LitElement {
         });
     }
     this._physicsEnabled = !this._physicsEnabled;
+  }
+
+  private _toggleLabels() {
+    this._showLabels = !this._showLabels;
   }
 
   static styles = css`

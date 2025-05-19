@@ -1,0 +1,301 @@
+import { html, LitElement, css } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
+import type { HomeAssistant, Route } from "../../../../../types";
+import "../../../../../components/chart/ha-network-graph";
+import type {
+  NetworkData,
+  NetworkNode,
+  NetworkLink,
+} from "../../../../../components/chart/ha-network-graph";
+import type {
+  BluetoothDeviceData,
+  BluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
+import {
+  subscribeBluetoothAdvertisements,
+  subscribeBluetoothScannersDetails,
+} from "../../../../../data/bluetooth";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import "../../../../../layouts/hass-subpage";
+import { colorVariables } from "../../../../../resources/theme/color.globals";
+import { navigate } from "../../../../../common/navigate";
+import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
+import { relativeTime } from "../../../../../common/datetime/relative_time";
+
+@customElement("bluetooth-network-visualization")
+export class BluetoothNetworkVisualization extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @state() private _data: BluetoothDeviceData[] = [];
+
+  @state() private _scanners: BluetoothScannersDetails = {};
+
+  @state() private _sourceDevices: Record<string, DeviceRegistryEntry> = {};
+
+  private _unsub_advertisements?: UnsubscribeFunc;
+
+  private _unsub_scanners?: UnsubscribeFunc;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass) {
+      this._unsub_advertisements = subscribeBluetoothAdvertisements(
+        this.hass.connection,
+        (data) => {
+          this._data = data;
+        }
+      );
+      this._unsub_scanners = subscribeBluetoothScannersDetails(
+        this.hass.connection,
+        (scanners) => {
+          this._scanners = scanners;
+        }
+      );
+
+      const devices = Object.values(this.hass.devices);
+      const bluetoothDevices = devices.filter((device) =>
+        device.connections.find((connection) => connection[0] === "bluetooth")
+      );
+      this._sourceDevices = Object.fromEntries(
+        bluetoothDevices.map((device) => {
+          const connection = device.connections.find(
+            (c) => c[0] === "bluetooth"
+          )!;
+          return [connection[1], device];
+        })
+      );
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsub_advertisements) {
+      this._unsub_advertisements();
+      this._unsub_advertisements = undefined;
+    }
+    if (this._unsub_scanners) {
+      this._unsub_scanners();
+      this._unsub_scanners = undefined;
+    }
+  }
+
+  protected shouldUpdate(changedProperties: PropertyValues) {
+    if (
+      changedProperties.has("_scanners") ||
+      changedProperties.has("_sourceDevices")
+    ) {
+      return true;
+    }
+    // prevent unnecessary node jumping when the data is updated
+    return (
+      changedProperties.has("_data") &&
+      (changedProperties.get("_data").length !== this._data.length ||
+        changedProperties
+          .get("_data")
+          ?.some(
+            (d: BluetoothDeviceData) =>
+              !this._data.some((d2) => d2.address === d.address)
+          ))
+    );
+  }
+
+  protected render() {
+    return html`
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        header=${this.hass.localize("ui.panel.config.bluetooth.visualization")}
+        .tabs=${bluetoothAdvertisementMonitorTabs}
+      >
+        <ha-network-graph
+          .hass=${this.hass}
+          .data=${this._formatNetworkData()}
+          .tooltipFormatter=${this._tooltipFormatter}
+          @chart-click=${this._handleChartClick}
+        ></ha-network-graph>
+      </hass-tabs-subpage>
+    `;
+  }
+
+  private _formatNetworkData(): NetworkData {
+    const categories = [
+      {
+        name: "Home Assistant",
+        symbol: "roundRect",
+        itemStyle: {
+          color: colorVariables["primary-color"],
+        },
+      },
+      {
+        name: "Scanners",
+        symbol: "circle",
+        itemStyle: {
+          color: colorVariables["cyan-color"],
+        },
+      },
+      {
+        name: "Known devices",
+        symbol: "circle",
+        itemStyle: {
+          color: colorVariables["teal-color"],
+        },
+      },
+      {
+        name: "Unknown devices",
+        symbol: "circle",
+        itemStyle: {
+          color: colorVariables["disabled-color"],
+        },
+      },
+    ];
+    const nodes: NetworkNode[] = [
+      {
+        id: "ha",
+        name: "Home Assistant",
+        category: 0,
+        value: 4,
+        symbol: "roundRect",
+        symbolSize: 40,
+        polarDistance: 0,
+      },
+    ];
+    const links: NetworkLink[] = [];
+    Object.values(this._scanners).forEach((scanner) => {
+      const scannerDevice = this._sourceDevices[scanner.source];
+      nodes.push({
+        id: scanner.source,
+        name:
+          scannerDevice?.name_by_user || scannerDevice?.name || scanner.name,
+        category: 1,
+        value: 5,
+        symbol: "circle",
+        symbolSize: 30,
+        polarDistance: 0.25,
+      });
+      links.push({
+        source: "ha",
+        target: scanner.source,
+        value: 0,
+        symbol: "none",
+        lineStyle: {
+          width: 3,
+          color: colorVariables["primary-color"],
+        },
+      });
+    });
+    this._data.forEach((node) => {
+      const device = this._sourceDevices[node.address];
+      nodes.push({
+        id: node.address,
+        name: this._getBluetoothDeviceName(node.address),
+        value: device ? 1 : 0,
+        category: device ? 2 : 3,
+        symbolSize: 20,
+      });
+      links.push({
+        source: node.source,
+        target: node.address,
+        value: node.rssi,
+        symbol: "none",
+        lineStyle: {
+          width: node.rssi > -33 ? 3 : node.rssi > -66 ? 2 : 1,
+          color: device
+            ? colorVariables["primary-color"]
+            : colorVariables["disabled-color"],
+        },
+      });
+    });
+    return { nodes, links, categories };
+  }
+
+  private _getBluetoothDeviceName(id: string): string {
+    if (id === "ha") {
+      return "Home Assistant";
+    }
+    if (this._sourceDevices[id]) {
+      return (
+        this._sourceDevices[id]?.name_by_user ||
+        this._sourceDevices[id]?.name ||
+        id
+      );
+    }
+    if (this._scanners[id]) {
+      return this._scanners[id]?.name || id;
+    }
+    return this._data.find((d) => d.address === id)?.name || id;
+  }
+
+  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+    const { dataType, data } = params as CallbackDataParams;
+    let tooltipText = "";
+    if (dataType === "edge") {
+      const { source, target, value } = data as any;
+      const sourceName = this._getBluetoothDeviceName(source);
+      const targetName = this._getBluetoothDeviceName(target);
+      tooltipText = `${sourceName} → ${targetName}`;
+      if (source !== "ha") {
+        tooltipText += ` <b>RSSI:</b> ${value}`;
+      }
+    } else {
+      const { id: address } = data as any;
+      const name = this._getBluetoothDeviceName(address);
+      const btDevice = this._data.find((d) => d.address === address);
+      if (btDevice) {
+        tooltipText = `<b>${name}</b><br><b>Address:</b> ${address}<br><b>RSSI:</b> ${btDevice.rssi}<br><b>Source:</b> ${btDevice.source}<br><b>Updated:</b> ${relativeTime(new Date(btDevice.time * 1000), this.hass.locale)}`;
+      } else {
+        const device = this._sourceDevices[address];
+        if (device) {
+          tooltipText = `<b>${name}</b><br><b>Address:</b> ${address}`;
+          if (device.area_id) {
+            const area = this.hass.areas[device.area_id];
+            if (area) {
+              tooltipText += `<br><b>Area: </b>${area.name}`;
+            }
+          }
+        }
+      }
+    }
+    return tooltipText;
+  };
+
+  private _handleChartClick(e: CustomEvent): void {
+    if (
+      e.detail.dataType === "node" &&
+      e.detail.event.target.cursor === "pointer"
+    ) {
+      const { id } = e.detail.data;
+      const device = this._sourceDevices[id];
+      if (device) {
+        navigate(`/config/devices/device/${device.id}`);
+      }
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      css`
+        ha-network-graph {
+          height: 100%;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "bluetooth-network-visualization": BluetoothNetworkVisualization;
+  }
+}
