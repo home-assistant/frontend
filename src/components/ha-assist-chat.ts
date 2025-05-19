@@ -487,6 +487,11 @@ export class HaAssistChat extends LitElement {
     ): _delta is ConversationChatLogToolResultDelta =>
       currentDeltaRole === "tool_result";
 
+    const tools: Record<
+      string,
+      ConversationChatLogAssistantDelta["tool_calls"][0]
+    > = {};
+
     const progress = {
       continueConversation: false,
       hassMessage: {
@@ -524,8 +529,15 @@ export class HaAssistChat extends LitElement {
                 "…";
               this.requestUpdate("_conversation");
             }
+            if (delta.tool_calls) {
+              for (const toolCall of delta.tool_calls) {
+                tools[toolCall.id] = toolCall;
+              }
+            }
           } else if (isToolResult(delta)) {
-            // These always come in 1 chunk
+            if (tools[delta.tool_call_id]) {
+              delete tools[delta.tool_call_id];
+            }
           }
         }
 
