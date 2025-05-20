@@ -148,6 +148,7 @@ export class HaConfigAreasDashboard extends LitElement {
         back-path="/config"
         .tabs=${configSections.areas}
         .route=${this.route}
+        has-fab
       >
         <ha-icon-button
           slot="toolbar-icon"
