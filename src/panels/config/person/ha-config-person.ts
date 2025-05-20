@@ -65,6 +65,7 @@ export class HaConfigPerson extends LitElement {
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.persons}
+        has-fab
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header"
