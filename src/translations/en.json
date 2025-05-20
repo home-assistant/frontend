@@ -374,7 +374,9 @@
       "copy": "Copy",
       "show": "Show",
       "replace": "Replace",
-      "append": "Append"
+      "append": "Append",
+      "supports_markdown": "Supports {markdown_help_link}",
+      "markdown": "Markdown"
     },
     "components": {
       "selectors": {
@@ -998,8 +1000,6 @@
           "edit": "Edit item",
           "save": "Save item",
           "due": "Due date",
-          "supports_markdown": "Supports {markdown}",
-          "markdown": "Markdown",
           "not_all_required_fields": "Not all required fields are filled in",
           "confirm_delete": {
             "delete": "Delete item",
@@ -4367,9 +4367,7 @@
               "add_icon": "Add icon",
               "add_category": "Add category",
               "add_labels": "Add labels",
-              "add_area": "Add area",
-              "supports_markdown": "[%key:ui::components::todo::item::supports_markdown%]",
-              "markdown": "[%key:ui::components::todo::item::markdown%]"
+              "add_area": "Add area"
             },
             "paste_confirm": {
               "title": "Pasted automation",
