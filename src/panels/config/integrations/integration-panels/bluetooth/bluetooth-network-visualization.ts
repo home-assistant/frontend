@@ -132,28 +132,28 @@ export class BluetoothNetworkVisualization extends LitElement {
   private _formatNetworkData(): NetworkData {
     const categories = [
       {
-        name: "Home Assistant",
+        name: this.hass.localize("ui.panel.config.bluetooth.core"),
         symbol: "roundRect",
         itemStyle: {
           color: colorVariables["primary-color"],
         },
       },
       {
-        name: "Scanners",
+        name: this.hass.localize("ui.panel.config.bluetooth.scanners"),
         symbol: "circle",
         itemStyle: {
           color: colorVariables["cyan-color"],
         },
       },
       {
-        name: "Known devices",
+        name: this.hass.localize("ui.panel.config.bluetooth.known_devices"),
         symbol: "circle",
         itemStyle: {
           color: colorVariables["teal-color"],
         },
       },
       {
-        name: "Unknown devices",
+        name: this.hass.localize("ui.panel.config.bluetooth.unknown_devices"),
         symbol: "circle",
         itemStyle: {
           color: colorVariables["disabled-color"],
@@ -163,7 +163,7 @@ export class BluetoothNetworkVisualization extends LitElement {
     const nodes: NetworkNode[] = [
       {
         id: "ha",
-        name: "Home Assistant",
+        name: this.hass.localize("ui.panel.config.bluetooth.core"),
         category: 0,
         value: 4,
         symbol: "roundRect",
@@ -222,7 +222,7 @@ export class BluetoothNetworkVisualization extends LitElement {
 
   private _getBluetoothDeviceName(id: string): string {
     if (id === "ha") {
-      return "Home Assistant";
+      return this.hass.localize("ui.panel.config.bluetooth.core");
     }
     if (this._sourceDevices[id]) {
       return (
@@ -246,22 +246,22 @@ export class BluetoothNetworkVisualization extends LitElement {
       const targetName = this._getBluetoothDeviceName(target);
       tooltipText = `${sourceName} → ${targetName}`;
       if (source !== "ha") {
-        tooltipText += ` <b>RSSI:</b> ${value}`;
+        tooltipText += ` <b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b> ${value}`;
       }
     } else {
       const { id: address } = data as any;
       const name = this._getBluetoothDeviceName(address);
       const btDevice = this._data.find((d) => d.address === address);
       if (btDevice) {
-        tooltipText = `<b>${name}</b><br><b>Address:</b> ${address}<br><b>RSSI:</b> ${btDevice.rssi}<br><b>Source:</b> ${btDevice.source}<br><b>Updated:</b> ${relativeTime(new Date(btDevice.time * 1000), this.hass.locale)}`;
+        tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}<br><b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b> ${btDevice.rssi}<br><b>${this.hass.localize("ui.panel.config.bluetooth.source")}:</b> ${btDevice.source}<br><b>${this.hass.localize("ui.panel.config.bluetooth.updated")}:</b> ${relativeTime(new Date(btDevice.time * 1000), this.hass.locale)}`;
       } else {
         const device = this._sourceDevices[address];
         if (device) {
-          tooltipText = `<b>${name}</b><br><b>Address:</b> ${address}`;
+          tooltipText = `<b>${name}</b><br><b>${this.hass.localize("ui.panel.config.bluetooth.address")}:</b> ${address}`;
           if (device.area_id) {
             const area = this.hass.areas[device.area_id];
             if (area) {
-              tooltipText += `<br><b>Area: </b>${area.name}`;
+              tooltipText += `<br><b>${this.hass.localize("ui.panel.config.bluetooth.area")}: </b>${area.name}`;
             }
           }
         }
