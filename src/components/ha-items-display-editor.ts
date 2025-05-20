@@ -51,8 +51,8 @@ export class HaItemDisplayEditor extends LitElement {
   @property({ type: Boolean, attribute: "show-navigation-button" })
   public showNavigationButton = false;
 
-  @property({ type: Boolean, attribute: "disable-visible-sort" })
-  public disableVisibleSort = false;
+  @property({ type: Boolean, attribute: "dont-sort-visible" })
+  public dontSortVisible = false;
 
   @property({ attribute: false })
   public value: DisplayValue = {
@@ -128,7 +128,7 @@ export class HaItemDisplayEditor extends LitElement {
       const compare = orderCompare(order);
 
       const visibleItems = items.filter((item) => !hidden.includes(item.value));
-      if (this.disableVisibleSort) {
+      if (this.dontSortVisible) {
         return visibleItems;
       }
 

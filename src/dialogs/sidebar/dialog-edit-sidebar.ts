@@ -109,7 +109,7 @@ class DialogEditSidebar extends LitElement {
             }}
             .items=${items}
             @value-changed=${this._changed}
-            disable-visible-sort
+            dont-sort-visible
           >
           </ha-items-display-editor>
         </div>
