@@ -180,12 +180,7 @@ export class HaLabelsPicker extends SubscribeMixin(LitElement) {
     showLabelDetailDialog(this, {
       entry: label,
       updateEntry: async (values) => {
-        const updated = await updateLabelRegistryEntry(
-          this.hass,
-          label.label_id,
-          values
-        );
-        return updated;
+        await updateLabelRegistryEntry(this.hass, label.label_id, values);
       },
     });
   }
