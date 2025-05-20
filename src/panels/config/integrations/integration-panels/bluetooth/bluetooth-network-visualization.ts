@@ -28,6 +28,9 @@ import { colorVariables } from "../../../../../resources/theme/color.globals";
 import { navigate } from "../../../../../common/navigate";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import { throttle } from "../../../../../common/util/throttle";
+
+const UPDATE_THROTTLE_TIME = 10000;
 
 @customElement("bluetooth-network-visualization")
 export class BluetoothNetworkVisualization extends LitElement {
@@ -49,13 +52,21 @@ export class BluetoothNetworkVisualization extends LitElement {
 
   private _unsub_scanners?: UnsubscribeFunc;
 
+  private _throttledUpdateData = throttle((data: BluetoothDeviceData[]) => {
+    this._data = data;
+  }, UPDATE_THROTTLE_TIME);
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.hass) {
       this._unsub_advertisements = subscribeBluetoothAdvertisements(
         this.hass.connection,
         (data) => {
-          this._data = data;
+          if (!this._data.length) {
+            this._data = data;
+          } else {
+            this._throttledUpdateData(data);
+          }
         }
       );
       this._unsub_scanners = subscribeBluetoothScannersDetails(
@@ -86,6 +97,7 @@ export class BluetoothNetworkVisualization extends LitElement {
       this._unsub_advertisements();
       this._unsub_advertisements = undefined;
     }
+    this._throttledUpdateData.cancel();
     if (this._unsub_scanners) {
       this._unsub_scanners();
       this._unsub_scanners = undefined;
