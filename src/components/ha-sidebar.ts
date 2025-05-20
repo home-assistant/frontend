@@ -38,6 +38,7 @@ import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
 import "./ha-icon";
@@ -47,7 +48,6 @@ import "./ha-md-list-item";
 import type { HaMdListItem } from "./ha-md-list-item";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
-import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -187,10 +187,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: "always-expand", type: Boolean })
   public alwaysExpand = false;
 
-  @property({ attribute: false})
+  @property({ attribute: false })
   public panelOrder!: string[];
 
-  @property({ attribute: false})
+  @property({ attribute: false })
   public hiddenPanels!: string[];
 
   @state() private _notifications?: PersistentNotification[];
@@ -394,10 +394,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _renderPanels(
-    panels: PanelInfo[],
-    selectedPanel: string
-  ) {
+  private _renderPanels(panels: PanelInfo[], selectedPanel: string) {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
@@ -568,10 +565,10 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _saveSidebar = (order: string[], hidden: string[]) => {
-    fireEvent(this, "hass-edit-sidebar", { 
+    fireEvent(this, "hass-edit-sidebar", {
       order,
       hidden,
-     });
+    });
   };
 
   private _itemMouseEnter(ev: MouseEvent) {
