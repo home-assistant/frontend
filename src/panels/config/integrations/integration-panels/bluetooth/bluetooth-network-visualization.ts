@@ -190,6 +190,20 @@ export class BluetoothNetworkVisualization extends LitElement {
         });
       });
       data.forEach((node) => {
+        if (this._scanners[node.address]) {
+          // proxies sometimes appear as end devices too
+          links.push({
+            source: node.source,
+            target: node.address,
+            value: node.rssi,
+            symbol: "none",
+            lineStyle: {
+              width: this._getLineWidth(node.rssi),
+              color: colorVariables["primary-color"],
+            },
+          });
+          return;
+        }
         const device = this._sourceDevices[node.address];
         nodes.push({
           id: node.address,
@@ -204,7 +218,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           value: node.rssi,
           symbol: "none",
           lineStyle: {
-            width: node.rssi > -33 ? 3 : node.rssi > -66 ? 2 : 1,
+            width: this._getLineWidth(node.rssi),
             color: device
               ? colorVariables["primary-color"]
               : colorVariables["disabled-color"],
@@ -230,6 +244,10 @@ export class BluetoothNetworkVisualization extends LitElement {
       return this._scanners[id]?.name || id;
     }
     return this._data.find((d) => d.address === id)?.name || id;
+  }
+
+  private _getLineWidth(rssi: number): number {
+    return rssi > -33 ? 3 : rssi > -66 ? 2 : 1;
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
