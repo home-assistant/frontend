@@ -285,7 +285,7 @@ export class HaFloorPicker extends LitElement {
           id: floor.floor_id,
           primary: floorName,
           floor: floor,
-          sorting_label: floorName,
+          sorting_label: floor.level?.toString() || "zzzzz",
           search_labels: [floorName, floor.floor_id, ...floor.aliases].filter(
             (v): v is string => Boolean(v)
           ),
