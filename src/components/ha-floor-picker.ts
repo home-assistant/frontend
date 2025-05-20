@@ -1,14 +1,13 @@
+import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
+import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
-import type { AreaRegistryEntry } from "../data/area_registry";
+import { computeFloorName } from "../common/entity/compute_floor_name";
 import { updateAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
@@ -16,33 +15,29 @@ import type {
 } from "../data/device_registry";
 import { getDeviceEntityDisplayLookup } from "../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
-import type { FloorRegistryEntry } from "../data/floor_registry";
 import {
   createFloorRegistryEntry,
   getFloorAreaLookup,
+  type FloorRegistryEntry,
 } from "../data/floor_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showFloorRegistryDetailDialog } from "../panels/config/areas/show-dialog-floor-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
 import "./ha-floor-icon";
+import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import "./ha-icon-button";
-
-type ScorableFloorRegistryEntry = ScorableTextItem & FloorRegistryEntry;
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import type { PickerValueRenderer } from "./ha-picker-field";
+import "./ha-svg-icon";
 
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_FLOORS_ID = "___NO_FLOORS___";
-const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
-const rowRenderer: ComboBoxLitRenderer<FloorRegistryEntry> = (item) => html`
-  <ha-combo-box-item type="button">
-    <ha-floor-icon slot="start" .floor=${item}></ha-floor-icon>
-    ${item.name}
-  </ha-combo-box-item>
-`;
+interface FloorComboBoxItem extends PickerComboBoxItem {
+  floor?: FloorRegistryEntry;
+}
 
 @customElement("ha-floor-picker")
 export class HaFloorPicker extends LitElement {
@@ -88,7 +83,7 @@ export class HaFloorPicker extends LitElement {
    * @type {Array}
    * @attr exclude-floors
    */
-  @property({ type: Array, attribute: "exclude-floor" })
+  @property({ type: Array, attribute: "exclude-floors" })
   public excludeFloors?: string[];
 
   @property({ attribute: false })
@@ -101,38 +96,53 @@ export class HaFloorPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _opened?: boolean;
-
-  @query("ha-combo-box", true) public comboBox!: HaComboBox;
-
-  private _suggestion?: string;
-
-  private _init = false;
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
     await this.updateComplete;
-    await this.comboBox?.open();
+    await this._picker?.open();
   }
 
-  public async focus() {
-    await this.updateComplete;
-    await this.comboBox?.focus();
-  }
+  // Recompute value renderer when the areas change
+  private _computeValueRenderer = memoizeOne(
+    (_haAreas: HomeAssistant["floors"]): PickerValueRenderer =>
+      (value) => {
+        const floor = this.hass.floors[value];
+
+        if (!floor) {
+          return html`
+            <ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>
+            <span slot="headline">${floor}</span>
+          `;
+        }
+
+        const floorName = floor ? computeFloorName(floor) : undefined;
+
+        return html`
+          <ha-floor-icon slot="start" .floor=${floor}></ha-floor-icon>
+          <span slot="headline">${floorName}</span>
+        `;
+      }
+  );
 
   private _getFloors = memoizeOne(
     (
-      floors: FloorRegistryEntry[],
-      areas: AreaRegistryEntry[],
-      devices: DeviceRegistryEntry[],
-      entities: EntityRegistryDisplayEntry[],
+      haFloors: HomeAssistant["floors"],
+      haAreas: HomeAssistant["areas"],
+      haDevices: HomeAssistant["devices"],
+      haEntities: HomeAssistant["entities"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
-      noAdd: this["noAdd"],
       excludeFloors: this["excludeFloors"]
-    ): FloorRegistryEntry[] => {
+    ): FloorComboBoxItem[] => {
+      const floors = Object.values(haFloors);
+      const areas = Object.values(haAreas);
+      const devices = Object.values(haDevices);
+      const entities = Object.values(haEntities);
+
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
@@ -269,216 +279,169 @@ export class HaFloorPicker extends LitElement {
         );
       }
 
-      if (!outputFloors.length) {
-        outputFloors = [
-          {
-            floor_id: NO_FLOORS_ID,
-            name: this.hass.localize("ui.components.floor-picker.no_floors"),
-            icon: null,
-            level: null,
-            aliases: [],
-            created_at: 0,
-            modified_at: 0,
-          },
-        ];
-      }
+      const items = outputFloors.map<FloorComboBoxItem>((floor) => {
+        const floorName = computeFloorName(floor);
+        return {
+          id: floor.floor_id,
+          primary: floorName,
+          floor: floor,
+          sorting_label: floorName,
+          search_labels: [floorName, floor.floor_id, ...floor.aliases].filter(
+            (v): v is string => Boolean(v)
+          ),
+        };
+      });
 
-      return noAdd
-        ? outputFloors
-        : [
-            ...outputFloors,
-            {
-              floor_id: ADD_NEW_ID,
-              name: this.hass.localize("ui.components.floor-picker.add_new"),
-              icon: "mdi:plus",
-              level: null,
-              aliases: [],
-              created_at: 0,
-              modified_at: 0,
-            },
-          ];
+      return items;
     }
   );
 
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (!this._init && this.hass) ||
-      (this._init && changedProps.has("_opened") && this._opened)
-    ) {
-      this._init = true;
-      const floors = this._getFloors(
-        Object.values(this.hass.floors),
-        Object.values(this.hass.areas),
-        Object.values(this.hass.devices),
-        Object.values(this.hass.entities),
-        this.includeDomains,
-        this.excludeDomains,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.noAdd,
-        this.excludeFloors
-      ).map((floor) => ({
-        ...floor,
-        strings: [floor.floor_id, floor.name, ...floor.aliases],
-      }));
-      this.comboBox.items = floors;
-      this.comboBox.filteredItems = floors;
+  private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (item) => html`
+    <ha-combo-box-item type="button" compact>
+      ${item.icon_path
+        ? html`
+            <ha-svg-icon
+              slot="start"
+              style="margin: 0 4px"
+              .path=${item.icon_path}
+            ></ha-svg-icon>
+          `
+        : html`
+            <ha-floor-icon
+              slot="start"
+              .floor=${item.floor}
+              style="margin: 0 4px"
+            ></ha-floor-icon>
+          `}
+      <span slot="headline">${item.primary}</span>
+    </ha-combo-box-item>
+  `;
+
+  private _getItems = () =>
+    this._getFloors(
+      this.hass.floors,
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
+      this.includeDomains,
+      this.excludeDomains,
+      this.includeDeviceClasses,
+      this.deviceFilter,
+      this.entityFilter,
+      this.excludeFloors
+    );
+
+  private _allFloorNames = memoizeOne(
+    (floors: HomeAssistant["floors"]) =>
+      Object.values(floors)
+        .map((floor) => computeFloorName(floor)?.toLowerCase())
+        .filter(Boolean) as string[]
+  );
+
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (this.noAdd) {
+      return [];
     }
-  }
+
+    const allFloors = this._allFloorNames(this.hass.floors);
+
+    if (searchString && !allFloors.includes(searchString.toLowerCase())) {
+      return [
+        {
+          id: ADD_NEW_ID + searchString,
+          primary: this.hass.localize(
+            "ui.components.floor-picker.add_new_sugestion",
+            {
+              name: searchString,
+            }
+          ),
+          icon_path: mdiPlus,
+        },
+      ];
+    }
+
+    return [
+      {
+        id: ADD_NEW_ID,
+        primary: this.hass.localize("ui.components.floor-picker.add_new"),
+        icon_path: mdiPlus,
+      },
+    ];
+  };
 
   protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.floor-picker.floor");
+
+    const valueRenderer = this._computeValueRenderer(this.hass.floors);
+
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
-        .helper=${this.helper}
-        item-value-path="floor_id"
-        item-id-path="floor_id"
-        item-label-path="name"
-        .value=${this._value}
-        .disabled=${this.disabled}
-        .required=${this.required}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.floor-picker.floor")
-          : this.label}
-        .placeholder=${this.placeholder
-          ? this.hass.floors[this.placeholder]?.name
-          : undefined}
-        .renderer=${rowRenderer}
-        @filter-changed=${this._filterChanged}
-        @opened-changed=${this._openedChanged}
-        @value-changed=${this._floorChanged}
+        .autofocus=${this.autofocus}
+        .label=${this.label}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.floor-picker.no_match"
+        )}
+        .placeholder=${placeholder}
+        .value=${this.value}
+        .getItems=${this._getItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .valueRenderer=${valueRenderer}
+        .rowRenderer=${this._rowRenderer}
+        @value-changed=${this._valueChanged}
       >
-      </ha-combo-box>
+      </ha-generic-picker>
     `;
   }
 
-  private _filterChanged(ev: CustomEvent): void {
-    const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value;
-    if (!filterString) {
-      this.comboBox.filteredItems = this.comboBox.items;
-      return;
-    }
-
-    const filteredItems = fuzzyFilterSort<ScorableFloorRegistryEntry>(
-      filterString,
-      target.items?.filter(
-        (item) => ![NO_FLOORS_ID, ADD_NEW_ID].includes(item.label_id)
-      ) || []
-    );
-    if (filteredItems.length === 0) {
-      if (this.noAdd) {
-        this.comboBox.filteredItems = [
-          {
-            floor_id: NO_FLOORS_ID,
-            name: this.hass.localize("ui.components.floor-picker.no_match"),
-            icon: null,
-            level: null,
-            aliases: [],
-            created_at: 0,
-            modified_at: 0,
-          },
-        ] as FloorRegistryEntry[];
-      } else {
-        this._suggestion = filterString;
-        this.comboBox.filteredItems = [
-          {
-            floor_id: ADD_NEW_SUGGESTION_ID,
-            name: this.hass.localize(
-              "ui.components.floor-picker.add_new_sugestion",
-              { name: this._suggestion }
-            ),
-            icon: "mdi:plus",
-            level: null,
-            aliases: [],
-            created_at: 0,
-            modified_at: 0,
-          },
-        ] as FloorRegistryEntry[];
-      }
-    } else {
-      this.comboBox.filteredItems = filteredItems;
-    }
-  }
-
-  private get _value() {
-    return this.value || "";
-  }
-
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
-  private _floorChanged(ev: ValueChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    let newValue = ev.detail.value;
+    const value = ev.detail.value;
 
-    if (newValue === NO_FLOORS_ID) {
-      newValue = "";
-      this.comboBox.setInputValue("");
+    if (!value) {
+      this._setValue(undefined);
       return;
     }
 
-    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
-      if (newValue !== this._value) {
-        this._setValue(newValue);
-      }
-      return;
-    }
+    if (value.startsWith(ADD_NEW_ID)) {
+      this.hass.loadFragmentTranslation("config");
 
-    (ev.target as any).value = this._value;
+      const suggestedName = value.substring(ADD_NEW_ID.length);
 
-    this.hass.loadFragmentTranslation("config");
-
-    showFloorRegistryDetailDialog(this, {
-      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
-      createEntry: async (values, addedAreas) => {
-        try {
-          const floor = await createFloorRegistryEntry(this.hass, values);
-          addedAreas.forEach((areaId) => {
-            updateAreaRegistryEntry(this.hass, areaId, {
-              floor_id: floor.floor_id,
+      showFloorRegistryDetailDialog(this, {
+        suggestedName: suggestedName,
+        createEntry: async (values, addedAreas) => {
+          try {
+            const floor = await createFloorRegistryEntry(this.hass, values);
+            addedAreas.forEach((areaId) => {
+              updateAreaRegistryEntry(this.hass, areaId, {
+                floor_id: floor.floor_id,
+              });
             });
-          });
-          const floors = [...Object.values(this.hass.floors), floor];
-          this.comboBox.filteredItems = this._getFloors(
-            floors,
-            Object.values(this.hass.areas)!,
-            Object.values(this.hass.devices)!,
-            Object.values(this.hass.entities)!,
-            this.includeDomains,
-            this.excludeDomains,
-            this.includeDeviceClasses,
-            this.deviceFilter,
-            this.entityFilter,
-            this.noAdd,
-            this.excludeFloors
-          );
-          await this.updateComplete;
-          await this.comboBox.updateComplete;
-          this._setValue(floor.floor_id);
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.components.floor-picker.failed_create_floor"
-            ),
-            text: err.message,
-          });
-        }
-      },
-    });
+            this._setValue(floor.floor_id);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.components.floor-picker.failed_create_floor"
+              ),
+              text: err.message,
+            });
+          }
+        },
+      });
+    }
 
-    this._suggestion = undefined;
-    this.comboBox.setInputValue("");
+    this._setValue(value);
   }
 
   private _setValue(value?: string) {
     this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
-    }, 0);
+    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "change");
   }
 }
 
