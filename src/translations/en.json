@@ -2021,9 +2021,7 @@
     "sidebar": {
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
-      "done": "Done",
-      "hide_panel": "Hide panel",
-      "show_panel": "Show panel"
+      "edit_sidebar": "Edit sidebar"
     },
     "panel": {
       "my": {

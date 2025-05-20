@@ -30,6 +30,7 @@ import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
 import "./ha-set-vibrate-row";
+import { showEditSidebarDialog } from "../../dialogs/sidebar/show-dialog-edit-sidebar";
 
 @customElement("ha-profile-section-general")
 class HaProfileSectionGeneral extends LitElement {
@@ -247,8 +248,17 @@ class HaProfileSectionGeneral extends LitElement {
   }
 
   private _customizeSidebar() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
+    showEditSidebarDialog(this, {
+      saveCallback: this._saveSidebar,
+    });
   }
+
+  private _saveSidebar = (order: string[], hidden: string[]) => {
+    fireEvent(this, "hass-edit-sidebar", { 
+      order,
+      hidden,
+     });
+  };
 
   private _handleLogOut() {
     showConfirmationDialog(this, {

@@ -30,8 +30,12 @@ class DialogEditSidebar extends LitElement {
 
   public async showDialog(params: EditSidebarDialogParams): Promise<void> {
     this._open = true;
-    this._order = params.order ? [...params.order] : this._order;
-    this._hidden = params.hidden ? [...params.hidden] : this._hidden;
+
+    const storedOrder = localStorage.getItem("sidebarPanelOrder");
+    const storedHidden = localStorage.getItem("sidebarHiddenPanels");
+
+    this._order = storedOrder ? JSON.parse(storedOrder) : this._order;
+    this._hidden = storedHidden ? JSON.parse(storedHidden) : this._hidden;
     this._saveCallback = params.saveCallback;
   }
 
@@ -53,8 +57,7 @@ class DialogEditSidebar extends LitElement {
       return nothing;
     }
 
-    // TODO translations
-    const dialogTitle = "Edit sidebar";
+    const dialogTitle = this.hass.localize("ui.sidebar.edit_sidebar");
 
     const panels = this._panels(this.hass.panels);
 
