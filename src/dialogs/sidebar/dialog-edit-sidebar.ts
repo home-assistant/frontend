@@ -62,7 +62,7 @@ class DialogEditSidebar extends LitElement {
     const panels = this._panels(this.hass.panels);
 
     const [beforeSpacer, afterSpacer] = computePanels(
-      panels,
+      this.hass.panels,
       this.hass.defaultPanel,
       this._order,
       this._hidden,
