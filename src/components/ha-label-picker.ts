@@ -385,7 +385,8 @@ export class HaLabelPicker extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     const placeholder =
-      this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
+      this.placeholder ??
+      this.hass.localize("ui.components.label-picker.label");
 
     return html`
       <ha-generic-picker
