@@ -539,17 +539,21 @@ export class HaAssistChat extends LitElement {
               delete tools[delta.tool_call_id];
             }
           }
-        }
-
-        if (event.type === "intent-end") {
+        } else if (event.type === "intent-end") {
           this._conversationId = event.data.intent_output.conversation_id;
           progress.continueConversation =
             event.data.intent_output.continue_conversation;
-          const plain = event.data.intent_output.response.speech?.plain;
-          if (plain) {
-            progress.hassMessage.text = plain.speech;
+          const response =
+            event.data.intent_output.response.speech?.plain.speech;
+          if (!response) {
+            return;
           }
-          this.requestUpdate("_conversation");
+          if (event.data.intent_output.response.response_type === "error") {
+            progress.setError(response);
+          } else {
+            progress.hassMessage.text = response;
+            this.requestUpdate("_conversation");
+          }
         }
       },
     };
