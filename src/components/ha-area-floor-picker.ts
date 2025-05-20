@@ -39,8 +39,6 @@ const SEPARATOR = "________";
 
 interface FloorComboBoxItem extends PickerComboBoxItem {
   type: "floor" | "area";
-  has_floor?: boolean;
-  last_area?: boolean;
   floor?: FloorRegistryEntry;
   area?: AreaRegistryEntry;
 }
@@ -61,6 +59,9 @@ export class HaAreaFloorPicker extends LitElement {
   @property() public helper?: string;
 
   @property() public placeholder?: string;
+
+  @property({ type: String, attribute: "search-label" })
+  public searchLabel?: string;
 
   /**
    * Show only areas with entities from specific domains.
@@ -337,25 +338,37 @@ export class HaAreaFloorPicker extends LitElement {
       floorAreaEntries.forEach(([floor, floorAreas]) => {
         if (floor) {
           const floorName = computeFloorName(floor);
+
+          const areaSearchLabels = floorAreas
+            .map((area) => {
+              const areaName = computeAreaName(area) || area.area_id;
+              return [area.area_id, areaName, ...area.aliases];
+            })
+            .flat();
+
           items.push({
             id: this._formatValue({ id: floor.floor_id, type: "floor" }),
             type: "floor",
             primary: floorName,
             floor: floor,
-            search_labels: [floor.floor_id, floorName, ...floor.aliases],
+            search_labels: [
+              floor.floor_id,
+              floorName,
+              ...floor.aliases,
+              ...areaSearchLabels,
+            ],
           });
         }
         items.push(
-          ...floorAreas.map((area, index, array) => {
+          ...floorAreas.map((area) => {
             const areaName = computeAreaName(area) || area.area_id;
             return {
               id: this._formatValue({ id: area.area_id, type: "area" }),
               type: "area" as const,
               primary: areaName,
               area: area,
+              icon: area.icon || undefined,
               search_labels: [area.area_id, areaName, ...area.aliases],
-              has_floor: true,
-              last_area: index === array.length - 1,
             };
           })
         );
@@ -368,6 +381,7 @@ export class HaAreaFloorPicker extends LitElement {
             id: this._formatValue({ id: area.area_id, type: "area" }),
             type: "area" as const,
             primary: areaName,
+            icon: area.icon || undefined,
             search_labels: [area.area_id, areaName, ...area.aliases],
           };
         })
@@ -377,10 +391,21 @@ export class HaAreaFloorPicker extends LitElement {
     }
   );
 
-  private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (item) => {
+  private _rowRenderer: ComboBoxLitRenderer<FloorComboBoxItem> = (
+    item,
+    { index },
+    combobox
+  ) => {
+    const nextItem = combobox.filteredItems?.[index + 1];
+    const isLastArea =
+      !nextItem ||
+      nextItem.type === "floor" ||
+      (nextItem.type === "area" && !nextItem.area?.floor_id);
+
     const rtl = computeRTL(this.hass);
 
     const hasFloor = item.type === "area" && item.area?.floor_id;
+
     return html`
       <ha-combo-box-item
         type="button"
@@ -399,7 +424,7 @@ export class HaAreaFloorPicker extends LitElement {
                   right: rtl ? "4px" : undefined,
                   transform: rtl ? "scaleX(-1)" : "",
                 })}
-                .end=${item.last_area}
+                .end=${isLastArea}
                 slot="start"
               ></ha-tree-indicator>
             `
@@ -413,7 +438,7 @@ export class HaAreaFloorPicker extends LitElement {
             ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
             : html`<ha-svg-icon
                 slot="start"
-                .path=${mdiTextureBox}
+                .path=${item.icon_path || mdiTextureBox}
               ></ha-svg-icon>`}
         ${item.primary}
       </ha-combo-box-item>
@@ -456,9 +481,11 @@ export class HaAreaFloorPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .searchLabel=${this.searchLabel}
         .notFoundLabel=${this.hass.localize(
           "ui.components.area-picker.no_match"
         )}
+        no-result-sorting
         .placeholder=${placeholder}
         .value=${value}
         .getItems=${this._getItems}

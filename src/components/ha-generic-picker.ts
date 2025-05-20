@@ -59,6 +59,9 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
 
+  @property({ attribute: "no-result-sorting", type: Boolean })
+  public noResultSorting = false;
+
   @query("ha-picker-field") private _field?: HaPickerField;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -93,6 +96,7 @@ export class HaGenericPicker extends LitElement {
                 .label=${this.searchLabel ??
                 this.hass.localize("ui.common.search")}
                 .value=${this.value}
+                .noResultSorting=${this.noResultSorting}
                 hide-clear-icon
                 @opened-changed=${this._openedChanged}
                 @value-changed=${this._valueChanged}

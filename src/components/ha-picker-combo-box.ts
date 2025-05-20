@@ -83,6 +83,9 @@ export class HaPickerComboBox extends LitElement {
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
 
+  @property({ attribute: "no-result-sorting", type: Boolean })
+  public noResultSorting = false;
+
   @state() private _opened = false;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -232,7 +235,7 @@ export class HaPickerComboBox extends LitElement {
     const searchString = ev.detail.value.trim() as string;
 
     const index = this._fuseIndex(this._items);
-    const fuse = new HaFuse(this._items, {}, index);
+    const fuse = new HaFuse(this._items, { shouldSort: false }, index);
 
     const results = fuse.multiTermsSearch(searchString);
     if (results) {
