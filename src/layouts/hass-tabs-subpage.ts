@@ -3,15 +3,15 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, eventOptions, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { canShowPage } from "../common/config/can_show_page";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
 import "../components/ha-tab";
-import type { HomeAssistant, Route } from "../types";
 import { haStyleScrollbar } from "../resources/styles";
-import { canShowPage } from "../common/config/can_show_page";
+import type { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
   path: string;
@@ -51,6 +51,12 @@ class HassTabsSubpage extends LitElement {
   public isWide = false;
 
   @property({ type: Boolean }) public pane = false;
+
+  /**
+   * Do we need to add padding for a fab.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean, attribute: "has-fab" }) public hasFab = false;
 
   @state() private _activeTab?: PageNavigation;
 
@@ -178,6 +184,7 @@ class HassTabsSubpage extends LitElement {
           @scroll=${this._saveScrollPos}
         >
           <slot></slot>
+          ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
       </div>
       <div id="fab" class=${classMap({ tabs: showTabs })}>
@@ -334,6 +341,14 @@ class HassTabsSubpage extends LitElement {
           height: calc(
             100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
           );
+        }
+
+        .content .fab-bottom-space {
+          height: calc(64px + env(safe-area-inset-bottom));
+        }
+
+        :host([narrow]) .content.tabs .fab-bottom-space {
+          height: calc(80px + env(safe-area-inset-bottom));
         }
 
         #fab {
