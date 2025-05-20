@@ -401,7 +401,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .label=${this.hass.localize(
                 "ui.components.target-picker.add_area_id"
               )}
-              no-add
               .deviceFilter=${this.deviceFilter}
               .entityFilter=${this.entityFilter}
               .includeDeviceClasses=${this.includeDeviceClasses}
