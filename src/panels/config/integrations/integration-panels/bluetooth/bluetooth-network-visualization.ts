@@ -109,6 +109,7 @@ export class BluetoothNetworkVisualization extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .route=${this.route}
         header=${this.hass.localize("ui.panel.config.bluetooth.visualization")}
         .tabs=${bluetoothAdvertisementMonitorTabs}
       >
