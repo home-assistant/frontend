@@ -1,11 +1,12 @@
 import { html, LitElement, css } from "lit";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import memoizeOne from "memoize-one";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../../../components/chart/ha-network-graph";
 import type {
@@ -91,26 +92,6 @@ export class BluetoothNetworkVisualization extends LitElement {
     }
   }
 
-  protected shouldUpdate(changedProperties: PropertyValues) {
-    if (
-      changedProperties.has("_scanners") ||
-      changedProperties.has("_sourceDevices")
-    ) {
-      return true;
-    }
-    // prevent unnecessary node jumping when the data is updated
-    return (
-      changedProperties.has("_data") &&
-      (changedProperties.get("_data").length !== this._data.length ||
-        changedProperties
-          .get("_data")
-          ?.some(
-            (d: BluetoothDeviceData) =>
-              !this._data.some((d2) => d2.address === d.address)
-          ))
-    );
-  }
-
   protected render() {
     return html`
       <hass-tabs-subpage
@@ -121,7 +102,7 @@ export class BluetoothNetworkVisualization extends LitElement {
       >
         <ha-network-graph
           .hass=${this.hass}
-          .data=${this._formatNetworkData()}
+          .data=${this._formatNetworkData(this._data)}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         ></ha-network-graph>
@@ -129,96 +110,98 @@ export class BluetoothNetworkVisualization extends LitElement {
     `;
   }
 
-  private _formatNetworkData(): NetworkData {
-    const categories = [
-      {
-        name: this.hass.localize("ui.panel.config.bluetooth.core"),
-        symbol: "roundRect",
-        itemStyle: {
-          color: colorVariables["primary-color"],
+  private _formatNetworkData = memoizeOne(
+    (data: BluetoothDeviceData[]): NetworkData => {
+      const categories = [
+        {
+          name: this.hass.localize("ui.panel.config.bluetooth.core"),
+          symbol: "roundRect",
+          itemStyle: {
+            color: colorVariables["primary-color"],
+          },
         },
-      },
-      {
-        name: this.hass.localize("ui.panel.config.bluetooth.scanners"),
-        symbol: "circle",
-        itemStyle: {
-          color: colorVariables["cyan-color"],
+        {
+          name: this.hass.localize("ui.panel.config.bluetooth.scanners"),
+          symbol: "circle",
+          itemStyle: {
+            color: colorVariables["cyan-color"],
+          },
         },
-      },
-      {
-        name: this.hass.localize("ui.panel.config.bluetooth.known_devices"),
-        symbol: "circle",
-        itemStyle: {
-          color: colorVariables["teal-color"],
+        {
+          name: this.hass.localize("ui.panel.config.bluetooth.known_devices"),
+          symbol: "circle",
+          itemStyle: {
+            color: colorVariables["teal-color"],
+          },
         },
-      },
-      {
-        name: this.hass.localize("ui.panel.config.bluetooth.unknown_devices"),
-        symbol: "circle",
-        itemStyle: {
-          color: colorVariables["disabled-color"],
+        {
+          name: this.hass.localize("ui.panel.config.bluetooth.unknown_devices"),
+          symbol: "circle",
+          itemStyle: {
+            color: colorVariables["disabled-color"],
+          },
         },
-      },
-    ];
-    const nodes: NetworkNode[] = [
-      {
-        id: "ha",
-        name: this.hass.localize("ui.panel.config.bluetooth.core"),
-        category: 0,
-        value: 4,
-        symbol: "roundRect",
-        symbolSize: 40,
-        polarDistance: 0,
-      },
-    ];
-    const links: NetworkLink[] = [];
-    Object.values(this._scanners).forEach((scanner) => {
-      const scannerDevice = this._sourceDevices[scanner.source];
-      nodes.push({
-        id: scanner.source,
-        name:
-          scannerDevice?.name_by_user || scannerDevice?.name || scanner.name,
-        category: 1,
-        value: 5,
-        symbol: "circle",
-        symbolSize: 30,
-        polarDistance: 0.25,
+      ];
+      const nodes: NetworkNode[] = [
+        {
+          id: "ha",
+          name: this.hass.localize("ui.panel.config.bluetooth.core"),
+          category: 0,
+          value: 4,
+          symbol: "roundRect",
+          symbolSize: 40,
+          polarDistance: 0,
+        },
+      ];
+      const links: NetworkLink[] = [];
+      Object.values(this._scanners).forEach((scanner) => {
+        const scannerDevice = this._sourceDevices[scanner.source];
+        nodes.push({
+          id: scanner.source,
+          name:
+            scannerDevice?.name_by_user || scannerDevice?.name || scanner.name,
+          category: 1,
+          value: 5,
+          symbol: "circle",
+          symbolSize: 30,
+          polarDistance: 0.25,
+        });
+        links.push({
+          source: "ha",
+          target: scanner.source,
+          value: 0,
+          symbol: "none",
+          lineStyle: {
+            width: 3,
+            color: colorVariables["primary-color"],
+          },
+        });
       });
-      links.push({
-        source: "ha",
-        target: scanner.source,
-        value: 0,
-        symbol: "none",
-        lineStyle: {
-          width: 3,
-          color: colorVariables["primary-color"],
-        },
+      data.forEach((node) => {
+        const device = this._sourceDevices[node.address];
+        nodes.push({
+          id: node.address,
+          name: this._getBluetoothDeviceName(node.address),
+          value: device ? 1 : 0,
+          category: device ? 2 : 3,
+          symbolSize: 20,
+        });
+        links.push({
+          source: node.source,
+          target: node.address,
+          value: node.rssi,
+          symbol: "none",
+          lineStyle: {
+            width: node.rssi > -33 ? 3 : node.rssi > -66 ? 2 : 1,
+            color: device
+              ? colorVariables["primary-color"]
+              : colorVariables["disabled-color"],
+          },
+        });
       });
-    });
-    this._data.forEach((node) => {
-      const device = this._sourceDevices[node.address];
-      nodes.push({
-        id: node.address,
-        name: this._getBluetoothDeviceName(node.address),
-        value: device ? 1 : 0,
-        category: device ? 2 : 3,
-        symbolSize: 20,
-      });
-      links.push({
-        source: node.source,
-        target: node.address,
-        value: node.rssi,
-        symbol: "none",
-        lineStyle: {
-          width: node.rssi > -33 ? 3 : node.rssi > -66 ? 2 : 1,
-          color: device
-            ? colorVariables["primary-color"]
-            : colorVariables["disabled-color"],
-        },
-      });
-    });
-    return { nodes, links, categories };
-  }
+      return { nodes, links, categories };
+    }
+  );
 
   private _getBluetoothDeviceName(id: string): string {
     if (id === "ha") {
