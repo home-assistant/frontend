@@ -115,7 +115,7 @@ export class BluetoothNetworkVisualization extends LitElement {
       >
         <ha-network-graph
           .hass=${this.hass}
-          .data=${this._formatNetworkData(this._data)}
+          .data=${this._formatNetworkData(this._data, this._scanners)}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         ></ha-network-graph>
@@ -124,7 +124,10 @@ export class BluetoothNetworkVisualization extends LitElement {
   }
 
   private _formatNetworkData = memoizeOne(
-    (data: BluetoothDeviceData[]): NetworkData => {
+    (
+      data: BluetoothDeviceData[],
+      scanners: BluetoothScannersDetails
+    ): NetworkData => {
       const categories = [
         {
           name: this.hass.localize("ui.panel.config.bluetooth.core"),
@@ -167,7 +170,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         },
       ];
       const links: NetworkLink[] = [];
-      Object.values(this._scanners).forEach((scanner) => {
+      Object.values(scanners).forEach((scanner) => {
         const scannerDevice = this._sourceDevices[scanner.source];
         nodes.push({
           id: scanner.source,
@@ -191,7 +194,7 @@ export class BluetoothNetworkVisualization extends LitElement {
         });
       });
       data.forEach((node) => {
-        if (this._scanners[node.address]) {
+        if (scanners[node.address]) {
           // proxies sometimes appear as end devices too
           links.push({
             source: node.source,
