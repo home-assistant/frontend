@@ -9,7 +9,7 @@ import "../../../../components/ha-md-list-item";
 import {
   computeBackupSize,
   computeBackupType,
-  type BackupContentExtended
+  type BackupContentExtended,
 } from "../../../../data/backup";
 import type { HomeAssistant } from "../../../../types";
 import { bytesToString } from "../../../../util/bytes-to-string";
