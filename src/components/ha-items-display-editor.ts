@@ -25,6 +25,7 @@ export interface DisplayItem {
   value: string;
   label: string;
   description?: string;
+  disableSorting?: boolean;
 }
 
 export interface DisplayValue {
@@ -49,6 +50,9 @@ export class HaItemDisplayEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "show-navigation-button" })
   public showNavigationButton = false;
+
+  @property({ type: Boolean, attribute: "dont-sort-visible" })
+  public dontSortVisible = false;
 
   @property({ attribute: false })
   public value: DisplayValue = {
@@ -89,7 +93,14 @@ export class HaItemDisplayEditor extends LitElement {
             (item) => item.value,
             (item: DisplayItem, idx) => {
               const isVisible = !this.value.hidden.includes(item.value);
-              const { label, value, description, icon, iconPath } = item;
+              const {
+                label,
+                value,
+                description,
+                icon,
+                iconPath,
+                disableSorting,
+              } = item;
               return html`
                 <ha-md-list-item
                   type=${ifDefined(
@@ -101,7 +112,7 @@ export class HaItemDisplayEditor extends LitElement {
                   .value=${value}
                   class=${classMap({
                     hidden: !isVisible,
-                    draggable: isVisible,
+                    draggable: isVisible && !disableSorting,
                     "drag-selected": this._dragIndex === idx,
                   })}
                 >
@@ -109,7 +120,7 @@ export class HaItemDisplayEditor extends LitElement {
                   ${description
                     ? html`<span slot="supporting-text">${description}</span>`
                     : nothing}
-                  ${isVisible
+                  ${isVisible && !disableSorting
                     ? html`
                         <ha-svg-icon
                           tabindex="0"
@@ -236,9 +247,15 @@ export class HaItemDisplayEditor extends LitElement {
   private _visibleItems = memoizeOne(
     (items: DisplayItem[], hidden: string[], order: string[]) => {
       const compare = orderCompare(order);
-      return items
-        .filter((item) => !hidden.includes(item.value))
-        .sort((a, b) => compare(a.value, b.value));
+
+      const visibleItems = items.filter((item) => !hidden.includes(item.value));
+      if (this.dontSortVisible) {
+        return visibleItems;
+      }
+
+      return items.sort((a, b) =>
+        a.disableSorting && !b.disableSorting ? -1 : compare(a.value, b.value)
+      );
     }
   );
 
@@ -256,7 +273,7 @@ export class HaItemDisplayEditor extends LitElement {
 
   private _maxSortableIndex = memoizeOne(
     (items: DisplayItem[], hidden: string[]) =>
-      items.filter((item) => !hidden.includes(item.value)).length - 1
+      items.filter((item) => !item.disableSorting && !hidden.includes(item.value)).length - 1
   );
 
   private _sortKeydown = async (ev: KeyboardEvent) => {
