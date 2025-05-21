@@ -103,9 +103,7 @@ export class HaItemDisplayEditor extends LitElement {
               } = item;
               return html`
                 <ha-md-list-item
-                  type=${ifDefined(
-                    this.showNavigationButton ? "button" : undefined
-                  )}
+                  type="button"
                   @click=${this.showNavigationButton
                     ? this._navigate
                     : undefined}
@@ -115,6 +113,12 @@ export class HaItemDisplayEditor extends LitElement {
                     draggable: isVisible && !disableSorting,
                     "drag-selected": this._dragIndex === idx,
                   })}
+                  @keydown=${!this.showNavigationButton &&
+                  isVisible &&
+                  !disableSorting
+                    ? this._dragHandleKeydown
+                    : undefined}
+                  .idx=${idx}
                 >
                   <span slot="headline">${label}</span>
                   ${description
@@ -123,9 +127,13 @@ export class HaItemDisplayEditor extends LitElement {
                   ${isVisible && !disableSorting
                     ? html`
                         <ha-svg-icon
-                          tabindex="0"
+                          tabindex=${ifDefined(
+                            this.showNavigationButton ? "0" : undefined
+                          )}
                           .idx=${idx}
-                          @keydown=${this._dragHandleKeydown}
+                          @keydown=${this.showNavigationButton
+                            ? this._dragHandleKeydown
+                            : undefined}
                           class="handle"
                           .path=${mdiDrag}
                           slot="start"
@@ -250,7 +258,10 @@ export class HaItemDisplayEditor extends LitElement {
 
       const visibleItems = items.filter((item) => !hidden.includes(item.value));
       if (this.dontSortVisible) {
-        return visibleItems;
+        return [
+          ...visibleItems.filter((item) => !item.disableSorting),
+          ...visibleItems.filter((item) => item.disableSorting),
+        ];
       }
 
       return items.sort((a, b) =>
@@ -273,35 +284,47 @@ export class HaItemDisplayEditor extends LitElement {
 
   private _maxSortableIndex = memoizeOne(
     (items: DisplayItem[], hidden: string[]) =>
-      items.filter((item) => !item.disableSorting && !hidden.includes(item.value)).length - 1
+      items.filter(
+        (item) => !item.disableSorting && !hidden.includes(item.value)
+      ).length - 1
   );
 
-  private _sortKeydown = async (ev: KeyboardEvent) => {
+  private _keyActivatedMove = (ev: KeyboardEvent, clearDragIndex = false) => {
+    const oldIndex = this._dragIndex;
+
+    if (ev.key === "ArrowUp") {
+      this._dragIndex = Math.max(0, this._dragIndex! - 1);
+    } else {
+      this._dragIndex = Math.min(
+        this._maxSortableIndex(this.items, this.value.hidden),
+        this._dragIndex! + 1
+      );
+    }
+    this._moveItem(oldIndex, this._dragIndex);
+
+    // refocus the item after the sort
+    setTimeout(async () => {
+      await this.updateComplete;
+      const selectedElement = this.shadowRoot?.querySelector(
+        `ha-md-list-item:nth-child(${this._dragIndex! + 1})`
+      ) as HTMLElement | null;
+      selectedElement?.focus();
+      if (clearDragIndex) {
+        this._dragIndex = null;
+      }
+    });
+  };
+
+  private _sortKeydown = (ev: KeyboardEvent) => {
     if (
       this._dragIndex !== null &&
       (ev.key === "ArrowUp" || ev.key === "ArrowDown")
     ) {
       ev.preventDefault();
-
-      const oldIndex = this._dragIndex;
-
-      if (ev.key === "ArrowUp") {
-        this._dragIndex = Math.max(0, this._dragIndex! - 1);
-      } else {
-        this._dragIndex = Math.min(
-          this._maxSortableIndex(this.items, this.value.hidden),
-          this._dragIndex! + 1
-        );
-      }
-      this._moveItem(oldIndex, this._dragIndex);
-
-      // refocus the item after the sort
-      await this.updateComplete;
-      const selectedElement = this.shadowRoot?.querySelector(
-        `ha-md-list-item.drag-selected`
-      ) as HTMLElement | null;
-      selectedElement?.focus();
+      this._keyActivatedMove(ev);
     } else if (this._dragIndex !== null && ev.key === "Escape") {
+      ev.preventDefault();
+      ev.stopPropagation();
       this._dragIndex = null;
       this.removeEventListener("keydown", this._sortKeydown);
     }
@@ -318,6 +341,10 @@ export class HaItemDisplayEditor extends LitElement {
         this.removeEventListener("keydown", this._sortKeydown);
         this._dragIndex = null;
       }
+    } else if (ev.altKey && (ev.key === "ArrowUp" || ev.key === "ArrowDown")) {
+      ev.preventDefault();
+      this._dragIndex = (ev.target as any).idx;
+      this._keyActivatedMove(ev, true);
     }
   }
 
