@@ -161,24 +161,28 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const links: NetworkLink[] = [];
     const categories = [
       {
-        name: this.hass.localize("ui.panel.config.zha.visualization.coordinator"),
+        name: this.hass.localize(
+          "ui.panel.config.zha.visualization.coordinator"
+        ),
         symbol: "roundRect",
         itemStyle: { color: primaryColor },
       },
-      { 
-        name: this.hass.localize("ui.panel.config.zha.visualization.router"), 
-        symbol: "circle", 
-        itemStyle: { color: routerColor } 
+      {
+        name: this.hass.localize("ui.panel.config.zha.visualization.router"),
+        symbol: "circle",
+        itemStyle: { color: routerColor },
       },
       {
-        name: this.hass.localize("ui.panel.config.zha.visualization.end_device"),
+        name: this.hass.localize(
+          "ui.panel.config.zha.visualization.end_device"
+        ),
         symbol: "circle",
         itemStyle: { color: endDeviceColor },
       },
-      { 
-        name: this.hass.localize("ui.panel.config.zha.visualization.offline"), 
-        symbol: "circle", 
-        itemStyle: { color: offlineColor } 
+      {
+        name: this.hass.localize("ui.panel.config.zha.visualization.offline"),
+        symbol: "circle",
+        itemStyle: { color: offlineColor },
       },
     ];
 
