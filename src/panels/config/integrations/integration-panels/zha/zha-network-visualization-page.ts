@@ -91,13 +91,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
       const sourceName = this._networkData!.nodes.find(
         (node) => node.id === source
       )!.name;
-      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
+      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>${this.hass.localize("ui.panel.config.zha.neighbors.lqi")}:</b> ${value}` : ""}`;
 
       const reverseValue = this._networkData!.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
       if (reverseValue) {
-        return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
+        return `${tooltipText}<br>${targetName} → ${sourceName} <b>${this.hass.localize("ui.panel.config.zha.neighbors.lqi")}:</b> ${reverseValue}`;
       }
       return tooltipText;
     }
@@ -105,20 +105,20 @@ export class ZHANetworkVisualizationPage extends LitElement {
     if (!device) {
       return name;
     }
-    let label = `<b>IEEE: </b>${device.ieee}`;
-    label += `<br><b>Device Type: </b>${device.device_type.replace("_", " ")}`;
+    let label = `<b>${this.hass.localize("ui.panel.config.zha.visualization.ieee")}: </b>${device.ieee}`;
+    label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
-      label += `<br><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.nwk")}: </b>${formatAsPaddedHex(device.nwk)}`;
     }
     if (device.manufacturer != null && device.model != null) {
-      label += `<br><b>Device: </b>${device.manufacturer} ${device.model}`;
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device")}: </b>${device.manufacturer} ${device.model}`;
     } else {
-      label += "<br><b>Device is not in <i>'zigbee.db'</i></b>";
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_not_in_db")}</b>`;
     }
     if (device.area_id) {
       const area = this.hass.areas[device.area_id];
       if (area) {
-        label += `<br><b>Area: </b>${area.name}`;
+        label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }
     }
     return label;
@@ -161,17 +161,25 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const links: NetworkLink[] = [];
     const categories = [
       {
-        name: "Coordinator",
+        name: this.hass.localize("ui.panel.config.zha.visualization.coordinator"),
         symbol: "roundRect",
         itemStyle: { color: primaryColor },
       },
-      { name: "Router", symbol: "circle", itemStyle: { color: routerColor } },
+      { 
+        name: this.hass.localize("ui.panel.config.zha.visualization.router"), 
+        symbol: "circle", 
+        itemStyle: { color: routerColor } 
+      },
       {
-        name: "End Device",
+        name: this.hass.localize("ui.panel.config.zha.visualization.end_device"),
         symbol: "circle",
         itemStyle: { color: endDeviceColor },
       },
-      { name: "Offline", symbol: "circle", itemStyle: { color: offlineColor } },
+      { 
+        name: this.hass.localize("ui.panel.config.zha.visualization.offline"), 
+        symbol: "circle", 
+        itemStyle: { color: offlineColor } 
+      },
     ];
 
     // Create all the nodes and links
