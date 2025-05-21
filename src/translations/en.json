@@ -5708,7 +5708,7 @@
             "refresh_topology": "Refresh topology",
             "device": "Device",
             "device_type": "Device type",
-            "device_not_in_db": "Device is not in <i>'zigbee.db'</i>",
+            "device_not_in_db": "Device is not in 'zigbee.db'",
             "area": "Area",
             "coordinator": "Coordinator",
             "router": "Router",
