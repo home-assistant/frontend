@@ -2113,7 +2113,8 @@
           "hide_url": "Hide URL",
           "copy_link": "Copy link",
           "graph": {
-            "toggle_physics": "Toggle physics"
+            "toggle_physics": "Toggle physics",
+            "toggle_labels": "Toggle labels"
           }
         },
         "updates": {
@@ -5521,6 +5522,7 @@
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
           "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
           "connection_monitor": "Connection monitor",
+          "visualization": "Visualization",
           "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
@@ -5538,7 +5540,12 @@
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
           "service_uuids": "Service UUIDs",
-          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+          "area": "Area",
+          "core": "Home Assistant",
+          "scanners": "Scanners",
+          "known_devices": "Known devices",
+          "unknown_devices": "Unknown devices"
         },
         "dhcp": {
           "title": "DHCP discovery",
