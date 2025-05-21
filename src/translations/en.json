@@ -5706,8 +5706,6 @@
             "header": "Network visualization",
             "caption": "Visualization",
             "refresh_topology": "Refresh topology",
-            "nwk": "NWK",
-            "ieee": "IEEE",
             "device": "Device",
             "device_type": "Device type",
             "device_not_in_db": "Device is not in <i>'zigbee.db'</i>",

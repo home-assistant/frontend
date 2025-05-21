@@ -95,13 +95,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
       const sourceName = this._networkData.nodes.find(
         (node) => node.id === source
       )!.name;
-      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>${this.hass.localize("ui.panel.config.zha.neighbors.lqi")}:</b> ${value}` : ""}`;
+      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
 
       const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
       if (reverseValue) {
-        return `${tooltipText}<br>${targetName} → ${sourceName} <b>${this.hass.localize("ui.panel.config.zha.neighbors.lqi")}:</b> ${reverseValue}`;
+        return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
       }
       return tooltipText;
     }
@@ -109,10 +109,10 @@ export class ZHANetworkVisualizationPage extends LitElement {
     if (!device) {
       return name;
     }
-    let label = `<b>${this.hass.localize("ui.panel.config.zha.visualization.ieee")}: </b>${device.ieee}`;
+    let label = `<b>IEEE: </b>${device.ieee}`;
     label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
-      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.nwk")}: </b>${formatAsPaddedHex(device.nwk)}`;
+      label += `<br><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
     }
     if (device.manufacturer != null && device.model != null) {
       label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device")}: </b>${device.manufacturer} ${device.model}`;
