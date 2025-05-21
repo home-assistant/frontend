@@ -374,7 +374,9 @@
       "copy": "Copy",
       "show": "Show",
       "replace": "Replace",
-      "append": "Append"
+      "append": "Append",
+      "supports_markdown": "Supports {markdown_help_link}",
+      "markdown": "Markdown"
     },
     "components": {
       "selectors": {
