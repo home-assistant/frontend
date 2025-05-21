@@ -33,7 +33,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state()
-  private _networkData?: NetworkData;
+  private _networkData: NetworkData = {
+    nodes: [],
+    links: [],
+    categories: [],
+  };
 
   @state()
   private _devices: ZHADevice[] = [];
@@ -85,15 +89,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const { dataType, data, name } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
-      const targetName = this._networkData!.nodes.find(
+      const targetName = this._networkData.nodes.find(
         (node) => node.id === target
       )!.name;
-      const sourceName = this._networkData!.nodes.find(
+      const sourceName = this._networkData.nodes.find(
         (node) => node.id === source
       )!.name;
       const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>${this.hass.localize("ui.panel.config.zha.neighbors.lqi")}:</b> ${value}` : ""}`;
 
-      const reverseValue = this._networkData!.links.find(
+      const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
       if (reverseValue) {
