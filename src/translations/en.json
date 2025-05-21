@@ -2772,7 +2772,7 @@
               "size": "Size",
               "created": "Created",
               "error": {
-                "title": "This backup was not created successfully. It has errors and may be corrupt.",
+                "title": "This backup was not created successfully. Some data is missing.",
                 "failed_locations": "Failed locations",
                 "failed_addons": "Failed add-ons",
                 "failed_folders": "Failed folders"
