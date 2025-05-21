@@ -113,10 +113,8 @@ export class HaItemDisplayEditor extends LitElement {
                     draggable: isVisible && !disableSorting,
                     "drag-selected": this._dragIndex === idx,
                   })}
-                  @keydown=${!this.showNavigationButton &&
-                  isVisible &&
-                  !disableSorting
-                    ? this._dragHandleKeydown
+                  @keydown=${isVisible && !disableSorting
+                    ? this._listElementKeydown
                     : undefined}
                   .idx=${idx}
                 >
@@ -330,6 +328,19 @@ export class HaItemDisplayEditor extends LitElement {
     }
   };
 
+  private _listElementKeydown = (ev: KeyboardEvent) => {
+    if (ev.altKey && (ev.key === "ArrowUp" || ev.key === "ArrowDown")) {
+      ev.preventDefault();
+      this._dragIndex = (ev.target as any).idx;
+      this._keyActivatedMove(ev, true);
+    } else if (
+      (!this.showNavigationButton && ev.key === "Enter") ||
+      ev.key === " "
+    ) {
+      this._dragHandleKeydown(ev);
+    }
+  };
+
   private _dragHandleKeydown(ev: KeyboardEvent): void {
     if (ev.key === "Enter" || ev.key === " ") {
       ev.preventDefault();
@@ -341,10 +352,6 @@ export class HaItemDisplayEditor extends LitElement {
         this.removeEventListener("keydown", this._sortKeydown);
         this._dragIndex = null;
       }
-    } else if (ev.altKey && (ev.key === "ArrowUp" || ev.key === "ArrowDown")) {
-      ev.preventDefault();
-      this._dragIndex = (ev.target as any).idx;
-      this._keyActivatedMove(ev, true);
     }
   }
 
