@@ -10,6 +10,7 @@ import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { showEditSidebarDialog } from "../../dialogs/sidebar/show-dialog-edit-sidebar";
 import "../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -247,8 +248,17 @@ class HaProfileSectionGeneral extends LitElement {
   }
 
   private _customizeSidebar() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
+    showEditSidebarDialog(this, {
+      saveCallback: this._saveSidebar,
+    });
   }
+
+  private _saveSidebar = (order: string[], hidden: string[]) => {
+    fireEvent(this, "hass-edit-sidebar", {
+      order,
+      hidden,
+    });
+  };
 
   private _handleLogOut() {
     showConfirmationDialog(this, {
