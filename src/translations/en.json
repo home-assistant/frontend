@@ -2653,6 +2653,8 @@
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
+              "last_backup_failed_addons_description": "The last automatic backup created {relative_time} wasn't able to store all add-ons.",
+              "last_backup_failed_folders_description": "The last automatic backup created {relative_time} wasn't able to store all folders.",
               "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
@@ -2768,7 +2770,13 @@
             "summary": {
               "title": "Backup",
               "size": "Size",
-              "created": "Created"
+              "created": "Created",
+              "error": {
+                "title": "This backup was not created successfully. It has errors and may be corrupt.",
+                "failed_locations": "Failed locations",
+                "failed_addons": "Failed add-ons",
+                "failed_folders": "Failed folders"
+              }
             },
             "restore": {
               "title": "Select what to restore",

@@ -1,13 +1,8 @@
-import {
-  mdiAlertCircle,
-  mdiBackupRestore,
-  mdiCalendar,
-  mdiInformation,
-} from "@mdi/js";
+import { mdiBackupRestore, mdiCalendar, mdiInformation } from "@mdi/js";
 import { addHours, differenceInDays, isToday, isTomorrow } from "date-fns";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
   formatDate,
@@ -25,8 +20,6 @@ import {
   BackupScheduleRecurrence,
   getFormattedBackupTime,
 } from "../../../../../data/backup";
-import { subscribeRepairsIssueRegistry } from "../../../../../data/repairs";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showAlertDialog } from "../../../../lovelace/custom-card-helpers";
@@ -35,7 +28,7 @@ import "../ha-backup-summary-card";
 const OVERDUE_MARGIN_HOURS = 3;
 
 @customElement("ha-backup-overview-summary")
-class HaBackupOverviewBackups extends SubscribeMixin(LitElement) {
+class HaBackupOverviewBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public backups: BackupContent[] = [];
@@ -43,16 +36,6 @@ class HaBackupOverviewBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public config!: BackupConfig;
 
   @property({ type: Boolean }) public fetching = false;
-
-  @state() private _repairIssuesCount = 0;
-
-  public hassSubscribe() {
-    return [
-      subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
-        this._repairIssuesCount = repairs.issues.length;
-      }),
-    ];
-  }
 
   private _sortedBackups = memoizeOne((backups: BackupContent[]) =>
     backups
@@ -80,10 +63,7 @@ class HaBackupOverviewBackups extends SubscribeMixin(LitElement) {
     lastCompletedDate?: Date
   ) {
     return html`
-      <ha-backup-summary-card
-        .heading=${heading}
-        .status=${!mdiAlertCircle ? status : "error"}
-      >
+      <ha-backup-summary-card .heading=${heading} .status=${status}>
         <ha-md-list>
           <ha-md-list-item>
             <ha-svg-icon slot="start" .path=${mdiBackupRestore}></ha-svg-icon>
@@ -238,8 +218,18 @@ class HaBackupOverviewBackups extends SubscribeMixin(LitElement) {
     const lastBackupDate = new Date(lastBackup.date);
 
     // If last backup
-    if (lastBackup.failed_agent_ids?.length) {
+    if (
+      lastBackup.failed_agent_ids?.length ||
+      lastBackup.failed_addons?.length ||
+      lastBackup.failed_folders?.length
+    ) {
       const lastUploadedBackup = this._lastUploadedBackup(this.backups);
+
+      const type = lastBackup.failed_agent_ids?.length
+        ? "locations"
+        : lastBackup.failed_addons?.length
+          ? "addons"
+          : "folders";
 
       return this._renderSummaryCard(
         this.hass.localize(
@@ -247,7 +237,7 @@ class HaBackupOverviewBackups extends SubscribeMixin(LitElement) {
         ),
         "error",
         this.hass.localize(
-          "ui.panel.config.backup.overview.summary.last_backup_failed_locations_description",
+          `ui.panel.config.backup.overview.summary.last_backup_failed_${type}_description`,
           {
             relative_time: relativeTime(
               lastAttemptDate,
