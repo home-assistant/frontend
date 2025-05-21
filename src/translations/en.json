@@ -2021,7 +2021,9 @@
     "sidebar": {
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
-      "edit_sidebar": "Edit sidebar"
+      "edit_sidebar": "Edit sidebar",
+      "edit_subtitle": "Synced on all devices",
+      "migrate_to_user_data": "This will change the sidebar on all of your devices. To create a sidebar per device, please create a separate user profile."
     },
     "panel": {
       "my": {
