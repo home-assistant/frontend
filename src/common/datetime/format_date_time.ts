@@ -1,6 +1,6 @@
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import type { FrontendLocaleData } from "../../data/translation";
+import { DateFormat, type FrontendLocaleData } from "../../data/translation";
 import { formatDateNumeric } from "./format_date";
 import { formatTime } from "./format_time";
 import { resolveTimeZone } from "./resolve-time-zone";
@@ -11,7 +11,31 @@ export const formatDateTime = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateTimeMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateTimeMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const year = parts.find((part) => part.type === "year")?.value;
+  const hour = parts.find((part) => part.type === "hour")?.value;
+  const minute = parts.find((part) => part.type === "minute")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}, ${year}, ${hour}:${minute}`,
+    [DateFormat.MDY]: `${month} ${day}, ${year}, ${hour}:${minute}`,
+    [DateFormat.YMD]: `${year}, ${month} ${day}, ${hour}:${minute}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateTimeMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -45,7 +69,31 @@ export const formatShortDateTimeWithYear = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatShortDateTimeWithYearMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatShortDateTimeWithYearMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const year = parts.find((part) => part.type === "year")?.value;
+  const hour = parts.find((part) => part.type === "hour")?.value;
+  const minute = parts.find((part) => part.type === "minute")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}, ${year}, ${hour}:${minute}`,
+    [DateFormat.MDY]: `${month} ${day}, ${year}, ${hour}:${minute}`,
+    [DateFormat.YMD]: `${year}, ${month} ${day}, ${hour}:${minute}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatShortDateTimeWithYearMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -65,7 +113,30 @@ export const formatShortDateTime = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatShortDateTimeMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatShortDateTimeMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const hour = parts.find((part) => part.type === "hour")?.value;
+  const minute = parts.find((part) => part.type === "minute")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}, ${hour}:${minute}`,
+    [DateFormat.MDY]: `${month} ${day}, ${hour}:${minute}`,
+    [DateFormat.YMD]: `${month} ${day}, ${hour}:${minute}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatShortDateTimeMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
@@ -96,7 +167,32 @@ export const formatDateTimeWithSeconds = (
   dateObj: Date,
   locale: FrontendLocaleData,
   config: HassConfig
-) => formatDateTimeWithSecondsMem(locale, config.time_zone).format(dateObj);
+) => {
+  const formatter = formatDateTimeWithSecondsMem(locale, config.time_zone);
+
+  if (
+    locale.date_format === DateFormat.language ||
+    locale.date_format === DateFormat.system
+  ) {
+    return formatter.format(dateObj);
+  }
+
+  const parts = formatter.formatToParts(dateObj);
+  const day = parts.find((part) => part.type === "day")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const year = parts.find((part) => part.type === "year")?.value;
+  const hour = parts.find((part) => part.type === "hour")?.value;
+  const minute = parts.find((part) => part.type === "minute")?.value;
+  const second = parts.find((part) => part.type === "second")?.value;
+
+  const formats = {
+    [DateFormat.DMY]: `${day} ${month}, ${year}, ${hour}:${minute}:${second}`,
+    [DateFormat.MDY]: `${month} ${day}, ${year}, ${hour}:${minute}:${second}`,
+    [DateFormat.YMD]: `${year}, ${month} ${day}, ${hour}:${minute}:${second}`,
+  };
+
+  return formats[locale.date_format];
+};
 
 const formatDateTimeWithSecondsMem = memoizeOne(
   (locale: FrontendLocaleData, serverTimeZone: string) =>
