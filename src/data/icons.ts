@@ -346,22 +346,18 @@ const getIconFromTranslations = (
     return undefined;
   }
 
-  let icon: string | undefined;
 
   // First check for exact state match
   if (state && translations.state?.[state]) {
-    icon = translations.state[state];
+    return translations.state[state];
   }
   // Then check for range-based icons if we have a numeric state
-  else if (state !== undefined && translations.range && !isNaN(Number(state))) {
-    icon = getIconFromRange(Number(state), translations.range);
+  if (state !== undefined && translations.range && !isNaN(Number(state))) {
+    return getIconFromRange(Number(state), translations.range);
   }
   // Fallback to default icon
-  if (!icon) {
-    icon = translations.default;
-  }
+  return translations.default;
 
-  return icon;
 };
 
 export const entityIcon = async (
