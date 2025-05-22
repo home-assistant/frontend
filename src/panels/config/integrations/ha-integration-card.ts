@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -23,7 +24,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
-import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -120,7 +120,7 @@ export class HaIntegrationCard extends LitElement {
                 ? `/config/devices/device/${devices[0].id}`
                 : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
-              <ha-button>
+              <ha-button appearance="plain">
                 ${this.hass.localize(
                   `ui.panel.config.integrations.config_entry.${
                     services ? "services" : "devices"
@@ -133,7 +133,7 @@ export class HaIntegrationCard extends LitElement {
             ? html`<a
                 href=${`/config/entities?historyBack=1&domain=${this.domain}`}
               >
-                <ha-button>
+                <ha-button appearance="plain">
                   ${this.hass.localize(
                     `ui.panel.config.integrations.config_entry.entities`,
                     { count: entitiesCount }
@@ -144,7 +144,7 @@ export class HaIntegrationCard extends LitElement {
               ? html`<a
                   href=${`/config/integrations/integration/${this.domain}`}
                 >
-                  <ha-button>
+                  <ha-button appearance="plain">
                     ${this.hass.localize(
                       `ui.panel.config.integrations.config_entry.entries`,
                       {
@@ -309,6 +309,7 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          padding: 4px 16px 4px 4px;
         }
         .debug-logging {
           --state-color: var(--warning-color);

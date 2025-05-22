@@ -4,6 +4,9 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-list-item";
 import {
   ATTENTION_SOURCES,
   DISCOVERY_SOURCES,
@@ -17,9 +20,6 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import "./ha-integration-action-card";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-button";
-import "../../../components/ha-list-item";
 
 @customElement("ha-config-flow-card")
 export class HaConfigFlowCard extends LitElement {
@@ -41,24 +41,25 @@ export class HaConfigFlowCard extends LitElement {
         .domain=${this.flow.handler}
         .label=${this.flow.localized_title}
       >
+        ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
+        this.flow.context.unique_id
+          ? html`<ha-button appearance="plain" @click=${this._ignoreFlow}
+              >${this.hass.localize(
+                "ui.panel.config.integrations.ignore.ignore"
+              )}</ha-button
+            >`
+          : ""}
         <ha-button
-          unelevated
           @click=${this._continueFlow}
-          .label=${this.hass.localize(
+          variant=${attention ? "danger" : "primary"}
+          appearance="filled"
+        >
+          ${this.hass.localize(
             attention
               ? "ui.panel.config.integrations.reconfigure"
               : "ui.common.add"
           )}
-        ></ha-button>
-        ${DISCOVERY_SOURCES.includes(this.flow.context.source) &&
-        this.flow.context.unique_id
-          ? html`<ha-button
-              @click=${this._ignoreFlow}
-              .label=${this.hass.localize(
-                "ui.panel.config.integrations.ignore.ignore"
-              )}
-            ></ha-button>`
-          : ""}
+        </ha-button>
         ${this.flow.context.configuration_url || this.manifest
           ? html`<ha-button-menu slot="header-button">
               <ha-icon-button
