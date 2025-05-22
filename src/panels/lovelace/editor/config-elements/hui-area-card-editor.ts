@@ -2,8 +2,8 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  assert,
   array,
+  assert,
   assign,
   boolean,
   object,
@@ -11,21 +11,21 @@ import {
   string,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import {
-  DEFAULT_ASPECT_RATIO,
-  DEVICE_CLASSES,
-} from "../../cards/hui-area-card";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { SelectOption } from "../../../../data/selector";
+import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 import type { HomeAssistant } from "../../../../types";
+import {
+  DEVICE_CLASSES,
+  DEFAULT_ASPECT_RATIO,
+} from "../../cards/hui-area-card";
 import type { AreaCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
-import type { SelectOption } from "../../../../data/selector";
-import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -122,41 +122,48 @@ export class HuiAreaCardEditor
       ] as const
   );
 
-  private _binaryClassesForArea = memoizeOne((area: string): string[] =>
-    this._classesForArea(area, "binary_sensor")
+  private _binaryClassesForArea = memoizeOne(
+    (area: string | undefined): string[] => {
+      if (!area) {
+        return [];
+      }
+
+      const binarySensorFilter = generateEntityFilter(this.hass!, {
+        domain: "binary_sensor",
+        area,
+        entity_category: "none",
+      });
+
+      const classes = Object.keys(this.hass!.entities)
+        .filter(binarySensorFilter)
+        .map((id) => this.hass!.states[id]?.attributes.device_class)
+        .filter((c): c is string => Boolean(c));
+
+      return [...new Set(classes)];
+    }
   );
 
   private _sensorClassesForArea = memoizeOne(
-    (area: string, numericDeviceClasses?: string[]): string[] =>
-      this._classesForArea(area, "sensor", numericDeviceClasses)
+    (area: string | undefined, numericDeviceClasses?: string[]): string[] => {
+      if (!area) {
+        return [];
+      }
+
+      const sensorFilter = generateEntityFilter(this.hass!, {
+        domain: "sensor",
+        area,
+        device_class: numericDeviceClasses,
+        entity_category: "none",
+      });
+
+      const classes = Object.keys(this.hass!.entities)
+        .filter(sensorFilter)
+        .map((id) => this.hass!.states[id]?.attributes.device_class)
+        .filter((c): c is string => Boolean(c));
+
+      return [...new Set(classes)];
+    }
   );
-
-  private _classesForArea(
-    area: string,
-    domain: "sensor" | "binary_sensor",
-    numericDeviceClasses?: string[] | undefined
-  ): string[] {
-    const entities = Object.values(this.hass!.entities).filter(
-      (e) =>
-        computeDomain(e.entity_id) === domain &&
-        !e.entity_category &&
-        !e.hidden &&
-        (e.area_id === area ||
-          (e.device_id && this.hass!.devices[e.device_id]?.area_id === area))
-    );
-
-    const classes = entities
-      .map((e) => this.hass!.states[e.entity_id]?.attributes.device_class || "")
-      .filter(
-        (c) =>
-          c &&
-          (domain !== "sensor" ||
-            !numericDeviceClasses ||
-            numericDeviceClasses.includes(c))
-      );
-
-    return [...new Set(classes)];
-  }
 
   private _buildBinaryOptions = memoizeOne(
     (possibleClasses: string[], currentClasses: string[]): SelectOption[] =>
@@ -207,11 +214,9 @@ export class HuiAreaCardEditor
       return nothing;
     }
 
-    const possibleBinaryClasses = this._binaryClassesForArea(
-      this._config.area || ""
-    );
+    const possibleBinaryClasses = this._binaryClassesForArea(this._config.area);
     const possibleSensorClasses = this._sensorClassesForArea(
-      this._config.area || "",
+      this._config.area,
       this._numericDeviceClasses
     );
     const binarySelectOptions = this._buildBinaryOptions(
