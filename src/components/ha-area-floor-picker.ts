@@ -485,7 +485,6 @@ export class HaAreaFloorPicker extends LitElement {
         .notFoundLabel=${this.hass.localize(
           "ui.components.area-picker.no_match"
         )}
-        no-result-sorting
         .placeholder=${placeholder}
         .value=${value}
         .getItems=${this._getItems}
