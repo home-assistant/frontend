@@ -317,6 +317,7 @@ export class HaEntityPicker extends LitElement {
         const secondary = [areaName, entityName ? deviceName : undefined]
           .filter(Boolean)
           .join(isRTL ? " ◂ " : " ▸ ");
+        const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
 
         return {
           id: entityId,
@@ -332,6 +333,7 @@ export class HaEntityPicker extends LitElement {
             friendlyName,
             entityId,
           ].filter(Boolean) as string[],
+          a11y_label: a11yLabel,
           stateObj: stateObj,
         };
       });
