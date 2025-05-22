@@ -22,6 +22,7 @@ export const AREA_STRATEGY_GROUPS = [
   "covers",
   "media_players",
   "security",
+  "actions",
   "others",
 ] as const;
 
@@ -31,6 +32,7 @@ export const AREA_STRATEGY_GROUP_ICONS = {
   covers: "mdi:blinds-horizontal",
   media_players: "mdi:multimedia",
   security: "mdi:security",
+  actions: "mdi:robot",
   others: "mdi:shape",
 };
 
@@ -121,6 +123,13 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
     ],
+    actions: [
+      generateEntityFilter(hass, {
+        domain: ["automation", "script", "scene"],
+        area: area,
+        entity_category: "none",
+      }),
+    ],
     others: [
       generateEntityFilter(hass, {
         domain: "vacuum",
@@ -138,7 +147,16 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
-        domain: ["switch", "select", "input_boolean", "input_select"],
+        domain: [
+          "switch",
+          "select",
+          "input_boolean",
+          "input_select",
+          "button",
+          "number",
+          "input_number",
+          "counter",
+        ],
         area: area,
         entity_category: "none",
       }),
