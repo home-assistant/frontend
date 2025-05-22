@@ -30,7 +30,6 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -38,6 +37,7 @@ import type {
 } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { createErrorCard } from "./hui-error-card";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
@@ -209,11 +209,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
 
     if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+      return createErrorCard(
+        this.hass,
+        this.hass.localize("ui.card.tile.not_found"),
+        "warning"
+      );
     }
 
     if (stateObj.state === UNAVAILABLE) {

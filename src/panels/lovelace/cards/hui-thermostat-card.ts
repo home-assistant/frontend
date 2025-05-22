@@ -15,13 +15,13 @@ import "../../../state-control/climate/ha-state-control-climate-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import type { ThermostatCardConfig } from "./types";
+import { createErrorCard } from "./hui-error-card";
 
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
@@ -112,11 +112,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config.entity] as ClimateEntity;
 
     if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+      return createErrorCard(
+        this.hass,
+        this.hass.localize("ui.card.tile.not_found"),
+        "warning"
+      );
     }
 
     const name = this._config!.name || computeStateName(stateObj);

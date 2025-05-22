@@ -35,9 +35,9 @@ import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MediaControlCardConfig } from "./types";
+import { createErrorCard } from "./hui-error-card";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -144,11 +144,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const stateObj = this._stateObj;
 
     if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+      return createErrorCard(
+        this.hass,
+        this.hass.localize("ui.card.tile.not_found"),
+        "warning"
+      );
     }
 
     const imageStyle = {

@@ -15,13 +15,13 @@ import "../../../state-control/humidifier/ha-state-control-humidifier-humidity";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
 import type { HumidifierCardConfig } from "./types";
+import { createErrorCard } from "./hui-error-card";
 
 @customElement("hui-humidifier-card")
 export class HuiHumidifierCard extends LitElement implements LovelaceCard {
@@ -120,11 +120,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config.entity] as HumidifierEntity;
 
     if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+      return createErrorCard(
+        this.hass,
+        this.hass.localize("ui.card.tile.not_found"),
+        "warning"
+      );
     }
 
     const name = this._config!.name || computeStateName(stateObj);

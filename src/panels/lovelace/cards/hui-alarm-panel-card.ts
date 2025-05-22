@@ -22,7 +22,6 @@ import {
 import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import type { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import {
@@ -30,6 +29,7 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import type { AlarmPanelCardConfig, AlarmPanelCardConfigState } from "./types";
+import { createErrorCard } from "./hui-error-card";
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 
@@ -219,11 +219,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       filterSupportedAlarmStates(stateObj, DEFAULT_STATES);
 
     if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+      return createErrorCard(
+        this.hass,
+        this.hass.localize("ui.card.tile.not_found"),
+        "warning"
+      );
     }
 
     const stateLabel = this._stateDisplay(stateObj.state);

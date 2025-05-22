@@ -18,9 +18,9 @@ import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-image";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PictureEntityCardConfig } from "./types";
+import { createErrorCard } from "./hui-error-card";
 
 export const STUB_IMAGE =
   "https://demo.home-assistant.io/stub_config/bedroom.png";
@@ -118,11 +118,11 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       this.hass.states[this._config.entity];
 
     if (!stateObj) {
-      return html`
-        <hui-warning>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
-        </hui-warning>
-      `;
+      return createErrorCard(
+        this.hass,
+        this.hass.localize("ui.card.tile.not_found"),
+        "warning"
+      );
     }
 
     const name = this._config.name || computeStateName(stateObj);
