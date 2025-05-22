@@ -9,6 +9,7 @@ import {
   formatDateWeekday,
 } from "../../../../../common/datetime/format_date";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
+import type { LocalizeKeys } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
@@ -217,7 +218,7 @@ class HaBackupOverviewBackups extends LitElement {
 
     const lastBackupDate = new Date(lastBackup.date);
 
-    // If last backup
+    // if parts of the last backup failed
     if (
       lastBackup.failed_agent_ids?.length ||
       lastBackup.failed_addons?.length ||
@@ -225,11 +226,19 @@ class HaBackupOverviewBackups extends LitElement {
     ) {
       const lastUploadedBackup = this._lastUploadedBackup(this.backups);
 
-      const type = lastBackup.failed_agent_ids?.length
-        ? "locations"
-        : lastBackup.failed_addons?.length
-          ? "addons"
-          : "folders";
+      const failedTypes: string[] = [];
+
+      if (lastBackup.failed_agent_ids?.length) {
+        failedTypes.push("locations");
+      }
+      if (lastBackup.failed_addons?.length) {
+        failedTypes.push("addons");
+      }
+      if (lastBackup.failed_folders?.length) {
+        failedTypes.push("folders");
+      }
+
+      const type = failedTypes.join("_");
 
       return this._renderSummaryCard(
         this.hass.localize(
@@ -237,7 +246,7 @@ class HaBackupOverviewBackups extends LitElement {
         ),
         "error",
         this.hass.localize(
-          `ui.panel.config.backup.overview.summary.last_backup_failed_${type}_description`,
+          `ui.panel.config.backup.overview.summary.last_backup_failed_${type}_description` as LocalizeKeys,
           {
             relative_time: relativeTime(
               lastAttemptDate,
