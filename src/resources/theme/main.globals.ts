@@ -26,6 +26,24 @@ export const mainStyles = css`
     --float-end: right;
     --margin-title-ltr: 0 0 0 24px;
     --margin-title-rtl: 0 24px 0 0;
+
+    /* safe-area-insets */
+    --safe-area-inset-top: var(
+      --android-safe-area-inset-top,
+      env(safe-area-inset-top, 0)
+    );
+    --safe-area-inset-bottom: var(
+      --android-safe-area-inset-bottom,
+      env(safe-area-inset-bottom, 0)
+    );
+    --safe-area-inset-left: var(
+      --android-safe-area-inset-left,
+      env(safe-area-inset-left, 0)
+    );
+    --safe-area-inset-right: var(
+      --android-safe-area-inset-right,
+      env(safe-area-inset-right, 0)
+    );
   }
 `;
 
