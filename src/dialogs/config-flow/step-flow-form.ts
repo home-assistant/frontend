@@ -45,7 +45,7 @@ class StepFlowForm extends LitElement {
   private handleReadOnlyFields = memoizeOne((schema) =>
     schema?.map((field) => ({
       ...field,
-      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0].read_only
+      ...(Object.values((field as HaFormSelector)?.selector ?? {})[0]?.read_only
         ? { disabled: true }
         : {}),
     }))
