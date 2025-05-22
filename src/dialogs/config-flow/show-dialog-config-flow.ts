@@ -74,7 +74,7 @@ export const showConfigFlowDialog = (
       return description
         ? html`
             <ha-markdown
-              allow-data-url
+              .allowDataUrl=${step.handler === "zwave_js"}
               allow-svg
               breaks
               .content=${description}
