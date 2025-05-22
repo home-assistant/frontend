@@ -73,7 +73,12 @@ export const showConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
+            <ha-markdown
+              allow-data-url
+              allow-svg
+              breaks
+              .content=${description}
+            ></ha-markdown>
           `
         : "";
     },
