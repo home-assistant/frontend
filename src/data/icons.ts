@@ -346,7 +346,6 @@ const getIconFromTranslations = (
     return undefined;
   }
 
-
   // First check for exact state match
   if (state && translations.state?.[state]) {
     return translations.state[state];
@@ -357,7 +356,6 @@ const getIconFromTranslations = (
   }
   // Fallback to default icon
   return translations.default;
-
 };
 
 export const entityIcon = async (
