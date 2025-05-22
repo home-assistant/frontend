@@ -74,7 +74,7 @@ class RenderedTimeTracker {
   renderTime(from: Date, to: Date): void {
     this.entries.push(html`
       <ha-timeline label>
-        ${relativeTime(from, this.hass.locale, to, false)} later
+        ${relativeTime(from, this.hass.locale, to, undefined, false)} later
       </ha-timeline>
     `);
     this.lastReportedTime = to;
