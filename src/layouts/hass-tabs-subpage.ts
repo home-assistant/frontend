@@ -223,7 +223,9 @@ class HassTabsSubpage extends LitElement {
 
         .container {
           display: flex;
-          height: calc(100% - var(--header-height));
+          height: calc(
+            100% - var(--header-height) - var(--safe-area-inset-top)
+          );
         }
 
         :host([narrow]) .container {
@@ -240,7 +242,7 @@ class HassTabsSubpage extends LitElement {
           height: calc(var(--header-height) + var(--safe-area-inset-top));
           padding-top: var(--safe-area-inset-top);
           padding-right: var(--safe-area-inset-right);
-          // TODO left when no drawer
+          padding-left: var(--safe-area-inset-content-left);
           font-size: var(--ha-font-size-xl);
           background-color: var(--sidebar-background-color);
           font-weight: var(--ha-font-weight-normal);
@@ -321,13 +323,7 @@ class HassTabsSubpage extends LitElement {
 
         .content {
           position: relative;
-          width: calc(
-            100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
-          );
-          margin-left: var(--safe-area-inset-left);
-          margin-right: var(--safe-area-inset-right);
-          margin-inline-start: var(--safe-area-inset-left);
-          margin-inline-end: var(--safe-area-inset-right);
+          width: 100%;
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }

@@ -530,7 +530,11 @@ export class HaDataTable extends LitElement {
       return nothing;
     }
     if (row.append) {
-      return html`<div class="mdc-data-table__row">${row.content}</div>`;
+      return html`<div
+        class=${`mdc-data-table__row append${row.groupHeader ? " group-header" : ""}`}
+      >
+        ${row.content}
+      </div>`;
     }
     if (row.empty) {
       return html`<div class="mdc-data-table__row empty-row"></div>`;
@@ -743,8 +747,9 @@ export class HaDataTable extends LitElement {
             groupedItems.push({
               append: true,
               selectable: false,
+              groupHeader: true,
               content: html`<div
-                class="mdc-data-table__cell group-header"
+                class="mdc-data-table__cell"
                 role="cell"
                 .group=${groupName}
                 @click=${this._collapseGroup}
@@ -1043,12 +1048,18 @@ export class HaDataTable extends LitElement {
           display: flex;
           height: var(--data-table-row-height, 52px);
           width: var(--table-row-width, 100%);
+          box-sizing: border-box;
+          padding-left: var(--safe-area-content-inset-left);
+          padding-right: var(--safe-area-content-inset-right);
         }
 
         .mdc-data-table__row.empty-row {
-          height: var(
-            --data-table-empty-row-height,
-            var(--data-table-row-height, 52px)
+          height: calc(
+            var(
+                --data-table-empty-row-height,
+                var(--data-table-row-height, 52px)
+              ) +
+              var(--safe-area-inset-bottom)
           );
         }
 
@@ -1075,6 +1086,9 @@ export class HaDataTable extends LitElement {
           display: flex;
           border-bottom: 1px solid var(--divider-color);
           overflow: auto;
+          box-sizing: border-box;
+          padding-left: var(--safe-area-content-inset-left);
+          padding-right: var(--safe-area-content-inset-right);
         }
 
         /* Hide scrollbar for Chrome, Safari and Opera */
@@ -1277,6 +1291,10 @@ export class HaDataTable extends LitElement {
         /* custom from here */
 
         .group-header {
+          background-color: var(--primary-background-color);
+        }
+
+        .group-header .mdc-data-table__cell {
           padding-top: 12px;
           height: var(--data-table-row-height, 52px);
           padding-left: 12px;
