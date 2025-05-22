@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-button";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-picture-upload";
 import type { HaPictureUpload } from "../../../components/ha-picture-upload";

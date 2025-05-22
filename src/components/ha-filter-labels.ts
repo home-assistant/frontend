@@ -1,16 +1,15 @@
-import "@material/mwc-list/mwc-list";
 import type { SelectedDetail } from "@material/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
-import memoizeOne from "memoize-one";
 import { mdiCog, mdiFilterVariantRemove } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
+import { stringCompare } from "../common/string/compare";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
 import { SubscribeMixin } from "../mixins/subscribe-mixin";
@@ -19,11 +18,11 @@ import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-label";
 import "./ha-icon-button";
+import "./ha-label";
+import "./ha-list";
 import "./ha-list-item";
 import "./search-input-outlined";
-import { stringCompare } from "../common/string/compare";
 
 @customElement("ha-filter-labels")
 export class HaFilterLabels extends SubscribeMixin(LitElement) {
@@ -71,7 +70,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -93,7 +92,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list
+              <ha-list
                 @selected=${this._labelSelected}
                 class="ha-scrollbar"
                 multi
@@ -122,7 +121,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
                     </ha-check-list-item>`;
                   }
                 )}
-              </mwc-list> `
+              </ha-list> `
           : nothing}
       </ha-expansion-panel>
       ${this.expanded
@@ -142,7 +141,7 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - (49 + 48 + 32)}px`;
       }, 300);
     }
@@ -175,9 +174,14 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
     }
 
     const value: string[] = [];
+    const filteredLabels = this._filteredLabels(
+      this._labels,
+      this._filter,
+      this.value
+    );
 
     for (const index of ev.detail.index) {
-      const labelId = this._labels[index].label_id;
+      const labelId = filteredLabels[index].label_id;
       value.push(labelId);
     }
     this.value = value;
@@ -229,10 +233,10 @@ export class HaFilterLabels extends SubscribeMixin(LitElement) {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

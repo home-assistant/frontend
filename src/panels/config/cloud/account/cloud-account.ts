@@ -1,15 +1,15 @@
 import "@material/mwc-button";
+import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiDeleteForever, mdiDotsVertical } from "@mdi/js";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-card";
-import "../../../../components/ha-tip";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-button-menu";
+import "../../../../components/ha-card";
+import "../../../../components/ha-list-item";
+import "../../../../components/ha-tip";
 import type {
   CloudStatusLoggedIn,
   SubscriptionInfo,
@@ -32,6 +32,7 @@ import "./cloud-ice-servers-pref";
 import "./cloud-remote-pref";
 import "./cloud-tts-pref";
 import "./cloud-webhooks";
+import { showSupportPackageDialog } from "./show-dialog-cloud-support-package";
 
 @customElement("cloud-account")
 export class CloudAccount extends SubscribeMixin(LitElement) {
@@ -52,7 +53,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         header="Home Assistant Cloud"
       >
-        <ha-button-menu slot="toolbar-icon" @action=${this._deleteCloudData}>
+        <ha-button-menu slot="toolbar-icon" @action=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
@@ -64,6 +65,12 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               "ui.panel.config.cloud.account.reset_cloud_data"
             )}
             <ha-svg-icon slot="graphic" .path=${mdiDeleteForever}></ha-svg-icon>
+          </ha-list-item>
+          <ha-list-item graphic="icon">
+            ${this.hass.localize(
+              "ui.panel.config.cloud.account.download_support_package"
+            )}
+            <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
           </ha-list-item>
         </ha-button-menu>
         <div class="content">
@@ -286,6 +293,16 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     fireEvent(this, "ha-refresh-cloud-status");
   }
 
+  private _handleMenuAction(ev) {
+    switch (ev.detail.index) {
+      case 0:
+        this._deleteCloudData();
+        break;
+      case 1:
+        this._downloadSupportPackage();
+    }
+  }
+
   private async _deleteCloudData() {
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
@@ -314,6 +331,10 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
     } finally {
       fireEvent(this, "ha-refresh-cloud-status");
     }
+  }
+
+  private async _downloadSupportPackage() {
+    showSupportPackageDialog(this);
   }
 
   static get styles() {

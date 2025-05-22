@@ -4,15 +4,14 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { ScorableTextItem } from "../../../common/string/filter/sequence-matching";
 import { fuzzyFilterSort } from "../../../common/string/filter/sequence-matching";
 import "../../../components/ha-combo-box";
 import type { HaComboBox } from "../../../components/ha-combo-box";
+import "../../../components/ha-combo-box-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -29,16 +28,14 @@ const ADD_NEW_ID = "___ADD_NEW___";
 const NO_CATEGORIES_ID = "___NO_CATEGORIES___";
 const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
-const rowRenderer: ComboBoxLitRenderer<CategoryRegistryEntry> = (item) =>
-  html`<ha-list-item
-    graphic="icon"
-    class=${classMap({ "add-new": item.category_id === ADD_NEW_ID })}
-  >
+const rowRenderer: ComboBoxLitRenderer<CategoryRegistryEntry> = (item) => html`
+  <ha-combo-box-item type="button">
     ${item.icon
-      ? html`<ha-icon slot="graphic" .icon=${item.icon}></ha-icon>`
-      : html`<ha-svg-icon .path=${mdiTag} slot="graphic"></ha-svg-icon>`}
+      ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
+      : html`<ha-svg-icon .path=${mdiTag} slot="start"></ha-svg-icon>`}
     ${item.name}
-  </ha-list-item>`;
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-category-picker")
 export class HaCategoryPicker extends SubscribeMixin(LitElement) {

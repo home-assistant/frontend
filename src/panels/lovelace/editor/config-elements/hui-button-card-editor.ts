@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -28,6 +29,7 @@ const cardConfigStruct = assign(
     icon_height: optional(string()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     theme: optional(string()),
     show_state: optional(boolean()),
   })
@@ -86,20 +88,43 @@ export class HuiButtonCardEditor
           ],
         },
         {
-          name: "tap_action",
-          selector: {
-            ui_action: {
-              default_action: getEntityDefaultButtonAction(entityId),
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "tap_action",
+              selector: {
+                ui_action: {
+                  default_action: getEntityDefaultButtonAction(entityId),
+                },
+              },
             },
-          },
-        },
-        {
-          name: "hold_action",
-          selector: {
-            ui_action: {
-              default_action: "more-info",
+            {
+              name: "hold_action",
+              selector: {
+                ui_action: {
+                  default_action: "more-info",
+                },
+              },
             },
-          },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: [
+                {
+                  name: "double_tap_action",
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                },
+              ],
+            },
+          ],
         },
       ] as const satisfies readonly HaFormSchema[]
   );

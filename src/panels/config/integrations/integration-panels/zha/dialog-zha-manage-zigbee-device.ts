@@ -1,5 +1,3 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -95,7 +93,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           <ha-icon-button
             slot="navigationIcon"
             dialogAction="cancel"
-            .label=${this.hass.localize("ui.dialogs.more_info_control.dismiss")}
+            .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
           <span
@@ -105,20 +103,21 @@ class DialogZHAManageZigbeeDevice extends LitElement {
           >
             ${this.hass.localize("ui.dialogs.zha_manage_device.heading")}
           </span>
-          <mwc-tab-bar
-            .activeIndex=${tabs.indexOf(this._currTab)}
-            @MDCTabBar:activated=${this._handleTabChanged}
-          >
+          <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
             ${tabs.map(
               (tab) => html`
-                <mwc-tab
-                  .label=${this.hass.localize(
+                <sl-tab
+                  slot="nav"
+                  .panel=${tab}
+                  .active=${this._currTab === tab}
+                >
+                  ${this.hass.localize(
                     `ui.dialogs.zha_manage_device.tabs.${tab}`
                   )}
-                ></mwc-tab>
+                </sl-tab>
               `
             )}
-          </mwc-tab-bar>
+          </sl-tab-group>
         </ha-dialog-header>
         <div class="content" tabindex="-1" dialogInitialFocus>
           ${cache(
@@ -187,7 +186,7 @@ class DialogZHAManageZigbeeDevice extends LitElement {
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = this._getTabs(this._device)[ev.detail.index];
+    const newTab = ev.detail.name as Tab;
     if (newTab === this._currTab) {
       return;
     }
@@ -228,6 +227,14 @@ class DialogZHAManageZigbeeDevice extends LitElement {
             --dialog-surface-margin-top: 40px;
             --mdc-dialog-max-height: calc(100% - 72px);
           }
+        }
+
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

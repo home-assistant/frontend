@@ -16,11 +16,22 @@ export const setupLeafletMap = async (
   const Leaflet = (await import("leaflet")).default as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
 
+  await import("leaflet.markercluster");
+
   const map = Leaflet.map(mapElement);
   const style = document.createElement("link");
   style.setAttribute("href", "/static/images/leaflet/leaflet.css");
   style.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(style);
+
+  const markerClusterStyle = document.createElement("link");
+  markerClusterStyle.setAttribute(
+    "href",
+    "/static/images/leaflet/MarkerCluster.css"
+  );
+  markerClusterStyle.setAttribute("rel", "stylesheet");
+  mapElement.parentNode.appendChild(markerClusterStyle);
+
   map.setView([52.3731339, 4.8903147], 13);
 
   const tileLayer = createTileLayer(Leaflet).addTo(map);

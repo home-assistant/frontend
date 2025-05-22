@@ -13,6 +13,7 @@ import { caseInsensitiveStringCompare } from "../common/string/compare";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
 import { showToast } from "../util/toast";
+import type { EntitySources } from "./entity_sources";
 
 export enum UpdateEntityFeature {
   INSTALL = 1,
@@ -60,6 +61,10 @@ export const updateReleaseNotes = (hass: HomeAssistant, entityId: string) =>
     entity_id: entityId,
   });
 
+const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";
+const HOME_ASSISTANT_SUPERVISOR_TITLE = "Home Assistant Supervisor";
+const HOME_ASSISTANT_OS_TITLE = "Home Assistant Operating System";
+
 export const filterUpdateEntities = (
   entities: HassEntities,
   language?: string
@@ -69,22 +74,22 @@ export const filterUpdateEntities = (
       (entity) => computeStateDomain(entity) === "update"
     ) as UpdateEntity[]
   ).sort((a, b) => {
-    if (a.attributes.title === "Home Assistant Core") {
+    if (a.attributes.title === HOME_ASSISTANT_CORE_TITLE) {
       return -3;
     }
-    if (b.attributes.title === "Home Assistant Core") {
+    if (b.attributes.title === HOME_ASSISTANT_CORE_TITLE) {
       return 3;
     }
-    if (a.attributes.title === "Home Assistant Operating System") {
+    if (a.attributes.title === HOME_ASSISTANT_OS_TITLE) {
       return -2;
     }
-    if (b.attributes.title === "Home Assistant Operating System") {
+    if (b.attributes.title === HOME_ASSISTANT_OS_TITLE) {
       return 2;
     }
-    if (a.attributes.title === "Home Assistant Supervisor") {
+    if (a.attributes.title === HOME_ASSISTANT_SUPERVISOR_TITLE) {
       return -1;
     }
-    if (b.attributes.title === "Home Assistant Supervisor") {
+    if (b.attributes.title === HOME_ASSISTANT_SUPERVISOR_TITLE) {
       return 1;
     }
     return caseInsensitiveStringCompare(
@@ -200,4 +205,36 @@ export const computeUpdateStateDisplay = (
   }
 
   return hass.formatEntityState(stateObj);
+};
+
+export type UpdateType =
+  | "addon"
+  | "home_assistant"
+  | "home_assistant_os"
+  | "generic";
+
+export const getUpdateType = (
+  stateObj: UpdateEntity,
+  entitySources: EntitySources
+): UpdateType => {
+  const entity_id = stateObj.entity_id;
+  const domain = entitySources[entity_id]?.domain;
+
+  if (domain !== "hassio") {
+    return "generic";
+  }
+
+  const title = stateObj.attributes.title || "";
+  if (title === HOME_ASSISTANT_CORE_TITLE) {
+    return "home_assistant";
+  }
+
+  if (title === HOME_ASSISTANT_OS_TITLE) {
+    return "home_assistant_os";
+  }
+
+  if (title !== HOME_ASSISTANT_SUPERVISOR_TITLE) {
+    return "addon";
+  }
+  return "generic";
 };

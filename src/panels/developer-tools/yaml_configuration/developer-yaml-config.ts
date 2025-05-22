@@ -6,7 +6,7 @@ import { componentsWithService } from "../../../common/config/components_with_se
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import type { CheckConfigResult } from "../../../data/core";
 import { checkCoreConfig } from "../../../data/core";
 import { domainToName } from "../../../data/integration";
@@ -94,7 +94,7 @@ export class DeveloperYamlConfig extends LitElement {
                 ? html`<div
                     class="validate-container layout vertical center-center"
                   >
-                    <ha-circular-progress indeterminate></ha-circular-progress>
+                    <ha-spinner></ha-spinner>
                   </div> `
                 : nothing
               : html`
@@ -120,9 +120,9 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.errors"
                             )}
                           >
-                            <span class="validate-log"
-                              >${this._validateResult.errors}</span
-                            >
+                            <!-- prettier-ignore -->
+                            <pre class="validate-log">${this._validateResult
+                              .errors}</pre>
                           </ha-alert>`
                         : ""
                     }
@@ -134,9 +134,9 @@ export class DeveloperYamlConfig extends LitElement {
                               "ui.panel.developer-tools.tabs.yaml.section.validation.warnings"
                             )}
                           >
-                            <span class="validate-log"
-                              >${this._validateResult.warnings}</span
-                            >
+                            <!-- prettier-ignore -->
+                            <pre class="validate-log">${this._validateResult
+                              .warnings}</pre>
                           </ha-alert>`
                         : ""
                     }
@@ -234,7 +234,7 @@ export class DeveloperYamlConfig extends LitElement {
 
         .validate-result {
           color: var(--success-color);
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           margin: 1em 0;
           text-align: center;
         }
@@ -246,14 +246,15 @@ export class DeveloperYamlConfig extends LitElement {
         .validate-log {
           white-space: pre-wrap;
           direction: ltr;
+          margin: 0;
         }
 
         .content {
           padding: 28px 20px 16px;
-          padding: max(28px, calc(12px + env(safe-area-inset-top)))
-            max(20px, calc(4px + env(safe-area-inset-right)))
-            max(16px, env(safe-area-inset-bottom))
-            max(20px, calc(4px + env(safe-area-inset-left)));
+          padding: max(28px, calc(12px + var(--safe-area-inset-top)))
+            max(20px, calc(4px + var(--safe-area-inset-right)))
+            max(16px, var(--safe-area-inset-bottom))
+            max(20px, calc(4px + var(--safe-area-inset-left)));
           max-width: 1040px;
           margin: 0 auto;
         }

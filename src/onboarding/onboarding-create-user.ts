@@ -5,6 +5,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { debounce } from "../common/util/debounce";
 import "../components/ha-form/ha-form";
 import type { HaForm } from "../components/ha-form/ha-form";
 import type {
@@ -14,7 +15,6 @@ import type {
 import { onboardUserStep } from "../data/onboarding";
 import type { ValueChangedEvent } from "../types";
 import { onBoardingStyles } from "./styles";
-import { debounce } from "../common/util/debounce";
 
 const CHECK_USERNAME_REGEX = /\s|[A-Z]/;
 

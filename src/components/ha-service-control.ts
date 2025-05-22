@@ -38,6 +38,7 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 import "./ha-service-section-icon";
+import { hasTemplate } from "../common/string/has-template";
 
 const attributeFilter = (values: any[], attribute: any) => {
   if (typeof attribute === "object") {
@@ -82,7 +83,7 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
     false;
@@ -100,6 +101,8 @@ export class HaServiceControl extends LitElement {
   @state() private _manifest?: IntegrationManifest;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  private _stickySelector: Record<string, Selector> = {};
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
     if (!this.hasUpdated) {
@@ -523,7 +526,7 @@ export class HaServiceControl extends LitElement {
           return fields.length &&
             this._hasFilteredFields(fields, targetEntities)
             ? html`<ha-expansion-panel
-                leftChevron
+                left-chevron
                 .expanded=${!dataField.collapsed}
                 .header=${this.hass.localize(
                   `component.${domain}.services.${serviceName}.sections.${dataField.key}.name`
@@ -590,7 +593,23 @@ export class HaServiceControl extends LitElement {
       return nothing;
     }
 
-    const selector = dataField?.selector ?? { text: undefined };
+    const fieldDataHasTemplate =
+      this._value?.data && hasTemplate(this._value.data[dataField.key]);
+
+    const selector =
+      fieldDataHasTemplate &&
+      typeof this._value!.data![dataField.key] === "string"
+        ? { template: null }
+        : fieldDataHasTemplate &&
+            typeof this._value!.data![dataField.key] === "object"
+          ? { object: null }
+          : (this._stickySelector[dataField.key] ??
+            dataField?.selector ?? { text: null });
+
+    if (fieldDataHasTemplate) {
+      // Hold this selector type until the field is cleared
+      this._stickySelector[dataField.key] = selector;
+    }
 
     const showOptional = showOptionalToggle(dataField);
 
@@ -693,6 +712,7 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys.delete(key);
       data = { ...this._value?.data };
       delete data[key];
+      delete this._stickySelector[key];
     }
     if (data) {
       fireEvent(this, "value-changed", {
@@ -816,6 +836,10 @@ export class HaServiceControl extends LitElement {
 
   private _serviceDataChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    if (ev.detail.isValid === false) {
+      // Don't clear an object selector that returns invalid YAML
+      return;
+    }
     const key = (ev.currentTarget as any).key;
     const value = ev.detail.value;
     if (
@@ -828,8 +852,13 @@ export class HaServiceControl extends LitElement {
 
     const data = { ...this._value?.data, [key]: value };
 
-    if (value === "" || value === undefined) {
+    if (
+      value === "" ||
+      value === undefined ||
+      (typeof value === "object" && !Object.keys(value).length)
+    ) {
       delete data[key];
+      delete this._stickySelector[key];
     }
 
     fireEvent(this, "value-changed", {
@@ -866,8 +895,10 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       padding: var(--service-control-padding, 0 16px);
     }
+    ha-settings-row[narrow] {
+      padding-bottom: 8px;
+    }
     ha-settings-row {
-      --paper-time-input-justify-content: flex-end;
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
       border-top: var(
@@ -888,7 +919,7 @@ export class HaServiceControl extends LitElement {
       margin: var(--service-control-padding, 0 16px);
       padding: 16px 0;
     }
-    :host([hidePicker]) p {
+    :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {

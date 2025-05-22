@@ -1,10 +1,10 @@
-import "@material/mwc-button";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-markdown";
 import "../../components/ha-relative-time";
+import "../../components/ha-tooltip";
+import "../../components/ha-button";
 import type { PersistentNotification } from "../../data/persistent_notification";
 import type { HomeAssistant } from "../../types";
 import "./notification-item-template";
@@ -28,21 +28,23 @@ export class HuiPersistentNotificationItem extends LitElement {
 
         <div class="time">
           <span>
-            <ha-relative-time
-              .hass=${this.hass}
-              .datetime=${this.notification.created_at}
-              capitalize
-            ></ha-relative-time>
-            <simple-tooltip animation-delay="0">
-              ${this._computeTooltip(this.hass, this.notification)}
-            </simple-tooltip>
+            <ha-tooltip
+              .content=${this._computeTooltip(this.hass, this.notification)}
+              placement="bottom"
+            >
+              <ha-relative-time
+                .hass=${this.hass}
+                .datetime=${this.notification.created_at}
+                capitalize
+              ></ha-relative-time>
+            </ha-tooltip>
           </span>
         </div>
 
-        <mwc-button slot="actions" @click=${this._handleDismiss}
+        <ha-button slot="actions" @click=${this._handleDismiss}
           >${this.hass.localize(
             "ui.card.persistent_notification.dismiss"
-          )}</mwc-button
+          )}</ha-button
         >
       </notification-item-template>
     `;

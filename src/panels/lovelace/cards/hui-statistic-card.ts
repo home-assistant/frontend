@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +9,7 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-state-icon";
+import { getEnergyDataCollection } from "../../../data/energy";
 import type { StatisticsMetaData } from "../../../data/recorder";
 import {
   fetchStatistic,
@@ -30,6 +31,8 @@ import type {
 } from "../types";
 import type { HuiErrorCard } from "./hui-error-card";
 import type { EntityCardConfig, StatisticCardConfig } from "./types";
+
+export const PERIOD_ENERGY = "energy_date_selection";
 
 @customElement("hui-statistic-card")
 export class HuiStatisticCard extends LitElement implements LovelaceCard {
@@ -70,13 +73,50 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
   @state() private _error?: string;
 
+  private _energySub?: UnsubscribeFunc;
+
+  @state() private _energyStart?: Date;
+
+  @state() private _energyEnd?: Date;
+
   private _interval?: number;
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._unsubscribeEnergy();
     clearInterval(this._interval);
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._config?.period === PERIOD_ENERGY) {
+      this._subscribeEnergy();
+    } else {
+      this._setFetchStatisticTimer();
+    }
+  }
+
+  private _subscribeEnergy() {
+    if (!this._energySub) {
+      this._energySub = getEnergyDataCollection(this.hass!, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
+        this._energyStart = data.start;
+        this._energyEnd = data.end;
+        this._fetchStatistic();
+      });
+    }
+  }
+
+  private _unsubscribeEnergy() {
+    if (this._energySub) {
+      this._energySub();
+      this._energySub = undefined;
+    }
+    this._energyStart = undefined;
+    this._energyEnd = undefined;
   }
 
   public setConfig(config: StatisticCardConfig): void {
@@ -99,8 +139,6 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
     this._config = config;
     this._error = undefined;
-    this._fetchStatistic();
-    this._fetchMetadata();
 
     if (this._config.footer) {
       this._footerElement = createHeaderFooterElement(this._config.footer);
@@ -174,7 +212,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     if (
       changedProps.has("_value") ||
       changedProps.has("_metadata") ||
-      changedProps.has("_error")
+      changedProps.has("_error") ||
+      changedProps.has("_energyStart") ||
+      changedProps.has("_energyEnd")
     ) {
       return true;
     }
@@ -182,6 +222,46 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
       return hasConfigOrEntityChanged(this, changedProps);
     }
     return true;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!this._config || !changedProps.has("_config")) {
+      return;
+    }
+    const oldConfig = changedProps.get("_config") as
+      | StatisticCardConfig
+      | undefined;
+
+    if (this.hass) {
+      if (this._config.period === PERIOD_ENERGY && !this._energySub) {
+        this._subscribeEnergy();
+        return;
+      }
+      if (this._config.period !== PERIOD_ENERGY && this._energySub) {
+        this._unsubscribeEnergy();
+        this._setFetchStatisticTimer();
+        return;
+      }
+      if (
+        this._config.period === PERIOD_ENERGY &&
+        this._energySub &&
+        changedProps.has("_config") &&
+        oldConfig?.collection_key !== this._config.collection_key
+      ) {
+        this._unsubscribeEnergy();
+        this._subscribeEnergy();
+      }
+    }
+
+    if (
+      changedProps.has("_config") &&
+      oldConfig?.entity !== this._config.entity
+    ) {
+      this._fetchMetadata().then(() => {
+        this._setFetchStatisticTimer();
+      });
+    }
   }
 
   protected firstUpdated() {
@@ -210,20 +290,31 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _setFetchStatisticTimer() {
+    this._fetchStatistic();
+    // statistics are created every hour
+    clearInterval(this._interval);
+    if (this._config?.period !== PERIOD_ENERGY) {
+      this._interval = window.setInterval(
+        () => this._fetchStatistic(),
+        5 * 1000 * 60
+      );
+    }
+  }
+
   private async _fetchStatistic() {
     if (!this.hass || !this._config) {
       return;
     }
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._fetchStatistic(),
-      5 * 1000 * 60
-    );
     try {
       const stats = await fetchStatistic(
         this.hass,
         this._config.entity,
-        this._config.period
+        this._energyStart && this._energyEnd
+          ? { fixed_period: { start: this._energyStart, end: this._energyEnd } }
+          : typeof this._config?.period === "object"
+            ? this._config?.period
+            : {}
       );
       this._value = stats[this._config!.stat_type];
       this._error = undefined;
@@ -278,9 +369,9 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
 
         .name {
           color: var(--secondary-text-color);
-          line-height: 40px;
-          font-weight: 500;
-          font-size: 16px;
+          line-height: var(--ha-line-height-expanded);
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
@@ -297,18 +388,18 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 28px;
+          line-height: var(--ha-line-height-expanded);
         }
 
         .value {
-          font-size: 28px;
+          font-size: var(--ha-font-size-3xl);
           margin-right: 4px;
           margin-inline-end: 4px;
           margin-inline-start: initial;
         }
 
         .measurement {
-          font-size: 18px;
+          font-size: var(--ha-font-size-l);
           color: var(--secondary-text-color);
         }
       `,

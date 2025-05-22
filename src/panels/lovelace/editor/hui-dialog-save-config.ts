@@ -4,7 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-formfield";
@@ -142,11 +142,10 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
                 @click=${this._saveConfig}
               >
                 ${this._saving
-                  ? html`<ha-circular-progress
-                      indeterminate
+                  ? html`<ha-spinner
                       size="small"
                       aria-label="Saving"
-                    ></ha-circular-progress>`
+                    ></ha-spinner>`
                   : ""}
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.save"

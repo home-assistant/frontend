@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -6,6 +5,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import type { HomeAssistant } from "../../types";
 import "../ha-relative-time";
 import "./state-badge";
+import "../ha-tooltip";
 
 @customElement("state-info")
 class StateInfo extends LitElement {
@@ -36,13 +36,13 @@ class StateInfo extends LitElement {
         </div>
         ${this.inDialog
           ? html`<div class="time-ago">
-              <ha-relative-time
-                .hass=${this.hass}
-                .datetime=${this.stateObj.last_changed}
-                capitalize
-              ></ha-relative-time>
-              <simple-tooltip animation-delay="0">
-                <div>
+              <ha-tooltip>
+                <ha-relative-time
+                  .hass=${this.hass}
+                  .datetime=${this.stateObj.last_changed}
+                  capitalize
+                ></ha-relative-time>
+                <div slot="content">
                   <div class="row">
                     <span class="column-name">
                       ${this.hass.localize(
@@ -68,7 +68,7 @@ class StateInfo extends LitElement {
                     ></ha-relative-time>
                   </div>
                 </div>
-              </simple-tooltip>
+              </ha-tooltip>
             </div>`
           : html`<div class="extra-info"><slot></slot></div>`}
       </div>`;
@@ -108,7 +108,7 @@ class StateInfo extends LitElement {
 
     .name.in-dialog,
     :host([secondary-line]) .name {
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
     }
 
     .time-ago,

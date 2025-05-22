@@ -1,8 +1,6 @@
-import "@material/mwc-button";
 import {
   mdiCheckCircle,
   mdiChip,
-  mdiPlayCircle,
   mdiCircleOffOutline,
   mdiCursorDefaultClickOutline,
   mdiDocker,
@@ -19,27 +17,30 @@ import {
   mdiNumeric6,
   mdiNumeric7,
   mdiNumeric8,
+  mdiPlayCircle,
   mdiPound,
   mdiShield,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
+import { capitalizeFirstLetter } from "../../../../src/common/string/capitalize-first-letter";
 import "../../../../src/components/buttons/ha-progress-button";
-import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-card";
-import "../../../../src/components/chips/ha-chip-set";
 import "../../../../src/components/chips/ha-assist-chip";
+import "../../../../src/components/chips/ha-chip-set";
+import "../../../../src/components/ha-alert";
+import "../../../../src/components/ha-button";
+import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import "../../../../src/components/ha-formfield";
 import type { HaSwitch } from "../../../../src/components/ha-switch";
 import type {
   AddonCapability,
@@ -81,10 +82,11 @@ import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { showSystemManagedDialog } from "../../dialogs/system-managed/show-dialog-system-managed";
 import { hassioStyle } from "../../resources/hassio-style";
 import "../../update-available/update-available-card";
 import { addonArchIsSupported, extractChangelog } from "../../util/addon";
-import { capitalizeFirstLetter } from "../../../../src/common/string/capitalize-first-letter";
+import "./hassio-addon-system-managed";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,
@@ -116,6 +118,9 @@ class HassioAddonInfo extends LitElement {
     | StoreAddonDetails;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
+
+  @property({ type: Boolean, attribute: "control-enabled" })
+  public controlEnabled = false;
 
   @state() private _metrics?: HassioStats;
 
@@ -155,6 +160,9 @@ class HassioAddonInfo extends LitElement {
         )}`,
       },
     ];
+
+    const systemManaged = this._isSystemManaged(this.addon);
+
     return html`
       ${this.addon.update_available
         ? html`
@@ -166,7 +174,7 @@ class HassioAddonInfo extends LitElement {
               @update-complete=${this._updateComplete}
             ></update-available-card>
           `
-        : ""}
+        : nothing}
       ${"protected" in this.addon && !this.addon.protected
         ? html`
             <ha-alert
@@ -178,22 +186,31 @@ class HassioAddonInfo extends LitElement {
               ${this.supervisor.localize(
                 "addon.dashboard.protection_mode.content"
               )}
-              <mwc-button
+              <ha-button
                 slot="action"
                 .label=${this.supervisor.localize(
                   "addon.dashboard.protection_mode.enable"
                 )}
                 @click=${this._protectionToggled}
               >
-              </mwc-button>
+              </ha-button>
             </ha-alert>
           `
-        : ""}
+        : nothing}
+      ${systemManaged
+        ? html`
+            <hassio-addon-system-managed
+              .supervisor=${this.supervisor}
+              .narrow=${this.narrow}
+              .hideButton=${this.controlEnabled}
+            ></hassio-addon-system-managed>
+          `
+        : nothing}
 
       <ha-card outlined>
         <div class="card-content">
           <div class="addon-header">
-            ${!this.narrow ? this.addon.name : ""}
+            ${!this.narrow ? this.addon.name : nothing}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
@@ -266,7 +283,7 @@ class HassioAddonInfo extends LitElement {
                     </ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
 
             <ha-assist-chip
               filled
@@ -301,7 +318,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiNetwork}> </ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.full_access
               ? html`
                   <ha-assist-chip
@@ -317,7 +334,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiChip}></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.homeassistant_api
               ? html`
                   <ha-assist-chip
@@ -336,7 +353,7 @@ class HassioAddonInfo extends LitElement {
                     ></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this._computeHassioApi
               ? html`
                   <ha-assist-chip
@@ -355,7 +372,7 @@ class HassioAddonInfo extends LitElement {
                     ></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.docker_api
               ? html`
                   <ha-assist-chip
@@ -371,7 +388,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiDocker}></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.host_pid
               ? html`
                   <ha-assist-chip
@@ -387,7 +404,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiPound}></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.apparmor !== "default"
               ? html`
                   <ha-assist-chip
@@ -404,7 +421,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiShield}></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.auth_api
               ? html`
                   <ha-assist-chip
@@ -420,7 +437,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiKey}></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.ingress
               ? html`
                   <ha-assist-chip
@@ -439,7 +456,7 @@ class HassioAddonInfo extends LitElement {
                     ></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
             ${this.addon.signed
               ? html`
                   <ha-assist-chip
@@ -455,7 +472,24 @@ class HassioAddonInfo extends LitElement {
                     <ha-svg-icon slot="icon" .path=${mdiLinkLock}></ha-svg-icon>
                   </ha-assist-chip>
                 `
-              : ""}
+              : nothing}
+            ${systemManaged
+              ? html`
+                  <ha-assist-chip
+                    filled
+                    @click=${this._showSystemManagedDialog}
+                    id="system_managed"
+                    .label=${capitalizeFirstLetter(
+                      this.supervisor.localize("addon.system_managed.badge")
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                `
+              : nothing}
           </ha-chip-set>
 
           <div class="description light-color">
@@ -479,7 +513,7 @@ class HassioAddonInfo extends LitElement {
                       src="/api/hassio/addons/${this.addon.slug}/logo"
                     />
                   `
-                : ""}
+                : nothing}
               ${this.addon.version
                 ? html`
                     <div
@@ -500,6 +534,7 @@ class HassioAddonInfo extends LitElement {
                           )}
                         </span>
                         <ha-switch
+                          .disabled=${systemManaged && !this.controlEnabled}
                           @change=${this._startOnBootToggled}
                           .checked=${this.addon.boot === "auto"}
                           haptic
@@ -520,13 +555,15 @@ class HassioAddonInfo extends LitElement {
                                 )}
                               </span>
                               <ha-switch
+                                .disabled=${systemManaged &&
+                                !this.controlEnabled}
                                 @change=${this._watchdogToggled}
-                                .checked=${this.addon.watchdog}
+                                .checked=${this.addon.watchdog || false}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
                           `
-                        : ""}
+                        : nothing}
                       ${this.addon.auto_update ||
                       this.hass.userData?.showAdvanced
                         ? html`
@@ -542,13 +579,15 @@ class HassioAddonInfo extends LitElement {
                                 )}
                               </span>
                               <ha-switch
+                                .disabled=${systemManaged &&
+                                !this.controlEnabled}
                                 @change=${this._autoUpdateToggled}
                                 .checked=${this.addon.auto_update}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
                           `
-                        : ""}
+                        : nothing}
                       ${!this._computeCannotIngressSidebar && this.addon.ingress
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
@@ -563,13 +602,15 @@ class HassioAddonInfo extends LitElement {
                                 )}
                               </span>
                               <ha-switch
+                                .disabled=${systemManaged &&
+                                !this.controlEnabled}
                                 @change=${this._panelToggled}
                                 .checked=${this.addon.ingress_panel}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
                           `
-                        : ""}
+                        : nothing}
                       ${this._computeUsesProtectedOptions
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
@@ -584,16 +625,18 @@ class HassioAddonInfo extends LitElement {
                                 )}
                               </span>
                               <ha-switch
+                                .disabled=${systemManaged &&
+                                !this.controlEnabled}
                                 @change=${this._protectionToggled}
                                 .checked=${this.addon.protected}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
                           `
-                        : ""}
+                        : nothing}
                     </div>
                   `
-                : ""}
+                : nothing}
             </div>
             <div>
               ${this.addon.version && this.addon.state === "started"
@@ -612,12 +655,12 @@ class HassioAddonInfo extends LitElement {
                         ></supervisor-metric>
                       `
                     )}`
-                : ""}
+                : nothing}
             </div>
           </div>
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+            : nothing}
           ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
@@ -641,7 +684,7 @@ class HassioAddonInfo extends LitElement {
                     )}
                   </ha-alert>
                 `
-            : ""}
+            : nothing}
         </div>
         <div class="card-actions">
           <div>
@@ -651,6 +694,7 @@ class HassioAddonInfo extends LitElement {
                     <ha-progress-button
                       class="warning"
                       @click=${this._stopClicked}
+                      .disabled=${systemManaged && !this.controlEnabled}
                     >
                       ${this.supervisor.localize("addon.dashboard.stop")}
                     </ha-progress-button>
@@ -688,26 +732,27 @@ class HassioAddonInfo extends LitElement {
                           target="_blank"
                           rel="noopener"
                         >
-                          <mwc-button>
+                          <ha-button>
                             ${this.supervisor.localize(
                               "addon.dashboard.open_web_ui"
                             )}
-                          </mwc-button>
+                          </ha-button>
                         </a>
                       `
-                    : ""}
+                    : nothing}
                   ${this._computeShowIngressUI
                     ? html`
-                        <mwc-button @click=${this._openIngress}>
+                        <ha-button @click=${this._openIngress}>
                           ${this.supervisor.localize(
                             "addon.dashboard.open_web_ui"
                           )}
-                        </mwc-button>
+                        </ha-button>
                       `
-                    : ""}
+                    : nothing}
                   <ha-progress-button
                     class="warning"
                     @click=${this._uninstallClicked}
+                    .disabled=${systemManaged && !this.controlEnabled}
                   >
                     ${this.supervisor.localize("addon.dashboard.uninstall")}
                   </ha-progress-button>
@@ -720,8 +765,8 @@ class HassioAddonInfo extends LitElement {
                           ${this.supervisor.localize("addon.dashboard.rebuild")}
                         </ha-progress-button>
                       `
-                    : ""}`
-              : ""}
+                    : nothing}`
+              : nothing}
           </div>
         </div>
       </ha-card>
@@ -737,7 +782,7 @@ class HassioAddonInfo extends LitElement {
               </div>
             </ha-card>
           `
-        : ""}
+        : nothing}
     `;
   }
 
@@ -819,6 +864,13 @@ class HassioAddonInfo extends LitElement {
           : this.supervisor.localize(
               `addon.dashboard.capability.${id}.description`
             ),
+    });
+  }
+
+  private _showSystemManagedDialog() {
+    showSystemManagedDialog(this, {
+      addon: this.addon as HassioAddonDetails,
+      supervisor: this.supervisor,
     });
   }
 
@@ -1014,6 +1066,10 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _stopClicked(ev: CustomEvent): Promise<void> {
+    if (this._isSystemManaged(this.addon) && !this.controlEnabled) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     button.progress = true;
 
@@ -1125,6 +1181,10 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _uninstallClicked(ev: CustomEvent): Promise<void> {
+    if (this._isSystemManaged(this.addon) && !this.controlEnabled) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     button.progress = true;
     let removeData = false;
@@ -1179,6 +1239,11 @@ class HassioAddonInfo extends LitElement {
     button.progress = false;
   }
 
+  private _isSystemManaged = memoizeOne(
+    (addon: HassioAddonDetails | StoreAddonDetails) =>
+      "system_managed" in addon && addon.system_managed
+  );
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -1201,7 +1266,7 @@ class HassioAddonInfo extends LitElement {
         ha-card.warning .card-content {
           color: white;
         }
-        ha-card.warning mwc-button {
+        ha-card.warning ha-button {
           --mdc-theme-primary: white !important;
         }
         .warning {
@@ -1215,12 +1280,12 @@ class HassioAddonInfo extends LitElement {
           padding-left: 8px;
           padding-inline-start: 8px;
           padding-inline-end: initial;
-          font-size: 24px;
+          font-size: var(--ha-font-size-2xl);
           color: var(--ha-card-header-color, var(--primary-text-color));
         }
         .addon-version {
           float: var(--float-end);
-          font-size: 15px;
+          font-size: var(--ha-font-size-l);
           vertical-align: middle;
         }
         .errors {
@@ -1246,7 +1311,7 @@ class HassioAddonInfo extends LitElement {
         ha-svg-icon.stopped {
           color: var(--error-color);
         }
-        protection-enable mwc-button {
+        protection-enable ha-button {
           --mdc-theme-primary: white;
         }
         .description a {
@@ -1328,9 +1393,15 @@ class HassioAddonInfo extends LitElement {
           align-self: end;
         }
 
-        ha-alert mwc-button {
+        ha-alert ha-button {
           --mdc-theme-primary: var(--primary-text-color);
         }
+
+        :host > ha-alert {
+          display: block;
+          margin-bottom: 16px;
+        }
+
         a {
           text-decoration: none;
         }

@@ -80,6 +80,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         .badges=${this.badges}
         .lovelace=${this.lovelace}
         .viewIndex=${this.index}
+        show-add-label
       ></hui-view-badges>
       <div
         id="columns"
@@ -291,7 +292,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     hui-view-badges {
       display: block;
       margin: 4px 8px 4px 8px;
-      font-size: 85%;
+      font-size: var(--ha-font-size-s);
     }
 
     #columns {
@@ -328,9 +329,9 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     ha-fab {
       position: fixed;
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
     }

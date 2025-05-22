@@ -1,4 +1,4 @@
-import { mdiEye, mdiGestureTap, mdiPalette } from "@mdi/js";
+import { mdiEye, mdiGestureTap, mdiTextShort } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -44,6 +44,8 @@ const entityConfigStruct = object({
   show_icon: optional(boolean()),
   color: optional(string()),
   tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
   visibility: optional(array(any())),
 });
 
@@ -78,10 +80,10 @@ export class HuiHeadingEntityEditor
           selector: { entity: {} },
         },
         {
-          name: "appearance",
+          name: "content",
           type: "expandable",
           flatten: true,
-          iconPath: mdiPalette,
+          iconPath: mdiTextShort,
           schema: [
             {
               name: "",
@@ -154,6 +156,21 @@ export class HuiHeadingEntityEditor
                 },
               },
             },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
+            },
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -191,8 +208,8 @@ export class HuiHeadingEntityEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiEye}></ha-svg-icon>
         <h3 slot="header">
-          <ha-svg-icon .path=${mdiEye}></ha-svg-icon>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.card.heading.entity_config.visibility"
           )}
@@ -256,7 +273,6 @@ export class HuiHeadingEntityEditor
     switch (schema.name) {
       case "state_content":
       case "displayed_elements":
-      case "appearance":
       case "color":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.heading.entity_config.${schema.name}`

@@ -6,13 +6,13 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { computeDeviceName } from "../../../../../data/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
   ZWaveJSFirmwareUpdateProgressMessage,
@@ -78,7 +78,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   private _deviceName?: string;
 
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
-    this._deviceName = computeDeviceName(params.device, this.hass!);
+    this._deviceName = computeDeviceNameDisplay(params.device, this.hass!);
     this.device = params.device;
     this._fetchData();
     this._subscribeNodeStatus();

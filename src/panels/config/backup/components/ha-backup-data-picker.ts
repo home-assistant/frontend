@@ -4,6 +4,7 @@ import {
   mdiFolder,
   mdiPlayBoxMultiple,
   mdiPuzzle,
+  mdiShieldCheck,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -16,7 +17,6 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-svg-icon";
 import type { BackupData } from "../../../../data/backup";
 import { fetchHassioAddonsInfo } from "../../../../data/hassio/addon";
 import { mdiHomeAssistant } from "../../../../resources/home-assistant-logo-svg";
@@ -36,6 +36,7 @@ const ITEM_ICONS = {
   database: mdiChartBox,
   media: mdiPlayBoxMultiple,
   share: mdiFolder,
+  ssl: mdiShieldCheck,
 };
 
 interface SelectedItems {
@@ -45,23 +46,34 @@ interface SelectedItems {
 
 @customElement("ha-backup-data-picker")
 export class HaBackupDataPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public data!: BackupData;
 
   @property({ attribute: false }) public value?: BackupData;
 
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
+  @property({ type: Array, attribute: "required-items" })
+  public requiredItems: string[] = [];
+
+  @property({ attribute: "translation-key-panel" }) public translationKeyPanel:
+    | "page-onboarding.restore"
+    | "config.backup" = "config.backup";
+
+  @property({ type: Boolean, attribute: false }) public addonsDisabled = false;
+
   @state() public _addonIcons: Record<string, boolean> = {};
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    if (isComponentLoaded(this.hass, "hassio")) {
+    if (this.hass && isComponentLoaded(this.hass, "hassio")) {
       this._fetchAddonInfo();
     }
   }
 
   private async _fetchAddonInfo() {
-    const { addons } = await fetchHassioAddonsInfo(this.hass);
+    const { addons } = await fetchHassioAddonsInfo(this.hass!);
     this._addonIcons = addons.reduce<Record<string, boolean>>(
       (acc, addon) => ({
         ...acc,
@@ -72,16 +84,14 @@ export class HaBackupDataPicker extends LitElement {
   }
 
   private _homeAssistantItems = memoizeOne(
-    (data: BackupData, _localize: LocalizeFunc) => {
+    (data: BackupData, localize: LocalizeFunc) => {
       const items: CheckBoxItem[] = [];
 
       if (data.homeassistant_included) {
         items.push({
-          label: data.database_included
-            ? this.hass.localize(
-                "ui.panel.config.backup.data_picker.settings_and_history"
-              )
-            : this.hass.localize("ui.panel.config.backup.data_picker.settings"),
+          label: localize(
+            `ui.panel.${this.translationKeyPanel}.data_picker.${data.database_included ? "settings_and_history" : "settings"}`
+          ),
           id: "config",
           version: data.homeassistant_version,
         });
@@ -97,16 +107,22 @@ export class HaBackupDataPicker extends LitElement {
   );
 
   private _localizeFolder(folder: string): string {
+    const localize = this.localize || this.hass!.localize;
+
     switch (folder) {
       case "media":
-        return this.hass.localize("ui.panel.config.backup.data_picker.media");
-      case "share":
-        return this.hass.localize(
-          "ui.panel.config.backup.data_picker.share_folder"
+        return localize(
+          `ui.panel.${this.translationKeyPanel}.data_picker.media`
         );
+      case "share":
+        return localize(
+          `ui.panel.${this.translationKeyPanel}.data_picker.share_folder`
+        );
+      case "ssl":
+        return localize(`ui.panel.${this.translationKeyPanel}.data_picker.ssl`);
       case "addons/local":
-        return this.hass.localize(
-          "ui.panel.config.backup.data_picker.local_addons"
+        return localize(
+          `ui.panel.${this.translationKeyPanel}.data_picker.local_addons`
         );
     }
     return capitalizeFirstLetter(folder);
@@ -167,15 +183,14 @@ export class HaBackupDataPicker extends LitElement {
     })
   );
 
-  private _itemChanged(ev: Event) {
+  private _homeassistantChanged(ev: Event) {
     const itemValues = this._parseValue(this.value);
 
     const checkbox = ev.currentTarget as HaCheckbox;
-    const section = (checkbox as any).section;
     if (checkbox.checked) {
-      itemValues[section].push(checkbox.id);
+      itemValues.homeassistant.push(checkbox.id);
     } else {
-      itemValues[section] = itemValues[section].filter(
+      itemValues.homeassistant = itemValues.homeassistant.filter(
         (id) => id !== checkbox.id
       );
     }
@@ -212,14 +227,13 @@ export class HaBackupDataPicker extends LitElement {
   }
 
   protected render() {
-    const homeAssistantItems = this._homeAssistantItems(
-      this.data,
-      this.hass.localize
-    );
+    const localize = this.localize || this.hass!.localize;
+
+    const homeAssistantItems = this._homeAssistantItems(this.data, localize);
 
     const addonsItems = this._addonsItems(
       this.data,
-      this.hass.localize,
+      localize,
       this._addonIcons
     );
 
@@ -244,6 +258,7 @@ export class HaBackupDataPicker extends LitElement {
                   selectedItems.homeassistant.length <
                     homeAssistantItems.length}
                   @change=${this._sectionChanged}
+                  ?disabled=${this.requiredItems.length > 0}
                 ></ha-checkbox>
               </ha-formfield>
               <div class="items">
@@ -262,8 +277,8 @@ export class HaBackupDataPicker extends LitElement {
                         .checked=${selectedItems.homeassistant.includes(
                           item.id
                         )}
-                        .section=${"homeassistant"}
-                        @change=${this._itemChanged}
+                        @change=${this._homeassistantChanged}
+                        .disabled=${this.requiredItems.includes(item.id)}
                       ></ha-checkbox>
                     </ha-formfield>
                   `
@@ -278,8 +293,8 @@ export class HaBackupDataPicker extends LitElement {
               <ha-formfield>
                 <ha-backup-formfield-label
                   slot="label"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.backup.data_picker.local_addons"
+                  .label=${localize(
+                    `ui.panel.${this.translationKeyPanel}.data_picker.addons`
                   )}
                   .iconPath=${mdiPuzzle}
                 >
@@ -290,6 +305,7 @@ export class HaBackupDataPicker extends LitElement {
                   .indeterminate=${selectedItems.addons.length > 0 &&
                   selectedItems.addons.length < addonsItems.length}
                   @change=${this._sectionChanged}
+                  .disabled=${this.addonsDisabled}
                 ></ha-checkbox>
               </ha-formfield>
               <ha-backup-addons-picker
@@ -297,6 +313,7 @@ export class HaBackupDataPicker extends LitElement {
                 .value=${selectedItems.addons}
                 @value-changed=${this._addonsChanged}
                 .addons=${addonsItems}
+                .disabled=${this.addonsDisabled}
               >
               </ha-backup-addons-picker>
             </div>

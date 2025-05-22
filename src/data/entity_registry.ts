@@ -24,6 +24,7 @@ export interface EntityRegistryDisplayEntry {
   translation_key?: string;
   platform?: string;
   display_precision?: number;
+  has_entity_name?: boolean;
 }
 
 export interface EntityRegistryDisplayEntryResponse {
@@ -39,6 +40,7 @@ export interface EntityRegistryDisplayEntryResponse {
     tk?: string;
     hb?: boolean;
     dp?: number;
+    hn?: boolean;
   }[];
   entity_categories: Record<number, EntityCategory>;
 }
@@ -50,6 +52,7 @@ export interface EntityRegistryEntry extends RegistryEntry {
   icon: string | null;
   platform: string;
   config_entry_id: string | null;
+  config_subentry_id: string | null;
   device_id: string | null;
   area_id: string | null;
   labels: string[];

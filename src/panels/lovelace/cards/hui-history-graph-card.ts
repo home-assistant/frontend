@@ -57,6 +57,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
+  private _stateHistory?: HistoryResult;
+
   public getCardSize(): number {
     return this._config?.title ? 2 : 0 + 2 * (this._entityIds?.length || 1);
   }
@@ -65,7 +67,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return {
       columns: 12,
       min_columns: 6,
-      min_rows: (this._config?.entities?.length || 1) * 2,
+      min_rows: 2,
     };
   }
 
@@ -123,7 +125,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           return;
         }
 
-        const stateHistory = computeHistory(
+        this._stateHistory = computeHistory(
           this.hass!,
           combinedHistory,
           this._entityIds,
@@ -132,11 +134,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
           this._config?.split_device_classes
         );
 
-        this._history = mergeHistoryResults(
-          stateHistory,
-          this._statisticsHistory,
-          this._config?.split_device_classes
-        );
+        this._mergeHistory();
       },
       this._hoursToShow,
       this._entityIds
@@ -149,6 +147,16 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     await this._fetchStatistics(sensorNumericDeviceClasses);
 
     this._setRedrawTimer();
+  }
+
+  private _mergeHistory() {
+    if (this._stateHistory) {
+      this._history = mergeHistoryResults(
+        this._stateHistory,
+        this._statisticsHistory,
+        this._config?.split_device_classes
+      );
+    }
   }
 
   private async _fetchStatistics(sensorNumericDeviceClasses: string[]) {
@@ -173,6 +181,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       sensorNumericDeviceClasses,
       this._config?.split_device_classes
     );
+
+    this._mergeHistory();
   }
 
   private _redrawGraph() {
@@ -243,6 +253,10 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       start_date: now.toISOString(),
     })}`;
 
+    const columns = this._config.grid_options?.columns ?? 12;
+    const narrow = typeof columns === "number" && columns <= 12;
+    const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
+
     return html`
       <ha-card>
         ${this._config.title
@@ -256,6 +270,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
+            "has-rows": !!this._config.grid_options?.rows,
+            "has-height": hasFixedHeight,
           })}"
         >
           ${this._error
@@ -280,6 +296,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                   .minYAxis=${this._config.min_y_axis}
                   .maxYAxis=${this._config.max_y_axis}
                   .fitYData=${this._config.fit_y_data || false}
+                  .height=${hasFixedHeight ? "100%" : undefined}
+                  .narrow=${narrow}
+                  .expandLegend=${this._config.expand_legend}
                 ></state-history-charts>
               `}
         </div>
@@ -289,11 +308,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     ha-card {
+      display: flex;
+      flex-direction: column;
       height: 100%;
     }
     .card-header {
       justify-content: space-between;
       display: flex;
+      padding-bottom: 0;
     }
     .card-header ha-icon-next {
       --mdc-icon-button-size: 24px;
@@ -301,10 +323,21 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       color: var(--primary-text-color);
     }
     .content {
-      padding: 16px;
+      padding: 0 16px 8px;
+      flex: 1;
+      overflow: hidden;
     }
     .has-header {
       padding-top: 0;
+    }
+    state-history-charts {
+      --timeline-top-margin: 16px;
+    }
+    .has-height state-history-charts {
+      height: 100%;
+    }
+    .has-rows {
+      --chart-max-height: 100%;
     }
   `;
 }

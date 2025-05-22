@@ -2,6 +2,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
@@ -88,72 +89,73 @@ class HaInputTextForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-picker>
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <ha-textfield
-                .value=${this._min}
-                .configValue=${"min"}
-                type="number"
-                min="0"
-                max="255"
-                @input=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_text.min"
-                )}
-              ></ha-textfield>
-              <ha-textfield
-                .value=${this._max}
-                .configValue=${"max"}
-                min="0"
-                max="255"
-                type="number"
-                @input=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_text.max"
-                )}
-              ></ha-textfield>
-              <div class="layout horizontal center justified">
-                ${this.hass.localize(
-                  "ui.dialogs.helper_settings.input_text.mode"
-                )}
-                <ha-formfield
-                  .label=${this.hass.localize(
-                    "ui.dialogs.helper_settings.input_text.text"
-                  )}
-                >
-                  <ha-radio
-                    name="mode"
-                    value="text"
-                    .checked=${this._mode === "text"}
-                    @change=${this._modeChanged}
-                  ></ha-radio>
-                </ha-formfield>
-                <ha-formfield
-                  .label=${this.hass.localize(
-                    "ui.dialogs.helper_settings.input_text.password"
-                  )}
-                >
-                  <ha-radio
-                    name="mode"
-                    value="password"
-                    .checked=${this._mode === "password"}
-                    @change=${this._modeChanged}
-                  ></ha-radio>
-                </ha-formfield>
-              </div>
-              <ha-textfield
-                .value=${this._pattern || ""}
-                .configValue=${"pattern"}
-                @input=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_text.pattern_label"
-                )}
-                .helper=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_text.pattern_helper"
-                )}
-              ></ha-textfield>
-            `
-          : ""}
+        <ha-expansion-panel
+          header=${this.hass.localize(
+            "ui.dialogs.helper_settings.generic.advanced_settings"
+          )}
+          outlined
+        >
+          <ha-textfield
+            .value=${this._min}
+            .configValue=${"min"}
+            type="number"
+            min="0"
+            max="255"
+            @input=${this._valueChanged}
+            .label=${this.hass!.localize(
+              "ui.dialogs.helper_settings.input_text.min"
+            )}
+          ></ha-textfield>
+          <ha-textfield
+            .value=${this._max}
+            .configValue=${"max"}
+            min="0"
+            max="255"
+            type="number"
+            @input=${this._valueChanged}
+            .label=${this.hass!.localize(
+              "ui.dialogs.helper_settings.input_text.max"
+            )}
+          ></ha-textfield>
+          <div class="layout horizontal center justified">
+            ${this.hass.localize("ui.dialogs.helper_settings.input_text.mode")}
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.dialogs.helper_settings.input_text.text"
+              )}
+            >
+              <ha-radio
+                name="mode"
+                value="text"
+                .checked=${this._mode === "text"}
+                @change=${this._modeChanged}
+              ></ha-radio>
+            </ha-formfield>
+            <ha-formfield
+              .label=${this.hass.localize(
+                "ui.dialogs.helper_settings.input_text.password"
+              )}
+            >
+              <ha-radio
+                name="mode"
+                value="password"
+                .checked=${this._mode === "password"}
+                @change=${this._modeChanged}
+              ></ha-radio>
+            </ha-formfield>
+          </div>
+          <ha-textfield
+            .value=${this._pattern || ""}
+            .configValue=${"pattern"}
+            @input=${this._valueChanged}
+            .label=${this.hass!.localize(
+              "ui.dialogs.helper_settings.input_text.pattern_label"
+            )}
+            .helper=${this.hass!.localize(
+              "ui.dialogs.helper_settings.input_text.pattern_helper"
+            )}
+          ></ha-textfield>
+        </ha-expansion-panel>
       </div>
     `;
   }
@@ -195,9 +197,13 @@ class HaInputTextForm extends LitElement {
         .row {
           padding: 16px 0;
         }
-        ha-textfield {
+        ha-textfield,
+        ha-icon-picker {
           display: block;
           margin: 8px 0;
+        }
+        ha-expansion-panel {
+          margin-top: 16px;
         }
       `,
     ];

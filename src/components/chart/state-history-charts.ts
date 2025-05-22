@@ -69,6 +69,11 @@ export class StateHistoryCharts extends LitElement {
 
   @property({ attribute: "fit-y-data", type: Boolean }) public fitYData = false;
 
+  @property({ type: String }) public height?: string;
+
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
+
   private _computedStartTime!: Date;
 
   private _computedEndTime!: Date;
@@ -133,7 +138,7 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div class="entry-container">
+      return html`<div class="entry-container line">
         <state-history-chart-line
           .hass=${this.hass}
           .unit=${item.unit}
@@ -151,10 +156,12 @@ export class StateHistoryCharts extends LitElement {
           .maxYAxis=${this.maxYAxis}
           .fitYData=${this.fitYData}
           @y-width-changed=${this._yWidthChanged}
+          .height=${this.virtualize ? undefined : this.height}
+          .expandLegend=${this.expandLegend}
         ></state-history-chart-line>
       </div> `;
     }
-    return html`<div class="entry-container">
+    return html`<div class="entry-container timeline">
       <state-history-chart-timeline
         .hass=${this.hass}
         .data=${item}
@@ -274,7 +281,8 @@ export class StateHistoryCharts extends LitElement {
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
+      flex-direction: column;
       /* height of single timeline chart = 60px */
       min-height: 60px;
     }
@@ -297,6 +305,12 @@ export class StateHistoryCharts extends LitElement {
       width: 100%;
     }
 
+    .entry-container.line {
+      flex: 1;
+      padding-top: 8px;
+      overflow: hidden;
+    }
+
     .entry-container:hover {
       z-index: 1;
     }
@@ -306,6 +320,10 @@ export class StateHistoryCharts extends LitElement {
       padding-right: 1px;
       padding-inline-start: 1px;
       padding-inline-end: 1px;
+    }
+
+    .entry-container.timeline:first-child {
+      margin-top: var(--timeline-top-margin);
     }
 
     .entry-container:not(:first-child) {

@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import type { ZHADevice } from "../../../../../data/zha";
 import { DEVICE_MESSAGE_TYPES, LOG_OUTPUT } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -40,6 +40,8 @@ class ZHAAddDevicesPage extends LitElement {
   private _addDevicesTimeoutHandle: any = undefined;
 
   private _subscribed?: Promise<() => Promise<void>>;
+
+  private _wakeLock?: Promise<WakeLockSentinel>;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -89,10 +91,7 @@ class ZHAAddDevicesPage extends LitElement {
                     "ui.panel.config.zha.add_device_page.spinner"
                   )}
                 </h1>
-                <ha-circular-progress
-                  indeterminate
-                  aria-label="Searching"
-                ></ha-circular-progress>
+                <ha-spinner aria-label="Searching"></ha-spinner>
               `
             : html`
                 <div>
@@ -188,6 +187,7 @@ class ZHAAddDevicesPage extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _deactivate(): void {
@@ -195,6 +195,7 @@ class ZHAAddDevicesPage extends LitElement {
     if (this._addDevicesTimeoutHandle) {
       clearTimeout(this._addDevicesTimeoutHandle);
     }
+    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _subscribe(): void {
@@ -214,6 +215,9 @@ class ZHAAddDevicesPage extends LitElement {
       () => this._deactivate(),
       254000
     );
+    if ("wakeLock" in navigator) {
+      this._wakeLock = navigator.wakeLock.request();
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -237,7 +241,7 @@ class ZHAAddDevicesPage extends LitElement {
         .error {
           color: var(--error-color);
         }
-        ha-circular-progress {
+        ha-spinner {
           margin: 20px;
         }
         .searching {

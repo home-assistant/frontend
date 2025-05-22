@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -10,6 +10,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-list-item";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-settings-row";
 import {
@@ -188,31 +189,31 @@ class HassioHostInfo extends LitElement {
               .path=${mdiDotsVertical}
               slot="trigger"
             ></ha-icon-button>
-            <mwc-list-item
+            <ha-list-item
               .action=${"hardware"}
               @click=${this._handleMenuAction}
             >
               ${this.supervisor.localize("system.host.hardware")}
-            </mwc-list-item>
+            </ha-list-item>
             ${this.supervisor.host.features.includes("haos")
               ? html`
-                  <mwc-list-item
+                  <ha-list-item
                     .action=${"import_from_usb"}
                     @click=${this._handleMenuAction}
                   >
                     ${this.supervisor.localize("system.host.import_from_usb")}
-                  </mwc-list-item>
+                  </ha-list-item>
                   ${this.supervisor.host.features.includes("os_agent") &&
                   atLeastVersion(this.supervisor.host.agent_version, 1, 2, 0)
                     ? html`
-                        <mwc-list-item
+                        <ha-list-item
                           .action=${"move_datadisk"}
                           @click=${this._handleMenuAction}
                         >
                           ${this.supervisor.localize(
                             "system.host.move_datadisk"
                           )}
-                        </mwc-list-item>
+                        </ha-list-item>
                       `
                     : ""}
                 `
@@ -438,7 +439,7 @@ class HassioHostInfo extends LitElement {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;
         }
-        mwc-list-item ha-svg-icon {
+        ha-list-item ha-svg-icon {
           color: var(--secondary-text-color);
         }
         a {

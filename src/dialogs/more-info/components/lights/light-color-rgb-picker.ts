@@ -49,6 +49,8 @@ class LightRgbColorPicker extends LitElement {
 
   @state() private _hsPickerValue?: [number, number];
 
+  @state() private _isInteracting?: boolean;
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
@@ -211,7 +213,10 @@ class LightRgbColorPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("entityId") && !changedProps.has("hass")) {
+    if (
+      this._isInteracting ||
+      (!changedProps.has("entityId") && !changedProps.has("hass"))
+    ) {
       return;
     }
 
@@ -219,10 +224,13 @@ class LightRgbColorPicker extends LitElement {
   }
 
   private _hsColorCursorMoved(ev: CustomEvent) {
-    if (!ev.detail.value) {
+    const color = ev.detail.value;
+    this._isInteracting = color !== undefined;
+
+    if (color === undefined) {
       return;
     }
-    this._hsPickerValue = ev.detail.value;
+    this._hsPickerValue = color;
 
     this._throttleUpdateColor();
   }

@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/ha-svg-icon";
 import { brandsUrl } from "../util/brands-url";
 
 @customElement("integration-badge")

@@ -1,9 +1,9 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { firstWeekday } from "../../common/datetime/first_weekday";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import { FirstWeekday } from "../../data/translation";
@@ -44,7 +44,7 @@ class FirstWeekdayRow extends LitElement {
             );
             const twoLine = day === FirstWeekday.language;
             return html`
-              <mwc-list-item .value=${day} .twoline=${twoLine}>
+              <ha-list-item .value=${day} .twoline=${twoLine}>
                 <span>${value}</span>
                 ${twoLine
                   ? html`
@@ -57,7 +57,7 @@ class FirstWeekdayRow extends LitElement {
                       >
                     `
                   : ""}
-              </mwc-list-item>
+              </ha-list-item>
             `;
           })}
         </ha-select>

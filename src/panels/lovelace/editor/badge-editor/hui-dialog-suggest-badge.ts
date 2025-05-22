@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-spinner";
 
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -109,11 +110,7 @@ export class HuiDialogSuggestBadge extends LitElement {
               >
                 ${this._saving
                   ? html`
-                      <ha-circular-progress
-                        indeterminate
-                        aria-label="Saving"
-                        size="small"
-                      ></ha-circular-progress>
+                      <ha-spinner aria-label="Saving" size="small"></ha-spinner>
                     `
                   : this.hass!.localize(
                       "ui.panel.lovelace.editor.suggest_badge.add"

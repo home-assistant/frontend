@@ -1,4 +1,4 @@
-import { mdiPacMan } from "@mdi/js";
+import { mdiLightbulbOn, mdiPacMan } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
@@ -120,6 +120,23 @@ const SAMPLES: {
             label="Some Action"
             .path=${mdiPacMan}
           ></ha-icon-button>
+          ${SHORT_TEXT}
+        </ha-expansion-panel>
+      `;
+    },
+  },
+  {
+    template(slot, leftChevron) {
+      return html`
+        <ha-expansion-panel
+          slot=${slot}
+          .leftChevron=${leftChevron}
+          header="Attr Header with actions"
+        >
+          <ha-svg-icon
+            slot="leading-icon"
+            .path=${mdiLightbulbOn}
+          ></ha-svg-icon>
           ${SHORT_TEXT}
         </ha-expansion-panel>
       `;

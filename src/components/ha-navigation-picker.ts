@@ -1,7 +1,6 @@
-import "@material/mwc-list/mwc-list-item";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { titleCase } from "../common/string/title-case";
@@ -10,6 +9,7 @@ import type { LovelaceViewRawConfig } from "../data/lovelace/config/view";
 import type { HomeAssistant, PanelInfo, ValueChangedEvent } from "../types";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
+import "./ha-combo-box-item";
 import "./ha-icon";
 
 interface NavigationItem {
@@ -21,11 +21,13 @@ interface NavigationItem {
 const DEFAULT_ITEMS: NavigationItem[] = [];
 
 const rowRenderer: ComboBoxLitRenderer<NavigationItem> = (item) => html`
-  <mwc-list-item graphic="icon" .twoline=${!!item.title}>
-    <ha-icon .icon=${item.icon} slot="graphic"></ha-icon>
-    <span>${item.title || item.path}</span>
-    <span slot="secondary">${item.path}</span>
-  </mwc-list-item>
+  <ha-combo-box-item type="button">
+    <ha-icon .icon=${item.icon} slot="start"></ha-icon>
+    <span slot="headline">${item.title || item.path}</span>
+    ${item.title
+      ? html`<span slot="supporting-text">${item.path}</span>`
+      : nothing}
+  </ha-combo-box-item>
 `;
 
 const createViewNavigationItem = (

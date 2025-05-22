@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -8,6 +7,7 @@ import "../../components/ha-switch";
 import { RecurrenceRange } from "../../data/calendar";
 import type { HomeAssistant } from "../../types";
 import type { ConfirmEventDialogBoxParams } from "./show-confirm-event-dialog-box";
+import "../../components/ha-button";
 
 @customElement("confirm-event-dialog-box")
 class ConfirmEventDialogBox extends LitElement {
@@ -40,26 +40,26 @@ class ConfirmEventDialogBox extends LitElement {
         <div>
           <p>${this._params.text}</p>
         </div>
-        <mwc-button @click=${this._dismiss} slot="secondaryAction">
-          ${this.hass.localize("ui.dialogs.generic.cancel")}
-        </mwc-button>
-        <mwc-button
+        <ha-button @click=${this._dismiss} slot="secondaryAction">
+          ${this.hass.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._confirm}
           dialogInitialFocus
-          class="destructive"
+          destructive
         >
           ${this._params.confirmText}
-        </mwc-button>
+        </ha-button>
         ${this._params.confirmFutureText
           ? html`
-              <mwc-button
+              <ha-button
                 @click=${this._confirmFuture}
-                class="destructive"
                 slot="primaryAction"
+                destructive
               >
                 ${this._params.confirmFutureText}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
       </ha-dialog>
@@ -119,9 +119,6 @@ class ConfirmEventDialogBox extends LitElement {
     }
     .secondary {
       color: var(--secondary-text-color);
-    }
-    .destructive {
-      --mdc-theme-primary: var(--error-color);
     }
     ha-dialog {
       /* Place above other dialogs */

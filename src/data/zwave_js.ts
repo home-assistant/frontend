@@ -80,7 +80,7 @@ enum QRCodeVersion {
   SmartStart = 1,
 }
 
-enum Protocols {
+export enum Protocols {
   ZWave = 0,
   ZWaveLongRange = 1,
 }
@@ -151,12 +151,35 @@ export interface QRProvisioningInformation {
   maxInclusionRequestInterval?: number | undefined;
   uuid?: string | undefined;
   supportedProtocols?: Protocols[] | undefined;
+  status?: ProvisioningEntryStatus;
 }
 
 export interface PlannedProvisioningEntry {
   /** The device specific key (DSK) in the form aaaaa-bbbbb-ccccc-ddddd-eeeee-fffff-11111-22222 */
   dsk: string;
   securityClasses: SecurityClass[];
+  status?: ProvisioningEntryStatus;
+}
+
+export enum ProvisioningEntryStatus {
+  Active = 0,
+  Inactive = 1,
+}
+
+export interface DeviceConfig {
+  filename: string;
+  manufacturer: string;
+  manufacturerId: number;
+  label: string;
+  description: string;
+  devices: {
+    productType: number;
+    productId: number;
+  }[];
+  firmwareVersion: {
+    min: string;
+    max: string;
+  };
 }
 
 export const MINIMUM_QR_STRING_LENGTH = 52;
@@ -195,6 +218,7 @@ export interface ZWaveJSController {
   is_rebuilding_routes: boolean;
   inclusion_state: InclusionState;
   nodes: ZWaveJSNodeStatus[];
+  supports_long_range: boolean;
 }
 
 export interface ZWaveJSNodeStatus {
@@ -555,7 +579,7 @@ export const zwaveTryParseDskFromQrCode = (
 export const zwaveValidateDskAndEnterPin = (
   hass: HomeAssistant,
   entry_id: string,
-  pin: string
+  pin: string | false
 ) =>
   hass.callWS({
     type: "zwave_js/validate_dsk_and_enter_pin",
@@ -585,19 +609,38 @@ export const zwaveParseQrCode = (
     qr_code_string,
   });
 
+export const lookupZwaveDevice = (
+  hass: HomeAssistant,
+  entry_id: string,
+  manufacturerId: number,
+  productType: number,
+  productId: number,
+  applicationVersion?: string
+): Promise<DeviceConfig> =>
+  hass.callWS({
+    type: "zwave_js/lookup_device",
+    entry_id,
+    manufacturerId,
+    productType,
+    productId,
+    applicationVersion,
+  });
+
 export const provisionZwaveSmartStartNode = (
   hass: HomeAssistant,
   entry_id: string,
   qr_provisioning_information?: QRProvisioningInformation,
-  qr_code_string?: string,
-  planned_provisioning_entry?: PlannedProvisioningEntry
-): Promise<QRProvisioningInformation> =>
+  protocol?: Protocols,
+  device_name?: string,
+  area_id?: string
+): Promise<string> =>
   hass.callWS({
     type: "zwave_js/provision_smart_start_node",
     entry_id,
-    qr_code_string,
     qr_provisioning_information,
-    planned_provisioning_entry,
+    protocol,
+    device_name,
+    area_id,
   });
 
 export const unprovisionZwaveSmartStartNode = (
@@ -611,6 +654,16 @@ export const unprovisionZwaveSmartStartNode = (
     entry_id,
     dsk,
     node_id,
+  });
+
+export const subscribeNewDevices = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: any) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage((message) => callbackFunction(message), {
+    type: "zwave_js/subscribe_new_devices",
+    entry_id: entry_id,
   });
 
 export const fetchZwaveNodeStatus = (
@@ -914,6 +967,28 @@ export const abortZwaveNodeFirmwareUpdate = (
   hass.callWS({
     type: "zwave_js/abort_firmware_update",
     device_id,
+  });
+
+export const subscribeZwaveNVMBackup = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: any) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(callbackFunction, {
+    type: "zwave_js/backup_nvm",
+    entry_id,
+  });
+
+export const restoreZwaveNVM = (
+  hass: HomeAssistant,
+  entry_id: string,
+  data: string,
+  callbackFunction: (message: any) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(callbackFunction, {
+    type: "zwave_js/restore_nvm",
+    entry_id,
+    data,
   });
 
 export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;

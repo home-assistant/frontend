@@ -38,7 +38,7 @@ export class HaWaitForTriggerAction
         )}
         .data=${timeData}
         .disabled=${this.disabled}
-        enableMillisecond
+        enable-millisecond
         @value-changed=${this._timeoutChanged}
       ></ha-duration-input>
       <ha-formfield

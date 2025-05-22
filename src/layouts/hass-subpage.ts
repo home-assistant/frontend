@@ -97,11 +97,11 @@ class HassSubpage extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 8px 12px;
           background-color: var(--app-header-background-color);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
@@ -125,7 +125,7 @@ class HassSubpage extends LitElement {
 
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           min-width: 0;
           flex-grow: 1;
           overflow-wrap: break-word;
@@ -148,10 +148,10 @@ class HassSubpage extends LitElement {
 
         #fab {
           position: absolute;
-          right: calc(16px + env(safe-area-inset-right));
-          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          right: calc(16px + var(--safe-area-inset-right));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right));
           inset-inline-start: initial;
-          bottom: calc(16px + env(safe-area-inset-bottom));
+          bottom: calc(16px + var(--safe-area-inset-bottom));
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
@@ -159,7 +159,7 @@ class HassSubpage extends LitElement {
           gap: 8px;
         }
         :host([narrow]) #fab.tabs {
-          bottom: calc(84px + env(safe-area-inset-bottom));
+          bottom: calc(84px + var(--safe-area-inset-bottom));
         }
         #fab[is-wide] {
           bottom: 24px;

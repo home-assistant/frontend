@@ -1,39 +1,52 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiCalendar } from "@mdi/js";
-import {
-  addDays,
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  endOfYear,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-  startOfYear,
-  isThisYear,
-} from "date-fns";
+import { isThisYear } from "date-fns";
+import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { calcDate, shiftDateRange } from "../common/datetime/calc_date";
+import { shiftDateRange } from "../common/datetime/calc_date";
+import type { DateRange } from "../common/datetime/calc_date_range";
+import { calcDateRange } from "../common/datetime/calc_date_range";
 import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 import {
-  formatShortDateTimeWithYear,
   formatShortDateTime,
+  formatShortDateTimeWithYear,
 } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
+import { fireEvent } from "../common/dom/fire_event";
+import { TimeZone } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import "./date-range-picker";
 import "./ha-icon-button";
-import "./ha-textarea";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
+import "./ha-list";
+import "./ha-list-item";
+import "./ha-textarea";
 
 export type DateRangePickerRanges = Record<string, [Date, Date]>;
+
+declare global {
+  interface HASSDomEvents {
+    "preset-selected": { index: number };
+  }
+}
+
+const RANGE_KEYS: DateRange[] = ["today", "yesterday", "this_week"];
+const EXTENDED_RANGE_KEYS: DateRange[] = [
+  "this_month",
+  "this_year",
+  "now-1h",
+  "now-12h",
+  "now-24h",
+  "now-7d",
+  "now-30d",
+];
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
@@ -51,7 +64,7 @@ export class HaDateRangePicker extends LitElement {
   public autoApply = false;
 
   @property({ attribute: "time-picker", type: Boolean })
-  public timePicker = true;
+  public timePicker = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -80,104 +93,16 @@ export class HaDateRangePicker extends LitElement {
       (changedProps.has("hass") &&
         this.hass?.localize !== changedProps.get("hass")?.localize)
     ) {
-      const today = new Date();
-      const weekStartsOn = firstWeekdayIndex(this.hass.locale);
-      const weekStart = calcDate(
-        today,
-        startOfWeek,
-        this.hass.locale,
-        this.hass.config,
-        {
-          weekStartsOn,
-        }
-      );
-      const weekEnd = calcDate(
-        today,
-        endOfWeek,
-        this.hass.locale,
-        this.hass.config,
-        {
-          weekStartsOn,
-        }
-      );
+      const rangeKeys = this.extendedPresets
+        ? [...RANGE_KEYS, ...EXTENDED_RANGE_KEYS]
+        : RANGE_KEYS;
 
-      this._ranges = {
-        [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
-          calcDate(today, startOfDay, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-          calcDate(today, endOfDay, this.hass.locale, this.hass.config, {
-            weekStartsOn,
-          }),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.yesterday"
-        )]: [
-          calcDate(
-            addDays(today, -1),
-            startOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-          calcDate(
-            addDays(today, -1),
-            endOfDay,
-            this.hass.locale,
-            this.hass.config,
-            {
-              weekStartsOn,
-            }
-          ),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_week"
-        )]: [weekStart, weekEnd],
-        ...(this.extendedPresets
-          ? {
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.this_month"
-              )]: [
-                calcDate(
-                  today,
-                  startOfMonth,
-                  this.hass.locale,
-                  this.hass.config,
-                  {
-                    weekStartsOn,
-                  }
-                ),
-                calcDate(
-                  today,
-                  endOfMonth,
-                  this.hass.locale,
-                  this.hass.config,
-                  {
-                    weekStartsOn,
-                  }
-                ),
-              ],
-              [this.hass.localize(
-                "ui.components.date-range-picker.ranges.this_year"
-              )]: [
-                calcDate(
-                  today,
-                  startOfYear,
-                  this.hass.locale,
-                  this.hass.config,
-                  {
-                    weekStartsOn,
-                  }
-                ),
-                calcDate(today, endOfYear, this.hass.locale, this.hass.config, {
-                  weekStartsOn,
-                }),
-              ],
-            }
-          : {}),
-      };
+      this._ranges = {};
+      rangeKeys.forEach((key) => {
+        this._ranges![
+          this.hass.localize(`ui.components.date-range-picker.ranges.${key}`)
+        ] = calcDateRange(this.hass, key);
+      });
     }
   }
 
@@ -197,14 +122,15 @@ export class HaDateRangePicker extends LitElement {
         ?auto-apply=${this.autoApply}
         time-picker=${this.timePicker}
         twentyfour-hours=${this._hour24format}
-        start-date=${this.startDate.toISOString()}
-        end-date=${this.endDate.toISOString()}
+        start-date=${this._formatDate(this.startDate)}
+        end-date=${this._formatDate(this.endDate)}
         ?ranges=${this.ranges !== false}
         opening-direction=${ifDefined(
           this.openingDirection || this._calcedOpeningDirection
         )}
         first-day=${firstWeekdayIndex(this.hass.locale)}
         language=${this.hass.locale.language}
+        @change=${this._handleChange}
       >
         <div slot="input" class="date-range-inputs" @click=${this._handleClick}>
           ${!this.minimal
@@ -263,11 +189,11 @@ export class HaDateRangePicker extends LitElement {
         </div>
         ${this.ranges !== false && (this.ranges || this._ranges)
           ? html`<div slot="ranges" class="date-range-ranges">
-              <mwc-list @action=${this._setDateRange} activatable>
+              <ha-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges || this._ranges!).map(
-                  (name) => html`<mwc-list-item>${name}</mwc-list-item>`
+                  (name) => html`<ha-list-item>${name}</ha-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             </div>`
           : nothing}
         <div slot="footer" class="date-range-footer">
@@ -315,6 +241,10 @@ export class HaDateRangePicker extends LitElement {
     const dateRange = Object.values(this.ranges || this._ranges!)[
       ev.detail.index
     ];
+
+    fireEvent(this, "preset-selected", {
+      index: ev.detail.index,
+    });
     const dateRangePicker = this._dateRangePicker;
     dateRangePicker.clickRange(dateRange);
     dateRangePicker.clickedApply();
@@ -325,7 +255,29 @@ export class HaDateRangePicker extends LitElement {
   }
 
   private _applyDateRange() {
+    if (this.hass.locale.time_zone === TimeZone.server) {
+      const dateRangePicker = this._dateRangePicker;
+
+      const startDate = fromZonedTime(
+        dateRangePicker.start,
+        this.hass.config.time_zone
+      );
+      const endDate = fromZonedTime(
+        dateRangePicker.end,
+        this.hass.config.time_zone
+      );
+
+      dateRangePicker.clickRange([startDate, endDate]);
+    }
+
     this._dateRangePicker.clickedApply();
+  }
+
+  private _formatDate(date: Date): string {
+    if (this.hass.locale.time_zone === TimeZone.server) {
+      return toZonedTime(date, this.hass.config.time_zone).toISOString();
+    }
+    return date.toISOString();
   }
 
   private get _dateRangePicker() {
@@ -358,45 +310,66 @@ export class HaDateRangePicker extends LitElement {
     }
   }
 
+  private _handleChange(ev: CustomEvent) {
+    ev.stopPropagation();
+    const startDate = ev.detail.startDate;
+    const endDate = ev.detail.endDate;
+
+    fireEvent(this, "value-changed", {
+      value: { startDate, endDate },
+    });
+  }
+
   static styles = css`
+    ha-icon-button {
+      direction: var(--direction);
+    }
 
-      ha-icon-button {
-        direction: var(--direction);
+    .date-range-inputs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-range-ranges {
+      border-right: 1px solid var(--divider-color);
+    }
+
+    .date-range-footer {
+      display: flex;
+      justify-content: flex-end;
+      padding: 8px;
+      border-top: 1px solid var(--divider-color);
+    }
+
+    ha-textarea {
+      display: inline-block;
+      width: 340px;
+    }
+    @media only screen and (max-width: 460px) {
+      ha-textarea {
+        width: 100%;
       }
-
-      .date-range-inputs {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
+    }
+    @media only screen and (max-width: 800px) {
       .date-range-ranges {
-        border-right: 1px solid var(--divider-color);
+        border-right: none;
+        border-bottom: 1px solid var(--divider-color);
+      }
+    }
+
+    @media only screen and (max-height: 940px) and (max-width: 800px) {
+      .date-range-ranges {
+        overflow: auto;
+        max-height: calc(70vh - 330px);
+        min-height: 160px;
       }
 
-      .date-range-footer {
-        display: flex;
-        justify-content: flex-end;
-        padding: 8px;
-        border-top: 1px solid var(--divider-color);
+      :host([header-position]) .date-range-ranges {
+        max-height: calc(90vh - 430px);
       }
-
-      ha-textarea {
-        display: inline-block;
-        width: 340px;
-      }
-      @media only screen and (max-width: 460px) {
-      ha-textarea {
-        width: 100%
-      }
-
-      @media only screen and (max-width: 800px) {
-        .date-range-ranges {
-          border-right: none;
-          border-bottom: 1px solid var(--divider-color);
-        }
-      }
-    `;
+    }
+  `;
 }
 
 declare global {

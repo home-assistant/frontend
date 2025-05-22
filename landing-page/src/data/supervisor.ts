@@ -1,4 +1,17 @@
 import type { LandingPageKeys } from "../../../src/common/translations/localize";
+import type { HassioResponse } from "../../../src/data/hassio/common";
+import type {
+  DockerNetwork,
+  NetworkInterface,
+} from "../../../src/data/hassio/network";
+import { handleFetchPromise } from "../../../src/util/hass-call-api";
+
+export interface NetworkInfo {
+  interfaces: NetworkInterface[];
+  docker: DockerNetwork;
+  host_internet: boolean;
+  supervisor_internet: boolean;
+}
 
 export const ALTERNATIVE_DNS_SERVERS: {
   ipv4: string[];
@@ -18,7 +31,7 @@ export const ALTERNATIVE_DNS_SERVERS: {
 ];
 
 export async function getSupervisorLogs(lines = 100) {
-  return fetch(`/supervisor/supervisor/logs?lines=${lines}`, {
+  return fetch(`/supervisor-api/supervisor/logs?lines=${lines}`, {
     headers: {
       Accept: "text/plain",
     },
@@ -26,22 +39,29 @@ export async function getSupervisorLogs(lines = 100) {
 }
 
 export async function getSupervisorLogsFollow(lines = 500) {
-  return fetch(`/supervisor/supervisor/logs/follow?lines=${lines}`, {
+  return fetch(`/supervisor-api/supervisor/logs/follow?lines=${lines}`, {
     headers: {
       Accept: "text/plain",
     },
   });
 }
 
-export async function getSupervisorNetworkInfo() {
-  return fetch("/supervisor/network/info");
+export async function pingSupervisor() {
+  return fetch("/supervisor-api/supervisor/ping");
+}
+
+export async function getSupervisorNetworkInfo(): Promise<NetworkInfo> {
+  const responseData = await handleFetchPromise<HassioResponse<NetworkInfo>>(
+    fetch("/supervisor-api/network/info")
+  );
+  return responseData?.data;
 }
 
 export const setSupervisorNetworkDns = async (
   dnsServerIndex: number,
   primaryInterface: string
 ) =>
-  fetch(`/supervisor/network/interface/${primaryInterface}/update`, {
+  fetch(`/supervisor-api/network/interface/${primaryInterface}/update`, {
     method: "POST",
     body: JSON.stringify({
       ipv4: {

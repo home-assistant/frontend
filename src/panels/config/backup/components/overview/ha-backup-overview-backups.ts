@@ -1,14 +1,20 @@
-import { mdiCalendarSync, mdiGestureTap } from "@mdi/js";
+import { mdiCalendarSync, mdiGestureTap, mdiPuzzle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-md-list";
 import "../../../../../components/ha-md-list-item";
-import type { BackupContent } from "../../../../../data/backup";
+import type { BackupContent, BackupType } from "../../../../../data/backup";
+import {
+  computeBackupSize,
+  computeBackupType,
+  getBackupTypes,
+} from "../../../../../data/backup";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
@@ -18,11 +24,17 @@ interface BackupStats {
   size: number;
 }
 
+const TYPE_ICONS: Record<BackupType, string> = {
+  automatic: mdiCalendarSync,
+  manual: mdiGestureTap,
+  addon_update: mdiPuzzle,
+};
+
 const computeBackupStats = (backups: BackupContent[]): BackupStats =>
   backups.reduce(
     (stats, backup) => {
       stats.count++;
-      stats.size += backup.size;
+      stats.size += computeBackupSize(backup);
       return stats;
     },
     { count: 0, size: 0 }
@@ -34,23 +46,22 @@ class HaBackupOverviewBackups extends LitElement {
 
   @property({ attribute: false }) public backups: BackupContent[] = [];
 
-  private _automaticStats = memoizeOne((backups: BackupContent[]) => {
-    const automaticBackups = backups.filter(
-      (backup) => backup.with_automatic_settings
-    );
-    return computeBackupStats(automaticBackups);
-  });
-
-  private _manualStats = memoizeOne((backups: BackupContent[]) => {
-    const manualBackups = backups.filter(
-      (backup) => !backup.with_automatic_settings
-    );
-    return computeBackupStats(manualBackups);
-  });
+  private _stats = memoizeOne(
+    (
+      backups: BackupContent[],
+      isHassio: boolean
+    ): [BackupType, BackupStats][] =>
+      getBackupTypes(isHassio).map((type) => {
+        const backupsOfType = backups.filter(
+          (backup) => computeBackupType(backup, isHassio) === type
+        );
+        return [type, computeBackupStats(backupsOfType)] as const;
+      })
+  );
 
   render() {
-    const automaticStats = this._automaticStats(this.backups);
-    const manualStats = this._manualStats(this.backups);
+    const isHassio = isComponentLoaded(this.hass, "hassio");
+    const stats = this._stats(this.backups, isHassio);
 
     return html`
       <ha-card class="my-backups">
@@ -59,44 +70,32 @@ class HaBackupOverviewBackups extends LitElement {
         </div>
         <div class="card-content">
           <ha-md-list>
-            <ha-md-list-item
-              type="link"
-              href="/config/backup/backups?type=automatic"
-            >
-              <ha-svg-icon slot="start" .path=${mdiCalendarSync}></ha-svg-icon>
-              <div slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.overview.backups.automatic",
-                  { count: automaticStats.count }
-                )}
-              </div>
-              <div slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.overview.backups.total_size",
-                  { size: bytesToString(automaticStats.size, 1) }
-                )}
-              </div>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
-              href="/config/backup/backups?type=manual"
-            >
-              <ha-svg-icon slot="start" .path=${mdiGestureTap}></ha-svg-icon>
-              <div slot="headline">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.overview.backups.manual",
-                  { count: manualStats.count }
-                )}
-              </div>
-              <div slot="supporting-text">
-                ${this.hass.localize(
-                  "ui.panel.config.backup.overview.backups.total_size",
-                  { size: bytesToString(manualStats.size, 1) }
-                )}
-              </div>
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
+            ${stats.map(
+              ([type, { count, size }]) => html`
+                <ha-md-list-item
+                  type="link"
+                  href="/config/backup/backups?type=${type}"
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${TYPE_ICONS[type]}
+                  ></ha-svg-icon>
+                  <div slot="headline">
+                    ${this.hass.localize(
+                      `ui.panel.config.backup.overview.backups.${type}`,
+                      { count }
+                    )}
+                  </div>
+                  <div slot="supporting-text">
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.overview.backups.total_size",
+                      { size: bytesToString(size) }
+                    )}
+                  </div>
+                  <ha-icon-next slot="end"></ha-icon-next>
+                </ha-md-list-item>
+              `
+            )}
           </ha-md-list>
         </div>
         <div class="card-actions">
@@ -123,7 +122,7 @@ class HaBackupOverviewBackups extends LitElement {
           gap: 24px;
           display: flex;
           flex-direction: column;
-          margin-bottom: calc(72px + env(safe-area-inset-bottom));
+          margin-bottom: calc(72px + var(--safe-area-inset-bottom));
         }
         .card-actions {
           display: flex;

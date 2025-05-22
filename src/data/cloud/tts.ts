@@ -1,8 +1,14 @@
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
 
 export interface CloudTTSInfo {
-  languages: [string, string][];
+  languages: [
+    // language
+    string,
+    // voice id
+    string,
+    // voice name
+    string,
+  ][];
 }
 
 export const getCloudTTSInfo = (hass: HomeAssistant) =>
@@ -24,23 +30,4 @@ export const getCloudTtsLanguages = (info?: CloudTTSInfo) => {
     languages.push(lang);
   }
   return languages;
-};
-
-export const getCloudTtsSupportedVoices = (
-  language: string,
-  info: CloudTTSInfo | undefined
-) => {
-  const voices: string[] = [];
-
-  if (!info) {
-    return voices;
-  }
-
-  for (const [curLang, voice] of info.languages) {
-    if (curLang === language) {
-      voices.push(voice);
-    }
-  }
-
-  return voices.sort((a, b) => caseInsensitiveStringCompare(a, b));
 };

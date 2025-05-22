@@ -10,13 +10,13 @@ import {
   mdiPlus,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, queryAssignedNodes } from "lit/decorators";
+import { customElement, property, queryAssignedElements } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -29,7 +29,6 @@ import {
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import {
   addCard,
   deleteCard,
@@ -54,7 +53,7 @@ export class HuiCardOptions extends LitElement {
 
   @property({ type: Array }) public path?: LovelaceCardPath;
 
-  @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
+  @queryAssignedElements() private _assignedElements?: LovelaceCard[];
 
   @property({ attribute: "hide-position", type: Boolean })
   public hidePosition = false;
@@ -68,7 +67,9 @@ export class HuiCardOptions extends LitElement {
   protected _clipboard?: LovelaceCardConfig;
 
   public getCardSize() {
-    return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
+    return this._assignedElements
+      ? computeCardSize(this._assignedElements[0])
+      : 1;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -226,12 +227,12 @@ export class HuiCardOptions extends LitElement {
         .position-badge {
           display: block;
           width: 24px;
-          line-height: 24px;
+          line-height: var(--ha-line-height-normal);
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           text-align: center;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           background-color: var(--app-header-edit-background-color, #455a64);
           color: var(--app-header-edit-text-color, white);
         }
@@ -267,21 +268,13 @@ export class HuiCardOptions extends LitElement {
         this._cutCard();
         break;
       case 4:
-        this._deleteCard({ silent: false });
+        this._deleteCard();
         break;
     }
   }
 
   private _duplicateCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const containerPath = getLovelaceContainerPath(this.path!);
-    const cardConfig = this._cards![cardIndex];
-    showEditCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: containerPath,
-      cardConfig,
-    });
+    fireEvent(this, "ll-duplicate-card", { path: this.path! });
   }
 
   private _editCard(): void {
@@ -289,14 +282,16 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _cutCard(): void {
-    this._copyCard();
-    this._deleteCard({ silent: true });
+    fireEvent(this, "ll-copy-card", { path: this.path! });
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
   }
 
   private _copyCard(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._cards[cardIndex];
-    this._clipboard = deepClone(cardConfig);
+    fireEvent(this, "ll-copy-card", { path: this.path! });
+  }
+
+  private _deleteCard(): void {
+    fireEvent(this, "ll-delete-card", { path: this.path!, silent: false });
   }
 
   private _decreaseCardPosiion(): void {
@@ -416,10 +411,6 @@ export class HuiCardOptions extends LitElement {
         }
       },
     });
-  }
-
-  private _deleteCard({ silent }: { silent: boolean }): void {
-    fireEvent(this, "ll-delete-card", { path: this.path!, silent });
   }
 }
 

@@ -1,3 +1,4 @@
+import memoizeOne from "memoize-one";
 import { theme2hex } from "./convert-color";
 
 export const COLORS = [
@@ -74,3 +75,12 @@ export function getGraphColorByIndex(
     getColorByIndex(index);
   return theme2hex(themeColor);
 }
+
+export const getAllGraphColors = memoizeOne(
+  (style: CSSStyleDeclaration) =>
+    COLORS.map((_color, index) => getGraphColorByIndex(index, style)),
+  (newArgs: [CSSStyleDeclaration], lastArgs: [CSSStyleDeclaration]) =>
+    // this is not ideal, but we need to memoize the colors
+    newArgs[0].getPropertyValue("--graph-color-1") ===
+    lastArgs[0].getPropertyValue("--graph-color-1")
+);

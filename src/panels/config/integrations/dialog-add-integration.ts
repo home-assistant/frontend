@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list";
+
 import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { HassConfig } from "home-assistant-js-websocket";
@@ -20,7 +20,10 @@ import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-button-prev";
+import "../../../components/ha-list";
+import "../../../components/ha-spinner";
 import "../../../components/search-input";
+import { getConfigEntries } from "../../../data/config_entries";
 import { fetchConfigFlowInProgress } from "../../../data/config_flow";
 import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
@@ -49,9 +52,6 @@ import "./ha-domain-integrations";
 import "./ha-integration-list-item";
 import type { AddIntegrationDialogParams } from "./show-add-integration-dialog";
 import { showYamlIntegrationDialog } from "./show-add-integration-dialog";
-import { getConfigEntries } from "../../../data/config_entries";
-import { stripDiacritics } from "../../../common/string/strip-diacritics";
-import { getStripDiacriticsFn } from "../../../util/fuse";
 
 export interface IntegrationListItem {
   name: string;
@@ -151,7 +151,7 @@ class AddIntegrationDialog extends LitElement {
     ) {
       // Store the width and height so that when we search, box doesn't jump
       const boundingRect =
-        this.shadowRoot!.querySelector("mwc-list")?.getBoundingClientRect();
+        this.shadowRoot!.querySelector("ha-list")?.getBoundingClientRect();
       this._width = boundingRect?.width;
       this._height = boundingRect?.height;
     }
@@ -187,6 +187,14 @@ class AddIntegrationDialog extends LitElement {
       const yamlIntegrations: IntegrationListItem[] = [];
 
       Object.entries(i).forEach(([domain, integration]) => {
+        if (
+          "integration_type" in integration &&
+          integration.integration_type === "hardware"
+        ) {
+          // Ignore hardware integrations, they cannot be added via UI
+          return;
+        }
+
         if (
           "integration_type" in integration &&
           (integration.config_flow ||
@@ -256,7 +264,7 @@ class AddIntegrationDialog extends LitElement {
           isCaseSensitive: false,
           minMatchCharLength: Math.min(filter.length, 2),
           threshold: 0.2,
-          getFn: getStripDiacriticsFn,
+          ignoreDiacritics: true,
         };
         const helpers = Object.entries(h).map(([domain, integration]) => ({
           domain,
@@ -266,16 +274,15 @@ class AddIntegrationDialog extends LitElement {
           is_built_in: integration.is_built_in !== false,
           cloud: integration.iot_class?.startsWith("cloud_"),
         }));
-        const normalizedFilter = stripDiacritics(filter);
         return [
           ...new Fuse(integrations, options)
-            .search(normalizedFilter)
+            .search(filter)
             .map((result) => result.item),
           ...new Fuse(yamlIntegrations, options)
-            .search(normalizedFilter)
+            .search(filter)
             .map((result) => result.item),
           ...new Fuse(helpers, options)
-            .search(normalizedFilter)
+            .search(filter)
             .map((result) => result.item),
         ];
       }
@@ -319,7 +326,6 @@ class AddIntegrationDialog extends LitElement {
       open
       @closed=${this.closeDialog}
       scrimClickAction
-      escapeKeyAction
       hideActions
       .heading=${createCloseHeading(
         this.hass,
@@ -444,25 +450,27 @@ class AddIntegrationDialog extends LitElement {
         @keypress=${this._maybeSubmit}
       ></search-input>
       ${integrations
-        ? html`<mwc-list
+        ? html`<ha-list
             dialogInitialFocus=${ifDefined(this._narrow ? "" : undefined)}
           >
             <lit-virtualizer
               scroller
+              tabindex="-1"
               class="ha-scrollbar"
               style=${styleMap({
                 width: `${this._width}px`,
                 height: this._narrow ? "calc(100vh - 184px)" : "500px",
               })}
               @click=${this._integrationPicked}
+              @keypress=${this._handleKeyPress}
               .items=${integrations}
               .keyFunction=${this._keyFunction}
               .renderItem=${this._renderRow}
             >
             </lit-virtualizer>
-          </mwc-list>`
+          </ha-list>`
         : html`<div class="flex center">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>`} `;
   }
 
@@ -478,6 +486,7 @@ class AddIntegrationDialog extends LitElement {
         brand
         .hass=${this.hass}
         .integration=${integration}
+        tabindex="0"
       >
       </ha-integration-list-item>
     `;
@@ -532,6 +541,12 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
     this._handleIntegrationPicked(listItem.integration);
+  }
+
+  private _handleKeyPress(ev) {
+    if (ev.key === "Enter") {
+      this._integrationPicked(ev);
+    }
   }
 
   private async _handleIntegrationPicked(integration: IntegrationListItem) {
@@ -649,6 +664,7 @@ class AddIntegrationDialog extends LitElement {
       startFlowHandler: domain,
       showAdvanced: this.hass.userData?.showAdvanced,
       manifest,
+      navigateToResult: true,
     });
   }
 
@@ -726,10 +742,10 @@ class AddIntegrationDialog extends LitElement {
         justify-content: center;
         align-items: center;
       }
-      ha-circular-progress {
+      ha-spinner {
         margin: 24px 0;
       }
-      mwc-list {
+      ha-list {
         position: relative;
       }
       lit-virtualizer {
@@ -755,9 +771,15 @@ class AddIntegrationDialog extends LitElement {
         margin-inline-end: initial;
         padding: 24px 24px 0 24px;
         color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
-        font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+        font-size: var(
+          --mdc-typography-headline6-font-size,
+          var(--ha-font-size-l)
+        );
         line-height: var(--mdc-typography-headline6-line-height, 2rem);
-        font-weight: var(--mdc-typography-headline6-font-weight, 500);
+        font-weight: var(
+          --mdc-typography-headline6-font-weight,
+          var(--ha-font-weight-medium)
+        );
         letter-spacing: var(
           --mdc-typography-headline6-letter-spacing,
           0.0125em

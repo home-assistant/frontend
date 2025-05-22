@@ -130,7 +130,7 @@ class DialogZHAChangeChannel extends LitElement implements HassDialog {
           slot="secondaryAction"
           @click=${this.closeDialog}
           .disabled=${this._migrationInProgress}
-          >${this.hass.localize("ui.dialogs.generic.cancel")}</ha-button
+          >${this.hass.localize("ui.common.cancel")}</ha-button
         >
       </ha-dialog>
     `;

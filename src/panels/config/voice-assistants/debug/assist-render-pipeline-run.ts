@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-expansion-panel";
 import type { PipelineRun } from "../../../../data/assist_pipeline";
 import type { HomeAssistant } from "../../../../types";
@@ -90,9 +90,7 @@ const renderProgress = (
     if ("error" in pipelineRun) {
       return html`❌`;
     }
-    return html`
-      <ha-circular-progress size="small" indeterminate></ha-circular-progress>
-    `;
+    return html` <ha-spinner size="small"></ha-spinner> `;
   }
 
   const duration =
@@ -414,7 +412,7 @@ export class AssistPipelineDebug extends LitElement {
       --expansion-panel-content-padding: 0px;
     }
     .heading {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       margin-bottom: 16px;
     }
 
@@ -423,7 +421,7 @@ export class AssistPipelineDebug extends LitElement {
     }
 
     .message {
-      font-size: 18px;
+      font-size: var(--ha-font-size-l);
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;

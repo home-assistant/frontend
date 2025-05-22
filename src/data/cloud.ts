@@ -1,4 +1,4 @@
-import type { EntityFilter } from "../common/entity/entity_filter";
+import type { EntityDomainFilter } from "../common/entity/entity_domain_filter";
 import type { HomeAssistant } from "../types";
 
 type StrictConnectionMode = "disabled" | "guard_page" | "drop_connection";
@@ -36,10 +36,10 @@ export interface CloudStatusLoggedIn {
   cloud_last_disconnect_reason: { clean: boolean; reason: string } | null;
   email: string;
   google_registered: boolean;
-  google_entities: EntityFilter;
+  google_entities: EntityDomainFilter;
   google_domains: string[];
   alexa_registered: boolean;
-  alexa_entities: EntityFilter;
+  alexa_entities: EntityDomainFilter;
   prefs: CloudPreferences;
   remote_domain: string | undefined;
   remote_connected: boolean;
@@ -73,6 +73,7 @@ export interface CloudWebhook {
 interface CloudLoginBase {
   hass: HomeAssistant;
   email: string;
+  check_connection?: boolean;
 }
 
 export interface CloudLoginPassword extends CloudLoginBase {
@@ -181,3 +182,6 @@ export const updateCloudGoogleEntityConfig = (
 
 export const cloudSyncGoogleAssistant = (hass: HomeAssistant) =>
   hass.callApi("POST", "cloud/google_actions/sync");
+
+export const fetchSupportPackage = (hass: HomeAssistant) =>
+  hass.callApi<string>("GET", "cloud/support_package");

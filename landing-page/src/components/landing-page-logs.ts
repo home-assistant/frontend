@@ -22,6 +22,8 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { fileDownload } from "../../../src/util/file_download";
 import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import { waitForSeconds } from "../../../src/common/util/wait";
+import { ASSUME_CORE_START_SECONDS } from "../ha-landing-page";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
@@ -216,7 +218,7 @@ class LandingPageLogs extends LitElement {
       // eslint-disable-next-line no-console
       console.error(err);
 
-      // fallback to observerlogs if there is a problem with supervisor
+      // fallback to observer logs if there is a problem with supervisor
       this._loadObserverLogs();
     }
   }
@@ -251,6 +253,9 @@ class LandingPageLogs extends LitElement {
 
       this._scheduleObserverLogs();
     } catch (err) {
+      // wait because there is a moment where landingpage is down and core is not up yet
+      await waitForSeconds(ASSUME_CORE_START_SECONDS);
+
       // eslint-disable-next-line no-console
       console.error(err);
       this._error = true;

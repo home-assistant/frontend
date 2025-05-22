@@ -101,6 +101,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
+  system_managed: boolean;
+  system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
   webui: null | string;
@@ -313,21 +315,34 @@ export const installHassioAddon = async (
 
 export const updateHassioAddon = async (
   hass: HomeAssistant,
-  slug: string
+  slug: string,
+  backup: boolean
 ): Promise<void> => {
+  if (atLeastVersion(hass.config.version, 2025, 2, 0)) {
+    await hass.callWS({
+      type: "hassio/update/addon",
+      addon: slug,
+      backup: backup,
+    });
+    return;
+  }
+
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
       endpoint: `/store/addons/${slug}/update`,
       method: "post",
       timeout: null,
+      data: { backup },
     });
-  } else {
-    await hass.callApi<HassioResponse<void>>(
-      "POST",
-      `hassio/addons/${slug}/update`
-    );
+    return;
   }
+
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/update`,
+    { backup }
+  );
 };
 
 export const restartHassioAddon = async (

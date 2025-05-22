@@ -7,6 +7,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-svg-icon";
+import type { BackupAgent } from "../../../../data/backup";
 import {
   computeBackupAgentName,
   isLocalAgent,
@@ -24,7 +25,7 @@ class HaBackupAgentsPicker extends LitElement {
   public disabled = false;
 
   @property({ attribute: false })
-  public agentIds!: string[];
+  public agents!: BackupAgent[];
 
   @property({ attribute: false })
   public disabledAgentIds?: string[];
@@ -35,30 +36,30 @@ class HaBackupAgentsPicker extends LitElement {
   render() {
     return html`
       <div class="agents">
-        ${this.agentIds.map((agent) => this._renderAgent(agent))}
+        ${this.agents.map((agent) => this._renderAgent(agent))}
       </div>
     `;
   }
 
-  private _renderAgent(agentId: string) {
-    const domain = computeDomain(agentId);
+  private _renderAgent(agent: BackupAgent) {
+    const domain = computeDomain(agent.agent_id);
     const name = computeBackupAgentName(
       this.hass.localize,
-      agentId,
-      this.agentIds
+      agent.agent_id,
+      this.agents
     );
 
     const disabled =
-      this.disabled || this.disabledAgentIds?.includes(agentId) || false;
+      this.disabled || this.disabledAgentIds?.includes(agent.agent_id) || false;
 
     return html`
       <ha-formfield>
         <span class="label ${classMap({ disabled })}" slot="label">
-          ${isLocalAgent(agentId)
+          ${isLocalAgent(agent.agent_id)
             ? html`
                 <ha-svg-icon .path=${mdiHarddisk} slot="start"> </ha-svg-icon>
               `
-            : isNetworkMountAgent(agentId)
+            : isNetworkMountAgent(agent.agent_id)
               ? html` <ha-svg-icon .path=${mdiNas} slot="start"></ha-svg-icon> `
               : html`
                   <img
@@ -77,8 +78,8 @@ class HaBackupAgentsPicker extends LitElement {
           ${name}
         </span>
         <ha-checkbox
-          .checked=${this.value.includes(agentId)}
-          .value=${agentId}
+          .checked=${this.value.includes(agent.agent_id)}
+          .value=${agent.agent_id}
           .disabled=${disabled}
           @change=${this._checkboxChanged}
         ></ha-checkbox>
@@ -119,9 +120,9 @@ class HaBackupAgentsPicker extends LitElement {
       flex-direction: row;
       align-items: center;
       gap: 16px;
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       letter-spacing: 0.5px;
     }
     span.disabled {

@@ -1,17 +1,18 @@
-import { MdSlider } from "@material/web/slider/slider";
+import { Slider } from "@material/web/slider/internal/slider";
+import { styles } from "@material/web/slider/internal/slider-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-slider")
-export class HaSlider extends MdSlider {
+export class HaSlider extends Slider {
   public connectedCallback() {
     super.connectedCallback();
     this.dir = mainWindow.document.dir;
   }
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --md-sys-color-primary: var(--primary-color);

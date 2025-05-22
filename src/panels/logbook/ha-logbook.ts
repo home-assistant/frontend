@@ -1,10 +1,11 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import type { LogbookEntry, LogbookStreamMessage } from "../../data/logbook";
 import { subscribeLogbook } from "../../data/logbook";
 import type { TraceContexts } from "../../data/trace";
@@ -76,7 +77,7 @@ export class HaLogbook extends LitElement {
 
   @state() private _error?: string;
 
-  private _subscribed?: Promise<(() => Promise<void>) | undefined>;
+  private _unsubLogbook?: Promise<UnsubscribeFunc>;
 
   private _liveUpdatesEnabled = true;
 
@@ -103,7 +104,7 @@ export class HaLogbook extends LitElement {
     if (this._logbookEntries === undefined) {
       return html`
         <div class="progress-wrapper">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `;
     }
@@ -132,14 +133,14 @@ export class HaLogbook extends LitElement {
   }
 
   public async refresh(force = false) {
-    if (!force && (this._subscribed || this._logbookEntries === undefined)) {
+    if (!force && (this._unsubLogbook || this._logbookEntries === undefined)) {
       return;
     }
 
     this._throttleGetLogbookEntries.cancel();
     this._updateTraceContexts.cancel();
     this._updateUsers.cancel();
-    await this._unsubscribeSetLoading();
+    this._unsubscribe(true);
 
     this._liveUpdatesEnabled = true;
 
@@ -208,19 +209,25 @@ export class HaLogbook extends LitElement {
     );
   }
 
-  private async _unsubscribe(): Promise<void> {
-    if (this._subscribed) {
-      try {
-        const unsub = await this._subscribed;
-        if (unsub) {
-          await unsub();
-          this._subscribed = undefined;
-          this._pendingStreamMessages = [];
-        }
-      } catch (err: any) {
-        // eslint-disable-next-line
-        console.error("Error unsubscribing:", err);
-      }
+  /**
+   * Unsubscribe from a logbook stream since
+   * - we are unloading the page
+   * - we are about to resubscribe
+   * - the entity is not being tracked in the logbook
+   *   and will not return results ever
+   * - the requested start time is in the future
+   *
+   * In cases where no events are expected, we set this._logbookEntries
+   * to an empty list to show a no results message.
+   *
+   * @param loading Indicates if the page should be put in a loading state again.
+   */
+  private _unsubscribe(loading: boolean): void {
+    if (this._unsubLogbook) {
+      this._unsubLogbook.then((unsub) => unsub());
+      this._unsubLogbook = undefined;
+      this._logbookEntries = loading ? undefined : [];
+      this._pendingStreamMessages = [];
     }
   }
 
@@ -234,28 +241,7 @@ export class HaLogbook extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._unsubscribeSetLoading();
-  }
-
-  /** Unsubscribe because we are unloading
-   * or about to resubscribe.
-   * Setting this._logbookEntries to undefined
-   * will put the page in a loading state.
-   */
-  private async _unsubscribeSetLoading() {
-    await this._unsubscribe();
-    this._logbookEntries = undefined;
-    this._pendingStreamMessages = [];
-  }
-
-  /** Unsubscribe because there are no results.
-   * Setting this._logbookEntries to an empty
-   * list will show a no results message.
-   */
-  private async _unsubscribeNoResults() {
-    await this._unsubscribe();
-    this._logbookEntries = [];
-    this._pendingStreamMessages = [];
+    this._unsubscribe(true);
   }
 
   private _calculateLogbookPeriod() {
@@ -284,41 +270,36 @@ export class HaLogbook extends LitElement {
     throw new Error("Unexpected time specified");
   }
 
-  private async _subscribeLogbookPeriod(logbookPeriod: LogbookTimePeriod) {
-    if (this._subscribed) {
-      return true;
+  private async _subscribeLogbookPeriod(
+    logbookPeriod: LogbookTimePeriod
+  ): Promise<void> {
+    if (this._unsubLogbook) {
+      return;
     }
-    // Ensure any previous subscription is cleaned up
-    await this._unsubscribe();
-    this._subscribed = subscribeLogbook(
-      this.hass,
-      (streamMessage) => {
-        // "recent" means start time is a sliding window
-        // so we need to calculate an expireTime to
-        // purge old events
-        if (!this._subscribed) {
-          // Message came in before we had a chance to unload
-          return;
-        }
-        this._processOrQueueStreamMessage(streamMessage);
-      },
-      logbookPeriod.startTime.toISOString(),
-      logbookPeriod.endTime.toISOString(),
-      this.entityIds,
-      this.deviceIds
-    ).catch((err) => {
-      this._subscribed = undefined;
+
+    try {
+      this._unsubLogbook = subscribeLogbook(
+        this.hass,
+        (streamMessage) => {
+          this._processOrQueueStreamMessage(streamMessage);
+        },
+        logbookPeriod.startTime.toISOString(),
+        logbookPeriod.endTime.toISOString(),
+        this.entityIds,
+        this.deviceIds
+      );
+      await this._unsubLogbook;
+    } catch (err: any) {
+      this._unsubLogbook = undefined;
       this._error = err;
-      return undefined;
-    });
-    return true;
+    }
   }
 
   private async _getLogBookData() {
     this._error = undefined;
 
     if (this._filterAlwaysEmptyResults) {
-      await this._unsubscribeNoResults();
+      this._unsubscribe(false);
       return;
     }
 
@@ -326,7 +307,7 @@ export class HaLogbook extends LitElement {
 
     if (logbookPeriod.startTime > logbookPeriod.now) {
       // Time Travel not yet invented
-      await this._unsubscribeNoResults();
+      this._unsubscribe(false);
       return;
     }
 

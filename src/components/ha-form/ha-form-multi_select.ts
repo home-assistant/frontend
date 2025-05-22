@@ -79,6 +79,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         .disabled=${this.disabled}
         @opening=${this._handleOpen}
         @closing=${this._handleClose}
+        positioning="fixed"
       >
         <ha-textfield
           slot="trigger"

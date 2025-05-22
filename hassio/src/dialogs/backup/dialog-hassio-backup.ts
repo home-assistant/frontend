@@ -1,5 +1,5 @@
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,14 +8,17 @@ import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import { slugify } from "../../../../src/common/string/slugify";
-import "../../../../src/components/ha-md-dialog";
-import "../../../../src/components/ha-dialog-header";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-button-menu";
+import "../../../../src/components/ha-dialog-header";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list-item";
+import "../../../../src/components/ha-md-dialog";
+import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
+import "../../../../src/components/ha-spinner";
 import { getSignedPath } from "../../../../src/data/auth";
 import type { HassioBackupDetail } from "../../../../src/data/hassio/backup";
 import {
@@ -35,15 +38,13 @@ import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import type { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
-import type { BackupOrRestoreKey } from "../../util/translations";
-import type { HaMdDialog } from "../../../../src/components/ha-md-dialog";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
   extends LitElement
   implements HassDialog<HassioBackupDialogParams>
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
 
@@ -62,9 +63,13 @@ class HassioBackupDialog
     this._dialogParams = dialogParams;
     this._backup = await fetchHassioBackupInfo(this.hass, dialogParams.slug);
     if (!this._backup) {
-      this._error = this._localize("no_backup_found");
+      this._error = this._dialogParams.supervisor?.localize(
+        "backup.no_backup_found"
+      );
     } else if (this._dialogParams.onboarding && !this._backup.homeassistant) {
-      this._error = this._localize("restore_no_home_assistant");
+      this._error = this._dialogParams.supervisor?.localize(
+        "backup.restore_no_home_assistant"
+      );
     }
     this._restoringBackup = false;
   }
@@ -82,13 +87,6 @@ class HassioBackupDialog
     return true;
   }
 
-  private _localize(key: BackupOrRestoreKey) {
-    return (
-      this._dialogParams!.supervisor?.localize(`backup.${key}`) ||
-      this._dialogParams!.localize!(`ui.panel.page-onboarding.restore.${key}`)
-    );
-  }
-
   protected render() {
     if (!this._dialogParams || !this._backup) {
       return nothing;
@@ -102,7 +100,7 @@ class HassioBackupDialog
         <ha-dialog-header slot="headline">
           <ha-icon-button
             slot="navigationIcon"
-            .label=${this._localize("close")}
+            .label=${this._dialogParams.supervisor?.localize("backup.close")}
             .path=${mdiClose}
             @click=${this.closeDialog}
             .disabled=${this._restoringBackup}
@@ -124,15 +122,15 @@ class HassioBackupDialog
                   .path=${mdiDotsVertical}
                   slot="trigger"
                 ></ha-icon-button>
-                <mwc-list-item
+                <ha-list-item
                   >${this._dialogParams.supervisor.localize(
                     "backup.download_backup"
-                  )}</mwc-list-item
+                  )}</ha-list-item
                 >
-                <mwc-list-item class="error"
+                <ha-list-item class="error"
                   >${this._dialogParams.supervisor.localize(
                     "backup.delete_backup_title"
-                  )}</mwc-list-item
+                  )}</ha-list-item
                 >
               </ha-button-menu>`
             : nothing}
@@ -142,7 +140,7 @@ class HassioBackupDialog
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
             : this._restoringBackup
               ? html`<div class="loading">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                 </div>`
               : html`
                   <supervisor-backup-content
@@ -150,7 +148,6 @@ class HassioBackupDialog
                     .supervisor=${this._dialogParams.supervisor}
                     .backup=${this._backup}
                     .onboarding=${this._dialogParams.onboarding || false}
-                    .localize=${this._dialogParams.localize}
                     dialogInitialFocus
                   >
                   </supervisor-backup-content>
@@ -161,7 +158,7 @@ class HassioBackupDialog
             .disabled=${this._restoringBackup || !!this._error}
             @click=${this._restoreClicked}
           >
-            ${this._localize("restore")}
+            ${this._dialogParams.supervisor?.localize("backup.restore")}
           </ha-button>
         </div>
       </ha-md-dialog>
@@ -196,18 +193,22 @@ class HassioBackupDialog
     }
     if (
       !(await showConfirmationDialog(this, {
-        title: this._localize(
-          this._backup!.type === "full"
-            ? "confirm_restore_full_backup_title"
-            : "confirm_restore_partial_backup_title"
+        title: supervisor?.localize(
+          `backup.${
+            this._backup!.type === "full"
+              ? "confirm_restore_full_backup_title"
+              : "confirm_restore_partial_backup_title"
+          }`
         ),
-        text: this._localize(
-          this._backup!.type === "full"
-            ? "confirm_restore_full_backup_text"
-            : "confirm_restore_partial_backup_text"
+        text: supervisor?.localize(
+          `backup.${
+            this._backup!.type === "full"
+              ? "confirm_restore_full_backup_text"
+              : "confirm_restore_partial_backup_text"
+          }`
         ),
-        confirmText: this._localize("restore"),
-        dismissText: this._localize("cancel"),
+        confirmText: supervisor?.localize("backup.restore"),
+        dismissText: supervisor?.localize("backup.cancel"),
       }))
     ) {
       this._restoringBackup = false;
@@ -227,7 +228,8 @@ class HassioBackupDialog
       this.closeDialog();
     } catch (error: any) {
       this._error =
-        error?.body?.message || this._localize("restore_start_failed");
+        error?.body?.message ||
+        supervisor?.localize("backup.restore_start_failed");
     } finally {
       this._restoringBackup = false;
     }
@@ -286,7 +288,7 @@ class HassioBackupDialog
         title: supervisor.localize("backup.remote_download_title"),
         text: supervisor.localize("backup.remote_download_text"),
         confirmText: supervisor.localize("backup.download"),
-        dismissText: this._localize("cancel"),
+        dismissText: supervisor?.localize("backup.cancel"),
       });
       if (!confirm) {
         return;
@@ -302,7 +304,7 @@ class HassioBackupDialog
   private get _computeName() {
     return this._backup
       ? this._backup.name || this._backup.slug
-      : this._localize("unnamed_backup");
+      : this._dialogParams!.supervisor?.localize("backup.unnamed_backup") || "";
   }
 
   static get styles(): CSSResultGroup {
@@ -310,10 +312,6 @@ class HassioBackupDialog
       haStyle,
       haStyleDialog,
       css`
-        ha-circular-progress {
-          display: block;
-          text-align: center;
-        }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
           --mdc-theme-primary: var(--mdc-theme-surface);

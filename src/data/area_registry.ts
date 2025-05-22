@@ -7,13 +7,15 @@ import type { RegistryEntry } from "./registry";
 export { subscribeAreaRegistry } from "./ws-area_registry";
 
 export interface AreaRegistryEntry extends RegistryEntry {
+  aliases: string[];
   area_id: string;
   floor_id: string | null;
-  name: string;
-  picture: string | null;
+  humidity_entity_id: string | null;
   icon: string | null;
   labels: string[];
-  aliases: string[];
+  name: string;
+  picture: string | null;
+  temperature_entity_id: string | null;
 }
 
 export type AreaEntityLookup = Record<string, EntityRegistryEntry[]>;
@@ -21,12 +23,14 @@ export type AreaEntityLookup = Record<string, EntityRegistryEntry[]>;
 export type AreaDeviceLookup = Record<string, DeviceRegistryEntry[]>;
 
 export interface AreaRegistryEntryMutableParams {
-  name: string;
-  floor_id?: string | null;
-  picture?: string | null;
-  icon?: string | null;
   aliases?: string[];
+  floor_id?: string | null;
+  humidity_entity_id?: string | null;
+  icon?: string | null;
   labels?: string[];
+  name: string;
+  picture?: string | null;
+  temperature_entity_id?: string | null;
 }
 
 export const createAreaRegistryEntry = (

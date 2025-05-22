@@ -1,5 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
-import "@material/mwc-list/mwc-list";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -13,8 +11,10 @@ import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import "../../../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -142,7 +142,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <mwc-list>
+            <ha-list>
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
@@ -199,7 +199,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     stateObject.entity_id === "zone.home" &&
                     !this._canEditCore
                       ? nothing
-                      : html`<div slot="meta">
+                      : html`<ha-tooltip
+                          slot="meta"
+                          placement="left"
+                          .content=${hass.localize(
+                            "ui.panel.config.zone.configured_in_yaml"
+                          )}
+                          .disabled=${stateObject.entity_id === "zone.home"}
+                          hoist
+                        >
                           <ha-icon-button
                             .id=${!this.narrow ? stateObject.entity_id : ""}
                             .entityId=${stateObject.entity_id}
@@ -214,23 +222,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               : hass.localize("ui.panel.config.zone.edit_zone")}
                             @click=${this._editHomeZone}
                           ></ha-icon-button>
-                          ${stateObject.entity_id !== "zone.home"
-                            ? html`
-                                <simple-tooltip
-                                  animation-delay="0"
-                                  position="left"
-                                >
-                                  ${hass.localize(
-                                    "ui.panel.config.zone.configured_in_yaml"
-                                  )}
-                                </simple-tooltip>
-                              `
-                            : ""}
-                        </div>`}
+                        </ha-tooltip>`}
                   </ha-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-list>
           `;
 
     return html`
@@ -242,6 +238,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           ? undefined
           : "/config"}
         .tabs=${configSections.areas}
+        has-fab
       >
         ${this.narrow
           ? html`
@@ -575,18 +572,18 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       flex-grow: 1;
       height: 100%;
     }
-    .flex mwc-list {
+    .flex ha-list {
       padding-bottom: 64px;
     }
-    .flex mwc-list,
+    .flex ha-list,
     .flex .empty {
       border-left: 1px solid var(--divider-color);
       width: 250px;
       min-height: 100%;
       box-sizing: border-box;
     }
-    ha-card {
-      margin-bottom: 100px;
+    ha-tooltip {
+      display: block;
     }
   `;
 }

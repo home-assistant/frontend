@@ -4,7 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import { domainToName } from "../../../../../data/integration";
@@ -99,7 +99,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           : this._status === "started"
             ? html`
                 <div class="flex-container">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                   <div class="status">
                     <p>
                       <b>
@@ -230,7 +230,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           text-align: center;
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
         }
@@ -256,7 +256,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         }
 
         .code {
-          font-family: monospace;
+          font-family: var(--ha-font-family-code);
         }
 
         .note {

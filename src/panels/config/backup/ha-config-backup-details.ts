@@ -8,56 +8,68 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-fade-in";
+import "../../../components/ha-spinner";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
-import { getSignedPath } from "../../../data/auth";
-import type { BackupContentExtended, BackupData } from "../../../data/backup";
+import type {
+  BackupAgent,
+  BackupConfig,
+  BackupContentAgent,
+  BackupContentExtended,
+} from "../../../data/backup";
+import "./components/ha-backup-details-summary";
+import "./components/ha-backup-details-restore";
 import {
   compareAgents,
   computeBackupAgentName,
   deleteBackup,
   fetchBackupDetails,
-  getBackupDownloadUrl,
-  getPreferredAgentForDownload,
   isLocalAgent,
   isNetworkMountAgent,
 } from "../../../data/backup";
-import type { HassioAddonInfo } from "../../../data/hassio/addon";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import { bytesToString } from "../../../util/bytes-to-string";
-import { fileDownload } from "../../../util/file_download";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
-import "./components/ha-backup-data-picker";
 import { showRestoreBackupDialog } from "./dialogs/show-dialog-restore-backup";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { downloadBackup } from "./helper/download_backup";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
-interface Agent {
+interface Agent extends BackupContentAgent {
   id: string;
   success: boolean;
 }
 
-const computeAgents = (agent_ids: string[], failed_agent_ids: string[]) =>
-  [
-    ...agent_ids.filter((id) => !failed_agent_ids.includes(id)),
-    ...failed_agent_ids,
+const computeAgents = (backup: BackupContentExtended) => {
+  const agentIds = Object.keys(backup.agents);
+  const failedAgentIds = backup.failed_agent_ids ?? [];
+  return [
+    ...agentIds.filter((id) => !failedAgentIds.includes(id)),
+    ...failedAgentIds,
   ]
-    .map<Agent>((id) => ({
-      id,
-      success: !failed_agent_ids.includes(id),
-    }))
+    .map<Agent>((id) => {
+      const agent: BackupContentAgent = backup.agents[id] ?? {
+        protected: false,
+        size: 0,
+      };
+      return {
+        ...agent,
+        id: id,
+        success: !failedAgentIds.includes(id),
+      };
+    })
     .sort((a, b) => compareAgents(a.id, b.id));
+};
 
 @customElement("ha-config-backup-details")
 class HaConfigBackupDetails extends LitElement {
@@ -67,15 +79,15 @@ class HaConfigBackupDetails extends LitElement {
 
   @property({ attribute: "backup-id" }) public backupId!: string;
 
+  @property({ attribute: false }) public config?: BackupConfig;
+
+  @property({ attribute: false }) public agents: BackupAgent[] = [];
+
   @state() private _backup?: BackupContentExtended | null;
 
   @state() private _agents: Agent[] = [];
 
   @state() private _error?: string;
-
-  @state() private _selectedData?: BackupData;
-
-  @state() private _addonsInfo?: HassioAddonInfo[];
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -91,6 +103,8 @@ class HaConfigBackupDetails extends LitElement {
     if (!this.hass) {
       return nothing;
     }
+
+    const isHassio = isComponentLoaded(this.hass, "hassio");
 
     return html`
       <hass-subpage
@@ -133,87 +147,22 @@ class HaConfigBackupDetails extends LitElement {
                 </ha-alert>
               `
             : !this._backup
-              ? html`<ha-circular-progress active></ha-circular-progress>`
+              ? html`<ha-fade-in .delay=${1000}
+                  ><ha-spinner></ha-spinner
+                ></ha-fade-in>`
               : html`
-                  <ha-card>
-                    <div class="card-header">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.details.summary.title"
-                      )}
-                    </div>
-                    <div class="card-content">
-                      <ha-md-list class="summary">
-                        <ha-md-list-item>
-                          <span slot="headline">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.size"
-                            )}
-                          </span>
-                          <span slot="supporting-text">
-                            ${bytesToString(this._backup.size)}
-                          </span>
-                        </ha-md-list-item>
-                        <ha-md-list-item>
-                          <span slot="headline">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.created"
-                            )}
-                          </span>
-                          <span slot="supporting-text">
-                            ${formatDateTime(
-                              new Date(this._backup.date),
-                              this.hass.locale,
-                              this.hass.config
-                            )}
-                          </span>
-                        </ha-md-list-item>
-                        <ha-md-list-item>
-                          <span slot="headline">
-                            ${this.hass.localize(
-                              "ui.panel.config.backup.details.summary.protection"
-                            )}
-                          </span>
-                          <span slot="supporting-text">
-                            ${this._backup.protected
-                              ? this.hass.localize(
-                                  "ui.panel.config.backup.details.summary.protected_encrypted_aes_128"
-                                )
-                              : this.hass.localize(
-                                  "ui.panel.config.backup.details.summary.protected_not_encrypted"
-                                )}
-                          </span>
-                        </ha-md-list-item>
-                      </ha-md-list>
-                    </div>
-                  </ha-card>
-                  <ha-card>
-                    <div class="card-header">
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.details.restore.title"
-                      )}
-                    </div>
-                    <div class="card-content">
-                      <ha-backup-data-picker
-                        .hass=${this.hass}
-                        .data=${this._backup}
-                        .value=${this._selectedData}
-                        @value-changed=${this._selectedBackupChanged}
-                        .addonsInfo=${this._addonsInfo}
-                      >
-                      </ha-backup-data-picker>
-                    </div>
-                    <div class="card-actions">
-                      <ha-button
-                        @click=${this._restore}
-                        .disabled=${this._isRestoreDisabled()}
-                        class="danger"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.backup.details.restore.action"
-                        )}
-                      </ha-button>
-                    </div>
-                  </ha-card>
+                  <ha-backup-details-summary
+                    .backup=${this._backup}
+                    .hass=${this.hass}
+                    .localize=${this.hass.localize}
+                    .isHassio=${isHassio}
+                  ></ha-backup-details-summary>
+                  <ha-backup-details-restore
+                    .backup=${this._backup}
+                    @backup-restore=${this._restore}
+                    .hass=${this.hass}
+                    .localize=${this.hass.localize}
+                  ></ha-backup-details-restore>
                   <ha-card>
                     <div class="card-header">
                       ${this.hass.localize(
@@ -224,87 +173,112 @@ class HaConfigBackupDetails extends LitElement {
                       <ha-md-list>
                         ${this._agents.map((agent) => {
                           const agentId = agent.id;
-                          const success = agent.success;
+
                           const domain = computeDomain(agentId);
                           const name = computeBackupAgentName(
                             this.hass.localize,
                             agentId,
-                            this._backup!.agent_ids
+                            this.agents
                           );
+                          const success = agent.success;
+                          const failed = !agent.success;
+                          const unencrypted = !agent.protected;
 
                           return html`
                             <ha-md-list-item>
-                              ${isLocalAgent(agentId)
-                                ? html`
-                                    <ha-svg-icon
-                                      .path=${mdiHarddisk}
-                                      slot="start"
-                                    >
-                                    </ha-svg-icon>
-                                  `
-                                : isNetworkMountAgent(agentId)
+                              ${
+                                isLocalAgent(agentId)
                                   ? html`
                                       <ha-svg-icon
-                                        .path=${mdiNas}
+                                        .path=${mdiHarddisk}
                                         slot="start"
-                                      ></ha-svg-icon>
+                                      >
+                                      </ha-svg-icon>
                                     `
-                                  : html`
-                                      <img
-                                        .src=${brandsUrl({
-                                          domain,
-                                          type: "icon",
-                                          useFallback: true,
-                                          darkOptimized:
-                                            this.hass.themes?.darkMode,
-                                        })}
-                                        crossorigin="anonymous"
-                                        referrerpolicy="no-referrer"
-                                        alt=""
-                                        slot="start"
-                                      />
-                                    `}
+                                  : isNetworkMountAgent(agentId)
+                                    ? html`
+                                        <ha-svg-icon
+                                          .path=${mdiNas}
+                                          slot="start"
+                                        ></ha-svg-icon>
+                                      `
+                                    : html`
+                                        <img
+                                          .src=${brandsUrl({
+                                            domain,
+                                            type: "icon",
+                                            useFallback: true,
+                                            darkOptimized:
+                                              this.hass.themes?.darkMode,
+                                          })}
+                                          crossorigin="anonymous"
+                                          referrerpolicy="no-referrer"
+                                          alt=${`${domain} logo`}
+                                          slot="start"
+                                        />
+                                      `
+                              }
                               <div slot="headline">${name}</div>
-                              <div slot="supporting-text">
-                                <span
-                                  class="dot ${success ? "success" : "error"}"
-                                >
-                                </span>
-                                <span>
-                                  ${success
-                                    ? this.hass.localize(
-                                        "ui.panel.config.backup.details.locations.backup_stored"
-                                      )
-                                    : this.hass.localize(
-                                        "ui.panel.config.backup.details.locations.backup_failed"
-                                      )}
-                                </span>
+                                <div slot="supporting-text">
+                                   ${
+                                     failed
+                                       ? html`
+                                           <span class="dot error"></span>
+                                           <span>
+                                             ${this.hass.localize(
+                                               "ui.panel.config.backup.details.locations.backup_failed"
+                                             )}
+                                           </span>
+                                         `
+                                       : unencrypted
+                                         ? html`
+                                             <span class="dot warning"></span>
+                                             <span>
+                                               ${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.unencrypted"
+                                               )}</span
+                                             >
+                                           `
+                                         : html`
+                                             <span class="dot success"></span>
+                                             <span
+                                               >${this.hass.localize(
+                                                 "ui.panel.config.backup.details.locations.encrypted"
+                                               )}</span
+                                             >
+                                           `
+                                   }
+                                </div>
                               </div>
-                              ${success
-                                ? html`<ha-button-menu
-                                    slot="end"
-                                    @action=${this._handleAgentAction}
-                                    .agent=${agentId}
-                                    fixed
-                                  >
-                                    <ha-icon-button
-                                      slot="trigger"
-                                      .label=${this.hass.localize(
-                                        "ui.common.menu"
-                                      )}
-                                      .path=${mdiDotsVertical}
-                                    ></ha-icon-button>
-                                    <ha-list-item graphic="icon">
-                                      <ha-svg-icon
-                                        slot="graphic"
-                                        .path=${mdiDownload}
-                                      ></ha-svg-icon>
-                                      ${this.hass.localize(
-                                        "ui.panel.config.backup.details.locations.download"
-                                      )}
-                                    </ha-list-item>
-                                  </ha-button-menu>`
-                                : nothing}
+                              ${
+                                success
+                                  ? html`
+                                      <ha-button-menu
+                                        slot="end"
+                                        @action=${this._handleAgentAction}
+                                        .agent=${agentId}
+                                        fixed
+                                      >
+                                        <ha-icon-button
+                                          slot="trigger"
+                                          .label=${this.hass.localize(
+                                            "ui.common.menu"
+                                          )}
+                                          .path=${mdiDotsVertical}
+                                        ></ha-icon-button>
+                                        <ha-list-item graphic="icon">
+                                          <ha-svg-icon
+                                            slot="graphic"
+                                            .path=${mdiDownload}
+                                          ></ha-svg-icon>
+                                          ${this.hass.localize(
+                                            "ui.panel.config.backup.details.locations.download"
+                                          )}
+                                        </ha-list-item>
+                                      </ha-button-menu>
+                                    `
+                                  : nothing
+                              }
                             </ha-md-list-item>
                           `;
                         })}
@@ -317,30 +291,13 @@ class HaConfigBackupDetails extends LitElement {
     `;
   }
 
-  private _selectedBackupChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    this._selectedData = ev.detail.value;
-  }
-
-  private _isRestoreDisabled() {
-    return (
-      !this._selectedData ||
-      !(
-        this._selectedData?.database_included ||
-        this._selectedData?.homeassistant_included ||
-        this._selectedData.addons.length ||
-        this._selectedData.folders.length
-      )
-    );
-  }
-
-  private _restore() {
-    if (!this._backup || !this._selectedData) {
+  private _restore(ev: CustomEvent) {
+    if (!this._backup || !ev.detail.selectedData) {
       return;
     }
     showRestoreBackupDialog(this, {
       backup: this._backup,
-      selectedData: this._selectedData,
+      selectedData: ev.detail.selectedData,
     });
   }
 
@@ -348,10 +305,7 @@ class HaConfigBackupDetails extends LitElement {
     try {
       const response = await fetchBackupDetails(this.hass, this.backupId);
       this._backup = response.backup;
-      this._agents = computeAgents(
-        response.backup.agent_ids || [],
-        response.backup.failed_agent_ids || []
-      );
+      this._agents = computeAgents(response.backup);
     } catch (err: any) {
       this._error =
         err?.message ||
@@ -377,13 +331,7 @@ class HaConfigBackupDetails extends LitElement {
   }
 
   private async _downloadBackup(agentId?: string): Promise<void> {
-    const preferedAgent =
-      agentId ?? getPreferredAgentForDownload(this._backup!.agent_ids!);
-    const signedUrl = await getSignedPath(
-      this.hass,
-      getBackupDownloadUrl(this._backup!.backup_id, preferedAgent)
-    );
-    fileDownload(signedUrl.path);
+    await downloadBackup(this.hass, this, this._backup!, this.config, agentId);
   }
 
   private async _deleteBackup(): Promise<void> {
@@ -412,6 +360,9 @@ class HaConfigBackupDetails extends LitElement {
       display: grid;
       margin-bottom: 24px;
     }
+    ha-spinner {
+      margin: 24px auto;
+    }
     .card-content {
       padding: 0 20px;
     }
@@ -435,13 +386,6 @@ class HaConfigBackupDetails extends LitElement {
       --mdc-icon-size: 48px;
       color: var(--primary-text-color);
     }
-    ha-md-list.summary ha-md-list-item {
-      --md-list-item-supporting-text-size: 1rem;
-      --md-list-item-label-text-size: 0.875rem;
-
-      --md-list-item-label-text-color: var(--secondary-text-color);
-      --md-list-item-supporting-text-color: var(--primary-text-color);
-    }
     .warning {
       color: var(--error-color);
     }
@@ -451,15 +395,12 @@ class HaConfigBackupDetails extends LitElement {
     ha-button.danger {
       --mdc-theme-primary: var(--error-color);
     }
-    ha-backup-data-picker {
-      display: block;
-    }
     ha-md-list-item [slot="supporting-text"] {
       display: flex;
       align-items: center;
       flex-direction: row;
       gap: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-condensed);
     }
     .dot {
       display: block;
@@ -472,6 +413,9 @@ class HaConfigBackupDetails extends LitElement {
     }
     .dot.success {
       background-color: var(--success-color);
+    }
+    .dot.warning {
+      background-color: var(--warning-color);
     }
     .dot.error {
       background-color: var(--error-color);

@@ -1,6 +1,4 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -16,6 +14,7 @@ import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
@@ -60,6 +59,8 @@ class HassioAddonConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @state() private _configHasChanged = false;
 
@@ -113,8 +114,9 @@ class HassioAddonConfig extends LitElement {
                   required: entry.required,
                   selector: {
                     text: {
-                      type:
-                        entry.format || MASKED_FIELDS.includes(entry.name)
+                      type: entry.format
+                        ? entry.format
+                        : MASKED_FIELDS.includes(entry.name)
                           ? "password"
                           : "text",
                     },
@@ -175,7 +177,7 @@ class HassioAddonConfig extends LitElement {
                 .path=${mdiDotsVertical}
                 slot="trigger"
               ></ha-icon-button>
-              <mwc-list-item .disabled=${!this._canShowSchema}>
+              <ha-list-item .disabled=${!this._canShowSchema || this.disabled}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
                       "addon.configuration.options.edit_in_ui"
@@ -183,10 +185,13 @@ class HassioAddonConfig extends LitElement {
                   : this.supervisor.localize(
                       "addon.configuration.options.edit_in_yaml"
                     )}
-              </mwc-list-item>
-              <mwc-list-item class="warning">
+              </ha-list-item>
+              <ha-list-item
+                class=${!this.disabled ? "warning" : ""}
+                .disabled=${this.disabled}
+              >
                 ${this.supervisor.localize("common.reset_defaults")}
-              </mwc-list-item>
+              </ha-list-item>
             </ha-button-menu>
           </div>
         </div>
@@ -194,6 +199,7 @@ class HassioAddonConfig extends LitElement {
         <div class="card-content">
           ${showForm
             ? html`<ha-form
+                .disabled=${this.disabled}
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .computeLabel=${this.computeLabel}
@@ -207,7 +213,7 @@ class HassioAddonConfig extends LitElement {
                       )
                 )}
               ></ha-form>`
-            : html` <ha-yaml-editor
+            : html`<ha-yaml-editor
                 @value-changed=${this._configChanged}
                 .yamlSchema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
@@ -243,7 +249,9 @@ class HassioAddonConfig extends LitElement {
         <div class="card-actions right">
           <ha-progress-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged || !this._valid}
+            .disabled=${this.disabled ||
+            !this._configHasChanged ||
+            !this._valid}
           >
             ${this.supervisor.localize("common.save")}
           </ha-progress-button>
@@ -345,6 +353,10 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
+    if (this.disabled || !this._configHasChanged || !this._valid) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     const options: Record<string, unknown> = this._yamlMode
       ? this._editor?.value
@@ -406,7 +418,7 @@ class HassioAddonConfig extends LitElement {
           z-index: 3;
           --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
-        mwc-list-item[disabled] {
+        ha-list-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
         .header {
@@ -416,13 +428,13 @@ class HassioAddonConfig extends LitElement {
         .header h2 {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: var(--ha-card-header-font-size, 24px);
+          font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
           letter-spacing: -0.012em;
-          line-height: 48px;
+          line-height: var(--ha-line-height-expanded);
           padding: 12px 16px 16px;
           display: block;
           margin-block: 0px;
-          font-weight: normal;
+          font-weight: var(--ha-font-weight-normal);
         }
         .card-actions.right {
           justify-content: flex-end;

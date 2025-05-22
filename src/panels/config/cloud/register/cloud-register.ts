@@ -141,7 +141,7 @@ export class CloudRegister extends LitElement {
                   type="email"
                   autocomplete="email"
                   required
-                  .value=${this.email}
+                  .value=${this.email ?? ""}
                   @keydown=${this._keyDown}
                   validationMessage=${this.hass.localize(
                     "ui.panel.config.cloud.register.email_error_msg"
@@ -260,9 +260,7 @@ export class CloudRegister extends LitElement {
   private _verificationEmailSent(email: string) {
     this._requestInProgress = false;
     this._password = "";
-    // @ts-ignore
-    fireEvent(this, "email-changed", { value: email });
-    // @ts-ignore
+    fireEvent(this, "cloud-email-changed", { value: email });
     fireEvent(this, "cloud-done", {
       flashMessage: this.hass.localize(
         "ui.panel.config.cloud.register.account_created"
@@ -303,5 +301,9 @@ export class CloudRegister extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "cloud-register": CloudRegister;
+  }
+
+  interface HASSDomEvents {
+    "cloud-done": { flashMessage: string };
   }
 }

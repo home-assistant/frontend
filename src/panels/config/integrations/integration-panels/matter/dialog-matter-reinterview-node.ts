@@ -4,7 +4,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-spinner";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { interviewMatterNode } from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -62,7 +62,7 @@ class DialogMatterReinterviewNode extends LitElement {
           : this._status === "started"
             ? html`
                 <div class="flex-container">
-                  <ha-circular-progress indeterminate></ha-circular-progress>
+                  <ha-spinner></ha-spinner>
                   <div class="status">
                     <p>
                       <b>
@@ -178,7 +178,7 @@ class DialogMatterReinterviewNode extends LitElement {
           height: 48px;
         }
 
-        .flex-container ha-circular-progress,
+        .flex-container ha-spinner,
         .flex-container ha-svg-icon {
           margin-right: 20px;
         }

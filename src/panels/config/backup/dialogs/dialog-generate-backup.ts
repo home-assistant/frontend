@@ -18,6 +18,7 @@ import "../../../../components/ha-md-select";
 import "../../../../components/ha-md-select-option";
 import "../../../../components/ha-textfield";
 import type {
+  BackupAgent,
   BackupConfig,
   GenerateBackupParams,
 } from "../../../../data/backup";
@@ -64,7 +65,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   @state() private _step?: "data" | "sync";
 
-  @state() private _agentIds: string[] = [];
+  @state() private _agents: BackupAgent[] = [];
 
   @state() private _backupConfig?: BackupConfig;
 
@@ -89,7 +90,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     }
     this._step = undefined;
     this._formData = undefined;
-    this._agentIds = [];
+    this._agents = [];
     this._backupConfig = undefined;
     this._params = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -97,15 +98,14 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
 
   private async _fetchAgents() {
     const { agents } = await fetchBackupAgentsInfo(this.hass);
-    this._agentIds = agents
-      .map((agent) => agent.agent_id)
+    this._agents = agents
       .filter(
-        (id) =>
-          id !== CLOUD_AGENT ||
+        (agent) =>
+          agent.agent_id !== CLOUD_AGENT ||
           (this._params?.cloudStatus?.logged_in &&
             this._params?.cloudStatus?.active_subscription)
       )
-      .sort(compareAgents);
+      .sort((a, b) => compareAgents(a.agent_id, b.agent_id));
   }
 
   private async _fetchBackupConfig() {
@@ -134,6 +134,10 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     this._step = STEPS[index + 1];
   }
 
+  private get _allAgentIds() {
+    return this._agents.map((agent) => agent.agent_id);
+  }
+
   protected willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
@@ -144,7 +148,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
           // Remove disallowed agents from the list
           const agentsIds =
             this._formData.agents_mode === "all"
-              ? this._agentIds
+              ? this._allAgentIds
               : this._formData.agent_ids;
 
           const filteredAgents = agentsIds.filter(
@@ -181,7 +185,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
             ? html`
                 <ha-icon-button
                   slot="navigationIcon"
-                  .label=${this.hass.localize("ui.dialogs.generic.close")}
+                  .label=${this.hass.localize("ui.common.close")}
                   .path=${mdiClose}
                   @click=${this.closeDialog}
                 ></ha-icon-button>
@@ -309,7 +313,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
               <div slot="headline">
                 ${this.hass.localize(
                   "ui.panel.config.backup.dialogs.generate.sync.locations_options.all",
-                  { count: this._agentIds.length }
+                  { count: this._allAgentIds.length }
                 )}
               </div>
             </ha-md-select-option>
@@ -350,7 +354,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
                 .hass=${this.hass}
                 .value=${this._formData.agent_ids}
                 @value-changed=${this._agentsChanged}
-                .agentIds=${this._agentIds}
+                .agents=${this._agents}
                 .disabledAgentIds=${disabledAgentIds}
               ></ha-backup-agents-picker>
             </ha-expansion-panel>
@@ -385,7 +389,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     if (!this._formData) {
       return [];
     }
-    const allAgents = this._agentIds;
+    const allAgents = this._allAgentIds;
     return !this._formData.data.include_homeassistant
       ? DISALLOWED_AGENTS_NO_HA.filter((agentId) => allAgents.includes(agentId))
       : [];
@@ -403,7 +407,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
     const params: GenerateBackupParams = {
       name,
       password,
-      agent_ids: agents_mode === "all" ? this._agentIds : agent_ids,
+      agent_ids: agents_mode === "all" ? this._allAgentIds : agent_ids,
       // We always include homeassistant if we include database
       include_homeassistant:
         data.include_homeassistant || data.include_database,

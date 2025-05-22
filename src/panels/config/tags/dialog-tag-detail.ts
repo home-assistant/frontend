@@ -5,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
 import "../../../components/ha-qr-code";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";

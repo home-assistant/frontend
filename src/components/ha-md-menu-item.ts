@@ -1,13 +1,14 @@
-import { MdMenuItem } from "@material/web/menu/menu-item";
+import { MenuItemEl } from "@material/web/menu/internal/menuitem/menu-item";
+import { styles } from "@material/web/menu/internal/menuitem/menu-item-styles";
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-md-menu-item")
-export class HaMdMenuItem extends MdMenuItem {
+export class HaMdMenuItem extends MenuItemEl {
   @property({ attribute: false }) clickAction?: (item?: HTMLElement) => void;
 
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --ha-icon-display: block;

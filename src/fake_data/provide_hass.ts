@@ -40,13 +40,13 @@ export interface MockHomeAssistant extends HomeAssistant {
   addEntities(entites: Entity | Entity[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
-  mockWS(
+  mockWS<T extends (...args) => any = any>(
     type: string,
     callback: (
       msg: any,
       hass: MockHomeAssistant,
       onChange?: (response: any) => void
-    ) => any
+    ) => Awaited<ReturnType<T>>
   );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);

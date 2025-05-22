@@ -10,6 +10,7 @@ import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
 import { cloudLogin } from "../../../data/cloud";
+import { showCloudAlreadyConnectedDialog } from "../../../panels/config/cloud/dialog-cloud-already-connected/show-dialog-cloud-already-connected";
 import type { HomeAssistant } from "../../../types";
 import {
   showAlertDialog,
@@ -24,6 +25,8 @@ export class CloudStepSignin extends LitElement {
   @state() private _requestInProgress = false;
 
   @state() private _error?: string;
+
+  @state() private _checkConnection = true;
 
   @query("#email", true) private _emailField!: HaTextField;
 
@@ -115,6 +118,7 @@ export class CloudStepSignin extends LitElement {
           hass: this.hass,
           email: username,
           ...(code ? { code } : { password }),
+          check_connection: this._checkConnection,
         });
       } catch (err: any) {
         const errCode = err && err.body && err.body.code;
@@ -137,6 +141,20 @@ export class CloudStepSignin extends LitElement {
             await doLogin(username, totpCode);
             return;
           }
+        }
+
+        if (errCode === "alreadyconnectederror") {
+          showCloudAlreadyConnectedDialog(this, {
+            details: JSON.parse(err.body.message),
+            logInHereAction: () => {
+              this._checkConnection = false;
+              doLogin(username);
+            },
+            closeDialog: () => {
+              this._requestInProgress = false;
+            },
+          });
+          return;
         }
 
         if (errCode === "usernotfound" && username !== username.toLowerCase()) {

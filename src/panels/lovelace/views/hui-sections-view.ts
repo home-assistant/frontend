@@ -25,7 +25,7 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "../badges/hui-view-badges";
+import "./hui-view-header";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import {
@@ -61,9 +61,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
-  @property({ attribute: false }) public badges: HuiBadge[] = [];
-
   @property({ attribute: false }) public cards: HuiCard[] = [];
+
+  @property({ attribute: false }) public badges: HuiBadge[] = [];
 
   @state() private _config?: LovelaceViewConfig;
 
@@ -154,45 +154,49 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const maxColumnCount = this._columnsController.value ?? 1;
 
     return html`
-      <hui-view-badges
-        .hass=${this.hass}
-        .badges=${this.badges}
-        .lovelace=${this.lovelace}
-        .viewIndex=${this.index}
-        style=${styleMap({
-          "--max-column-count": maxColumnCount,
-        })}
-      ></hui-view-badges>
-      <ha-sortable
-        .disabled=${!editMode}
-        @item-moved=${this._sectionMoved}
-        group="section"
-        handle-selector=".handle"
-        draggable-selector=".section"
-        .rollback=${false}
+      <div
+        class="wrapper ${classMap({
+          "top-margin": Boolean(this._config?.top_margin),
+        })}"
       >
-        <div
-          class="container ${classMap({
-            dense: Boolean(this._config?.dense_section_placement),
-          })}"
+        <hui-view-header
+          .hass=${this.hass}
+          .badges=${this.badges}
+          .lovelace=${this.lovelace}
+          .viewIndex=${this.index}
+          .config=${this._config?.header}
           style=${styleMap({
-            "--total-section-count": totalSectionCount,
             "--max-column-count": maxColumnCount,
           })}
+        ></hui-view-header>
+        <ha-sortable
+          .disabled=${!editMode}
+          @item-moved=${this._sectionMoved}
+          group="section"
+          handle-selector=".handle"
+          draggable-selector=".section"
+          .rollback=${false}
         >
-          ${repeat(
-            sections,
-            (section) => this._getSectionKey(section),
-            (section, idx) => {
-              const sectionConfig = this._config?.sections?.[idx];
-              const columnSpan = Math.min(
-                sectionConfig?.column_span || 1,
-                maxColumnCount
-              );
+          <div
+            class="container ${classMap({
+              dense: Boolean(this._config?.dense_section_placement),
+            })}"
+            style=${styleMap({
+              "--total-section-count": totalSectionCount,
+              "--max-column-count": maxColumnCount,
+            })}
+          >
+            ${repeat(
+              sections,
+              (section) => this._getSectionKey(section),
+              (section, idx) => {
+                const columnSpan = Math.min(
+                  section.config.column_span || 1,
+                  maxColumnCount
+                );
+                const rowSpan = section.config.row_span || 1;
 
-              const rowSpan = sectionConfig?.row_span || 1;
-
-              return html`
+                return html`
                 <div
                   class="section"
                   style=${styleMap({
@@ -239,72 +243,73 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   </div>
                 </div>
               `;
-            }
-          )}
-          ${editMode
-            ? html`
-                <ha-sortable
-                  group="card"
-                  @item-added=${this._handleCardAdded}
-                  draggable-selector=".card"
-                  .rollback=${false}
-                >
-                  <div class="create-section-container">
-                    <div class="drop-helper" aria-hidden="true">
-                      <p>
+              }
+            )}
+            ${editMode
+              ? html`
+                  <ha-sortable
+                    group="card"
+                    @item-added=${this._handleCardAdded}
+                    draggable-selector=".card"
+                    .rollback=${false}
+                  >
+                    <div class="create-section-container">
+                      <div class="drop-helper" aria-hidden="true">
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.lovelace.editor.section.drop_card_create_section"
+                          )}
+                        </p>
+                      </div>
+                      <button
+                        class="create-section"
+                        @click=${this._createSection}
+                        aria-label=${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.create_section"
+                        )}
+                        .title=${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.create_section"
+                        )}
+                      >
+                        <ha-ripple></ha-ripple>
+                        <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
+                      </button>
+                    </div>
+                  </ha-sortable>
+                `
+              : nothing}
+            ${editMode && this._config?.cards?.length
+              ? html`
+                  <div class="section imported-cards">
+                    <div class="imported-card-header">
+                      <p class="title">
+                        <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
                         ${this.hass.localize(
-                          "ui.panel.lovelace.editor.section.drop_card_create_section"
+                          "ui.panel.lovelace.editor.section.imported_cards_title"
+                        )}
+                      </p>
+                      <p class="subtitle">
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.editor.section.imported_cards_description"
                         )}
                       </p>
                     </div>
-                    <button
-                      class="create-section"
-                      @click=${this._createSection}
-                      aria-label=${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.create_section"
+                    <hui-section
+                      .lovelace=${this.lovelace}
+                      .hass=${this.hass}
+                      .config=${this._importedCardSectionConfig(
+                        this._config.cards
                       )}
-                      .title=${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.create_section"
-                      )}
-                    >
-                      <ha-ripple></ha-ripple>
-                      <ha-svg-icon .path=${mdiViewGridPlus}></ha-svg-icon>
-                    </button>
+                      .viewIndex=${this.index}
+                      preview
+                      import-only
+                    ></hui-section>
                   </div>
-                </ha-sortable>
-              `
-            : nothing}
-          ${editMode && this._config?.cards?.length
-            ? html`
-                <div class="section imported-cards">
-                  <div class="imported-card-header">
-                    <p class="title">
-                      <ha-svg-icon .path=${mdiEyeOff}></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.imported_cards_title"
-                      )}
-                    </p>
-                    <p class="subtitle">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.imported_cards_description"
-                      )}
-                    </p>
-                  </div>
-                  <hui-section
-                    .lovelace=${this.lovelace}
-                    .hass=${this.hass}
-                    .config=${this._importedCardSectionConfig(
-                      this._config.cards
-                    )}
-                    .viewIndex=${this.index}
-                    preview
-                    import-only
-                  ></hui-section>
-                </div>
-              `
-            : nothing}
-        </div>
-      </ha-sortable>
+                `
+              : nothing}
+          </div>
+        </ha-sortable>
+      </div>
     `;
   }
 
@@ -430,6 +435,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       --column-gap: var(--ha-view-sections-column-gap, 32px);
       --column-max-width: var(--ha-view-sections-column-max-width, 500px);
       --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+      --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
       display: block;
     }
 
@@ -437,6 +443,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       :host {
         --column-gap: var(--row-gap);
       }
+    }
+
+    .wrapper.top-margin {
+      display: block;
+      margin-top: var(--top-margin);
     }
 
     .container > * {
@@ -519,9 +530,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     .drop-helper p {
       color: var(--primary-text-color);
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       text-align: center;
     }
 
@@ -551,9 +562,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       border-radius: var(--ha-card-border-radius, 12px);
     }
 
-    hui-view-badges {
+    hui-view-header {
       display: block;
-      text-align: center;
       padding: 0 var(--column-gap);
       padding-top: var(--row-gap);
       margin: auto;
@@ -607,9 +617,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     .imported-card-header .title {
       margin: 0;
       color: var(--primary-text-color);
-      font-size: 16px;
-      font-weight: 400;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-normal);
       --mdc-icon-size: 18px;
       display: flex;
       align-items: center;
@@ -619,9 +629,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     .imported-card-header .subtitle {
       margin: 0;
       color: var(--secondary-text-color);
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
     }
   `;
 }

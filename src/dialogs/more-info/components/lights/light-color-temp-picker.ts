@@ -22,7 +22,6 @@ import { DOMAIN_ATTRIBUTES_UNITS } from "../../../../data/entity_attributes";
 declare global {
   interface HASSDomEvents {
     "color-changed": LightColor;
-    "color-hovered": LightColor | undefined;
   }
 }
 
@@ -53,6 +52,8 @@ class LightColorTempPicker extends LitElement {
   @property({ attribute: false }) public stateObj!: LightEntity;
 
   @state() private _ctPickerValue?: number;
+
+  @state() private _isInteracting?: boolean;
 
   protected render() {
     if (!this.stateObj) {
@@ -113,7 +114,7 @@ class LightColorTempPicker extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!changedProps.has("stateObj")) {
+    if (this._isInteracting || !changedProps.has("stateObj")) {
       return;
     }
 
@@ -123,15 +124,13 @@ class LightColorTempPicker extends LitElement {
   private _ctColorCursorMoved(ev: CustomEvent) {
     const ct = ev.detail.value;
 
+    this._isInteracting = ct !== undefined;
+
     if (isNaN(ct) || this._ctPickerValue === ct) {
       return;
     }
 
     this._ctPickerValue = ct;
-
-    fireEvent(this, "color-hovered", {
-      color_temp_kelvin: ct,
-    });
 
     this._throttleUpdateColorTemp();
   }
@@ -142,8 +141,6 @@ class LightColorTempPicker extends LitElement {
 
   private _ctColorChanged(ev: CustomEvent) {
     const ct = ev.detail.value;
-
-    fireEvent(this, "color-hovered", undefined);
 
     if (isNaN(ct) || this._ctPickerValue === ct) {
       return;
@@ -188,7 +185,7 @@ class LightColorTempPicker extends LitElement {
             top,
             var(--gradient)
           );
-          --control-slider-tooltip-font-size: 20px;
+          --control-slider-tooltip-font-size: var(--ha-font-size-xl);
           --control-slider-background-opacity: 1;
         }
       `,

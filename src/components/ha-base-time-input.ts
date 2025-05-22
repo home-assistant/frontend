@@ -1,16 +1,16 @@
-import "@material/mwc-list/mwc-list-item";
+import { mdiClose } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { mdiClose } from "@mdi/js";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
-import "./ha-select";
 import "./ha-icon-button";
+import "./ha-input-helper-text";
+import "./ha-list-item";
+import "./ha-select";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
-import "./ha-input-helper-text";
 
 export interface TimeChangedEvent {
   days?: number;
@@ -81,27 +81,27 @@ export class HaBaseTimeInput extends LitElement {
   /**
    * Label for the day input
    */
-  @property({ attribute: false }) dayLabel = "";
+  @property({ type: String, attribute: "day-label" }) dayLabel = "";
 
   /**
    * Label for the hour input
    */
-  @property({ attribute: false }) hourLabel = "";
+  @property({ type: String, attribute: "hour-label" }) hourLabel = "";
 
   /**
    * Label for the min input
    */
-  @property({ attribute: false }) minLabel = "";
+  @property({ type: String, attribute: "min-label" }) minLabel = "";
 
   /**
    * Label for the sec input
    */
-  @property({ attribute: false }) secLabel = "";
+  @property({ type: String, attribute: "sec-label" }) secLabel = "";
 
   /**
    * Label for the milli sec input
    */
-  @property({ attribute: false }) millisecLabel = "";
+  @property({ type: String, attribute: "ms-label" }) millisecLabel = "";
 
   /**
    * show the sec field
@@ -266,8 +266,8 @@ export class HaBaseTimeInput extends LitElement {
               @selected=${this._valueChanged}
               @closed=${stopPropagation}
             >
-              <mwc-list-item value="AM">AM</mwc-list-item>
-              <mwc-list-item value="PM">PM</mwc-list-item>
+              <ha-list-item value="AM">AM</ha-list-item>
+              <ha-list-item value="PM">PM</ha-list-item>
             </ha-select>`}
       </div>
       ${this.helper
@@ -329,14 +329,12 @@ export class HaBaseTimeInput extends LitElement {
     :host([clearable]) {
       position: relative;
     }
-    :host {
-      display: block;
-    }
     .time-input-wrap-wrap {
       display: flex;
     }
     .time-input-wrap {
       display: flex;
+      flex: var(--time-input-flex, unset);
       border-radius: var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0 0;
       overflow: hidden;
       position: relative;
@@ -344,7 +342,8 @@ export class HaBaseTimeInput extends LitElement {
       padding-right: 3px;
     }
     ha-textfield {
-      width: 55px;
+      width: 60px;
+      flex-grow: 1;
       text-align: center;
       --mdc-shape-small: 0;
       --text-field-appearance: none;
@@ -382,15 +381,21 @@ export class HaBaseTimeInput extends LitElement {
       border-bottom-width: 1px;
     }
     label {
-      -moz-osx-font-smoothing: grayscale;
-      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
       font-family: var(
         --mdc-typography-body2-font-family,
-        var(--mdc-typography-font-family, Roboto, sans-serif)
+        var(--mdc-typography-font-family, var(--ha-font-family-body))
       );
-      font-size: var(--mdc-typography-body2-font-size, 0.875rem);
-      line-height: var(--mdc-typography-body2-line-height, 1.25rem);
-      font-weight: var(--mdc-typography-body2-font-weight, 400);
+      font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
+      line-height: var(
+        --mdc-typography-body2-line-height,
+        var(--ha-line-height-condensed)
+      );
+      font-weight: var(
+        --mdc-typography-body2-font-weight,
+        var(--ha-font-weight-normal)
+      );
       letter-spacing: var(
         --mdc-typography-body2-letter-spacing,
         0.0178571429em
@@ -404,7 +409,7 @@ export class HaBaseTimeInput extends LitElement {
     }
     ha-input-helper-text {
       padding-top: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-condensed);
     }
   `;
 }

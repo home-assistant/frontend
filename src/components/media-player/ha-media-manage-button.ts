@@ -62,8 +62,7 @@ class MediaManageButton extends LitElement {
       --mdc-button-disabled-ink-color: --mdc-theme-primary;
     }
 
-    ha-svg-icon[slot="icon"],
-    ha-circular-progress[slot="icon"] {
+    ha-svg-icon[slot="icon"] {
       vertical-align: middle;
     }
 

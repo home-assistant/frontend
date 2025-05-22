@@ -7,13 +7,12 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import {
   getCustomCardEntry,
   isCustomType,
@@ -23,13 +22,12 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import "../../sections/hui-section";
-import { addCard, replaceCard } from "../config-util";
 import { getCardDocumentationURL } from "../get-dashboard-documentation-url";
 import type { ConfigChangedEvent } from "../hui-element-editor";
-import { findLovelaceContainer } from "../lovelace-path";
 import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
@@ -59,9 +57,7 @@ export class HuiDialogEditCard
 
   @state() private _cardConfig?: LovelaceCardConfig;
 
-  @state() private _containerConfig!:
-    | LovelaceViewConfig
-    | LovelaceSectionConfig;
+  @state() private _sectionConfig?: LovelaceSectionConfig;
 
   @state() private _saving = false;
 
@@ -85,23 +81,10 @@ export class HuiDialogEditCard
     this._GUImode = true;
     this._guiModeAvailable = true;
 
-    const containerConfig = findLovelaceContainer(
-      params.lovelaceConfig,
-      params.path
-    );
+    this._sectionConfig = this._params.sectionConfig;
 
-    if ("strategy" in containerConfig) {
-      throw new Error("Can't edit strategy");
-    }
-
-    this._containerConfig = containerConfig;
-
-    if ("cardConfig" in params) {
-      this._cardConfig = params.cardConfig;
-      this._dirty = true;
-    } else {
-      this._cardConfig = this._containerConfig.cards?.[params.cardIndex];
-    }
+    this._cardConfig = params.cardConfig;
+    this._dirty = Boolean(this._params.isNew);
 
     this.large = false;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
@@ -127,11 +110,7 @@ export class HuiDialogEditCard
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (
-      !this._cardConfig ||
-      this._documentationURL !== undefined ||
-      !changedProps.has("_cardConfig")
-    ) {
+    if (!this._cardConfig || !changedProps.has("_cardConfig")) {
       return;
     }
 
@@ -156,12 +135,12 @@ export class HuiDialogEditCard
   };
 
   protected render() {
-    if (!this._params) {
+    if (!this._params || !this._cardConfig) {
       return nothing;
     }
 
     let heading: string;
-    if (this._cardConfig && this._cardConfig.type) {
+    if (this._cardConfig.type) {
       let cardName: string | undefined;
       if (isCustomType(this._cardConfig.type)) {
         // prettier-ignore
@@ -181,13 +160,6 @@ export class HuiDialogEditCard
         "ui.panel.lovelace.editor.edit_card.typed_header",
         { type: cardName }
       );
-    } else if (!this._cardConfig) {
-      heading = this._containerConfig.title
-        ? this.hass!.localize(
-            "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-            { name: this._containerConfig.title }
-          )
-        : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {
       heading = this.hass!.localize(
         "ui.panel.lovelace.editor.edit_card.header"
@@ -230,10 +202,8 @@ export class HuiDialogEditCard
         <div class="content">
           <div class="element-editor">
             <hui-card-element-editor
-              .showVisibilityTab=${this._cardConfig?.type !== "conditional"}
-              .sectionConfig=${this._isInSection
-                ? this._containerConfig
-                : undefined}
+              .showVisibilityTab=${this._cardConfig.type !== "conditional"}
+              .sectionConfig=${this._sectionConfig}
               .hass=${this.hass}
               .lovelace=${this._params.lovelaceConfig}
               .value=${this._cardConfig}
@@ -244,7 +214,7 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            ${this._isInSection
+            ${this._sectionConfig
               ? html`
                   <hui-section
                     .hass=${this.hass}
@@ -262,12 +232,7 @@ export class HuiDialogEditCard
                   ></hui-card>
                 `}
             ${this._error
-              ? html`
-                  <ha-circular-progress
-                    indeterminate
-                    aria-label="Can't update card"
-                  ></ha-circular-progress>
-                `
+              ? html` <ha-spinner aria-label="Can't update card"></ha-spinner> `
               : ``}
           </div>
         </div>
@@ -299,11 +264,10 @@ export class HuiDialogEditCard
                 >
                   ${this._saving
                     ? html`
-                        <ha-circular-progress
-                          indeterminate
+                        <ha-spinner
                           aria-label="Saving"
                           size="small"
-                        ></ha-circular-progress>
+                        ></ha-spinner>
                       `
                     : this.hass!.localize("ui.common.save")}
                 </mwc-button>
@@ -345,14 +309,10 @@ export class HuiDialogEditCard
     this._cardEditorEl?.focusYamlEditor();
   }
 
-  private get _isInSection() {
-    return this._params!.path.length === 2;
-  }
-
   private _cardConfigInSection = memoizeOne(
-    (cardConfig?: LovelaceCardConfig) => {
+    (cardConfig: LovelaceCardConfig) => {
       const { cards, title, ...containerConfig } = this
-        ._containerConfig as LovelaceSectionConfig;
+        ._sectionConfig as LovelaceSectionConfig;
 
       return {
         ...containerConfig,
@@ -411,20 +371,18 @@ export class HuiDialogEditCard
       return;
     }
     this._saving = true;
-    const path = this._params!.path;
-    await this._params!.saveConfig(
-      "cardConfig" in this._params!
-        ? addCard(this._params!.lovelaceConfig, path, this._cardConfig!)
-        : replaceCard(
-            this._params!.lovelaceConfig,
-            [...path, this._params!.cardIndex],
-            this._cardConfig!
-          )
-    );
-    this._saving = false;
-    this._dirty = false;
-    showSaveSuccessToast(this, this.hass);
-    this.closeDialog();
+    try {
+      await this._params!.saveCardConfig(this._cardConfig!);
+      this._saving = false;
+      this._dirty = false;
+      showSaveSuccessToast(this, this.hass);
+      this.closeDialog();
+    } catch (err: any) {
+      showToast(this, {
+        message: err.message,
+      });
+      this._saving = false;
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -531,10 +489,12 @@ export class HuiDialogEditCard
           background: var(--primary-background-color);
           padding: 4px;
           border-radius: 4px;
+          position: sticky;
+          top: 0;
         }
-        .element-preview ha-circular-progress {
-          top: 50%;
-          left: 50%;
+        .element-preview ha-spinner {
+          top: calc(50% - 24px);
+          left: calc(50% - 24px);
           position: absolute;
           z-index: 10;
         }

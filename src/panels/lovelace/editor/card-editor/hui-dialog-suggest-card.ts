@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-spinner";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -150,11 +151,7 @@ export class HuiDialogSuggestCard extends LitElement {
               >
                 ${this._saving
                   ? html`
-                      <ha-circular-progress
-                        indeterminate
-                        aria-label="Saving"
-                        size="small"
-                      ></ha-circular-progress>
+                      <ha-spinner aria-label="Saving" size="small"></ha-spinner>
                     `
                   : this.hass!.localize(
                       "ui.panel.lovelace.editor.suggest_card.add"

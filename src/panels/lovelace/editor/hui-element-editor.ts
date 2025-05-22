@@ -8,7 +8,7 @@ import { debounce } from "../../../common/util/debounce";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-alert";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -81,6 +81,8 @@ export abstract class HuiElementEditor<
   @state() private _loading = false;
 
   @query("ha-yaml-editor") _yamlEditor?: HaYamlEditor;
+
+  private _loadCount = 0;
 
   public get value(): T | undefined {
     return this._config;
@@ -223,12 +225,7 @@ export abstract class HuiElementEditor<
           ? html`
               <div class="gui-editor" @edit-sub-element=${this._editSubElement}>
                 ${this._loading
-                  ? html`
-                      <ha-circular-progress
-                        indeterminate
-                        class="center margin-bot"
-                      ></ha-circular-progress>
-                    `
+                  ? html` <ha-spinner class="center margin-bot"></ha-spinner> `
                   : cache(
                       this._subElementEditorConfig
                         ? this._renderSubElement()
@@ -416,7 +413,7 @@ export abstract class HuiElementEditor<
     if (!this.value) {
       return;
     }
-
+    const loadNum = ++this._loadCount;
     try {
       this._errors = undefined;
       this._warnings = undefined;
@@ -440,6 +437,9 @@ export abstract class HuiElementEditor<
         this.GUImode = false;
       }
     } catch (err: any) {
+      if (loadNum !== this._loadCount) {
+        return;
+      }
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;
@@ -470,7 +470,7 @@ export abstract class HuiElementEditor<
     ha-code-editor {
       --code-mirror-max-height: calc(100vh - 245px);
     }
-    ha-circular-progress {
+    ha-spinner {
       display: block;
       margin: auto;
     }

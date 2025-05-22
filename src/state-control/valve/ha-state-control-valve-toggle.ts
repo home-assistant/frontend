@@ -166,6 +166,7 @@ export class HaStateControlValveToggle extends LitElement {
     ha-control-button.active {
       --control-button-icon-color: white;
       --control-button-background-color: var(--color);
+      --control-button-focus-color: var(--color);
       --control-button-background-opacity: 1;
     }
     ha-control-button:not(:last-child) {

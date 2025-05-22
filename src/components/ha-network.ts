@@ -1,5 +1,4 @@
 import { mdiStar } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -64,9 +63,13 @@ export class HaNetwork extends LitElement {
           >
           </ha-checkbox>
         </span>
-        <span slot="heading" data-for="auto_configure"> Auto Configure </span>
+        <span slot="heading" data-for="auto_configure">
+          ${this.hass.localize(
+            "ui.panel.config.network.adapter.auto_configure"
+          )}
+        </span>
         <span slot="description" data-for="auto_configure">
-          Detected:
+          ${this.hass.localize("ui.panel.config.network.adapter.detected")}:
           ${format_auto_detected_interfaces(this.networkConfig.adapters)}
         </span>
       </ha-settings-row>
@@ -85,18 +88,21 @@ export class HaNetwork extends LitElement {
                   </ha-checkbox>
                 </span>
                 <span slot="heading">
-                  Adapter: ${adapter.name}
+                  ${this.hass.localize(
+                    "ui.panel.config.network.adapter.adapter"
+                  )}:
+                  ${adapter.name}
                   ${adapter.default
                     ? html`<ha-svg-icon .path=${mdiStar}></ha-svg-icon>
-                        (Default)`
-                    : ""}
+                        (${this.hass.localize("ui.common.default")})`
+                    : nothing}
                 </span>
                 <span slot="description">
                   ${format_addresses([...adapter.ipv4, ...adapter.ipv6])}
                 </span>
               </ha-settings-row>`
           )
-        : ""}
+        : nothing}
     `;
   }
 
@@ -157,7 +163,6 @@ export class HaNetwork extends LitElement {
 
         ha-settings-row {
           padding: 0;
-          --paper-time-input-justify-content: flex-end;
           --settings-row-content-display: contents;
           --settings-row-prefix-display: contents;
         }

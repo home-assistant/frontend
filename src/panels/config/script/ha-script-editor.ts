@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import "@material/mwc-button";
 import {
   mdiCog,
@@ -20,21 +21,23 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
@@ -42,12 +45,12 @@ import {
 } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
+  normalizeScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
-  migrateAutomationAction,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -58,21 +61,18 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
-import type { EntityRegistryUpdate } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
-import { showAutomationRenameDialog } from "../automation/automation-rename-dialog/show-dialog-automation-rename";
+import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -105,8 +105,9 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _readOnly = false;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaScriptEditor, value) {
       return value.find(({ entity_id }) => entity_id === this._entityId);
     },
@@ -427,6 +428,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .isWide=${this.isWide}
                           .config=${this._config}
                           .disabled=${this._readOnly}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                         ></manual-script-editor>
                       `}
@@ -452,7 +454,7 @@ export class HaScriptEditor extends SubscribeMixin(
           )}
           .disabled=${this._saving}
           extended
-          @click=${this._saveScript}
+          @click=${this._handleSave}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -499,12 +501,11 @@ export class HaScriptEditor extends SubscribeMixin(
         ...initData,
       } as ScriptConfig;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
@@ -543,25 +544,12 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
-    // Normalize data: ensure sequence is a list
-    // Happens when people copy paste their scripts into the config
-    const value = config.sequence;
-    if (value && !Array.isArray(value)) {
-      config.sequence = [value];
-    }
-    if (config.sequence) {
-      config.sequence = migrateAutomationAction(config.sequence);
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     fetchScriptFileConfig(this.hass, this.scriptId!).then(
       (config) => {
         this._dirty = false;
         this._readOnly = false;
-        this._config = this._normalizeConfig(config);
+        this._config = normalizeScriptConfig(config);
         const entity = this.entityRegistry.find(
           (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
         );
@@ -707,20 +695,48 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this._dirty) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+    if (!this._dirty) {
+      return true;
     }
-    return true;
+
+    return new Promise<boolean>((resolve) => {
+      showAutomationSaveDialog(this, {
+        config: this._config!,
+        domain: "script",
+        updateConfig: async (config, entityRegistryUpdate) => {
+          this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+
+          const id = this.scriptId || String(Date.now());
+          try {
+            await this._saveScript(id);
+          } catch (_err: any) {
+            this.requestUpdate();
+            resolve(false);
+            return;
+          }
+
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+        onDiscard: () => resolve(true),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this._registryEntry,
+        title: this.hass.localize(
+          this.scriptId
+            ? "ui.panel.config.script.editor.leave.unsaved_confirm_title"
+            : "ui.panel.config.script.editor.leave.unsaved_new_title"
+        ),
+        description: this.hass.localize(
+          this.scriptId
+            ? "ui.panel.config.script.editor.leave.unsaved_confirm_text"
+            : "ui.panel.config.script.editor.leave.unsaved_new_text"
+        ),
+        hideInputs: this.scriptId !== null,
+      });
+    });
   }
 
   private _backTapped = async () => {
@@ -742,7 +758,7 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       const newConfig = {
-        ...this._normalizeConfig(result.substituted_config),
+        ...normalizeScriptConfig(result.substituted_config),
         alias: config.alias,
         description: config.description,
       };
@@ -843,10 +859,10 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private async _promptScriptAlias(): Promise<boolean> {
     return new Promise((resolve) => {
-      showAutomationRenameDialog(this, {
+      showAutomationSaveDialog(this, {
         config: this._config!,
         domain: "script",
-        updateConfig: (config, entityRegistryUpdate) => {
+        updateConfig: async (config, entityRegistryUpdate) => {
           this._config = config;
           this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
@@ -877,13 +893,15 @@ export class HaScriptEditor extends SubscribeMixin(
     });
   }
 
-  private async _saveScript(): Promise<void> {
+  private async _handleSave() {
     if (this._yamlErrors) {
       showToast(this, {
         message: this._yamlErrors,
       });
       return;
     }
+
+    this._manualEditor?.resetPastedConfig();
 
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
@@ -894,6 +912,13 @@ export class HaScriptEditor extends SubscribeMixin(
     }
     const id = this.scriptId || this._entityId || Date.now();
 
+    await this._saveScript(id);
+    if (!this.scriptId) {
+      navigate(`/config/script/edit/${id}`, { replace: true });
+    }
+  }
+
+  private async _saveScript(id): Promise<void> {
     this._saving = true;
 
     let entityRegPromise: Promise<EntityRegistryEntry> | undefined;
@@ -962,10 +987,6 @@ export class HaScriptEditor extends SubscribeMixin(
       }
 
       this._dirty = false;
-
-      if (!this.scriptId) {
-        navigate(`/config/script/edit/${id}`, { replace: true });
-      }
     } catch (errors: any) {
       this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
@@ -979,7 +1000,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      s: () => this._saveScript(),
+      s: () => this._handleSave(),
     };
   }
 
@@ -1000,7 +1021,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .errors {
           padding: 20px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           color: var(--error-color);
         }
         .yaml-mode {
@@ -1035,7 +1056,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
@@ -1050,8 +1071,8 @@ export class HaScriptEditor extends SubscribeMixin(
           align-items: center;
         }
         .header .name {
-          font-size: 20px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
         }
         .header a {

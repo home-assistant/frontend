@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiClose, mdiContentCopy } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -160,9 +159,11 @@ class DialogSystemLogDetail extends LitElement {
                     this.hass!.locale,
                     this.hass!.config
                   )}
-                  (${item.count}
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.detail.occurrences"
+                  (${this.hass.localize(
+                    "ui.panel.config.logs.detail.number_of_occurrences",
+                    {
+                      count: item.count,
+                    }
                   )}) <br />
                 `
               : ""}
@@ -238,7 +239,7 @@ class DialogSystemLogDetail extends LitElement {
         }
         pre {
           margin-bottom: 0;
-          font-family: var(--code-font-family, monospace);
+          font-family: var(--ha-font-family-code);
         }
         ha-alert {
           display: block;

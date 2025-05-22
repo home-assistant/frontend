@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import "@material/mwc-button";
 import {
   mdiCog,
@@ -19,20 +20,22 @@ import {
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type {
@@ -52,6 +55,7 @@ import {
 } from "../../../data/automation";
 import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
@@ -61,24 +65,23 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "../ha-config-section";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import {
   type EntityRegistryUpdate,
-  showAutomationRenameDialog,
-} from "./automation-rename-dialog/show-dialog-automation-rename";
+  showAutomationSaveDialog,
+} from "./automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
-import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
+import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -132,8 +135,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaAutomationEditor, value) {
       return value.find(({ entity_id }) => entity_id === this._entityId);
     },
@@ -146,6 +150,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry!: EntityRegistryEntry[];
+
+  @query("manual-automation-editor")
+  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -184,7 +191,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   protected render(): TemplateResult | typeof nothing {
     if (!this._config) {
-      return nothing;
+      return html`
+        <ha-fade-in .delay=${500}>
+          <ha-spinner size="large"></ha-spinner>
+        </ha-fade-in>
+      `;
     }
 
     const stateObj = this._entityId
@@ -463,6 +474,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                         ></manual-automation-editor>
                       `}
@@ -500,7 +512,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
           .disabled=${this._saving}
           extended
-          @click=${this._saveAutomation}
+          @click=${this._handleSaveAutomation}
         >
           <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
         </ha-fab>
@@ -546,7 +558,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
@@ -743,20 +754,48 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   }
 
   private async _confirmUnsavedChanged(): Promise<boolean> {
-    if (this._dirty) {
-      return showConfirmationDialog(this, {
-        title: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_title"
-        ),
-        text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm_text"
-        ),
-        confirmText: this.hass!.localize("ui.common.leave"),
-        dismissText: this.hass!.localize("ui.common.stay"),
-        destructive: true,
-      });
+    if (!this._dirty) {
+      return true;
     }
-    return true;
+
+    return new Promise<boolean>((resolve) => {
+      showAutomationSaveDialog(this, {
+        config: this._config!,
+        domain: "automation",
+        updateConfig: async (config, entityRegistryUpdate) => {
+          this._config = config;
+          this._entityRegistryUpdate = entityRegistryUpdate;
+          this._dirty = true;
+          this.requestUpdate();
+
+          const id = this.automationId || String(Date.now());
+          try {
+            await this._saveAutomation(id);
+          } catch (_err: any) {
+            this.requestUpdate();
+            resolve(false);
+            return;
+          }
+
+          resolve(true);
+        },
+        onClose: () => resolve(false),
+        onDiscard: () => resolve(true),
+        entityRegistryUpdate: this._entityRegistryUpdate,
+        entityRegistryEntry: this._registryEntry,
+        title: this.hass.localize(
+          this.automationId
+            ? "ui.panel.config.automation.editor.leave.unsaved_confirm_title"
+            : "ui.panel.config.automation.editor.leave.unsaved_new_title"
+        ),
+        description: this.hass.localize(
+          this.automationId
+            ? "ui.panel.config.automation.editor.leave.unsaved_confirm_text"
+            : "ui.panel.config.automation.editor.leave.unsaved_new_text"
+        ),
+        hideInputs: this.automationId !== null,
+      });
+    });
   }
 
   private _backTapped = async () => {
@@ -878,10 +917,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   private async _promptAutomationAlias(): Promise<boolean> {
     return new Promise((resolve) => {
-      showAutomationRenameDialog(this, {
+      showAutomationSaveDialog(this, {
         config: this._config!,
         domain: "automation",
-        updateConfig: (config, entityRegistryUpdate) => {
+        updateConfig: async (config, entityRegistryUpdate) => {
           this._config = config;
           this._entityRegistryUpdate = entityRegistryUpdate;
           this._dirty = true;
@@ -910,13 +949,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     });
   }
 
-  private async _saveAutomation(): Promise<void> {
+  private async _handleSaveAutomation(): Promise<void> {
     if (this._yamlErrors) {
       showToast(this, {
         message: this._yamlErrors,
       });
       return;
     }
+
+    this._manualEditor?.resetPastedConfig();
 
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
@@ -926,6 +967,13 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       }
     }
 
+    await this._saveAutomation(id);
+    if (!this.automationId) {
+      navigate(`/config/automation/edit/${id}`, { replace: true });
+    }
+  }
+
+  private async _saveAutomation(id): Promise<void> {
     this._saving = true;
     this._validationErrors = undefined;
 
@@ -990,10 +1038,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       }
 
       this._dirty = false;
-
-      if (!this.automationId) {
-        navigate(`/config/automation/edit/${id}`, { replace: true });
-      }
     } catch (errors: any) {
       this._errors = errors.body?.message || errors.error || errors.body;
       showToast(this, {
@@ -1016,7 +1060,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      s: () => this._saveAutomation(),
+      s: () => this._handleSaveAutomation(),
     };
   }
 
@@ -1032,6 +1076,12 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
     return [
       haStyle,
       css`
+        ha-fade-in {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+        }
         .content {
           padding-bottom: 20px;
         }
@@ -1067,7 +1117,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {

@@ -44,7 +44,7 @@ export class DialogYamlIntegration extends LitElement {
           )}
         </p>
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
-          ${this.hass.localize("ui.dialogs.generic.cancel")}
+          ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
         ${docLink
           ? html`<a
@@ -60,7 +60,7 @@ export class DialogYamlIntegration extends LitElement {
               </mwc-button>
             </a>`
           : html`<mwc-button @click=${this.closeDialog} dialogInitialFocus>
-              ${this.hass.localize("ui.dialogs.generic.ok")}
+              ${this.hass.localize("ui.common.ok")}
             </mwc-button>`}
       </ha-dialog>
     `;

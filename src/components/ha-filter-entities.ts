@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -14,8 +13,9 @@ import { haStyleScrollbar } from "../resources/styles";
 import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
-import "./ha-state-icon";
 import "./ha-expansion-panel";
+import "./ha-list";
+import "./ha-state-icon";
 import "./search-input-outlined";
 
 @customElement("ha-filter-entities")
@@ -48,7 +48,7 @@ export class HaFilterEntities extends LitElement {
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -71,7 +71,7 @@ export class HaFilterEntities extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list class="ha-scrollbar" multi>
+              <ha-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._entities(
                     this.hass.states,
@@ -84,7 +84,7 @@ export class HaFilterEntities extends LitElement {
                   @click=${this._handleItemClick}
                 >
                 </lit-virtualizer>
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </ha-expansion-panel>
@@ -95,7 +95,7 @@ export class HaFilterEntities extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
@@ -246,10 +246,10 @@ export class HaFilterEntities extends LitElement {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

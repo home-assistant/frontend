@@ -1,5 +1,6 @@
 import type { HomeAssistant } from "../types";
 import { handleFetchPromise } from "../util/hass-call-api";
+import type { CloudStatus } from "./cloud";
 
 export interface InstallationType {
   installation_type:
@@ -36,8 +37,20 @@ export interface OnboardingStep {
   done: boolean;
 }
 
+interface CloudLoginBase {
+  email: string;
+}
+
+export interface CloudLoginPassword extends CloudLoginBase {
+  password: string;
+}
+
+export interface CloudLoginMFA extends CloudLoginBase {
+  code: string;
+}
+
 export const fetchOnboardingOverview = () =>
-  fetch("/api/onboarding", { credentials: "same-origin" });
+  fetch(`${__HASS_URL__}/api/onboarding`, { credentials: "same-origin" });
 
 export const onboardUserStep = (params: {
   client_id: string;
@@ -47,7 +60,7 @@ export const onboardUserStep = (params: {
   language: string;
 }) =>
   handleFetchPromise<OnboardingUserStepResponse>(
-    fetch("/api/onboarding/users", {
+    fetch(`${__HASS_URL__}/api/onboarding/users`, {
       method: "POST",
       credentials: "same-origin",
       body: JSON.stringify(params),
@@ -74,9 +87,12 @@ export const onboardIntegrationStep = (
   );
 
 export const fetchInstallationType = async (): Promise<InstallationType> => {
-  const response = await fetch("/api/onboarding/installation_type", {
-    method: "GET",
-  });
+  const response = await fetch(
+    `${__HASS_URL__}/api/onboarding/installation_type`,
+    {
+      method: "GET",
+    }
+  );
 
   if (response.status === 401) {
     throw Error("unauthorized");
@@ -88,3 +104,35 @@ export const fetchInstallationType = async (): Promise<InstallationType> => {
 
   return response.json();
 };
+
+export const loginHaCloud = async (
+  params: CloudLoginPassword | CloudLoginMFA
+) =>
+  handleFetchPromise(
+    fetch("/api/onboarding/cloud/login", {
+      method: "POST",
+      body: JSON.stringify(params),
+    })
+  );
+
+export const fetchHaCloudStatus = async (): Promise<CloudStatus> =>
+  handleFetchPromise(fetch("/api/onboarding/cloud/status"));
+
+export const signOutHaCloud = async () =>
+  handleFetchPromise(fetch("/api/onboarding/cloud/logout", { method: "POST" }));
+
+export const forgotPasswordHaCloud = async (email: string) =>
+  handleFetchPromise(
+    fetch("/api/onboarding/cloud/forgot_password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    })
+  );
+
+export const waitForIntegration = (domain: string) =>
+  handleFetchPromise<{ integration_loaded: boolean }>(
+    fetch("/api/onboarding/integration/wait", {
+      method: "POST",
+      body: JSON.stringify({ domain }),
+    })
+  );

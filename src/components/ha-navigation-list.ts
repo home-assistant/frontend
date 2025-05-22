@@ -1,15 +1,13 @@
-import "@material/mwc-list/mwc-list";
-import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { navigate } from "../common/navigate";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-next";
-import "./ha-list-item";
 import "./ha-svg-icon";
+import "./ha-md-list";
+import "./ha-md-list-item";
 
 @customElement("ha-navigation-list")
 class HaNavigationList extends LitElement {
@@ -26,21 +24,21 @@ class HaNavigationList extends LitElement {
 
   public render(): TemplateResult {
     return html`
-      <mwc-list
+      <ha-md-list
         innerRole="menu"
         itemRoles="menuitem"
         innerAriaLabel=${ifDefined(this.label)}
-        @action=${this._handleListAction}
       >
-        ${this.pages.map(
-          (page) => html`
-            <ha-list-item
-              graphic="avatar"
-              .twoline=${this.hasSecondary}
-              .hasMeta=${!this.narrow}
+        ${this.pages.map((page) => {
+          const externalApp = page.path.endsWith("#external-app-configuration");
+          return html`
+            <ha-md-list-item
+              .type=${externalApp ? "button" : "link"}
+              .href=${externalApp ? undefined : page.path}
+              @click=${externalApp ? this._handleExternalApp : undefined}
             >
               <div
-                slot="graphic"
+                slot="start"
                 class=${page.iconColor ? "icon-background" : ""}
                 .style="background-color: ${page.iconColor || "undefined"}"
               >
@@ -48,31 +46,23 @@ class HaNavigationList extends LitElement {
               </div>
               <span>${page.name}</span>
               ${this.hasSecondary
-                ? html`<span slot="secondary">${page.description}</span>`
+                ? html`<span slot="supporting-text">${page.description}</span>`
                 : ""}
               ${!this.narrow
-                ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                ? html`<ha-icon-next slot="end"></ha-icon-next>`
                 : ""}
-            </ha-list-item>
-          `
-        )}
-      </mwc-list>
+            </ha-md-list-item>
+          `;
+        })}
+      </ha-md-list>
     `;
   }
 
-  private _handleListAction(ev: CustomEvent<ActionDetail>) {
-    const path = this.pages[ev.detail.index].path;
-    if (path.endsWith("#external-app-configuration")) {
-      this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
-    } else {
-      navigate(path);
-    }
+  private _handleExternalApp() {
+    this.hass.auth.external!.fireMessage({ type: "config_screen/show" });
   }
 
   static styles: CSSResultGroup = css`
-    :host {
-      --mdc-list-vertical-padding: 0;
-    }
     ha-svg-icon,
     ha-icon-next {
       color: var(--secondary-text-color);
@@ -89,8 +79,7 @@ class HaNavigationList extends LitElement {
     .icon-background ha-svg-icon {
       color: #fff;
     }
-    ha-list-item {
-      cursor: pointer;
+    ha-md-list-item {
       font-size: var(--navigation-list-item-title-font-size);
     }
   `;

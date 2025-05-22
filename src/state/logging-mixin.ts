@@ -29,11 +29,11 @@ export const loggingMixin = <T extends Constructor<HassBaseEl>>(
           return;
         }
         if (
-          !__DEV__ &&
-          (ev.message.includes("ResizeObserver loop limit exceeded") ||
-            ev.message.includes(
-              "ResizeObserver loop completed with undelivered notifications"
-            ))
+          (!__DEV__ &&
+            ev.message.includes("ResizeObserver loop limit exceeded")) ||
+          ev.message.includes(
+            "ResizeObserver loop completed with undelivered notifications"
+          )
         ) {
           ev.preventDefault();
           ev.stopImmediatePropagation();

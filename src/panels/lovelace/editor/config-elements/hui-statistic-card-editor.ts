@@ -13,6 +13,7 @@ import type {
 } from "../../../../data/recorder";
 import {
   getStatisticMetadata,
+  StatisticMeanType,
   statisticsMetaHasType,
 } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
@@ -32,6 +33,7 @@ const cardConfigStruct = assign(
     period: optional(any()),
     theme: optional(string()),
     footer: optional(headerFooterConfigStructs),
+    collection_key: optional(string()),
   })
 );
 
@@ -219,7 +221,11 @@ export class HuiStatisticCardEditor
       if (metadata && !metadata.has_sum && config.stat_type === "change") {
         config.stat_type = "mean";
       }
-      if (metadata && !metadata.has_mean && config.stat_type !== "change") {
+      if (
+        metadata &&
+        metadata.mean_type === StatisticMeanType.NONE &&
+        config.stat_type !== "change"
+      ) {
         config.stat_type = "change";
       }
     }

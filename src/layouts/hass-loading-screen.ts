@@ -1,7 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/ha-circular-progress";
+import "../components/ha-spinner";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import { haStyle } from "../resources/styles";
@@ -40,7 +40,7 @@ class HassLoadingScreen extends LitElement {
                 `}
           </div>`}
       <div class="content">
-        <ha-circular-progress indeterminate></ha-circular-progress>
+        <ha-spinner></ha-spinner>
         ${this.message
           ? html`<div id="loading-text">${this.message}</div>`
           : nothing}
@@ -64,12 +64,12 @@ class HassLoadingScreen extends LitElement {
         .toolbar {
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 8px 12px;
           pointer-events: none;
           background-color: var(--app-header-background-color);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;

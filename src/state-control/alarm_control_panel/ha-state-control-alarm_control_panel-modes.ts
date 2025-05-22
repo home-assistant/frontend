@@ -47,7 +47,12 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
   }
 
   private async _setMode(mode: AlarmMode) {
-    setProtectedAlarmControlPanelMode(this, this.hass!, this.stateObj!, mode);
+    await setProtectedAlarmControlPanelMode(
+      this,
+      this.hass!,
+      this.stateObj!,
+      mode
+    );
   }
 
   private async _valueChanged(ev: CustomEvent) {

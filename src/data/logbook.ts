@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   BINARY_STATE_OFF,
   BINARY_STATE_ON,
@@ -119,7 +119,7 @@ export const subscribeLogbook = (
   endDate: string,
   entityIds?: string[],
   deviceIds?: string[]
-): Promise<() => Promise<void>> => {
+): Promise<UnsubscribeFunc> => {
   // If all specified filters are empty lists, we can return an empty list.
   if (
     (entityIds || deviceIds) &&

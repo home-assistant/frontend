@@ -6,7 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-circular-progress";
+import "../../../components/ha-spinner";
 import "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import "../../../components/ha-icon-next";
@@ -129,7 +129,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
     let stats: TemplateResult;
 
     if (!this._stats5min || !this._statsHour) {
-      stats = html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      stats = html`<ha-spinner></ha-spinner>`;
     } else if (this._statsHour.length < 1 && this._stats5min.length < 1) {
       stats = html`<p>
         ${this.hass.localize(
@@ -526,7 +526,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
           display: flex;
           flex-direction: column;
         }
-        .stat-list ha-circular-progress {
+        .stat-list ha-spinner {
           margin: 0 auto;
         }
       `,

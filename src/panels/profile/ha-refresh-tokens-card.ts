@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAndroid,

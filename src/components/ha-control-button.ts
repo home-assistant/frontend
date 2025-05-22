@@ -28,6 +28,7 @@ export class HaControlButton extends LitElement {
   static styles = css`
     :host {
       display: block;
+      --control-button-focus-color: var(--secondary-text-color);
       --control-button-icon-color: var(--primary-text-color);
       --control-button-background-color: var(--disabled-color);
       --control-button-background-opacity: 0.2;
@@ -57,8 +58,8 @@ export class HaControlButton extends LitElement {
       padding: var(--control-button-padding);
       box-sizing: border-box;
       line-height: inherit;
-      font-family: Roboto;
-      font-weight: 500;
+      font-family: var(--ha-font-family-body);
+      font-weight: var(--ha-font-weight-medium);
       outline: none;
       overflow: hidden;
       background: none;
@@ -66,9 +67,13 @@ export class HaControlButton extends LitElement {
       z-index: 0;
       font-size: inherit;
       color: inherit;
+      transition:
+        box-shadow 180ms ease-in-out,
+        color 180ms ease-in-out;
+      color: var(--control-button-icon-color);
     }
     .button:focus-visible {
-      --control-button-background-opacity: 0.4;
+      box-shadow: 0 0 0 2px var(--control-button-focus-color);
     }
     .button::before {
       content: "";
@@ -84,10 +89,6 @@ export class HaControlButton extends LitElement {
       opacity: var(--control-button-background-opacity);
       pointer-events: none;
       white-space: normal;
-    }
-    .button {
-      transition: color 180ms ease-in-out;
-      color: var(--control-button-icon-color);
     }
     .button ::slotted(*) {
       pointer-events: none;

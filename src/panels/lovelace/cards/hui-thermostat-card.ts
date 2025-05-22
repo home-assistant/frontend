@@ -151,14 +151,16 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           @click=${this._handleMoreInfo}
           tabindex="0"
         ></ha-icon-button>
-        <hui-card-features
-          style=${styleMap({
-            "--feature-color": color,
-          })}
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .features=${this._config.features}
-        ></hui-card-features>
+        ${this._config.features?.length
+          ? html`<hui-card-features
+              style=${styleMap({
+                "--feature-color": color,
+              })}
+              .hass=${this.hass}
+              .stateObj=${stateObj}
+              .features=${this._config.features}
+            ></hui-card-features>`
+          : nothing}
       </ha-card>
     `;
   }
@@ -200,8 +202,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     .title {
       width: 100%;
-      font-size: 18px;
-      line-height: 36px;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-expanded);
       padding: 8px 30px 8px 30px;
       margin: 0;
       text-align: center;
@@ -248,6 +250,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     hui-card-features {
       width: 100%;
       flex: none;
+      padding: 0 12px 12px 12px;
     }
   `;
 }

@@ -4,25 +4,29 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-card";
-import "../../layouts/hass-tabs-subpage";
-import { profileSections } from "./ha-panel-profile";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
-import { getOptimisticFrontendUserDataCollection } from "../../data/frontend";
+import { subscribeFrontendUserData } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { showEditSidebarDialog } from "../../dialogs/sidebar/show-dialog-edit-sidebar";
+import "../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
+import { isMobileClient } from "../../util/is_mobile";
 import "./ha-advanced-mode-row";
 import "./ha-enable-shortcuts-row";
+import "./ha-entity-id-picker-row";
 import "./ha-force-narrow-row";
+import { profileSections } from "./ha-panel-profile";
 import "./ha-pick-dashboard-row";
+import "./ha-pick-date-format-row";
 import "./ha-pick-first-weekday-row";
 import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
 import "./ha-pick-time-format-row";
-import "./ha-pick-date-format-row";
 import "./ha-pick-time-zone-row";
 import "./ha-push-notifications-row";
 import "./ha-set-suspend-row";
@@ -38,15 +42,16 @@ class HaProfileSectionGeneral extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  private _unsubCoreData?: UnsubscribeFunc;
+  private _unsubCoreData?: Promise<UnsubscribeFunc>;
 
   private _getCoreData() {
-    this._unsubCoreData = getOptimisticFrontendUserDataCollection(
+    this._unsubCoreData = subscribeFrontendUserData(
       this.hass.connection,
-      "core"
-    ).subscribe((coreUserData) => {
-      this._coreUserData = coreUserData;
-    });
+      "core",
+      ({ value }) => {
+        this._coreUserData = value;
+      }
+    );
   }
 
   public connectedCallback() {
@@ -54,6 +59,8 @@ class HaProfileSectionGeneral extends LitElement {
     if (this.hass) {
       this._getCoreData();
     }
+
+    this._scrollToHash();
   }
 
   public firstUpdated() {
@@ -65,9 +72,24 @@ class HaProfileSectionGeneral extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     if (this._unsubCoreData) {
-      this._unsubCoreData();
+      this._unsubCoreData.then((unsub) => unsub());
       this._unsubCoreData = undefined;
     }
+  }
+
+  private async _scrollToHash() {
+    await nextRender();
+
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      const element = this.shadowRoot!.getElementById(hash);
+      element?.scrollIntoView();
+      this._clearHash();
+    }
+  }
+
+  private _clearHash() {
+    history.replaceState(null, "", window.location.pathname);
   }
 
   protected render(): TemplateResult {
@@ -137,6 +159,15 @@ class HaProfileSectionGeneral extends LitElement {
                   ></ha-advanced-mode-row>
                 `
               : ""}
+            ${this.hass.user!.is_admin
+              ? html`
+                  <ha-entity-id-picker-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .coreUserData=${this._coreUserData}
+                  ></ha-entity-id-picker-row>
+                `
+              : ""}
           </ha-card>
           <ha-card
             .header=${this.hass.localize(
@@ -201,10 +232,15 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-set-suspend-row>
-            <ha-enable-shortcuts-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-enable-shortcuts-row>
+            ${!isMobileClient
+              ? html`
+                  <ha-enable-shortcuts-row
+                    id="shortcuts"
+                    .narrow=${this.narrow}
+                    .hass=${this.hass}
+                  ></ha-enable-shortcuts-row>
+                `
+              : ""}
           </ha-card>
         </div>
       </hass-tabs-subpage>
@@ -212,8 +248,17 @@ class HaProfileSectionGeneral extends LitElement {
   }
 
   private _customizeSidebar() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
+    showEditSidebarDialog(this, {
+      saveCallback: this._saveSidebar,
+    });
   }
+
+  private _saveSidebar = (order: string[], hidden: string[]) => {
+    fireEvent(this, "hass-edit-sidebar", {
+      order,
+      hidden,
+    });
+  };
 
   private _handleLogOut() {
     showConfirmationDialog(this, {
@@ -239,7 +284,7 @@ class HaProfileSectionGeneral extends LitElement {
           display: block;
           max-width: 600px;
           margin: 0 auto;
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
 
         .content > * {

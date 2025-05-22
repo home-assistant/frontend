@@ -2,6 +2,7 @@ import {
   DIRECTION_HORIZONTAL,
   DIRECTION_VERTICAL,
   Manager,
+  Press,
   Swipe,
   Tap,
 } from "@egjs/hammerjs";
@@ -79,6 +80,7 @@ export class HaControlSwitch extends LitElement {
       );
 
       this._mc.add(new Tap({ event: "singletap" }));
+      this._mc.add(new Press());
 
       if (this.vertical) {
         this._mc.on("swipeup", () => {
@@ -106,10 +108,11 @@ export class HaControlSwitch extends LitElement {
         });
       }
 
-      this._mc.on("singletap", () => {
+      this._mc.on("singletap pressup", () => {
         if (this.disabled) return;
         this._toggle();
       });
+
       this.addEventListener("keydown", this._keydown);
     }
   }

@@ -12,6 +12,7 @@ import { brandsUrl } from "../../../util/brands-url";
 import type { IntegrationListItem } from "./dialog-add-integration";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-tooltip";
 
 @customElement("ha-integration-list-item")
 export class HaIntegrationListItem extends ListItemBase {
@@ -73,43 +74,45 @@ export class HaIntegrationListItem extends ListItemBase {
     }
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
       ${this.integration.cloud
-        ? html`<span
+        ? html`<ha-tooltip
+            placement="left"
+            .content=${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.depends_on_cloud"
+            )}
             ><ha-svg-icon .path=${mdiWeb}></ha-svg-icon
-            ><simple-tooltip animation-delay="0" position="left"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.depends_on_cloud"
-              )}</simple-tooltip
-            ></span
-          >`
-        : ""}
+          ></ha-tooltip>`
+        : nothing}
       ${!this.integration.is_built_in
         ? html`<span
             class=${this.integration.overwrites_built_in
               ? "overwrites"
               : "custom"}
-            ><ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon
-            ><simple-tooltip animation-delay="0" position="left"
-              >${this.hass.localize(
+            ><ha-tooltip
+              placement="left"
+              .content=${this.hass.localize(
                 this.integration.overwrites_built_in
                   ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                   : "ui.panel.config.integrations.config_entry.custom_integration"
-              )}</simple-tooltip
-            ></span
-          >`
-        : ""}
+              )}
+              ><ha-svg-icon
+                .path=${mdiPackageVariant}
+              ></ha-svg-icon></ha-tooltip
+          ></span>`
+        : nothing}
       ${!this.integration.config_flow &&
       !this.integration.integrations &&
       !this.integration.iot_standards
-        ? html`<span
-            ><simple-tooltip animation-delay="0" position="left"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.yaml_only"
-              )}</simple-tooltip
-            ><ha-svg-icon
+        ? html`<ha-tooltip
+            placement="left"
+            .content=${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.yaml_only"
+            )}
+          >
+            <ha-svg-icon
               .path=${mdiFileCodeOutline}
               class="open-in-new"
-            ></ha-svg-icon
-          ></span>`
+            ></ha-svg-icon>
+          </ha-tooltip>`
         : html`<ha-icon-next></ha-icon-next>`}
     </span>`;
   }

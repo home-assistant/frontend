@@ -95,7 +95,10 @@ export class HassRouterPage extends ReactiveElement {
     const defaultPage = routerOptions.defaultPage;
 
     if (route && route.path === "" && defaultPage !== undefined) {
-      navigate(`${route.prefix}/${defaultPage}`, { replace: true });
+      const queryParams = window.location.search;
+      navigate(`${route.prefix}/${defaultPage}${queryParams}`, {
+        replace: true,
+      });
     }
 
     let newPage = route

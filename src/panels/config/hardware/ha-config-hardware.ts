@@ -1,20 +1,18 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import { mdiPower } from "@mdi/js";
-import type { ChartOptions } from "chart.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { SeriesOption } from "echarts/types/dist/shared";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { numberFormatToLocale } from "../../../common/number/format_number";
 import { round } from "../../../common/number/round";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-settings-row";
@@ -32,22 +30,27 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { DEFAULT_PRIMARY_COLOR } from "../../../resources/styles-data";
+import { DefaultPrimaryColor } from "../../../resources/theme/color.globals";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
+import type { ECOption } from "../../../resources/echarts";
 
 const DATASAMPLES = 60;
 
-const DATA_SET_CONFIG = {
-  fill: "origin",
-  borderColor: DEFAULT_PRIMARY_COLOR,
-  backgroundColor: DEFAULT_PRIMARY_COLOR + "2B",
-  pointRadius: 0,
-  lineTension: 0.2,
-  borderWidth: 1,
+const DATA_SET_CONFIG: SeriesOption = {
+  type: "line",
+  color: DefaultPrimaryColor,
+  areaStyle: {
+    color: DefaultPrimaryColor + "2B",
+  },
+  symbolSize: 0,
+  lineStyle: {
+    width: 1,
+  },
+  smooth: 0.25,
 };
 
 @customElement("ha-config-hardware")
@@ -62,15 +65,15 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
   @state() private _hardwareInfo?: HardwareInfo;
 
-  @state() private _chartOptions?: ChartOptions;
+  @state() private _chartOptions?: ECOption;
 
   @state() private _systemStatusData?: SystemStatusStreamMessage;
 
   @state() private _configEntries?: Record<string, ConfigEntry>;
 
-  private _memoryEntries: { x: number; y: number | null }[] = [];
+  private _memoryEntries: [number, number | null][] = [];
 
-  private _cpuEntries: { x: number; y: number | null }[] = [];
+  private _cpuEntries: [number, number | null][] = [];
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     const subs = [
@@ -121,14 +124,14 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
             this._memoryEntries.shift();
             this._cpuEntries.shift();
 
-            this._memoryEntries.push({
-              x: new Date(message.timestamp).getTime(),
-              y: message.memory_used_percent,
-            });
-            this._cpuEntries.push({
-              x: new Date(message.timestamp).getTime(),
-              y: message.cpu_percent,
-            });
+            this._memoryEntries.push([
+              new Date(message.timestamp).getTime(),
+              message.memory_used_percent,
+            ]);
+            this._cpuEntries.push([
+              new Date(message.timestamp).getTime(),
+              message.cpu_percent,
+            ]);
 
             this._systemStatusData = message;
           },
@@ -143,51 +146,37 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
   }
 
   protected willUpdate(): void {
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated && !this._chartOptions) {
       this._chartOptions = {
-        responsive: true,
-        scales: {
-          y: {
-            gridLines: {
-              drawTicks: false,
-            },
-            ticks: {
-              maxTicksLimit: 7,
-              fontSize: 10,
-              max: 100,
-              min: 0,
-              stepSize: 1,
-              callback: (value) =>
-                value + blankBeforePercent(this.hass.locale) + "%",
-            },
-          },
-          x: {
-            type: "time",
-            adapters: {
-              date: {
-                locale: this.hass.locale,
-                config: this.hass.config,
-              },
-            },
-            gridLines: {
-              display: true,
-              drawTicks: false,
-            },
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
-              fontSize: 10,
-              autoSkip: true,
-              maxTicksLimit: 5,
-            },
-          },
+        xAxis: {
+          type: "time",
         },
-        // @ts-expect-error
-        locale: numberFormatToLocale(this.hass.locale),
+        yAxis: {
+          type: "value",
+          splitLine: {
+            show: true,
+          },
+          axisLabel: {
+            formatter: (value: number) =>
+              value + blankBeforePercent(this.hass.locale) + "%",
+          },
+          axisLine: {
+            show: false,
+          },
+          scale: true,
+        },
+        grid: {
+          top: 10,
+          bottom: 10,
+          left: 10,
+          right: 10,
+          containLabel: true,
+        },
+        tooltip: {
+          trigger: "axis",
+          valueFormatter: (value) =>
+            value + blankBeforePercent(this.hass.locale) + "%",
+        },
       };
     }
   }
@@ -201,8 +190,8 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     for (let i = 0; i < DATASAMPLES; i++) {
       const t = new Date(date);
       t.setSeconds(t.getSeconds() - 5 * (DATASAMPLES - i));
-      this._memoryEntries.push({ x: t.getTime(), y: null });
-      this._cpuEntries.push({ x: t.getTime(), y: null });
+      this._memoryEntries.push([t.getTime(), null]);
+      this._cpuEntries.push([t.getTime(), null]);
     }
   }
 
@@ -297,26 +286,24 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   </div>
                   ${documentationURL
                     ? html`
-                        <mwc-list>
-                          <ha-clickable-list-item
-                            .href=${documentationURL}
-                            open-new-tab
-                            twoline
-                            hasMeta
+                        <ha-md-list-item
+                          .href=${documentationURL}
+                          type="link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <span
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation"
+                            )}</span
                           >
-                            <span
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation"
-                              )}</span
-                            >
-                            <span slot="secondary"
-                              >${this.hass.localize(
-                                "ui.panel.config.hardware.documentation_description"
-                              )}</span
-                            >
-                            <ha-icon-next slot="meta"></ha-icon-next>
-                          </ha-clickable-list-item>
-                        </mwc-list>
+                          <span slot="supporting-text"
+                            >${this.hass.localize(
+                              "ui.panel.config.hardware.documentation_description"
+                            )}</span
+                          >
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-md-list-item>
                       `
                     : ""}
                   ${boardConfigEntries.length ||
@@ -387,14 +374,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   <div class="card-content">
                     <ha-chart-base
                       .hass=${this.hass}
-                      .data=${{
-                        datasets: [
-                          {
-                            ...DATA_SET_CONFIG,
-                            data: this._cpuEntries,
-                          },
-                        ],
-                      }}
+                      .data=${this._getChartData(this._cpuEntries)}
                       .options=${this._chartOptions}
                     ></ha-chart-base>
                   </div>
@@ -419,14 +399,7 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                   <div class="card-content">
                     <ha-chart-base
                       .hass=${this.hass}
-                      .data=${{
-                        datasets: [
-                          {
-                            ...DATA_SET_CONFIG,
-                            data: this._memoryEntries,
-                          },
-                        ],
-                      }}
+                      .data=${this._getChartData(this._memoryEntries)}
                       .options=${this._chartOptions}
                     ></ha-chart-base>
                   </div>
@@ -482,6 +455,20 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
     showRestartDialog(this);
   }
 
+  private _getChartData = memoizeOne(
+    (entries: [number, number | null][]): SeriesOption[] => [
+      {
+        ...DATA_SET_CONFIG,
+        id: entries === this._cpuEntries ? "cpu" : "memory",
+        name:
+          entries === this._cpuEntries
+            ? this.hass.localize("ui.panel.config.hardware.processor")
+            : this.hass.localize("ui.panel.config.hardware.memory"),
+        data: entries,
+      } as SeriesOption,
+    ]
+  );
+
   static styles = [
     haStyle,
     css`
@@ -515,11 +502,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
         text-align: center;
       }
       .primary-text {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
         margin: 0;
       }
       .secondary-text {
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         margin-bottom: 0;
         color: var(--secondary-text-color);
       }
@@ -532,11 +519,11 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
 
       .header .title {
         color: var(--secondary-text-color);
-        font-size: 18px;
+        font-size: var(--ha-font-size-l);
       }
 
       .header .value {
-        font-size: 16px;
+        font-size: var(--ha-font-size-l);
       }
       .row {
         display: flex;

@@ -1,4 +1,5 @@
 import { dump } from "js-yaml";
+import { consume } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -18,7 +19,16 @@ import "../../panels/logbook/ha-logbook-renderer";
 import { traceTabStyles } from "./trace-tab-styles";
 import type { HomeAssistant } from "../../types";
 import type { NodeInfo } from "./hat-script-graph";
-import { describeCondition } from "../../data/automation_i18n";
+import { describeCondition, describeTrigger } from "../../data/automation_i18n";
+import type { EntityRegistryEntry } from "../../data/entity_registry";
+import type { LabelRegistryEntry } from "../../data/label_registry";
+import type { FloorRegistryEntry } from "../../data/floor_registry";
+import {
+  floorsContext,
+  fullEntitiesContext,
+  labelsContext,
+} from "../../data/context";
+import { describeAction } from "../../data/script_i18n";
 
 const TRACE_PATH_TABS = [
   "step_config",
@@ -44,6 +54,18 @@ export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public trackedNodes!: Record<string, any>;
 
   @state() private _view: (typeof TRACE_PATH_TABS)[number] = "step_config";
+
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  _entityReg!: EntityRegistryEntry[];
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  _labelReg!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: floorsContext, subscribe: true })
+  _floorReg!: Record<string, FloorRegistryEntry>;
 
   protected render(): TemplateResult {
     return html`
@@ -144,11 +166,46 @@ export class HaTracePathDetails extends LitElement {
             )}`;
           }
 
+          const selectedType = this.selected.type;
+
           return html`
             ${curPath === this.selected.path
               ? currentDetail.alias
                 ? html`<h2>${currentDetail.alias}</h2>`
-                : nothing
+                : selectedType === "trigger"
+                  ? html`<h2>
+                      ${describeTrigger(
+                        currentDetail,
+                        this.hass,
+                        this._entityReg
+                      )}
+                    </h2>`
+                  : selectedType === "condition"
+                    ? html`<h2>
+                        ${describeCondition(
+                          currentDetail,
+                          this.hass,
+                          this._entityReg
+                        )}
+                      </h2>`
+                    : selectedType === "action"
+                      ? html`<h2>
+                          ${describeAction(
+                            this.hass,
+                            this._entityReg,
+                            this._labelReg,
+                            this._floorReg,
+                            currentDetail
+                          )}
+                        </h2>`
+                      : selectedType === "chooseOption"
+                        ? html`<h2>
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.actions.type.choose.option",
+                              { number: pathParts[pathParts.length - 1] }
+                            )}
+                          </h2>`
+                        : nothing
               : html`<h2>
                   ${curPath.substring(this.selected.path.length + 1)}
                 </h2>`}
@@ -166,7 +223,7 @@ export class HaTracePathDetails extends LitElement {
               ? html`[${describeCondition(
                     currentDetail,
                     this.hass,
-                    currentDetail.alias
+                    this._entityReg
                   )}]<br />`
               : nothing}
             ${this.hass!.localize(

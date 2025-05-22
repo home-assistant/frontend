@@ -17,7 +17,6 @@ const NEED_ATTRIBUTE_DOMAINS = [
   "climate",
   "humidifier",
   "input_datetime",
-  "thermostat",
   "water_heater",
   "person",
   "device_tracker",

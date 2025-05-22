@@ -9,7 +9,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { hasTemplate } from "../../../common/string/has-template";
+import { hasTemplate, isTemplate } from "../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -52,6 +52,7 @@ class HaPanelDevAction extends LitElement {
 
   private _yamlValid = true;
 
+  @state()
   @storage({
     key: "panel-dev-action-state-service-data",
     state: true,
@@ -59,6 +60,7 @@ class HaPanelDevAction extends LitElement {
   })
   private _serviceData?: ServiceAction = { action: "", target: {}, data: {} };
 
+  @state()
   @storage({
     key: "panel-dev-action-state-yaml-mode",
     state: true,
@@ -349,8 +351,11 @@ class HaPanelDevAction extends LitElement {
         `ui.panel.developer-tools.tabs.actions.errors.${errorCategory}.invalid_action`
       );
     }
+    const dataIsTemplate =
+      typeof serviceData.data === "string" && isTemplate(serviceData.data);
     if (
       target &&
+      !dataIsTemplate &&
       !serviceData.target &&
       !serviceData.data?.entity_id &&
       !serviceData.data?.device_id &&
@@ -363,6 +368,7 @@ class HaPanelDevAction extends LitElement {
     for (const field of fields) {
       if (
         field.required &&
+        !dataIsTemplate &&
         (!serviceData.data || serviceData.data[field.key] === undefined)
       ) {
         return localize(
@@ -507,30 +513,28 @@ class HaPanelDevAction extends LitElement {
       return;
     }
     this._yamlValid = true;
-    this._serviceDataChanged(ev);
+
+    if (typeof ev.detail.value !== "object") {
+      return;
+    }
+
+    if (this._serviceData?.action !== ev.detail.value.action) {
+      this._error = undefined;
+    }
+
+    this._serviceData = migrateAutomationAction(
+      ev.detail.value
+    ) as ServiceAction;
+
+    this._checkUiSupported();
   }
 
   private _checkUiSupported() {
-    const fields = this._fields(
-      this.hass.services,
-      this._serviceData?.action
-    ).fields;
     if (
       this._serviceData &&
-      (Object.entries(this._serviceData).some(
+      Object.entries(this._serviceData).some(
         ([key, val]) => key !== "data" && hasTemplate(val)
-      ) ||
-        (this._serviceData.data &&
-          Object.entries(this._serviceData.data).some(([key, val]) => {
-            const field = fields.find((f) => f.key === key);
-            if (
-              field?.selector &&
-              ("template" in field.selector || "object" in field.selector)
-            ) {
-              return false;
-            }
-            return hasTemplate(val);
-          })))
+      )
     ) {
       this._yamlMode = true;
       this._uiAvailable = false;
@@ -543,18 +547,18 @@ class HaPanelDevAction extends LitElement {
     if (this._serviceData?.action !== ev.detail.value.action) {
       this._error = undefined;
     }
-    this._serviceData = migrateAutomationAction(
-      ev.detail.value
-    ) as ServiceAction;
+    this._serviceData = ev.detail.value;
     this._checkUiSupported();
   }
 
   private _serviceChanged(ev) {
     ev.stopPropagation();
-    this._serviceData = { action: ev.detail.value || "", data: {} };
+    if (ev.detail.value) {
+      this._serviceData = { action: ev.detail.value, data: {} };
+      this._yamlEditor?.setValue(this._serviceData);
+    }
     this._response = undefined;
     this._error = undefined;
-    this._yamlEditor?.setValue(this._serviceData);
     this._checkUiSupported();
   }
 
@@ -597,19 +601,19 @@ class HaPanelDevAction extends LitElement {
       css`
         .content {
           padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
+          padding: max(16px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(16px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
         .button-row {
           padding: 8px 16px;
-          padding: max(8px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(8px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
+          padding: max(8px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(8px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);

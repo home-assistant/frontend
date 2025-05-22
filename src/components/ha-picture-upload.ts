@@ -17,7 +17,6 @@ import type { CropOptions } from "../dialogs/image-cropper-dialog/show-image-cro
 import { showImageCropperDialog } from "../dialogs/image-cropper-dialog/show-image-cropper-dialog";
 import type { HomeAssistant } from "../types";
 import "./ha-button";
-import "./ha-circular-progress";
 import "./ha-file-upload";
 import { showMediaBrowserDialog } from "./media-player/show-media-browser-dialog";
 
@@ -198,7 +197,7 @@ export class HaPictureUpload extends LitElement {
             const url = generateImageThumbnailUrl(mediaId, undefined, true);
             let data;
             try {
-              data = await getImageData(url);
+              data = await getImageData(this.hass, url);
             } catch (err: any) {
               showAlertDialog(this, {
                 text: err.toString(),
@@ -250,6 +249,11 @@ export class HaPictureUpload extends LitElement {
           max-height: 200px;
           margin-bottom: 4px;
           border-radius: var(--file-upload-image-border-radius);
+          transition: opacity 0.3s;
+          opacity: var(--picture-opacity, 1);
+        }
+        img:hover {
+          opacity: 1;
         }
       `,
     ];

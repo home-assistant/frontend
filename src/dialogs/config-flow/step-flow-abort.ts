@@ -20,6 +20,8 @@ class StepFlowAbort extends LitElement {
 
   @property({ attribute: false }) public domain!: string;
 
+  @property({ attribute: false }) public handler!: string;
+
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
     if (this.step.reason === "missing_credentials") {
@@ -32,11 +34,6 @@ class StepFlowAbort extends LitElement {
       return nothing;
     }
     return html`
-      <h2>
-        ${this.params.flowConfig.renderAbortHeader
-          ? this.params.flowConfig.renderAbortHeader(this.hass, this.step)
-          : this.hass.localize(`component.${this.domain}.title`)}
-      </h2>
       <div class="content">
         ${this.params.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
@@ -58,8 +55,9 @@ class StepFlowAbort extends LitElement {
       applicationCredentialAddedCallback: () => {
         showConfigFlowDialog(this.params.dialogParentElement!, {
           dialogClosedCallback: this.params.dialogClosedCallback,
-          startFlowHandler: this.domain,
+          startFlowHandler: this.handler,
           showAdvanced: this.hass.userData?.showAdvanced,
+          navigateToResult: this.params.navigateToResult,
         });
       },
     });

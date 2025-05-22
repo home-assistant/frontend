@@ -2,7 +2,7 @@ import { ensureArray } from "../../../common/array/ensure-array";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNKNOWN } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
@@ -75,7 +75,7 @@ function checkStateCondition(
   const state =
     condition.entity && hass.states[condition.entity]
       ? hass.states[condition.entity].state
-      : UNAVAILABLE;
+      : UNKNOWN;
   let value = condition.state ?? condition.state_not;
 
   // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
@@ -191,6 +191,9 @@ export function extractConditionEntityIds(
   const entityIds = new Set<string>();
   for (const condition of conditions) {
     if (condition.condition === "numeric_state") {
+      if (condition.entity) {
+        entityIds.add(condition.entity);
+      }
       if (
         typeof condition.above === "string" &&
         isValidEntityId(condition.above)
@@ -204,6 +207,9 @@ export function extractConditionEntityIds(
         entityIds.add(condition.below);
       }
     } else if (condition.condition === "state") {
+      if (condition.entity) {
+        entityIds.add(condition.entity);
+      }
       [
         ...(ensureArray(condition.state) ?? []),
         ...(ensureArray(condition.state_not) ?? []),
@@ -304,8 +310,8 @@ export function addEntityToCondition(
     condition.condition === "numeric_state"
   ) {
     return {
-      ...condition,
       entity: entityId,
+      ...condition,
     };
   }
   return condition;

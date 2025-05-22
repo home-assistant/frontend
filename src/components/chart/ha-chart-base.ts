@@ -1,666 +1,823 @@
+import { consume } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { mdiChevronDown, mdiChevronUp, mdiRestart } from "@mdi/js";
+import { differenceInMinutes } from "date-fns";
+import type { DataZoomComponentOption } from "echarts/components";
+import type { EChartsType } from "echarts/core";
 import type {
-  Chart,
-  ChartType,
-  ChartData,
-  ChartOptions,
-  TooltipModel,
-  UpdateMode,
-} from "chart.js";
+  ECElementEvent,
+  LegendComponentOption,
+  XAXisOption,
+  YAXisOption,
+} from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
-import { css, html, nothing, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { mdiRestart } from "@mdi/js";
+import { getAllGraphColors } from "../../common/color/colors";
 import { fireEvent } from "../../common/dom/fire_event";
-import { clamp } from "../../common/number/clamp";
+import { listenMediaQuery } from "../../common/dom/media_query";
+import { themesContext } from "../../data/context";
+import type { Themes } from "../../data/ws-themes";
+import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
-import { debounce } from "../../common/util/debounce";
 import { isMac } from "../../util/is_mac";
 import "../ha-icon-button";
+import { formatTimeLabel } from "./axis-label";
+import { ensureArray } from "../../common/array/ensure-array";
+import "../chips/ha-assist-chip";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
-
-interface Tooltip
-  extends Omit<TooltipModel<any>, "tooltipPosition" | "hasValue" | "getProps"> {
-  top: string;
-  left: string;
-}
-
-export interface ChartDatasetExtra {
-  show_legend?: boolean;
-  legend_label?: string;
-}
+const LEGEND_OVERFLOW_LIMIT = 10;
+const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
+const DOUBLE_TAP_TIME = 300;
 
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
-  public chart?: Chart;
+  public chart?: EChartsType;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: "chart-type", reflect: true })
-  public chartType: ChartType = "line";
+  @property({ attribute: false }) public data: ECOption["series"] = [];
 
-  @property({ attribute: false }) public data: ChartData = { datasets: [] };
+  @property({ attribute: false }) public options?: ECOption;
 
-  @property({ attribute: false }) public extraData?: ChartDatasetExtra[];
+  @property({ type: String }) public height?: string;
 
-  @property({ attribute: false }) public options?: ChartOptions;
+  @property({ attribute: "expand-legend", type: Boolean })
+  public expandLegend?: boolean;
 
-  @property({ attribute: false }) public plugins?: any[];
+  // extraComponents is not reactive and should not trigger updates
+  public extraComponents?: any[];
 
-  @property({ type: Number }) public height?: number;
-
-  @property({ attribute: false, type: Number }) public paddingYAxis = 0;
-
-  @property({ attribute: "external-hidden", type: Boolean })
-  public externalHidden = false;
-
-  @state() private _legendHeight?: number;
-
-  @state() private _tooltip?: Tooltip;
-
-  @state() private _hiddenDatasets = new Set<number>();
-
-  @state() private _showZoomHint = false;
+  @state()
+  @consume({ context: themesContext, subscribe: true })
+  _themes!: Themes;
 
   @state() private _isZoomed = false;
 
-  private _paddingUpdateCount = 0;
+  @state() private _zoomRatio = 1;
 
-  private _paddingUpdateLock = false;
+  @state() private _minutesDifference = 24 * 60;
 
-  private _paddingYAxisInternal = 0;
+  @state() private _hiddenDatasets = new Set<string>();
 
-  private _datasetOrder: number[] = [];
+  private _modifierPressed = false;
+
+  private _isTouchDevice = "ontouchstart" in window;
+
+  private _lastTapTime?: number;
+
+  // @ts-ignore
+  private _resizeController = new ResizeController(this, {
+    callback: () => this.chart?.resize(),
+  });
+
+  private _loading = false;
+
+  private _reducedMotion = false;
+
+  private _listeners: (() => void)[] = [];
+
+  private _originalZrFlush?: () => void;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener("scroll", this._handleScroll, true);
-    this._releaseCanvas();
+    while (this._listeners.length) {
+      this._listeners.pop()!();
+    }
+    this.chart?.dispose();
+    this.chart = undefined;
+    this._originalZrFlush = undefined;
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("scroll", this._handleScroll, true);
     if (this.hasUpdated) {
-      this._releaseCanvas();
       this._setupChart();
     }
-  }
 
-  public updateChart = (mode?: UpdateMode): void => {
-    this.chart?.update(mode);
-  };
+    this._listeners.push(
+      listenMediaQuery("(prefers-reduced-motion)", (matches) => {
+        if (this._reducedMotion !== matches) {
+          this._reducedMotion = matches;
+          this._setChartOptions({ animation: !this._reducedMotion });
+        }
+      })
+    );
+
+    if (!this.options?.dataZoom) {
+      // Add keyboard event listeners
+      const handleKeyDown = (ev: KeyboardEvent) => {
+        if (
+          !this._modifierPressed &&
+          ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
+        ) {
+          this._modifierPressed = true;
+          if (!this.options?.dataZoom) {
+            this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
+          }
+          // drag to zoom
+          this.chart?.dispatchAction({
+            type: "takeGlobalCursor",
+            key: "dataZoomSelect",
+            dataZoomSelectActive: true,
+          });
+        }
+      };
+
+      const handleKeyUp = (ev: KeyboardEvent) => {
+        if (
+          this._modifierPressed &&
+          ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
+        ) {
+          this._modifierPressed = false;
+          if (!this.options?.dataZoom) {
+            this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
+          }
+          this.chart?.dispatchAction({
+            type: "takeGlobalCursor",
+            key: "dataZoomSelect",
+            dataZoomSelectActive: false,
+          });
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      window.addEventListener("keyup", handleKeyUp);
+      this._listeners.push(
+        () => window.removeEventListener("keydown", handleKeyDown),
+        () => window.removeEventListener("keyup", handleKeyUp)
+      );
+    }
+  }
 
   protected firstUpdated() {
     this._setupChart();
-    this.data.datasets.forEach((dataset, index) => {
-      if (dataset.hidden) {
-        this._hiddenDatasets.add(index);
-      }
-    });
   }
-
-  public shouldUpdate(changedProps: PropertyValues): boolean {
-    if (
-      this._paddingUpdateLock &&
-      changedProps.size === 1 &&
-      changedProps.has("paddingYAxis")
-    ) {
-      return false;
-    }
-    return true;
-  }
-
-  private _debouncedClearUpdates = debounce(
-    () => {
-      this._paddingUpdateCount = 0;
-    },
-    2000,
-    false
-  );
 
   public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-
-    if (!this._paddingUpdateLock) {
-      this._paddingYAxisInternal = this.paddingYAxis;
-      if (changedProps.size === 1 && changedProps.has("paddingYAxis")) {
-        this._paddingUpdateCount++;
-        if (this._paddingUpdateCount > 300) {
-          this._paddingUpdateLock = true;
-          // eslint-disable-next-line
-          console.error(
-            "Detected excessive chart padding updates, possibly an infinite loop. Disabling axis padding."
-          );
-        } else {
-          this._debouncedClearUpdates();
-        }
-      }
-    }
-
-    // put the legend labels in sorted order if provided
-    if (changedProps.has("data")) {
-      this._datasetOrder = this.data.datasets.map((_, index) => index);
-      if (this.data?.datasets.some((dataset) => dataset.order)) {
-        this._datasetOrder.sort(
-          (a, b) =>
-            (this.data.datasets[a].order || 0) -
-            (this.data.datasets[b].order || 0)
-        );
-      }
-
-      if (this.externalHidden) {
-        this._hiddenDatasets = new Set();
-        if (this.data?.datasets) {
-          this.data.datasets.forEach((dataset, index) => {
-            if (dataset.hidden) {
-              this._hiddenDatasets.add(index);
-            }
-          });
-        }
-      }
-    }
-
-    if (!this.hasUpdated || !this.chart) {
+    if (!this.chart) {
       return;
     }
-    if (changedProps.has("plugins") || changedProps.has("chartType")) {
-      this._releaseCanvas();
+    if (changedProps.has("_themes")) {
       this._setupChart();
       return;
     }
-    if (changedProps.has("data")) {
-      if (this._hiddenDatasets.size && !this.externalHidden) {
-        this.data.datasets.forEach((dataset, index) => {
-          dataset.hidden = this._hiddenDatasets.has(index);
-        });
-      }
-      this.chart.data = this.data;
+    let chartOptions: ECOption = {};
+    if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
+      chartOptions.series = this._getSeries();
     }
-    if (changedProps.has("options") && !this.chart.isZoomedOrPanned()) {
-      // this resets the chart zoom because min/max scales changed
-      // so we only do it if the user is not zooming or panning
-      this.chart.options = this._createOptions();
+    if (changedProps.has("options")) {
+      chartOptions = { ...chartOptions, ...this._createOptions() };
+    } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
+      chartOptions.dataZoom = this._getDataZoomConfig();
     }
-    this.chart.update("none");
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (changedProperties.has("data") || changedProperties.has("options")) {
-      if (this.options?.plugins?.legend?.display) {
-        this._legendHeight =
-          this.renderRoot.querySelector(".chart-legend")?.clientHeight;
-      } else {
-        this._legendHeight = 0;
-      }
+    if (Object.keys(chartOptions).length > 0) {
+      this._setChartOptions(chartOptions);
     }
   }
 
   protected render() {
     return html`
-      ${this.options?.plugins?.legend?.display === true
-        ? html`<div class="chart-legend">
-            <ul>
-              ${this._datasetOrder.map((index) => {
-                const dataset = this.data.datasets[index];
-                return this.extraData?.[index]?.show_legend === false
-                  ? nothing
-                  : html`<li
-                      .datasetIndex=${index}
-                      @click=${this._legendClick}
-                      class=${classMap({
-                        hidden: this._hiddenDatasets.has(index),
-                      })}
-                      .title=${this.extraData?.[index]?.legend_label ??
-                      dataset.label}
-                    >
-                      <div
-                        class="bullet"
-                        style=${styleMap({
-                          backgroundColor: dataset.backgroundColor as string,
-                          borderColor: dataset.borderColor as string,
-                        })}
-                      ></div>
-                      <div class="label">
-                        ${this.extraData?.[index]?.legend_label ??
-                        dataset.label}
-                      </div>
-                    </li>`;
-              })}
-            </ul>
-          </div>`
-        : ""}
       <div
-        class="chart-container"
-        style=${styleMap({
-          height: `${this.height ?? this._getDefaultHeight()}px`,
-          "padding-left": `${this._paddingYAxisInternal}px`,
-          "padding-right": 0,
-          "padding-inline-start": `${this._paddingYAxisInternal}px`,
-          "padding-inline-end": 0,
-        })}
-        @wheel=${this._handleChartScroll}
+        class="container ${classMap({ "has-height": !!this.height })}"
+        style=${styleMap({ height: this.height })}
       >
-        <canvas
-          class=${classMap({
-            "not-zoomed": !this._isZoomed,
-          })}
-        ></canvas>
         <div
-          class="zoom-hint ${classMap({
-            visible: this._showZoomHint,
-          })}"
+          class="chart-container"
+          style=${styleMap({
+            height: this.height ? undefined : `${this._getDefaultHeight()}px`,
+          })}
         >
-          <div>
-            ${isMac
-              ? this.hass.localize("ui.components.history_charts.zoom_hint_mac")
-              : this.hass.localize("ui.components.history_charts.zoom_hint")}
-          </div>
+          <div class="chart"></div>
         </div>
-        ${this._isZoomed && this.chartType !== "timeline"
-          ? html`<ha-icon-button
-              class="zoom-reset"
-              .path=${mdiRestart}
-              @click=${this._handleZoomReset}
-              title=${this.hass.localize(
-                "ui.components.history_charts.zoom_reset"
-              )}
-            ></ha-icon-button>`
-          : nothing}
-        ${this._tooltip
-          ? html`<div
-              class="chart-tooltip ${classMap({
-                [this._tooltip.yAlign]: true,
-              })}"
-              style=${styleMap({
-                top: this._tooltip.top,
-                left: this._tooltip.left,
-              })}
-            >
-              <div class="title">${this._tooltip.title}</div>
-              ${this._tooltip.beforeBody
-                ? html`<div class="before-body">
-                    ${this._tooltip.beforeBody}
-                  </div>`
-                : ""}
-              <div>
-                <ul>
-                  ${this._tooltip.body.map(
-                    (item, i) =>
-                      html`<li>
-                        <div
-                          class="bullet"
-                          style=${styleMap({
-                            backgroundColor: this._tooltip!.labelColors[i]
-                              .backgroundColor as string,
-                            borderColor: this._tooltip!.labelColors[i]
-                              .borderColor as string,
-                          })}
-                        ></div>
-                        ${item.lines.join("\n")}
-                      </li>`
-                  )}
-                </ul>
-              </div>
-              ${this._tooltip.footer.length
-                ? html`<div class="footer">
-                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
-                  </div>`
-                : ""}
-            </div>`
-          : ""}
+        ${this._renderLegend()}
+        <div class="chart-controls">
+          ${this._isZoomed
+            ? html`<ha-icon-button
+                class="zoom-reset"
+                .path=${mdiRestart}
+                @click=${this._handleZoomReset}
+                title=${this.hass.localize(
+                  "ui.components.history_charts.zoom_reset"
+                )}
+              ></ha-icon-button>`
+            : nothing}
+          <slot name="button"></slot>
+        </div>
       </div>
     `;
   }
 
-  private _loading = false;
+  private _renderLegend() {
+    if (!this.options?.legend || !this.data) {
+      return nothing;
+    }
+    const legend = ensureArray(this.options.legend)[0] as LegendComponentOption;
+    if (!legend.show || legend.type !== "custom") {
+      return nothing;
+    }
+    const datasets = ensureArray(this.data);
+    const items = (legend.data ||
+      datasets
+        .filter((d) => (d.data as any[])?.length && (d.id || d.name))
+        .map((d) => d.name ?? d.id) ||
+      []) as string[];
+
+    const isMobile = window.matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
+    const overflowLimit = isMobile
+      ? LEGEND_OVERFLOW_LIMIT_MOBILE
+      : LEGEND_OVERFLOW_LIMIT;
+    return html`<div
+      class=${classMap({
+        "chart-legend": true,
+        "multiple-items": items.length > 1,
+      })}
+    >
+      <ul>
+        ${items.map((item: string, index: number) => {
+          if (!this.expandLegend && index >= overflowLimit) {
+            return nothing;
+          }
+          const dataset = datasets.find(
+            (d) => d.id === item || d.name === item
+          );
+          const color = dataset?.color as string;
+          const borderColor = dataset?.itemStyle?.borderColor as string;
+          return html`<li
+            .name=${item}
+            @click=${this._legendClick}
+            class=${classMap({ hidden: this._hiddenDatasets.has(item) })}
+            .title=${item}
+          >
+            <div
+              class="bullet"
+              style=${styleMap({
+                backgroundColor: color,
+                borderColor: borderColor || color,
+              })}
+            ></div>
+            <div class="label">${item}</div>
+          </li>`;
+        })}
+        ${items.length > overflowLimit
+          ? html`<li>
+              <ha-assist-chip
+                @click=${this._toggleExpandedLegend}
+                filled
+                label=${this.expandLegend
+                  ? this.hass.localize(
+                      "ui.components.history_charts.collapse_legend"
+                    )
+                  : `${this.hass.localize(
+                      "ui.components.history_charts.expand_legend"
+                    )} (${items.length - overflowLimit})`}
+              >
+                <ha-svg-icon
+                  slot="trailing-icon"
+                  .path=${this.expandLegend ? mdiChevronUp : mdiChevronDown}
+                ></ha-svg-icon>
+              </ha-assist-chip>
+            </li>`
+          : nothing}
+      </ul>
+    </div>`;
+  }
+
+  private _formatTimeLabel = (value: number | Date) =>
+    formatTimeLabel(
+      value,
+      this.hass.locale,
+      this.hass.config,
+      this._minutesDifference * this._zoomRatio
+    );
 
   private async _setupChart() {
     if (this._loading) return;
-    const ctx: CanvasRenderingContext2D = this.renderRoot
-      .querySelector("canvas")!
-      .getContext("2d")!;
+    const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
     this._loading = true;
     try {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      const ChartConstructor = (await import("../../resources/chartjs")).Chart;
+      if (this.chart) {
+        this.chart.dispose();
+      }
+      const echarts = (await import("../../resources/echarts")).default;
 
-      const computedStyles = getComputedStyle(this);
+      if (this.extraComponents?.length) {
+        echarts.use(this.extraComponents);
+      }
 
-      ChartConstructor.defaults.borderColor =
-        computedStyles.getPropertyValue("--divider-color");
-      ChartConstructor.defaults.color = computedStyles.getPropertyValue(
-        "--secondary-text-color"
-      );
-      ChartConstructor.defaults.font.family =
-        computedStyles.getPropertyValue("--mdc-typography-body1-font-family") ||
-        computedStyles.getPropertyValue("--mdc-typography-font-family") ||
-        "Roboto, Noto, sans-serif";
+      echarts.registerTheme("custom", this._createTheme());
 
-      this.chart = new ChartConstructor(ctx, {
-        type: this.chartType,
-        data: this.data,
-        options: this._createOptions(),
-        plugins: this._createPlugins(),
+      this.chart = echarts.init(container, "custom");
+      this.chart.on("datazoom", (e: any) => {
+        const { start, end } = e.batch?.[0] ?? e;
+        this._isZoomed = start !== 0 || end !== 100;
+        this._zoomRatio = (end - start) / 100;
+      });
+      this.chart.on("click", (e: ECElementEvent) => {
+        fireEvent(this, "chart-click", e);
+      });
+      if (!this.options?.dataZoom) {
+        this.chart.getZr().on("dblclick", this._handleClickZoom);
+      }
+      if (this._isTouchDevice) {
+        this.chart.getZr().on("click", (e: ECElementEvent) => {
+          if (!e.zrByTouch) {
+            return;
+          }
+          if (
+            this._lastTapTime &&
+            Date.now() - this._lastTapTime < DOUBLE_TAP_TIME
+          ) {
+            this._handleClickZoom(e);
+          } else {
+            this._lastTapTime = Date.now();
+          }
+        });
+      }
+
+      const legend = ensureArray(this.options?.legend || [])[0] as
+        | LegendComponentOption
+        | undefined;
+      Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
+        if (selected === false) {
+          this._hiddenDatasets.add(stat);
+        }
+      });
+
+      this.chart.setOption({
+        ...this._createOptions(),
+        series: this._getSeries(),
       });
     } finally {
       this._loading = false;
     }
   }
 
-  private _createOptions(): ChartOptions {
-    const modifierKey = isMac ? "meta" : "ctrl";
+  private _getDataZoomConfig(): DataZoomComponentOption | undefined {
+    const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
+      | XAXisOption
+      | undefined;
+    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+      | YAXisOption
+      | undefined;
+    if (xAxis?.type === "value" && yAxis?.type === "category") {
+      // vertical data zoom doesn't work well in this case and horizontal is pointless
+      return undefined;
+    }
     return {
-      maintainAspectRatio: false,
-      animation: {
-        duration: 500,
-      },
-      ...this.options,
-      plugins: {
-        ...this.options?.plugins,
-        tooltip: {
-          ...this.options?.plugins?.tooltip,
-          enabled: false,
-          external: (context) => this._handleTooltip(context),
-        },
-        legend: {
-          ...this.options?.plugins?.legend,
-          display: false,
-        },
-        zoom: {
-          ...this.options?.plugins?.zoom,
-          pan: {
-            enabled: true,
-          },
-          zoom: {
-            pinch: {
-              enabled: true,
-            },
-            drag: {
-              enabled: true,
-              modifierKey,
-              threshold: 2,
-            },
-            wheel: {
-              enabled: true,
-              modifierKey,
-              speed: 0.05,
-            },
-            mode:
-              this.chartType !== "timeline" &&
-              (this.options?.scales?.y as any)?.type === "category"
-                ? "y"
-                : "x",
-            onZoomComplete: () => {
-              const isZoomed = this.chart?.isZoomedOrPanned() ?? false;
-              if (this._isZoomed && !isZoomed) {
-                setTimeout(() => {
-                  // make sure the scales are properly reset after full zoom out
-                  // they get bugged when zooming in/out multiple times and panning
-                  this.chart?.resetZoom();
-                });
-              }
-              this._isZoomed = isZoomed;
-            },
-          },
-          limits: {
-            x: {
-              min: "original",
-              max: (this.options?.scales?.x as any)?.max ?? "original",
-            },
-            y: {
-              min: "original",
-              max: "original",
-            },
-          },
-        },
-      },
+      id: "dataZoom",
+      type: "inside",
+      orient: "horizontal",
+      filterMode: "none",
+      moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
+      preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
+      zoomLock: !this._isTouchDevice && !this._modifierPressed,
     };
   }
 
-  private _createPlugins() {
-    return [
-      ...(this.plugins || []),
-      {
-        id: "resizeHook",
-        resize: (chart: Chart) => {
-          if (!this.height) {
-            // lock the height
-            // this removes empty space below the chart
-            this.height = chart.height;
-          }
+  private _createOptions(): ECOption {
+    let xAxis = this.options?.xAxis;
+    if (xAxis) {
+      xAxis = Array.isArray(xAxis) ? xAxis : [xAxis];
+      xAxis = xAxis.map((axis: XAXisOption) => {
+        if (axis.type !== "time" || axis.show === false) {
+          return axis;
+        }
+        if (axis.max && axis.min) {
+          this._minutesDifference = differenceInMinutes(
+            axis.max as Date,
+            axis.min as Date
+          );
+        }
+        const dayDifference = this._minutesDifference / 60 / 24;
+        let minInterval: number | undefined;
+        if (dayDifference) {
+          minInterval =
+            dayDifference >= 89 // quarter
+              ? 28 * 3600 * 24 * 1000
+              : dayDifference > 2
+                ? 3600 * 24 * 1000
+                : undefined;
+        }
+        return {
+          axisLine: { show: false },
+          splitLine: { show: true },
+          ...axis,
+          axisLabel: {
+            formatter: this._formatTimeLabel,
+            rich: { bold: { fontWeight: "bold" } },
+            hideOverlap: true,
+            ...axis.axisLabel,
+          },
+          minInterval,
+        } as XAXisOption;
+      });
+    }
+    let legend = this.options?.legend;
+    if (legend) {
+      legend = ensureArray(legend).map((l) =>
+        l.type === "custom" ? { show: false } : l
+      );
+    }
+    const options = {
+      animation: !this._reducedMotion,
+      darkMode: this._themes.darkMode ?? false,
+      aria: { show: true },
+      dataZoom: this._getDataZoomConfig(),
+      toolbox: {
+        top: Infinity,
+        left: Infinity,
+        feature: {
+          dataZoom: { show: true, yAxisIndex: false, filterMode: "none" },
         },
-        legend: {
-          ...this.options?.plugins?.legend,
-          display: false,
+        iconStyle: { opacity: 0 },
+      },
+      ...this.options,
+      legend,
+      xAxis,
+    };
+
+    const isMobile = window.matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
+    if (isMobile && options.tooltip) {
+      // mobile charts are full width so we need to confine the tooltip to the chart
+      const tooltips = Array.isArray(options.tooltip)
+        ? options.tooltip
+        : [options.tooltip];
+      tooltips.forEach((tooltip) => {
+        tooltip.confine = true;
+        tooltip.appendTo = undefined;
+        tooltip.triggerOn = "click";
+      });
+      options.tooltip = tooltips;
+    }
+    return options;
+  }
+
+  private _createTheme() {
+    const style = getComputedStyle(this);
+    return {
+      color: getAllGraphColors(style),
+      backgroundColor: "transparent",
+      textStyle: {
+        color: style.getPropertyValue("--primary-text-color"),
+        fontFamily: "Roboto, Noto, sans-serif",
+      },
+      title: {
+        textStyle: { color: style.getPropertyValue("--primary-text-color") },
+        subtextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
         },
       },
-    ];
+      line: {
+        lineStyle: { width: 1.5 },
+        symbolSize: 1,
+        symbol: "circle",
+        smooth: false,
+      },
+      bar: { itemStyle: { barBorderWidth: 1.5 } },
+      categoryAxis: {
+        axisLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: false,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      valueAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      logAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      timeAxis: {
+        axisLine: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        axisTick: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        axisLabel: {
+          show: true,
+          color: style.getPropertyValue("--primary-text-color"),
+        },
+        splitLine: {
+          show: true,
+          lineStyle: { color: style.getPropertyValue("--divider-color") },
+        },
+        splitArea: {
+          show: false,
+          areaStyle: {
+            color: [
+              style.getPropertyValue("--divider-color") + "3F",
+              style.getPropertyValue("--divider-color") + "7F",
+            ],
+          },
+        },
+      },
+      legend: {
+        textStyle: { color: style.getPropertyValue("--primary-text-color") },
+        inactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageIconColor: style.getPropertyValue("--primary-text-color"),
+        pageIconInactiveColor: style.getPropertyValue("--disabled-text-color"),
+        pageTextStyle: {
+          color: style.getPropertyValue("--secondary-text-color"),
+        },
+      },
+      tooltip: {
+        backgroundColor: style.getPropertyValue("--card-background-color"),
+        borderColor: style.getPropertyValue("--divider-color"),
+        textStyle: {
+          color: style.getPropertyValue("--primary-text-color"),
+          fontSize: 12,
+        },
+        axisPointer: {
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+          crossStyle: { color: style.getPropertyValue("--info-color") },
+        },
+        extraCssText:
+          "direction:" +
+          style.getPropertyValue("--direction") +
+          ";margin-inline-start:3px;margin-inline-end:8px;",
+      },
+      timeline: {},
+    };
+  }
+
+  private _getSeries() {
+    const series = ensureArray(this.data).filter(
+      (d) => !this._hiddenDatasets.has(String(d.name ?? d.id))
+    );
+    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+      | YAXisOption
+      | undefined;
+    if (yAxis?.type === "log") {
+      // set <=0 values to null so they render as gaps on a log graph
+      return series.map((d) =>
+        d.type === "line"
+          ? {
+              ...d,
+              data: d.data?.map((v) =>
+                Array.isArray(v)
+                  ? [
+                      v[0],
+                      typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
+                      ...v.slice(2),
+                    ]
+                  : v
+              ),
+            }
+          : d
+      );
+    }
+    return series;
   }
 
   private _getDefaultHeight() {
-    return this.clientWidth / 2;
+    return Math.max(this.clientWidth / 2, 200);
   }
 
-  private _handleChartScroll(ev: MouseEvent) {
-    const modifier = isMac ? "metaKey" : "ctrlKey";
-    this._tooltip = undefined;
-    if (!ev[modifier] && !this._showZoomHint) {
-      this._showZoomHint = true;
-      setTimeout(() => {
-        this._showZoomHint = false;
-      }, 1000);
-    }
-  }
-
-  private _legendClick(ev) {
+  private _setChartOptions(options: ECOption) {
     if (!this.chart) {
       return;
     }
-    const index = ev.currentTarget.datasetIndex;
-    if (this.chart.isDatasetVisible(index)) {
-      this.chart.setDatasetVisibility(index, false);
-      this._hiddenDatasets.add(index);
-      if (this.externalHidden) {
-        fireEvent(this, "dataset-hidden", {
-          index,
-        });
-      }
-    } else {
-      this.chart.setDatasetVisibility(index, true);
-      this._hiddenDatasets.delete(index);
-      if (this.externalHidden) {
-        fireEvent(this, "dataset-unhidden", {
-          index,
-        });
+    if (!this._originalZrFlush) {
+      const dataSize = ensureArray(this.data).reduce(
+        (acc, series) => acc + ((series.data as any[]) || []).length,
+        0
+      );
+      if (dataSize > 10000) {
+        // delay the last bit of the render to avoid blocking the main thread
+        // this is not that impactful with sampling enabled but it doesn't hurt to have it
+        const zr = this.chart.getZr();
+        this._originalZrFlush = zr.flush;
+        zr.flush = () => {
+          setTimeout(() => {
+            this._originalZrFlush?.call(zr);
+          }, 5);
+        };
       }
     }
-    this.chart.update("none");
+    const replaceMerge = options.series ? ["series"] : [];
+    this.chart.setOption(options, { replaceMerge });
+  }
+
+  private _handleClickZoom = (e: ECElementEvent) => {
+    if (!this.chart) {
+      return;
+    }
+    const range = this._isZoomed
+      ? [0, 100]
+      : [
+          (e.offsetX / this.chart.getWidth()) * 100 - 15,
+          (e.offsetX / this.chart.getWidth()) * 100 + 15,
+        ];
+    this.chart.dispatchAction({
+      type: "dataZoom",
+      start: range[0],
+      end: range[1],
+    });
+  };
+
+  private _handleZoomReset() {
+    this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+  }
+
+  private _legendClick(ev: any) {
+    if (!this.chart) {
+      return;
+    }
+    const name = ev.currentTarget?.name;
+    if (this._hiddenDatasets.has(name)) {
+      this._hiddenDatasets.delete(name);
+      fireEvent(this, "dataset-unhidden", { name });
+    } else {
+      this._hiddenDatasets.add(name);
+      fireEvent(this, "dataset-hidden", { name });
+    }
     this.requestUpdate("_hiddenDatasets");
   }
 
-  private _handleTooltip(context: {
-    chart: Chart;
-    tooltip: TooltipModel<any>;
-  }) {
-    if (context.tooltip.opacity === 0) {
-      this._tooltip = undefined;
-      return;
-    }
-    const boundingBox = this.getBoundingClientRect();
-    this._tooltip = {
-      ...context.tooltip,
-      top:
-        boundingBox.y +
-        (this._legendHeight || 0) +
-        context.tooltip.caretY +
-        12 +
-        "px",
-      left:
-        clamp(
-          boundingBox.x + context.tooltip.caretX,
-          boundingBox.x + 100,
-          boundingBox.x + boundingBox.width - 100
-        ) -
-        100 +
-        "px",
-    };
+  private _toggleExpandedLegend() {
+    this.expandLegend = !this.expandLegend;
+    setTimeout(() => {
+      this.chart?.resize();
+    });
   }
-
-  private _releaseCanvas() {
-    // release the canvas memory to prevent
-    // safari from running out of memory.
-    if (this.chart) {
-      this.chart.destroy();
-    }
-  }
-
-  private _handleZoomReset() {
-    this.chart?.resetZoom();
-  }
-
-  private _handleScroll = () => {
-    this._tooltip = undefined;
-  };
 
   static styles = css`
     :host {
       display: block;
       position: relative;
+      letter-spacing: normal;
     }
-    .chart-container {
+    .container {
+      display: flex;
+      flex-direction: column;
       position: relative;
     }
-    canvas {
-      max-height: var(--chart-max-height, 400px);
+    .container.has-height {
+      max-height: var(--chart-max-height, 350px);
     }
-    canvas.not-zoomed {
-      /* allow scrolling if the chart is not zoomed */
-      touch-action: pan-y !important;
+    .chart-container {
+      width: 100%;
+      max-height: var(--chart-max-height, 350px);
+    }
+    .has-height .chart-container {
+      flex: 1;
+    }
+    .chart {
+      height: 100%;
+      width: 100%;
+    }
+    .chart-controls {
+      position: absolute;
+      top: 16px;
+      right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .chart-controls ha-icon-button,
+    .chart-controls ::slotted(ha-icon-button) {
+      background: var(--card-background-color);
+      border-radius: 4px;
+      --mdc-icon-button-size: 32px;
+      color: var(--primary-color);
+      border: 1px solid var(--divider-color);
+    }
+    .chart-controls ha-icon-button.inactive,
+    .chart-controls ::slotted(ha-icon-button.inactive) {
+      color: var(--state-inactive-color);
     }
     .chart-legend {
-      text-align: center;
+      max-height: 60%;
+      overflow-y: auto;
+      padding: 12px 0 0;
+      font-size: var(--ha-font-size-s);
+      color: var(--primary-text-color);
+    }
+    .chart-legend ul {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
     }
     .chart-legend li {
+      height: 24px;
       cursor: pointer;
-      display: inline-grid;
-      grid-auto-flow: column;
-      padding: 0 8px;
-      box-sizing: border-box;
+      display: inline-flex;
       align-items: center;
-      color: var(--secondary-text-color);
+      padding: 0 2px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .chart-legend.multiple-items li {
+      max-width: 220px;
     }
     .chart-legend .hidden {
-      text-decoration: line-through;
+      color: var(--secondary-text-color);
     }
     .chart-legend .label {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
     }
-    .chart-legend .bullet,
-    .chart-tooltip .bullet {
+    .chart-legend .bullet {
       border-width: 1px;
       border-style: solid;
       border-radius: 50%;
-      display: inline-block;
+      display: block;
       height: 16px;
-      margin-right: 6px;
       width: 16px;
+      margin-right: 4px;
       flex-shrink: 0;
       box-sizing: border-box;
-      margin-inline-end: 6px;
+      margin-inline-end: 4px;
       margin-inline-start: initial;
       direction: var(--direction);
     }
-    .chart-tooltip .bullet {
-      align-self: baseline;
+    .chart-legend .hidden .bullet {
+      border-color: var(--secondary-text-color) !important;
+      background-color: transparent !important;
     }
-    .chart-tooltip {
-      padding: 8px;
-      font-size: 90%;
-      position: fixed;
-      background: rgba(80, 80, 80, 0.9);
-      color: white;
-      border-radius: 4px;
-      pointer-events: none;
-      z-index: 1;
-      -ms-user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      width: 200px;
-      box-sizing: border-box;
-      direction: var(--direction);
-    }
-    .chart-legend ul,
-    .chart-tooltip ul {
-      display: inline-block;
-      padding: 0 0px;
-      margin: 8px 0 0 0;
-      width: 100%;
-    }
-    .chart-tooltip ul {
-      margin: 0 4px;
-    }
-    .chart-tooltip li {
-      display: flex;
-      white-space: pre-line;
-      word-break: break-word;
-      align-items: center;
-      line-height: 16px;
-      padding: 4px 0;
-    }
-    .chart-tooltip .title {
-      text-align: center;
-      font-weight: 500;
-      word-break: break-word;
-      direction: ltr;
-    }
-    .chart-tooltip .footer {
-      font-weight: 500;
-    }
-    .chart-tooltip .before-body {
-      text-align: center;
-      font-weight: 300;
-      word-break: break-all;
-    }
-    .zoom-hint {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1);
-      pointer-events: none;
-    }
-    .zoom-hint.visible {
-      opacity: 1;
-    }
-    .zoom-hint > div {
-      color: white;
-      font-size: 1.5em;
-      font-weight: 500;
-      padding: 8px;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 32px 32px rgba(0, 0, 0, 0.3);
-    }
-    .zoom-reset {
-      position: absolute;
-      top: 16px;
-      right: 4px;
-      background: var(--card-background-color);
-      border-radius: 4px;
-      --mdc-icon-button-size: 32px;
-      color: var(--primary-color);
-      border: 1px solid var(--divider-color);
+    ha-assist-chip {
+      height: 100%;
+      --_label-text-weight: 500;
+      --_leading-space: 8px;
+      --_trailing-space: 8px;
+      --_icon-label-space: 4px;
     }
   `;
 }
@@ -670,7 +827,8 @@ declare global {
     "ha-chart-base": HaChartBase;
   }
   interface HASSDomEvents {
-    "dataset-hidden": { index: number };
-    "dataset-unhidden": { index: number };
+    "dataset-hidden": { name: string };
+    "dataset-unhidden": { name: string };
+    "chart-click": ECElementEvent;
   }
 }

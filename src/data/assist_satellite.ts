@@ -49,9 +49,13 @@ export const testAssistSatelliteConnection = (
 export const assistSatelliteAnnounce = (
   hass: HomeAssistant,
   entity_id: string,
-  message: string
-) =>
-  hass.callService("assist_satellite", "announce", { message }, { entity_id });
+  args: {
+    message?: string;
+    media_id?: string;
+    preannounce?: boolean;
+    preannounce_media_id?: string;
+  }
+) => hass.callService("assist_satellite", "announce", args, { entity_id });
 
 export const fetchAssistSatelliteConfiguration = (
   hass: HomeAssistant,

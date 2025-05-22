@@ -1,6 +1,8 @@
+import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import "../../../components/ha-svg-icon";
@@ -21,6 +23,7 @@ import {
 import { createSectionElement } from "../create-element/create-section-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { addCard, replaceCard } from "../editor/config-util";
 import { performDeleteCard } from "../editor/delete-card";
 import { parseLovelaceCardPath } from "../editor/lovelace-path";
 import { generateLovelaceSectionStrategy } from "../strategies/get-strategy";
@@ -57,6 +60,14 @@ export class HuiSection extends ReactiveElement {
   private _layoutElement?: LovelaceSectionElement;
 
   private _listeners: MediaQueriesListener[] = [];
+
+  @storage({
+    key: "dashboardCardClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: LovelaceCardConfig;
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
@@ -174,7 +185,7 @@ export class HuiSection extends ReactiveElement {
     if (isStrategySection(sectionConfig)) {
       isStrategy = true;
       sectionConfig = await generateLovelaceSectionStrategy(
-        sectionConfig.strategy,
+        sectionConfig,
         this.hass!
       );
     }
@@ -253,17 +264,66 @@ export class HuiSection extends ReactiveElement {
       ev.stopPropagation();
       if (!this.lovelace) return;
       const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const sectionConfig = this.config;
+      if (isStrategySection(sectionConfig)) {
+        return;
+      }
+      const cardConfig = sectionConfig.cards![cardIndex];
       showEditCardDialog(this, {
         lovelaceConfig: this.lovelace.config,
-        saveConfig: this.lovelace.saveConfig,
-        path: [this.viewIndex, this.index],
-        cardIndex,
+        saveCardConfig: async (newCardConfig) => {
+          const newConfig = replaceCard(
+            this.lovelace!.config,
+            [this.viewIndex, this.index, cardIndex],
+            newCardConfig
+          );
+          await this.lovelace!.saveConfig(newConfig);
+        },
+        sectionConfig,
+        cardConfig,
       });
     });
     this._layoutElement.addEventListener("ll-delete-card", (ev) => {
       ev.stopPropagation();
       if (!this.lovelace) return;
       performDeleteCard(this.hass, this.lovelace, ev.detail);
+    });
+    this._layoutElement.addEventListener("ll-duplicate-card", (ev) => {
+      ev.stopPropagation();
+      if (!this.lovelace) return;
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const sectionConfig = this.config;
+      if (isStrategySection(sectionConfig)) {
+        return;
+      }
+      const cardConfig = sectionConfig.cards![cardIndex];
+
+      showEditCardDialog(this, {
+        lovelaceConfig: this.lovelace!.config,
+        saveCardConfig: async (newCardConfig) => {
+          const newConfig = addCard(
+            this.lovelace!.config,
+            [this.viewIndex, this.index],
+            newCardConfig
+          );
+          await this.lovelace!.saveConfig(newConfig);
+        },
+        cardConfig,
+        sectionConfig,
+        isNew: true,
+      });
+    });
+    this._layoutElement.addEventListener("ll-copy-card", (ev) => {
+      ev.stopPropagation();
+      if (!this.lovelace) return;
+      const { cardIndex } = parseLovelaceCardPath(ev.detail.path);
+      const sectionConfig = this.config;
+
+      if (isStrategySection(sectionConfig)) {
+        return;
+      }
+      const cardConfig = sectionConfig.cards![cardIndex];
+      this._clipboard = deepClone(cardConfig);
     });
   }
 

@@ -49,7 +49,7 @@ import { mainWindow } from "../common/dom/get_main_window";
 type OnboardingEvent =
   | {
       type: "init";
-      result: { restore: boolean };
+      result?: { restore: "upload" | "cloud" };
     }
   | {
       type: "user";
@@ -97,7 +97,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _init = false;
 
-  @state() private _restoring = false;
+  @state() private _restoring?: "upload" | "cloud";
 
   @state() private _supervisor?: boolean;
 
@@ -157,8 +157,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   private _renderStep() {
     if (this._restoring) {
       return html`<onboarding-restore-backup
-        .hass=${this.hass}
         .localize=${this.localize}
+        .supervisor=${this._supervisor ?? false}
+        .mode=${this._restoring}
       >
       </onboarding-restore-backup>`;
     }
@@ -166,15 +167,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     if (this._init) {
       return html`<onboarding-welcome
         .localize=${this.localize}
-        .language=${this.language}
-        .supervisor=${this._supervisor}
       ></onboarding-welcome>`;
     }
 
     const step = this._curStep()!;
 
     if (this._loading || !step) {
-      return html`<onboarding-loading></onboarding-loading> `;
+      return html`<onboarding-loading></onboarding-loading>`;
     }
     if (step.step === "user") {
       return html`<onboarding-create-user
@@ -215,12 +214,16 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this._fetchOnboardingSteps();
     import("./onboarding-integrations");
     import("./onboarding-core-config");
+    import("./onboarding-restore-backup");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     this.addEventListener("onboarding-progress", (ev) =>
       this._handleProgress(ev)
     );
-    if (window.innerWidth > 450) {
+    if (
+      window.innerWidth > 450 &&
+      !matchMedia("(prefers-reduced-motion)").matches
+    ) {
       import("../resources/particles");
     }
     makeDialogManager(this, this.shadowRoot!);
@@ -230,13 +233,18 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (changedProps.has("_page")) {
-      this._restoring = this._page === "restore_backup";
+      this._restoring =
+        this._page === "restore_backup"
+          ? "upload"
+          : this._page === "restore_backup_cloud"
+            ? "cloud"
+            : undefined;
       if (this._page === null && this._steps && !this._steps[0].done) {
         this._init = true;
       }
     }
     if (changedProps.has("language")) {
-      document.querySelector("html")!.setAttribute("lang", this.language!);
+      document.querySelector("html")!.setAttribute("lang", this.language);
     }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -272,10 +280,6 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         "Home Assistant OS",
         "Home Assistant Supervised",
       ].includes(response.installation_type);
-      if (this._supervisor) {
-        // Only load if we have supervisor
-        import("./onboarding-restore-backup");
-      }
     } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(
@@ -349,12 +353,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
     if (stepResult.type === "init") {
       this._init = false;
-      this._restoring = stepResult.result.restore;
+      this._restoring = stepResult.result?.restore;
       if (!this._restoring) {
         this._progress = 0.25;
       } else {
         navigate(
-          `${location.pathname}?${addSearchParam({ page: "restore_backup" })}`
+          `${location.pathname}?${addSearchParam({ page: `restore_backup${this._restoring === "cloud" ? "_cloud" : ""}` })}`
         );
       }
     } else if (stepResult.type === "user") {
@@ -435,7 +439,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       let redirectUrl = authParams.redirect_uri!;
       redirectUrl +=
         (redirectUrl.includes("?") ? "&" : "?") +
-        `code=${encodeURIComponent(result.auth_code)}`;
+        `code=${encodeURIComponent(result.auth_code)}&storeToken=true`;
 
       if (authParams.state) {
         redirectUrl += `&state=${encodeURIComponent(authParams.state)}`;
@@ -454,7 +458,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       subscribeOne(conn, subscribeUser),
     ]);
     this.initializeHass(auth, conn);
-    if (this.language && this.language !== this.hass!.language) {
+    if (this.language !== this.hass!.language) {
       this._updateHass({
         locale: { ...this.hass!.locale, language: this.language },
         language: this.language,
@@ -493,6 +497,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   }
 
   static styles = css`
+    .card-content {
+      padding: 32px;
+    }
     mwc-linear-progress {
       position: fixed;
       top: 0;

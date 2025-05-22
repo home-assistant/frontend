@@ -122,7 +122,7 @@ class DialogAdminChangePassword extends LitElement {
                 )}
               </p>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.dialogs.generic.ok")}
+                ${this.hass.localize("ui.common.ok")}
               </mwc-button>
             `
           : html`

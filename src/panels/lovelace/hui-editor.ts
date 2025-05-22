@@ -8,7 +8,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
 import { deepEqual } from "../../common/util/deep-equal";
-import "../../components/ha-circular-progress";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
 import "../../components/ha-icon-button";
@@ -153,12 +152,12 @@ class LovelaceFullConfigEditor extends LitElement {
         }
 
         .comments {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
 
         .save-button {
           opacity: 0;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           padding: 0px 10px;
         }
 

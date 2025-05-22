@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-menu/mwc-menu-surface";
 import { mdiFilterVariantRemove, mdiTextureBox } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -15,12 +13,13 @@ import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
+import "./ha-expansion-panel";
 import "./ha-floor-icon";
 import "./ha-icon";
+import "./ha-icon-button";
+import "./ha-list";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
-import "./ha-icon-button";
-import "./ha-expansion-panel";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
@@ -54,7 +53,7 @@ export class HaFilterFloorAreas extends LitElement {
 
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -74,7 +73,7 @@ export class HaFilterFloorAreas extends LitElement {
         </div>
         ${this._shouldRender
           ? html`
-              <mwc-list class="ha-scrollbar">
+              <ha-list class="ha-scrollbar">
                 ${repeat(
                   areas?.floors || [],
                   (floor) => floor.floor_id,
@@ -108,7 +107,7 @@ export class HaFilterFloorAreas extends LitElement {
                   (area) => area.area_id,
                   (area) => this._renderArea(area)
                 )}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </ha-expansion-panel>
@@ -183,7 +182,7 @@ export class HaFilterFloorAreas extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49}px`;
       }, 300);
     }
@@ -304,10 +303,10 @@ export class HaFilterFloorAreas extends LitElement {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

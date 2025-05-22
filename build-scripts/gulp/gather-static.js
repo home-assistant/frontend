@@ -6,8 +6,8 @@ import path from "path";
 import paths from "../paths.cjs";
 
 const npmPath = (...parts) =>
-  path.resolve(paths.polymer_dir, "node_modules", ...parts);
-const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
+  path.resolve(paths.root_dir, "node_modules", ...parts);
+const polyPath = (...parts) => path.resolve(paths.root_dir, ...parts);
 
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
@@ -59,6 +59,11 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
+  // Lit polyfill support
+  fs.copySync(
+    npmPath("lit/polyfill-support.js"),
+    path.join(staticPath("polyfills/"), "lit-polyfill-support.js")
+  );
 
   // dialog-polyfill css
   copyFileDir(
@@ -88,6 +93,10 @@ function copyMapPanel(staticDir) {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(
     npmPath("leaflet/dist/leaflet.css"),
+    staticPath("images/leaflet/")
+  );
+  copyFileDir(
+    npmPath("leaflet.markercluster/dist/MarkerCluster.css"),
     staticPath("images/leaflet/")
   );
   fs.copySync(

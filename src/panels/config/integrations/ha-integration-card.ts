@@ -1,4 +1,3 @@
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -10,6 +9,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -162,43 +162,42 @@ export class HaIntegrationCard extends LitElement {
                   ? "overwrites"
                   : "custom"}"
               >
-                <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
-                <simple-tooltip
-                  animation-delay="0"
-                  .position=${computeRTL(this.hass) ? "right" : "left"}
-                  offset="4"
-                  >${this.hass.localize(
+                <ha-tooltip
+                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .content=${this.hass.localize(
                     this.manifest.overwrites_built_in
                       ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
                       : "ui.panel.config.integrations.config_entry.custom_integration"
-                  )}</simple-tooltip
+                  )}
                 >
+                  <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
+                </ha-tooltip>
               </span>`
             : nothing}
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
             ? html`<div class="icon cloud">
-                <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
-                <simple-tooltip
-                  animation-delay="0"
-                  .position=${computeRTL(this.hass) ? "right" : "left"}
-                  offset="4"
-                  >${this.hass.localize(
+                <ha-tooltip
+                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                  )}</simple-tooltip
+                  )}
                 >
+                  <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
+                </ha-tooltip>
               </div>`
             : nothing}
-          ${this.manifest && !this.manifest?.config_flow
+          ${this.manifest &&
+          !this.manifest?.config_flow &&
+          !this.items.every((itm) => itm.source === "system")
             ? html`<div class="icon yaml">
-                <ha-svg-icon .path=${mdiFileCodeOutline}></ha-svg-icon>
-                <simple-tooltip
-                  animation-delay="0"
-                  .position=${computeRTL(this.hass) ? "right" : "left"}
-                  offset="4"
-                  >${this.hass.localize(
+                <ha-tooltip
+                  .placement=${computeRTL(this.hass) ? "right" : "left"}
+                  .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"
-                  )}</simple-tooltip
+                  )}
                 >
+                  <ha-svg-icon .path=${mdiFileCodeOutline}></ha-svg-icon
+                ></ha-tooltip>
               </div>`
             : nothing}
         </div>
@@ -366,9 +365,6 @@ export class HaIntegrationCard extends LitElement {
           width: 24px;
           height: 24px;
           display: block;
-        }
-        simple-tooltip {
-          white-space: nowrap;
         }
         .spacer {
           height: 36px;

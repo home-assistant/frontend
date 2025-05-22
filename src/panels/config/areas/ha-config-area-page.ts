@@ -1,7 +1,5 @@
-import "@material/mwc-list/mwc-list-item";
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import "@material/mwc-button";
-import "@material/mwc-list";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup } from "lit";
@@ -10,16 +8,19 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
-import "../../../components/ha-button-menu";
+import "../../../components/ha-list";
+import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import {
   deleteAreaRegistryEntry,
@@ -28,10 +29,7 @@ import {
 import type { AutomationEntity } from "../../../data/automation";
 import { fullEntitiesContext } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import {
-  computeDeviceName,
-  sortDeviceRegistryByName,
-} from "../../../data/device_registry";
+import { sortDeviceRegistryByName } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   computeEntityRegistryName,
@@ -165,7 +163,7 @@ class HaConfigAreaPage extends LitElement {
     // Pre-compute the entity and device names, so we can sort by them
     if (devices) {
       devices.forEach((entry) => {
-        entry.name = computeDeviceName(entry, this.hass);
+        entry.name = computeDeviceNameDisplay(entry, this.hass);
       });
       sortDeviceRegistryByName(devices, this.hass.locale.language);
     }
@@ -233,16 +231,16 @@ class HaConfigAreaPage extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .entry=${area}
             @click=${this._showSettings}
           >
             ${this.hass.localize("ui.panel.config.areas.edit_settings")}
             <ha-svg-icon slot="graphic" .path=${mdiPencil}> </ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             class="warning"
             graphic="icon"
             @click=${this._deleteConfirm}
@@ -250,7 +248,7 @@ class HaConfigAreaPage extends LitElement {
             ${this.hass.localize("ui.panel.config.areas.editor.delete")}
             <ha-svg-icon class="warning" slot="graphic" .path=${mdiDelete}>
             </ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
 
         <div class="container">
@@ -281,7 +279,7 @@ class HaConfigAreaPage extends LitElement {
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
               >${devices.length
-                ? html`<mwc-list>
+                ? html`<ha-list>
                     ${devices.map(
                       (device) => html`
                         <a href="/config/devices/device/${device.id}">
@@ -292,7 +290,7 @@ class HaConfigAreaPage extends LitElement {
                         </a>
                       `
                     )}
-                  </mwc-list>`
+                  </ha-list>`
                 : html`
                     <div class="no-entries">
                       ${this.hass.localize(
@@ -308,7 +306,7 @@ class HaConfigAreaPage extends LitElement {
               )}
             >
               ${entities.length
-                ? html`<mwc-list>
+                ? html`<ha-list>
                     ${entities.map((entity) =>
                       ["scene", "script", "automation"].includes(
                         computeDomain(entity.entity_id)
@@ -324,7 +322,7 @@ class HaConfigAreaPage extends LitElement {
                               <ha-icon-next slot="meta"></ha-icon-next>
                             </ha-list-item>
                           `
-                    )}</mwc-list
+                    )}</ha-list
                   >`
                 : html`
                     <div class="no-entries">
@@ -350,13 +348,13 @@ class HaConfigAreaPage extends LitElement {
                               "ui.panel.config.areas.assigned_to_area"
                             )}:
                           </h3>
-                          <mwc-list>
+                          <ha-list>
                             ${groupedAutomations.map((automation) =>
                               this._renderAutomation(
                                 automation.name,
                                 automation.entity
                               )
-                            )}</mwc-list
+                            )}</ha-list
                           >`
                       : ""}
                     ${relatedAutomations?.length
@@ -365,13 +363,13 @@ class HaConfigAreaPage extends LitElement {
                               "ui.panel.config.areas.targeting_area"
                             )}:
                           </h3>
-                          <mwc-list>
+                          <ha-list>
                             ${relatedAutomations.map((automation) =>
                               this._renderAutomation(
                                 automation.name,
                                 automation.entity
                               )
-                            )}</mwc-list
+                            )}</ha-list
                           >`
                       : ""}
                     ${!groupedAutomations?.length && !relatedAutomations?.length
@@ -400,10 +398,10 @@ class HaConfigAreaPage extends LitElement {
                               "ui.panel.config.areas.assigned_to_area"
                             )}:
                           </h3>
-                          <mwc-list>
+                          <ha-list>
                             ${groupedScenes.map((scene) =>
                               this._renderScene(scene.name, scene.entity)
-                            )}</mwc-list
+                            )}</ha-list
                           >`
                       : ""}
                     ${relatedScenes?.length
@@ -412,10 +410,10 @@ class HaConfigAreaPage extends LitElement {
                               "ui.panel.config.areas.targeting_area"
                             )}:
                           </h3>
-                          <mwc-list>
+                          <ha-list>
                             ${relatedScenes.map((scene) =>
                               this._renderScene(scene.name, scene.entity)
-                            )}</mwc-list
+                            )}</ha-list
                           >`
                       : ""}
                     ${!groupedScenes?.length && !relatedScenes?.length
@@ -549,7 +547,11 @@ class HaConfigAreaPage extends LitElement {
   }
 
   private _renderScene(name: string, entityState: SceneEntity) {
-    return html`<div>
+    return html`<ha-tooltip
+      .distance=${-4}
+      .disabled=${!!entityState.attributes.id}
+      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
+    >
       <a
         href=${ifDefined(
           entityState.attributes.id
@@ -562,18 +564,15 @@ class HaConfigAreaPage extends LitElement {
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
       </a>
-      ${!entityState.attributes.id
-        ? html`
-            <simple-tooltip animation-delay="0">
-              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </simple-tooltip>
-          `
-        : ""}
-    </div>`;
+    </ha-tooltip>`;
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html`<div>
+    return html`<ha-tooltip
+      .disabled=${!!entityState.attributes.id}
+      .distance=${-4}
+      .content=${this.hass.localize("ui.panel.config.devices.cant_edit")}
+    >
       <a
         href=${ifDefined(
           entityState.attributes.id
@@ -586,14 +585,7 @@ class HaConfigAreaPage extends LitElement {
           <ha-icon-next slot="meta"></ha-icon-next>
         </ha-list-item>
       </a>
-      ${!entityState.attributes.id
-        ? html`
-            <simple-tooltip animation-delay="0">
-              ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-            </simple-tooltip>
-          `
-        : ""}
-    </div>`;
+    </ha-tooltip>`;
   }
 
   private _renderScript(name: string, entityState: ScriptEntity) {
@@ -663,7 +655,7 @@ class HaConfigAreaPage extends LitElement {
         h3 {
           margin: 0;
           padding: 0 16px;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           color: var(--secondary-text-color);
         }
         img {

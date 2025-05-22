@@ -40,8 +40,13 @@ export class DialogEnterCode
 
   @state() private _showClearButton = false;
 
+  @state() private _narrow = false;
+
   public async showDialog(dialogParams: EnterCodeDialogParams): Promise<void> {
     this._dialogParams = dialogParams;
+    this._narrow = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    ).matches;
     await this.updateComplete;
   }
 
@@ -96,7 +101,7 @@ export class DialogEnterCode
         >
           <ha-textfield
             class="input"
-            dialogInitialFocus
+            ?dialogInitialFocus=${!this._narrow}
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
@@ -134,6 +139,7 @@ export class DialogEnterCode
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
             inputmode="numeric"
+            ?dialogInitialFocus=${!this._narrow}
           ></ha-textfield>
           <div class="keypad">
             ${BUTTONS.map((value) =>
@@ -222,7 +228,7 @@ export class DialogEnterCode
       height: 56px;
       --control-button-border-radius: 28px;
       --mdc-icon-size: 24px;
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
     }
     .submit {
       --control-button-background-color: var(--green-color);

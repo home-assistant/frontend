@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   css,
   type CSSResultGroup,
@@ -9,16 +8,22 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-spinner";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-faded";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-markdown";
+import "../../../src/components/ha-md-list";
+import "../../../src/components/ha-md-list-item";
 import "../../../src/components/ha-svg-icon";
+import "../../../src/components/ha-switch";
+import type { HaSwitch } from "../../../src/components/ha-switch";
 import type { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   fetchHassioAddonChangelog,
@@ -121,6 +126,8 @@ class UpdateAvailableCard extends LitElement {
 
     const changelog = changelogUrl(this._updateType, this._version_latest);
 
+    const createBackupTexts = this._computeCreateBackupTexts();
+
     return html`
       <ha-card
         outlined
@@ -160,13 +167,35 @@ class UpdateAvailableCard extends LitElement {
                       )}
                     </p>
                   </div>
+                  ${createBackupTexts
+                    ? html`
+                        <hr />
+                        <ha-md-list>
+                          <ha-md-list-item>
+                            <span slot="headline">
+                              ${createBackupTexts.title}
+                            </span>
+
+                            ${createBackupTexts.description
+                              ? html`
+                                  <span slot="supporting-text">
+                                    ${createBackupTexts.description}
+                                  </span>
+                                `
+                              : nothing}
+                            <ha-switch
+                              slot="end"
+                              id="create-backup"
+                            ></ha-switch>
+                          </ha-md-list-item>
+                        </ha-md-list>
+                      `
+                    : nothing}
                 `
-              : html`<ha-circular-progress
+              : html`<ha-spinner
                     aria-label="Updating"
                     size="large"
-                    indeterminate
-                  >
-                  </ha-circular-progress>
+                  ></ha-spinner>
                   <p class="progress-text">
                     ${this.supervisor.localize("update_available.updating", {
                       name: this._name,
@@ -225,6 +254,48 @@ class UpdateAvailableCard extends LitElement {
         this._loadOsData();
         break;
     }
+  }
+
+  private _computeCreateBackupTexts():
+    | { title: string; description?: string }
+    | undefined {
+    // Addon backup
+    if (
+      this._updateType === "addon" &&
+      atLeastVersion(this.hass.config.version, 2025, 2, 0)
+    ) {
+      const version = this._version;
+      return {
+        title: this.supervisor.localize("update_available.create_backup.addon"),
+        description: this.supervisor.localize(
+          "update_available.create_backup.addon_description",
+          { version: version }
+        ),
+      };
+    }
+
+    // Old behavior
+    if (this._updateType && ["core", "addon"].includes(this._updateType)) {
+      return {
+        title: this.supervisor.localize(
+          "update_available.create_backup.generic"
+        ),
+      };
+    }
+    return undefined;
+  }
+
+  get _shouldCreateBackup(): boolean {
+    if (this._updateType && !["core", "addon"].includes(this._updateType)) {
+      return false;
+    }
+    const createBackupSwitch = this.shadowRoot?.getElementById(
+      "create-backup"
+    ) as HaSwitch;
+    if (createBackupSwitch) {
+      return createBackupSwitch.checked;
+    }
+    return true;
   }
 
   get _version(): string {
@@ -341,14 +412,22 @@ class UpdateAvailableCard extends LitElement {
   }
 
   private async _update() {
+    if (this._shouldCreateBackup && this.supervisor.info.state === "freeze") {
+      this._error = this.supervisor.localize("backup.backup_already_running");
+      return;
+    }
     this._error = undefined;
     this._updating = true;
 
     try {
       if (this._updateType === "addon") {
-        await updateHassioAddon(this.hass, this.addonSlug!);
+        await updateHassioAddon(
+          this.hass,
+          this.addonSlug!,
+          this._shouldCreateBackup
+        );
       } else if (this._updateType === "core") {
-        await updateCore(this.hass);
+        await updateCore(this.hass, this._shouldCreateBackup);
       } else if (this._updateType === "os") {
         await updateOS(this.hass);
       } else if (this._updateType === "supervisor") {
@@ -384,7 +463,7 @@ class UpdateAvailableCard extends LitElement {
           justify-content: space-between;
         }
 
-        ha-circular-progress {
+        ha-spinner {
           display: block;
           margin: 32px;
           text-align: center;
@@ -402,6 +481,17 @@ class UpdateAvailableCard extends LitElement {
           border-color: var(--divider-color);
           border-bottom: none;
           margin: 16px 0 0 0;
+        }
+
+        ha-md-list {
+          padding: 0;
+          margin-bottom: -16px;
+        }
+
+        ha-md-list-item {
+          --md-list-item-leading-space: 0;
+          --md-list-item-trailing-space: 0;
+          --md-item-overflow: visible;
         }
       `,
     ];

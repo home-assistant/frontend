@@ -11,6 +11,7 @@ import "./ha-icon-button";
 import { blankBeforePercent } from "../common/translations/blank_before_percent";
 import { ensureArray } from "../common/array/ensure-array";
 import { bytesToString } from "../util/bytes-to-string";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 declare global {
   interface HASSDomEvents {
@@ -23,6 +24,8 @@ declare global {
 export class HaFileUpload extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public localize?: LocalizeFunc;
+
   @property() public accept!: string;
 
   @property() public icon?: string;
@@ -30,6 +33,10 @@ export class HaFileUpload extends LitElement {
   @property() public label?: string;
 
   @property() public secondary?: string;
+
+  @property({ attribute: "uploading-label" }) public uploadingLabel?: string;
+
+  @property({ attribute: "delete-label" }) public deleteLabel?: string;
 
   @property() public supports?: string;
 
@@ -73,23 +80,22 @@ export class HaFileUpload extends LitElement {
   }
 
   public render(): TemplateResult {
+    const localize = this.localize || this.hass!.localize;
     return html`
       ${this.uploading
         ? html`<div class="container">
             <div class="uploading">
               <span class="header"
-                >${this.value
-                  ? this.hass?.localize(
-                      "ui.components.file-upload.uploading_name",
-                      { name: this._name }
-                    )
-                  : this.hass?.localize(
-                      "ui.components.file-upload.uploading"
-                    )}</span
+                >${this.uploadingLabel || this.value
+                  ? localize("ui.components.file-upload.uploading_name", {
+                      name: this._name,
+                    })
+                  : localize("ui.components.file-upload.uploading")}</span
               >
               ${this.progress
                 ? html`<div class="progress">
-                    ${this.progress}${blankBeforePercent(this.hass!.locale)}%
+                    ${this.progress}${this.hass &&
+                    blankBeforePercent(this.hass!.locale)}%
                   </div>`
                 : nothing}
             </div>
@@ -116,14 +122,11 @@ export class HaFileUpload extends LitElement {
                     .path=${this.icon || mdiFileUpload}
                   ></ha-svg-icon>
                   <ha-button unelevated @click=${this._openFilePicker}>
-                    ${this.label ||
-                    this.hass?.localize("ui.components.file-upload.label")}
+                    ${this.label || localize("ui.components.file-upload.label")}
                   </ha-button>
                   <span class="secondary"
                     >${this.secondary ||
-                    this.hass?.localize(
-                      "ui.components.file-upload.secondary"
-                    )}</span
+                    localize("ui.components.file-upload.secondary")}</span
                   >
                   <span class="supports">${this.supports}</span>`
               : typeof this.value === "string"
@@ -136,8 +139,7 @@ export class HaFileUpload extends LitElement {
                     </div>
                     <ha-icon-button
                       @click=${this._clearValue}
-                      .label=${this.hass?.localize("ui.common.delete") ||
-                      "Delete"}
+                      .label=${this.deleteLabel || localize("ui.common.delete")}
                       .path=${mdiDelete}
                     ></ha-icon-button>
                   </div>`
@@ -155,8 +157,8 @@ export class HaFileUpload extends LitElement {
                         </div>
                         <ha-icon-button
                           @click=${this._clearValue}
-                          .label=${this.hass?.localize("ui.common.delete") ||
-                          "Delete"}
+                          .label=${this.deleteLabel ||
+                          localize("ui.common.delete")}
                           .path=${mdiDelete}
                         ></ha-icon-button>
                       </div>`
@@ -238,6 +240,10 @@ export class HaFileUpload extends LitElement {
       border-radius: var(--mdc-shape-small, 4px);
       height: 100%;
     }
+    .row {
+      display: flex;
+      align-items: center;
+    }
     label.container {
       border: dashed 1px
         var(--mdc-text-field-idle-line-color, rgba(0, 0, 0, 0.42));
@@ -288,7 +294,7 @@ export class HaFileUpload extends LitElement {
     }
     .supports {
       color: var(--secondary-text-color);
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
     }
     :host([disabled]) .secondary {
       color: var(--disabled-text-color);
@@ -318,7 +324,7 @@ export class HaFileUpload extends LitElement {
       box-sizing: border-box;
     }
     .header {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
     .progress {
       color: var(--secondary-text-color);
@@ -327,7 +333,7 @@ export class HaFileUpload extends LitElement {
       background: none;
       border: none;
       padding: 0;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--primary-color);
       text-decoration: underline;
       cursor: pointer;

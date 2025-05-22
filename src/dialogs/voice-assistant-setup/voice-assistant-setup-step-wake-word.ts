@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
+import "../../components/ha-spinner";
 import "../../components/ha-dialog-header";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { interceptWakeWord } from "../../data/assist_satellite";
@@ -43,6 +44,15 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
 
   protected override willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
+
+    if (changedProperties.has("assistConfiguration")) {
+      if (
+        this.assistConfiguration &&
+        !this.assistConfiguration.available_wake_words.length
+      ) {
+        this._nextStep();
+      }
+    }
 
     if (changedProperties.has("assistEntityId")) {
       this._detected = false;
@@ -84,7 +94,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
     const entityState = this.hass.states[this.assistEntityId];
 
     if (entityState.state !== "idle") {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     return html`<div class="content">
@@ -135,13 +145,16 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
               >`
             : nothing}
       </div>
-      <div class="footer centered">
-        <ha-button @click=${this._changeWakeWord}
-          >${this.hass.localize(
-            "ui.panel.config.voice_assistants.satellite_wizard.wake_word.change_wake_word"
-          )}</ha-button
-        >
-      </div>`;
+      ${this.assistConfiguration &&
+      this.assistConfiguration.available_wake_words.length > 1
+        ? html`<div class="footer centered">
+            <ha-button @click=${this._changeWakeWord}
+              >${this.hass.localize(
+                "ui.panel.config.voice_assistants.satellite_wizard.wake_word.change_wake_word"
+              )}</ha-button
+            >
+          </div>`
+        : nothing}`;
   }
 
   private async _listenWakeWord() {

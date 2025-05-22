@@ -119,7 +119,7 @@ class HuiAlarmModeCardFeature
 
     const color = stateColorCss(this.stateObj);
 
-    const supportedModes = supportedAlarmModes(this.stateObj);
+    const supportedModes = supportedAlarmModes(this.stateObj).reverse();
 
     const options = filterModes(
       supportedModes,

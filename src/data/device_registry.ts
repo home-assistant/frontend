@@ -17,6 +17,7 @@ export {
 export interface DeviceRegistryEntry extends RegistryEntry {
   id: string;
   config_entries: string[];
+  config_entries_subentries: Record<string, (string | null)[]>;
   connections: [string, string][];
   identifiers: [string, string][];
   manufacturer: string | null;
@@ -63,20 +64,6 @@ export const fallbackDeviceName = (
   }
   return undefined;
 };
-
-export const computeDeviceName = (
-  device: DeviceRegistryEntry,
-  hass: HomeAssistant,
-  entities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
-) =>
-  device.name_by_user ||
-  device.name ||
-  (entities && fallbackDeviceName(hass, entities)) ||
-  hass.localize("ui.panel.config.devices.unnamed_device", {
-    type: hass.localize(
-      `ui.panel.config.devices.type.${device.entry_type || "device"}`
-    ),
-  });
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);

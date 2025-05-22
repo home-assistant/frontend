@@ -97,12 +97,13 @@ export class HaCardConditionEditor extends LitElement {
 
     return html`
       <div class="container">
-        <ha-expansion-panel leftChevron>
+        <ha-expansion-panel left-chevron>
+          <ha-svg-icon
+            slot="leading-icon"
+            class="condition-icon"
+            .path=${ICON_CONDITION[condition.condition]}
+          ></ha-svg-icon>
           <h3 slot="header">
-            <ha-svg-icon
-              class="condition-icon"
-              .path=${ICON_CONDITION[condition.condition]}
-            ></ha-svg-icon>
             ${this.hass.localize(
               `ui.panel.lovelace.editor.condition-editor.condition.${condition.condition}.label`
             ) || condition.condition}
@@ -312,16 +313,20 @@ export class HaCardConditionEditor extends LitElement {
         right: 0px;
         left: 0px;
         text-transform: uppercase;
-        font-weight: bold;
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-bold);
         background-color: var(--divider-color, #e0e0e0);
         color: var(--text-primary-color);
         max-height: 0px;
         overflow: hidden;
         transition: max-height 0.3s;
         text-align: center;
-        border-top-right-radius: var(--ha-card-border-radius, 12px);
-        border-top-left-radius: var(--ha-card-border-radius, 12px);
+        border-top-right-radius: calc(
+          var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+        );
+        border-top-left-radius: calc(
+          var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+        );
       }
       .testing.active {
         max-height: 100px;

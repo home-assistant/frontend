@@ -1,19 +1,26 @@
-import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { getRelativePosition } from "chart.js/helpers";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type {
+  CustomSeriesOption,
+  CustomSeriesRenderItem,
+  ECElementEvent,
+  TooltipFormatterCallback,
+  TooltipPositionCallbackParams,
+} from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
-import { fireEvent } from "../../common/dom/fire_event";
-import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { TimelineEntity } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
-import type { TimeLineData } from "./timeline-chart/const";
-import { computeTimelineColor } from "./timeline-chart/timeline-color";
-import { clickIsTouch } from "./click_is_touch";
+import { computeTimelineColor } from "./timeline-color";
+import type { ECOption } from "../../resources/echarts";
+import echarts from "../../resources/echarts";
+import { luminosity } from "../../common/color/rgb";
+import { hex2rgb } from "../../common/color/convert-color";
+import { measureTextWidth } from "../../util/text";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
@@ -44,9 +51,9 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false, type: Number }) public chartIndex?;
 
-  @state() private _chartData?: ChartData<"timeline">;
+  @state() private _chartData: CustomSeriesOption[] = [];
 
-  @state() private _chartOptions?: ChartOptions<"timeline">;
+  @state() private _chartOptions?: ECOption;
 
   @state() private _yWidth = 0;
 
@@ -56,20 +63,103 @@ export class StateHistoryChartTimeline extends LitElement {
     return html`
       <ha-chart-base
         .hass=${this.hass}
-        .data=${this._chartData}
         .options=${this._chartOptions}
-        .height=${this.data.length * 30 + 30}
-        .paddingYAxis=${this.paddingYAxis - this._yWidth}
-        chart-type="timeline"
+        .height=${`${this.data.length * 30 + 30}px`}
+        .data=${this._chartData as ECOption["series"]}
+        @chart-click=${this._handleChartClick}
       ></ha-chart-base>
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated) {
-      this._createOptions();
+  private _renderItem: CustomSeriesRenderItem = (params, api) => {
+    const categoryIndex = api.value(0);
+    const start = api.coord([api.value(1), categoryIndex]);
+    const end = api.coord([api.value(2), categoryIndex]);
+    const height = 20;
+    const coordSys = params.coordSys as any;
+    const rectShape = echarts.graphic.clipRectByRect(
+      {
+        x: start[0],
+        y: start[1] - height / 2,
+        width: end[0] - start[0],
+        height: height,
+      },
+      {
+        x: coordSys.x,
+        y: coordSys.y,
+        width: coordSys.width,
+        height: coordSys.height,
+      }
+    );
+    if (!rectShape) return null;
+    const rect = {
+      type: "rect" as const,
+      transition: "shape" as const,
+      shape: rectShape,
+      style: {
+        fill: api.value(4) as string,
+      },
+    };
+    const text = api.value(3) as string;
+    const textWidth = measureTextWidth(text, 12);
+    const LABEL_PADDING = 4;
+    if (textWidth < rectShape.width - LABEL_PADDING * 2) {
+      return {
+        type: "group",
+        children: [
+          rect,
+          {
+            type: "text",
+            style: {
+              ...rectShape,
+              x: rectShape.x + LABEL_PADDING,
+              text,
+              fill: api.value(5) as string,
+              fontSize: 12,
+              lineHeight: rectShape.height,
+            },
+          },
+        ],
+      };
     }
+    return rect;
+  };
 
+  private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
+    (params: TooltipPositionCallbackParams) => {
+      const { value, name, marker, seriesName, color } = Array.isArray(params)
+        ? params[0]
+        : params;
+      const title = seriesName
+        ? `<h4 style="text-align: center; margin: 0;">${seriesName}</h4>`
+        : "";
+      const durationInMs = value![2] - value![1];
+      const formattedDuration = `${this.hass.localize(
+        "ui.components.history_charts.duration"
+      )}: ${millisecondsToDuration(durationInMs)}`;
+
+      const markerLocalized = !computeRTL(this.hass)
+        ? marker
+        : `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+
+      const lines = [
+        markerLocalized + name,
+        formatDateTimeWithSeconds(
+          new Date(value![1]),
+          this.hass.locale,
+          this.hass.config
+        ),
+        formatDateTimeWithSeconds(
+          new Date(value![2]),
+          this.hass.locale,
+          this.hass.config
+        ),
+        formattedDuration,
+      ].join("<br>");
+      return [title, lines].join("");
+    };
+
+  public willUpdate(changedProps: PropertyValues) {
     if (
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
@@ -83,9 +173,12 @@ export class StateHistoryChartTimeline extends LitElement {
     }
 
     if (
+      !this.hasUpdated ||
       changedProps.has("startTime") ||
       changedProps.has("endTime") ||
-      changedProps.has("showNames")
+      changedProps.has("showNames") ||
+      changedProps.has("paddingYAxis") ||
+      changedProps.has("_yWidth")
     ) {
       this._createOptions();
     }
@@ -93,144 +186,71 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _createOptions() {
     const narrow = this.narrow;
+    const showNames = this.chunked || this.showNames;
+    const maxInternalLabelWidth = narrow ? 105 : 185;
+    const labelWidth = showNames
+      ? Math.max(this.paddingYAxis, this._yWidth)
+      : 0;
+    const labelMargin = 5;
+    const rtl = computeRTL(this.hass);
     this._chartOptions = {
-      maintainAspectRatio: false,
-      parsing: false,
-      scales: {
-        x: {
-          type: "time",
-          position: "bottom",
-          adapters: {
-            date: {
-              locale: this.hass.locale,
-              config: this.hass.config,
-            },
-          },
-          min: this.startTime,
-          suggestedMax: this.endTime,
-          ticks: {
-            autoSkip: true,
-            maxRotation: 0,
-            sampleSize: 5,
-            autoSkipPadding: 20,
-            major: {
-              enabled: true,
-            },
-            font: (context) =>
-              context.tick && context.tick.major
-                ? ({ weight: "bold" } as any)
-                : {},
-          },
-          grid: {
-            offset: false,
-          },
-          time: {
-            tooltipFormat: "datetimeseconds",
-          },
+      xAxis: {
+        type: "time",
+        min: this.startTime,
+        max: this.endTime,
+        axisTick: {
+          show: true,
         },
-        y: {
-          type: "category",
-          barThickness: 20,
-          offset: true,
-          grid: {
-            display: false,
-            drawBorder: false,
-            drawTicks: false,
-          },
-          ticks: {
-            display: this.chunked || this.showNames,
-          },
-          afterSetDimensions: (y) => {
-            y.maxWidth = y.chart.width * 0.18;
-          },
-          afterFit: (scaleInstance) => {
-            if (this.chunked) {
-              // ensure all the chart labels are the same width
-              scaleInstance.width = narrow ? 105 : 185;
-            }
-          },
-          afterUpdate: (y) => {
-            const yWidth = this.showNames
-              ? (y.width ?? 0)
-              : computeRTL(this.hass)
-                ? 0
-                : (y.left ?? 0);
-            if (
-              this._yWidth !== Math.floor(yWidth) &&
-              y.ticks.length === this.data.length
-            ) {
-              this._yWidth = Math.floor(yWidth);
+        splitLine: {
+          show: false,
+        },
+      },
+      yAxis: {
+        type: "category",
+        inverse: true,
+        position: rtl ? "right" : "left",
+        triggerEvent: true,
+        axisTick: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisLabel: {
+          show: showNames,
+          width: labelWidth,
+          overflow: "truncate",
+          margin: labelMargin,
+          formatter: (id: string) => {
+            const label = this._chartData.find((d) => d.id === id)
+              ?.name as string;
+            const width = label
+              ? Math.min(
+                  measureTextWidth(label, 12) + labelMargin,
+                  maxInternalLabelWidth
+                )
+              : 0;
+            if (width > this._yWidth) {
+              this._yWidth = width;
               fireEvent(this, "y-width-changed", {
                 value: this._yWidth,
                 chartIndex: this.chartIndex,
               });
             }
+            return label;
           },
-          position: computeRTL(this.hass) ? "right" : "left",
+          hideOverlap: true,
         },
       },
-      plugins: {
-        tooltip: {
-          mode: "nearest",
-          callbacks: {
-            title: (context) =>
-              context![0].chart!.data!.labels![
-                context[0].datasetIndex
-              ] as string,
-            beforeBody: (context) => context[0].dataset.label || "",
-            label: (item) => {
-              const d = item.dataset.data[item.dataIndex] as TimeLineData;
-              const durationInMs = d.end.getTime() - d.start.getTime();
-              const formattedDuration = `${this.hass.localize(
-                "ui.components.history_charts.duration"
-              )}: ${millisecondsToDuration(durationInMs)}`;
-
-              return [
-                d.label || "",
-                formatDateTimeWithSeconds(
-                  d.start,
-                  this.hass.locale,
-                  this.hass.config
-                ),
-                formatDateTimeWithSeconds(
-                  d.end,
-                  this.hass.locale,
-                  this.hass.config
-                ),
-                formattedDuration,
-              ];
-            },
-            labelColor: (item) => ({
-              borderColor: (item.dataset.data[item.dataIndex] as TimeLineData)
-                .color!,
-              backgroundColor: (
-                item.dataset.data[item.dataIndex] as TimeLineData
-              ).color!,
-            }),
-          },
-        },
-        filler: {
-          propagate: true,
-        },
+      grid: {
+        top: 10,
+        bottom: 30,
+        left: rtl ? 1 : labelWidth,
+        right: rtl ? labelWidth : 1,
       },
-      // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-      onClick: (e: any) => {
-        if (!this.clickForMoreInfo || clickIsTouch(e)) {
-          return;
-        }
-
-        const chart = e.chart;
-        const canvasPosition = getRelativePosition(e, chart);
-
-        const index = Math.abs(
-          chart.scales.y.getValueForPixel(canvasPosition.y)
-        );
-        fireEvent(this, "hass-more-info", {
-          // @ts-ignore
-          entityId: this._chartData?.datasets[index]?.label,
-        });
-        chart.canvas.dispatchEvent(new Event("mouseout")); // to hide tooltip
+      tooltip: {
+        appendTo: document.body,
+        formatter: this._renderTooltip,
       },
     };
   }
@@ -246,8 +266,7 @@ export class StateHistoryChartTimeline extends LitElement {
     this._chartTime = new Date();
     const startTime = this.startTime;
     const endTime = this.endTime;
-    const labels: string[] = [];
-    const datasets: ChartDataset<"timeline">[] = [];
+    const datasets: CustomSeriesOption[] = [];
     const names = this.names || {};
     // stateHistory is a list of lists of sorted state objects
     stateHistory.forEach((stateInfo) => {
@@ -255,10 +274,11 @@ export class StateHistoryChartTimeline extends LitElement {
       let prevState: string | null = null;
       let locState: string | null = null;
       let prevLastChanged = startTime;
-      const entityDisplay: string =
-        names[stateInfo.entity_id] || stateInfo.name;
+      const entityDisplay: string = this.showNames
+        ? names[stateInfo.entity_id] || stateInfo.name || stateInfo.entity_id
+        : "";
 
-      const dataRow: TimeLineData[] = [];
+      const dataRow: unknown[] = [];
       stateInfo.data.forEach((entityState) => {
         let newState: string | null = entityState.state;
         const timeStamp = new Date(entityState.last_changed);
@@ -277,15 +297,23 @@ export class StateHistoryChartTimeline extends LitElement {
         } else if (newState !== prevState) {
           newLastChanged = new Date(entityState.last_changed);
 
+          const color = computeTimelineColor(
+            prevState,
+            computedStyles,
+            this.hass.states[stateInfo.entity_id]
+          );
           dataRow.push({
-            start: prevLastChanged,
-            end: newLastChanged,
-            label: locState,
-            color: computeTimelineColor(
-              prevState,
-              computedStyles,
-              this.hass.states[stateInfo.entity_id]
-            ),
+            value: [
+              stateInfo.entity_id,
+              prevLastChanged,
+              newLastChanged,
+              locState,
+              color,
+              luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
+            ],
+            itemStyle: {
+              color,
+            },
           });
 
           prevState = newState;
@@ -295,28 +323,52 @@ export class StateHistoryChartTimeline extends LitElement {
       });
 
       if (prevState !== null) {
+        const color = computeTimelineColor(
+          prevState,
+          computedStyles,
+          this.hass.states[stateInfo.entity_id]
+        );
         dataRow.push({
-          start: prevLastChanged,
-          end: endTime,
-          label: locState,
-          color: computeTimelineColor(
-            prevState,
-            computedStyles,
-            this.hass.states[stateInfo.entity_id]
-          ),
+          value: [
+            stateInfo.entity_id,
+            prevLastChanged,
+            endTime,
+            locState,
+            color,
+            luminosity(hex2rgb(color)) > 0.5 ? "#000" : "#fff",
+          ],
+          itemStyle: {
+            color,
+          },
         });
       }
       datasets.push({
+        id: stateInfo.entity_id,
         data: dataRow,
-        label: stateInfo.entity_id,
+        name: entityDisplay,
+        dimensions: ["id", "start", "end", "name", "color", "textColor"],
+        type: "custom",
+        encode: {
+          x: [1, 2],
+          y: 0,
+          itemName: 3,
+        },
+        renderItem: this._renderItem,
       });
-      labels.push(entityDisplay);
     });
 
-    this._chartData = {
-      labels: labels,
-      datasets: datasets,
-    };
+    this._chartData = datasets;
+  }
+
+  private _handleChartClick(e: CustomEvent<ECElementEvent>): void {
+    if (e.detail.targetType === "axisLabel") {
+      const dataset = this._chartData[e.detail.dataIndex];
+      if (dataset) {
+        fireEvent(this, "hass-more-info", {
+          entityId: dataset.id as string,
+        });
+      }
+    }
   }
 
   static styles = css`

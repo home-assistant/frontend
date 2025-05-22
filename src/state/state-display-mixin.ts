@@ -1,3 +1,4 @@
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { getSensorNumericDeviceClasses } from "../data/sensor";
 import type { Constructor, HomeAssistant } from "../types";
@@ -31,10 +32,21 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
     }
 
     private _updateStateDisplay = async () => {
-      if (!this.hass) return;
+      if (!this.hass || !this.hass.config) {
+        return;
+      }
 
-      const { numeric_device_classes: sensorNumericDeviceClasses } =
-        await getSensorNumericDeviceClasses(this.hass);
+      let sensorNumericDeviceClasses: string[] = [];
+
+      if (isComponentLoaded(this.hass, "sensor")) {
+        try {
+          sensorNumericDeviceClasses = (
+            await getSensorNumericDeviceClasses(this.hass)
+          ).numeric_device_classes;
+        } catch (_err: any) {
+          // ignore
+        }
+      }
 
       const {
         formatEntityState,

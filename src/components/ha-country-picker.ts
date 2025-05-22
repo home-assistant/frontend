@@ -8,7 +8,7 @@ import "./ha-list-item";
 import "./ha-select";
 import type { HaSelect } from "./ha-select";
 
-const COUNTRIES = [
+export const COUNTRIES = [
   "AD",
   "AE",
   "AF",

@@ -76,10 +76,10 @@ export class HaEntitySelector extends LitElement {
     }
 
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : ""}
       <ha-entities-picker
         .hass=${this.hass}
         .value=${this.value}
+        .label=${this.label}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}

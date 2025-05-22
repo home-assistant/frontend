@@ -10,7 +10,9 @@ import type {
   SchemaUnion,
 } from "../../../components/ha-form/types";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-list-item";
 import "../../../components/ha-navigation-picker";
+import type { HaSelect } from "../../../components/ha-select";
 import "../../../components/ha-service-control";
 import type {
   ActionConfig,
@@ -21,7 +23,6 @@ import type {
 import type { ServiceAction } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
 import type { EditorTarget } from "../editor/types";
-import type { HaSelect } from "../../../components/ha-select";
 
 export type UiAction = Exclude<ActionConfig["action"], "fire-dom-event">;
 
@@ -141,7 +142,7 @@ export class HuiActionEditor extends LitElement {
           fixedMenuPosition
           naturalMenuWidt
         >
-          <mwc-list-item value="default">
+          <ha-list-item value="default">
             ${this.hass!.localize(
               "ui.panel.lovelace.editor.action-editor.actions.default_action"
             )}
@@ -150,14 +151,14 @@ export class HuiActionEditor extends LitElement {
                   `ui.panel.lovelace.editor.action-editor.actions.${this.defaultAction}`
                 ).toLowerCase()})`
               : nothing}
-          </mwc-list-item>
+          </ha-list-item>
           ${actions.map(
             (actn) => html`
-              <mwc-list-item .value=${actn}>
+              <ha-list-item .value=${actn}>
                 ${this.hass!.localize(
                   `ui.panel.lovelace.editor.action-editor.actions.${actn}`
                 )}
-              </mwc-list-item>
+              </ha-list-item>
             `
           )}
         </ha-select>
@@ -344,12 +345,6 @@ export class HuiActionEditor extends LitElement {
     }
     ha-service-control {
       --service-control-padding: 0;
-    }
-    ha-formfield {
-      display: flex;
-      height: 56px;
-      align-items: center;
-      --mdc-typography-body2-font-size: 1em;
     }
   `;
 }

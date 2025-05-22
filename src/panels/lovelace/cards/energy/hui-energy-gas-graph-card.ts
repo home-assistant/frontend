@@ -1,9 +1,3 @@
-import type {
-  ChartData,
-  ChartDataset,
-  ChartOptions,
-  ScatterDataPoint,
-} from "chart.js";
 import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -11,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import type { BarSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
@@ -31,7 +26,12 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGasGraphCardConfig } from "../types";
 import { hasConfigChanged } from "../../common/has-changed";
-import { getCommonOptions } from "./common/energy-chart-options";
+import {
+  fillDataGapsAndRoundCaps,
+  getCommonOptions,
+  getCompareTransform,
+} from "./common/energy-chart-options";
+import type { ECOption } from "../../../../resources/echarts";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
@@ -42,9 +42,7 @@ export class HuiEnergyGasGraphCard
 
   @state() private _config?: EnergyGasGraphCardConfig;
 
-  @state() private _chartData: ChartData = {
-    datasets: [],
-  };
+  @state() private _chartData: BarSeriesOption[] = [];
 
   @state() private _start = startOfToday();
 
@@ -111,7 +109,7 @@ export class HuiEnergyGasGraphCard
             )}
             chart-type="bar"
           ></ha-chart-base>
-          ${!this._chartData.datasets.length
+          ${!this._chartData.length
             ? html`<div class="no-data">
                 ${isToday(this._start)
                   ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
@@ -125,6 +123,12 @@ export class HuiEnergyGasGraphCard
     `;
   }
 
+  private _formatTotal = (total: number) =>
+    this.hass.localize(
+      "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
+      { num: formatNumber(total, this.hass.locale), unit: this._unit }
+    );
+
   private _createOptions = memoizeOne(
     (
       start: Date,
@@ -134,63 +138,62 @@ export class HuiEnergyGasGraphCard
       unit?: string,
       compareStart?: Date,
       compareEnd?: Date
-    ): ChartOptions => {
-      const commonOptions = getCommonOptions(
+    ): ECOption =>
+      getCommonOptions(
         start,
         end,
         locale,
         config,
         unit,
         compareStart,
-        compareEnd
-      );
-      const options: ChartOptions = {
-        ...commonOptions,
-        plugins: {
-          ...commonOptions.plugins,
-          tooltip: {
-            ...commonOptions.plugins!.tooltip,
-            callbacks: {
-              ...commonOptions.plugins!.tooltip!.callbacks,
-              footer: (contexts) => {
-                if (contexts.length < 2) {
-                  return [];
-                }
-                let total = 0;
-                for (const context of contexts) {
-                  total += (context.dataset.data[context.dataIndex] as any).y;
-                }
-                if (total === 0) {
-                  return [];
-                }
-                return [
-                  this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.energy_gas_graph.total_consumed",
-                    { num: formatNumber(total, locale), unit }
-                  ),
-                ];
-              },
-            },
-          },
-        },
-      };
-      return options;
-    }
+        compareEnd,
+        this._formatTotal
+      )
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
+    this._compareStart = energyData.startCompare;
+    this._compareEnd = energyData.endCompare;
+
     const gasSources: GasSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    this._unit =
-      getEnergyGasUnit(this.hass, energyData.prefs, energyData.statsMetadata) ||
-      "m³";
+    this._unit = getEnergyGasUnit(
+      this.hass,
+      energyData.prefs,
+      energyData.statsMetadata
+    );
 
-    const datasets: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
+    const datasets: BarSeriesOption[] = [];
 
     const computedStyles = getComputedStyle(this);
+
+    if (energyData.statsCompare) {
+      datasets.push(
+        ...this._processDataSet(
+          energyData.statsCompare,
+          energyData.statsMetadata,
+          gasSources,
+          computedStyles,
+          true
+        )
+      );
+    } else {
+      // add empty dataset so compare bars are first
+      // `stack: gas` so it doesn't take up space yet
+      const firstId = gasSources[0]?.stat_energy_from ?? "placeholder";
+      datasets.push({
+        id: "compare-" + firstId,
+        type: "bar",
+        stack: "gas",
+        data: [],
+      });
+    }
 
     datasets.push(
       ...this._processDataSet(
@@ -201,38 +204,8 @@ export class HuiEnergyGasGraphCard
       )
     );
 
-    if (energyData.statsCompare) {
-      // Add empty dataset to align the bars
-      datasets.push({
-        order: 0,
-        data: [],
-      });
-      datasets.push({
-        order: 999,
-        data: [],
-        xAxisID: "xAxisCompare",
-      });
-
-      datasets.push(
-        ...this._processDataSet(
-          energyData.statsCompare,
-          energyData.statsMetadata,
-          gasSources,
-          computedStyles,
-          true
-        )
-      );
-    }
-
-    this._start = energyData.start;
-    this._end = energyData.end || endOfToday();
-
-    this._compareStart = energyData.startCompare;
-    this._compareEnd = energyData.endCompare;
-
-    this._chartData = {
-      datasets,
-    };
+    fillDataGapsAndRoundCaps(datasets);
+    this._chartData = datasets;
   }
 
   private _processDataSet(
@@ -242,56 +215,67 @@ export class HuiEnergyGasGraphCard
     computedStyles: CSSStyleDeclaration,
     compare = false
   ) {
-    const data: ChartDataset<"bar", ScatterDataPoint[]>[] = [];
+    const data: BarSeriesOption[] = [];
+    const compareTransform = getCompareTransform(
+      this._start,
+      this._compareStart!
+    );
 
     gasSources.forEach((source, idx) => {
       let prevStart: number | null = null;
 
-      const gasConsumptionData: ScatterDataPoint[] = [];
+      const gasConsumptionData: BarSeriesOption["data"] = [];
 
       // Process gas consumption data.
       if (source.stat_energy_from in statistics) {
         const stats = statistics[source.stat_energy_from];
-        let end;
-
         for (const point of stats) {
-          if (point.change === null || point.change === undefined) {
+          if (
+            point.change === null ||
+            point.change === undefined ||
+            point.change === 0
+          ) {
             continue;
           }
           if (prevStart === point.start) {
             continue;
           }
-          const date = new Date(point.start);
-          gasConsumptionData.push({
-            x: date.getTime(),
-            y: point.change,
-          });
+          const dataPoint: (Date | string | number)[] = [
+            point.start,
+            point.change,
+          ];
+          if (compare) {
+            dataPoint[2] = dataPoint[0];
+            dataPoint[0] = compareTransform(new Date(point.start));
+          }
+          gasConsumptionData.push(dataPoint);
           prevStart = point.start;
-          end = point.end;
-        }
-        if (gasConsumptionData.length === 1) {
-          gasConsumptionData.push({
-            x: end,
-            y: 0,
-          });
         }
       }
 
       data.push({
-        label: getStatisticLabel(
+        type: "bar",
+        cursor: "default",
+        id: compare
+          ? "compare-" + source.stat_energy_from
+          : source.stat_energy_from,
+        name: getStatisticLabel(
           this.hass,
           source.stat_energy_from,
           statisticsMetaData[source.stat_energy_from]
         ),
-        borderColor: getEnergyColor(
-          computedStyles,
-          this.hass.themes.darkMode,
-          false,
-          compare,
-          "--energy-gas-color",
-          idx
-        ),
-        backgroundColor: getEnergyColor(
+        barMaxWidth: 50,
+        itemStyle: {
+          borderColor: getEnergyColor(
+            computedStyles,
+            this.hass.themes.darkMode,
+            false,
+            compare,
+            "--energy-gas-color",
+            idx
+          ),
+        },
+        color: getEnergyColor(
           computedStyles,
           this.hass.themes.darkMode,
           true,
@@ -300,9 +284,7 @@ export class HuiEnergyGasGraphCard
           idx
         ),
         data: gasConsumptionData,
-        order: 1,
-        stack: "gas",
-        xAxisID: compare ? "xAxisCompare" : undefined,
+        stack: compare ? "compare-gas" : "gas",
       });
     });
     return data;

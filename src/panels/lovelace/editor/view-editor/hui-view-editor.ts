@@ -100,6 +100,12 @@ export class HuiViewEditor extends LitElement {
                       boolean: {},
                     },
                   },
+                  {
+                    name: "top_margin",
+                    selector: {
+                      boolean: {},
+                    },
+                  },
                 ],
               },
             ] as const satisfies HaFormSchema[])
@@ -149,6 +155,7 @@ export class HuiViewEditor extends LitElement {
     if (config.type !== SECTIONS_VIEW_LAYOUT) {
       delete config.max_columns;
       delete config.dense_section_placement;
+      delete config.top_margin;
     }
 
     if (
@@ -174,6 +181,7 @@ export class HuiViewEditor extends LitElement {
       case "subview":
       case "max_columns":
       case "dense_section_placement":
+      case "top_margin":
       case "section_specifics":
         return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view.${schema.name}`
@@ -191,6 +199,7 @@ export class HuiViewEditor extends LitElement {
     switch (schema.name) {
       case "subview":
       case "dense_section_placement":
+      case "top_margin":
         return this.hass.localize(
           `ui.panel.lovelace.editor.edit_view.${schema.name}_helper`
         );

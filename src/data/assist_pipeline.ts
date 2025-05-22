@@ -1,6 +1,5 @@
 import type { HomeAssistant } from "../types";
 import type { ConversationResult } from "./conversation";
-import type { ResolvedMediaSource } from "./media_source";
 import type { SpeechMetadata } from "./stt";
 
 export interface AssistPipeline {
@@ -53,9 +52,15 @@ interface PipelineRunStartEvent extends PipelineEventBase {
   data: {
     pipeline: string;
     language: string;
+    conversation_id: string;
     runner_data: {
       stt_binary_handler_id: number | null;
       timeout: number;
+    };
+    tts_output?: {
+      token: string;
+      url: string;
+      mime_type: string;
     };
   };
 }
@@ -108,6 +113,34 @@ interface PipelineIntentStartEvent extends PipelineEventBase {
     intent_input: string;
   };
 }
+
+export interface ConversationChatLogAssistantDelta {
+  role: "assistant";
+  content: string;
+  tool_calls: {
+    id: string;
+    tool_name: string;
+    tool_args: Record<string, unknown>;
+  }[];
+}
+
+export interface ConversationChatLogToolResultDelta {
+  role: "tool_result";
+  agent_id: string;
+  tool_call_id: string;
+  tool_name: string;
+  tool_result: unknown;
+}
+interface PipelineIntentProgressEvent extends PipelineEventBase {
+  type: "intent-progress";
+  data: {
+    chat_log_delta:
+      | Partial<ConversationChatLogAssistantDelta>
+      // These always come in 1 chunk
+      | ConversationChatLogToolResultDelta;
+  };
+}
+
 interface PipelineIntentEndEvent extends PipelineEventBase {
   type: "intent-end";
   data: {
@@ -128,7 +161,12 @@ interface PipelineTTSStartEvent extends PipelineEventBase {
 interface PipelineTTSEndEvent extends PipelineEventBase {
   type: "tts-end";
   data: {
-    tts_output: ResolvedMediaSource;
+    tts_output: {
+      media_id: string;
+      token: string;
+      url: string;
+      mime_type: string;
+    };
   };
 }
 
@@ -141,6 +179,7 @@ export type PipelineRunEvent =
   | PipelineSTTStartEvent
   | PipelineSTTEndEvent
   | PipelineIntentStartEvent
+  | PipelineIntentProgressEvent
   | PipelineIntentEndEvent
   | PipelineTTSStartEvent
   | PipelineTTSEndEvent;

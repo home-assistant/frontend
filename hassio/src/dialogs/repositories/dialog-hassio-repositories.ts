@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDeleteOff } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -8,7 +7,8 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-tooltip";
+import "../../../../src/components/ha-spinner";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
 import type {
@@ -118,28 +118,27 @@ class HassioRepositoriesDialog extends LitElement {
                         <div>${repo.maintainer}</div>
                         <div>${repo.url}</div>
                       </div>
-                      <div class="delete" slot="end">
-                        <ha-icon-button
-                          .disabled=${usedRepositories.includes(repo.slug)}
-                          .slug=${repo.slug}
-                          .path=${usedRepositories.includes(repo.slug)
-                            ? mdiDeleteOff
-                            : mdiDelete}
-                          @click=${this._removeRepository}
-                        >
-                        </ha-icon-button>
-                        <simple-tooltip
-                          animation-delay="0"
-                          position="bottom"
-                          offset="1"
-                        >
-                          ${this._dialogParams!.supervisor.localize(
-                            usedRepositories.includes(repo.slug)
-                              ? "dialog.repositories.used"
-                              : "dialog.repositories.remove"
-                          )}
-                        </simple-tooltip>
-                      </div>
+                      <ha-tooltip
+                        class="delete"
+                        slot="end"
+                        .content=${this._dialogParams!.supervisor.localize(
+                          usedRepositories.includes(repo.slug)
+                            ? "dialog.repositories.used"
+                            : "dialog.repositories.remove"
+                        )}
+                      >
+                        <div>
+                          <ha-icon-button
+                            .disabled=${usedRepositories.includes(repo.slug)}
+                            .slug=${repo.slug}
+                            .path=${usedRepositories.includes(repo.slug)
+                              ? mdiDeleteOff
+                              : mdiDelete}
+                            @click=${this._removeRepository}
+                          >
+                          </ha-icon-button>
+                        </div>
+                      </ha-tooltip>
                     </ha-md-list-item>
                   `
                 )
@@ -162,10 +161,7 @@ class HassioRepositoriesDialog extends LitElement {
             ></ha-textfield>
             <mwc-button @click=${this._addRepository}>
               ${this._processing
-                ? html`<ha-circular-progress
-                    indeterminate
-                    size="small"
-                  ></ha-circular-progress>`
+                ? html`<ha-spinner size="small"></ha-spinner>`
                 : this._dialogParams!.supervisor.localize(
                     "dialog.repositories.add"
                   )}
@@ -187,9 +183,6 @@ class HassioRepositoriesDialog extends LitElement {
         ha-dialog.button-left {
           --justify-action-buttons: flex-start;
         }
-        paper-icon-item {
-          cursor: pointer;
-        }
         .form {
           color: var(--primary-text-color);
         }
@@ -203,7 +196,7 @@ class HassioRepositoriesDialog extends LitElement {
           margin-inline-start: 8px;
           margin-inline-end: initial;
         }
-        ha-circular-progress {
+        ha-spinner {
           display: block;
           margin: 32px;
           text-align: center;

@@ -184,7 +184,7 @@ export class HaControlNumberButton extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --control-number-buttons-focus-color: var(--primary-color);
+      --control-number-buttons-focus-color: var(--secondary-text-color);
       --control-number-buttons-background-color: var(--disabled-color);
       --control-number-buttons-background-opacity: 0.2;
       --control-number-buttons-border-radius: 10px;
@@ -194,7 +194,7 @@ export class HaControlNumberButton extends LitElement {
       color: var(--primary-text-color);
       -webkit-tap-highlight-color: transparent;
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       transition: color 180ms ease-in-out;
     }
     :host([disabled]) {
@@ -228,6 +228,7 @@ export class HaControlNumberButton extends LitElement {
       color: inherit;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      transition: box-shadow 180ms ease-in-out;
       outline: none;
     }
     .value::before {
@@ -253,7 +254,7 @@ export class HaControlNumberButton extends LitElement {
       bottom: 0;
       padding: 0;
       width: 35px;
-      height: 40px;
+      height: 100%;
       border: none;
       background: none;
       cursor: pointer;

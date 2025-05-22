@@ -80,7 +80,6 @@ export class HaFormString extends LitElement implements HaFormElement {
     if (!this.isPassword) return nothing;
     return html`
       <ha-icon-button
-        toggles
         .label=${this.localize?.(
           `${this.localizeBaseKey}.${
             this.unmaskedPassword ? "hide_password" : "show_password"

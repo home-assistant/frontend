@@ -1,12 +1,11 @@
-import "@material/mwc-list/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
-import { computeDeviceName } from "../data/device_registry";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
@@ -14,6 +13,7 @@ import { loadVirtualizer } from "../resources/virtualizer";
 import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
+import "./ha-list";
 import "./search-input-outlined";
 
 @customElement("ha-filter-devices")
@@ -46,7 +46,7 @@ export class HaFilterDevices extends LitElement {
   protected render() {
     return html`
       <ha-expansion-panel
-        leftChevron
+        left-chevron
         .expanded=${this.expanded}
         @expanded-will-change=${this._expandedWillChange}
         @expanded-changed=${this._expandedChanged}
@@ -68,7 +68,7 @@ export class HaFilterDevices extends LitElement {
                 @value-changed=${this._handleSearchChange}
               >
               </search-input-outlined>
-              <mwc-list class="ha-scrollbar" multi>
+              <ha-list class="ha-scrollbar" multi>
                 <lit-virtualizer
                   .items=${this._devices(
                     this.hass.devices,
@@ -80,7 +80,7 @@ export class HaFilterDevices extends LitElement {
                   @click=${this._handleItemClick}
                 >
                 </lit-virtualizer>
-              </mwc-list>`
+              </ha-list>`
           : nothing}
       </ha-expansion-panel>
     `;
@@ -95,7 +95,7 @@ export class HaFilterDevices extends LitElement {
           .value=${device.id}
           .selected=${this.value?.includes(device.id) ?? false}
         >
-          ${computeDeviceName(device, this.hass)}
+          ${computeDeviceNameDisplay(device, this.hass)}
         </ha-check-list-item>`;
 
   private _handleItemClick(ev) {
@@ -117,7 +117,7 @@ export class HaFilterDevices extends LitElement {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - 49 - 32}px`; // 32px is the height of the search input
       }, 300);
     }
@@ -142,12 +142,14 @@ export class HaFilterDevices extends LitElement {
         .filter(
           (device) =>
             !filter ||
-            computeDeviceName(device, this.hass).toLowerCase().includes(filter)
+            computeDeviceNameDisplay(device, this.hass)
+              .toLowerCase()
+              .includes(filter)
         )
         .sort((a, b) =>
           stringCompare(
-            computeDeviceName(a, this.hass),
-            computeDeviceName(b, this.hass),
+            computeDeviceNameDisplay(a, this.hass),
+            computeDeviceNameDisplay(b, this.hass),
             this.hass.locale.language
           )
         );
@@ -230,10 +232,10 @@ export class HaFilterDevices extends LitElement {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

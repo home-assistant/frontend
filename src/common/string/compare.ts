@@ -45,3 +45,22 @@ export const caseInsensitiveStringCompare = (
 
   return fallbackStringCompare(a.toLowerCase(), b.toLowerCase());
 };
+
+export const orderCompare = (order: string[]) => (a: string, b: string) => {
+  const idxA = order.indexOf(a);
+  const idxB = order.indexOf(b);
+
+  if (idxA === idxB) {
+    return 0;
+  }
+
+  if (idxA === -1) {
+    return 1;
+  }
+
+  if (idxB === -1) {
+    return -1;
+  }
+
+  return idxA - idxB;
+};

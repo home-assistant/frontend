@@ -1,6 +1,6 @@
 import { mdiChevronDown } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -13,11 +13,11 @@ export class HaExpansionPanel extends LitElement {
 
   @property({ type: Boolean, reflect: true }) outlined = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) leftChevron =
-    false;
+  @property({ attribute: "left-chevron", type: Boolean, reflect: true })
+  public leftChevron = false;
 
-  @property({ attribute: false, type: Boolean, reflect: true }) noCollapse =
-    false;
+  @property({ attribute: "no-collapse", type: Boolean, reflect: true })
+  public noCollapse = false;
 
   @property() header?: string;
 
@@ -28,6 +28,14 @@ export class HaExpansionPanel extends LitElement {
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
+    const chevronIcon = this.noCollapse
+      ? nothing
+      : html`
+          <ha-svg-icon
+            .path=${mdiChevronDown}
+            class="summary-icon ${classMap({ expanded: this.expanded })}"
+          ></ha-svg-icon>
+        `;
     return html`
       <div class="top ${classMap({ expanded: this.expanded })}">
         <div
@@ -42,28 +50,15 @@ export class HaExpansionPanel extends LitElement {
           aria-expanded=${this.expanded}
           aria-controls="sect1"
         >
-          ${this.leftChevron && !this.noCollapse
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiChevronDown}
-                  class="summary-icon ${classMap({ expanded: this.expanded })}"
-                ></ha-svg-icon>
-              `
-            : ""}
+          ${this.leftChevron ? chevronIcon : nothing}
+          <slot name="leading-icon"></slot>
           <slot name="header">
             <div class="header">
               ${this.header}
               <slot class="secondary" name="secondary">${this.secondary}</slot>
             </div>
           </slot>
-          ${!this.leftChevron && !this.noCollapse
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiChevronDown}
-                  class="summary-icon ${classMap({ expanded: this.expanded })}"
-                ></ha-svg-icon>
-              `
-            : ""}
+          ${!this.leftChevron ? chevronIcon : nothing}
           <slot name="icons"></slot>
         </div>
       </div>
@@ -177,7 +172,8 @@ export class HaExpansionPanel extends LitElement {
       margin-inline-end: initial;
     }
 
-    :host([leftchevron]) .summary-icon {
+    :host([left-chevron]) .summary-icon,
+    ::slotted([slot="leading-icon"]) {
       margin-left: 0;
       margin-right: 8px;
       margin-inline-start: 0;
@@ -192,7 +188,7 @@ export class HaExpansionPanel extends LitElement {
       align-items: center;
       cursor: pointer;
       overflow: hidden;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       outline: none;
     }
     #summary.noCollapse {
@@ -206,6 +202,7 @@ export class HaExpansionPanel extends LitElement {
     .header,
     ::slotted([slot="header"]) {
       flex: 1;
+      overflow-wrap: anywhere;
     }
 
     .container {
@@ -222,7 +219,7 @@ export class HaExpansionPanel extends LitElement {
     .secondary {
       display: block;
       color: var(--secondary-text-color);
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
     }
   `;
 }

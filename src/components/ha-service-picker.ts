@@ -7,7 +7,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import { domainToName } from "../data/integration";
 import type { HomeAssistant } from "../types";
 import "./ha-combo-box";
-import "./ha-list-item";
+import "./ha-combo-box-item";
 import "./ha-service-icon";
 import { getServiceIcons } from "../data/icons";
 
@@ -29,18 +29,19 @@ class HaServicePicker extends LitElement {
   }
 
   private _rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> =
-    (item) =>
-      html`<ha-list-item twoline graphic="icon">
+    (item) => html`
+      <ha-combo-box-item type="button">
         <ha-service-icon
-          slot="graphic"
+          slot="start"
           .hass=${this.hass}
           .service=${item.service}
         ></ha-service-icon>
-        <span>${item.name}</span>
-        <span slot="secondary"
+        <span slot="headline">${item.name}</span>
+        <span slot="supporting-text"
           >${item.name === item.service ? "" : item.service}</span
         >
-      </ha-list-item>`;
+      </ha-combo-box-item>
+    `;
 
   protected render() {
     return html`

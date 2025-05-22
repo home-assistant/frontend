@@ -27,7 +27,7 @@ import {
 import { MIN_TIME_BETWEEN_UPDATES } from "../../components/chart/ha-chart-base";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
-import "../../components/ha-circular-progress";
+import "../../components/ha-spinner";
 import "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-button-menu";
@@ -63,6 +63,7 @@ class HaPanelHistory extends LitElement {
 
   @state() private _endDate: Date;
 
+  @state()
   @storage({
     key: "historyPickedValue",
     state: true,
@@ -172,7 +173,8 @@ class HaPanelHistory extends LitElement {
               .startDate=${this._startDate}
               .endDate=${this._endDate}
               extended-presets
-              @change=${this._dateRangeChanged}
+              time-picker
+              @value-changed=${this._dateRangeChanged}
             ></ha-date-range-picker>
             <ha-target-picker
               .hass=${this.hass}
@@ -184,7 +186,7 @@ class HaPanelHistory extends LitElement {
           </div>
           ${this._isLoading
             ? html`<div class="progress-wrapper">
-                <ha-circular-progress indeterminate></ha-circular-progress>
+                <ha-spinner></ha-spinner>
               </div>`
             : !entitiesSelected
               ? html`<div class="start-search">
@@ -196,6 +198,7 @@ class HaPanelHistory extends LitElement {
                     .historyData=${this._mungedStateHistory}
                     .startTime=${this._startDate}
                     .endTime=${this._endDate}
+                    .narrow=${this.narrow}
                   >
                   </state-history-charts>
                 `}
@@ -422,8 +425,8 @@ class HaPanelHistory extends LitElement {
   );
 
   private _dateRangeChanged(ev) {
-    this._startDate = ev.detail.startDate;
-    const endDate = ev.detail.endDate;
+    this._startDate = ev.detail.value.startDate;
+    const endDate = ev.detail.value.endDate;
     if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);
@@ -623,7 +626,7 @@ class HaPanelHistory extends LitElement {
 
         .content {
           padding: 0 16px 16px;
-          padding-bottom: max(env(safe-area-inset-bottom), 16px);
+          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
         }
 
         :host([virtualize]) {

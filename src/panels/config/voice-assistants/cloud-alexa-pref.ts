@@ -4,7 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { isEmptyFilter } from "../../../common/entity/entity_filter";
+import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
@@ -56,7 +56,9 @@ export class CloudAlexaPref extends LitElement {
     const alexa_registered = this.cloudStatus.alexa_registered;
     const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
-    const manualConfig = !isEmptyFilter(this.cloudStatus.alexa_entities);
+    const manualConfig = !isEmptyEntityDomainFilter(
+      this.cloudStatus.alexa_entities
+    );
 
     return html`
       <ha-card outlined>

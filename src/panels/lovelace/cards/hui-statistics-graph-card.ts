@@ -6,7 +6,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
 import { getEnergyDataCollection } from "../../../data/energy";
-import { getSuggestedPeriod } from "./energy/common/energy-chart-options";
+import {
+  getSuggestedMax,
+  getSuggestedPeriod,
+} from "./energy/common/energy-chart-options";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -131,8 +134,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
   getGridOptions(): LovelaceGridOptions {
     return {
       columns: 12,
-      min_columns: 8,
-      min_rows: 4,
+      min_columns: 6,
+      min_rows: 3,
     };
   }
 
@@ -255,11 +258,17 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const hasFixedHeight = typeof this._config.grid_options?.rows === "number";
+
     return html`
-      <ha-card .header=${this._config.title}>
+      <ha-card>
+        ${this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : nothing}
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
+            "has-rows": !!this._config.grid_options?.rows,
           })}"
         >
           <statistics-chart
@@ -274,9 +283,21 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .unit=${this._unit}
             .minYAxis=${this._config.min_y_axis}
             .maxYAxis=${this._config.max_y_axis}
+            .startTime=${this._energyStart}
+            .endTime=${this._energyEnd && this._energyStart
+              ? getSuggestedMax(
+                  differenceInDays(this._energyEnd, this._energyStart),
+                  this._energyEnd
+                )
+              : undefined}
             .fitYData=${this._config.fit_y_data || false}
             .hideLegend=${this._config.hide_legend || false}
             .logarithmicScale=${this._config.logarithmic_scale || false}
+            .daysToShow=${this._energyStart && this._energyEnd
+              ? differenceInDays(this._energyEnd, this._energyStart)
+              : this._config.days_to_show || DEFAULT_DAYS_TO_SHOW}
+            .height=${hasFixedHeight ? "100%" : undefined}
+            .expandLegend=${this._config.expand_legend}
           ></statistics-chart>
         </div>
       </ha-card>
@@ -308,7 +329,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       );
     const endDate = this._energyEnd;
     try {
-      let unitClass;
+      let unitClass: string | undefined | null;
       if (this._config!.unit && this._metadata) {
         const metadata = Object.values(this._metadata).find(
           (metaData) =>
@@ -352,13 +373,25 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     ha-card {
+      display: flex;
+      flex-direction: column;
       height: 100%;
+    }
+    .card-header {
+      padding-bottom: 0;
     }
     .content {
       padding: 16px;
+      flex: 1;
     }
     .has-header {
       padding-top: 0;
+    }
+    statistics-chart {
+      height: 100%;
+    }
+    .has-rows {
+      --chart-max-height: 100%;
     }
   `;
 }

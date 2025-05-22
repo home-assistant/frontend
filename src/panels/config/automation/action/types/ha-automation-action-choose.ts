@@ -18,6 +18,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ChooseAction;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @state() private _showDefault = false;
 
   public static get defaultConfig(): ChooseAction {
@@ -35,6 +37,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @value-changed=${this._optionsChanged}
         .hass=${this.hass}
+        .narrow=${this.narrow}
       ></ha-automation-option>
 
       ${this._showDefault || action.default
@@ -49,6 +52,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .disabled=${this.disabled}
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
+              .narrow=${this.narrow}
             ></ha-automation-action>
           `
         : html`

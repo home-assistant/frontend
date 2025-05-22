@@ -1,5 +1,4 @@
 import { mdiInformation } from "@mdi/js";
-import "@lrnwebcomponents/simple-tooltip/simple-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,12 +8,12 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
-import type {
-  EnergyData,
-  GridSourceTypeEnergyPreference,
+import "../../../../components/ha-tooltip";
+import type { EnergyData } from "../../../../data/energy";
+import {
+  getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
-import { getEnergyDataCollection } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -31,7 +30,7 @@ class HuiEnergyGridGaugeCard
   extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyGridNeutralityGaugeCardConfig;
 
@@ -75,27 +74,17 @@ class HuiEnergyGridGaugeCard
         "ui.panel.lovelace.cards.energy.loading"
       )}`;
     }
-
-    const prefs = this._data.prefs;
-    const gridSource = prefs.energy_sources.find(
-      (src) => src.type === "grid"
-    ) as GridSourceTypeEnergyPreference | undefined;
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
 
     let value: number | undefined;
 
-    if (!gridSource) {
+    if (!("from_grid" in summedData.total)) {
       return nothing;
     }
 
-    const consumedFromGrid = calculateStatisticsSumGrowth(
-      this._data.stats,
-      gridSource.flow_from.map((flow) => flow.stat_energy_from)
-    );
+    const consumedFromGrid = summedData.total.from_grid ?? 0;
 
-    const returnedToGrid = calculateStatisticsSumGrowth(
-      this._data.stats,
-      gridSource.flow_to.map((flow) => flow.stat_energy_to)
-    );
+    const returnedToGrid = summedData.total.to_grid ?? 0;
 
     if (consumedFromGrid !== null && returnedToGrid !== null) {
       if (returnedToGrid > consumedFromGrid) {
@@ -111,19 +100,6 @@ class HuiEnergyGridGaugeCard
       <ha-card>
         ${value !== undefined
           ? html`
-              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-              <simple-tooltip animation-delay="0" for="info" position="left">
-                <span>
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
-                  )}
-                  <br /><br />
-                  ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
-                  )}
-                </span>
-              </simple-tooltip>
-
               <ha-gauge
                 min="-1"
                 max="1"
@@ -138,6 +114,18 @@ class HuiEnergyGridGaugeCard
                 label="kWh"
                 needle
               ></ha-gauge>
+              <ha-tooltip placement="left" hoist>
+                <span slot="content">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
+                  )}
+                </span>
+                <ha-svg-icon .path=${mdiInformation}></ha-svg-icon>
+              </ha-tooltip>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
                   ? this.hass.localize(
@@ -178,7 +166,7 @@ class HuiEnergyGridGaugeCard
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
 
@@ -190,14 +178,9 @@ class HuiEnergyGridGaugeCard
       top: 4px;
       color: var(--secondary-text-color);
     }
-    simple-tooltip > span {
-      font-size: 12px;
-      line-height: 12px;
-    }
-    simple-tooltip {
-      width: 80%;
-      max-width: 250px;
-      top: 8px !important;
+
+    ha-tooltip::part(base__popup) {
+      margin-top: 4px;
     }
   `;
 }

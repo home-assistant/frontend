@@ -6,19 +6,19 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type {
-  EntityFilter,
-  FilterFunc,
-} from "../../../common/entity/entity_filter";
+  EntityDomainFilter,
+  EntityDomainFilterFunc,
+} from "../../../common/entity/entity_domain_filter";
 import {
-  generateFilter,
-  isEmptyFilter,
-} from "../../../common/entity/entity_filter";
+  generateEntityDomainFilter,
+  isEmptyEntityDomainFilter,
+} from "../../../common/entity/entity_domain_filter";
+import "../../../components/ha-alert";
 import "../../../components/ha-aliases-editor";
+import "../../../components/ha-checkbox";
+import "../../../components/ha-formfield";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-alert";
 import { fetchCloudAlexaEntity } from "../../../data/alexa";
 import type { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import {
@@ -30,16 +30,16 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { GoogleEntity } from "../../../data/google_assistant";
-import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { exposeEntities, voiceAssistants } from "../../../data/expose";
+import type { GoogleEntity } from "../../../data/google_assistant";
+import { fetchCloudGoogleEntity } from "../../../data/google_assistant";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
 import { documentationUrl } from "../../../util/documentation-url";
+import type { EntityRegistrySettings } from "../entities/entity-registry-settings";
 
 @customElement("entity-voice-settings")
 export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
@@ -101,14 +101,14 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
   }
 
   private _getEntityFilterFuncs = memoizeOne(
-    (googleFilter: EntityFilter, alexaFilter: EntityFilter) => ({
-      google: generateFilter(
+    (googleFilter: EntityDomainFilter, alexaFilter: EntityDomainFilter) => ({
+      google: generateEntityDomainFilter(
         googleFilter.include_domains,
         googleFilter.include_entities,
         googleFilter.exclude_domains,
         googleFilter.exclude_entities
       ),
-      alexa: generateFilter(
+      alexa: generateEntityDomainFilter(
         alexaFilter.include_domains,
         alexaFilter.include_entities,
         alexaFilter.exclude_domains,
@@ -131,10 +131,12 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     const alexaManual =
       alexaEnabled &&
-      !isEmptyFilter((this._cloudStatus as CloudStatusLoggedIn).alexa_entities);
+      !isEmptyEntityDomainFilter(
+        (this._cloudStatus as CloudStatusLoggedIn).alexa_entities
+      );
     const googleManual =
       googleEnabled &&
-      !isEmptyFilter(
+      !isEmptyEntityDomainFilter(
         (this._cloudStatus as CloudStatusLoggedIn).google_entities
       );
 
@@ -159,8 +161,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
 
     let manFilterFuncs:
       | {
-          google: FilterFunc;
-          alexa: FilterFunc;
+          google: EntityDomainFilterFunc;
+          alexa: EntityDomainFilterFunc;
         }
       | undefined;
 
@@ -421,8 +423,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         .description {
           color: var(--secondary-text-color);
-          font-size: 14px;
-          line-height: 20px;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
           margin-top: 0;
           margin-bottom: 16px;
         }

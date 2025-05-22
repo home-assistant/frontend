@@ -1,7 +1,7 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../src/components/ha-circular-progress";
+import "../../../../src/components/ha-spinner";
 import type { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import type { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
@@ -21,9 +21,12 @@ class HassioAddonInfoDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
+  @property({ type: Boolean, attribute: "control-enabled" })
+  public controlEnabled = false;
+
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`<ha-circular-progress indeterminate></ha-circular-progress>`;
+      return html`<ha-spinner></ha-spinner>`;
     }
 
     return html`
@@ -34,6 +37,7 @@ class HassioAddonInfoDashboard extends LitElement {
           .hass=${this.hass}
           .supervisor=${this.supervisor}
           .addon=${this.addon}
+          .controlEnabled=${this.controlEnabled}
         ></hassio-addon-info>
       </div>
     `;

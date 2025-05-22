@@ -12,9 +12,8 @@ import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
-import { computeTimelineColor } from "../../components/chart/timeline-chart/timeline-color";
+import { computeTimelineColor } from "../../components/chart/timeline-color";
 import "../../components/entity/state-badge";
-import "../../components/ha-circular-progress";
 import "../../components/ha-icon-next";
 import "../../components/ha-relative-time";
 import type { LogbookEntry } from "../../data/logbook";
@@ -587,7 +586,7 @@ class HaLogbookRenderer extends LitElement {
           position: relative;
           display: flex;
           width: 100%;
-          line-height: 2em;
+          line-height: var(--ha-line-height-expanded);
           padding: 8px 16px;
           box-sizing: border-box;
           border-top: 1px solid var(--divider-color);
@@ -637,8 +636,8 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .secondary {
-          font-size: 12px;
-          line-height: 1.7;
+          font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-normal);
         }
 
         .secondary a {
@@ -683,7 +682,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         button.link {
-          color: var(--paper-item-icon-color);
+          color: var(--state-icon-color);
           text-decoration: none;
         }
 
@@ -701,7 +700,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .narrow .entry {
-          line-height: 1.5;
+          line-height: var(--ha-line-height-normal);
         }
 
         .narrow .icon-message state-badge {

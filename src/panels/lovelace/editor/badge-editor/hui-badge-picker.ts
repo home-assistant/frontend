@@ -10,8 +10,7 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
-import { stripDiacritics } from "../../../../common/string/strip-diacritics";
-import "../../../../components/ha-circular-progress";
+import "../../../../components/ha-spinner";
 import "../../../../components/search-input";
 import { isUnavailableState } from "../../../../data/entity";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -23,7 +22,6 @@ import {
   getCustomBadgeEntry,
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
-import { getStripDiacriticsFn } from "../../../../util/fuse";
 import {
   calcUnusedEntities,
   computeUsedEntities,
@@ -45,6 +43,7 @@ export class HuiBadgePicker extends LitElement {
 
   @property({ attribute: false }) public suggestedBadges?: string[];
 
+  @state()
   @storage({
     key: "dashboardBadgeClipboard",
     state: true,
@@ -82,12 +81,10 @@ export class HuiBadgePicker extends LitElement {
         isCaseSensitive: false,
         minMatchCharLength: Math.min(filter.length, 2),
         threshold: 0.2,
-        getFn: getStripDiacriticsFn,
+        ignoreDiacritics: true,
       };
       const fuse = new Fuse(badges, options);
-      badges = fuse
-        .search(stripDiacritics(filter))
-        .map((result) => result.item);
+      badges = fuse.search(filter).map((result) => result.item);
       return badgeElements.filter((badgeElement: BadgeElement) =>
         badges.includes(badgeElement.badge)
       );
@@ -300,7 +297,7 @@ export class HuiBadgePicker extends LitElement {
         this._renderBadgeElement(badge),
         html`
           <div class="badge spinner">
-            <ha-circular-progress indeterminate></ha-circular-progress>
+            <ha-spinner></ha-spinner>
           </div>
         `
       )}`,
@@ -332,7 +329,7 @@ export class HuiBadgePicker extends LitElement {
       ),
       html`
         <div class="badge spinner">
-          <ha-circular-progress indeterminate></ha-circular-progress>
+          <ha-spinner></ha-spinner>
         </div>
       `
     )}`;
@@ -479,8 +476,8 @@ export class HuiBadgePicker extends LitElement {
         }
 
         .badges-container-header {
-          font-size: 16px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           padding: 12px 8px 4px 8px;
           margin: 0;
           grid-column: 1 / -1;
@@ -510,10 +507,10 @@ export class HuiBadgePicker extends LitElement {
         .badge-header {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
-          line-height: 20px;
+          line-height: var(--ha-line-height-condensed);
           padding: 12px 16px;
           display: block;
           text-align: center;

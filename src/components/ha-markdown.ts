@@ -13,6 +13,8 @@ export class HaMarkdown extends LitElement {
   @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
     false;
 
+  @property({ type: Boolean }) public cache = false;
+
   protected render() {
     if (!this.content) {
       return nothing;
@@ -23,6 +25,7 @@ export class HaMarkdown extends LitElement {
       .allowSvg=${this.allowSvg}
       .breaks=${this.breaks}
       .lazyImages=${this.lazyImages}
+      .cache=${this.cache}
     ></ha-markdown-element>`;
   }
 
@@ -61,7 +64,7 @@ export class HaMarkdown extends LitElement {
       color: var(--markdown-svg-color, none);
     }
     code {
-      font-size: 85%;
+      font-size: var(--ha-font-size-s);
       padding: 0.2em 0.4em;
     }
     pre code {
@@ -71,7 +74,7 @@ export class HaMarkdown extends LitElement {
       padding: 16px;
       overflow: auto;
       line-height: 1.45;
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
     }
     h1,
     h2,
@@ -82,8 +85,8 @@ export class HaMarkdown extends LitElement {
       line-height: initial;
     }
     h2 {
-      font-size: 1.5em;
-      font-weight: bold;
+      font-size: var(--ha-font-size-xl);
+      font-weight: var(--ha-font-weight-bold);
     }
     hr {
       border-color: var(--divider-color);

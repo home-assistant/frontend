@@ -39,6 +39,7 @@ export class HaPanelLogbook extends LitElement {
   @state()
   private _showBack?: boolean;
 
+  @state()
   @storage({
     key: "logbookPickedValue",
     state: true,
@@ -93,7 +94,8 @@ export class HaPanelLogbook extends LitElement {
               .hass=${this.hass}
               .startDate=${this._time.range[0]}
               .endDate=${this._time.range[1]}
-              @change=${this._dateRangeChanged}
+              @value-changed=${this._dateRangeChanged}
+              time-picker
             ></ha-date-range-picker>
 
             <ha-target-picker
@@ -232,8 +234,8 @@ export class HaPanelLogbook extends LitElement {
   }
 
   private _dateRangeChanged(ev) {
-    const startDate = ev.detail.startDate;
-    const endDate = ev.detail.endDate;
+    const startDate = ev.detail.value.startDate;
+    const endDate = ev.detail.value.endDate;
     if (endDate.getHours() === 0 && endDate.getMinutes() === 0) {
       endDate.setDate(endDate.getDate() + 1);
       endDate.setMilliseconds(endDate.getMilliseconds() - 1);

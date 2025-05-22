@@ -25,6 +25,13 @@ export interface LovelaceViewBackgroundConfig {
   attachment?: "scroll" | "fixed";
 }
 
+export interface LovelaceViewHeaderConfig {
+  card?: LovelaceCardConfig;
+  layout?: "start" | "center" | "responsive";
+  badges_position?: "bottom" | "top";
+  badges_wrap?: "wrap" | "scroll";
+}
+
 export interface LovelaceBaseViewConfig {
   index?: number;
   title?: string;
@@ -39,6 +46,7 @@ export interface LovelaceBaseViewConfig {
   // Only used for section view, it should move to a section view config type when the views will have dedicated editor.
   max_columns?: number;
   dense_section_placement?: boolean;
+  top_margin?: boolean;
 }
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
@@ -46,6 +54,7 @@ export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   badges?: (string | Partial<LovelaceBadgeConfig>)[]; // Badge can be just an entity_id or without type
   cards?: LovelaceCardConfig[];
   sections?: LovelaceSectionRawConfig[];
+  header?: LovelaceViewHeaderConfig;
 }
 
 export interface LovelaceStrategyViewConfig extends LovelaceBaseViewConfig {

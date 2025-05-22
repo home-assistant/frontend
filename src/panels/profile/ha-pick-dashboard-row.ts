@@ -1,7 +1,7 @@
-import "@material/mwc-list/mwc-list-item";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
@@ -41,19 +41,19 @@ class HaPickDashboardRow extends LitElement {
               @selected=${this._dashboardChanged}
               naturalMenuWidth
             >
-              <mwc-list-item value="lovelace">
+              <ha-list-item value="lovelace">
                 ${this.hass.localize(
                   "ui.panel.profile.dashboard.default_dashboard_label"
                 )}
-              </mwc-list-item>
+              </ha-list-item>
               ${this._dashboards.map((dashboard) => {
                 if (!this.hass.user!.is_admin && dashboard.require_admin) {
                   return "";
                 }
                 return html`
-                  <mwc-list-item .value=${dashboard.url_path}>
+                  <ha-list-item .value=${dashboard.url_path}>
                     ${dashboard.title}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `;
               })}
             </ha-select>`
