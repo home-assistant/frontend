@@ -10,6 +10,7 @@ import { showNotificationDrawer } from "../dialogs/notifications/show-notificati
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
 import { computeRTLDirection } from "../common/util/compute_rtl";
+import { storage } from "../common/decorators/storage";
 
 declare global {
   // for fire event
@@ -25,7 +26,8 @@ declare global {
 }
 
 interface EditSideBarEvent {
-  editMode: boolean;
+  order: string[];
+  hidden: string[];
 }
 
 @customElement("home-assistant-main")
@@ -41,6 +43,22 @@ export class HomeAssistantMain extends LitElement {
   @state() private _externalSidebar = false;
 
   @state() private _drawerOpen = false;
+
+  @state()
+  @storage({
+    key: "sidebarPanelOrder",
+    state: true,
+    subscribe: true,
+  })
+  private _panelOrder: string[] = [];
+
+  @state()
+  @storage({
+    key: "sidebarHiddenPanels",
+    state: true,
+    subscribe: true,
+  })
+  private _hiddenPanels: string[] = [];
 
   constructor() {
     super();
@@ -63,7 +81,8 @@ export class HomeAssistantMain extends LitElement {
           .hass=${this.hass}
           .narrow=${sidebarNarrow}
           .route=${this.route}
-          .editMode=${this._sidebarEditMode}
+          .panelOrder=${this._panelOrder}
+          .hiddenPanels=${this._hiddenPanels}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
         <partial-panel-resolver
@@ -90,17 +109,8 @@ export class HomeAssistantMain extends LitElement {
     this.addEventListener(
       "hass-edit-sidebar",
       (ev: HASSDomEvent<EditSideBarEvent>) => {
-        this._sidebarEditMode = ev.detail.editMode;
-
-        if (this._sidebarEditMode) {
-          if (this._sidebarNarrow) {
-            this._drawerOpen = true;
-          } else {
-            fireEvent(this, "hass-dock-sidebar", {
-              dock: "docked",
-            });
-          }
-        }
+        this._panelOrder = ev.detail.order;
+        this._hiddenPanels = ev.detail.hidden;
       }
     );
 
@@ -172,7 +182,7 @@ export class HomeAssistantMain extends LitElement {
       --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
     }
     :host([expanded]) {
-      --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
+      --mdc-drawer-width: calc(256px + var(--safe-area-inset-left));
     }
     :host([modal]) {
       --mdc-drawer-width: unset;

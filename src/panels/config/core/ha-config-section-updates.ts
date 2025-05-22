@@ -195,7 +195,7 @@ class HaConfigSectionUpdates extends LitElement {
       justify-content: space-between;
       flex-direction: column;
       display: flex;
-      margin-bottom: max(24px, env(safe-area-inset-bottom));
+      margin-bottom: max(24px, var(--safe-area-inset-bottom));
     }
     ha-config-updates {
       margin-bottom: 8px;

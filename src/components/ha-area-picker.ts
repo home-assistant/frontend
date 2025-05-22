@@ -1,15 +1,14 @@
-import { mdiTextureBox } from "@mdi/js";
-import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
+import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import type { TemplateResult } from "lit";
+import { LitElement, html, nothing } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeDomain } from "../common/entity/compute_domain";
-import type { ScorableTextItem } from "../common/string/filter/sequence-matching";
-import { fuzzyFilterSort } from "../common/string/filter/sequence-matching";
-import type { AreaRegistryEntry } from "../data/area_registry";
+import { computeFloorName } from "../common/entity/compute_floor_name";
+import { getAreaContext } from "../common/entity/context/get_area_context";
 import { createAreaRegistryEntry } from "../data/area_registry";
 import type {
   DeviceEntityDisplayLookup,
@@ -21,26 +20,15 @@ import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showAreaRegistryDetailDialog } from "../panels/config/areas/show-dialog-area-registry-detail";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
-import "./ha-combo-box";
-import type { HaComboBox } from "./ha-combo-box";
 import "./ha-combo-box-item";
+import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import "./ha-icon-button";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import type { PickerValueRenderer } from "./ha-picker-field";
 import "./ha-svg-icon";
 
-type ScorableAreaRegistryEntry = ScorableTextItem & AreaRegistryEntry;
-
-const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (item) => html`
-  <ha-combo-box-item type="button">
-    ${item.icon
-      ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
-      : html`<ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>`}
-    ${item.name}
-  </ha-combo-box-item>
-`;
-
 const ADD_NEW_ID = "___ADD_NEW___";
-const NO_ITEMS_ID = "___NO_ITEMS___";
-const ADD_NEW_SUGGESTION_ID = "___ADD_NEW_SUGGESTION___";
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends LitElement {
@@ -99,40 +87,67 @@ export class HaAreaPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @state() private _opened?: boolean;
-
-  @query("ha-combo-box", true) public comboBox!: HaComboBox;
-
-  private _suggestion?: string;
-
-  private _init = false;
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
     await this.updateComplete;
-    await this.comboBox?.open();
+    await this._picker?.open();
   }
 
-  public async focus() {
-    await this.updateComplete;
-    await this.comboBox?.focus();
-  }
+  // Recompute value renderer when the areas change
+  private _computeValueRenderer = memoizeOne(
+    (_haAreas: HomeAssistant["areas"]): PickerValueRenderer =>
+      (value) => {
+        const area = this.hass.areas[value];
+
+        if (!area) {
+          return html`
+            <ha-svg-icon slot="start" .path=${mdiTextureBox}></ha-svg-icon>
+            <span slot="headline">${area}</span>
+          `;
+        }
+
+        const { floor } = getAreaContext(area, this.hass);
+
+        const areaName = area ? computeAreaName(area) : undefined;
+        const floorName = floor ? computeFloorName(floor) : undefined;
+
+        const icon = area.icon;
+
+        return html`
+          ${icon
+            ? html`<ha-icon slot="start" .icon=${icon}></ha-icon>`
+            : html`<ha-svg-icon
+                slot="start"
+                .path=${mdiTextureBox}
+              ></ha-svg-icon>`}
+          <span slot="headline">${areaName}</span>
+          ${floorName
+            ? html`<span slot="supporting-text">${floorName}</span>`
+            : nothing}
+        `;
+      }
+  );
 
   private _getAreas = memoizeOne(
     (
-      areas: AreaRegistryEntry[],
-      devices: DeviceRegistryEntry[],
-      entities: EntityRegistryDisplayEntry[],
+      haAreas: HomeAssistant["areas"],
+      haDevices: HomeAssistant["devices"],
+      haEntities: HomeAssistant["entities"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       includeDeviceClasses: this["includeDeviceClasses"],
       deviceFilter: this["deviceFilter"],
       entityFilter: this["entityFilter"],
-      noAdd: this["noAdd"],
       excludeAreas: this["excludeAreas"]
-    ): AreaRegistryEntry[] => {
+    ): PickerComboBoxItem[] => {
       let deviceEntityLookup: DeviceEntityDisplayLookup = {};
       let inputDevices: DeviceRegistryEntry[] | undefined;
       let inputEntities: EntityRegistryDisplayEntry[] | undefined;
+
+      const areas = Object.values(haAreas);
+      const devices = Object.values(haDevices);
+      const entities = Object.values(haEntities);
 
       if (
         includeDomains ||
@@ -263,225 +278,147 @@ export class HaAreaPicker extends LitElement {
         );
       }
 
-      if (!outputAreas.length) {
-        outputAreas = [
-          {
-            area_id: NO_ITEMS_ID,
-            floor_id: null,
-            name: this.hass.localize("ui.components.area-picker.no_areas"),
-            picture: null,
-            icon: null,
-            aliases: [],
-            labels: [],
-            temperature_entity_id: null,
-            humidity_entity_id: null,
-            created_at: 0,
-            modified_at: 0,
-          },
-        ];
-      }
+      const items = outputAreas.map<PickerComboBoxItem>((area) => {
+        const { floor } = getAreaContext(area, this.hass);
+        const floorName = floor ? computeFloorName(floor) : undefined;
+        const areaName = computeAreaName(area);
+        return {
+          id: area.area_id,
+          primary: areaName || area.area_id,
+          secondary: floorName,
+          icon: area.icon || undefined,
+          icon_path: area.icon ? undefined : mdiTextureBox,
+          sorting_label: areaName,
+          search_labels: [
+            areaName,
+            floorName,
+            area.area_id,
+            ...area.aliases,
+          ].filter((v): v is string => Boolean(v)),
+        };
+      });
 
-      return noAdd
-        ? outputAreas
-        : [
-            ...outputAreas,
-            {
-              area_id: ADD_NEW_ID,
-              floor_id: null,
-              name: this.hass.localize("ui.components.area-picker.add_new"),
-              picture: null,
-              icon: "mdi:plus",
-              aliases: [],
-              labels: [],
-              temperature_entity_id: null,
-              humidity_entity_id: null,
-              created_at: 0,
-              modified_at: 0,
-            },
-          ];
+      return items;
     }
   );
 
-  protected updated(changedProps: PropertyValues) {
-    if (
-      (!this._init && this.hass) ||
-      (this._init && changedProps.has("_opened") && this._opened)
-    ) {
-      this._init = true;
-      const areas = this._getAreas(
-        Object.values(this.hass.areas),
-        Object.values(this.hass.devices),
-        Object.values(this.hass.entities),
-        this.includeDomains,
-        this.excludeDomains,
-        this.includeDeviceClasses,
-        this.deviceFilter,
-        this.entityFilter,
-        this.noAdd,
-        this.excludeAreas
-      ).map((area) => ({
-        ...area,
-        strings: [area.area_id, ...area.aliases, area.name],
-      }));
-      this.comboBox.items = areas;
-      this.comboBox.filteredItems = areas;
+  private _getItems = () =>
+    this._getAreas(
+      this.hass.areas,
+      this.hass.devices,
+      this.hass.entities,
+      this.includeDomains,
+      this.excludeDomains,
+      this.includeDeviceClasses,
+      this.deviceFilter,
+      this.entityFilter,
+      this.excludeAreas
+    );
+
+  private _allAreaNames = memoizeOne(
+    (areas: HomeAssistant["areas"]) =>
+      Object.values(areas)
+        .map((area) => computeAreaName(area)?.toLowerCase())
+        .filter(Boolean) as string[]
+  );
+
+  private _getAdditionalItems = (
+    searchString?: string
+  ): PickerComboBoxItem[] => {
+    if (this.noAdd) {
+      return [];
     }
-  }
+
+    const allAreas = this._allAreaNames(this.hass.areas);
+
+    if (searchString && !allAreas.includes(searchString.toLowerCase())) {
+      return [
+        {
+          id: ADD_NEW_ID + searchString,
+          primary: this.hass.localize(
+            "ui.components.area-picker.add_new_sugestion",
+            {
+              name: searchString,
+            }
+          ),
+          icon_path: mdiPlus,
+        },
+      ];
+    }
+
+    return [
+      {
+        id: ADD_NEW_ID,
+        primary: this.hass.localize("ui.components.area-picker.add_new"),
+        icon_path: mdiPlus,
+      },
+    ];
+  };
 
   protected render(): TemplateResult {
+    const placeholder =
+      this.placeholder ?? this.hass.localize("ui.components.area-picker.area");
+
+    const valueRenderer = this._computeValueRenderer(this.hass.areas);
+
     return html`
-      <ha-combo-box
+      <ha-generic-picker
         .hass=${this.hass}
-        .helper=${this.helper}
-        item-value-path="area_id"
-        item-id-path="area_id"
-        item-label-path="name"
-        .value=${this._value}
-        .disabled=${this.disabled}
-        .required=${this.required}
-        .label=${this.label === undefined && this.hass
-          ? this.hass.localize("ui.components.area-picker.area")
-          : this.label}
-        .placeholder=${this.placeholder
-          ? this.hass.areas[this.placeholder]?.name
-          : undefined}
-        .renderer=${rowRenderer}
-        @filter-changed=${this._filterChanged}
-        @opened-changed=${this._openedChanged}
-        @value-changed=${this._areaChanged}
+        .autofocus=${this.autofocus}
+        .label=${this.label}
+        .notFoundLabel=${this.hass.localize(
+          "ui.components.area-picker.no_match"
+        )}
+        .placeholder=${placeholder}
+        .value=${this.value}
+        .getItems=${this._getItems}
+        .getAdditionalItems=${this._getAdditionalItems}
+        .valueRenderer=${valueRenderer}
+        @value-changed=${this._valueChanged}
       >
-      </ha-combo-box>
+      </ha-generic-picker>
     `;
   }
 
-  private _filterChanged(ev: CustomEvent): void {
-    const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value;
-    if (!filterString) {
-      this.comboBox.filteredItems = this.comboBox.items;
-      return;
-    }
-
-    const filteredItems = fuzzyFilterSort<ScorableAreaRegistryEntry>(
-      filterString,
-      target.items?.filter(
-        (item) => ![NO_ITEMS_ID, ADD_NEW_ID].includes(item.label_id)
-      ) || []
-    );
-    if (filteredItems.length === 0) {
-      if (this.noAdd) {
-        this.comboBox.filteredItems = [
-          {
-            area_id: NO_ITEMS_ID,
-            floor_id: null,
-            name: this.hass.localize("ui.components.area-picker.no_match"),
-            icon: null,
-            picture: null,
-            labels: [],
-            aliases: [],
-            temperature_entity_id: null,
-            humidity_entity_id: null,
-            created_at: 0,
-            modified_at: 0,
-          },
-        ] as AreaRegistryEntry[];
-      } else {
-        this._suggestion = filterString;
-        this.comboBox.filteredItems = [
-          {
-            area_id: ADD_NEW_SUGGESTION_ID,
-            floor_id: null,
-            name: this.hass.localize(
-              "ui.components.area-picker.add_new_sugestion",
-              { name: this._suggestion }
-            ),
-            icon: "mdi:plus",
-            picture: null,
-            labels: [],
-            aliases: [],
-            temperature_entity_id: null,
-            humidity_entity_id: null,
-            created_at: 0,
-            modified_at: 0,
-          },
-        ] as AreaRegistryEntry[];
-      }
-    } else {
-      this.comboBox.filteredItems = filteredItems;
-    }
-  }
-
-  private get _value() {
-    return this.value || "";
-  }
-
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
-  private _areaChanged(ev: ValueChangedEvent<string>) {
+  private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
-    let newValue = ev.detail.value;
+    const value = ev.detail.value;
 
-    if (newValue === NO_ITEMS_ID) {
-      newValue = "";
-      this.comboBox.setInputValue("");
+    if (!value) {
+      this._setValue(undefined);
       return;
     }
 
-    if (![ADD_NEW_SUGGESTION_ID, ADD_NEW_ID].includes(newValue)) {
-      if (newValue !== this._value) {
-        this._setValue(newValue);
-      }
-      return;
+    if (value.startsWith(ADD_NEW_ID)) {
+      this.hass.loadFragmentTranslation("config");
+
+      const suggestedName = value.substring(ADD_NEW_ID.length);
+
+      showAreaRegistryDetailDialog(this, {
+        suggestedName: suggestedName,
+        createEntry: async (values) => {
+          try {
+            const area = await createAreaRegistryEntry(this.hass, values);
+            this._setValue(area.area_id);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.components.area-picker.failed_create_area"
+              ),
+              text: err.message,
+            });
+          }
+        },
+      });
     }
 
-    (ev.target as any).value = this._value;
-
-    this.hass.loadFragmentTranslation("config");
-
-    showAreaRegistryDetailDialog(this, {
-      suggestedName: newValue === ADD_NEW_SUGGESTION_ID ? this._suggestion : "",
-      createEntry: async (values) => {
-        try {
-          const area = await createAreaRegistryEntry(this.hass, values);
-          const areas = [...Object.values(this.hass.areas), area];
-          this.comboBox.filteredItems = this._getAreas(
-            areas,
-            Object.values(this.hass.devices)!,
-            Object.values(this.hass.entities)!,
-            this.includeDomains,
-            this.excludeDomains,
-            this.includeDeviceClasses,
-            this.deviceFilter,
-            this.entityFilter,
-            this.noAdd,
-            this.excludeAreas
-          );
-          await this.updateComplete;
-          await this.comboBox.updateComplete;
-          this._setValue(area.area_id);
-        } catch (err: any) {
-          showAlertDialog(this, {
-            title: this.hass.localize(
-              "ui.components.area-picker.failed_create_area"
-            ),
-            text: err.message,
-          });
-        }
-      },
-    });
-
-    this._suggestion = undefined;
-    this.comboBox.setInputValue("");
+    this._setValue(value);
   }
 
   private _setValue(value?: string) {
     this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
-    }, 0);
+    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "change");
   }
 }
 
