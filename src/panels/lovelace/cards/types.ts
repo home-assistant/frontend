@@ -101,11 +101,13 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 }
 
 export interface AreaCardConfig extends LovelaceCardConfig {
-  area: string;
+  area?: string;
   navigation_path?: string;
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
   aspect_ratio?: string;
+  sensor_classes?: string[];
+  alert_classes?: string[];
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
