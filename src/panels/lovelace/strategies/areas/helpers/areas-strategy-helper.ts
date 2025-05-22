@@ -125,7 +125,12 @@ export const getAreaGroupedEntities = (
     ],
     actions: [
       generateEntityFilter(hass, {
-        domain: ["automation", "script", "scene"],
+        domain: ["script", "scene"],
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: ["automation"],
         area: area,
         entity_category: "none",
       }),
@@ -147,14 +152,15 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
+        domain: ["switch", "button", "input_boolean", "input_button"],
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
         domain: [
-          "switch",
           "select",
-          "button",
           "number",
-          "input_boolean",
           "input_select",
-          "input_button",
           "input_number",
           "counter",
           "timer",
