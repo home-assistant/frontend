@@ -46,8 +46,12 @@ export function downSampleLineData(
   const result: typeof data = [];
   for (const [_i, frame] of frames) {
     // Use min/max points to preserve visual accuracy
+    // The order of the data must be preserved so max may be before min
+    if (frame.min![0] > frame.max![0]) {
+      result.push(frame.max);
+    }
     result.push(frame.min);
-    if (frame.min !== frame.max) {
+    if (frame.min![0] < frame.max![0]) {
       result.push(frame.max);
     }
   }
