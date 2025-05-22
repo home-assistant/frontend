@@ -90,7 +90,7 @@ export class HaDialog extends DialogBase {
       }
       .mdc-dialog__actions {
         justify-content: var(--justify-action-buttons, flex-end);
-        padding: 12px 24px max(env(safe-area-inset-bottom), 12px) 24px;
+        padding: 12px 24px max(var(--safe-area-inset-bottom), 12px) 24px;
       }
       .mdc-dialog__actions span:nth-child(1) {
         flex: var(--secondary-action-button-flex, unset);
@@ -117,7 +117,7 @@ export class HaDialog extends DialogBase {
       :host([hideactions]) .mdc-dialog .mdc-dialog__content {
         padding-bottom: max(
           var(--dialog-content-padding, 24px),
-          env(safe-area-inset-bottom)
+          var(--safe-area-inset-bottom)
         );
       }
       .mdc-dialog .mdc-dialog__surface {

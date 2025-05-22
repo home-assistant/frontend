@@ -366,7 +366,7 @@ class HaConfigInfo extends LitElement {
         }
 
         .pages {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
           padding: 4px 0;
         }
 
