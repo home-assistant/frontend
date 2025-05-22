@@ -8,12 +8,16 @@ export class HaTopAppBar extends TopAppBarBase {
   static override styles = [
     styles,
     css`
+      header {
+        padding-top: var(--safe-area-inset-top);
+        // TODO right padding
+      }
       .mdc-top-app-bar__row {
         height: var(--header-height);
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {
-        padding-top: var(--header-height);
+        padding-top: calc(var(--safe-area-inset-top) + var(--header-height));
       }
       .mdc-top-app-bar {
         --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);

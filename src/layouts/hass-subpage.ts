@@ -98,8 +98,11 @@ class HassSubpage extends LitElement {
           display: flex;
           align-items: center;
           font-size: var(--ha-font-size-xl);
-          height: var(--header-height);
+          height: calc(var(--header-height) + var(--safe-area-inset-top));
           padding: 8px 12px;
+          padding-top: calc(8px + var(--safe-area-inset-top));
+          padding-right: calc(12px + var(--safe-area-inset-right));
+          // TODO left when no drawer
           background-color: var(--app-header-background-color);
           font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
@@ -109,6 +112,8 @@ class HassSubpage extends LitElement {
         @media (max-width: 599px) {
           .toolbar {
             padding: 4px;
+            padding-top: calc(4px + var(--safe-area-inset-top));
+            padding-right: calc(4px + var(--safe-area-inset-right));
           }
         }
         .toolbar a {
