@@ -109,14 +109,15 @@ export default class HaAutomationTrigger extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.add"
-              )}
+              appearance="filled"
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
+              size="small"
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.add"
+              )}
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
             </ha-button>
           </div>
         </div>

@@ -24,14 +24,16 @@ export class HaProgressButton extends LitElement {
     const overlay = this._result || this.progress;
     return html`
       <ha-button
-        .raised=${this.raised}
-        .label=${this.label}
-        .unelevated=${this.unelevated}
+        .appearance=${this.unelevated
+          ? "accent"
+          : this.raised
+            ? "filled"
+            : "plain"}
         .disabled=${this.disabled || this.progress}
         class=${this._result || ""}
       >
         <slot name="icon" slot="icon"></slot>
-        <slot></slot>
+        <slot>${this.label}</slot>
       </ha-button>
       ${!overlay
         ? nothing

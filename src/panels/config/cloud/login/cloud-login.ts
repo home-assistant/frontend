@@ -105,6 +105,7 @@ export class CloudLogin extends LitElement {
       </div>
       <div class="card-actions">
         <ha-button
+          appearance="plain"
           .disabled=${this._inProgress}
           @click=${this._handleForgotPassword}
         >

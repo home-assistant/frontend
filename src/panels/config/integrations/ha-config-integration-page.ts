@@ -564,11 +564,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           ${flow.localized_title}
                           <ha-button
                             slot="end"
-                            unelevated
+                            appearance="filled"
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize("ui.common.add")}
-                          ></ha-button>
+                          >
+                            ${this.hass.localize("ui.common.add")}
+                          </ha-button>
                         </ha-md-list-item>`
                     )}
                   </ha-md-list>
@@ -599,15 +600,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         >
                         <ha-button
                           slot="end"
-                          unelevated
+                          appearance="plain"
                           .flow=${flow}
                           @click=${this._continueFlow}
-                          .label=${this.hass.localize(
+                        >
+                          ${this.hass.localize(
                             `ui.panel.config.integrations.${
                               attention ? "reconfigure" : "configure"
                             }`
                           )}
-                        ></ha-button>
+                        </ha-button>
                       </ha-md-list-item>`;
                     })}
                     ${attentionEntries.map(
@@ -838,25 +840,33 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             : nothing}
         </div>
         ${item.disabled_by === "user"
-          ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
+          ? html`<ha-button
+              appearance="plain"
+              slot="end"
+              @click=${this._handleEnable}
+            >
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel &&
               (item.domain !== "matter" ||
                 isDevVersion(this.hass.config.version)) &&
               !stateText
-            ? html`<a
+            ? html`<ha-button
+                appearance="plain"
                 slot="end"
                 href=${`/${configPanel}?config_entry=${item.entry_id}`}
-                ><ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.configure"
-                  )}
-                </ha-button></a
-              >`
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.configure"
+                )}
+              </ha-button>`
             : item.supports_options
               ? html`
-                  <ha-button slot="end" @click=${this._showOptions}>
+                  <ha-button
+                    appearance="plain"
+                    slot="end"
+                    @click=${this._showOptions}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.configure"
                     )}
@@ -1074,7 +1084,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       ${configEntry.supported_subentry_types[subEntry.subentry_type]
         ?.supports_reconfigure
         ? html`
-            <ha-button slot="end" @click=${this._handleReconfigureSub}>
+            <ha-button
+              appearance="plain"
+              slot="end"
+              @click=${this._handleReconfigureSub}
+            >
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.configure"
               )}

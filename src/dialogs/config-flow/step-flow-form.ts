@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import "../../components/ha-button";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
@@ -88,12 +88,12 @@ class StepFlowForm extends LitElement {
             `
           : html`
               <div>
-                <mwc-button @click=${this._submitStep}>
+                <ha-button @click=${this._submitStep}>
                   ${this.flowConfig.renderShowFormStepSubmitButton(
                     this.hass,
                     this.step
                   )}
-                </mwc-button>
+                </ha-button>
               </div>
             `}
       </div>

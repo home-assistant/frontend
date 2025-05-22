@@ -191,10 +191,19 @@ class DialogDashboardStrategyEditor extends LitElement {
           ></hui-dashboard-strategy-element-editor>
         </div>
 
-        <ha-button class="danger" @click=${this._delete} slot="secondaryAction">
+        <ha-button
+          variant="danger"
+          appearance="plain"
+          @click=${this._delete}
+          slot="secondaryAction"
+        >
           ${this.hass!.localize("ui.common.delete")}
         </ha-button>
-        <ha-button @click=${this._cancel} slot="primaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this._cancel}
+          slot="primaryAction"
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._save} slot="primaryAction">
@@ -227,10 +236,6 @@ class DialogDashboardStrategyEditor extends LitElement {
             --mdc-dialog-max-height: 100%;
             --dialog-content-padding: 8px;
           }
-        }
-
-        .danger {
-          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];

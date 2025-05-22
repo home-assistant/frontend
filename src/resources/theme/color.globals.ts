@@ -34,8 +34,6 @@ export const colorStyles = css`
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
     --error-color: #db4437;
-    --error-color-lighter: #ffdedc;
-    --error-color-darker: #b30532;
     --warning-color: #ffa600;
     --success-color: #43a047;
     --info-color: #039be5;

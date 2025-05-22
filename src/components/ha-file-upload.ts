@@ -117,11 +117,15 @@ export class HaFileUpload extends LitElement {
             @dragleave=${this._handleDragEnd}
             @dragend=${this._handleDragEnd}
             >${!this.value
-              ? html`<ha-svg-icon
-                    class="big-icon"
-                    .path=${this.icon || mdiFileUpload}
-                  ></ha-svg-icon>
-                  <ha-button unelevated @click=${this._openFilePicker}>
+              ? html` <ha-button
+                    size="small"
+                    appearance="filled"
+                    @click=${this._openFilePicker}
+                  >
+                    <ha-svg-icon
+                      slot="prefix"
+                      .path=${this.icon || mdiFileUpload}
+                    ></ha-svg-icon>
                     ${this.label || localize("ui.components.file-upload.label")}
                   </ha-button>
                   <span class="secondary"
@@ -290,7 +294,7 @@ export class HaFileUpload extends LitElement {
       color: var(--primary-color);
     }
     ha-button {
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
     .supports {
       color: var(--secondary-text-color);
@@ -309,10 +313,6 @@ export class HaFileUpload extends LitElement {
       margin-right: 8px;
       margin-inline-end: 8px;
       margin-inline-start: initial;
-    }
-    .big-icon {
-      --mdc-icon-size: 48px;
-      margin-bottom: 8px;
     }
     ha-button {
       --mdc-button-outline-color: var(--primary-color);
