@@ -604,7 +604,7 @@ class HaPanelDevAction extends LitElement {
           padding: max(16px, var(--safe-area-inset-top))
             max(16px, var(--safe-area-inset-right))
             max(16px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-content-left));
+            max(16px, var(--safe-area-content-inset-left));
           max-width: 1200px;
           margin: auto;
         }
@@ -613,7 +613,7 @@ class HaPanelDevAction extends LitElement {
           padding: max(8px, var(--safe-area-inset-top))
             max(16px, var(--safe-area-inset-right))
             max(8px, var(--safe-area-inset-bottom))
-            max(16px, var(--safe-area-inset-content-left));
+            max(16px, var(--safe-area-content-inset-left));
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
           background: var(--card-background-color);
