@@ -152,10 +152,17 @@ export class DialogDataTableSettings extends LitElement {
             )}
           </ha-list>
         </ha-sortable>
-        <ha-button slot="secondaryAction" @click=${this._reset}
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._reset}
           >${localize("ui.components.data-table.settings.restore")}</ha-button
         >
-        <ha-button slot="primaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="filled"
+          slot="primaryAction"
+          @click=${this.closeDialog}
+        >
           ${localize("ui.components.data-table.settings.done")}
         </ha-button>
       </ha-dialog>

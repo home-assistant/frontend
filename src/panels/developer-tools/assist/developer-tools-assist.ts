@@ -150,6 +150,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           </div>
           <div class="card-actions">
             <ha-button
+              appearance="filled"
               @click=${this._parse}
               .disabled=${!this._language || !this._validInput}
             >

@@ -227,7 +227,11 @@ export class DialogAddApplicationCredential extends LitElement {
               </div>
             `
           : html`
-              <ha-button slot="secondaryAction" @click=${this._abortDialog}>
+              <ha-button
+                appearance="plain"
+                slot="secondaryAction"
+                @click=${this._abortDialog}
+              >
                 ${this.hass.localize("ui.common.cancel")}
               </ha-button>
               <ha-button

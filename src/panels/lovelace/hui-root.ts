@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiCodeBraces,
@@ -34,6 +32,7 @@ import {
 } from "../../common/url/search-params";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
+import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
@@ -75,9 +74,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
-import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
+import "./views/hui-view-container";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -123,14 +122,14 @@ class HUIRoot extends LitElement {
     const result: TemplateResult[] = [];
     if (this._editMode) {
       result.push(
-        html`<mwc-button
-            outlined
+        html`<ha-button
+            appearance="filled"
+            size="small"
             class="exit-edit-mode"
-            .label=${this.hass!.localize(
-              "ui.panel.lovelace.menu.exit_edit_mode"
-            )}
             @click=${this._editModeDisable}
-          ></mwc-button>
+          >
+            ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
+          </ha-button>
           <a
             href=${documentationUrl(this.hass, "/dashboards/")}
             rel="noreferrer"
@@ -1144,9 +1143,6 @@ class HUIRoot extends LitElement {
         }
         a {
           color: var(--text-primary-color, white);
-        }
-        mwc-button.warning:not([disabled]) {
-          color: var(--error-color);
         }
         hui-view-container {
           position: relative;

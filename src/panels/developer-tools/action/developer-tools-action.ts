@@ -168,7 +168,8 @@ class HaPanelDevAction extends LitElement {
       <div class="button-row">
         <div class="buttons">
           <div class="switch-mode-container">
-            <mwc-button
+            <ha-button
+              appearance="plain"
               @click=${this._toggleYaml}
               .disabled=${!this._uiAvailable}
             >
@@ -179,7 +180,7 @@ class HaPanelDevAction extends LitElement {
                 : this.hass.localize(
                     "ui.panel.developer-tools.tabs.actions.yaml_mode"
                   )}
-            </mwc-button>
+            </ha-button>
             ${!this._uiAvailable
               ? html`<span class="error"
                   >${this.hass.localize(
@@ -211,7 +212,10 @@ class HaPanelDevAction extends LitElement {
                   has-extra-actions
                   .value=${this._response}
                 >
-                  <ha-button slot="extra-actions" @click=${this._copyTemplate}
+                  <ha-button
+                    appearance="plain"
+                    slot="extra-actions"
+                    @click=${this._copyTemplate}
                     >${this.hass.localize(
                       "ui.panel.developer-tools.tabs.actions.copy_clipboard_template"
                     )}</ha-button
@@ -306,10 +310,12 @@ class HaPanelDevAction extends LitElement {
                 )}
               </table>
               ${this._yamlMode
-                ? html`<mwc-button @click=${this._fillExampleData}
+                ? html`<ha-button
+                    appearance="plain"
+                    @click=${this._fillExampleData}
                     >${this.hass.localize(
                       "ui.panel.developer-tools.tabs.actions.fill_example_data"
-                    )}</mwc-button
+                    )}</ha-button
                   >`
                 : ""}
             </ha-expansion-panel>

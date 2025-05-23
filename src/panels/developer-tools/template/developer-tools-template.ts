@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -7,6 +6,7 @@ import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-alert";
 import "../../../components/ha-spinner";
+import "../../../components/ha-button";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-card";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
@@ -149,14 +149,14 @@ class HaPanelDevTemplate extends LitElement {
             ></ha-code-editor>
           </div>
           <div class="card-actions">
-            <mwc-button @click=${this._restoreDemo}>
+            <ha-button appearance="plain" @click=${this._restoreDemo}>
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.templates.reset"
               )}
-            </mwc-button>
-            <mwc-button @click=${this._clear}>
+            </ha-button>
+            <ha-button appearance="plain" @click=${this._clear}>
               ${this.hass.localize("ui.common.clear")}
-            </mwc-button>
+            </ha-button>
           </div>
         </ha-card>
 
