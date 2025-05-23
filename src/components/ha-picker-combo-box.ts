@@ -234,7 +234,7 @@ export class HaPickerComboBox extends LitElement {
     const searchString = ev.detail.value.trim() as string;
 
     const index = this._fuseIndex(this._items);
-    const fuse = new HaFuse(this._items, {}, index);
+    const fuse = new HaFuse(this._items, { shouldSort: false }, index);
 
     const results = fuse.multiTermsSearch(searchString);
     if (results) {
