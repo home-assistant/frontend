@@ -29,19 +29,19 @@ export const mainStyles = css`
 
     /* safe-area-insets */
     --safe-area-inset-top: var(
-      --android-safe-area-inset-top,
+      --app-safe-area-inset-top,
       env(safe-area-inset-top, 0)
     );
     --safe-area-inset-bottom: var(
-      --android-safe-area-inset-bottom,
+      --app-safe-area-inset-bottom,
       env(safe-area-inset-bottom, 0)
     );
     --safe-area-inset-left: var(
-      --android-safe-area-inset-left,
+      --app-safe-area-inset-left,
       env(safe-area-inset-left, 0)
     );
     --safe-area-inset-right: var(
-      --android-safe-area-inset-right,
+      --app-safe-area-inset-right,
       env(safe-area-inset-right, 0)
     );
   }
