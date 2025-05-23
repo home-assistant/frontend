@@ -139,13 +139,16 @@ class HuiVacuumCommandCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: VacuumCommandsCardFeatureConfig;
 
-  private get _stateObj(): VacuumEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as
       | VacuumEntity
       | undefined;
@@ -194,6 +197,7 @@ class HuiVacuumCommandCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsVacuumCommandsCardFeature(this.hass, this.context)
     ) {

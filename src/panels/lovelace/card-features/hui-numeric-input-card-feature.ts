@@ -34,9 +34,9 @@ class HuiNumericInputCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: NumericInputCardFeatureConfig;
 
@@ -49,7 +49,10 @@ class HuiNumericInputCardFeature
     };
   }
 
-  private get _stateObj(): HassEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
@@ -69,9 +72,9 @@ class HuiNumericInputCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("hass") && this._stateObj) {
+    if (changedProp.has("hass") && this._stateObj && this.context?.entity_id) {
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      const oldStateObj = oldHass?.states[this.context.entity_id];
       if (oldStateObj !== this._stateObj) {
         this._currentState = this._stateObj.state;
       }
@@ -93,6 +96,7 @@ class HuiNumericInputCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsNumericInputCardFeature(this.hass, this.context)
     ) {

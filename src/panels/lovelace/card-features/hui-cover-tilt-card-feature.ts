@@ -42,13 +42,16 @@ class HuiCoverTiltCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: CoverTiltCardFeatureConfig;
 
-  private get _stateObj(): CoverEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as CoverEntity | undefined;
   }
 
@@ -90,6 +93,7 @@ class HuiCoverTiltCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsCoverTiltCardFeature(this.hass, this.context)
     ) {

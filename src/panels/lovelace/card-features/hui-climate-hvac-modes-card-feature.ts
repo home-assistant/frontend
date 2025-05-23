@@ -43,9 +43,9 @@ class HuiClimateHvacModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: ClimateHvacModesCardFeatureConfig;
 
@@ -54,7 +54,10 @@ class HuiClimateHvacModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  private get _stateObj(): ClimateEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as
       | ClimateEntity
       | undefined;
@@ -82,9 +85,9 @@ class HuiClimateHvacModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("hass") && this._stateObj) {
+    if (changedProp.has("hass") && this._stateObj && this.context?.entity_id) {
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      const oldStateObj = oldHass?.states[this.context.entity_id];
       if (oldStateObj !== this._stateObj) {
         this._currentHvacMode = this._stateObj.state as HvacMode;
       }
@@ -132,6 +135,7 @@ class HuiClimateHvacModesCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsClimateHvacModesCardFeature(this.hass, this.context)
     ) {

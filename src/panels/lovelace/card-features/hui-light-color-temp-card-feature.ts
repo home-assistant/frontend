@@ -45,13 +45,16 @@ class HuiLightColorTempCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: LightColorTempCardFeatureConfig;
 
-  private get _stateObj(): LightEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as LightEntity | undefined;
   }
 
@@ -72,6 +75,7 @@ class HuiLightColorTempCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsLightColorTempCardFeature(this.hass, this.context)
     ) {

@@ -47,9 +47,9 @@ class HuiAlarmModeCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: AlarmModesCardFeatureConfig;
 
@@ -75,17 +75,20 @@ class HuiAlarmModeCardFeature
     this._config = config;
   }
 
-  private get _stateObj(): AlarmControlPanelEntity | undefined {
-    return this.hass.states[this.context.entity_id!] as
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id] as
       | AlarmControlPanelEntity
       | undefined;
   }
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("hass") && this._stateObj) {
+    if (changedProp.has("hass") && this._stateObj && this.context?.entity_id) {
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      const oldStateObj = oldHass?.states[this.context.entity_id];
       if (oldStateObj !== this._stateObj) {
         this._currentMode = this._getCurrentMode(this._stateObj);
       }

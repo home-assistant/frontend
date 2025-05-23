@@ -64,13 +64,16 @@ const DOMAIN_ICONS: Record<string, { on: string; off: string }> = {
 
 @customElement("hui-toggle-card-feature")
 class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: ToggleCardFeatureConfig;
 
-  private get _stateObj(): HassEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
@@ -123,6 +126,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsToggleCardFeature(this.hass, this.context)
     ) {

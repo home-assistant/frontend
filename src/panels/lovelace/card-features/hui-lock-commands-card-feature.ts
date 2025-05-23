@@ -37,13 +37,16 @@ class HuiLockCommandsCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: LockCommandsCardFeatureConfig;
 
-  private get _stateObj(): LockEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as LockEntity | undefined;
   }
 
@@ -74,6 +77,7 @@ class HuiLockCommandsCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsLockCommandsCardFeature(this.hass, this.context)
     ) {

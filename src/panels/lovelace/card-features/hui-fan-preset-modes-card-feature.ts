@@ -42,9 +42,9 @@ class HuiFanPresetModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: FanPresetModesCardFeatureConfig;
 
@@ -53,7 +53,10 @@ class HuiFanPresetModesCardFeature
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
 
-  private get _stateObj(): FanEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as FanEntity | undefined;
   }
 
@@ -80,9 +83,9 @@ class HuiFanPresetModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("hass") && this._stateObj) {
+    if (changedProp.has("hass") && this._stateObj && this.context?.entity_id) {
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      const oldStateObj = oldHass?.states[this.context.entity_id];
       if (oldStateObj !== this._stateObj) {
         this._currentPresetMode = this._stateObj.attributes.preset_mode;
       }
@@ -131,6 +134,7 @@ class HuiFanPresetModesCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsFanPresetModesCardFeature(this.hass, this.context)
     ) {

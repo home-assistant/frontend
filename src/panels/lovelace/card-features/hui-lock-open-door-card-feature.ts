@@ -42,9 +42,9 @@ class HuiLockOpenDoorCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() public _buttonState: ButtonState = "normal";
 
@@ -52,7 +52,10 @@ class HuiLockOpenDoorCardFeature
 
   private _buttonTimeout?: number;
 
-  private get _stateObj(): LockEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as LockEntity | undefined;
   }
 
@@ -96,6 +99,7 @@ class HuiLockOpenDoorCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsLockOpenDoorCardFeature(this.hass, this.context)
     ) {

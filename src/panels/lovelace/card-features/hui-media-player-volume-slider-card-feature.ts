@@ -37,13 +37,16 @@ class HuiMediaPlayerVolumeSliderCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: MediaPlayerVolumeSliderCardFeatureConfig;
 
-  private get _stateObj(): MediaPlayerEntity | undefined {
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
     return this.hass.states[this.context.entity_id!] as
       | MediaPlayerEntity
       | undefined;
@@ -66,6 +69,7 @@ class HuiMediaPlayerVolumeSliderCardFeature
     if (
       !this._config ||
       !this.hass ||
+      !this.context ||
       !this._stateObj ||
       !supportsMediaPlayerVolumeSliderCardFeature(this.hass, this.context)
     ) {
