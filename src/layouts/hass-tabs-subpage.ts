@@ -326,6 +326,15 @@ class HassTabsSubpage extends LitElement {
         .content {
           position: relative;
           width: 100%;
+          box-sizing: border-box;
+          padding-left: var(
+            --tabs-subpage-content-padding-left,
+            var(--safe-area-content-inset-left)
+          );
+          padding-right: var(
+            --tabs-subpage-content-padding-right,
+            var(--safe-area-content-inset-right)
+          );
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }

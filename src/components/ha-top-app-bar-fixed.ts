@@ -10,11 +10,11 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
     css`
       header {
         padding-top: var(--safe-area-inset-top);
-        // TODO fix missing small line bellow the toolbar in settings when padding_right
-        padding-right: var(--safe-area-inset-right);
       }
       .mdc-top-app-bar__row {
         height: var(--header-height);
+        padding-left: var(--safe-area-content-inset-left);
+        padding-right: var(--safe-area-content-inset-right);
         border-bottom: var(--app-header-border-bottom);
       }
       .mdc-top-app-bar--fixed-adjust {

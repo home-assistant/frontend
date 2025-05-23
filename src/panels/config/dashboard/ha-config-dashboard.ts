@@ -246,11 +246,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           </ha-list-item>
         </ha-button-menu>
 
-        <ha-config-section
-          .narrow=${this.narrow}
-          .isWide=${this.isWide}
-          full-width
-        >
+        <div class="content">
           ${repairsIssues.length || canInstallUpdates.length
             ? html`<ha-card outlined>
                 ${repairsIssues.length
@@ -321,7 +317,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             ></ha-config-navigation>
           </ha-card>
           <ha-tip .hass=${this.hass}>${this._tip}</ha-tip>
-        </ha-config-section>
+        </div>
       </ha-top-app-bar-fixed>
     `;
   }
@@ -392,10 +388,19 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         :host(:not([narrow])) ha-card:last-child {
           margin-bottom: max(24px, var(--safe-area-inset-bottom));
         }
-        ha-config-section {
-          margin: auto;
-          margin-top: -32px;
+        .content {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+          margin-top: 24px;
+          margin-left: var(--safe-area-content-inset-left);
+          margin-right: var(--safe-area-content-inset-right);
+        }
+        .content > * {
           max-width: 600px;
+          width: 100%;
+          display: block;
         }
         ha-card {
           overflow: hidden;
@@ -418,9 +423,19 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
             border-width: 1px 0;
             border-radius: 0;
             box-shadow: unset;
+            --md-list-item-leading-space: max(
+              16px,
+              var(--safe-area-content-inset-left)
+            );
+            --md-list-item-trailing-space: max(
+              16px,
+              var(--safe-area-content-inset-right)
+            );
           }
-          ha-config-section {
-            margin-top: -42px;
+          .content {
+            margin-top: -1px;
+            margin-left: 0;
+            margin-right: 0;
           }
         }
 
