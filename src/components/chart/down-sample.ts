@@ -13,8 +13,8 @@ export function downSampleLineData(
   if (data.length <= width) {
     return data;
   }
-  const min = minX ?? data[0]![0];
-  const max = maxX ?? data[data.length - 1]![0];
+  const min = minX ?? getPointData(data[0]!)[0];
+  const max = maxX ?? getPointData(data[data.length - 1]!)[0];
   const step = Math.floor((max - min) / width);
   const frames = new Map<
     number,
@@ -26,10 +26,7 @@ export function downSampleLineData(
 
   // Group points into frames
   for (const point of data) {
-    const pointData =
-      point && typeof point === "object" && "value" in point
-        ? point.value
-        : point;
+    const pointData = getPointData(point);
     if (!Array.isArray(pointData)) continue;
     const x = Number(pointData[0]);
     const y = Number(pointData[1]);
@@ -64,4 +61,12 @@ export function downSampleLineData(
   }
 
   return result;
+}
+
+function getPointData(point: NonNullable<LineSeriesOption["data"]>[number]) {
+  const pointData =
+    point && typeof point === "object" && "value" in point
+      ? point.value
+      : point;
+  return pointData as number[];
 }
