@@ -12,26 +12,13 @@ const ERROR_ICONS = {
   error: mdiAlertCircleOutline,
 };
 
-export const createErrorCard = (
-  hass: HomeAssistant,
-  message?: string,
-  severity?: "warning" | "error"
-) => {
-  const el = document.createElement("hui-error-card");
-  el.setConfig({
-    type: "error",
-    error: message,
-    severity: severity,
-  });
-  el.hass = hass;
-  return el;
-};
-
 @customElement("hui-error-card")
 export class HuiErrorCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public preview = false;
+
+  @property({ attribute: "severity" }) public severity: "warning" | "error" = "error";
 
   @state() private _config?: ErrorCardConfig;
 
@@ -50,27 +37,23 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: ErrorCardConfig): void {
     this._config = config;
+    this.severity = config.severity || "error";
   }
 
   protected render() {
-    if (!this._config) {
-      return nothing;
-    }
-
     const error =
-      this._config.error ||
+      this._config?.error ||
       this.hass?.localize("ui.errors.config.configuration_error");
-    const title = this.hass?.user?.is_admin ? error : "";
-    const severity = this._config.severity || "error";
+    const showTitle = this.hass === undefined || this.hass?.user?.is_admin;
 
     return html`
-      <ha-card class="${severity} ${title ? "" : "no-title"}">
+      <ha-card class="${this.severity} ${showTitle ? "" : "no-title"}">
         <div class="icon">
           <slot name="icon">
-            <ha-svg-icon .path=${ERROR_ICONS[severity]}></ha-svg-icon>
+            <ha-svg-icon .path=${ERROR_ICONS[this.severity]}></ha-svg-icon>
           </slot>
         </div>
-        ${title ? html`<div class="title">${title}</div>` : nothing}
+        ${showTitle ? html`<slot class="title">${error}</slot>` : nothing}
       </ha-card>
     `;
   }

@@ -19,9 +19,9 @@ import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
-import { createErrorCard } from "./hui-error-card";
 
 export const DEFAULT_MIN = 0;
 export const DEFAULT_MAX = 100;
@@ -89,11 +89,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
-      return createErrorCard(
-        this.hass,
-        this.hass.localize("ui.card.tile.not_found"),
-        "warning"
-      );
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
+      `;
     }
 
     const entityState = Number(stateObj.state);

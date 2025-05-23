@@ -29,6 +29,7 @@ import type { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import type {
   LovelaceCard,
@@ -36,7 +37,6 @@ import type {
   LovelaceHeaderFooter,
 } from "../types";
 import type { HuiErrorCard } from "./hui-error-card";
-import { createErrorCard } from "./hui-error-card";
 import type { EntityCardConfig } from "./types";
 
 @customElement("hui-entity-card")
@@ -113,11 +113,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
-      return createErrorCard(
-        this.hass,
-        this.hass.localize("ui.card.tile.not_found"),
-        "warning"
-      );
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
+      `;
     }
 
     const domain = computeStateDomain(stateObj);

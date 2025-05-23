@@ -36,7 +36,7 @@ import type {
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
-import { createErrorCard } from "./hui-error-card";
+import {createEntityNotFoundWarning} from "../components/hui-warning";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -248,11 +248,11 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const contentClasses = { vertical: Boolean(this._config.vertical) };
 
     if (!stateObj) {
-      return createErrorCard(
-        this.hass,
-        this.hass.localize("ui.card.tile.not_found"),
-        "warning"
-      );
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
+      `;
     }
 
     const name = this._config.name || computeStateName(stateObj);

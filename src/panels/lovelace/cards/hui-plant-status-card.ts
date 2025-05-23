@@ -18,9 +18,9 @@ import type { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
-import { createErrorCard } from "./hui-error-card";
 
 const SENSOR_ICONS = {
   moisture: mdiWaterPercent,
@@ -103,11 +103,11 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass.states[this._config!.entity];
 
     if (!stateObj) {
-      return createErrorCard(
-        this.hass,
-        this.hass.localize("ui.card.tile.not_found"),
-        "warning"
-      );
+      return html`
+        <hui-warning .hass=${this.hass}>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
+      `;
     }
 
     return html`
