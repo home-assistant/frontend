@@ -7,34 +7,13 @@ import { filterXSS, getDefaultWhiteList } from "xss";
 let whiteListNormal: IWhiteList | undefined;
 let whiteListSvg: IWhiteList | undefined;
 
-// Override the default `onTagAttr` behavior to only render
-// our markdown checkboxes.
-// Returning undefined causes the default measure to be taken
-// in the xss library.
-const onTagAttr = (
-  tag: string,
-  name: string,
-  value: string
-): string | undefined => {
-  if (tag === "input") {
-    if (
-      (name === "type" && value === "checkbox") ||
-      name === "checked" ||
-      name === "disabled"
-    ) {
-      return undefined;
-    }
-    return "";
-  }
-  return undefined;
-};
-
 const renderMarkdown = async (
   content: string,
   markedOptions: MarkedOptions,
   hassOptions: {
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
+    allowDataUrl?: boolean;
   } = {}
 ): Promise<string> => {
   if (!whiteListNormal) {
@@ -70,10 +49,41 @@ const renderMarkdown = async (
   } else {
     whiteList = whiteListNormal;
   }
+  if (hassOptions.allowDataUrl && whiteList.a) {
+    whiteList.a.push("download");
+  }
 
   return filterXSS(await marked(content, markedOptions), {
     whiteList,
-    onTagAttr,
+    onTagAttr: (
+      tag: string,
+      name: string,
+      value: string
+    ): string | undefined => {
+      // Override the default `onTagAttr` behavior to only render
+      // our markdown checkboxes.
+      // Returning undefined causes the default measure to be taken
+      // in the xss library.
+      if (tag === "input") {
+        if (
+          (name === "type" && value === "checkbox") ||
+          name === "checked" ||
+          name === "disabled"
+        ) {
+          return undefined;
+        }
+        return "";
+      }
+      if (
+        hassOptions.allowDataUrl &&
+        tag === "a" &&
+        name === "href" &&
+        value.startsWith("data:")
+      ) {
+        return `href="${value}"`;
+      }
+      return undefined;
+    },
   });
 };
 
