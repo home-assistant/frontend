@@ -54,6 +54,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
           ...groups.climate,
           ...groups.media_players,
           ...groups.security,
+          ...groups.actions,
           ...groups.others,
         ];
 
