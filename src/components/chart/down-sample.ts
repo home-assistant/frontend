@@ -18,26 +18,33 @@ export function downSampleLineData(
   const step = Math.floor((max - min) / width);
   const frames = new Map<
     number,
-    { min: (typeof data)[number]; max: (typeof data)[number] }
+    {
+      min: { point: (typeof data)[number]; x: number; y: number };
+      max: { point: (typeof data)[number]; x: number; y: number };
+    }
   >();
 
   // Group points into frames
   for (const point of data) {
-    if (!Array.isArray(point)) continue;
-    const x = Number(point[0]);
-    const y = Number(point[1]);
+    const pointData =
+      point && typeof point === "object" && "value" in point
+        ? point.value
+        : point;
+    if (!Array.isArray(pointData)) continue;
+    const x = Number(pointData[0]);
+    const y = Number(pointData[1]);
     if (isNaN(x) || isNaN(y)) continue;
 
     const frameIndex = Math.floor((x - min) / step);
     const frame = frames.get(frameIndex);
     if (!frame) {
-      frames.set(frameIndex, { min: point, max: point });
+      frames.set(frameIndex, { min: { point, x, y }, max: { point, x, y } });
     } else {
-      if (frame.min![1] > y) {
-        frame.min = point;
+      if (frame.min.y > y) {
+        frame.min = { point, x, y };
       }
-      if (frame.max![1] < y) {
-        frame.max = point;
+      if (frame.max.y < y) {
+        frame.max = { point, x, y };
       }
     }
   }
@@ -47,12 +54,12 @@ export function downSampleLineData(
   for (const [_i, frame] of frames) {
     // Use min/max points to preserve visual accuracy
     // The order of the data must be preserved so max may be before min
-    if (frame.min![0] > frame.max![0]) {
-      result.push(frame.max);
+    if (frame.min.x > frame.max.x) {
+      result.push(frame.max.point);
     }
-    result.push(frame.min);
-    if (frame.min![0] < frame.max![0]) {
-      result.push(frame.max);
+    result.push(frame.min.point);
+    if (frame.min.x < frame.max.x) {
+      result.push(frame.max.point);
     }
   }
 
