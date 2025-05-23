@@ -9,6 +9,7 @@ import {
   startOfDay,
   isFirstDayOfMonth,
   isLastDayOfMonth,
+  addYears,
 } from "date-fns";
 import type { Collection } from "home-assistant-js-websocket";
 import { getCollection } from "home-assistant-js-websocket";
@@ -267,6 +268,7 @@ export interface EnergyData {
   end?: Date;
   startCompare?: Date;
   endCompare?: Date;
+  compareMode?: CompareMode;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -342,12 +344,18 @@ export const getReferencedStatisticIds = (
   return statIDs;
 };
 
+export const enum CompareMode {
+  NONE = "",
+  PREVIOUS = "previous",
+  YOY = "yoy",
+}
+
 const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   start: Date,
   end?: Date,
-  compare?: boolean
+  compare?: CompareMode
 ): Promise<EnergyData> => {
   const info = await getEnergyInfo(hass);
 
@@ -422,46 +430,50 @@ const getEnergyData = async (
   let endCompare;
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
-
   if (compare) {
-    if (
-      (calcDateProperty(
-        start,
-        isFirstDayOfMonth,
-        hass.locale,
-        hass.config
-      ) as boolean) &&
-      (calcDateProperty(
-        end || new Date(),
-        isLastDayOfMonth,
-        hass.locale,
-        hass.config
-      ) as boolean)
-    ) {
-      // When comparing a month (or multiple), we want to start at the beginning of the month
-      startCompare = calcDate(
-        start,
-        addMonths,
-        hass.locale,
-        hass.config,
-        -(calcDateDifferenceProperty(
-          end || new Date(),
+    if (compare === CompareMode.PREVIOUS) {
+      if (
+        (calcDateProperty(
           start,
-          differenceInMonths,
+          isFirstDayOfMonth,
           hass.locale,
           hass.config
-        ) as number) - 1
-      );
-    } else {
-      startCompare = calcDate(
-        start,
-        addDays,
-        hass.locale,
-        hass.config,
-        (dayDifference + 1) * -1
-      );
+        ) as boolean) &&
+        (calcDateProperty(
+          end || new Date(),
+          isLastDayOfMonth,
+          hass.locale,
+          hass.config
+        ) as boolean)
+      ) {
+        // When comparing a month (or multiple), we want to start at the beginning of the month
+        startCompare = calcDate(
+          start,
+          addMonths,
+          hass.locale,
+          hass.config,
+          -(calcDateDifferenceProperty(
+            end || new Date(),
+            start,
+            differenceInMonths,
+            hass.locale,
+            hass.config
+          ) as number) - 1
+        );
+      } else {
+        startCompare = calcDate(
+          start,
+          addDays,
+          hass.locale,
+          hass.config,
+          (dayDifference + 1) * -1
+        );
+      }
+      endCompare = addMilliseconds(start, -1);
+    } else if (compare === CompareMode.YOY) {
+      startCompare = calcDate(start, addYears, hass.locale, hass.config, -1);
+      endCompare = calcDate(end!, addYears, hass.locale, hass.config, -1);
     }
-    endCompare = addMilliseconds(start, -1);
     if (energyStatIds.length) {
       _energyStatsCompare = fetchStatistics(
         hass!,
@@ -549,6 +561,7 @@ const getEnergyData = async (
     end,
     startCompare,
     endCompare,
+    compareMode: compare,
     info,
     prefs,
     stats,
@@ -565,11 +578,11 @@ const getEnergyData = async (
 export interface EnergyCollection extends Collection<EnergyData> {
   start: Date;
   end?: Date;
-  compare?: boolean;
+  compare?: CompareMode;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
-  setCompare(compare: boolean): void;
+  setCompare(compare: CompareMode): void;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
   _active: number;
@@ -725,7 +738,7 @@ export const getEnergyDataCollection = (
       scheduleUpdatePeriod();
     }
   };
-  collection.setCompare = (compare: boolean) => {
+  collection.setCompare = (compare: CompareMode) => {
     collection.compare = compare;
   };
   return collection;
