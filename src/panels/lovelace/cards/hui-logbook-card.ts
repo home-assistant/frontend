@@ -174,7 +174,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
     if (!isComponentLoaded(this.hass, "logbook")) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${this.hass.localize("ui.components.logbook.not_loaded", {
             platform: "logbook",
           })}</hui-warning

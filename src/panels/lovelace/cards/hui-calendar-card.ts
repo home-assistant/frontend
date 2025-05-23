@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import type { Calendar, CalendarEvent } from "../../../data/calendar";
@@ -176,17 +175,9 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._events = result.events;
 
     if (result.errors.length > 0) {
-      const nameList = result.errors
-        .map((error_entity_id) =>
-          this.hass!.states[error_entity_id]
-            ? computeStateName(this.hass!.states[error_entity_id])
-            : error_entity_id
-        )
-        .join(", ");
-
       this._error = `${this.hass!.localize(
         "ui.components.calendar.event_retrieval_error"
-      )} ${nameList}`;
+      )}`;
     }
   }
 
