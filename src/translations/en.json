@@ -1008,7 +1008,7 @@
         "my_calendars": "My calendars",
         "create_calendar": "Create calendar",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars:",
+        "event_retrieval_error": "Could not retrieve events for calendars",
         "event": {
           "add": "Add event",
           "delete": "Delete event",
