@@ -18,7 +18,8 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public preview = false;
 
-  @property({ attribute: "severity" }) public severity: "warning" | "error" = "error";
+  @property({ attribute: "severity" }) public severity: "warning" | "error" =
+    "error";
 
   @state() private _config?: ErrorCardConfig;
 

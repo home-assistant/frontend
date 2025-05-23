@@ -36,7 +36,7 @@ import type {
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
-import {createEntityNotFoundWarning} from "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
