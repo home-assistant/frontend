@@ -1,18 +1,25 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiClose } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-alert";
 import "../../components/ha-dialog-header";
+import "../../components/ha-fade-in";
 import "../../components/ha-icon-button";
 import "../../components/ha-items-display-editor";
 import type { DisplayValue } from "../../components/ha-items-display-editor";
 import "../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../components/ha-md-dialog";
 import { computePanels, PANEL_ICONS } from "../../components/ha-sidebar";
+import "../../components/ha-spinner";
+import {
+  fetchFrontendUserData,
+  saveFrontendUserData,
+} from "../../data/frontend";
 import type { HomeAssistant } from "../../types";
-import type { EditSidebarDialogParams } from "./show-dialog-edit-sidebar";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 
 @customElement("dialog-edit-sidebar")
 class DialogEditSidebar extends LitElement {
@@ -22,21 +29,43 @@ class DialogEditSidebar extends LitElement {
 
   @query("ha-md-dialog") private _dialog?: HaMdDialog;
 
-  @state() private _order: string[] = [];
+  @state() private _order?: string[];
 
-  @state() private _hidden: string[] = [];
+  @state() private _hidden?: string[];
 
-  private _saveCallback?: (order: string[], hidden: string[]) => void;
+  @state() private _error?: string;
 
-  public async showDialog(params: EditSidebarDialogParams): Promise<void> {
+  /**
+   * If user has old localStorage values, show a confirmation dialog
+   */
+  private _migrateToUserData = false;
+
+  public async showDialog(): Promise<void> {
     this._open = true;
 
-    const storedOrder = localStorage.getItem("sidebarPanelOrder");
-    const storedHidden = localStorage.getItem("sidebarHiddenPanels");
+    this._getData();
+  }
 
-    this._order = storedOrder ? JSON.parse(storedOrder) : this._order;
-    this._hidden = storedHidden ? JSON.parse(storedHidden) : this._hidden;
-    this._saveCallback = params.saveCallback;
+  private async _getData() {
+    try {
+      const data = await fetchFrontendUserData(this.hass.connection, "sidebar");
+      this._order = data?.panelOrder;
+      this._hidden = data?.hiddenPanels;
+
+      // fallback to old localStorage values
+      if (!this._order) {
+        const storedOrder = localStorage.getItem("sidebarPanelOrder");
+        this._migrateToUserData = !!storedOrder;
+        this._order = storedOrder ? JSON.parse(storedOrder) : [];
+      }
+      if (!this._hidden) {
+        const storedHidden = localStorage.getItem("sidebarHiddenPanels");
+        this._migrateToUserData = !!storedHidden;
+        this._hidden = storedHidden ? JSON.parse(storedHidden) : [];
+      }
+    } catch (err: any) {
+      this._error = err.message || err;
+    }
   }
 
   private _dialogClosed(): void {
@@ -52,12 +81,16 @@ class DialogEditSidebar extends LitElement {
     panels ? Object.values(panels) : []
   );
 
-  protected render() {
-    if (!this._open) {
-      return nothing;
+  private _renderContent(): TemplateResult {
+    if (!this._order || !this._hidden) {
+      return html`<ha-fade-in .delay=${500}
+        ><ha-spinner size="large"></ha-spinner
+      ></ha-fade-in>`;
     }
 
-    const dialogTitle = this.hass.localize("ui.sidebar.edit_sidebar");
+    if (this._error) {
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+    }
 
     const panels = this._panels(this.hass.panels);
 
@@ -71,7 +104,7 @@ class DialogEditSidebar extends LitElement {
 
     const items = [
       ...beforeSpacer,
-      ...panels.filter((panel) => this._hidden.includes(panel.url_path)),
+      ...panels.filter((panel) => this._hidden!.includes(panel.url_path)),
       ...afterSpacer.filter((panel) => panel.url_path !== "config"),
     ].map((panel) => ({
       value: panel.url_path,
@@ -89,6 +122,26 @@ class DialogEditSidebar extends LitElement {
       disableSorting: panel.url_path === "developer-tools",
     }));
 
+    return html`<ha-items-display-editor
+      .hass=${this.hass}
+      .value=${{
+        order: this._order,
+        hidden: this._hidden,
+      }}
+      .items=${items}
+      @value-changed=${this._changed}
+      dont-sort-visible
+    >
+    </ha-items-display-editor>`;
+  }
+
+  protected render() {
+    if (!this._open) {
+      return nothing;
+    }
+
+    const dialogTitle = this.hass.localize("ui.sidebar.edit_sidebar");
+
     return html`
       <ha-md-dialog open @closed=${this._dialogClosed}>
         <ha-dialog-header slot="headline">
@@ -98,26 +151,20 @@ class DialogEditSidebar extends LitElement {
             .path=${mdiClose}
             @click=${this.closeDialog}
           ></ha-icon-button>
-          <span slot="title" .title=${dialogTitle}> ${dialogTitle} </span>
-        </ha-dialog-header>
-        <div slot="content" class="content">
-          <ha-items-display-editor
-            .hass=${this.hass}
-            .value=${{
-              order: this._order,
-              hidden: this._hidden,
-            }}
-            .items=${items}
-            @value-changed=${this._changed}
-            dont-sort-visible
+          <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
+          <span slot="subtitle"
+            >${this.hass.localize("ui.sidebar.edit_subtitle")}</span
           >
-          </ha-items-display-editor>
-        </div>
+        </ha-dialog-header>
+        <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
           <ha-button @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
-          <ha-button @click=${this._save}>
+          <ha-button
+            .disabled=${!this._order || !this._hidden}
+            @click=${this._save}
+          >
             ${this.hass.localize("ui.common.save")}
           </ha-button>
         </div>
@@ -131,8 +178,27 @@ class DialogEditSidebar extends LitElement {
     this._hidden = [...hidden];
   }
 
-  private _save(): void {
-    this._saveCallback?.(this._order ?? [], this._hidden ?? []);
+  private async _save() {
+    if (this._migrateToUserData) {
+      const confirmation = await showConfirmationDialog(this, {
+        destructive: true,
+        text: this.hass.localize("ui.sidebar.migrate_to_user_data"),
+      });
+      if (!confirmation) {
+        return;
+      }
+    }
+
+    try {
+      await saveFrontendUserData(this.hass.connection, "sidebar", {
+        panelOrder: this._order!,
+        hiddenPanels: this._hidden!,
+      });
+    } catch (err: any) {
+      this._error = err.message || err;
+      return;
+    }
+
     this.closeDialog();
   }
 
@@ -148,6 +214,12 @@ class DialogEditSidebar extends LitElement {
         min-width: 100%;
         min-height: 100%;
       }
+    }
+
+    ha-fade-in {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   `;
 }

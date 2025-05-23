@@ -5,29 +5,21 @@ import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
+import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/ha-drawer";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
-import { computeRTLDirection } from "../common/util/compute_rtl";
-import { storage } from "../common/decorators/storage";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
     "hass-toggle-menu": undefined | { open?: boolean };
-    "hass-edit-sidebar": EditSideBarEvent;
     "hass-show-notifications": undefined;
   }
   interface HTMLElementEventMap {
-    "hass-edit-sidebar": HASSDomEvent<EditSideBarEvent>;
     "hass-toggle-menu": HASSDomEvent<HASSDomEvents["hass-toggle-menu"]>;
   }
-}
-
-interface EditSideBarEvent {
-  order: string[];
-  hidden: string[];
 }
 
 @customElement("home-assistant-main")
@@ -43,22 +35,6 @@ export class HomeAssistantMain extends LitElement {
   @state() private _externalSidebar = false;
 
   @state() private _drawerOpen = false;
-
-  @state()
-  @storage({
-    key: "sidebarPanelOrder",
-    state: true,
-    subscribe: true,
-  })
-  private _panelOrder: string[] = [];
-
-  @state()
-  @storage({
-    key: "sidebarHiddenPanels",
-    state: true,
-    subscribe: true,
-  })
-  private _hiddenPanels: string[] = [];
 
   constructor() {
     super();
@@ -81,8 +57,6 @@ export class HomeAssistantMain extends LitElement {
           .hass=${this.hass}
           .narrow=${sidebarNarrow}
           .route=${this.route}
-          .panelOrder=${this._panelOrder}
-          .hiddenPanels=${this._hiddenPanels}
           .alwaysExpand=${sidebarNarrow || this.hass.dockedSidebar === "docked"}
         ></ha-sidebar>
         <partial-panel-resolver
@@ -105,14 +79,6 @@ export class HomeAssistantMain extends LitElement {
         mod.attachExternalToApp(this)
       );
     }
-
-    this.addEventListener(
-      "hass-edit-sidebar",
-      (ev: HASSDomEvent<EditSideBarEvent>) => {
-        this._panelOrder = ev.detail.order;
-        this._hiddenPanels = ev.detail.hidden;
-      }
-    );
 
     this.addEventListener("hass-toggle-menu", (ev) => {
       if (this._sidebarEditMode) {
