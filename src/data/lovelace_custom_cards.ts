@@ -23,7 +23,7 @@ export interface CustomCardFeatureEntry {
   name?: string;
   /** @deprecated Use `supportsFeature` */
   supported?: (stateObj: HassEntity) => boolean;
-  supportsFeature?: (
+  isSupported?: (
     hass: HomeAssistant,
     context: LovelaceCardFeatureContext
   ) => boolean;

@@ -187,8 +187,8 @@ export const supportsFeaturesType = (
       return false;
     }
     try {
-      if (customFeatureEntry.supportsFeature) {
-        return customFeatureEntry.supportsFeature(hass, context);
+      if (customFeatureEntry.isSupported) {
+        return customFeatureEntry.isSupported(hass, context);
       }
       // Fallback to the old supported method
       if (customFeatureEntry.supported) {
