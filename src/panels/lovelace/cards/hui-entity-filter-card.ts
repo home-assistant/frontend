@@ -86,11 +86,11 @@ export class HuiEntityFilterCard
         (config.conditions && Array.isArray(config.conditions)) ||
         (config.state_filter && Array.isArray(config.state_filter))
       ) &&
-      !config.entities.every(
+      !config.entities.some(
         (entity) =>
           typeof entity === "object" &&
-          entity.state_filter &&
-          Array.isArray(entity.state_filter)
+          ((entity.state_filter && Array.isArray(entity.state_filter)) ||
+            (entity.conditions && Array.isArray(entity.conditions)))
       )
     ) {
       throw new Error("Incorrect filter config");
@@ -161,7 +161,7 @@ export class HuiEntityFilterCard
         return filters.some((filter) => evaluateStateFilter(stateObj, filter));
       }
 
-      return false;
+      return true;
     });
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {
