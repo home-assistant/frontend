@@ -40,7 +40,7 @@ import { customElement, property } from "lit/decorators";
  */
 @customElement("ha-button")
 export class HaButton extends Button {
-  @property() appearance?: "accent" | "filled" | "plain";
+  @property({ reflect: true }) appearance?: "accent" | "filled" | "plain";
 
   static override styles = [
     styles,
