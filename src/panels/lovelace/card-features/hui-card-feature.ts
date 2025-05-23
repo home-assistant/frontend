@@ -1,17 +1,19 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { createCardFeatureElement } from "../create-element/create-card-feature-element";
 import type { LovelaceCardFeature } from "../types";
-import type { LovelaceCardFeatureConfig } from "./types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
 @customElement("hui-card-feature")
 export class HuiCardFeature extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: HassEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public feature?: LovelaceCardFeatureConfig;
 
@@ -22,9 +24,7 @@ export class HuiCardFeature extends LitElement {
   private _getFeatureElement(feature: LovelaceCardFeatureConfig) {
     if (!this._element) {
       this._element = createCardFeatureElement(feature);
-      return this._element;
     }
-
     return this._element;
   }
 
@@ -33,12 +33,21 @@ export class HuiCardFeature extends LitElement {
       return nothing;
     }
 
-    const element = this._getFeatureElement(this.feature);
+    const element = this._getFeatureElement(
+      this.feature
+    ) as LovelaceCardFeature;
 
     if (this.hass) {
       element.hass = this.hass;
-      (element as LovelaceCardFeature).stateObj = this.stateObj;
-      (element as LovelaceCardFeature).color = this.color;
+      element.context = this.context;
+      element.color = this.color;
+      // Backwards compatibility from custom card features
+      if (this.context.entity_id) {
+        const stateObj = this.hass.states[this.context.entity_id];
+        if (stateObj) {
+          element.stateObj = stateObj;
+        }
+      }
     }
     return html`${element}`;
   }
