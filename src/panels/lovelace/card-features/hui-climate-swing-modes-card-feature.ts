@@ -1,5 +1,4 @@
 import { mdiArrowOscillating } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -19,9 +18,19 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { ClimateSwingModesCardFeatureConfig } from "./types";
+import type {
+  ClimateSwingModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsClimateSwingModesCardFeature = (stateObj: HassEntity) => {
+export const supportsClimateSwingModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "climate" &&
@@ -34,9 +43,9 @@ class HuiClimateSwingModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: ClimateEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @state() private _config?: ClimateSwingModesCardFeatureConfig;
 
@@ -44,6 +53,12 @@ class HuiClimateSwingModesCardFeature
 
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
+
+  private get _stateObj(): ClimateEntity | undefined {
+    return this.hass.states[this.context.entity_id!] as
+      | ClimateEntity
+      | undefined;
+  }
 
   static getStubConfig(): ClimateSwingModesCardFeatureConfig {
     return {
@@ -70,8 +85,12 @@ class HuiClimateSwingModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentSwingMode = this.stateObj.attributes.swing_mode;
+    if (changedProp.has("hass") && this._stateObj) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentSwingMode = this._stateObj.attributes.swing_mode;
+      }
     }
   }
 
@@ -93,7 +112,7 @@ class HuiClimateSwingModesCardFeature
     const swingMode =
       (ev.detail as any).value ?? ((ev.target as any).value as string);
 
-    const oldSwingMode = this.stateObj!.attributes.swing_mode;
+    const oldSwingMode = this._stateObj!.attributes.swing_mode;
 
     if (swingMode === oldSwingMode) return;
 
@@ -108,7 +127,7 @@ class HuiClimateSwingModesCardFeature
 
   private async _setMode(mode: string) {
     await this.hass!.callService("climate", "set_swing_mode", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       swing_mode: mode,
     });
   }
@@ -117,13 +136,13 @@ class HuiClimateSwingModesCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsClimateSwingModesCardFeature(this.stateObj)
+      !this._stateObj ||
+      !supportsClimateSwingModesCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const stateObj = this.stateObj;
+    const stateObj = this._stateObj;
 
     const options = filterModes(
       stateObj.attributes.swing_modes,
@@ -131,7 +150,7 @@ class HuiClimateSwingModesCardFeature
     ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.formatEntityAttributeValue(
-        this.stateObj!,
+        this._stateObj!,
         "swing_mode",
         mode
       ),
@@ -155,7 +174,7 @@ class HuiClimateSwingModesCardFeature
             stateObj,
             "swing_mode"
           )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       `;
@@ -167,7 +186,7 @@ class HuiClimateSwingModesCardFeature
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "swing_mode")}
         .value=${this._currentSwingMode}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .disabled=${this._stateObj.state === UNAVAILABLE}
         fixedMenuPosition
         naturalMenuWidth
         @selected=${this._valueChanged}

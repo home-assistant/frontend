@@ -12,9 +12,19 @@ import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { NumericInputCardFeatureConfig } from "./types";
+import type {
+  LovelaceCardFeatureContext,
+  NumericInputCardFeatureConfig,
+} from "./types";
 
-export const supportsNumericInputCardFeature = (stateObj: HassEntity) => {
+export const supportsNumericInputCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return domain === "input_number" || domain === "number";
 };
@@ -24,9 +34,9 @@ class HuiNumericInputCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @state() private _config?: NumericInputCardFeatureConfig;
 
@@ -37,6 +47,10 @@ class HuiNumericInputCardFeature
       type: "numeric-input",
       style: "buttons",
     };
+  }
+
+  private get _stateObj(): HassEntity | undefined {
+    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
@@ -55,13 +69,17 @@ class HuiNumericInputCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentState = this.stateObj.state;
+    if (changedProp.has("hass") && this._stateObj) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentState = this._stateObj.state;
+      }
     }
   }
 
   private async _setValue(ev: CustomEvent) {
-    const stateObj = this.stateObj!;
+    const stateObj = this._stateObj!;
 
     const domain = computeDomain(stateObj.entity_id);
 
@@ -75,13 +93,13 @@ class HuiNumericInputCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsNumericInputCardFeature(this.stateObj)
+      !this._stateObj ||
+      !supportsNumericInputCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
 
-    const stateObj = this.stateObj;
+    const stateObj = this._stateObj;
 
     const parsedState = Number(stateObj.state);
     const value = !isNaN(parsedState) ? parsedState : undefined;

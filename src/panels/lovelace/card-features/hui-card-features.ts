@@ -1,15 +1,17 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import "./hui-card-feature";
-import type { LovelaceCardFeatureConfig } from "./types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
 @customElement("hui-card-features")
 export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: HassEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public features?: LovelaceCardFeatureConfig[];
 
@@ -24,7 +26,7 @@ export class HuiCardFeatures extends LitElement {
         (feature) => html`
           <hui-card-feature
             .hass=${this.hass}
-            .stateObj=${this.stateObj}
+            .context=${this.context}
             .color=${this.color}
             .feature=${feature}
           ></hui-card-feature>

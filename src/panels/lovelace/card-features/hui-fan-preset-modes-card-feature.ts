@@ -1,5 +1,4 @@
 import { mdiTuneVariant } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -19,9 +18,19 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { FanPresetModesCardFeatureConfig } from "./types";
+import type {
+  FanPresetModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsFanPresetModesCardFeature = (stateObj: HassEntity) => {
+export const supportsFanPresetModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "fan" && supportsFeature(stateObj, FanEntityFeature.PRESET_MODE)
@@ -33,9 +42,9 @@ class HuiFanPresetModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: FanEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @state() private _config?: FanPresetModesCardFeatureConfig;
 
@@ -43,6 +52,10 @@ class HuiFanPresetModesCardFeature
 
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
+
+  private get _stateObj(): FanEntity | undefined {
+    return this.hass.states[this.context.entity_id!] as FanEntity | undefined;
+  }
 
   static getStubConfig(): FanPresetModesCardFeatureConfig {
     return {
@@ -67,8 +80,12 @@ class HuiFanPresetModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentPresetMode = this.stateObj.attributes.preset_mode;
+    if (changedProp.has("hass") && this._stateObj) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentPresetMode = this._stateObj.attributes.preset_mode;
+      }
     }
   }
 
@@ -90,7 +107,7 @@ class HuiFanPresetModesCardFeature
     const presetMode =
       (ev.detail as any).value ?? ((ev.target as any).value as string);
 
-    const oldPresetMode = this.stateObj!.attributes.preset_mode;
+    const oldPresetMode = this._stateObj!.attributes.preset_mode;
 
     if (presetMode === oldPresetMode) return;
 
@@ -105,7 +122,7 @@ class HuiFanPresetModesCardFeature
 
   private async _setMode(mode: string) {
     await this.hass!.callService("fan", "set_preset_mode", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       preset_mode: mode,
     });
   }
@@ -114,13 +131,13 @@ class HuiFanPresetModesCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsFanPresetModesCardFeature(this.stateObj)
+      !this._stateObj ||
+      !supportsFanPresetModesCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const stateObj = this.stateObj;
+    const stateObj = this._stateObj;
 
     const options = filterModes(
       stateObj.attributes.preset_modes,
@@ -128,7 +145,7 @@ class HuiFanPresetModesCardFeature
     ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.formatEntityAttributeValue(
-        this.stateObj!,
+        this._stateObj!,
         "preset_mode",
         mode
       ),
@@ -152,7 +169,7 @@ class HuiFanPresetModesCardFeature
             stateObj,
             "preset_mode"
           )}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       `;
@@ -164,7 +181,7 @@ class HuiFanPresetModesCardFeature
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "preset_mode")}
         .value=${this._currentPresetMode}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .disabled=${this._stateObj.state === UNAVAILABLE}
         fixedMenuPosition
         naturalMenuWidth
         @selected=${this._valueChanged}

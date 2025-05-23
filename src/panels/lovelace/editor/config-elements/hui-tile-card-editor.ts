@@ -1,5 +1,4 @@
 import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -74,6 +73,12 @@ export class HuiTileCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
   }
+
+  private _featureContext = memoizeOne(
+    (entityId?: string): LovelaceCardFeatureContext => ({
+      entity_id: entityId,
+    })
+  );
 
   private _schema = memoizeOne(
     (
@@ -239,7 +244,8 @@ export class HuiTileCardEditor
   );
 
   private _hasCompatibleFeatures = memoizeOne(
-    (stateObj: HassEntity) => getSupportedFeaturesType(stateObj).length > 0
+    (context: LovelaceCardFeatureContext) =>
+      getSupportedFeaturesType(this.hass!, context).length > 0
   );
 
   protected render() {
@@ -248,7 +254,6 @@ export class HuiTileCardEditor
     }
 
     const entityId = this._config!.entity;
-    const stateObj = entityId ? this.hass!.states[entityId] : undefined;
 
     const schema = this._schema(
       this.hass.localize,
@@ -271,8 +276,8 @@ export class HuiTileCardEditor
       data.features_position = "bottom";
     }
 
-    const hasCompatibleFeatures =
-      (stateObj && this._hasCompatibleFeatures(stateObj)) || false;
+    const featureContext = this._featureContext(entityId);
+    const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
 
     return html`
       <ha-form
@@ -306,7 +311,7 @@ export class HuiTileCardEditor
             : nothing}
           <hui-card-features-editor
             .hass=${this.hass}
-            .stateObj=${stateObj}
+            .context=${featureContext}
             .features=${this._config!.features ?? []}
             @features-changed=${this._featuresChanged}
             @edit-detail-element=${this._editDetailElement}
@@ -368,13 +373,12 @@ export class HuiTileCardEditor
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     const index = ev.detail.subElementConfig.index;
     const config = this._config!.features![index!];
+    const featureContext = this._featureContext(this._config!.entity);
 
     fireEvent(this, "edit-sub-element", {
       config: config,
       saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
-      context: {
-        entity_id: this._config!.entity,
-      },
+      context: featureContext,
       type: "feature",
     } as EditSubElementEvent<
       LovelaceCardFeatureConfig,

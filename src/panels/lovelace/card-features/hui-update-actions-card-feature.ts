@@ -1,5 +1,4 @@
 import { mdiCancel, mdiCellphoneArrowDown } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -14,11 +13,21 @@ import { showUpdateBackupDialogParams } from "../../../dialogs/update_backup/sho
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { UpdateActionsCardFeatureConfig } from "./types";
+import type {
+  LovelaceCardFeatureContext,
+  UpdateActionsCardFeatureConfig,
+} from "./types";
 
 export const DEFAULT_UPDATE_BACKUP_OPTION = "no";
 
-export const supportsUpdateActionsCardFeature = (stateObj: HassEntity) => {
+export const supportsUpdateActionsCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "update" &&
@@ -31,11 +40,17 @@ class HuiUpdateActionsCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @state() private _config?: UpdateActionsCardFeatureConfig;
+
+  private get _stateObj(): UpdateEntity | undefined {
+    return this.hass.states[this.context.entity_id!] as
+      | UpdateEntity
+      | undefined;
+  }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
@@ -59,7 +74,7 @@ class HuiUpdateActionsCardFeature
   }
 
   private get _installDisabled(): boolean {
-    const stateObj = this.stateObj as UpdateEntity;
+    const stateObj = this._stateObj as UpdateEntity;
 
     if (stateObj.state === UNAVAILABLE) return true;
 
@@ -74,7 +89,7 @@ class HuiUpdateActionsCardFeature
   }
 
   private get _skipDisabled(): boolean {
-    const stateObj = this.stateObj as UpdateEntity;
+    const stateObj = this._stateObj as UpdateEntity;
 
     if (stateObj.state === UNAVAILABLE) return true;
 
@@ -89,7 +104,7 @@ class HuiUpdateActionsCardFeature
 
   private async _install(): Promise<void> {
     const supportsBackup = supportsFeature(
-      this.stateObj!,
+      this._stateObj!,
       UpdateEntityFeature.BACKUP
     );
     let backup = supportsBackup && this._config?.backup === "yes";
@@ -101,14 +116,14 @@ class HuiUpdateActionsCardFeature
     }
 
     this.hass!.callService("update", "install", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       backup: backup,
     });
   }
 
   private async _skip(): Promise<void> {
     this.hass!.callService("update", "skip", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
     });
   }
 
@@ -116,8 +131,8 @@ class HuiUpdateActionsCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsUpdateActionsCardFeature(this.stateObj)
+      !this._stateObj ||
+      !supportsUpdateActionsCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }

@@ -1,19 +1,30 @@
-import { mdiRestore, mdiPlus, mdiMinus } from "@mdi/js";
+import { mdiMinus, mdiPlus, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-control-button";
+import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-select";
 import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import { COUNTER_ACTIONS, type CounterActionsCardFeatureConfig } from "./types";
-import "../../../components/ha-control-button-group";
-import "../../../components/ha-control-button";
+import {
+  COUNTER_ACTIONS,
+  type CounterActionsCardFeatureConfig,
+  type LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsCounterActionsCardFeature = (stateObj: HassEntity) => {
+export const supportsCounterActionsCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return domain === "counter";
 };
@@ -54,11 +65,15 @@ class HuiCounterActionsCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @state() private _config?: CounterActionsCardFeatureConfig;
+
+  private get _stateObj(): HassEntity | undefined {
+    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
+  }
 
   public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
     await import(
@@ -85,8 +100,8 @@ class HuiCounterActionsCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsCounterActionsCardFeature(this.stateObj)
+      !this._stateObj ||
+      !supportsCounterActionsCardFeature(this.hass, this.context)
     ) {
       return null;
     }
@@ -96,7 +111,7 @@ class HuiCounterActionsCardFeature
         ${this._config?.actions
           ?.filter((action) => COUNTER_ACTIONS.includes(action))
           .map((action) => {
-            const button = COUNTER_ACTIONS_BUTTON[action](this.stateObj!);
+            const button = COUNTER_ACTIONS_BUTTON[action](this._stateObj!);
             return html`
               <ha-control-button
                 .entry=${button}
@@ -106,7 +121,7 @@ class HuiCounterActionsCardFeature
                 )}
                 @click=${this._onActionTap}
                 .disabled=${button.disabled ||
-                this.stateObj?.state === UNAVAILABLE}
+                this._stateObj?.state === UNAVAILABLE}
               >
                 <ha-svg-icon .path=${button.icon}></ha-svg-icon>
               </ha-control-button>
@@ -120,7 +135,7 @@ class HuiCounterActionsCardFeature
     ev.stopPropagation();
     const entry = (ev.target! as any).entry as CounterButton;
     this.hass!.callService("counter", entry.serviceName, {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
     });
   }
 

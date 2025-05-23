@@ -1,5 +1,4 @@
 import { mdiTuneVariant } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -19,9 +18,19 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { HumidifierModesCardFeatureConfig } from "./types";
+import type {
+  HumidifierModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsHumidifierModesCardFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return (
     domain === "humidifier" &&
@@ -34,13 +43,19 @@ class HuiHumidifierModesCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HumidifierEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @state() private _config?: HumidifierModesCardFeatureConfig;
 
   @state() _currentMode?: string;
+
+  private get _stateObj(): HumidifierEntity | undefined {
+    return this.hass.states[this.context.entity_id!] as
+      | HumidifierEntity
+      | undefined;
+  }
 
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
@@ -68,8 +83,12 @@ class HuiHumidifierModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentMode = this.stateObj.attributes.mode;
+    if (changedProp.has("hass") && this._stateObj) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentMode = this._stateObj.attributes.mode;
+      }
     }
   }
 
@@ -91,7 +110,7 @@ class HuiHumidifierModesCardFeature
     const mode =
       (ev.detail as any).value ?? ((ev.target as any).value as string);
 
-    const oldMode = this.stateObj!.attributes.mode;
+    const oldMode = this._stateObj!.attributes.mode;
 
     if (mode === oldMode) return;
 
@@ -106,7 +125,7 @@ class HuiHumidifierModesCardFeature
 
   private async _setMode(mode: string) {
     await this.hass!.callService("humidifier", "set_mode", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       mode: mode,
     });
   }
@@ -115,13 +134,13 @@ class HuiHumidifierModesCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsHumidifierModesCardFeature(this.stateObj)
+      !this._stateObj ||
+      !supportsHumidifierModesCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const stateObj = this.stateObj;
+    const stateObj = this._stateObj;
 
     const options = filterModes(
       stateObj.attributes.available_modes,
@@ -129,7 +148,7 @@ class HuiHumidifierModesCardFeature
     ).map<ControlSelectOption>((mode) => ({
       value: mode,
       label: this.hass!.formatEntityAttributeValue(
-        this.stateObj!,
+        this._stateObj!,
         "mode",
         mode
       ),
@@ -150,7 +169,7 @@ class HuiHumidifierModesCardFeature
           @value-changed=${this._valueChanged}
           hide-label
           .ariaLabel=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
-          .disabled=${this.stateObj!.state === UNAVAILABLE}
+          .disabled=${this._stateObj!.state === UNAVAILABLE}
         >
         </ha-control-select>
       `;
@@ -162,7 +181,7 @@ class HuiHumidifierModesCardFeature
         hide-label
         .label=${this.hass!.formatEntityAttributeName(stateObj, "mode")}
         .value=${this._currentMode}
-        .disabled=${this.stateObj.state === UNAVAILABLE}
+        .disabled=${this._stateObj.state === UNAVAILABLE}
         fixedMenuPosition
         naturalMenuWidth
         @selected=${this._valueChanged}
