@@ -387,9 +387,9 @@ export class HaChartBase extends LitElement {
         if (axis.type !== "time" || axis.show === false) {
           return axis;
         }
-        if (axis.max && axis.min) {
+        if (axis.min) {
           this._minutesDifference = differenceInMinutes(
-            axis.max as Date,
+            (axis.max as Date) || new Date(),
             axis.min as Date
           );
         }
