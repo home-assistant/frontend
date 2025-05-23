@@ -3273,15 +3273,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/auth-oauth-device@npm:7.1.5":
-  version: 7.1.5
-  resolution: "@octokit/auth-oauth-device@npm:7.1.5"
+"@octokit/auth-oauth-device@npm:8.0.0":
+  version: 8.0.0
+  resolution: "@octokit/auth-oauth-device@npm:8.0.0"
   dependencies:
     "@octokit/oauth-methods": "npm:^5.1.5"
     "@octokit/request": "npm:^9.2.3"
     "@octokit/types": "npm:^14.0.0"
     universal-user-agent: "npm:^7.0.0"
-  checksum: 10/f193f037735d997f37ab0125d82f156fd2997b2f336bb458952524d532c2f85a6b04e904cf226ab1bed88ee11223af40352f47b591fe5d40741e840e2e399a31
+  checksum: 10/d37842da9d2acb40c5c3f3c4e6423db2155aa08d3cf61e1d2f56e00a76ddb15cfd08c9b046f7d2dbb493adaeb28ba886a5f20eb7c69a3a204cf93b3de6f2d8a3
   languageName: node
   linkType: hard
 
@@ -3392,16 +3392,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-retry@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@octokit/plugin-retry@npm:7.2.1"
+"@octokit/plugin-retry@npm:8.0.0":
+  version: 8.0.0
+  resolution: "@octokit/plugin-retry@npm:8.0.0"
   dependencies:
     "@octokit/request-error": "npm:^6.1.8"
     "@octokit/types": "npm:^14.0.0"
     bottleneck: "npm:^2.15.3"
   peerDependencies:
     "@octokit/core": ">=6"
-  checksum: 10/64346ff62c2323bb44f5274b43781bfb594d76ca82bcececf4fe4204ecb00f0ba58a92719fbbece1f75981bc00cdfbeaa29fef25ba0a67d14e8f0f46f128a3bd
+  checksum: 10/d1dbfaf417193a6dabaccae3ef4d667735137d56f2b7be485c4ce1812ccff1b0503e7f48ac24e53a555908fac3b1cadc5ac077296c69b4e4acf1cde8c3bb9e0b
   languageName: node
   linkType: hard
 
@@ -9282,8 +9282,8 @@ __metadata:
     "@material/web": "npm:2.3.0"
     "@mdi/js": "npm:7.4.47"
     "@mdi/svg": "npm:7.4.47"
-    "@octokit/auth-oauth-device": "npm:7.1.5"
-    "@octokit/plugin-retry": "npm:7.2.1"
+    "@octokit/auth-oauth-device": "npm:8.0.0"
+    "@octokit/plugin-retry": "npm:8.0.0"
     "@octokit/rest": "npm:21.1.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@rsdoctor/rspack-plugin": "npm:1.1.2"
