@@ -700,12 +700,16 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     hass-tabs-subpage {
       background: var(--data-table-background-color);
+      --tabs-subpage-content-padding-left: 0;
+      --tabs-subpage-content-padding-right: 0;
     }
 
     ha-data-table {
       width: 100%;
       height: 100%;
       --data-table-border-width: 0;
+      --data-row-padding-left: var(--safe-area-inset-left);
+      --data-row-padding-right: var(--safe-area-inset-right);
     }
     :host(:not([narrow])) ha-data-table,
     .pane {

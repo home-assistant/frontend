@@ -1049,8 +1049,8 @@ export class HaDataTable extends LitElement {
           height: var(--data-table-row-height, 52px);
           width: var(--table-row-width, 100%);
           box-sizing: border-box;
-          padding-left: var(--safe-area-content-inset-left);
-          padding-right: var(--safe-area-content-inset-right);
+          padding-left: var(--data-row-padding-left);
+          padding-right: var(--data-row-padding-right);
         }
 
         .mdc-data-table__row.empty-row {
@@ -1087,8 +1087,8 @@ export class HaDataTable extends LitElement {
           border-bottom: 1px solid var(--divider-color);
           overflow: auto;
           box-sizing: border-box;
-          padding-left: var(--safe-area-content-inset-left);
-          padding-right: var(--safe-area-content-inset-right);
+          padding-left: var(--data-row-padding-left);
+          padding-right: var(--data-row-padding-right);
         }
 
         /* Hide scrollbar for Chrome, Safari and Opera */

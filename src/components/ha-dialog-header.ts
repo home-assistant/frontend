@@ -41,7 +41,7 @@ export class HaDialogHeader extends LitElement {
           display: flex;
           flex-direction: row;
           align-items: flex-start;
-          padding: 4px;
+          padding: 12px;
           box-sizing: border-box;
         }
         .header-content {
@@ -62,15 +62,14 @@ export class HaDialogHeader extends LitElement {
           line-height: 20px;
           color: var(--secondary-text-color);
         }
-        header {
-          padding-top: var(--safe-area-inset-top);
-        }
-        @media all and (min-width: 450px) and (min-height: 500px) {
+        @media all and (max-width: 450px), all and (max-height: 500px) {
           header {
-            padding-top: 0;
+            padding-top: var(--safe-area-inset-top);
+            padding-right: var(--safe-area-inset-right);
+            padding-left: var(--safe-area-inset-left);
           }
           .header-bar {
-            padding: 12px;
+            padding: 4px;
           }
         }
         .header-navigation-icon {
