@@ -7,6 +7,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { LightColorMode, lightSupportsColorMode } from "../../../data/light";
 import { stateActive } from "../../../common/entity/state_active";
+import "../../../components/ha-control-slider";
 import type { LovelaceCardFeature } from "../types";
 import type { LightColorHueCardFeatureConfig } from "./types";
 import type { HomeAssistant } from "../../../types";
