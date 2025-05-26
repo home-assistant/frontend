@@ -22,7 +22,7 @@ export class HuiWarning extends LitElement {
   protected render(): TemplateResult {
     return html`<hui-error-card .hass=${this.hass} severity="warning"
       ><slot></slot
-    ></hui-error-card> `;
+    ></hui-error-card>`;
   }
 }
 

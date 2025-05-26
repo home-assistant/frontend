@@ -190,7 +190,7 @@ export class HuiCard extends ReactiveElement {
             this._element.hass = this.hass;
           }
         } catch (e: any) {
-          // eslint-disable-next-line
+          // eslint-disable-next-line no-console
           console.error(this.config?.type, e);
           this._loadElement({ type: "error" });
         }
@@ -201,7 +201,7 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
         } catch (e: any) {
-          // eslint-disable-next-line
+          // eslint-disable-next-line no-console
           console.error(this.config?.type, e);
           this._loadElement({ type: "error" });
         }
@@ -212,7 +212,7 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).isPanel = this.layout === "panel";
         } catch (e: any) {
-          // eslint-disable-next-line
+          // eslint-disable-next-line no-console
           console.error(this.config?.type, e);
           this._loadElement({ type: "error" });
         }

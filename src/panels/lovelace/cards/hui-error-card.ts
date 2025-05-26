@@ -1,11 +1,11 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-alert";
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { ErrorCardConfig } from "./types";
 import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
 
 const ERROR_ICONS = {
   warning: mdiAlertOutline,
@@ -67,7 +67,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       border-width: 0;
       display: flex;
       align-items: center;
-      column-gap: var(--ha-card-column-gap, 16px);
+      column-gap: 16px;
       padding: 16px;
     }
     ha-card::after {
