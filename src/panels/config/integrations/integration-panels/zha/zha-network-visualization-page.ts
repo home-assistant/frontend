@@ -33,7 +33,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state()
-  private _networkData?: NetworkData;
+  private _networkData: NetworkData = {
+    nodes: [],
+    links: [],
+    categories: [],
+  };
 
   @state()
   private _devices: ZHADevice[] = [];
@@ -54,9 +58,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .route=${this.route}
-        .header=${this.hass.localize(
-          "ui.panel.config.zha.visualization.header"
-        )}
+        header=${this.hass.localize("ui.panel.config.zha.visualization.header")}
       >
         <ha-network-graph
           .hass=${this.hass}
@@ -87,15 +89,15 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const { dataType, data, name } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
-      const targetName = this._networkData!.nodes.find(
+      const targetName = this._networkData.nodes.find(
         (node) => node.id === target
       )!.name;
-      const sourceName = this._networkData!.nodes.find(
+      const sourceName = this._networkData.nodes.find(
         (node) => node.id === source
       )!.name;
       const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
 
-      const reverseValue = this._networkData!.links.find(
+      const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
       if (reverseValue) {
@@ -108,19 +110,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
       return name;
     }
     let label = `<b>IEEE: </b>${device.ieee}`;
-    label += `<br><b>Device Type: </b>${device.device_type.replace("_", " ")}`;
+    label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
       label += `<br><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
     }
     if (device.manufacturer != null && device.model != null) {
-      label += `<br><b>Device: </b>${device.manufacturer} ${device.model}`;
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device")}: </b>${device.manufacturer} ${device.model}`;
     } else {
-      label += "<br><b>Device is not in <i>'zigbee.db'</i></b>";
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_not_in_db")}</b>`;
     }
     if (device.area_id) {
       const area = this.hass.areas[device.area_id];
       if (area) {
-        label += `<br><b>Area: </b>${area.name}`;
+        label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }
     }
     return label;
@@ -163,17 +165,29 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const links: NetworkLink[] = [];
     const categories = [
       {
-        name: "Coordinator",
-        icon: "roundRect",
+        name: this.hass.localize(
+          "ui.panel.config.zha.visualization.coordinator"
+        ),
+        symbol: "roundRect",
         itemStyle: { color: primaryColor },
       },
-      { name: "Router", icon: "circle", itemStyle: { color: routerColor } },
       {
-        name: "End Device",
-        icon: "circle",
+        name: this.hass.localize("ui.panel.config.zha.visualization.router"),
+        symbol: "circle",
+        itemStyle: { color: routerColor },
+      },
+      {
+        name: this.hass.localize(
+          "ui.panel.config.zha.visualization.end_device"
+        ),
+        symbol: "circle",
         itemStyle: { color: endDeviceColor },
       },
-      { name: "Offline", icon: "circle", itemStyle: { color: offlineColor } },
+      {
+        name: this.hass.localize("ui.panel.config.zha.visualization.offline"),
+        symbol: "circle",
+        itemStyle: { color: offlineColor },
+      },
     ];
 
     // Create all the nodes and links
@@ -347,7 +361,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _getLQIWidth(lqi: number): number {
-    return Math.max(1, Math.floor((lqi / 256) * 4));
+    return lqi > 200 ? 3 : lqi > 100 ? 2 : 1;
   }
 }
 

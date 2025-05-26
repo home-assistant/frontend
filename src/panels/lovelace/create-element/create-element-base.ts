@@ -16,7 +16,10 @@ import type { ErrorCardConfig } from "../cards/types";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import type { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
+import type {
+  ErrorBadgeConfig as ErrorHeadingBadgeConfig,
+  LovelaceHeadingBadgeConfig,
+} from "../heading-badges/types";
 import type {
   LovelaceBadge,
   LovelaceBadgeConstructor,
@@ -31,6 +34,7 @@ import type {
   LovelaceHeadingBadgeConstructor,
   LovelaceRowConstructor,
 } from "../types";
+import type { ErrorBadgeConfig } from "../badges/types";
 
 const TIMEOUT = 2000;
 
@@ -96,7 +100,7 @@ export const createErrorCardElement = (config: ErrorCardConfig) => {
   return el;
 };
 
-export const createErrorBadgeElement = (config: ErrorCardConfig) => {
+export const createErrorBadgeElement = (config: ErrorBadgeConfig) => {
   const el = document.createElement("hui-error-badge");
   if (customElements.get("hui-error-badge")) {
     el.setConfig(config);
@@ -110,7 +114,9 @@ export const createErrorBadgeElement = (config: ErrorCardConfig) => {
   return el;
 };
 
-export const createErrorHeadingBadgeElement = (config: ErrorCardConfig) => {
+export const createErrorHeadingBadgeElement = (
+  config: ErrorHeadingBadgeConfig
+) => {
   const el = document.createElement("hui-error-heading-badge");
   if (customElements.get("hui-error-heading-badge")) {
     el.setConfig(config);
@@ -123,12 +129,6 @@ export const createErrorHeadingBadgeElement = (config: ErrorCardConfig) => {
   }
   return el;
 };
-
-export const createErrorCardConfig = (error, origConfig) => ({
-  type: "error",
-  error,
-  origConfig,
-});
 
 export const createErrorBadgeConfig = (error, origConfig) => ({
   type: "error",
@@ -167,7 +167,7 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
       createErrorHeadingBadgeConfig(error, config)
     );
   }
-  return createErrorCardElement(createErrorCardConfig(error, config));
+  return createErrorCardElement({ type: "error" });
 };
 
 const _customCreate = <T extends keyof CreateElementConfigTypes>(
