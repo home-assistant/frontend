@@ -48,6 +48,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
+    const groupMembers = stateObj.attributes.group_members?.length;
 
     return html`
       <div class="controls">
@@ -95,6 +96,11 @@ class MoreInfoMediaPlayer extends LitElement {
                   .path=${mdiSpeakerMultiple}
                   slot="icon"
                 ></ha-svg-icon>
+                ${groupMembers && groupMembers > 1
+                  ? html`<span class="badge">
+                      ${stateObj.attributes.group_members?.length}
+                    </span>`
+                  : nothing}
               </ha-button>
             `
           : ""}
@@ -280,6 +286,23 @@ class MoreInfoMediaPlayer extends LitElement {
 
     mwc-button > ha-svg-icon {
       vertical-align: text-bottom;
+    }
+
+    .badge {
+      position: absolute;
+      top: 0;
+      left: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 16px;
+      min-width: 8px;
+      border-radius: 10px;
+      font-weight: var(--ha-font-weight-normal);
+      font-size: var(--ha-font-size-xs);
+      background-color: var(--accent-color);
+      padding: 0 4px;
+      color: var(--text-accent-color, var(--text-primary-color));
     }
   `;
 

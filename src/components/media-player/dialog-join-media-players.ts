@@ -56,6 +56,7 @@ class DialogJoinMediaPlayers extends LitElement {
   public closeDialog() {
     this._entityId = undefined;
     this._selectedEntities = [];
+    this._groupMembers = [];
     this._submitting = false;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -136,21 +137,30 @@ class DialogJoinMediaPlayers extends LitElement {
 
     const currentPlatform = this.hass.entities[this._entityId]?.platform;
 
+    if (!currentPlatform) {
+      return [];
+    }
+
     return Object.values(entities).filter((entity) => {
-      const isCurrentEntity = entity.entity_id === this._entityId;
-      const isMediaPlayer = computeDomain(entity.entity_id) === "media_player";
-      const isSamePlatform =
-        this.hass.entities[entity.entity_id]?.platform === currentPlatform;
-      const supportsGrouping =
-        this.hass.states[entity.entity_id] &&
-        supportsFeature(
+      if (entity.entity_id === this._entityId) {
+        return false;
+      }
+      if (!computeDomain(entity.entity_id) === "media_player") {
+        return false;
+      }
+      if (this.hass.entities[entity.entity_id]?.platform !== currentPlatform) {
+        return false;
+      }
+      if (
+        !this.hass.states[entity.entity_id] ||
+        !supportsFeature(
           this.hass.states[entity.entity_id],
           MediaPlayerEntityFeature.GROUPING
-        );
-
-      return (
-        !isCurrentEntity && isMediaPlayer && isSamePlatform && supportsGrouping
-      );
+        )
+      ) {
+        return false;
+      }
+      return true;
     });
   };
 

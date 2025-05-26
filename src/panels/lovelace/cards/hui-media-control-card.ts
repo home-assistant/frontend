@@ -326,7 +326,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                         .path=${mdiSpeakerMultiple}
                                       ></ha-svg-icon>
                                       ${groupMembers && groupMembers > 1
-                                        ? html` <span class="badge">
+                                        ? html`<span class="badge">
                                             ${stateObj.attributes.group_members
                                               ?.length}
                                           </span>`
@@ -858,22 +858,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       position: absolute;
       top: 0;
       right: 0;
-      /* Inherits parent's size otherwise */
       width: auto;
       height: auto;
-      display: inline-block;
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: 0;
-      min-width: 16px;
-      box-sizing: border-box;
-      border-radius: 50%;
-      font-weight: 400;
-      font-size: 11px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 8px;
+      min-height: 16px;
+      border-radius: 10px;
+      font-weight: var(--ha-font-weight-normal);
+      font-size: var(--ha-font-size-xs);
       background-color: var(--accent-color);
-      line-height: 16px;
-      text-align: center;
-      padding: 0px 2px;
+      padding: 0 4px;
       color: var(--text-accent-color, var(--text-primary-color));
     }
   `;
