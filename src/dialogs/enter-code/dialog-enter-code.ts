@@ -222,7 +222,6 @@ export class DialogEnterCode
         grid-column-start: 6;
       }
     }
-
     ha-control-button {
       width: 56px;
       height: 56px;
@@ -237,12 +236,6 @@ export class DialogEnterCode
     .clear {
       --control-button-background-color: var(--red-color);
       --control-button-icon-color: var(--red-color);
-    }
-    .hidden {
-      display: none;
-    }
-    .buttons {
-      margin-top: 12px;
     }
   `;
 }
