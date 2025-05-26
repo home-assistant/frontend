@@ -155,6 +155,7 @@ class HaBackupOverviewBackups extends LitElement {
                       lastAttemptDate,
                       this.hass.locale,
                       now,
+                      undefined,
                       true
                     ),
                   }
@@ -177,6 +178,7 @@ class HaBackupOverviewBackups extends LitElement {
                                 new Date(lastUploadedBackup.date),
                                 this.hass.locale,
                                 now,
+                                undefined,
                                 true
                               ),
                               count: Object.keys(lastUploadedBackup.agents)
@@ -245,6 +247,7 @@ class HaBackupOverviewBackups extends LitElement {
                       lastAttemptDate,
                       this.hass.locale,
                       now,
+                      undefined,
                       true
                     ),
                   }
@@ -264,6 +267,7 @@ class HaBackupOverviewBackups extends LitElement {
                               new Date(lastUploadedBackup.date),
                               this.hass.locale,
                               now,
+                              undefined,
                               true
                             ),
                             count: Object.keys(lastUploadedBackup.agents)
@@ -286,6 +290,7 @@ class HaBackupOverviewBackups extends LitElement {
           new Date(lastBackup.date),
           this.hass.locale,
           now,
+          undefined,
           true
         ),
         count: Object.keys(lastBackup.agents).length,

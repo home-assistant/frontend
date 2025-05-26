@@ -9,6 +9,8 @@ export interface ConditionalBaseConfig extends LovelaceCardConfig {
 
 export const TIMESTAMP_RENDERING_FORMATS = [
   "relative",
+  "relative_narrow",
+  "relative_short",
   "total",
   "date",
   "time",

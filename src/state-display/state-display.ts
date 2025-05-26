@@ -13,6 +13,7 @@ import type { UpdateEntity } from "../data/update";
 import { computeUpdateStateDisplay } from "../data/update";
 import "../panels/lovelace/components/hui-timestamp-display";
 import type { HomeAssistant } from "../types";
+import type { TimestampRenderingFormat } from "../panels/lovelace/components/types";
 
 const TIMESTAMP_STATE_DOMAINS = ["button", "input_button", "scene"];
 
@@ -61,6 +62,8 @@ class StateDisplay extends LitElement {
 
   @property({ attribute: false }) public name?: string;
 
+  @property({ attribute: false }) public format?: TimestampRenderingFormat;
+
   @property({ type: Boolean, attribute: "dash-unavailable" })
   public dashUnavailable?: boolean;
 
@@ -92,7 +95,7 @@ class StateDisplay extends LitElement {
           <hui-timestamp-display
             .hass=${this.hass}
             .ts=${new Date(stateObj.state)}
-            format="relative"
+            .format=${this.format}
             capitalize
           ></hui-timestamp-display>
         `;
@@ -135,6 +138,7 @@ class StateDisplay extends LitElement {
         <ha-relative-time
           .hass=${this.hass}
           .datetime=${relativeDateTime}
+          .format=${this.format}
           capitalize
         ></ha-relative-time>
       `;
