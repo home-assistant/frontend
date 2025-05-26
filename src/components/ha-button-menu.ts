@@ -1,4 +1,3 @@
-import type { Button } from "@material/mwc-button";
 import type { Corner, Menu, MenuCorner } from "@material/mwc-menu";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -94,8 +93,8 @@ export class HaButtonMenu extends LitElement {
 
   private get _triggerButton() {
     return this.querySelector(
-      'ha-icon-button[slot="trigger"], ha-button[slot="trigger"], mwc-button[slot="trigger"]'
-    ) as HaIconButton | Button | HaButton | null;
+      'ha-icon-button[slot="trigger"], ha-button[slot="trigger"]'
+    ) as HaIconButton | HaButton | null;
   }
 
   private _setTriggerAria() {
