@@ -320,7 +320,7 @@ export const getAutomaticEntityIds = (
   hass: HomeAssistant,
   entity_ids: string[]
 ) =>
-  hass.callWS<Record<string, string>>({
+  hass.callWS<Record<string, string | null>>({
     type: "config/entity_registry/get_automatic_entity_ids",
     entity_ids,
   });
