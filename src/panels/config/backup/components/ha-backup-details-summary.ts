@@ -96,13 +96,12 @@ class HaBackupDetailsSummary extends LitElement {
 
   private _renderErrorSummary(errors: { title: string; items: string[] }[]) {
     return html`
-      <ha-alert alert-type="error">
-        <b
-          >${this.hass.localize(
-            "ui.panel.config.backup.details.summary.error.title"
-          )}</b
-        >
-        <br />
+      <ha-alert
+        alert-type="error"
+        .title=${this.hass.localize(
+          "ui.panel.config.backup.details.summary.error.title"
+        )}
+      >
         ${errors.map(
           ({ title, items }) => html`
             <br />
