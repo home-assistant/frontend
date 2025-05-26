@@ -36,6 +36,7 @@ import type {
 } from "../types";
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
+import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
@@ -84,6 +85,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: TileCardConfig;
 
+  @state() private _featureContext: LovelaceCardFeatureContext = {};
+
   public setConfig(config: TileCardConfig): void {
     if (!config.entity) {
       throw new Error("Specify an entity");
@@ -97,6 +100,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         action: getEntityDefaultTileIconAction(config.entity),
       },
       ...config,
+    };
+    this._featureContext = {
+      entity_id: config.entity,
     };
   }
 
@@ -335,7 +341,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ? html`
                 <hui-card-features
                   .hass=${this.hass}
-                  .stateObj=${stateObj}
+                  .context=${this._featureContext}
                   .color=${this._config.color}
                   .features=${features}
                 ></hui-card-features>
