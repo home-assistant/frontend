@@ -267,6 +267,7 @@ export class HaStatisticPicker extends LitElement {
         const secondary = [areaName, entityName ? deviceName : undefined]
           .filter(Boolean)
           .join(isRTL ? " ◂ " : " ▸ ");
+        const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
 
         const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
         output.push({
@@ -274,6 +275,7 @@ export class HaStatisticPicker extends LitElement {
           statistic_id: id,
           primary,
           secondary,
+          a11y_label: a11yLabel,
           stateObj: stateObj,
           type: "entity",
           sorting_label: [sortingPrefix, deviceName, entityName].join("_"),

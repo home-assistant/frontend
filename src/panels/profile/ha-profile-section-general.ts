@@ -4,8 +4,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
-import "../../components/ha-card";
 import "../../components/ha-button";
+import "../../components/ha-card";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
@@ -154,6 +154,27 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.description"
+                )}
+              </span>
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._customizeSidebar}
+              >
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </ha-button>
+            </ha-settings-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -191,27 +212,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
-            <ha-settings-row .narrow=${this.narrow}>
-              <span slot="heading">
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.header"
-                )}
-              </span>
-              <span slot="description">
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.description"
-                )}
-              </span>
-              <ha-button
-                size="small"
-                appearance="plain"
-                @click=${this._customizeSidebar}
-              >
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.button"
-                )}
-              </ha-button>
-            </ha-settings-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row
@@ -256,17 +256,8 @@ class HaProfileSectionGeneral extends LitElement {
   }
 
   private _customizeSidebar() {
-    showEditSidebarDialog(this, {
-      saveCallback: this._saveSidebar,
-    });
+    showEditSidebarDialog(this);
   }
-
-  private _saveSidebar = (order: string[], hidden: string[]) => {
-    fireEvent(this, "hass-edit-sidebar", {
-      order,
-      hidden,
-    });
-  };
 
   private _handleLogOut() {
     showConfirmationDialog(this, {

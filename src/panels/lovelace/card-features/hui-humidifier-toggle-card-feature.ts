@@ -1,5 +1,4 @@
 import { mdiPower, mdiWaterPercent } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -16,9 +15,19 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
-import type { HumidifierToggleCardFeatureConfig } from "./types";
+import type {
+  HumidifierToggleCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsHumidifierToggleCardFeature = (stateObj: HassEntity) => {
+export const supportsHumidifierToggleCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return domain === "humidifier";
 };
@@ -30,11 +39,20 @@ class HuiHumidifierToggleCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HumidifierEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: HumidifierToggleCardFeatureConfig;
 
   @state() _currentState?: HumidifierState;
+
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as
+      | HumidifierEntity
+      | undefined;
+  }
 
   static getStubConfig(): HumidifierToggleCardFeatureConfig {
     return {
@@ -51,17 +69,24 @@ class HuiHumidifierToggleCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentState = this.stateObj.state as HumidifierState;
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentState = this._stateObj.state as HumidifierState;
+      }
     }
   }
 
   private async _valueChanged(ev: CustomEvent) {
     const newState = (ev.detail as any).value as HumidifierState;
 
-    if (newState === this.stateObj!.state) return;
+    if (newState === this._stateObj!.state) return;
 
-    const oldState = this.stateObj!.state as HumidifierState;
+    const oldState = this._stateObj!.state as HumidifierState;
     this._currentState = newState;
 
     try {
@@ -76,7 +101,7 @@ class HuiHumidifierToggleCardFeature
       "humidifier",
       newState === "on" ? "turn_on" : "turn_off",
       {
-        entity_id: this.stateObj!.entity_id,
+        entity_id: this._stateObj!.entity_id,
       }
     );
   }
@@ -85,17 +110,18 @@ class HuiHumidifierToggleCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsHumidifierToggleCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsHumidifierToggleCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const color = stateColorCss(this.stateObj);
+    const color = stateColorCss(this._stateObj);
 
     const options = ["off", "on"].map<ControlSelectOption>((entityState) => ({
       value: entityState,
-      label: this.hass!.formatEntityState(this.stateObj!, entityState),
+      label: this.hass!.formatEntityState(this._stateObj!, entityState),
       path: entityState === "on" ? mdiWaterPercent : mdiPower,
     }));
 
@@ -109,7 +135,7 @@ class HuiHumidifierToggleCardFeature
         style=${styleMap({
           "--control-select-color": color,
         })}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .disabled=${this._stateObj!.state === UNAVAILABLE}
       >
       </ha-control-select>
     `;

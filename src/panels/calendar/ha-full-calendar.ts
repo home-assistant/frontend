@@ -41,6 +41,7 @@ import type {
 } from "../../types";
 import { showCalendarEventDetailDialog } from "./show-dialog-calendar-event-detail";
 import { showCalendarEventEditDialog } from "./show-dialog-calendar-event-editor";
+import "../lovelace/components/hui-warning";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -126,11 +127,8 @@ export class HAFullCalendar extends LitElement {
       ${this.calendar
         ? html`
             ${this.error
-              ? html`<ha-alert
-                  alert-type="error"
-                  dismissable
-                  @alert-dismissed-clicked=${this._clearError}
-                  >${this.error}</ha-alert
+              ? html`<hui-warning .hass=${this.hass} severity="warning"
+                  >${this.error}</hui-warning
                 >`
               : ""}
             <div class="header">
@@ -422,10 +420,6 @@ export class HAFullCalendar extends LitElement {
     );
   });
 
-  private _clearError() {
-    this.error = undefined;
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -510,11 +504,6 @@ export class HAFullCalendar extends LitElement {
           inset-inline-end: 32px;
           inset-inline-start: initial;
           z-index: 1;
-        }
-
-        ha-alert {
-          display: block;
-          margin: 4px 0;
         }
 
         #calendar {

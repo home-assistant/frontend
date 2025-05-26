@@ -72,14 +72,15 @@
     },
     "badge": {
       "entity": {
-        "not_found": "[%key:ui::card::tile::not_found%]"
+        "not_found": "[%key:ui::card::common::entity_not_found%]"
       }
     },
     "card": {
       "common": {
         "turn_on": "Turn on",
         "turn_off": "Turn off",
-        "toggle": "Toggle"
+        "toggle": "Toggle",
+        "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
         "code": "Code",
@@ -256,9 +257,6 @@
           "cancel": "cancel",
           "finish": "finish"
         }
-      },
-      "tile": {
-        "not_found": "Entity not found"
       },
       "vacuum": {
         "actions": {
@@ -1010,7 +1008,7 @@
         "my_calendars": "My calendars",
         "create_calendar": "Create calendar",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars:",
+        "event_retrieval_error": "Could not retrieve events for calendars",
         "event": {
           "add": "Add event",
           "delete": "Delete event",
@@ -2021,7 +2019,9 @@
     "sidebar": {
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
-      "edit_sidebar": "Edit sidebar"
+      "edit_sidebar": "Edit sidebar",
+      "edit_subtitle": "Synced on all devices",
+      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged into. To create a sidebar per device, you should use a different user for that device."
     },
     "panel": {
       "my": {
@@ -2654,6 +2654,12 @@
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
+              "last_backup_failed_addons_description": "The last automatic backup created {relative_time} was not able to backup all add-ons.",
+              "last_backup_failed_folders_description": "The last automatic backup created {relative_time} was not able to backup all folders.",
+              "last_backup_failed_addons_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and folders.",
+              "last_backup_failed_locations_addons_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and wasn't stored in all locations.",
+              "last_backup_failed_locations_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all folders and wasn't stored in all locations.",
+              "last_backup_failed_locations_addons_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and folders and wasn't stored in all locations.",
               "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
@@ -2769,7 +2775,13 @@
             "summary": {
               "title": "Backup",
               "size": "Size",
-              "created": "Created"
+              "created": "Created",
+              "error": {
+                "title": "This backup was not created successfully. Some data is missing.",
+                "failed_locations": "Failed locations",
+                "failed_addons": "Failed add-ons",
+                "failed_folders": "Failed folders"
+              }
             },
             "restore": {
               "title": "Select what to restore",
@@ -6573,8 +6585,9 @@
               "lights": "Lights",
               "covers": "Covers",
               "climate": "Climate",
-              "media_players": "Entertainment",
+              "media_players": "Media players",
               "security": "Security",
+              "actions": "Actions",
               "others": "Others"
             }
           }

@@ -275,9 +275,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.configEntriesInProgress
     );
 
-    const discoveryFlows = configEntriesInProgress.filter(
-      (flow) => !ATTENTION_SOURCES.includes(flow.context.source)
-    );
+    const discoveryFlows = configEntriesInProgress
+      .filter((flow) => !ATTENTION_SOURCES.includes(flow.context.source))
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.localized_title || "zzz",
+          b.localized_title || "zzz",
+          this.hass.locale.language
+        )
+      );
 
     const attentionFlows = configEntriesInProgress.filter((flow) =>
       ATTENTION_SOURCES.includes(flow.context.source)

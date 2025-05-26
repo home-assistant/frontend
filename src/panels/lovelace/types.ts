@@ -8,13 +8,16 @@ import type {
   LovelaceRawConfig,
 } from "../../data/lovelace/config/types";
 import type { FrontendLocaleData } from "../../data/translation";
+import type { ShowToastParams } from "../../managers/notification-manager";
 import type { Constructor, HomeAssistant } from "../../types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./card-features/types";
+import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "./header-footer/types";
-import type { LovelaceCardFeatureConfig } from "./card-features/types";
-import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import type { LovelaceHeadingBadgeConfig } from "./heading-badges/types";
-import type { ShowToastParams } from "../../managers/notification-manager";
 
 declare global {
   interface HASSDomEvents {
@@ -169,7 +172,9 @@ export interface LovelaceGenericElementEditor<C = any> extends HTMLElement {
 
 export interface LovelaceCardFeature extends HTMLElement {
   hass?: HomeAssistant;
+  /** @deprecated Use `context` instead */
   stateObj?: HassEntity;
+  context?: LovelaceCardFeatureContext;
   setConfig(config: LovelaceCardFeatureConfig);
   color?: string;
 }
@@ -178,7 +183,7 @@ export interface LovelaceCardFeatureConstructor
   extends Constructor<LovelaceCardFeature> {
   getStubConfig?: (
     hass: HomeAssistant,
-    stateObj?: HassEntity
+    context?: LovelaceCardFeatureContext
   ) => LovelaceCardFeatureConfig;
   getConfigElement?: () => LovelaceCardFeatureEditor;
   getConfigForm?: () => {
