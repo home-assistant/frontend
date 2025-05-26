@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { debounce } from "../common/util/debounce";
 import "../components/entity/state-info";
 import "../components/ha-slider";
@@ -63,6 +64,7 @@ class StateCardInputNumber extends LitElement {
                 .max=${Number(this.stateObj.attributes.max)}
                 .value=${this.stateObj.state}
                 @change=${this._selectedValueChanged}
+                @click=${stopPropagation}
               ></ha-slider>
               <span class="state">
                 ${this.hass.formatEntityState(this.stateObj)}
@@ -81,6 +83,7 @@ class StateCardInputNumber extends LitElement {
                 .suffix=${this.stateObj.attributes.unit_of_measurement || ""}
                 type="number"
                 @change=${this._selectedValueChanged}
+                @click=${stopPropagation}
               >
               </ha-textfield>
             </div>
