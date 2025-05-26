@@ -86,7 +86,7 @@ class HuiEnergyCarbonGaugeCard
     const co2State = this.hass.states[this._data.co2SignalEntity];
 
     if (!co2State) {
-      return html`<hui-warning>
+      return html`<hui-warning .hass=${this.hass}>
         ${createEntityNotFoundWarning(this.hass, this._data.co2SignalEntity)}
       </hui-warning>`;
     }

@@ -215,8 +215,9 @@ export interface EntityFilterCardConfig extends LovelaceCardConfig {
 }
 
 export interface ErrorCardConfig extends LovelaceCardConfig {
-  error: string;
-  origConfig: LovelaceCardConfig;
+  error?: string;
+  origConfig?: LovelaceCardConfig;
+  severity?: "warning" | "error";
 }
 
 export interface SeverityConfig {

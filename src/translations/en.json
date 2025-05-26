@@ -72,14 +72,15 @@
     },
     "badge": {
       "entity": {
-        "not_found": "[%key:ui::card::tile::not_found%]"
+        "not_found": "[%key:ui::card::common::entity_not_found%]"
       }
     },
     "card": {
       "common": {
         "turn_on": "Turn on",
         "turn_off": "Turn off",
-        "toggle": "Toggle"
+        "toggle": "Toggle",
+        "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
         "code": "Code",
@@ -256,9 +257,6 @@
           "cancel": "cancel",
           "finish": "finish"
         }
-      },
-      "tile": {
-        "not_found": "Entity not found"
       },
       "vacuum": {
         "actions": {
@@ -1010,7 +1008,7 @@
         "my_calendars": "My calendars",
         "create_calendar": "Create calendar",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars:",
+        "event_retrieval_error": "Could not retrieve events for calendars",
         "event": {
           "add": "Add event",
           "delete": "Delete event",
