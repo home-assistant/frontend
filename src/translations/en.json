@@ -72,14 +72,15 @@
     },
     "badge": {
       "entity": {
-        "not_found": "[%key:ui::card::tile::not_found%]"
+        "not_found": "[%key:ui::card::common::entity_not_found%]"
       }
     },
     "card": {
       "common": {
         "turn_on": "Turn on",
         "turn_off": "Turn off",
-        "toggle": "Toggle"
+        "toggle": "Toggle",
+        "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
         "code": "Code",
@@ -257,9 +258,6 @@
           "finish": "finish"
         }
       },
-      "tile": {
-        "not_found": "Entity not found"
-      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",
@@ -374,7 +372,9 @@
       "copy": "Copy",
       "show": "Show",
       "replace": "Replace",
-      "append": "Append"
+      "append": "Append",
+      "supports_markdown": "Supports {markdown_help_link}",
+      "markdown": "Markdown"
     },
     "components": {
       "selectors": {
@@ -647,9 +647,9 @@
         "none": "None"
       },
       "user-picker": {
-        "no_user": "No user",
-        "add_user": "Add user",
-        "remove_user": "Remove user"
+        "no_match": "No matching users found",
+        "user": "User",
+        "add_user": "Add user"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -662,7 +662,8 @@
         "no_match": "No matching devices found",
         "device": "Device",
         "unnamed_device": "Unnamed device",
-        "no_area": "No area"
+        "no_area": "No area",
+        "placeholder": "Select a device"
       },
       "category-picker": {
         "clear": "Clear",
@@ -683,15 +684,13 @@
         }
       },
       "label-picker": {
-        "clear": "Clear",
-        "show_labels": "Show labels",
         "label": "Label",
         "labels": "Labels",
-        "add_label": "Add label",
         "add_new_sugestion": "Add new label ''{name}''",
         "add_new": "Add new label…",
         "no_labels": "You don't have any labels",
-        "no_match": "No matching labels found"
+        "no_match": "No matching labels found",
+        "failed_create_label": "Failed to create label."
       },
       "area-picker": {
         "clear": "Clear",
@@ -1009,7 +1008,7 @@
         "my_calendars": "My calendars",
         "create_calendar": "Create calendar",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars:",
+        "event_retrieval_error": "Could not retrieve events for calendars",
         "event": {
           "add": "Add event",
           "delete": "Delete event",
@@ -1150,6 +1149,9 @@
       },
       "form-optional-actions": {
         "add": "Add interaction"
+      },
+      "combo-box": {
+        "no_match": "No matching items found"
       }
     },
     "dialogs": {
@@ -2017,9 +2019,7 @@
     "sidebar": {
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
-      "done": "Done",
-      "hide_panel": "Hide panel",
-      "show_panel": "Show panel"
+      "edit_sidebar": "Edit sidebar"
     },
     "panel": {
       "my": {
@@ -2089,7 +2089,7 @@
           },
           "system": {
             "main": "System",
-            "secondary": "Create backups, check logs or reboot your system"
+            "secondary": "Create backups, check logs, or reboot your system"
           },
           "about": {
             "main": "About",
@@ -2109,7 +2109,11 @@
           "learn_more": "Learn more",
           "show_url": "Show full URL",
           "hide_url": "Hide URL",
-          "copy_link": "Copy link"
+          "copy_link": "Copy link",
+          "graph": {
+            "toggle_physics": "Toggle physics",
+            "toggle_labels": "Toggle labels"
+          }
         },
         "updates": {
           "caption": "Updates",
@@ -2215,10 +2219,10 @@
           "add_label": "Create label",
           "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
-          "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
-          "introduction2": "Go to the area, device or entity you want to add a label to, and press the edit button to assign labels to them.",
+          "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
+          "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices and entities.",
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities.",
           "detail": {
             "new_label": "New label",
             "name": "Name",
@@ -2267,6 +2271,7 @@
             "name": "Name",
             "icon": "Icon",
             "floor": "Floor",
+            "add_labels": "Add labels",
             "name_required": "Name is required",
             "area_id": "Area ID",
             "unknown_error": "Unknown error",
@@ -4725,7 +4730,7 @@
             "check_your_email": "Check your email for instructions on how to reset your password."
           },
           "register": {
-            "title": "Register Account",
+            "title": "Register account",
             "headline": "Start your free trial",
             "information": "Create an account to start your free one month trial with Home Assistant Cloud. No payment information necessary.",
             "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
@@ -4735,7 +4740,7 @@
             "feature_webhook_apps": "Easy integration with webhook-based apps like OwnTracks",
             "information3": "This service is run by our partner ",
             "information3a": ", a company founded by the founders of Home Assistant.",
-            "information4": "By registering an account you agree to the following terms and conditions.",
+            "information4": "By registering an account, you agree to the following terms and conditions.",
             "link_terms_conditions": "Terms and conditions",
             "link_privacy_policy": "Privacy policy",
             "create_account": "Create account",
@@ -4753,11 +4758,11 @@
             "download_support_package": "Download support package",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
-            "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant and Amazon Alexa integrations. This action cannot be undone.",
+            "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
             "reset": "Reset",
             "reset_data_failed": "Failed to reset cloud data",
             "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
-            "nabu_casa_account": "Nabu Casa Account",
+            "nabu_casa_account": "Nabu Casa account",
             "connection_status": "Cloud connection status",
             "manage_account": "Manage account",
             "sign_out": "Sign out",
@@ -4796,7 +4801,7 @@
               "cerificate_loading": "Your certificate is loading.",
               "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
               "cerificate_error": "There was an error generating the certificate, check your logs.",
-              "info": "Home Assistant Cloud provides a secure remote access to your instance while away from home. For more information on remote access and these settings visit our security documentation.",
+              "info": "Home Assistant Cloud provides secure remote access to your instance while away from home. For more information on remote access and these settings, visit our security documentation.",
               "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
               "security_options": "Security options",
@@ -5340,7 +5345,7 @@
           },
           "config_flow": {
             "success": "Success",
-            "assign_area": "Assign {number, plural,\n  one {device}\n  other {devices}\n} to area",
+            "device_created": "{number, plural,\n  one {Device}\n  other {Devices}\n} created",
             "device_name": "Device name",
             "aborted": "Aborted",
             "close": "Close",
@@ -5515,6 +5520,7 @@
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
           "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
           "connection_monitor": "Connection monitor",
+          "visualization": "Visualization",
           "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
@@ -5532,7 +5538,12 @@
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
           "service_uuids": "Service UUIDs",
-          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+          "area": "Area",
+          "core": "Home Assistant",
+          "scanners": "Scanners",
+          "known_devices": "Known devices",
+          "unknown_devices": "Unknown devices"
         },
         "dhcp": {
           "title": "DHCP discovery",
@@ -5610,7 +5621,11 @@
             "value": "Value"
           },
           "configuration_page": {
-            "shortcuts_title": "Shortcuts",
+            "status_title": "status",
+            "status_online": "online",
+            "status_offline": "offline",
+            "devices": "{count} {count, plural,\n one {device}\n other {devices}\n}",
+            "devices_offline": "{count} offline",
             "update_button": "Update configuration",
             "download_backup": "Download backup",
             "migrate_radio": "Migrate radio",
@@ -5688,11 +5703,15 @@
           "visualization": {
             "header": "Network visualization",
             "caption": "Visualization",
-            "highlight_label": "Highlight devices",
-            "zoom_label": "Zoom to device",
-            "auto_zoom": "Auto zoom",
-            "enable_physics": "Enable physics",
-            "refresh_topology": "Refresh topology"
+            "refresh_topology": "Refresh topology",
+            "device": "Device",
+            "device_type": "Device type",
+            "device_not_in_db": "Device is not in 'zigbee.db'",
+            "area": "Area",
+            "coordinator": "Coordinator",
+            "router": "Router",
+            "end_device": "End device",
+            "offline": "Offline"
           },
           "device_binding": {
             "bind": "Bind",
@@ -5761,7 +5780,7 @@
               "backup_failed": "Failed to download backup",
               "restore_complete": "Backup restored",
               "restore_failed": "Failed to restore backup",
-              "downloading": "Downloading backup",
+              "creating": "Creating backup",
               "restoring": "Restoring backup",
               "migrate": "Migrate controller"
             },
@@ -6194,7 +6213,7 @@
             "capability_controls": {
               "thermostat_setback": {
                 "title": "Thermostat Setback",
-                "setback_state_label": "Setback in 1/10 degrees (Kelvin)",
+                "setback_state_label": "Setback in Kelvin",
                 "setback_state_helper": "Min: -12.8, max: 12.0",
                 "setback_special_state": {
                   "label": "Setback special state",
@@ -6419,7 +6438,7 @@
             "zeroconf_info": "Show services discovered using mDNS. Does not include services unknown to Home Assistant."
           },
           "network_adapter": "Network adapter",
-          "network_adapter_info": "Configure which network adapters integrations will use. Currently this setting only affects multicast traffic. A restart is required for these settings to apply.",
+          "network_adapter_info": "Configure which network adapters integrations will use. A restart is required for these settings to apply.",
           "ip_information": "IP Information",
           "adapter": {
             "auto_configure": "Auto configure",
@@ -6552,8 +6571,9 @@
               "lights": "Lights",
               "covers": "Covers",
               "climate": "Climate",
-              "media_players": "Entertainment",
+              "media_players": "Media players",
               "security": "Security",
+              "actions": "Actions",
               "others": "Others"
             }
           }

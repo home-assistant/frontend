@@ -34,7 +34,7 @@ class HaLabel extends LitElement {
           align-items: center;
           font-size: var(--ha-font-size-s);
           font-weight: var(--ha-font-weight-medium);
-          line-height: 16px;
+          line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.1px;
           vertical-align: middle;
           height: 32px;

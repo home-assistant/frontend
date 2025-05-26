@@ -238,6 +238,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           ? undefined
           : "/config"}
         .tabs=${configSections.areas}
+        has-fab
       >
         ${this.narrow
           ? html`
@@ -580,9 +581,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       width: 250px;
       min-height: 100%;
       box-sizing: border-box;
-    }
-    ha-card {
-      margin-bottom: 100px;
     }
     ha-tooltip {
       display: block;

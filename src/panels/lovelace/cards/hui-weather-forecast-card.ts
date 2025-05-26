@@ -220,7 +220,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -549,7 +549,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .state,
         .temp-attribute .temp {
           font-size: var(--ha-font-size-3xl);
-          line-height: 1.3;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .name,

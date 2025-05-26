@@ -287,6 +287,7 @@ export class StateHistoryChartLine extends LitElement {
           },
         } as YAXisOption,
         legend: {
+          type: "custom",
           show: this.showNames,
         },
         grid: {

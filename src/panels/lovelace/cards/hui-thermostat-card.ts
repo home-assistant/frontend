@@ -113,7 +113,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -203,7 +203,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     .title {
       width: 100%;
       font-size: var(--ha-font-size-l);
-      line-height: 36px;
+      line-height: var(--ha-line-height-expanded);
       padding: 8px 30px 8px 30px;
       margin: 0;
       text-align: center;

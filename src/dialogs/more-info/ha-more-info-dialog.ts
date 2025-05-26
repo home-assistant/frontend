@@ -680,7 +680,7 @@ export class MoreInfoDialog extends LitElement {
         .title .main {
           color: var(--primary-text-color);
           font-size: var(--ha-font-size-xl);
-          line-height: 24px;
+          line-height: var(--ha-line-height-condensed);
         }
 
         .title .breadcrumb {

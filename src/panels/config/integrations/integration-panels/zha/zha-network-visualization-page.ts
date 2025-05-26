@@ -1,27 +1,26 @@
 import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import type { Edge, EdgeOptions, Node } from "vis-network/peer/esm/vis-network";
-import { Network } from "vis-network/peer/esm/vis-network";
-import { navigate } from "../../../../../common/navigate";
-import "../../../../../components/search-input";
-import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-checkbox";
-import type { HaCheckbox } from "../../../../../components/ha-checkbox";
-import "../../../../../components/ha-formfield";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import { customElement, property, state } from "lit/decorators";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
+import { mdiRefresh } from "@mdi/js";
+import "../../../../../components/chart/ha-network-graph";
+import type {
+  NetworkData,
+  NetworkNode,
+  NetworkLink,
+} from "../../../../../components/chart/ha-network-graph";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
-import type {
-  ValueChangedEvent,
-  HomeAssistant,
-  Route,
-} from "../../../../../types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
+import { colorVariables } from "../../../../../resources/theme/color.globals";
+import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -33,103 +32,22 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @property({ attribute: false })
-  public zoomedDeviceIdFromURL?: string;
+  @state()
+  private _networkData: NetworkData = {
+    nodes: [],
+    links: [],
+    categories: [],
+  };
 
   @state()
-  private zoomedDeviceId?: string;
-
-  @query("#visualization", true)
-  private _visualization?: HTMLElement;
-
-  @state()
-  private _devices = new Map<string, ZHADevice>();
-
-  @state()
-  private _devicesByDeviceId = new Map<string, ZHADevice>();
-
-  @state()
-  private _nodes: Node[] = [];
-
-  @state()
-  private _network?: Network;
-
-  @state()
-  private _filter?: string;
-
-  private _autoZoom = true;
-
-  private _enablePhysics = true;
+  private _devices: ZHADevice[] = [];
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
 
-    // prevent zoomedDeviceIdFromURL from being restored to zoomedDeviceId after the user clears it
-    if (this.zoomedDeviceIdFromURL) {
-      this.zoomedDeviceId = this.zoomedDeviceIdFromURL;
-    }
-
     if (this.hass) {
       this._fetchData();
     }
-
-    this._network = new Network(
-      this._visualization!,
-      {},
-      {
-        autoResize: true,
-        layout: {
-          improvedLayout: true,
-        },
-        physics: {
-          barnesHut: {
-            springConstant: 0,
-            avoidOverlap: 10,
-            damping: 0.09,
-          },
-        },
-        nodes: {
-          font: {
-            multi: "html",
-          },
-        },
-        edges: {
-          smooth: {
-            enabled: true,
-            type: "continuous",
-            forceDirection: "none",
-            roundness: 0.6,
-          },
-        },
-      }
-    );
-
-    this._network.on("doubleClick", (properties) => {
-      const ieee = properties.nodes[0];
-      if (ieee) {
-        const device = this._devices.get(ieee);
-        if (device) {
-          navigate(`/config/devices/device/${device.device_reg_id}`);
-        }
-      }
-    });
-
-    this._network.on("click", (properties) => {
-      const ieee = properties.nodes[0];
-      if (ieee) {
-        const device = this._devices.get(ieee);
-        if (device && this._autoZoom) {
-          this.zoomedDeviceId = device.device_reg_id;
-          this._zoomToDevice();
-        }
-      }
-    });
-
-    this._network.on("stabilized", () => {
-      if (this.zoomedDeviceId) {
-        this._zoomToDevice();
-      }
-    });
   }
 
   protected render() {
@@ -140,362 +58,310 @@ export class ZHANetworkVisualizationPage extends LitElement {
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .route=${this.route}
-        .header=${this.hass.localize(
-          "ui.panel.config.zha.visualization.header"
-        )}
+        header=${this.hass.localize("ui.panel.config.zha.visualization.header")}
       >
-        ${this.narrow
-          ? html`
-              <div slot="header">
-                <search-input
-                  .hass=${this.hass}
-                  class="header"
-                  @value-changed=${this._handleSearchChange}
-                  .filter=${this._filter}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.zha.visualization.highlight_label"
-                  )}
-                >
-                </search-input>
-              </div>
-            `
-          : ""}
-        <div class="header">
-          ${!this.narrow
-            ? html`<search-input
-                .hass=${this.hass}
-                @value-changed=${this._handleSearchChange}
-                .filter=${this._filter}
-                .label=${this.hass.localize(
-                  "ui.panel.config.zha.visualization.highlight_label"
-                )}
-              ></search-input>`
-            : ""}
-          <ha-device-picker
-            .hass=${this.hass}
-            .value=${this.zoomedDeviceId}
-            .label=${this.hass.localize(
-              "ui.panel.config.zha.visualization.zoom_label"
+        <ha-network-graph
+          .hass=${this.hass}
+          .data=${this._networkData}
+          .tooltipFormatter=${this._tooltipFormatter}
+          @chart-click=${this._handleChartClick}
+        >
+          <ha-icon-button
+            slot="button"
+            class="refresh-button"
+            .path=${mdiRefresh}
+            @click=${this._refreshTopology}
+            label=${this.hass.localize(
+              "ui.panel.config.zha.visualization.refresh_topology"
             )}
-            .deviceFilter=${this._filterDevices}
-            @value-changed=${this._onZoomToDevice}
-          ></ha-device-picker>
-          <div class="controls">
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.zha.visualization.auto_zoom"
-              )}
-            >
-              <ha-checkbox
-                @change=${this._handleAutoZoomCheckboxChange}
-                .checked=${this._autoZoom}
-              >
-              </ha-checkbox>
-            </ha-formfield>
-            <ha-formfield
-              .label=${this.hass!.localize(
-                "ui.panel.config.zha.visualization.enable_physics"
-              )}
-              ><ha-checkbox
-                @change=${this._handlePhysicsCheckboxChange}
-                .checked=${this._enablePhysics}
-              >
-              </ha-checkbox
-            ></ha-formfield>
-            <mwc-button @click=${this._refreshTopology}>
-              ${this.hass!.localize(
-                "ui.panel.config.zha.visualization.refresh_topology"
-              )}
-            </mwc-button>
-          </div>
-        </div>
-        <div id="visualization"></div>
+          ></ha-icon-button>
+        </ha-network-graph>
       </hass-tabs-subpage>
     `;
   }
 
   private async _fetchData() {
-    const devices = await fetchDevices(this.hass!);
-    this._devices = new Map(
-      devices.map((device: ZHADevice) => [device.ieee, device])
-    );
-    this._devicesByDeviceId = new Map(
-      devices.map((device: ZHADevice) => [device.device_reg_id, device])
-    );
-    this._updateDevices(devices);
+    this._devices = await fetchDevices(this.hass!);
+    this._networkData = this._createChartData(this._devices);
   }
 
-  private _updateDevices(devices: ZHADevice[]) {
-    this._nodes = [];
-    const edges: Edge[] = [];
+  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+    const { dataType, data, name } = params as CallbackDataParams;
+    if (dataType === "edge") {
+      const { source, target, value } = data as any;
+      const targetName = this._networkData.nodes.find(
+        (node) => node.id === target
+      )!.name;
+      const sourceName = this._networkData.nodes.find(
+        (node) => node.id === source
+      )!.name;
+      const tooltipText = `${sourceName} → ${targetName}${value ? ` <b>LQI:</b> ${value}` : ""}`;
 
-    devices.forEach((device) => {
-      this._nodes.push({
-        id: device.ieee,
-        label: this._buildLabel(device),
-        shape: this._getShape(device),
-        mass: this._getMass(device),
-        fixed: device.device_type === "Coordinator",
-        color: {
-          background: device.available ? "#66FF99" : "#FF9999",
-        },
-      });
-
-      if (device.neighbors && device.neighbors.length > 0) {
-        device.neighbors.forEach((neighbor) => {
-          const idx = edges.findIndex(
-            (e) => device.ieee === e.to && neighbor.ieee === e.from
-          );
-          if (idx === -1) {
-            const edge_options = this._getEdgeOptions(parseInt(neighbor.lqi));
-            edges.push({
-              from: device.ieee,
-              to: neighbor.ieee,
-              label: neighbor.lqi + "",
-              color: edge_options.color,
-              width: edge_options.width,
-              length: edge_options.length,
-              physics: edge_options.physics,
-              arrows: {
-                from: {
-                  enabled: neighbor.relationship !== "Child",
-                },
-              },
-              dashes: neighbor.relationship !== "Child",
-            });
-          } else {
-            const edge_options = this._getEdgeOptions(
-              Math.min(parseInt(edges[idx].label!), parseInt(neighbor.lqi))
-            );
-            edges[idx].label += " & " + neighbor.lqi;
-            edges[idx].color = edge_options.color;
-            edges[idx].width = edge_options.width;
-            edges[idx].length = edge_options.length;
-            edges[idx].physics = edge_options.physics;
-            delete edges[idx].arrows;
-            delete edges[idx].dashes;
-          }
-        });
+      const reverseValue = this._networkData.links.find(
+        (link) => link.source === source && link.target === target
+      )?.reverseValue;
+      if (reverseValue) {
+        return `${tooltipText}<br>${targetName} → ${sourceName} <b>LQI:</b> ${reverseValue}`;
       }
-    });
-
-    this._network?.setData({ nodes: this._nodes, edges: edges });
-  }
-
-  private _getEdgeOptions(lqi: number): EdgeOptions {
-    const length = 2000 - 4 * lqi;
-    if (lqi > 192) {
-      return {
-        color: { color: "#17ab00", highlight: "#17ab00" },
-        width: lqi / 20,
-        length: length,
-        physics: false,
-      };
+      return tooltipText;
     }
-    if (lqi > 128) {
-      return {
-        color: { color: "#e6b402", highlight: "#e6b402" },
-        width: 9,
-        length: length,
-        physics: false,
-      };
+    const device = this._devices.find((d) => d.ieee === (data as any).id);
+    if (!device) {
+      return name;
     }
-    return {
-      color: { color: "#bfbfbf", highlight: "#bfbfbf" },
-      width: 1,
-      length: length,
-      physics: false,
-    };
-  }
-
-  private _getMass(device: ZHADevice): number {
-    if (!device.available) {
-      return 6;
-    }
-    if (device.device_type === "Coordinator") {
-      return 2;
-    }
-    if (device.device_type === "Router") {
-      return 4;
-    }
-    return 5;
-  }
-
-  private _getShape(device: ZHADevice): string {
-    if (device.device_type === "Coordinator") {
-      return "box";
-    }
-    if (device.device_type === "Router") {
-      return "ellipse";
-    }
-    return "circle";
-  }
-
-  private _buildLabel(device: ZHADevice): string {
-    let label =
-      device.user_given_name !== null
-        ? `<b>${device.user_given_name}</b>\n`
-        : "";
-    label += `<b>IEEE: </b>${device.ieee}`;
-    label += `\n<b>Device Type: </b>${device.device_type.replace("_", " ")}`;
+    let label = `<b>IEEE: </b>${device.ieee}`;
+    label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b>${device.device_type.replace("_", " ")}`;
     if (device.nwk != null) {
-      label += `\n<b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
+      label += `<br><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`;
     }
     if (device.manufacturer != null && device.model != null) {
-      label += `\n<b>Device: </b>${device.manufacturer} ${device.model}`;
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device")}: </b>${device.manufacturer} ${device.model}`;
     } else {
-      label += "\n<b>Device is not in <i>'zigbee.db'</i></b>";
+      label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.device_not_in_db")}</b>`;
     }
     if (device.area_id) {
-      label += `\n<b>Area ID: </b>${device.area_id}`;
-    }
-    return label;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
-    const filterText = this._filter!.toLowerCase();
-    if (!this._network) {
-      return;
-    }
-    if (this._filter) {
-      const filteredNodeIds: (string | number)[] = [];
-      this._nodes.forEach((node) => {
-        if (node.label && node.label.toLowerCase().includes(filterText)) {
-          filteredNodeIds.push(node.id!);
-        }
-      });
-      this.zoomedDeviceId = "";
-      this._zoomOut();
-      this._network.selectNodes(filteredNodeIds, true);
-    } else {
-      this._network.unselectAll();
-    }
-  }
-
-  private _onZoomToDevice(event: ValueChangedEvent<string>) {
-    event.stopPropagation();
-    this.zoomedDeviceId = event.detail.value;
-    if (!this._network) {
-      return;
-    }
-    this._zoomToDevice();
-  }
-
-  private _zoomToDevice() {
-    this._filter = "";
-    if (!this.zoomedDeviceId) {
-      this._zoomOut();
-    } else {
-      const device: ZHADevice | undefined = this._devicesByDeviceId.get(
-        this.zoomedDeviceId
-      );
-      if (device) {
-        this._network!.fit({
-          nodes: [device.ieee],
-          animation: { duration: 500, easingFunction: "easeInQuad" },
-        });
+      const area = this.hass.areas[device.area_id];
+      if (area) {
+        label += `<br><b>${this.hass.localize("ui.panel.config.zha.visualization.area")}: </b>${area.name}`;
       }
     }
-  }
-
-  private _zoomOut() {
-    this._network!.fit({
-      nodes: [],
-      animation: { duration: 500, easingFunction: "easeOutQuad" },
-    });
-  }
+    return label;
+  };
 
   private async _refreshTopology(): Promise<void> {
     await refreshTopology(this.hass);
+    await this._fetchData();
   }
 
-  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    if (!this.hass) {
-      return false;
-    }
-    for (const parts of device.identifiers) {
-      for (const part of parts) {
-        if (part === "zha") {
-          return true;
-        }
+  private _handleChartClick(e: CustomEvent): void {
+    if (
+      e.detail.dataType === "node" &&
+      e.detail.event.target.cursor === "pointer"
+    ) {
+      const { id } = e.detail.data;
+      const device = this._devices.find((d) => d.ieee === id);
+      if (device) {
+        navigate(`/config/devices/device/${device.device_reg_id}`);
       }
     }
-    return false;
-  };
-
-  private _handleAutoZoomCheckboxChange(ev: Event) {
-    this._autoZoom = (ev.target as HaCheckbox).checked;
-  }
-
-  private _handlePhysicsCheckboxChange(ev: Event) {
-    this._enablePhysics = (ev.target as HaCheckbox).checked;
-
-    this._network!.setOptions(
-      this._enablePhysics
-        ? { physics: { enabled: true } }
-        : { physics: { enabled: false } }
-    );
   }
 
   static get styles(): CSSResultGroup {
     return [
       css`
-        .header {
-          border-bottom: 1px solid var(--divider-color);
-          padding: 0 8px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          height: var(--header-height);
-          box-sizing: border-box;
-        }
-
-        .header > * {
-          padding: 0 8px;
-        }
-
-        :host([narrow]) .header {
-          flex-direction: column;
-          align-items: stretch;
-          height: var(--header-height) * 2;
-        }
-
-        .search-toolbar {
-          display: flex;
-          align-items: center;
-          color: var(--secondary-text-color);
-          padding: 0 16px;
-        }
-
-        search-input {
-          flex: 1;
-          display: block;
-        }
-
-        search-input.header {
-          color: var(--secondary-text-color);
-        }
-
-        ha-device-picker {
-          flex: 1;
-        }
-
-        .controls {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        #visualization {
-          height: calc(100% - var(--header-height));
-          width: 100%;
-        }
-        :host([narrow]) #visualization {
-          height: calc(100% - (var(--header-height) * 2));
+        ha-network-graph {
+          height: 100%;
         }
       `,
     ];
+  }
+
+  private _createChartData(devices: ZHADevice[]): NetworkData {
+    const primaryColor = colorVariables["primary-color"];
+    const routerColor = colorVariables["cyan-color"];
+    const endDeviceColor = colorVariables["teal-color"];
+    const offlineColor = colorVariables["error-color"];
+    const nodes: NetworkNode[] = [];
+    const links: NetworkLink[] = [];
+    const categories = [
+      {
+        name: this.hass.localize(
+          "ui.panel.config.zha.visualization.coordinator"
+        ),
+        symbol: "roundRect",
+        itemStyle: { color: primaryColor },
+      },
+      {
+        name: this.hass.localize("ui.panel.config.zha.visualization.router"),
+        symbol: "circle",
+        itemStyle: { color: routerColor },
+      },
+      {
+        name: this.hass.localize(
+          "ui.panel.config.zha.visualization.end_device"
+        ),
+        symbol: "circle",
+        itemStyle: { color: endDeviceColor },
+      },
+      {
+        name: this.hass.localize("ui.panel.config.zha.visualization.offline"),
+        symbol: "circle",
+        itemStyle: { color: offlineColor },
+      },
+    ];
+
+    // Create all the nodes and links
+    devices.forEach((device) => {
+      const isCoordinator = device.device_type === "Coordinator";
+      let category: number;
+      if (!device.available) {
+        category = 3; // Offline
+      } else if (isCoordinator) {
+        category = 0;
+      } else if (device.device_type === "Router") {
+        category = 1;
+      } else {
+        category = 2; // End Device
+      }
+
+      // Create node
+      nodes.push({
+        id: device.ieee,
+        name: device.user_given_name || device.name || device.ieee,
+        category,
+        value: isCoordinator ? 3 : device.device_type === "Router" ? 2 : 1,
+        symbolSize: isCoordinator
+          ? 40
+          : device.device_type === "Router"
+            ? 30
+            : 20,
+        symbol: isCoordinator ? "roundRect" : "circle",
+        itemStyle: {
+          color: device.available
+            ? isCoordinator
+              ? primaryColor
+              : device.device_type === "Router"
+                ? routerColor
+                : endDeviceColor
+            : offlineColor,
+        },
+        polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
+      });
+
+      // Create links (edges)
+      const existingLinks = links.filter(
+        (link) => link.source === device.ieee || link.target === device.ieee
+      );
+      if (device.routes && device.routes.length > 0) {
+        device.routes.forEach((route) => {
+          const neighbor = device.neighbors.find(
+            (n) => n.nwk === route.next_hop
+          );
+          if (!neighbor) {
+            return;
+          }
+          const existingLink = existingLinks.find(
+            (link) =>
+              link.source === neighbor.ieee || link.target === neighbor.ieee
+          );
+
+          if (existingLink) {
+            if (existingLink.source === device.ieee) {
+              existingLink.value = Math.max(
+                existingLink.value!,
+                parseInt(neighbor.lqi)
+              );
+            } else {
+              existingLink.reverseValue = Math.max(
+                existingLink.reverseValue ?? 0,
+                parseInt(neighbor.lqi)
+              );
+            }
+            const width = this._getLQIWidth(parseInt(neighbor.lqi));
+            existingLink.symbolSize = (width / 4) * 6 + 3; // range 3-9
+            existingLink.lineStyle = {
+              ...existingLink.lineStyle,
+              width,
+              color:
+                route.route_status === "Active"
+                  ? primaryColor
+                  : existingLink.lineStyle!.color,
+              type: ["Child", "Parent"].includes(neighbor.relationship)
+                ? "solid"
+                : existingLink.lineStyle!.type,
+            };
+          } else {
+            // Create a new link
+            const width = this._getLQIWidth(parseInt(neighbor.lqi));
+            const link: NetworkLink = {
+              source: device.ieee,
+              target: neighbor.ieee,
+              value: parseInt(neighbor.lqi),
+              lineStyle: {
+                width,
+                color:
+                  route.route_status === "Active"
+                    ? primaryColor
+                    : colorVariables["disabled-color"],
+                type: ["Child", "Parent"].includes(neighbor.relationship)
+                  ? "solid"
+                  : "dotted",
+              },
+              symbolSize: (width / 4) * 6 + 3, // range 3-9
+              // By default, all links should be ignored for force layout
+              ignoreForceLayout: true,
+            };
+            links.push(link);
+            existingLinks.push(link);
+          }
+        });
+      } else if (existingLinks.length === 0) {
+        // If there are no links, create a link to the closest neighbor
+        const neighbors: { ieee: string; lqi: string }[] =
+          device.neighbors ?? [];
+        if (neighbors.length === 0) {
+          // If there are no neighbors, look for links from other devices
+          devices.forEach((d) => {
+            if (d.neighbors && d.neighbors.length > 0) {
+              const neighbor = d.neighbors.find((n) => n.ieee === device.ieee);
+              if (neighbor) {
+                neighbors.push({ ieee: d.ieee, lqi: neighbor.lqi });
+              }
+            }
+          });
+        }
+        const closestNeighbor = neighbors.sort(
+          (a, b) => parseInt(b.lqi) - parseInt(a.lqi)
+        )[0];
+        if (closestNeighbor) {
+          links.push({
+            source: device.ieee,
+            target: closestNeighbor.ieee,
+            value: parseInt(closestNeighbor.lqi),
+            symbolSize: 5,
+            lineStyle: {
+              width: 1,
+              color: colorVariables["disabled-color"],
+              type: "dotted",
+            },
+            ignoreForceLayout: true,
+          });
+        }
+      }
+    });
+
+    // Now set ignoreForceLayout to false for the strongest connection of each device
+    // Except for the coordinator which can have multiple strong connections
+    devices.forEach((device) => {
+      if (device.device_type === "Coordinator") {
+        links.forEach((link) => {
+          if (link.source === device.ieee || link.target === device.ieee) {
+            link.ignoreForceLayout = false;
+          }
+        });
+      } else {
+        // Find the link that corresponds to this strongest connection
+        let strongestLink: NetworkLink | undefined;
+        links.forEach((link) => {
+          if (
+            (link.source === device.ieee || link.target === device.ieee) &&
+            link.value! > (strongestLink?.value ?? 0)
+          ) {
+            strongestLink = link;
+          }
+        });
+
+        if (strongestLink) {
+          strongestLink.ignoreForceLayout = false;
+        }
+      }
+    });
+
+    return { nodes, links, categories };
+  }
+
+  private _getLQIWidth(lqi: number): number {
+    return lqi > 200 ? 3 : lqi > 100 ? 2 : 1;
   }
 }
 

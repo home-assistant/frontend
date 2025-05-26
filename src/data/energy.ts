@@ -1036,33 +1036,46 @@ export const computeConsumptionSingle = (data: {
 
   let used_total_remaining = Math.max(used_total, 0);
   // Consumption Priority
-  // Battery_Out -> Grid_Out
-  // Solar -> Grid_Out
   // Solar -> Battery_In
+  // Solar -> Grid_Out
+  // Battery_Out -> Grid_Out
   // Grid_In -> Battery_In
   // Solar -> Consumption
   // Battery_Out -> Consumption
   // Grid_In -> Consumption
 
-  // Battery_Out -> Grid_Out
-  battery_to_grid = Math.min(from_battery, to_grid);
-  from_battery -= battery_to_grid;
-  to_grid -= battery_to_grid;
+  // If we have more grid_in than consumption, the excess must be charging the battery
+  // This must be accounted for before filling the battery from solar, or else the grid
+  // input could be stranded with nowhere to go.
+  const excess_grid_in_after_consumption = Math.max(
+    0,
+    Math.min(to_battery, from_grid - used_total_remaining)
+  );
+  grid_to_battery += excess_grid_in_after_consumption;
+  to_battery -= excess_grid_in_after_consumption;
+  from_grid -= excess_grid_in_after_consumption;
+
+  // Fill the remainder of the battery input from solar
+  // Solar -> Battery_In
+  solar_to_battery = Math.min(solar, to_battery);
+  to_battery -= solar_to_battery;
+  solar -= solar_to_battery;
 
   // Solar -> Grid_Out
   solar_to_grid = Math.min(solar, to_grid);
   to_grid -= solar_to_grid;
   solar -= solar_to_grid;
 
-  // Solar -> Battery_In
-  solar_to_battery = Math.min(solar, to_battery);
-  to_battery -= solar_to_battery;
-  solar -= solar_to_battery;
+  // Battery_Out -> Grid_Out
+  battery_to_grid = Math.min(from_battery, to_grid);
+  from_battery -= battery_to_grid;
+  to_grid -= battery_to_grid;
 
-  // Grid_In -> Battery_In
-  grid_to_battery = Math.min(from_grid, to_battery);
-  from_grid -= grid_to_battery;
-  to_battery -= grid_to_battery;
+  // Grid_In -> Battery_In (second pass)
+  const grid_to_battery_2 = Math.min(from_grid, to_battery);
+  grid_to_battery += grid_to_battery_2;
+  from_grid -= grid_to_battery_2;
+  to_battery -= grid_to_battery_2;
 
   // Solar -> Consumption
   used_solar = Math.min(used_total_remaining, solar);
