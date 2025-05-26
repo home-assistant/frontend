@@ -21,7 +21,7 @@ export interface CustomBadgeEntry {
 export interface CustomCardFeatureEntry {
   type: string;
   name?: string;
-  /** @deprecated Use `supportsFeature` */
+  /** @deprecated Use `isSupported` */
   supported?: (stateObj: HassEntity) => boolean;
   isSupported?: (
     hass: HomeAssistant,
