@@ -10,6 +10,7 @@ import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { showEditSidebarDialog } from "../../dialogs/sidebar/show-dialog-edit-sidebar";
 import "../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
@@ -149,6 +150,23 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-first-weekday-row>
+            <ha-settings-row .narrow=${this.narrow}>
+              <span slot="heading">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}
+              </span>
+              <span slot="description">
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.description"
+                )}
+              </span>
+              <mwc-button @click=${this._customizeSidebar}>
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </mwc-button>
+            </ha-settings-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -186,23 +204,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
-            <ha-settings-row .narrow=${this.narrow}>
-              <span slot="heading">
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.header"
-                )}
-              </span>
-              <span slot="description">
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.description"
-                )}
-              </span>
-              <mwc-button @click=${this._customizeSidebar}>
-                ${this.hass.localize(
-                  "ui.panel.profile.customize_sidebar.button"
-                )}
-              </mwc-button>
-            </ha-settings-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row
@@ -247,7 +248,7 @@ class HaProfileSectionGeneral extends LitElement {
   }
 
   private _customizeSidebar() {
-    fireEvent(this, "hass-edit-sidebar", { editMode: true });
+    showEditSidebarDialog(this);
   }
 
   private _handleLogOut() {
@@ -274,7 +275,7 @@ class HaProfileSectionGeneral extends LitElement {
           display: block;
           max-width: 600px;
           margin: 0 auto;
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
 
         .content > * {

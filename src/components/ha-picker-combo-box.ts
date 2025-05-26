@@ -18,6 +18,7 @@ import "./ha-icon";
 export interface PickerComboBoxItem {
   id: string;
   primary: string;
+  a11y_label?: string;
   secondary?: string;
   search_labels?: string[];
   sorting_label?: string;
@@ -27,7 +28,7 @@ export interface PickerComboBoxItem {
 
 // Hack to force empty label to always display empty value by default in the search field
 export interface PickerComboBoxItemWithLabel extends PickerComboBoxItem {
-  label: "";
+  a11y_label: string;
 }
 
 const NO_MATCHING_ITEMS_FOUND_ID = "___no_matching_items_found___";
@@ -109,7 +110,7 @@ export class HaPickerComboBox extends LitElement {
       id: NO_MATCHING_ITEMS_FOUND_ID,
       primary: label || localize("ui.components.combo-box.no_match"),
       icon_path: mdiMagnify,
-      label: "",
+      a11y_label: label || localize("ui.components.combo-box.no_match"),
     })
   );
 
@@ -118,7 +119,7 @@ export class HaPickerComboBox extends LitElement {
 
     return items.map<PickerComboBoxItemWithLabel>((item) => ({
       ...item,
-      label: "",
+      a11y_label: item.a11y_label || item.primary,
     }));
   };
 
@@ -128,7 +129,7 @@ export class HaPickerComboBox extends LitElement {
     const sortedItems = items
       .map<PickerComboBoxItemWithLabel>((item) => ({
         ...item,
-        label: "",
+        a11y_label: item.a11y_label || item.primary,
       }))
       .sort((entityA, entityB) =>
         caseInsensitiveStringCompare(
@@ -175,7 +176,8 @@ export class HaPickerComboBox extends LitElement {
       <ha-combo-box
         item-id-path="id"
         item-value-path="id"
-        item-label-path="label"
+        item-label-path="a11y_label"
+        clear-initial-value
         .hass=${this.hass}
         .value=${this._value}
         .label=${this.label}
@@ -232,7 +234,7 @@ export class HaPickerComboBox extends LitElement {
     const searchString = ev.detail.value.trim() as string;
 
     const index = this._fuseIndex(this._items);
-    const fuse = new HaFuse(this._items, {}, index);
+    const fuse = new HaFuse(this._items, { shouldSort: false }, index);
 
     const results = fuse.multiTermsSearch(searchString);
     if (results) {

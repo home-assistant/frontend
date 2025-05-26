@@ -5,9 +5,15 @@ export interface CoreFrontendUserData {
   showEntityIdPicker?: boolean;
 }
 
+export interface SidebarFrontendUserData {
+  panelOrder: string[];
+  hiddenPanels: string[];
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
+    sidebar: SidebarFrontendUserData;
   }
 }
 

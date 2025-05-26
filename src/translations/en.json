@@ -72,14 +72,15 @@
     },
     "badge": {
       "entity": {
-        "not_found": "[%key:ui::card::tile::not_found%]"
+        "not_found": "[%key:ui::card::common::entity_not_found%]"
       }
     },
     "card": {
       "common": {
         "turn_on": "Turn on",
         "turn_off": "Turn off",
-        "toggle": "Toggle"
+        "toggle": "Toggle",
+        "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
         "code": "Code",
@@ -261,9 +262,6 @@
           "finish": "finish"
         }
       },
-      "tile": {
-        "not_found": "Entity not found"
-      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",
@@ -379,7 +377,9 @@
       "copy": "Copy",
       "show": "Show",
       "replace": "Replace",
-      "append": "Append"
+      "append": "Append",
+      "supports_markdown": "Supports {markdown_help_link}",
+      "markdown": "Markdown"
     },
     "components": {
       "selectors": {
@@ -1013,7 +1013,7 @@
         "my_calendars": "My calendars",
         "create_calendar": "Create calendar",
         "today": "Today",
-        "event_retrieval_error": "Could not retrieve events for calendars:",
+        "event_retrieval_error": "Could not retrieve events for calendars",
         "event": {
           "add": "Add event",
           "delete": "Delete event",
@@ -2024,9 +2024,9 @@
     "sidebar": {
       "external_app_configuration": "App settings",
       "sidebar_toggle": "Sidebar toggle",
-      "done": "Done",
-      "hide_panel": "Hide panel",
-      "show_panel": "Show panel"
+      "edit_sidebar": "Edit sidebar",
+      "edit_subtitle": "Synced on all devices",
+      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged into. To create a sidebar per device, you should use a different user for that device."
     },
     "panel": {
       "my": {
@@ -2096,7 +2096,7 @@
           },
           "system": {
             "main": "System",
-            "secondary": "Create backups, check logs or reboot your system"
+            "secondary": "Create backups, check logs, or reboot your system"
           },
           "about": {
             "main": "About",
@@ -2118,7 +2118,8 @@
           "hide_url": "Hide URL",
           "copy_link": "Copy link",
           "graph": {
-            "toggle_physics": "Toggle physics"
+            "toggle_physics": "Toggle physics",
+            "toggle_labels": "Toggle labels"
           }
         },
         "updates": {
@@ -2225,10 +2226,10 @@
           "add_label": "Create label",
           "manage_labels": "Manage labels",
           "no_labels": "You don't have any labels",
-          "introduction": "Labels can help you organize your areas, devices and entities. They can be used to filter in the UI, or use them as a target in automations.",
-          "introduction2": "Go to the area, device or entity you want to add a label to, and press the edit button to assign labels to them.",
+          "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
+          "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices and entities.",
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities.",
           "detail": {
             "new_label": "New label",
             "name": "Name",
@@ -2658,6 +2659,12 @@
               "last_backup_failed_heading": "Last automatic backup failed",
               "last_backup_failed_description": "The last automatic backup triggered {relative_time} wasn't successful.",
               "last_backup_failed_locations_description": "The last automatic backup created {relative_time} wasn't stored in all locations.",
+              "last_backup_failed_addons_description": "The last automatic backup created {relative_time} was not able to backup all add-ons.",
+              "last_backup_failed_folders_description": "The last automatic backup created {relative_time} was not able to backup all folders.",
+              "last_backup_failed_addons_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and folders.",
+              "last_backup_failed_locations_addons_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and wasn't stored in all locations.",
+              "last_backup_failed_locations_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all folders and wasn't stored in all locations.",
+              "last_backup_failed_locations_addons_folders_description": "The last automatic backup created {relative_time} wasn't able to backup all add-ons and folders and wasn't stored in all locations.",
               "last_successful_backup_description": "Last successful automatic backup {relative_time} and stored in {count} {count, plural,\n one {location}\n other {locations}\n}.",
               "no_backup_heading": "No automatic backup available",
               "no_backup_description": "You have no automatic backups yet.",
@@ -2773,7 +2780,13 @@
             "summary": {
               "title": "Backup",
               "size": "Size",
-              "created": "Created"
+              "created": "Created",
+              "error": {
+                "title": "This backup was not created successfully. Some data is missing.",
+                "failed_locations": "Failed locations",
+                "failed_addons": "Failed add-ons",
+                "failed_folders": "Failed folders"
+              }
             },
             "restore": {
               "title": "Select what to restore",
@@ -5526,6 +5539,7 @@
           "connection_slot_allocations_monitor": "Connection slot allocations monitor",
           "connection_slot_allocations_monitor_details": "The connection slot allocations monitor displays the (GATT) connection slot allocations for the adapter. This adapter supports up to {slots} simultaneous connections. Each remote Bluetooth device that requires an active connection will use one connection slot while the Bluetooth device is connecting or connected.",
           "connection_monitor": "Connection monitor",
+          "visualization": "Visualization",
           "used_connection_slot_allocations": "Used connection slot allocations",
           "no_connections": "No active connections",
           "no_advertisements_found": "No matching Bluetooth advertisements found",
@@ -5543,7 +5557,12 @@
           "manufacturer_data": "Manufacturer data",
           "service_data": "Service data",
           "service_uuids": "Service UUIDs",
-          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]"
+          "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
+          "area": "Area",
+          "core": "Home Assistant",
+          "scanners": "Scanners",
+          "known_devices": "Known devices",
+          "unknown_devices": "Unknown devices"
         },
         "dhcp": {
           "title": "DHCP discovery",
@@ -5703,7 +5722,15 @@
           "visualization": {
             "header": "Network visualization",
             "caption": "Visualization",
-            "refresh_topology": "Refresh topology"
+            "refresh_topology": "Refresh topology",
+            "device": "Device",
+            "device_type": "Device type",
+            "device_not_in_db": "Device is not in 'zigbee.db'",
+            "area": "Area",
+            "coordinator": "Coordinator",
+            "router": "Router",
+            "end_device": "End device",
+            "offline": "Offline"
           },
           "device_binding": {
             "bind": "Bind",
@@ -6563,8 +6590,9 @@
               "lights": "Lights",
               "covers": "Covers",
               "climate": "Climate",
-              "media_players": "Entertainment",
+              "media_players": "Media players",
               "security": "Security",
+              "actions": "Actions",
               "others": "Others"
             }
           }

@@ -27,6 +27,7 @@ import "../ha-icon-button";
 import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../chips/ha-assist-chip";
+import { downSampleLineData } from "./down-sample";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -387,9 +388,9 @@ export class HaChartBase extends LitElement {
         if (axis.type !== "time" || axis.show === false) {
           return axis;
         }
-        if (axis.max && axis.min) {
+        if (axis.min) {
           this._minutesDifference = differenceInMinutes(
-            axis.max as Date,
+            (axis.max as Date) || new Date(),
             axis.min as Date
           );
         }
@@ -613,19 +614,21 @@ export class HaChartBase extends LitElement {
   }
 
   private _getSeries() {
-    const series = ensureArray(this.data).filter(
-      (d) => !this._hiddenDatasets.has(String(d.name ?? d.id))
-    );
+    const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
+      | XAXisOption
+      | undefined;
     const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
       | YAXisOption
       | undefined;
-    if (yAxis?.type === "log") {
-      // set <=0 values to null so they render as gaps on a log graph
-      return series.map((d) =>
-        d.type === "line"
-          ? {
-              ...d,
-              data: d.data?.map((v) =>
+    const series = ensureArray(this.data)
+      .filter((d) => !this._hiddenDatasets.has(String(d.name ?? d.id)))
+      .map((s) => {
+        if (s.type === "line") {
+          if (yAxis?.type === "log") {
+            // set <=0 values to null so they render as gaps on a log graph
+            return {
+              ...s,
+              data: s.data?.map((v) =>
                 Array.isArray(v)
                   ? [
                       v[0],
@@ -634,10 +637,26 @@ export class HaChartBase extends LitElement {
                     ]
                   : v
               ),
-            }
-          : d
-      );
-    }
+            };
+          }
+          if (s.sampling === "minmax") {
+            const minX =
+              xAxis?.min && typeof xAxis.min === "number"
+                ? xAxis.min
+                : undefined;
+            const maxX =
+              xAxis?.max && typeof xAxis.max === "number"
+                ? xAxis.max
+                : undefined;
+            return {
+              ...s,
+              sampling: undefined,
+              data: downSampleLineData(s.data, this.clientWidth, minX, maxX),
+            };
+          }
+        }
+        return s;
+      });
     return series;
   }
 

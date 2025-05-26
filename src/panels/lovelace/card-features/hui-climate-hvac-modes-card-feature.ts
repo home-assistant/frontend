@@ -1,5 +1,4 @@
 import { mdiThermostat } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -22,9 +21,19 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import { filterModes } from "./common/filter-modes";
-import type { ClimateHvacModesCardFeatureConfig } from "./types";
+import type {
+  ClimateHvacModesCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "./types";
 
-export const supportsClimateHvacModesCardFeature = (stateObj: HassEntity) => {
+export const supportsClimateHvacModesCardFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => {
+  const stateObj = context.entity_id
+    ? hass.states[context.entity_id]
+    : undefined;
+  if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
   return domain === "climate";
 };
@@ -36,7 +45,7 @@ class HuiClimateHvacModesCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: ClimateEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @state() private _config?: ClimateHvacModesCardFeatureConfig;
 
@@ -44,6 +53,15 @@ class HuiClimateHvacModesCardFeature
 
   @query("ha-control-select-menu", true)
   private _haSelect?: HaControlSelectMenu;
+
+  private get _stateObj() {
+    if (!this.hass || !this.context || !this.context.entity_id) {
+      return undefined;
+    }
+    return this.hass.states[this.context.entity_id!] as
+      | ClimateEntity
+      | undefined;
+  }
 
   static getStubConfig(): ClimateHvacModesCardFeatureConfig {
     return {
@@ -67,8 +85,15 @@ class HuiClimateHvacModesCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj") && this.stateObj) {
-      this._currentHvacMode = this.stateObj.state as HvacMode;
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
+      const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
+      if (oldStateObj !== this._stateObj) {
+        this._currentHvacMode = this._stateObj.state as HvacMode;
+      }
     }
   }
 
@@ -90,9 +115,9 @@ class HuiClimateHvacModesCardFeature
     const mode =
       (ev.detail as any).value ?? ((ev.target as any).value as HvacMode);
 
-    if (mode === this.stateObj!.state) return;
+    if (mode === this._stateObj!.state) return;
 
-    const oldMode = this.stateObj!.state as HvacMode;
+    const oldMode = this._stateObj!.state as HvacMode;
     this._currentHvacMode = mode;
 
     try {
@@ -104,7 +129,7 @@ class HuiClimateHvacModesCardFeature
 
   private async _setMode(mode: HvacMode) {
     await this.hass!.callService("climate", "set_hvac_mode", {
-      entity_id: this.stateObj!.entity_id,
+      entity_id: this._stateObj!.entity_id,
       hvac_mode: mode,
     });
   }
@@ -113,15 +138,16 @@ class HuiClimateHvacModesCardFeature
     if (
       !this._config ||
       !this.hass ||
-      !this.stateObj ||
-      !supportsClimateHvacModesCardFeature(this.stateObj)
+      !this.context ||
+      !this._stateObj ||
+      !supportsClimateHvacModesCardFeature(this.hass, this.context)
     ) {
       return null;
     }
 
-    const color = stateColorCss(this.stateObj);
+    const color = stateColorCss(this._stateObj);
 
-    const ordererHvacModes = (this.stateObj.attributes.hvac_modes || [])
+    const ordererHvacModes = (this._stateObj.attributes.hvac_modes || [])
       .concat()
       .sort(compareClimateHvacModes)
       .reverse();
@@ -131,7 +157,7 @@ class HuiClimateHvacModesCardFeature
       this._config.hvac_modes
     ).map<ControlSelectOption>((mode) => ({
       value: mode,
-      label: this.hass!.formatEntityState(this.stateObj!, mode),
+      label: this.hass!.formatEntityState(this._stateObj!, mode),
       icon: html`
         <ha-svg-icon
           slot="graphic"
@@ -147,7 +173,7 @@ class HuiClimateHvacModesCardFeature
           hide-label
           .label=${this.hass.localize("ui.card.climate.mode")}
           .value=${this._currentHvacMode}
-          .disabled=${this.stateObj.state === UNAVAILABLE}
+          .disabled=${this._stateObj.state === UNAVAILABLE}
           fixedMenuPosition
           naturalMenuWidth
           @selected=${this._valueChanged}
@@ -184,7 +210,7 @@ class HuiClimateHvacModesCardFeature
         style=${styleMap({
           "--control-select-color": color,
         })}
-        .disabled=${this.stateObj!.state === UNAVAILABLE}
+        .disabled=${this._stateObj!.state === UNAVAILABLE}
       >
       </ha-control-select>
     `;

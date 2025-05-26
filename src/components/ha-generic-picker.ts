@@ -2,6 +2,7 @@ import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { ComboBoxLightOpenedChangedEvent } from "@vaadin/combo-box/vaadin-combo-box-light";
 import { css, html, LitElement, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
@@ -74,6 +75,7 @@ export class HaGenericPicker extends LitElement {
               <ha-picker-field
                 type="button"
                 compact
+                aria-label=${ifDefined(this.label)}
                 @click=${this.open}
                 @clear=${this._clear}
                 .placeholder=${this.placeholder}
