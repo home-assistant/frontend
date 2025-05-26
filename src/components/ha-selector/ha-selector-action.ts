@@ -1,4 +1,4 @@
-import { ContextProvider, consume } from "@lit-labs/context";
+import { ContextProvider, consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
