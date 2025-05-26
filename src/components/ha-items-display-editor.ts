@@ -212,6 +212,7 @@ export class HaItemDisplayEditor extends LitElement {
       hidden: newHidden,
       order: newOrder,
     };
+
     fireEvent(this, "value-changed", { value: this.value });
   }
 
@@ -262,7 +263,7 @@ export class HaItemDisplayEditor extends LitElement {
         ];
       }
 
-      return items.sort((a, b) =>
+      return visibleItems.sort((a, b) =>
         a.disableSorting && !b.disableSorting ? -1 : compare(a.value, b.value)
       );
     }
