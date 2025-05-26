@@ -117,14 +117,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 9;
+      return 10;
     }
 
     const stateObj = this.hass.states[this._config.entity];
 
     return !stateObj || stateObj.attributes.code_format !== FORMAT_NUMBER
       ? 4
-      : 9;
+      : 10;
   }
 
   public setConfig(config: AlarmPanelCardConfig): void {
