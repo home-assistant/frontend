@@ -79,9 +79,12 @@ class HuiSelectOptionsCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("hass") && this._stateObj && this.context?.entity_id) {
+    if (
+      (changedProp.has("hass") || changedProp.has("context")) &&
+      this._stateObj
+    ) {
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
-      const oldStateObj = oldHass?.states[this.context.entity_id];
+      const oldStateObj = oldHass?.states[this.context!.entity_id!];
       if (oldStateObj !== this._stateObj) {
         this._currentOption = this._stateObj.state;
       }
