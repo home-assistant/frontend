@@ -212,7 +212,6 @@ export class HaItemDisplayEditor extends LitElement {
       hidden: newHidden,
       order: newOrder,
     };
-
     fireEvent(this, "value-changed", { value: this.value });
   }
 
