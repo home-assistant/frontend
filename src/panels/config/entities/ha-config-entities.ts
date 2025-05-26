@@ -10,6 +10,7 @@ import {
   mdiMenuDown,
   mdiPencilOff,
   mdiPlus,
+  mdiRestore,
   mdiRestoreAlert,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -95,6 +96,7 @@ import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
+import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -952,6 +954,21 @@ ${
       )}
     </div>
   </ha-md-menu-item>
+
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
+    <ha-svg-icon
+      slot="start"
+      .path=${mdiRestore}
+    ></ha-svg-icon>
+    <div slot="headline">
+      ${this.hass.localize(
+        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+      )}
+    </div>
+  </ha-md-menu-item>
+
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
@@ -1369,6 +1386,12 @@ ${rejected
         this._bulkLabel(label.label_id, "add");
       },
     });
+  };
+
+  private _restoreEntityIdSelected = () => {
+    regenerateEntityIds(this, this.hass, this._selected);
+
+    this._clearSelection();
   };
 
   private _removeSelected = async () => {
