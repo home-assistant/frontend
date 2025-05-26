@@ -164,7 +164,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ${this._results.length
           ? html`
               <div class="result-toolbar">
-                <ha-button outlined @click=${this._clear} destructive>
+                <ha-button outlined @click=${this._clear} variant="danger">
                   <ha-svg-icon slot="icon" .path=${mdiTrashCan}></ha-svg-icon>
                   ${this.hass.localize("ui.common.clear")}
                 </ha-button>

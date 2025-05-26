@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -10,6 +9,7 @@ import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-tip";
+import "../../../../components/ha-button";
 import type {
   CloudStatusLoggedIn,
   SubscriptionInfo,
@@ -148,22 +148,21 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                <a
+                <ha-button
+                  appearance="plain"
                   href="https://account.nabucasa.com"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.account.manage_account"
-                    )}
-                  </mwc-button>
-                </a>
-                <mwc-button @click=${this._signOut} class="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.manage_account"
+                  )}
+                </ha-button>
+                <ha-button @click=${this._signOut} variant="danger">
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.sign_out"
                   )}
-                </mwc-button>
+                </ha-button>
               </div>
             </ha-card>
           </ha-config-section>
@@ -359,7 +358,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
           flex-direction: row-reverse;
           justify-content: space-between;
         }
-        mwc-button {
+        ha-button {
           align-self: center;
         }
         .wrap {

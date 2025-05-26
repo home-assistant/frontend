@@ -135,9 +135,6 @@ export class HaProgressButton extends LitElement {
     ha-button.error slot {
       visibility: hidden;
     }
-    :host([destructive]) {
-      --mdc-theme-primary: var(--error-color);
-    }
   `;
 }
 

@@ -6,6 +6,7 @@ import { customElement, property, query } from "lit/decorators";
 import { mainWindow } from "../common/dom/get_main_window";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
 import type { HaIconButton } from "./ha-icon-button";
+import type { HaButton } from "./ha-button";
 import "./ha-menu";
 
 @customElement("ha-button-menu")
@@ -94,7 +95,7 @@ export class HaButtonMenu extends LitElement {
   private get _triggerButton() {
     return this.querySelector(
       'ha-icon-button[slot="trigger"], ha-button[slot="trigger"], mwc-button[slot="trigger"]'
-    ) as HaIconButton | Button | null;
+    ) as HaIconButton | Button | HaButton | null;
   }
 
   private _setTriggerAria() {

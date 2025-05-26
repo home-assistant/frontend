@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiContentCopy } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -1538,9 +1537,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         }
         li[divider] {
           border-bottom-color: var(--divider-color);
-        }
-        ha-alert mwc-button {
-          width: max-content;
         }
         .menu-item {
           border-radius: 4px;

@@ -1,10 +1,10 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiPencil, mdiSolarPower } from "@mdi/js";
+import { mdiDelete, mdiPencil, mdiPlus, mdiSolarPower } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import type {
   EnergyInfo,
@@ -132,11 +132,16 @@ export class EnergySolarSettings extends LitElement {
             ? html`
                 <div class="row border-bottom">
                   <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-                  <mwc-button @click=${this._addSource}>
+                  <ha-button
+                    @click=${this._addSource}
+                    appearance="filled"
+                    size="small"
+                  >
+                    <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.energy.solar.add_solar_production"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>
               `
             : ""}

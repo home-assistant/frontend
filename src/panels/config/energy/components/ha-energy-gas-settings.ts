@@ -1,9 +1,9 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiFire, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiFire, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
 import type {
@@ -120,10 +120,15 @@ export class EnergyGasSettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
-            <mwc-button @click=${this._addSource}
+            <ha-button
+              @click=${this._addSource}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.gas.add_gas_source"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </div>

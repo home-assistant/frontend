@@ -1,6 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import "../components/ha-button";
@@ -37,18 +37,7 @@ class StateCardScene extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        mwc-button {
-          top: 3px;
-          height: 37px;
-          margin-right: -0.57em;
-          margin-inline-end: -0.57em;
-          margin-inline-start: initial;
-        }
-      `,
-    ];
+    return [haStyle];
   }
 }
 

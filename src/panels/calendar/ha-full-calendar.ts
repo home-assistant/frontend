@@ -5,7 +5,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-button";
 import {
   mdiPlus,
   mdiViewAgenda,
@@ -26,6 +25,7 @@ import "../../components/ha-button-toggle-group";
 import "../../components/ha-fab";
 import "../../components/ha-icon-button-next";
 import "../../components/ha-icon-button-prev";
+import "../../components/ha-button";
 import type {
   Calendar as CalendarData,
   CalendarEvent,
@@ -137,13 +137,14 @@ export class HAFullCalendar extends LitElement {
               ${!this.narrow
                 ? html`
                     <div class="navigation">
-                      <mwc-button
-                        outlined
+                      <ha-button
+                        appearance="filled"
+                        size="small"
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
                           "ui.components.calendar.today"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                       <ha-icon-button-prev
                         .label=${this.hass.localize("ui.common.previous")}
@@ -184,13 +185,14 @@ export class HAFullCalendar extends LitElement {
                       </div>
                     </div>
                     <div class="controls buttons">
-                      <mwc-button
-                        outlined
+                      <ha-button
+                        appearance="plain"
+                        size="small"
                         class="today"
                         @click=${this._handleToday}
                         >${this.hass.localize(
                           "ui.components.calendar.today"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                       <ha-button-toggle-group
                         .buttons=${viewToggleButtons}

@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 import { mdiCalendar } from "@mdi/js";

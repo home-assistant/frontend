@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -18,6 +16,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { isUnavailableState } from "../../../data/entity";
@@ -69,17 +68,17 @@ class MoreInfoMediaPlayer extends LitElement {
         ${!isUnavailableState(stateObj.state) &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
-              <mwc-button
-                .label=${this.hass.localize(
-                  "ui.card.media_player.browse_media"
-                )}
+              <ha-button
                 @click=${this._showBrowseMedia}
+                appearance="plain"
+                size="small"
               >
                 <ha-svg-icon
                   .path=${mdiPlayBoxMultiple}
-                  slot="icon"
+                  slot="prefix"
                 ></ha-svg-icon>
-              </mwc-button>
+                ${this.hass.localize("ui.card.media_player.browse_media")}
+              </ha-button>
             `
           : ""}
       </div>
@@ -262,7 +261,7 @@ class MoreInfoMediaPlayer extends LitElement {
       font-style: italic;
     }
 
-    mwc-button > ha-svg-icon {
+    ha-button > ha-svg-icon {
       vertical-align: text-bottom;
     }
   `;

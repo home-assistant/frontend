@@ -904,7 +904,7 @@ export class HaDataTable extends LitElement {
         .find((el) =>
           [
             "ha-checkbox",
-            "mwc-button",
+            "ha-button",
             "ha-button",
             "ha-icon-button",
             "ha-assist-chip",

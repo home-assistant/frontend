@@ -1,6 +1,5 @@
-import "@material/mwc-button";
 import { mdiUpload } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { MediaPlayerItem } from "../../data/media-player";
@@ -10,7 +9,7 @@ import {
 } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../types";
-import "../ha-spinner";
+import "../ha-button";
 import "../ha-svg-icon";
 
 declare global {
@@ -36,8 +35,13 @@ class MediaUploadButton extends LitElement {
       return nothing;
     }
     return html`
-      <mwc-button
-        .label=${this._uploading > 0
+      <ha-button
+        .disabled=${this._uploading > 0}
+        @click=${this._startUpload}
+        .loading=${this._uploading > 0}
+      >
+        <ha-svg-icon .path=${mdiUpload} slot="prefix"></ha-svg-icon>
+        ${this._uploading > 0
           ? this.hass.localize(
               "ui.components.media-browser.file_management.uploading",
               {
@@ -47,19 +51,7 @@ class MediaUploadButton extends LitElement {
           : this.hass.localize(
               "ui.components.media-browser.file_management.add_media"
             )}
-        .disabled=${this._uploading > 0}
-        @click=${this._startUpload}
-      >
-        ${this._uploading > 0
-          ? html`
-              <ha-spinner
-                size="small"
-                area-label="Uploading"
-                slot="icon"
-              ></ha-spinner>
-            `
-          : html` <ha-svg-icon .path=${mdiUpload} slot="icon"></ha-svg-icon> `}
-      </mwc-button>
+      </ha-button>
     `;
   }
 
@@ -107,24 +99,6 @@ class MediaUploadButton extends LitElement {
     document.body.append(input);
     input.click();
   }
-
-  static styles = css`
-    mwc-button {
-      /* We use icon + text to show disabled state */
-      --mdc-button-disabled-ink-color: --mdc-theme-primary;
-    }
-
-    ha-svg-icon[slot="icon"],
-    ha-spinner[slot="icon"] {
-      vertical-align: middle;
-    }
-
-    ha-svg-icon[slot="icon"] {
-      margin-inline-start: 0px;
-      margin-inline-end: 8px;
-      direction: var(--direction);
-    }
-  `;
 }
 
 declare global {

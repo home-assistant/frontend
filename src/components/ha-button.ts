@@ -83,7 +83,6 @@ export class HaButton extends Button {
         --sl-input-border-width: var(--ha-button-border-width, 0);
       }
 
-      :host([destructive]), /* Deprecated */
       :host([variant="danger"]) {
         --ha-button-theme-color: #b30532;
         --ha-button-theme-darker-color: #64031d;
