@@ -337,7 +337,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   private _handlePadClick(e: MouseEvent): void {
     const val = (e.currentTarget! as any).value;
-    this._value = val === "clear" ? "" : this._value + val;
+    this._value = val === "clear" ? "" : (this._value || "") + val;
   }
 
   private _handleActionClick(e: MouseEvent): void {
