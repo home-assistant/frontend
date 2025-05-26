@@ -14,7 +14,6 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import {
@@ -30,6 +29,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { stringCompare } from "../common/string/compare";
 import { throttle } from "../common/util/throttle";
+import { subscribeFrontendUserData } from "../data/frontend";
 import type { ActionHandlerDetail } from "../data/lovelace/action_handler";
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -41,11 +41,13 @@ import { SubscribeMixin } from "../mixins/subscribe-mixin";
 import { actionHandler } from "../panels/lovelace/common/directives/action-handler-directive";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo, Route } from "../types";
+import "./ha-fade-in";
 import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-md-list";
 import "./ha-md-list-item";
 import type { HaMdListItem } from "./ha-md-list-item";
+import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
 
@@ -187,17 +189,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   @property({ attribute: "always-expand", type: Boolean })
   public alwaysExpand = false;
 
-  @property({ attribute: false })
-  public panelOrder!: string[];
-
-  @property({ attribute: false })
-  public hiddenPanels!: string[];
-
   @state() private _notifications?: PersistentNotification[];
 
   @state() private _updatesCount = 0;
 
   @state() private _issuesCount = 0;
+
+  @state() private _panelOrder?: string[];
+
+  @state() private _hiddenPanels?: string[];
 
   private _mouseLeaveTimeout?: number;
 
@@ -205,20 +205,41 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _recentKeydownActiveUntil = 0;
 
-  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
-
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return this.hass.user?.is_admin
-      ? [
-          subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
-            this._issuesCount = repairs.issues.filter(
-              (issue) => !issue.ignored
-            ).length;
-          }),
-        ]
-      : [];
+  public hassSubscribe() {
+    return [
+      subscribeFrontendUserData(
+        this.hass.connection,
+        "sidebar",
+        ({ value }) => {
+          this._panelOrder = value?.panelOrder;
+          this._hiddenPanels = value?.hiddenPanels;
+
+          // fallback to old localStorage values
+          if (!this._panelOrder) {
+            const storedOrder = localStorage.getItem("sidebarPanelOrder");
+            this._panelOrder = storedOrder ? JSON.parse(storedOrder) : [];
+          }
+          if (!this._hiddenPanels) {
+            const storedHidden = localStorage.getItem("sidebarHiddenPanels");
+            this._hiddenPanels = storedHidden ? JSON.parse(storedHidden) : [];
+          }
+        }
+      ),
+      subscribeNotifications(this.hass.connection, (notifications) => {
+        this._notifications = notifications;
+      }),
+      ...(this.hass.user?.is_admin
+        ? [
+            subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
+              this._issuesCount = repairs.issues.filter(
+                (issue) => !issue.ignored
+              ).length;
+            }),
+          ]
+        : []),
+    ];
   }
 
   protected render() {
@@ -254,8 +275,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
-      changedProps.has("hiddenPanels") ||
-      changedProps.has("panelOrder")
+      changedProps.has("_hiddenPanels") ||
+      changedProps.has("_panelOrder")
     ) {
       return true;
     }
@@ -279,23 +300,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     );
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
-    this._subscribePersistentNotifications();
-  }
-
-  private _subscribePersistentNotifications(): void {
-    if (this._unsubPersistentNotifications) {
-      this._unsubPersistentNotifications();
-    }
-    this._unsubPersistentNotifications = subscribeNotifications(
-      this.hass.connection,
-      (notifications) => {
-        this._notifications = notifications;
-      }
-    );
-  }
-
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
@@ -306,14 +310,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (
-      this.hass &&
-      oldHass?.connected === false &&
-      this.hass.connected === true
-    ) {
-      this._subscribePersistentNotifications();
-    }
 
     this._calculateCounts();
 
@@ -369,11 +365,19 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderAllPanels(selectedPanel: string) {
+    if (!this._panelOrder || !this._hiddenPanels) {
+      return html`
+        <ha-fade-in .delay=${500}
+          ><ha-spinner size="large"></ha-spinner
+        ></ha-fade-in>
+      `;
+    }
+
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
       this.hass.defaultPanel,
-      this.panelOrder,
-      this.hiddenPanels,
+      this._panelOrder,
+      this._hiddenPanels,
       this.hass.locale
     );
 
@@ -559,17 +563,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       return;
     }
 
-    showEditSidebarDialog(this, {
-      saveCallback: this._saveSidebar,
-    });
+    showEditSidebarDialog(this);
   }
-
-  private _saveSidebar = (order: string[], hidden: string[]) => {
-    fireEvent(this, "hass-edit-sidebar", {
-      order,
-      hidden,
-    });
-  };
 
   private _itemMouseEnter(ev: MouseEvent) {
     // On keypresses on the listbox, we're going to ignore mouse enter events
@@ -730,13 +725,22 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           display: none;
         }
 
+        ha-fade-in,
         ha-md-list {
-          padding: 4px 0;
-          box-sizing: border-box;
-          height: calc(100% - var(--header-height) - 132px);
           height: calc(
             100% - var(--header-height) - 132px - var(--safe-area-inset-bottom)
           );
+        }
+
+        ha-fade-in {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        ha-md-list {
+          padding: 4px 0;
+          box-sizing: border-box;
           overflow-x: hidden;
           background: none;
           margin-left: var(--safe-area-inset-left);
