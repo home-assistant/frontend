@@ -7167,7 +7167,7 @@
                 "conditional": "Conditional",
                 "cast": "Cast",
                 "button": "Button",
-                "label": "Label"
+                "filter": "Filter"
               }
             },
             "entity": {
