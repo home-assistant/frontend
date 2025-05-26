@@ -510,7 +510,7 @@ export class HuiBadgePicker extends LitElement {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
-          line-height: 20px;
+          line-height: var(--ha-line-height-condensed);
           padding: 12px 16px;
           display: block;
           text-align: center;

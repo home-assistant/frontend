@@ -207,8 +207,8 @@ class DialogExposeEntity extends LitElement {
         }
         .subtitle {
           color: var(--secondary-text-color);
-          font-size: 1rem;
-          line-height: normal;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
         }
         lit-virtualizer {
           width: 100%;
@@ -236,10 +236,10 @@ class DialogExposeEntity extends LitElement {
         @media all and (max-width: 500px), all and (max-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
             );
             --mdc-dialog-max-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
             );
             --mdc-dialog-min-height: 100%;
             --mdc-dialog-max-height: 100%;

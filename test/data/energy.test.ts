@@ -378,13 +378,13 @@ describe("Energy Usage Calculation Tests", () => {
       }),
       {
         grid_to_battery: 0,
-        battery_to_grid: 3,
-        used_solar: 4,
+        battery_to_grid: 0,
+        used_solar: 1,
         used_grid: 5,
-        used_battery: 7,
+        used_battery: 10,
         used_total: 16,
         solar_to_battery: 3,
-        solar_to_grid: 0,
+        solar_to_grid: 3,
       }
     );
     assert.deepEqual(
@@ -416,13 +416,13 @@ describe("Energy Usage Calculation Tests", () => {
       }),
       {
         grid_to_battery: 0,
-        battery_to_grid: 1,
-        used_solar: 2,
+        battery_to_grid: 0,
+        used_solar: 1,
         used_grid: 2,
-        used_battery: 0,
+        used_battery: 1,
         used_total: 4,
         solar_to_battery: 1,
-        solar_to_grid: 6,
+        solar_to_grid: 7,
       }
     );
     assert.deepEqual(
@@ -503,6 +503,31 @@ describe("Energy Usage Calculation Tests", () => {
         solar_to_battery: 0,
         solar_to_grid: 1,
         used_total: 0,
+      }
+    );
+  });
+
+  it("bug #25387", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        {
+          from_grid: 0.059,
+          to_grid: 48.0259,
+          solar: 61.22,
+          to_battery: 5.716,
+          from_battery: 4.83,
+        },
+        false
+      ),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 0,
+        used_solar: 7.478099999999998,
+        used_grid: 0.05899999999999572,
+        used_battery: 4.83,
+        solar_to_battery: 5.716,
+        solar_to_grid: 48.0259,
+        used_total: 12.367099999999994,
       }
     );
   });

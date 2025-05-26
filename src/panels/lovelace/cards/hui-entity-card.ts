@@ -114,7 +114,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -301,7 +301,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 28px;
+          line-height: var(--ha-line-height-expanded);
         }
 
         .value {
