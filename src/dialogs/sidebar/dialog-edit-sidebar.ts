@@ -38,7 +38,7 @@ class DialogEditSidebar extends LitElement {
   /**
    * If user has old localStorage values, show a confirmation dialog
    */
-  private _migrateToUserData = false;
+  @state() private _migrateToUserData = false;
 
   public async showDialog(): Promise<void> {
     this._open = true;
@@ -152,9 +152,11 @@ class DialogEditSidebar extends LitElement {
             @click=${this.closeDialog}
           ></ha-icon-button>
           <span slot="title" .title=${dialogTitle}>${dialogTitle}</span>
-          <span slot="subtitle"
-            >${this.hass.localize("ui.sidebar.edit_subtitle")}</span
-          >
+          ${!this._migrateToUserData
+            ? html`<span slot="subtitle"
+                >${this.hass.localize("ui.sidebar.edit_subtitle")}</span
+              >`
+            : nothing}
         </ha-dialog-header>
         <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
