@@ -262,7 +262,7 @@ export class HaItemDisplayEditor extends LitElement {
         ];
       }
 
-      return items.sort((a, b) =>
+      return visibleItems.sort((a, b) =>
         a.disableSorting && !b.disableSorting ? -1 : compare(a.value, b.value)
       );
     }
