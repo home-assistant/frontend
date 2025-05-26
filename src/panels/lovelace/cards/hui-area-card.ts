@@ -51,7 +51,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant
   ): Promise<AreaCardConfig> {
     const areas = Object.values(hass.areas);
-    return { type: "area-legacy", area: areas[0]?.area_id || "" };
+    return { type: "area", area: areas[0]?.area_id || "" };
   }
 
   public getCardSize(): number {
