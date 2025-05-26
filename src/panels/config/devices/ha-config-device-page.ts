@@ -668,19 +668,18 @@ export class HaConfigDevicePage extends LitElement {
       .narrow=${this.narrow}
       .header=${deviceName}
     >
+      <ha-icon-button
+        slot="toolbar-icon"
+        .path=${mdiPencil}
+        @click=${this._showSettings}
+        .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
+      ></ha-icon-button>
       <ha-md-button-menu slot="toolbar-icon">
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
-
-        <ha-md-menu-item .clickAction=${this._showSettings}>
-          <ha-svg-icon slot="start" .path=${mdiPencil}></ha-svg-icon>
-          <div slot="headline">
-            ${this.hass.localize("ui.panel.config.devices.edit_settings")}
-          </div>
-        </ha-md-menu-item>
 
         <ha-md-menu-item .clickAction=${this._resetEntityIds}>
           <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
