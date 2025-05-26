@@ -129,9 +129,9 @@ const textEntitiesRowConfigStruct = object({
   icon: optional(string()),
 });
 
-const labelEntitiesRowConfigStruct = object({
-  type: literal("label"),
-  label: string(),
+const filterEntitiesRowConfigStruct = object({
+  type: literal("filter"),
+  label: union([string(), array(string())]),
   icon: optional(string()),
   image: optional(string()),
   secondary_info: optional(string()),
@@ -185,8 +185,8 @@ const entitiesRowConfigStruct = dynamic<any>((value) => {
       case "weblink": {
         return webLinkEntitiesRowConfigStruct;
       }
-      case "label": {
-        return labelEntitiesRowConfigStruct;
+      case "filter": {
+        return filterEntitiesRowConfigStruct;
       }
     }
   }

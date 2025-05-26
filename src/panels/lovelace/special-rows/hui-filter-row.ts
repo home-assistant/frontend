@@ -4,18 +4,19 @@ import { customElement, property, state } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../../types";
 import { createRowElement } from "../create-element/create-row-element";
-import type { LabelRowConfig, LovelaceRow } from "../entity-rows/types";
+import type { FilterRowConfig, LovelaceRow } from "../entity-rows/types";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
+import { ensureArray } from "../../../common/array/ensure-array";
 
-@customElement("hui-label-row")
-class HuiLabelRow extends SubscribeMixin(LitElement) implements LovelaceRow {
+@customElement("hui-filter-row")
+class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @state() private _config?: LabelRowConfig;
+  @state() private _config?: FilterRowConfig;
 
   @state() private _entities?: EntityRegistryEntry[];
 
@@ -23,7 +24,7 @@ class HuiLabelRow extends SubscribeMixin(LitElement) implements LovelaceRow {
 
   private _elementsSorted: LovelaceRow[] = [];
 
-  public setConfig(config: LabelRowConfig): void {
+  public setConfig(config: FilterRowConfig): void {
     if (!config.label) {
       throw new Error("No label configured");
     }
@@ -46,10 +47,12 @@ class HuiLabelRow extends SubscribeMixin(LitElement) implements LovelaceRow {
       delete configExtra.type;
       delete configExtra.label;
 
+      const configLabels = ensureArray(this._config!.label);
+
       this._entities?.forEach((entityReg) => {
         const id = entityReg.entity_id;
 
-        if (entityReg.labels.includes(this._config!.label)) {
+        if (configLabels.some((l) => entityReg.labels.includes(l))) {
           if (!(id in this._elements)) {
             changed = true;
             this._elements[id] = createRowElement({
@@ -110,6 +113,6 @@ class HuiLabelRow extends SubscribeMixin(LitElement) implements LovelaceRow {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-label-row": HuiLabelRow;
+    "hui-filter-row": HuiFilterRow;
   }
 }
