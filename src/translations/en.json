@@ -3707,6 +3707,7 @@
               "queued": "Queue length",
               "parallel": "Max number of parallel runs"
             },
+            "max_exceeded": "Max exceeded severity level",
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
             "copy_to_clipboard": "Copy to clipboard",
