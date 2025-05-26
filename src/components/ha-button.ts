@@ -26,7 +26,7 @@ export type Appearance = "accent" | "filled" | "plain";
  * @csspart spinner - The spinner that shows when the button is in the loading state.
  *
  * @cssprop --ha-button-font-family - Font family for the button text.
- * @cssprop --ha-font-weight-medium - Medium font weight for button text.
+ * @cssprop --ha-button-font-weight - buttons font weight.
  * @cssprop --ha-button-border-width - Border width for the button.
  * @cssprop --ha-button-theme-color - Main color for the button.
  * @cssprop --ha-button-theme-darker-color - Darker variant of the main color.
@@ -35,6 +35,8 @@ export type Appearance = "accent" | "filled" | "plain";
  * @cssprop --ha-button-border-radius - Border radius for the button.
  * @cssprop --ha-button-text-color - Text color for the button.
  * @cssprop --ha-button-font-size - Font weight for the button text.
+ * @cssprop --ha-button-padding-inline-start - padding for the button text on the left side.
+ * @cssprop --ha-button-padding-inline-end - padding for the button text on the right side.
  *
  * @attr {("small"|"medium")} size - Sets the button size.
  * @attr {("primary"|"danger"|"neutral"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
@@ -95,7 +97,7 @@ export class HaButton extends Button {
         --ha-button-theme-color: #545868;
         --ha-button-theme-darker-color: #373a44;
         --ha-button-theme-active-color: #1c1d22;
-        --ha-button-theme-lighter-color: #e4e5e9;
+        --ha-button-theme-lighter-color: #767986;
       }
 
       :host([variant="warning"]) {
@@ -180,20 +182,30 @@ export class HaButton extends Button {
         color: var(--white-color);
       }
 
+      .button.button--medium .button__label {
+        padding-inline-start: var(--ha-button-padding-inline-start, 16px);
+        padding-inline-end: var(--ha-button-padding-inline-start, 16px);
+      }
+
+      .button.button--small .button__label {
+        padding-inline-start: var(--ha-button-padding-inline-start, 12px);
+        padding-inline-end: var(--ha-button-padding-inline-start, 12px);
+      }
+
       /* spacing */
       .button--has-prefix.button--medium .button__label {
-        padding-inline-start: 8px;
+        padding-inline-start: var(--ha-button-padding-inline-start, 8px);
       }
       .button--has-prefix.button--small .button__label {
-        padding-inline-start: 4px;
+        padding-inline-start: var(--ha-button-padding-inline-start, 4px);
       }
       .button--has-suffix.button--medium .button__label,
       .button--caret.button--medium .button__label {
-        padding-inline-end: 8px;
+        padding-inline-end: var(--ha-button-padding-inline-end, 8px);
       }
       .button--has-suffix.button--small .button__label,
       .button--caret.button--small .button__label {
-        padding-inline-end: 4px;
+        padding-inline-end: var(--ha-button-padding-inline-end, 4px);
       }
 
       /*
