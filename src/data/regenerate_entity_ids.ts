@@ -86,7 +86,7 @@ export const regenerateEntityIds = async (
           .filter(([oldId, newId]) => newId && oldId !== newId)
           .forEach(([oldEntityId, newEntityId]) =>
             updateEntityRegistryEntry(hass, oldEntityId, {
-              new_entity_id: newEntityId,
+              new_entity_id: newEntityId!,
             }).catch((err: any) => {
               showAlertDialog(element, {
                 title: hass.localize(
