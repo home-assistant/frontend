@@ -34,6 +34,7 @@ export type Appearance = "accent" | "filled" | "plain";
  * @cssprop --ha-button-height - Height of the button.
  * @cssprop --ha-button-border-radius - Border radius for the button.
  * @cssprop --ha-button-text-color - Text color for the button.
+ * @cssprop --ha-button-focus-ring-color - Focus ring color for the button.
  * @cssprop --ha-button-font-size - Font weight for the button text.
  * @cssprop --ha-button-padding-inline-start - padding for the button text on the left side.
  * @cssprop --ha-button-padding-inline-end - padding for the button text on the right side.
@@ -62,7 +63,7 @@ export class HaButton extends Button {
           var(--ha-font-weight-medium)
         );
         --sl-transition-x-fast: 0.4s;
-        --sl-focus-ring: solid 4px var(--accent-color);
+        --sl-focus-ring: solid 4px var(--ha-button-focus-ring-color, #625b71);
         --sl-focus-ring-offset: 1px;
         --sl-button-font-size-small: var(
           --ha-button-font-size,
