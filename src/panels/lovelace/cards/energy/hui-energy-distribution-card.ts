@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowLeft,
@@ -18,6 +17,7 @@ import { css, html, LitElement, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
@@ -756,13 +756,11 @@ class HuiEnergyDistrubutionCard
         ${this._config.link_dashboard
           ? html`
               <div class="card-actions">
-                <a href="/energy"
-                  ><mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
-                    )}
-                  </mwc-button></a
-                >
+                <ha-button appearance="plain" size="small" href="/energy">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
+                  )}
+                </ha-button>
               </div>
             `
           : ""}

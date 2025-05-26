@@ -1,11 +1,10 @@
-import "@material/mwc-button";
-
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import type { HassioStats } from "../../../src/data/hassio/common";
@@ -70,12 +69,12 @@ class HassioCoreInfo extends LitElement {
               ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
               this.supervisor.core.update_available
                 ? html`
-                    <a href="/hassio/update-available/core">
-                      <mwc-button
-                        .label=${this.supervisor.localize("common.show")}
-                      >
-                      </mwc-button>
-                    </a>
+                    <ha-button
+                      appearance="plain"
+                      href="/hassio/update-available/core"
+                    >
+                      ${this.supervisor.localize("common.show")}
+                    </ha-button>
                   `
                 : ""}
             </ha-settings-row>

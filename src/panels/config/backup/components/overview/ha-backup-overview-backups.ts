@@ -100,7 +100,7 @@ class HaBackupOverviewBackups extends LitElement {
         </div>
         <div class="card-actions">
           <a href="/config/backup/backups?type=all">
-            <ha-button>
+            <ha-button appearance="filled">
               ${this.hass.localize(
                 "ui.panel.config.backup.overview.backups.show_all"
               )}

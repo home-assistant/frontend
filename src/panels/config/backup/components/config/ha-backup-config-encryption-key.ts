@@ -36,8 +36,13 @@ class HaBackupConfigEncryptionKey extends LitElement {
                 "ui.panel.config.backup.encryption_key.download_emergency_kit_description"
               )}
             </span>
-            <ha-button slot="end" @click=${this._download}>
-              <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+            <ha-button
+              appearance="plain"
+              slot="end"
+              @click=${this._download}
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiDownload} slot="prefix"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
               )}
@@ -54,7 +59,12 @@ class HaBackupConfigEncryptionKey extends LitElement {
                 "ui.panel.config.backup.encryption_key.show_encryption_key_description"
               )}
             </span>
-            <ha-button slot="end" @click=${this._show}>
+            <ha-button
+              appearance="plain"
+              slot="end"
+              @click=${this._show}
+              size="small"
+            >
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.show_encryption_key_action"
               )}
@@ -71,7 +81,13 @@ class HaBackupConfigEncryptionKey extends LitElement {
                 "ui.panel.config.backup.encryption_key.change_encryption_key_description"
               )}
             </span>
-            <ha-button class="danger" slot="end" @click=${this._change}>
+            <ha-button
+              appearance="plain"
+              variant="danger"
+              size="small"
+              slot="end"
+              @click=${this._change}
+            >
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.change_encryption_key_action"
               )}
@@ -141,8 +157,9 @@ class HaBackupConfigEncryptionKey extends LitElement {
     ha-md-list-item {
       --md-item-overflow: visible;
     }
-    .danger {
-      --mdc-theme-primary: var(--error-color);
+
+    ha-button[size="small"] ha-svg-icon {
+      --mdc-icon-size: 16px;
     }
   `;
 }

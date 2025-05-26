@@ -1,9 +1,9 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
+import "../components/ha-button";
 import { activateScene } from "../data/scene";
 import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
@@ -24,8 +24,8 @@ class StateCardScene extends LitElement {
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <mwc-button @click=${this._activateScene}
-          >${this.hass.localize("ui.card.scene.activate")}</mwc-button
+        <ha-button appearance="plain" size="small" @click=${this._activateScene}
+          >${this.hass.localize("ui.card.scene.activate")}</ha-button
         >
       </div>
     `;

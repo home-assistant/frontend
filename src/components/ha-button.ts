@@ -3,6 +3,8 @@ import styles from "@shoelace-style/shoelace/dist/components/button/button.style
 import { css } from "lit";
 import { customElement, property } from "lit/decorators";
 
+export type Appearance = "accent" | "filled" | "plain";
+
 /**
  * Home Assistant button component
  *
@@ -35,12 +37,15 @@ import { customElement, property } from "lit/decorators";
  * @cssprop --ha-button-font-size - Font weight for the button text.
  *
  * @attr {("small"|"medium")} size - Sets the button size.
- * @attr {("primary"|"danger"|"neutral"|"warning")} variant - Sets the button color variant. "primary" is default.
+ * @attr {("primary"|"danger"|"neutral"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
  * @attr {("accent"|"filled"|"plain")} appearance - Sets the button appearance.
  */
 @customElement("ha-button")
 export class HaButton extends Button {
-  @property({ reflect: true }) appearance?: "accent" | "filled" | "plain";
+  @property({ reflect: true }) appearance?: Appearance;
+
+  @property({ type: Boolean, attribute: "hide-content", reflect: true })
+  hideContent = false;
 
   static override styles = [
     styles,
@@ -97,6 +102,12 @@ export class HaButton extends Button {
         --ha-button-theme-lighter-color: #fef3cd;
       }
 
+      :host([variant="success"]) {
+        --ha-button-theme-color: var(--success-color);
+        --ha-button-theme-darker-color: #275e2a;
+        --ha-button-theme-lighter-color: #5ce463;
+      }
+
       .button {
         height: var(--ha-button-height, var(--button-height, 40px));
         align-items: center;
@@ -113,11 +124,13 @@ export class HaButton extends Button {
       .button--standard.button--neutral,
       .button--standard.button--danger,
       .button--standard.button--warning,
+      .button--standard.button--success,
       .button--standard.button--default:active:not(.button--disabled),
       .button--standard.button--primary:active:not(.button--disabled),
       .button--standard.button--neutral:active:not(.button--disabled),
       .button--standard.button--danger:active:not(.button--disabled),
       .button--standard.button--warning:active:not(.button--disabled),
+      .button--standard.button--success:active:not(.button--disabled),
       .button:active:not(.button--disabled) {
         background-color: var(--ha-button-theme-color);
         color: var(--ha-button-text-color, var(--white-color));
@@ -127,6 +140,7 @@ export class HaButton extends Button {
       .button--standard.button--primary:hover:not(.button--disabled),
       .button--standard.button--neutral:hover:not(.button--disabled),
       .button--standard.button--warning:hover:not(.button--disabled),
+      .button--standard.button--success:hover:not(.button--disabled),
       .button--standard.button--danger:hover:not(.button--disabled) {
         background-color: var(--ha-button-theme-darker-color);
         color: var(--ha-button-text-color, var(--white-color));
@@ -166,6 +180,17 @@ export class HaButton extends Button {
       .button--has-suffix.button--small .button__label,
       .button--caret.button--small .button__label {
         padding-inline-end: 4px;
+      }
+
+      /*
+      * hide content for overlays
+      */
+
+      :host([hide-content]) .button .button__prefix,
+      :host([hide-content]) .button .button__label,
+      :host([hide-content]) .button .button__suffix,
+      :host([hide-content]) .button .button__caret {
+        visibility: hidden;
       }
     `,
   ];

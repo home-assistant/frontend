@@ -16,6 +16,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/trace/ha-trace-blueprint-config";
@@ -101,17 +102,16 @@ export class HaScriptTrace extends LitElement {
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow} .header=${title}>
         ${!this.narrow && this.scriptId
           ? html`
-              <a
+              <ha-button
                 class="trace-link"
                 href="/config/script/edit/${this.scriptId}"
                 slot="toolbar-icon"
+                appearance="plain"
               >
-                <mwc-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.script.trace.edit_script"
-                  )}
-                </mwc-button>
-              </a>
+                ${this.hass.localize(
+                  "ui.panel.config.script.trace.edit_script"
+                )}
+              </ha-button>
             `
           : ""}
 

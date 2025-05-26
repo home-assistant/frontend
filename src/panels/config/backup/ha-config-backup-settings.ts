@@ -274,44 +274,42 @@ class HaConfigBackupSettings extends LitElement {
                     )}
                   </div>
                   <div class="card-actions">
-                    <a href="/config/cloud/login">
-                      <ha-button>
-                        ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                        )}
-                      </ha-button>
-                    </a>
-                    <a href="/config/cloud/register">
-                      <ha-button unelevated>
-                        ${this.hass.localize(
-                          "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
-                        )}
-                      </ha-button>
-                    </a>
+                    <ha-button appearance="plain" href="/config/cloud/login">
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                      )}
+                    </ha-button>
+                    <ha-button href="/config/cloud/register">
+                      ${this.hass.localize(
+                        "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                      )}
+                    </ha-button>
                   </div>
                 </ha-card>`
               : nothing}
             <div class="card-actions">
-              <a
+              <ha-button
+                size="small"
                 href=${documentationUrl(this.hass, "/integrations/#backup")}
                 target="_blank"
                 rel="noreferrer"
+                appearance="plain"
               >
-                <ha-button>
-                  <ha-svg-icon slot="icon" .path=${mdiOpenInNew}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.backup.settings.locations.more_locations"
-                  )}
-                </ha-button>
-              </a>
+                <ha-svg-icon slot="prefix" .path=${mdiOpenInNew}></ha-svg-icon>
+                ${this.hass.localize(
+                  "ui.panel.config.backup.settings.locations.more_locations"
+                )}
+              </ha-button>
               ${supervisor
-                ? html`<a href="/config/storage">
-                    <ha-button>
-                      ${this.hass.localize(
-                        "ui.panel.config.backup.settings.locations.manage_network_storage"
-                      )}
-                    </ha-button>
-                  </a>`
+                ? html`<ha-button
+                    size="small"
+                    appearance="plain"
+                    href="/config/storage"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.backup.settings.locations.manage_network_storage"
+                    )}
+                  </ha-button>`
                 : nothing}
             </div>
           </ha-card>
@@ -548,6 +546,10 @@ class HaConfigBackupSettings extends LitElement {
     .cloud-info .card-actions {
       display: flex;
       justify-content: space-between;
+    }
+
+    ha-button[size="small"] ha-svg-icon {
+      --mdc-icon-size: 16px;
     }
   `;
 }

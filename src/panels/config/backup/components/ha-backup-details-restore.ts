@@ -67,7 +67,8 @@ class HaBackupDetailsRestore extends LitElement {
           <ha-button
             @click=${this._restore}
             .disabled=${this._isRestoreDisabled}
-            destructive
+            variant="danger"
+            appearance="plain"
           >
             ${this.localize(
               `ui.panel.${this.translationKeyPanel}.details.restore.action`

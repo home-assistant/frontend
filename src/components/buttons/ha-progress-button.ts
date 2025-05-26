@@ -5,6 +5,13 @@ import { customElement, property, state } from "lit/decorators";
 import "../ha-button";
 import "../ha-spinner";
 import "../ha-svg-icon";
+import type { Appearance } from "../ha-button";
+
+const HIGHLIGHT_APPEARANCE = {
+  accent: "accent" as Appearance,
+  filled: "accent" as Appearance,
+  plain: "filled" as Appearance,
+};
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
@@ -12,30 +19,53 @@ export class HaProgressButton extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public progress = false;
+  @property({ type: Boolean, reflect: true }) public progress = false;
 
-  @property({ type: Boolean }) public raised = false;
+  @property() appearance: Appearance = "accent";
 
-  @property({ type: Boolean }) public unelevated = false;
+  @property() variant:
+    | "primary"
+    | "danger"
+    | "neutral"
+    | "warning"
+    | "success" = "primary";
 
   @state() private _result?: "success" | "error";
 
+  @state() private _hasInitialIcon = false;
+
   public render(): TemplateResult {
-    const overlay = this._result || this.progress;
+    const appearance =
+      this.progress || this._result
+        ? HIGHLIGHT_APPEARANCE[this.appearance]
+        : this.appearance;
+
     return html`
       <ha-button
-        .appearance=${this.unelevated
-          ? "accent"
-          : this.raised
-            ? "filled"
-            : "plain"}
-        .disabled=${this.disabled || this.progress}
-        class=${this._result || ""}
+        .appearance=${appearance}
+        .disabled=${this.disabled}
+        .loading=${this.progress}
+        .variant=${this._result === "success"
+          ? "success"
+          : this._result === "error"
+            ? "danger"
+            : this.variant}
+        .hideContent=${this._result !== undefined}
       >
-        <slot name="icon" slot="icon"></slot>
-        <slot>${this.label}</slot>
+        ${this._hasInitialIcon
+          ? html`<slot name="icon" slot="prefix"></slot>`
+          : nothing}
+        <slot
+          >${this._result
+            ? html`<ha-svg-icon
+                .path=${this._result === "success"
+                  ? mdiCheckBold
+                  : mdiAlertOctagram}
+              ></ha-svg-icon>`
+            : this.label}</slot
+        >
       </ha-button>
-      ${!overlay
+      ${!this._result
         ? nothing
         : html`
             <div class="progress">
@@ -43,12 +73,18 @@ export class HaProgressButton extends LitElement {
                 ? html`<ha-svg-icon .path=${mdiCheckBold}></ha-svg-icon>`
                 : this._result === "error"
                   ? html`<ha-svg-icon .path=${mdiAlertOctagram}></ha-svg-icon>`
-                  : this.progress
-                    ? html`<ha-spinner size="small"></ha-spinner>`
-                    : nothing}
+                  : nothing}
             </div>
           `}
     `;
+  }
+
+  firstUpdated() {
+    const iconSlot = this.shadowRoot!.querySelector(
+      'slot[name="icon"]'
+    ) as HTMLSlotElement;
+    this._hasInitialIcon =
+      iconSlot && iconSlot.assignedNodes({ flatten: true }).length > 0;
   }
 
   public actionSuccess(): void {
@@ -71,47 +107,23 @@ export class HaProgressButton extends LitElement {
       outline: none;
       display: inline-block;
       position: relative;
+    }
+
+    :host([progress]) {
       pointer-events: none;
     }
 
     ha-button {
       transition: all 1s;
-      pointer-events: initial;
-    }
-
-    ha-button.success {
-      --mdc-theme-primary: white;
-      background-color: var(--success-color);
-      transition: none;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    ha-button[unelevated].success,
-    ha-button[raised].success {
-      --mdc-theme-primary: var(--success-color);
-      --mdc-theme-on-primary: white;
-    }
-
-    ha-button.error {
-      --mdc-theme-primary: white;
-      background-color: var(--error-color);
-      transition: none;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    ha-button[unelevated].error,
-    ha-button[raised].error {
-      --mdc-theme-primary: var(--error-color);
-      --mdc-theme-on-primary: white;
     }
 
     .progress {
-      bottom: 4px;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       position: absolute;
-      text-align: center;
-      top: 4px;
+      top: 0;
       width: 100%;
     }
 

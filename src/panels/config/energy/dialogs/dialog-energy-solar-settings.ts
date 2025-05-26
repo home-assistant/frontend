@@ -1,5 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import { mdiSolarPower } from "@mdi/js";
+import { mdiPlus, mdiSolarPower } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,7 +8,9 @@ import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
+import "../../../../components/ha-button";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-svg-icon";
 import type { HaRadio } from "../../../../components/ha-radio";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
@@ -179,24 +180,33 @@ export class DialogEnergySolarSettings
                     </ha-checkbox>
                   </ha-formfield>`
               )}
-              <mwc-button @click=${this._addForecast}>
+              <ha-button
+                appearance="filled"
+                size="small"
+                @click=${this._addForecast}
+              >
+                <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.energy.solar.dialog.add_forecast"
                 )}
-              </mwc-button>
+              </ha-button>
             </div>`
           : ""}
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="secondaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._save}
           .disabled=${!this._source.stat_energy_from}
           slot="primaryAction"
         >
           ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }
@@ -294,7 +304,7 @@ export class DialogEnergySolarSettings
           padding-inline-start: 32px;
           padding-inline-end: initial;
         }
-        .forecast-options mwc-button {
+        .forecast-options ha-button {
           padding-left: 8px;
           padding-inline-start: 8px;
           padding-inline-end: initial;

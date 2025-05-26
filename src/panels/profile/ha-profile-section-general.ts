@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-card";
+import "../../components/ha-button";
 import { isExternal } from "../../data/external";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
@@ -113,9 +113,13 @@ class HaProfileSectionGeneral extends LitElement {
                 : ""}
             </div>
             <div class="card-actions">
-              <mwc-button class="warning" @click=${this._handleLogOut}>
+              <ha-button
+                variant="danger"
+                appearance="plain"
+                @click=${this._handleLogOut}
+              >
                 ${this.hass.localize("ui.panel.profile.logout")}
-              </mwc-button>
+              </ha-button>
             </div>
           </ha-card>
           <ha-card
@@ -198,11 +202,15 @@ class HaProfileSectionGeneral extends LitElement {
                   "ui.panel.profile.customize_sidebar.description"
                 )}
               </span>
-              <mwc-button @click=${this._customizeSidebar}>
+              <ha-button
+                size="small"
+                appearance="plain"
+                @click=${this._customizeSidebar}
+              >
                 ${this.hass.localize(
                   "ui.panel.profile.customize_sidebar.button"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-settings-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`

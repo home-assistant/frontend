@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -8,10 +6,11 @@ import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
-import "../../../src/components/ha-list-item";
 import "../../../src/components/ha-icon-button";
+import "../../../src/components/ha-list-item";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
@@ -77,24 +76,28 @@ class HassioHostInfo extends LitElement {
                   <span slot="description">
                     ${this.supervisor.host.hostname}
                   </span>
-                  <mwc-button
-                    .label=${this.supervisor.localize("system.host.change")}
+                  <ha-button
                     @click=${this._changeHostnameClicked}
+                    appearance="plain"
+                    size="small"
                   >
-                  </mwc-button>
+                    ${this.supervisor.localize("system.host.change")}
+                  </ha-button>
                 </ha-settings-row>`
               : ""}
             ${this.supervisor.host.features.includes("network")
-              ? html` <ha-settings-row>
+              ? html`<ha-settings-row>
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.ip_address")}
                   </span>
                   <span slot="description"> ${primaryIpAddress} </span>
-                  <mwc-button
-                    .label=${this.supervisor.localize("system.host.change")}
+                  <ha-button
                     @click=${this._changeNetworkClicked}
+                    appearance="plain"
+                    size="small"
                   >
-                  </mwc-button>
+                    ${this.supervisor.localize("system.host.change")}
+                  </ha-button>
                 </ha-settings-row>`
               : ""}
 
@@ -108,12 +111,13 @@ class HassioHostInfo extends LitElement {
               ${!atLeastVersion(this.hass.config.version, 2021, 12) &&
               this.supervisor.os.update_available
                 ? html`
-                    <a href="/hassio/update-available/os">
-                      <mwc-button
-                        .label=${this.supervisor.localize("common.show")}
-                      >
-                      </mwc-button>
-                    </a>
+                    <ha-button
+                      appearance="plain"
+                      size="small"
+                      href="/hassio/update-available/os"
+                    >
+                      ${this.supervisor.localize("common.show")}
+                    </ha-button>
                   `
                 : ""}
             </ha-settings-row>
