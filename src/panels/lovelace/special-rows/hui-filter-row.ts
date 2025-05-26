@@ -25,7 +25,10 @@ class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
   private _elementsSorted: LovelaceRow[] = [];
 
   public setConfig(config: FilterRowConfig): void {
-    if (!config.label) {
+    if (!config.filter) {
+      throw new Error("No filter configured");
+    }
+    if (!config.filter.label) {
       throw new Error("No label configured");
     }
     this._config = config;
@@ -45,9 +48,9 @@ class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
 
       const configExtra = { ...this._config } as any;
       delete configExtra.type;
-      delete configExtra.label;
+      delete configExtra.filter;
 
-      const configLabels = ensureArray(this._config!.label);
+      const configLabels = ensureArray(this._config!.filter.label);
 
       this._entities?.forEach((entityReg) => {
         const id = entityReg.entity_id;

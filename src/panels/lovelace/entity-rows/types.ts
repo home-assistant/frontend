@@ -112,5 +112,7 @@ export interface AttributeRowConfig extends EntityConfig {
 
 export interface FilterRowConfig {
   type: "Filter";
-  label: string | string[];
+  filter: {
+    label: string | string[];
+  };
 }

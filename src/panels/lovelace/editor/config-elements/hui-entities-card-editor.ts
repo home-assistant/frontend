@@ -131,7 +131,7 @@ const textEntitiesRowConfigStruct = object({
 
 const filterEntitiesRowConfigStruct = object({
   type: literal("filter"),
-  label: union([string(), array(string())]),
+  filter: object({ label: union([string(), array(string())]) }),
   icon: optional(string()),
   image: optional(string()),
   secondary_info: optional(string()),
