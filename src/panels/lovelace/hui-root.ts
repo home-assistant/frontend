@@ -1026,6 +1026,8 @@ class HUIRoot extends LitElement {
           padding: 0px 12px;
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
+          // TODO add right padding
+          // TODO fix issue in landscape tablet with safe area on the left and right
         }
         @media (max-width: 599px) {
           .toolbar {
@@ -1154,9 +1156,9 @@ class HUIRoot extends LitElement {
           min-height: 100vh;
           box-sizing: border-box;
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
-          padding-left: var(--safe-area-inset-left);
+          padding-left: var(--safe-area-content-inset-left);
           padding-right: var(--safe-area-inset-right);
-          padding-inline-start: var(--safe-area-inset-left);
+          padding-inline-start: var(--safe-area-content-inset-left);
           padding-inline-end: var(--safe-area-inset-right);
           padding-bottom: var(--safe-area-inset-bottom);
         }
