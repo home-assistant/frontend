@@ -1,4 +1,3 @@
-import { mdiExclamationThick, mdiHelp } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -38,6 +37,7 @@ import type {
 import { renderTileBadge } from "./tile/badges/tile-badge";
 import type { TileCardConfig } from "./types";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 export const getEntityDefaultTileIconAction = (entityId: string) => {
   const domain = computeDomain(entityId);
@@ -255,20 +255,9 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <ha-card>
-          <div class="content ${classMap(contentClasses)}">
-            <ha-tile-icon>
-              <ha-svg-icon slot="icon" .path=${mdiHelp}></ha-svg-icon>
-              <ha-tile-badge class="not-found">
-                <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
-              </ha-tile-badge>
-            </ha-tile-icon>
-            <ha-tile-info
-              .primary=${entityId}
-              secondary=${this.hass.localize("ui.card.tile.not_found")}
-            ></ha-tile-info>
-          </div>
-        </ha-card>
+        <hui-warning .hass=${this.hass}>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

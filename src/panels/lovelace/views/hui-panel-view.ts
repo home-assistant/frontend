@@ -63,7 +63,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       ${this.cards!.length > 1
-        ? html`<hui-warning>
+        ? html`<hui-warning .hass=${this.hass}>
             ${this.hass!.localize(
               "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
             )}
