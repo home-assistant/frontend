@@ -287,7 +287,7 @@ class HassTabsSubpage extends LitElement {
           z-index: 2;
           font-size: var(--ha-font-size-s);
           width: 100%;
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
 
         #tabbar:not(.bottom-bar) {
@@ -319,12 +319,12 @@ class HassTabsSubpage extends LitElement {
         .content {
           position: relative;
           width: calc(
-            100% - env(safe-area-inset-left) - env(safe-area-inset-right)
+            100% - var(--safe-area-inset-left) - var(--safe-area-inset-right)
           );
-          margin-left: env(safe-area-inset-left);
-          margin-right: env(safe-area-inset-right);
-          margin-inline-start: env(safe-area-inset-left);
-          margin-inline-end: env(safe-area-inset-right);
+          margin-left: var(--safe-area-inset-left);
+          margin-right: var(--safe-area-inset-right);
+          margin-inline-start: var(--safe-area-inset-left);
+          margin-inline-end: var(--safe-area-inset-right);
           overflow: auto;
           -webkit-overflow-scrolling: touch;
         }
@@ -332,31 +332,31 @@ class HassTabsSubpage extends LitElement {
         :host([narrow]) .content {
           height: calc(100% - var(--header-height));
           height: calc(
-            100% - var(--header-height) - env(safe-area-inset-bottom)
+            100% - var(--header-height) - var(--safe-area-inset-bottom)
           );
         }
 
         :host([narrow]) .content.tabs {
           height: calc(100% - 2 * var(--header-height));
           height: calc(
-            100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
+            100% - 2 * var(--header-height) - var(--safe-area-inset-bottom)
           );
         }
 
         .content .fab-bottom-space {
-          height: calc(64px + env(safe-area-inset-bottom));
+          height: calc(64px + var(--safe-area-inset-bottom));
         }
 
         :host([narrow]) .content.tabs .fab-bottom-space {
-          height: calc(80px + env(safe-area-inset-bottom));
+          height: calc(80px + var(--safe-area-inset-bottom));
         }
 
         #fab {
           position: fixed;
-          right: calc(16px + env(safe-area-inset-right));
-          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          right: calc(16px + var(--safe-area-inset-right));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right));
           inset-inline-start: initial;
-          bottom: calc(16px + env(safe-area-inset-bottom));
+          bottom: calc(16px + var(--safe-area-inset-bottom));
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
@@ -364,7 +364,7 @@ class HassTabsSubpage extends LitElement {
           gap: 8px;
         }
         :host([narrow]) #fab.tabs {
-          bottom: calc(84px + env(safe-area-inset-bottom));
+          bottom: calc(84px + var(--safe-area-inset-bottom));
         }
         #fab[is-wide] {
           bottom: 24px;

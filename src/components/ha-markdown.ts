@@ -8,6 +8,9 @@ export class HaMarkdown extends LitElement {
 
   @property({ attribute: "allow-svg", type: Boolean }) public allowSvg = false;
 
+  @property({ attribute: "allow-data-url", type: Boolean })
+  public allowDataUrl = false;
+
   @property({ type: Boolean }) public breaks = false;
 
   @property({ type: Boolean, attribute: "lazy-images" }) public lazyImages =
@@ -23,6 +26,7 @@ export class HaMarkdown extends LitElement {
     return html`<ha-markdown-element
       .content=${this.content}
       .allowSvg=${this.allowSvg}
+      .allowDataUrl=${this.allowDataUrl}
       .breaks=${this.breaks}
       .lazyImages=${this.lazyImages}
       .cache=${this.cache}

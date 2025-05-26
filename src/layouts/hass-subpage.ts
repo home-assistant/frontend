@@ -148,10 +148,10 @@ class HassSubpage extends LitElement {
 
         #fab {
           position: absolute;
-          right: calc(16px + env(safe-area-inset-right));
-          inset-inline-end: calc(16px + env(safe-area-inset-right));
+          right: calc(16px + var(--safe-area-inset-right));
+          inset-inline-end: calc(16px + var(--safe-area-inset-right));
           inset-inline-start: initial;
-          bottom: calc(16px + env(safe-area-inset-bottom));
+          bottom: calc(16px + var(--safe-area-inset-bottom));
           z-index: 1;
           display: flex;
           flex-wrap: wrap;
@@ -159,7 +159,7 @@ class HassSubpage extends LitElement {
           gap: 8px;
         }
         :host([narrow]) #fab.tabs {
-          bottom: calc(84px + env(safe-area-inset-bottom));
+          bottom: calc(84px + var(--safe-area-inset-bottom));
         }
         #fab[is-wide] {
           bottom: 24px;

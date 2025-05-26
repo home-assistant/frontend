@@ -145,10 +145,12 @@ type PlatformIcons = Record<
   string,
   {
     state: Record<string, string>;
+    range?: Record<string, string>;
     state_attributes: Record<
       string,
       {
         state: Record<string, string>;
+        range?: Record<string, string>;
         default: string;
       }
     >;
@@ -160,10 +162,12 @@ export type ComponentIcons = Record<
   string,
   {
     state?: Record<string, string>;
+    range?: Record<string, string>;
     state_attributes?: Record<
       string,
       {
         state: Record<string, string>;
+        range?: Record<string, string>;
         default: string;
       }
     >;
@@ -286,6 +290,74 @@ export const getServiceIcons = async (
   return resources.services.domains[domain];
 };
 
+// Cache for sorted range keys
+const sortedRangeCache = new WeakMap<Record<string, string>, number[]>();
+
+// Helper function to get an icon from a range of values
+const getIconFromRange = (
+  value: number,
+  range: Record<string, string>
+): string | undefined => {
+  // Get cached range values or compute and cache them
+  let rangeValues = sortedRangeCache.get(range);
+  if (!rangeValues) {
+    rangeValues = Object.keys(range)
+      .map(Number)
+      .filter((k) => !isNaN(k))
+      .sort((a, b) => a - b);
+    sortedRangeCache.set(range, rangeValues);
+  }
+
+  if (rangeValues.length === 0) {
+    return undefined;
+  }
+
+  // If the value is below the first threshold, return undefined
+  // (we'll fall back to the default icon)
+  if (value < rangeValues[0]) {
+    return undefined;
+  }
+
+  // Find the highest threshold that's less than or equal to the value
+  let selectedThreshold = rangeValues[0];
+  for (const threshold of rangeValues) {
+    if (value >= threshold) {
+      selectedThreshold = threshold;
+    } else {
+      break;
+    }
+  }
+
+  return range[selectedThreshold.toString()];
+};
+
+// Helper function to get an icon based on state and translations
+const getIconFromTranslations = (
+  state: string | number | undefined,
+  translations:
+    | {
+        default?: string;
+        state?: Record<string, string>;
+        range?: Record<string, string>;
+      }
+    | undefined
+): string | undefined => {
+  if (!translations) {
+    return undefined;
+  }
+
+  // First check for exact state match
+  if (state && translations.state?.[state]) {
+    return translations.state[state];
+  }
+  // Then check for range-based icons if we have a numeric state
+  if (state !== undefined && translations.range && !isNaN(Number(state))) {
+    return getIconFromRange(Number(state), translations.range);
+  }
+  // Fallback to default icon
+  return translations.default;
+};
+
 export const entityIcon = async (
   hass: HomeAssistant,
   stateObj: HassEntity,
@@ -331,7 +403,8 @@ const getEntityIcon = async (
     const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
       const translations = platformIcons[domain]?.[translation_key];
-      icon = (state && translations?.state?.[state]) || translations?.default;
+
+      icon = getIconFromTranslations(state, translations);
     }
   }
 
@@ -345,7 +418,8 @@ const getEntityIcon = async (
       const translations =
         (device_class && entityComponentIcons[device_class]) ||
         entityComponentIcons._;
-      icon = (state && translations?.state?.[state]) || translations?.default;
+
+      icon = getIconFromTranslations(state, translations);
     }
   }
   return icon;
@@ -372,9 +446,10 @@ export const attributeIcon = async (
   if (translation_key && platform) {
     const platformIcons = await getPlatformIcons(hass, platform);
     if (platformIcons) {
-      const translations =
-        platformIcons[domain]?.[translation_key]?.state_attributes?.[attribute];
-      icon = (value && translations?.state?.[value]) || translations?.default;
+      icon = getIconFromTranslations(
+        value,
+        platformIcons[domain]?.[translation_key]?.state_attributes?.[attribute]
+      );
     }
   }
   if (!icon) {
@@ -384,7 +459,8 @@ export const attributeIcon = async (
         (deviceClass &&
           entityComponentIcons[deviceClass]?.state_attributes?.[attribute]) ||
         entityComponentIcons._?.state_attributes?.[attribute];
-      icon = (value && translations?.state?.[value]) || translations?.default;
+
+      icon = getIconFromTranslations(value, translations);
     }
   }
   return icon;

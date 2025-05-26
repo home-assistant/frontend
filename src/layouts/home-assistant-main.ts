@@ -148,7 +148,7 @@ export class HomeAssistantMain extends LitElement {
       --mdc-top-app-bar-width: calc(100% - var(--mdc-drawer-width));
     }
     :host([expanded]) {
-      --mdc-drawer-width: calc(256px + env(safe-area-inset-left));
+      --mdc-drawer-width: calc(256px + var(--safe-area-inset-left));
     }
     :host([modal]) {
       --mdc-drawer-width: unset;
