@@ -77,6 +77,7 @@ export class HaButton extends Button {
 
         --ha-button-theme-color: var(--primary-color);
         --ha-button-theme-darker-color: var(--dark-primary-color);
+        --ha-button-theme-active-color: #00669c;
         --ha-button-theme-lighter-color: #dff3fc;
 
         line-height: 1;
@@ -86,24 +87,28 @@ export class HaButton extends Button {
       :host([variant="danger"]) {
         --ha-button-theme-color: #b30532;
         --ha-button-theme-darker-color: #64031d;
+        --ha-button-theme-active-color: #410213;
         --ha-button-theme-lighter-color: #ffdedc;
       }
 
       :host([variant="neutral"]) {
         --ha-button-theme-color: #545868;
         --ha-button-theme-darker-color: #373a44;
+        --ha-button-theme-active-color: #1c1d22;
         --ha-button-theme-lighter-color: #e4e5e9;
       }
 
       :host([variant="warning"]) {
         --ha-button-theme-color: #b45f04;
         --ha-button-theme-darker-color: #9c5203;
+        --ha-button-theme-active-color: #693803;
         --ha-button-theme-lighter-color: #fef3cd;
       }
 
       :host([variant="success"]) {
         --ha-button-theme-color: var(--success-color);
         --ha-button-theme-darker-color: #275e2a;
+        --ha-button-theme-active-color: #1a411c;
         --ha-button-theme-lighter-color: #5ce463;
       }
 
@@ -123,14 +128,7 @@ export class HaButton extends Button {
       .button--standard.button--neutral,
       .button--standard.button--danger,
       .button--standard.button--warning,
-      .button--standard.button--success,
-      .button--standard.button--default:active:not(.button--disabled),
-      .button--standard.button--primary:active:not(.button--disabled),
-      .button--standard.button--neutral:active:not(.button--disabled),
-      .button--standard.button--danger:active:not(.button--disabled),
-      .button--standard.button--warning:active:not(.button--disabled),
-      .button--standard.button--success:active:not(.button--disabled),
-      .button:active:not(.button--disabled) {
+      .button--standard.button--success {
         background-color: var(--ha-button-theme-color);
         color: var(--ha-button-text-color, var(--white-color));
       }
@@ -145,8 +143,18 @@ export class HaButton extends Button {
         color: var(--ha-button-text-color, var(--white-color));
       }
 
-      :host([appearance="filled"]) .button,
-      :host([appearance="filled"]) .button:active:not(.button--disabled) {
+      .button--standard.button--default:active:not(.button--disabled),
+      .button--standard.button--primary:active:not(.button--disabled),
+      .button--standard.button--neutral:active:not(.button--disabled),
+      .button--standard.button--danger:active:not(.button--disabled),
+      .button--standard.button--warning:active:not(.button--disabled),
+      .button--standard.button--success:active:not(.button--disabled),
+      .button:active:not(.button--disabled) {
+        background-color: var(--ha-button-theme-active-color);
+        color: var(--ha-button-text-color, var(--white-color));
+      }
+
+      :host([appearance="filled"]) .button {
         background-color: var(--ha-button-theme-lighter-color);
         color: var(--ha-button-text-color, var(--ha-button-theme-color));
       }
@@ -154,15 +162,22 @@ export class HaButton extends Button {
         background-color: var(--ha-button-theme-color);
         color: var(--white-color);
       }
+      :host([appearance="filled"]) .button:active:not(.button--disabled) {
+        background-color: var(--ha-button-theme-darker-color);
+        color: var(--white-color);
+      }
 
-      :host([appearance="plain"]) .button,
-      :host([appearance="plain"]) .button:active:not(.button--disabled) {
+      :host([appearance="plain"]) .button {
         background-color: transparent;
         color: var(--ha-button-text-color, var(--ha-button-theme-color));
       }
       :host([appearance="plain"]) .button:hover:not(.button--disabled) {
         background-color: var(--ha-button-theme-lighter-color);
         color: var(--ha-button-text-color, var(--ha-button-theme-darker-color));
+      }
+      :host([appearance="plain"]) .button:active:not(.button--disabled) {
+        background-color: var(--ha-button-theme-color);
+        color: var(--white-color);
       }
 
       /* spacing */
