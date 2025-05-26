@@ -1,8 +1,8 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-button";
+import "../../../../src/components/ha-card";
 import type { ActionHandlerEvent } from "../../../../src/data/lovelace/action_handler";
 import { actionHandler } from "../../../../src/panels/lovelace/common/directives/action-handler-directive";
 
@@ -16,7 +16,10 @@ export class DemoUtilLongPress extends LitElement {
             <ha-button
               appearance="plain"
               @action=${this._handleAction}
-              .actionHandler=${actionHandler({})}
+              .actionHandler=${actionHandler({
+                hasHold: true,
+                hasDoubleClick: true,
+              })}
             >
               (long) press me!
             </ha-button>
