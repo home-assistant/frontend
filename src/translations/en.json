@@ -6571,8 +6571,9 @@
               "lights": "Lights",
               "covers": "Covers",
               "climate": "Climate",
-              "media_players": "Entertainment",
+              "media_players": "Media players",
               "security": "Security",
+              "actions": "Actions",
               "others": "Others"
             }
           }
