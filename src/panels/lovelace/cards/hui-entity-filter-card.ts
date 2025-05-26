@@ -171,7 +171,7 @@ export class HuiEntityFilterCard
       if (!stateObj) return false;
 
       const conditions = entityConf.conditions ?? this._config!.conditions;
-      if (conditions && (entityConf.conditions || !entityConf.state_filter)) {
+      if (conditions && !entityConf.state_filter) {
         const conditionWithEntity = conditions.map((condition) =>
           addEntityToCondition(condition, entityConf.entity)
         );
