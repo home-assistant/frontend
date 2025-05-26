@@ -14,6 +14,7 @@ import type { ClimateEntity } from "../../../data/climate";
 import "../../../state-control/climate/ha-state-control-climate-temperature";
 import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
+import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type {
@@ -61,6 +62,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: ThermostatCardConfig;
 
+  @state() private _featureContext: LovelaceCardFeatureContext = {};
+
   public getCardSize(): number {
     return 7;
   }
@@ -71,6 +74,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+    this._featureContext = {
+      entity_id: config.entity,
+    };
   }
 
   private _handleMoreInfo() {
@@ -113,7 +119,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -157,7 +163,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 "--feature-color": color,
               })}
               .hass=${this.hass}
-              .stateObj=${stateObj}
+              .context=${this._featureContext}
               .features=${this._config.features}
             ></hui-card-features>`
           : nothing}
