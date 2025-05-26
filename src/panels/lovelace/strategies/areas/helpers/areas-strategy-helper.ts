@@ -13,7 +13,10 @@ import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-co
 import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
 import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../../card-features/types";
 import type { TileCardConfig } from "../../../cards/types";
 
 export const AREA_STRATEGY_GROUPS = [
@@ -206,6 +209,10 @@ export const computeAreaTileCardConfig =
   (entity: string): LovelaceCardConfig => {
     const stateObj = hass.states[entity];
 
+    const context: LovelaceCardFeatureContext = {
+      entity_id: entity,
+    };
+
     const additionalCardConfig: Partial<TileCardConfig> = {};
 
     const domain = computeDomain(entity);
@@ -225,23 +232,23 @@ export const computeAreaTileCardConfig =
 
     let feature: LovelaceCardFeatureConfig | undefined;
     if (includeFeature) {
-      if (supportsLightBrightnessCardFeature(stateObj)) {
+      if (supportsLightBrightnessCardFeature(hass, context)) {
         feature = {
           type: "light-brightness",
         };
-      } else if (supportsCoverOpenCloseCardFeature(stateObj)) {
+      } else if (supportsCoverOpenCloseCardFeature(hass, context)) {
         feature = {
           type: "cover-open-close",
         };
-      } else if (supportsTargetTemperatureCardFeature(stateObj)) {
+      } else if (supportsTargetTemperatureCardFeature(hass, context)) {
         feature = {
           type: "target-temperature",
         };
-      } else if (supportsAlarmModesCardFeature(stateObj)) {
+      } else if (supportsAlarmModesCardFeature(hass, context)) {
         feature = {
           type: "alarm-modes",
         };
-      } else if (supportsLockCommandsCardFeature(stateObj)) {
+      } else if (supportsLockCommandsCardFeature(hass, context)) {
         feature = {
           type: "lock-commands",
         };
