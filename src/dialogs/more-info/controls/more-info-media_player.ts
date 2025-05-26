@@ -2,6 +2,7 @@ import {
   mdiLoginVariant,
   mdiMusicNote,
   mdiPlayBoxMultiple,
+  mdiSpeakerMultiple,
   mdiVolumeHigh,
   mdiVolumeMinus,
   mdiVolumeOff,
@@ -19,6 +20,7 @@ import "../../../components/ha-slider";
 import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { isUnavailableState } from "../../../data/entity";
 import type {
   MediaPickedEvent,
@@ -45,6 +47,7 @@ class MoreInfoMediaPlayer extends LitElement {
 
     const stateObj = this.stateObj;
     const controls = computeMediaControls(stateObj, true);
+    const groupMembers = stateObj.attributes.group_members?.length;
 
     return html`
       <div class="controls">
@@ -78,6 +81,27 @@ class MoreInfoMediaPlayer extends LitElement {
                   slot="prefix"
                 ></ha-svg-icon>
                 ${this.hass.localize("ui.card.media_player.browse_media")}
+              </ha-button>
+            `
+          : ""}
+        ${!isUnavailableState(stateObj.state) &&
+        supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
+          ? html`
+              <ha-button
+                @click=${this._showGroupMediaPlayers}
+                appearance="plain"
+                size="small"
+              >
+                <ha-svg-icon
+                  .path=${mdiSpeakerMultiple}
+                  slot="prefix"
+                ></ha-svg-icon>
+                ${groupMembers && groupMembers > 1
+                  ? html`<span class="badge">
+                    ${stateObj.attributes.group_members?.length || 4}
+                  </span>`
+                  : nothing}
+                ${this.hass.localize("ui.card.media_player.join")}
               </ha-button>
             `
           : ""}
@@ -264,6 +288,23 @@ class MoreInfoMediaPlayer extends LitElement {
     ha-button > ha-svg-icon {
       vertical-align: text-bottom;
     }
+
+    .badge {
+      position: absolute;
+      top: -6px;
+      left: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 16px;
+      min-width: 8px;
+      border-radius: 10px;
+      font-weight: var(--ha-font-weight-normal);
+      font-size: var(--ha-font-size-xs);
+      background-color: var(--accent-color);
+      padding: 0 4px;
+      color: var(--text-accent-color, var(--text-primary-color));
+    }
   `;
 
   private _handleClick(e: MouseEvent): void {
@@ -325,6 +366,12 @@ class MoreInfoMediaPlayer extends LitElement {
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
         ),
+    });
+  }
+
+  private _showGroupMediaPlayers(): void {
+    showJoinMediaPlayersDialog(this, {
+      entityId: this.stateObj!.entity_id,
     });
   }
 }
