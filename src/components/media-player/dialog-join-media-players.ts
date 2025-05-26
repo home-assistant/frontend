@@ -145,7 +145,7 @@ class DialogJoinMediaPlayers extends LitElement {
       if (entity.entity_id === this._entityId) {
         return false;
       }
-      if (!computeDomain(entity.entity_id) === "media_player") {
+      if (computeDomain(entity.entity_id) !== "media_player") {
         return false;
       }
       if (this.hass.entities[entity.entity_id]?.platform !== currentPlatform) {
