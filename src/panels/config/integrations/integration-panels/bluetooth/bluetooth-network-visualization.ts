@@ -32,6 +32,9 @@ import { throttle } from "../../../../../common/util/throttle";
 
 const UPDATE_THROTTLE_TIME = 10000;
 
+const CORE_SOURCE_ID = "ha";
+const CORE_SOURCE_LABEL = "Home Assistant";
+
 @customElement("bluetooth-network-visualization")
 export class BluetoothNetworkVisualization extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -130,7 +133,7 @@ export class BluetoothNetworkVisualization extends LitElement {
     ): NetworkData => {
       const categories = [
         {
-          name: this.hass.localize("ui.panel.config.bluetooth.core"),
+          name: CORE_SOURCE_LABEL,
           symbol: "roundRect",
           itemStyle: {
             color: colorVariables["primary-color"],
@@ -160,8 +163,8 @@ export class BluetoothNetworkVisualization extends LitElement {
       ];
       const nodes: NetworkNode[] = [
         {
-          id: "ha",
-          name: this.hass.localize("ui.panel.config.bluetooth.core"),
+          id: CORE_SOURCE_ID,
+          name: CORE_SOURCE_LABEL,
           category: 0,
           value: 4,
           symbol: "roundRect",
@@ -183,7 +186,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           polarDistance: 0.25,
         });
         links.push({
-          source: "ha",
+          source: CORE_SOURCE_ID,
           target: scanner.source,
           value: 0,
           symbol: "none",
@@ -234,8 +237,8 @@ export class BluetoothNetworkVisualization extends LitElement {
   );
 
   private _getBluetoothDeviceName(id: string): string {
-    if (id === "ha") {
-      return this.hass.localize("ui.panel.config.bluetooth.core");
+    if (id === CORE_SOURCE_ID) {
+      return CORE_SOURCE_LABEL;
     }
     if (this._sourceDevices[id]) {
       return (
@@ -262,7 +265,7 @@ export class BluetoothNetworkVisualization extends LitElement {
       const sourceName = this._getBluetoothDeviceName(source);
       const targetName = this._getBluetoothDeviceName(target);
       tooltipText = `${sourceName} → ${targetName}`;
-      if (source !== "ha") {
+      if (source !== CORE_SOURCE_ID) {
         tooltipText += ` <b>${this.hass.localize("ui.panel.config.bluetooth.rssi")}:</b> ${value}`;
       }
     } else {
