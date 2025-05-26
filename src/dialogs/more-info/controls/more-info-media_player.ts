@@ -98,8 +98,8 @@ class MoreInfoMediaPlayer extends LitElement {
                 ></ha-svg-icon>
                 ${groupMembers && groupMembers > 1
                   ? html`<span class="badge">
-                    ${stateObj.attributes.group_members?.length || 4}
-                  </span>`
+                      ${stateObj.attributes.group_members?.length || 4}
+                    </span>`
                   : nothing}
                 ${this.hass.localize("ui.card.media_player.join")}
               </ha-button>
