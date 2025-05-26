@@ -60,7 +60,7 @@ class DialogEditSidebar extends LitElement {
       }
       if (!this._hidden) {
         const storedHidden = localStorage.getItem("sidebarHiddenPanels");
-        this._migrateToUserData = !!storedHidden;
+        this._migrateToUserData = this._migrateToUserData || !!storedHidden;
         this._hidden = storedHidden ? JSON.parse(storedHidden) : [];
       }
     } catch (err: any) {
