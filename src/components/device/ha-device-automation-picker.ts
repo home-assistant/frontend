@@ -12,6 +12,7 @@ import type { EntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
 import "../ha-list-item";
 import "../ha-select";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
@@ -103,6 +104,7 @@ export abstract class HaDeviceAutomationPicker<
         .label=${this.label}
         .value=${value}
         @selected=${this._automationChanged}
+        @closed=${stopPropagation}
         .disabled=${this._automations.length === 0}
       >
         ${value === NO_AUTOMATION_KEY

@@ -363,7 +363,7 @@ export class HuiAreaCard
 
     if (area === null) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${this.hass.localize("ui.card.area.area_not_found")}
         </hui-warning>
       `;

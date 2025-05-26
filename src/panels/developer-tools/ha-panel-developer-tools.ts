@@ -129,7 +129,7 @@ class PanelDeveloperTools extends LitElement {
           z-index: 4;
           background-color: var(--app-header-background-color);
           width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
+          padding-top: var(--safe-area-inset-top);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
@@ -157,9 +157,9 @@ class PanelDeveloperTools extends LitElement {
         developer-tools-router {
           display: block;
           padding-top: calc(
-            var(--header-height) + 48px + env(safe-area-inset-top)
+            var(--header-height) + 48px + var(--safe-area-inset-top)
           );
-          padding-bottom: calc(env(safe-area-inset-bottom));
+          padding-bottom: calc(var(--safe-area-inset-bottom));
           flex: 1 1 100%;
           max-width: 100%;
         }
