@@ -82,6 +82,8 @@ export class StateHistoryChartLine extends LitElement {
 
   private _chartTime: Date = new Date();
 
+  private _previousYAxisLabelValue = 0;
+
   protected render() {
     return html`
       <ha-chart-base
@@ -258,32 +260,7 @@ export class StateHistoryChartLine extends LitElement {
           },
           axisLabel: {
             margin: 5,
-            formatter: (value: number) => {
-              const formatOptions =
-                value >= 1 || value <= -1
-                  ? undefined
-                  : {
-                      // show the first significant digit for tiny values
-                      maximumFractionDigits: Math.max(
-                        2,
-                        -Math.floor(Math.log10(Math.abs(value % 1 || 1)))
-                      ),
-                    };
-              const label = formatNumber(
-                value,
-                this.hass.locale,
-                formatOptions
-              );
-              const width = measureTextWidth(label, 12) + 5;
-              if (width > this._yWidth) {
-                this._yWidth = width;
-                fireEvent(this, "y-width-changed", {
-                  value: this._yWidth,
-                  chartIndex: this.chartIndex,
-                });
-              }
-              return label;
-            },
+            formatter: this._formatYAxisLabel,
           },
         } as YAXisOption,
         legend: {
@@ -744,6 +721,35 @@ export class StateHistoryChartLine extends LitElement {
     });
     this._visualMap = visualMap.length > 0 ? visualMap : undefined;
   }
+
+  private _formatYAxisLabel = (value: number) => {
+    const formatOptions =
+      value >= 1 || value <= -1
+        ? undefined
+        : {
+            // show the first significant digit for tiny values
+            maximumFractionDigits: Math.max(
+              2,
+              // use the difference to the previous value to determine the number of significant digits #25526
+              -Math.floor(
+                Math.log10(
+                  Math.abs(value - (this._previousYAxisLabelValue % 1) || 1)
+                )
+              )
+            ),
+          };
+    const label = formatNumber(value, this.hass.locale, formatOptions);
+    const width = measureTextWidth(label, 12) + 5;
+    if (width > this._yWidth) {
+      this._yWidth = width;
+      fireEvent(this, "y-width-changed", {
+        value: this._yWidth,
+        chartIndex: this.chartIndex,
+      });
+    }
+    this._previousYAxisLabelValue = value;
+    return label;
+  };
 
   private _clampYAxis(value?: number | ((values: any) => number)) {
     if (this.logarithmicScale) {
