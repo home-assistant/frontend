@@ -220,11 +220,11 @@ export class HaChartBase extends LitElement {
       return nothing;
     }
     const datasets = ensureArray(this.data);
-    const items = (legend.data ||
-      datasets
+    const items: LegendComponentOption["data"] =
+      legend.data ||
+      ((datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => d.name ?? d.id) ||
-      []) as string[];
+        .map((d) => d.name ?? d.id) || []) as string[]);
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -239,20 +239,32 @@ export class HaChartBase extends LitElement {
       })}
     >
       <ul>
-        ${items.map((item: string, index: number) => {
+        ${items.map((item, index) => {
           if (!this.expandLegend && index >= overflowLimit) {
             return nothing;
           }
-          const dataset = datasets.find(
-            (d) => d.id === item || d.name === item
-          );
-          const color = dataset?.color as string;
-          const borderColor = dataset?.itemStyle?.borderColor as string;
+          let itemStyle: Record<string, any> = {};
+          let name = "";
+          if (typeof item === "string") {
+            name = item;
+            const dataset = datasets.find(
+              (d) => d.id === item || d.name === item
+            );
+            itemStyle = {
+              color: dataset?.color as string,
+              ...(dataset?.itemStyle as { borderColor?: string }),
+            };
+          } else {
+            name = item.name ?? "";
+            itemStyle = item.itemStyle ?? {};
+          }
+          const color = itemStyle?.color as string;
+          const borderColor = itemStyle?.borderColor as string;
           return html`<li
-            .name=${item}
+            .name=${name}
             @click=${this._legendClick}
-            class=${classMap({ hidden: this._hiddenDatasets.has(item) })}
-            .title=${item}
+            class=${classMap({ hidden: this._hiddenDatasets.has(name) })}
+            .title=${name}
           >
             <div
               class="bullet"
@@ -261,7 +273,7 @@ export class HaChartBase extends LitElement {
                 borderColor: borderColor || color,
               })}
             ></div>
-            <div class="label">${item}</div>
+            <div class="label">${name}</div>
           </li>`;
         })}
         ${items.length > overflowLimit
