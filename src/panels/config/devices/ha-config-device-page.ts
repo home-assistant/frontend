@@ -8,6 +8,7 @@ import {
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
+  mdiRestore,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -22,13 +23,11 @@ import { computeEntityEntryName } from "../../../common/entity/compute_entity_na
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
-import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
-import "../../../components/ha-button-menu";
 import "../../../components/ha-button";
-import "../../../components/ha-expansion-panel";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
@@ -64,6 +63,7 @@ import {
 } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
+import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
 import type { RelatedResult } from "../../../data/search";
@@ -406,7 +406,11 @@ export class HaConfigDevicePage extends LitElement {
         ${device.disabled_by === "user"
           ? html`
               <div class="card-actions" slot="actions">
-                <ha-button @click=${this._enableDevice}>
+                <ha-button
+                  variant="warning"
+                  size="small"
+                  @click=${this._enableDevice}
+                >
                   ${this.hass.localize("ui.common.enable")}
                 </ha-button>
               </div>
@@ -664,7 +668,7 @@ export class HaConfigDevicePage extends LitElement {
         `
       : "";
 
-    return html` <hass-subpage
+    return html`<hass-subpage
       .hass=${this.hass}
       .narrow=${this.narrow}
       .header=${deviceName}
@@ -675,6 +679,21 @@ export class HaConfigDevicePage extends LitElement {
         @click=${this._showSettings}
         .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
       ></ha-icon-button>
+      <ha-md-button-menu slot="toolbar-icon">
+        <ha-icon-button
+          slot="trigger"
+          .label=${this.hass.localize("ui.common.menu")}
+          .path=${mdiDotsVertical}
+        ></ha-icon-button>
+
+        <ha-md-menu-item .clickAction=${this._resetEntityIds}>
+          <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.devices.restore_entity_ids")}
+          </div>
+        </ha-md-menu-item>
+      </ha-md-button-menu>
+
       <div class="container">
         <div class="header fullwidth">
           ${area
@@ -744,39 +763,35 @@ export class HaConfigDevicePage extends LitElement {
               ? html`
                   <div class="card-actions" slot="actions">
                     <div>
-                      <a
+                      <ha-button
                         href=${ifDefined(firstDeviceAction!.href)}
                         rel=${ifDefined(
                           firstDeviceAction!.target ? "noreferrer" : undefined
                         )}
                         target=${ifDefined(firstDeviceAction!.target)}
+                        class=${ifDefined(firstDeviceAction!.classes)}
+                        .action=${firstDeviceAction!.action}
+                        @click=${this._deviceActionClicked}
                       >
-                        <ha-button
-                          class=${ifDefined(firstDeviceAction!.classes)}
-                          .action=${firstDeviceAction!.action}
-                          @click=${this._deviceActionClicked}
-                          graphic="icon"
-                        >
-                          ${firstDeviceAction!.label}
-                          ${firstDeviceAction!.icon
-                            ? html`
-                                <ha-svg-icon
-                                  class=${ifDefined(firstDeviceAction!.classes)}
-                                  .path=${firstDeviceAction!.icon}
-                                  slot="graphic"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                          ${firstDeviceAction!.trailingIcon
-                            ? html`
-                                <ha-svg-icon
-                                  .path=${firstDeviceAction!.trailingIcon}
-                                  slot="trailingIcon"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                        </ha-button>
-                      </a>
+                        ${firstDeviceAction!.label}
+                        ${firstDeviceAction!.icon
+                          ? html`
+                              <ha-svg-icon
+                                class=${ifDefined(firstDeviceAction!.classes)}
+                                .path=${firstDeviceAction!.icon}
+                                slot="prefix"
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                        ${firstDeviceAction!.trailingIcon
+                          ? html`
+                              <ha-svg-icon
+                                .path=${firstDeviceAction!.trailingIcon}
+                                slot="suffix"
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                      </ha-button>
                     </div>
 
                     ${actions.length
@@ -1256,7 +1271,14 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private async _showSettings() {
+  private _resetEntityIds = () => {
+    const entities = this._entities(this.deviceId, this._entityReg).map(
+      (e) => e.entity_id
+    );
+    regenerateEntityIds(this, this.hass, entities);
+  };
+
+  private _showSettings = async () => {
     const device = this.hass.devices[this.deviceId];
     showDeviceRegistryDetailDialog(this, {
       device,
@@ -1342,153 +1364,34 @@ export class HaConfigDevicePage extends LitElement {
         }
         const entities = this._entities(this.deviceId, this._entityReg);
 
-        let renameEntityid = false;
-        let entityIdRenames: { oldId: string; newId?: string }[] = [];
-
-        if (this.showAdvanced) {
-          const oldDeviceSlug = slugify(oldDeviceName);
-          const newDeviceSlug = slugify(newDeviceName);
-          entityIdRenames = entities.map((entity) => {
-            const oldId = entity.entity_id;
-            if (oldId.includes(oldDeviceSlug)) {
-              const newId = oldId.replace(oldDeviceSlug, newDeviceSlug);
-              return { oldId, newId };
-            }
-            return { oldId };
-          });
-
-          const dialogRenames = entityIdRenames
-            .filter((entity) => entity.newId)
-            .map(
-              (entity) =>
-                html`<tr>
-                  <td>${entity.oldId}</td>
-                  <td>${entity.newId}</td>
-                </tr>`
-            );
-          const dialogNoRenames = entityIdRenames
-            .filter((entity) => !entity.newId)
-            .map((entity) => html`<li>${entity.oldId}</li>`);
-
-          if (dialogRenames.length) {
-            renameEntityid = await showConfirmationDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.devices.confirm_rename_entity_ids"
-              ),
-              text: html`${this.hass.localize(
-                  "ui.panel.config.devices.confirm_rename_entity_ids_warning"
-                )} <br /><br />
-                <ha-expansion-panel outlined>
-                  <span slot="header"
-                    >${this.hass.localize(
-                      "ui.panel.config.devices.confirm_rename_entity_will_rename",
-                      { count: dialogRenames.length }
-                    )}</span
-                  >
-                  <div style="overflow: auto;">
-                    <table style="width: 100%; text-align: var(--float-start);">
-                      <tr>
-                        <th>
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.confirm_rename_old"
-                          )}
-                        </th>
-                        <th>
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.confirm_rename_new"
-                          )}
-                        </th>
-                      </tr>
-                      ${dialogRenames}
-                    </table>
-                  </div>
-                </ha-expansion-panel>
-                ${dialogNoRenames.length
-                  ? html`<ha-expansion-panel outlined>
-                      <span slot="header"
-                        >${this.hass.localize(
-                          "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                          {
-                            count: dialogNoRenames.length,
-                            deviceSlug: oldDeviceSlug,
-                          }
-                        )}</span
-                      >
-                      ${dialogNoRenames}</ha-expansion-panel
-                    >`
-                  : nothing} `,
-              confirmText: this.hass.localize("ui.common.rename"),
-              dismissText: this.hass.localize("ui.common.no"),
-              warning: true,
-            });
-          } else if (dialogNoRenames.length) {
-            await showAlertDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.devices.confirm_rename_entity_no_renamable_entity_ids"
-              ),
-              text: html`<ha-expansion-panel outlined>
-                <span slot="header"
-                  >${this.hass.localize(
-                    "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                    {
-                      deviceSlug: oldDeviceSlug,
-                      count: dialogNoRenames.length,
-                    }
-                  )}</span
-                >
-                ${dialogNoRenames}
-              </ha-expansion-panel>`,
-            });
-          }
-        }
-
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;
-          let newEntityId: string | undefined;
           let newName: string | null | undefined;
 
-          let shouldUpdateName: boolean;
-          let shouldUpdateEntityId = false;
-
           if (entity.has_entity_name && !entity.name) {
-            shouldUpdateName = false;
-          } else if (
+            return undefined;
+          }
+
+          if (
             entity.has_entity_name &&
             (entity.name === oldDeviceName || entity.name === newDeviceName)
           ) {
-            shouldUpdateName = true;
             // clear name if it matches the device name and it uses the device name (entity naming)
             newName = null;
           } else if (name && name.includes(oldDeviceName)) {
-            shouldUpdateName = true;
             newName = name.replace(oldDeviceName, newDeviceName);
           } else {
-            shouldUpdateName = false;
-          }
-
-          if (renameEntityid) {
-            const entityRename = entityIdRenames?.find(
-              (item) => item.oldId === entity.entity_id
-            );
-            if (entityRename?.newId) {
-              shouldUpdateEntityId = true;
-              newEntityId = entityRename.newId;
-            }
-          }
-
-          if (newName === undefined && newEntityId === undefined) {
             return undefined;
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: shouldUpdateName ? newName : undefined,
-            new_entity_id: shouldUpdateEntityId ? newEntityId : undefined,
+            name: newName,
           });
         });
         await Promise.all(updateProms);
       },
     });
-  }
+  };
 
   private async _enableDevice(): Promise<void> {
     await updateDeviceRegistryEntry(this.hass, this.deviceId, {
