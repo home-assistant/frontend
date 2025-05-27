@@ -31,12 +31,12 @@ export class FlowPreviewGeneric extends LitElement {
 
   @state() protected _error?: string;
 
-  private _unsub?: Promise<UnsubscribeFunc | undefined>;
+  private _unsub?: Promise<UnsubscribeFunc>;
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._unsub) {
-      this._unsub.then((unsub) => unsub?.());
+      this._unsub.then((unsub) => unsub());
       this._unsub = undefined;
     }
   }
@@ -79,7 +79,7 @@ export class FlowPreviewGeneric extends LitElement {
 
   private async _subscribePreview() {
     if (this._unsub) {
-      (await this._unsub)?.();
+      (await this._unsub)();
       this._unsub = undefined;
     }
     if (this.flowType !== "config_flow" && this.flowType !== "options_flow") {
@@ -94,11 +94,8 @@ export class FlowPreviewGeneric extends LitElement {
         this.flowType,
         this.stepData,
         this._setPreview
-      ).catch((err) => {
-        this._error = err.message;
-        this._preview = undefined;
-        return undefined;
-      });
+      );
+      await this._unsub;
       fireEvent(this, "set-flow-errors", { errors: {} });
     } catch (err: any) {
       if (typeof err.message === "string") {
