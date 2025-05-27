@@ -296,9 +296,9 @@ export const colorStyles = css`
     --ha-button-primary-light-color: var(--light-primary-color);
     --ha-button-primary-dark-color: var(--dark-primary-color);
     --ha-button-primary-darker-color: var(--darker-primary-color);
-    
-    --ha-button-error-color: #B30532;
-    --ha-button-error-light-color: #FFDEDC;
+
+    --ha-button-error-color: #b30532;
+    --ha-button-error-light-color: #ffdedc;
     --ha-button-error-dark-color: #6e021f;
     --ha-button-error-darker-color: #530016;
 
