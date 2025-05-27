@@ -368,7 +368,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     if (!this._panelOrder || !this._hiddenPanels) {
       return html`
         <ha-fade-in .delay=${500}
-          ><ha-spinner size="large"></ha-spinner
+          ><ha-spinner size="small"></ha-spinner
         ></ha-fade-in>
       `;
     }
