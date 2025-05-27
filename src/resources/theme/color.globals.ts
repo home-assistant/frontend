@@ -17,6 +17,7 @@ export const colorStyles = css`
     /* main interface colors */
     --primary-color: #03a9f4;
     --dark-primary-color: #0288d1;
+    --darker-primary-color: #016194;
     --light-primary-color: #b3e5fc;
     --accent-color: #ff9800;
     --divider-color: rgba(0, 0, 0, 0.12);
@@ -290,6 +291,32 @@ export const colorStyles = css`
     );
     --chip-background-color: rgba(var(--rgb-primary-text-color), 0.15);
 
+    /* ha-button */
+    --ha-button-primary-color: var(--primary-color);
+    --ha-button-primary-light-color: var(--light-primary-color);
+    --ha-button-primary-dark-color: var(--dark-primary-color);
+    --ha-button-primary-darker-color: var(--darker-primary-color);
+    
+    --ha-button-error-color: #B30532;
+    --ha-button-error-light-color: #FFDEDC;
+    --ha-button-error-dark-color: #6e021f;
+    --ha-button-error-darker-color: #530016;
+
+    --ha-button-warning-color: var(--warning-color);
+    --ha-button-warning-light-color: #fae3b9c1;
+    --ha-button-warning-dark-color: #ce8600;
+    --ha-button-warning-darker-color: #a36a00;
+
+    --ha-button-success-color: var(--success-color);
+    --ha-button-success-light-color: #add1ae;
+    --ha-button-success-dark-color: #317534;
+    --ha-button-success-darker-color: #225524;
+
+    --ha-button-neutral-color: #545868;
+    --ha-button-neutral-light-color: #d2d5e0;
+    --ha-button-neutral-dark-color: #3c3f4b;
+    --ha-button-neutral-darker-color: #262830;
+
     /* Vaadin */
     --material-body-text-color: var(--primary-text-color);
     --material-background-color: var(--card-background-color);
@@ -352,6 +379,11 @@ const darkColorStyles = css`
     --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5) contrast(1.2)
       saturate(0.3);
     --disabled-color: #464646;
+
+    --ha-button-primary-light-color: #4082a040;
+    --ha-button-warning-light-color: #917b54c1;
+    --ha-button-neutral-color: #d9dae0;
+    --ha-button-neutral-light-color: #6a7081;
   }
 `;
 export const colorDerivedVariables = extractDerivedVars(colorStyles);
