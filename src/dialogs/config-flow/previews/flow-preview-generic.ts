@@ -31,12 +31,12 @@ export class FlowPreviewGeneric extends LitElement {
 
   @state() protected _error?: string;
 
-  private _unsub?: Promise<UnsubscribeFunc>;
+  private _unsub?: Promise<UnsubscribeFunc | undefined>;
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     if (this._unsub) {
-      this._unsub.then((unsub) => unsub());
+      this._unsub.then((unsub) => unsub?.());
       this._unsub = undefined;
     }
   }
@@ -58,6 +58,11 @@ export class FlowPreviewGeneric extends LitElement {
   }
 
   private _setPreview = (preview: GenericPreview) => {
+    if (preview.error) {
+      this._error = preview.error;
+      this._preview = undefined;
+      return;
+    }
     const now = new Date().toISOString();
     this._preview = {
       entity_id: `${this.stepId}.___flow_preview___`,
@@ -74,12 +79,13 @@ export class FlowPreviewGeneric extends LitElement {
 
   private async _subscribePreview() {
     if (this._unsub) {
-      (await this._unsub)();
+      (await this._unsub)?.();
       this._unsub = undefined;
     }
     if (this.flowType !== "config_flow" && this.flowType !== "options_flow") {
       return;
     }
+    this._error = undefined;
     try {
       this._unsub = subscribePreviewGeneric(
         this.hass,
@@ -88,7 +94,11 @@ export class FlowPreviewGeneric extends LitElement {
         this.flowType,
         this.stepData,
         this._setPreview
-      );
+      ).catch((err) => {
+        this._error = err.message;
+        this._preview = undefined;
+        return undefined;
+      });
       fireEvent(this, "set-flow-errors", { errors: {} });
     } catch (err: any) {
       if (typeof err.message === "string") {
