@@ -732,9 +732,7 @@ export class StateHistoryChartLine extends LitElement {
               2,
               // use the difference to the previous value to determine the number of significant digits #25526
               -Math.floor(
-                Math.log10(
-                  Math.abs(value - (this._previousYAxisLabelValue % 1) || 1)
-                )
+                Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
               )
             ),
           };
