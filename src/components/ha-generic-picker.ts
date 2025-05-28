@@ -104,8 +104,8 @@ export class HaGenericPicker extends LitElement {
                 .getAdditionalItems=${this.getAdditionalItems}
               ></ha-picker-combo-box>
             `}
-        ${this._renderHelper()}
       </div>
+      ${this._renderHelper()}
     `;
   }
 
@@ -163,6 +163,10 @@ export class HaGenericPicker extends LitElement {
         label {
           display: block;
           margin: 0 0 8px;
+        }
+        ha-input-helper-text {
+          display: block;
+          margin: 8px 0 0;
         }
       `,
     ];
