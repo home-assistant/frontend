@@ -1,7 +1,6 @@
 // Gulp task to gather all static files.
 
 import fs from "fs-extra";
-import { task } from "gulp";
 import path from "node:path";
 import paths from "../paths.ts";
 
@@ -17,7 +16,7 @@ const genStaticPath =
   (...parts) =>
     path.resolve(staticDir, ...parts);
 
-function copyTranslations(staticDir) {
+const copyTranslations = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
 
   // Translation output
@@ -25,23 +24,23 @@ function copyTranslations(staticDir) {
     polyPath("build/translations/output"),
     staticPath("translations")
   );
-}
+};
 
-function copyLocaleData(staticDir) {
+const copyLocaleData = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
 
   // Locale data output
   fs.copySync(polyPath("build/locale-data"), staticPath("locale-data"));
-}
+};
 
-function copyMdiIcons(staticDir) {
+const copyMdiIcons = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
 
   // MDI icons output
   fs.copySync(polyPath("build/mdi"), staticPath("mdi"));
-}
+};
 
-function copyPolyfills(staticDir) {
+const copyPolyfills = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
 
   // For custom panels using ES5 builds that don't use Babel 7+
@@ -70,9 +69,9 @@ function copyPolyfills(staticDir) {
     npmPath("dialog-polyfill/dialog-polyfill.css"),
     staticPath("polyfills/")
   );
-}
+};
 
-function copyFonts(staticDir) {
+const copyFonts = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
   fs.copySync(
@@ -82,14 +81,14 @@ function copyFonts(staticDir) {
       filter: (src) => !src.includes(".") || src.endsWith(".woff2"),
     }
   );
-}
+};
 
-function copyQrScannerWorker(staticDir) {
+const copyQrScannerWorker = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(npmPath("qr-scanner/qr-scanner-worker.min.js"), staticPath("js"));
-}
+};
 
-function copyMapPanel(staticDir) {
+const copyMapPanel = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(
     npmPath("leaflet/dist/leaflet.css"),
@@ -103,43 +102,38 @@ function copyMapPanel(staticDir) {
     npmPath("leaflet/dist/images"),
     staticPath("images/leaflet/images/")
   );
-}
+};
 
-function copyZXingWasm(staticDir) {
+const copyZXingWasm = (staticDir) => {
   const staticPath = genStaticPath(staticDir);
   copyFileDir(
     npmPath("zxing-wasm/dist/reader/zxing_reader.wasm"),
     staticPath("js")
   );
-}
+};
 
-task("copy-locale-data", async () => {
-  const staticDir = paths.app_output_static;
-  copyLocaleData(staticDir);
-});
-
-task("copy-translations-app", async () => {
+export const copyTranslationsApp = async () => {
   const staticDir = paths.app_output_static;
   copyTranslations(staticDir);
-});
+};
 
-task("copy-translations-supervisor", async () => {
+export const copyTranslationsSupervisor = async () => {
   const staticDir = paths.hassio_output_static;
   copyTranslations(staticDir);
-});
+};
 
-task("copy-translations-landing-page", async () => {
+export const copyTranslationsLandingPage = async () => {
   const staticDir = paths.landingPage_output_static;
   copyTranslations(staticDir);
-});
+};
 
-task("copy-static-supervisor", async () => {
+export const copyStaticSupervisor = async () => {
   const staticDir = paths.hassio_output_static;
   copyLocaleData(staticDir);
   copyFonts(staticDir);
-});
+};
 
-task("copy-static-app", async () => {
+export const copyStaticApp = async () => {
   const staticDir = paths.app_output_static;
   // Basic static files
   fs.copySync(polyPath("public"), paths.app_output_root);
@@ -155,9 +149,9 @@ task("copy-static-app", async () => {
   // Qr Scanner assets
   copyZXingWasm(staticDir);
   copyQrScannerWorker(staticDir);
-});
+};
 
-task("copy-static-demo", async () => {
+export const copyStaticDemo = async () => {
   // Copy app static files
   fs.copySync(
     polyPath("public/static"),
@@ -171,9 +165,9 @@ task("copy-static-demo", async () => {
   copyTranslations(paths.demo_output_static);
   copyLocaleData(paths.demo_output_static);
   copyMdiIcons(paths.demo_output_static);
-});
+};
 
-task("copy-static-cast", async () => {
+export const copyStaticCast = async () => {
   // Copy app static files
   fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
@@ -184,9 +178,9 @@ task("copy-static-cast", async () => {
   copyTranslations(paths.cast_output_static);
   copyLocaleData(paths.cast_output_static);
   copyMdiIcons(paths.cast_output_static);
-});
+};
 
-task("copy-static-gallery", async () => {
+export const copyStaticGallery = async () => {
   // Copy app static files
   fs.copySync(polyPath("public/static"), paths.gallery_output_static);
   // Copy gallery static files
@@ -200,9 +194,9 @@ task("copy-static-gallery", async () => {
   copyTranslations(paths.gallery_output_static);
   copyLocaleData(paths.gallery_output_static);
   copyMdiIcons(paths.gallery_output_static);
-});
+};
 
-task("copy-static-landing-page", async () => {
+export const copyStaticLandingPage = async () => {
   // Copy landing-page static files
   fs.copySync(
     path.resolve(paths.landingPage_dir, "public"),
@@ -211,4 +205,4 @@ task("copy-static-landing-page", async () => {
 
   copyFonts(paths.landingPage_output_static);
   copyTranslations(paths.landingPage_output_static);
-});
+};

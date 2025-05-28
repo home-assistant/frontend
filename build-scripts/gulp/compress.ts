@@ -1,6 +1,6 @@
 // Tasks to compress
 
-import { dest, parallel, src, task } from "gulp";
+import { dest, parallel, src } from "gulp";
 import brotli from "gulp-brotli";
 import zopfli from "gulp-zopfli-green";
 import { constants } from "node:zlib";
@@ -64,21 +64,16 @@ const compressHassioOtherBrotli = () =>
 const compressHassioOtherZopfli = () =>
   compressOther(paths.hassio_output_root, paths.hassio_output_latest, "zopfli");
 
-task(
-  "compress-app",
-  parallel(
-    compressAppModernBrotli,
-    compressAppOtherBrotli,
-    compressAppModernZopfli,
-    compressAppOtherZopfli
-  )
+export const compressApp = parallel(
+  compressAppModernBrotli,
+  compressAppOtherBrotli,
+  compressAppModernZopfli,
+  compressAppOtherZopfli
 );
-task(
-  "compress-hassio",
-  parallel(
-    compressHassioModernBrotli,
-    compressHassioOtherBrotli,
-    compressHassioModernZopfli,
-    compressHassioOtherZopfli
-  )
+
+export const compressHassio = parallel(
+  compressHassioModernBrotli,
+  compressHassioOtherBrotli,
+  compressHassioModernZopfli,
+  compressHassioOtherZopfli
 );

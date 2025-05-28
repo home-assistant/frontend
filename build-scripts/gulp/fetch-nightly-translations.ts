@@ -4,9 +4,9 @@ import { createOAuthDeviceAuth } from "@octokit/auth-oauth-device";
 import { retry } from "@octokit/plugin-retry";
 import { Octokit } from "@octokit/rest";
 import { deleteAsync } from "del";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { series, task } from "gulp";
+import { series } from "gulp";
 import jszip from "jszip";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { extract } from "tar";
@@ -22,12 +22,13 @@ const TOKEN_FILE = path.posix.join(EXTRACT_DIR, "token.json");
 const ARTIFACT_FILE = path.posix.join(EXTRACT_DIR, "artifact.json");
 
 let allowTokenSetup = false;
-task("allow-setup-fetch-nightly-translations", (done) => {
+
+export const allowSetupFetchNightlyTranslations = (done) => {
   allowTokenSetup = true;
   done();
-});
+};
 
-task("fetch-nightly-translations", async function () {
+export const fetchNightlyTranslations = async () => {
   // Skip all when environment flag is set (assumes translations are already in place)
   if (process.env?.SKIP_FETCH_NIGHTLY_TRANSLATIONS) {
     console.log("Skipping fetch due to environment signal");
@@ -161,9 +162,9 @@ task("fetch-nightly-translations", async function () {
   await new Promise((resolve, reject) => {
     extractStream.on("close", resolve).on("error", reject);
   });
-});
+};
 
-task(
-  "setup-and-fetch-nightly-translations",
-  series("allow-setup-fetch-nightly-translations", "fetch-nightly-translations")
+export const setupAndFetchNightlyTranslations = series(
+  allowSetupFetchNightlyTranslations,
+  fetchNightlyTranslations
 );

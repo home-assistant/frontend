@@ -1,6 +1,6 @@
 import defineProvider from "@babel/helper-define-polyfill-provider";
 import { join } from "node:path";
-import paths from "../paths.cjs";
+import paths from "../paths";
 
 const POLYFILL_DIR = join(paths.root_dir, "src/resources/polyfills");
 

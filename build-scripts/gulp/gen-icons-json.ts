@@ -1,7 +1,6 @@
 import fs from "node:fs";
-import { task } from "gulp";
-import hash from "object-hash";
 import path from "node:path";
+import hash from "object-hash";
 import paths from "../paths.ts";
 
 const ICON_PACKAGE_PATH = path.resolve("node_modules/@mdi/svg/");
@@ -97,7 +96,7 @@ const findDifferentiator = (curString, prevString) => {
   throw new Error(`Cannot find differentiator; ${curString}; ${prevString}`);
 };
 
-task("gen-icons-json", (done) => {
+export const genIconsJson = (done) => {
   const meta = getMeta();
 
   const metaAndRemoved = addRemovedMeta(meta);
@@ -153,13 +152,13 @@ task("gen-icons-json", (done) => {
   );
 
   done();
-});
+};
 
-task("gen-dummy-icons-json", (done) => {
+export const genDummyIconsJson = (done) => {
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
   fs.writeFileSync(path.resolve(OUTPUT_DIR, "iconList.json"), "[]");
   done();
-});
+};

@@ -3,9 +3,10 @@
 import rspack from "@rspack/core";
 import { RspackDevServer } from "@rspack/dev-server";
 import log from "fancy-log";
+import { series, watch } from "gulp";
 import fs from "node:fs";
-import { task, watch, series } from "gulp";
 import path from "node:path";
+import { isDevContainer, isStatsBuild, isTestBuild } from "../env.ts";
 import paths from "../paths.ts";
 import {
   createAppConfig,
@@ -15,7 +16,16 @@ import {
   createHassioConfig,
   createLandingPageConfig,
 } from "../rspack.ts";
-import { isDevContainer, isStatsBuild, isTestBuild } from "../env.ts";
+import {
+  copyTranslationsApp,
+  copyTranslationsLandingPage,
+  copyTranslationsSupervisor,
+} from "./gather-static.ts";
+import {
+  buildLandingPageTranslations,
+  buildSupervisorTranslations,
+  buildTranslations,
+} from "./translations.ts";
 
 const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
@@ -105,7 +115,7 @@ const prodBuild = (conf) =>
     );
   });
 
-task("rspack-watch-app", () => {
+export const rspackWatchApp = () => {
   // This command will run forever because we don't close compiler
   rspack(
     process.env.ES5
@@ -114,40 +124,37 @@ task("rspack-watch-app", () => {
   ).watch({ poll: isWsl }, doneHandler());
   watch(
     path.join(paths.translations_src, "en.json"),
-    series("build-translations", "copy-translations-app")
+    series(buildTranslations, copyTranslationsApp)
   );
-});
+};
 
-task("rspack-prod-app", () =>
+export const rspackProdApp = () =>
   prodBuild(
     bothBuilds(createAppConfig, {
       isProdBuild: true,
       isStatsBuild: isStatsBuild(),
       isTestBuild: isTestBuild(),
     })
-  )
-);
+  );
 
-task("rspack-dev-server-demo", () =>
+export const rspackDevServerDemo = () =>
   runDevServer({
     compiler: rspack(
       createDemoConfig({ isProdBuild: false, latestBuild: true })
     ),
     contentBase: paths.demo_output_root,
     port: 8090,
-  })
-);
+  });
 
-task("rspack-prod-demo", () =>
+export const rspackProdDemo = () =>
   prodBuild(
     bothBuilds(createDemoConfig, {
       isProdBuild: true,
       isStatsBuild: isStatsBuild(),
     })
-  )
-);
+  );
 
-task("rspack-dev-server-cast", () =>
+export const rspackDevServerCast = () =>
   runDevServer({
     compiler: rspack(
       createCastConfig({ isProdBuild: false, latestBuild: true })
@@ -156,18 +163,16 @@ task("rspack-dev-server-cast", () =>
     port: 8080,
     // Accessible from the network, because that's how Cast hits it.
     listenHost: "0.0.0.0",
-  })
-);
+  });
 
-task("rspack-prod-cast", () =>
+export const rspackProdCast = () =>
   prodBuild(
     bothBuilds(createCastConfig, {
       isProdBuild: true,
     })
-  )
-);
+  );
 
-task("rspack-watch-hassio", () => {
+export const rspackWatchHassio = () => {
   // This command will run forever because we don't close compiler
   rspack(
     createHassioConfig({
@@ -178,21 +183,20 @@ task("rspack-watch-hassio", () => {
 
   watch(
     path.join(paths.translations_src, "en.json"),
-    series("build-supervisor-translations", "copy-translations-supervisor")
+    series(buildSupervisorTranslations, copyTranslationsSupervisor)
   );
-});
+};
 
-task("rspack-prod-hassio", () =>
+export const rspackProdHassio = () =>
   prodBuild(
     bothBuilds(createHassioConfig, {
       isProdBuild: true,
       isStatsBuild: isStatsBuild(),
       isTestBuild: isTestBuild(),
     })
-  )
-);
+  );
 
-task("rspack-dev-server-gallery", () =>
+export const rspackDevServerGallery = () =>
   runDevServer({
     compiler: rspack(
       createGalleryConfig({ isProdBuild: false, latestBuild: true })
@@ -200,19 +204,17 @@ task("rspack-dev-server-gallery", () =>
     contentBase: paths.gallery_output_root,
     port: 8100,
     listenHost: "0.0.0.0",
-  })
-);
+  });
 
-task("rspack-prod-gallery", () =>
+export const rspackProdGallery = () =>
   prodBuild(
     createGalleryConfig({
       isProdBuild: true,
       latestBuild: true,
     })
-  )
-);
+  );
 
-task("rspack-watch-landing-page", () => {
+export const rspackWatchLandingPage = () => {
   // This command will run forever because we don't close compiler
   rspack(
     process.env.ES5
@@ -222,16 +224,15 @@ task("rspack-watch-landing-page", () => {
 
   watch(
     path.join(paths.translations_src, "en.json"),
-    series("build-landing-page-translations", "copy-translations-landing-page")
+    series(buildLandingPageTranslations, copyTranslationsLandingPage)
   );
-});
+};
 
-task("rspack-prod-landing-page", () =>
+export const rspackProdLandingPage = () =>
   prodBuild(
     bothBuilds(createLandingPageConfig, {
       isProdBuild: true,
       isStatsBuild: isStatsBuild(),
       isTestBuild: isTestBuild(),
     })
-  )
-);
+  );

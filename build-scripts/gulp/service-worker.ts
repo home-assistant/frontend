@@ -1,7 +1,6 @@
 // Generate service workers
 
 import { deleteAsync } from "del";
-import { task } from "gulp";
 import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
 import { basename, join, relative } from "node:path";
 import { injectManifest } from "workbox-build";
@@ -23,7 +22,7 @@ self.addEventListener('install', (event) => {
 });
   `.trim() + "\n";
 
-task("gen-service-worker-app-dev", async () => {
+export const genServiceWorkerAppDev = async () => {
   await mkdir(paths.app_output_root, { recursive: true });
   await Promise.all(
     Object.values(SW_MAP).map((build) =>
@@ -32,9 +31,9 @@ task("gen-service-worker-app-dev", async () => {
       })
     )
   );
-});
+};
 
-task("gen-service-worker-app-prod", () =>
+export const genServiceWorkerAppProd = () =>
   Promise.all(
     Object.entries(SW_MAP).map(async ([outPath, build]) => {
       const manifest = JSON.parse(
@@ -83,5 +82,4 @@ task("gen-service-worker-app-prod", () =>
         await symlink(basename(swDest), swOld);
       }
     })
-  )
-);
+  );

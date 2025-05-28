@@ -1,45 +1,45 @@
-import { series, task } from "gulp";
+import { series } from "gulp";
 import { isTestBuild } from "../env.ts";
-import "./clean.ts";
-import "./compress.ts";
-import "./entry-html.ts";
-import "./gather-static.ts";
-import "./gen-icons-json.ts";
-import "./rspack.ts";
-import "./translations.ts";
+import { cleanHassio } from "./clean.ts";
+import { compressHassio } from "./compress.ts";
+import { genPagesHassioDev, genPagesHassioProd } from "./entry-html.ts";
+import {
+  copyStaticSupervisor,
+  copyTranslationsSupervisor,
+} from "./gather-static.ts";
+import { genDummyIconsJson } from "./gen-icons-json.ts";
+import { buildLocaleData } from "./locale-data.ts";
+import { rspackProdHassio, rspackWatchHassio } from "./rspack.ts";
+import { buildSupervisorTranslations } from "./translations.ts";
 
-task(
-  "develop-hassio",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "development";
-    },
-    "clean-hassio",
-    "gen-dummy-icons-json",
-    "gen-pages-hassio-dev",
-    "build-supervisor-translations",
-    "copy-translations-supervisor",
-    "build-locale-data",
-    "copy-static-supervisor",
-    "rspack-watch-hassio"
-  )
+// develop-hassio
+export const developHassio = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "development";
+  },
+  cleanHassio,
+  genDummyIconsJson,
+  genPagesHassioDev,
+  buildSupervisorTranslations,
+  copyTranslationsSupervisor,
+  buildLocaleData,
+  copyStaticSupervisor,
+  rspackWatchHassio
 );
 
-task(
-  "build-hassio",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "production";
-    },
-    "clean-hassio",
-    "gen-dummy-icons-json",
-    "build-supervisor-translations",
-    "copy-translations-supervisor",
-    "build-locale-data",
-    "copy-static-supervisor",
-    "rspack-prod-hassio",
-    "gen-pages-hassio-prod",
-    ...// Don't compress running tests
-    (isTestBuild() ? [] : ["compress-hassio"])
-  )
+// build-hassio
+export const buildHassio = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "production";
+  },
+  cleanHassio,
+  genDummyIconsJson,
+  buildSupervisorTranslations,
+  copyTranslationsSupervisor,
+  buildLocaleData,
+  copyStaticSupervisor,
+  rspackProdHassio,
+  genPagesHassioProd,
+  ...// Don't compress running tests
+  (isTestBuild() ? [] : [compressHassio])
 );

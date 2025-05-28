@@ -6,4 +6,4 @@ set -e
 
 cd "$(dirname "$0")/../.."
 
-node --import ./ts-node-register.js ./node_modules/.bin/gulp develop-cast
+yarn run-task develop-cast

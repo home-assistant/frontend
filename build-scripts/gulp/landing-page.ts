@@ -1,41 +1,46 @@
-import { series, task } from "gulp";
-import "./clean.ts";
+import { series } from "gulp";
+import { cleanLandingPage } from "./clean.ts";
 import "./compress.ts";
-import "./entry-html.ts";
-import "./gather-static.ts";
-import "./gen-icons-json.ts";
-import "./rspack.ts";
-import "./translations.ts";
+import {
+  genPagesLandingPageDev,
+  genPagesLandingPageProd,
+} from "./entry-html.ts";
+import {
+  copyStaticLandingPage,
+  copyTranslationsLandingPage,
+} from "./gather-static.ts";
+import { buildLocaleData } from "./locale-data.ts";
+import { rspackProdLandingPage, rspackWatchLandingPage } from "./rspack.ts";
+import {
+  buildLandingPageTranslations,
+  translationsEnableMergeBackend,
+} from "./translations.ts";
 
-task(
-  "develop-landing-page",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "development";
-    },
-    "clean-landing-page",
-    "translations-enable-merge-backend",
-    "build-landing-page-translations",
-    "copy-translations-landing-page",
-    "build-locale-data",
-    "copy-static-landing-page",
-    "gen-pages-landing-page-dev",
-    "rspack-watch-landing-page"
-  )
+// develop-landing-page
+export const developLandingPage = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "development";
+  },
+  cleanLandingPage,
+  translationsEnableMergeBackend,
+  buildLandingPageTranslations,
+  copyTranslationsLandingPage,
+  buildLocaleData,
+  copyStaticLandingPage,
+  genPagesLandingPageDev,
+  rspackWatchLandingPage
 );
 
-task(
-  "build-landing-page",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "production";
-    },
-    "clean-landing-page",
-    "build-landing-page-translations",
-    "copy-translations-landing-page",
-    "build-locale-data",
-    "copy-static-landing-page",
-    "rspack-prod-landing-page",
-    "gen-pages-landing-page-prod"
-  )
+// build-landing-page
+export const buildLandingPage = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "production";
+  },
+  cleanLandingPage,
+  buildLandingPageTranslations,
+  copyTranslationsLandingPage,
+  buildLocaleData,
+  copyStaticLandingPage,
+  rspackProdLandingPage,
+  genPagesLandingPageProd
 );

@@ -1,54 +1,47 @@
-import { parallel, series, task } from "gulp";
-import "./clean.ts";
-import "./entry-html.ts";
-import "./gather-static.ts";
-import "./gen-icons-json.ts";
-import "./rspack.ts";
+import { parallel, series } from "gulp";
+import { clean, cleanDemo } from "./clean.ts";
+import { genPagesDemoDev, genPagesDemoProd } from "./entry-html.ts";
+import { copyStaticDemo } from "./gather-static.ts";
+import { genIconsJson } from "./gen-icons-json.ts";
+import { buildLocaleData } from "./locale-data.ts";
+import { rspackDevServerDemo, rspackProdDemo } from "./rspack.ts";
 import "./service-worker.ts";
-import "./translations.ts";
+import {
+  buildTranslations,
+  translationsEnableMergeBackend,
+} from "./translations.ts";
 
-task(
-  "develop-demo",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "development";
-    },
-    "clean-demo",
-    "translations-enable-merge-backend",
-    parallel(
-      "gen-icons-json",
-      "gen-pages-demo-dev",
-      "build-translations",
-      "build-locale-data"
-    ),
-    "copy-static-demo",
-    "rspack-dev-server-demo"
-  )
+// develop-demo
+export const developDemo = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "development";
+  },
+  cleanDemo,
+  translationsEnableMergeBackend,
+  parallel(genIconsJson, genPagesDemoDev, buildTranslations, buildLocaleData),
+  copyStaticDemo,
+  rspackDevServerDemo
 );
 
-task(
-  "build-demo",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "production";
-    },
-    "clean-demo",
-    // Cast needs to be backwards compatible and older HA has no translations
-    "translations-enable-merge-backend",
-    parallel("gen-icons-json", "build-translations", "build-locale-data"),
-    "copy-static-demo",
-    "rspack-prod-demo",
-    "gen-pages-demo-prod"
-  )
+// build-demo
+export const buildDemo = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "production";
+  },
+  cleanDemo,
+  // Cast needs to be backwards compatible and older HA has no translations
+  translationsEnableMergeBackend,
+  parallel(genIconsJson, buildTranslations, buildLocaleData),
+  copyStaticDemo,
+  rspackProdDemo,
+  genPagesDemoProd
 );
 
-task(
-  "analyze-demo",
-  series(
-    async function setEnv() {
-      process.env.STATS = "1";
-    },
-    "clean",
-    "rspack-prod-demo"
-  )
+// analyze-demo
+export const analyzeDemo = series(
+  async function setEnv() {
+    process.env.STATS = "1";
+  },
+  clean,
+  rspackProdDemo
 );

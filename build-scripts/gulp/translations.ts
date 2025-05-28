@@ -2,7 +2,7 @@
 
 import { deleteAsync } from "del";
 import { glob } from "glob";
-import { src as glupSrc, dest as gulpDest, parallel, series, task } from "gulp";
+import { src as glupSrc, dest as gulpDest, parallel, series } from "gulp";
 import rename from "gulp-rename";
 import merge from "lodash.merge";
 import { createHash } from "node:crypto";
@@ -12,7 +12,10 @@ import { PassThrough, Transform } from "node:stream";
 import { finished } from "node:stream/promises";
 import { isProdBuild } from "../env.ts";
 import paths from "../paths.ts";
-import "./fetch-nightly-translations.ts";
+import {
+  allowSetupFetchNightlyTranslations,
+  fetchNightlyTranslations,
+} from "./fetch-nightly-translations.ts";
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
@@ -23,12 +26,10 @@ const TEST_LOCALE = "en-x-test";
 
 let mergeBackend = false;
 
-task(
-  "translations-enable-merge-backend",
-  parallel(async () => {
-    mergeBackend = true;
-  }, "allow-setup-fetch-nightly-translations")
-);
+// translations-enable-merge-backend
+export const translationsEnableMergeBackend = parallel(async () => {
+  mergeBackend = true;
+}, allowSetupFetchNightlyTranslations);
 
 // Transform stream to apply a function on Vinyl JSON files (buffer mode only).
 // The provided function can either return a new object, or an array of
@@ -145,7 +146,7 @@ const lokaliseTransform = (data, path, original = data) => {
   return output;
 };
 
-task("clean-translations", () => deleteAsync([workDir]));
+export const cleanTranslations = () => deleteAsync([workDir]);
 
 const makeWorkDir = () => mkdir(workDir, { recursive: true });
 
@@ -312,26 +313,20 @@ const writeTranslationMetaData = () =>
     )
     .pipe(gulpDest(workDir));
 
-task(
-  "build-translations",
-  series(
-    parallel(
-      "fetch-nightly-translations",
-      series("clean-translations", makeWorkDir)
-    ),
-    createTestTranslation,
-    createMasterTranslation,
-    createTranslations,
-    writeTranslationMetaData
-  )
+export const buildTranslations = series(
+  parallel(fetchNightlyTranslations, series(cleanTranslations, makeWorkDir)),
+  createTestTranslation,
+  createMasterTranslation,
+  createTranslations,
+  writeTranslationMetaData
 );
 
-task(
-  "build-supervisor-translations",
-  series(setFragment("supervisor"), "build-translations")
+export const buildSupervisorTranslations = series(
+  setFragment("supervisor"),
+  buildTranslations
 );
 
-task(
-  "build-landing-page-translations",
-  series(setFragment("landing-page"), "build-translations")
+export const buildLandingPageTranslations = series(
+  setFragment("landing-page"),
+  buildTranslations
 );

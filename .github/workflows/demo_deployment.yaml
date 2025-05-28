@@ -36,7 +36,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build Demo
-        run: node --import ./ts-node-register.js ./node_modules/.bin/gulp build-demo
+        run: yarn run-task build-demo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build Demo
-        run: node --import ./ts-node-register.js ./node_modules/.bin/gulp build-demo
+        run: yarn run-task build-demo
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -6,4 +6,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-node --import ./ts-node-register.js ./node_modules/.bin/gulp build-app
+yarn run-task build-app

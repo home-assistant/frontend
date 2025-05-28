@@ -6,7 +6,6 @@ import {
   getPreUserAgentRegexes,
 } from "browserslist-useragent-regexp";
 import fs from "fs-extra";
-import { task } from "gulp";
 import { minify } from "html-minifier-terser";
 import template from "lodash.template";
 import { dirname, extname, resolve } from "node:path";
@@ -171,20 +170,18 @@ const APP_PAGE_ENTRIES = {
   "index.html": ["core", "app"],
 };
 
-task(
-  "gen-pages-app-dev",
-  genPagesDevTask(APP_PAGE_ENTRIES, paths.root_dir, paths.app_output_root)
+export const genPagesAppDev = genPagesDevTask(
+  APP_PAGE_ENTRIES,
+  paths.root_dir,
+  paths.app_output_root
 );
 
-task(
-  "gen-pages-app-prod",
-  genPagesProdTask(
-    APP_PAGE_ENTRIES,
-    paths.root_dir,
-    paths.app_output_root,
-    paths.app_output_latest,
-    paths.app_output_es5
-  )
+export const genPagesAppProd = genPagesProdTask(
+  APP_PAGE_ENTRIES,
+  paths.root_dir,
+  paths.app_output_root,
+  paths.app_output_latest,
+  paths.app_output_es5
 );
 
 const CAST_PAGE_ENTRIES = {
@@ -194,104 +191,82 @@ const CAST_PAGE_ENTRIES = {
   "receiver.html": ["receiver"],
 };
 
-task(
-  "gen-pages-cast-dev",
-  genPagesDevTask(CAST_PAGE_ENTRIES, paths.cast_dir, paths.cast_output_root)
+export const genPagesCastDev = genPagesDevTask(
+  CAST_PAGE_ENTRIES,
+  paths.cast_dir,
+  paths.cast_output_root
 );
 
-task(
-  "gen-pages-cast-prod",
-  genPagesProdTask(
-    CAST_PAGE_ENTRIES,
-    paths.cast_dir,
-    paths.cast_output_root,
-    paths.cast_output_latest,
-    paths.cast_output_es5
-  )
+export const genPagesCastProd = genPagesProdTask(
+  CAST_PAGE_ENTRIES,
+  paths.cast_dir,
+  paths.cast_output_root,
+  paths.cast_output_latest,
+  paths.cast_output_es5
 );
 
 const DEMO_PAGE_ENTRIES = { "index.html": ["main"] };
 
-task(
-  "gen-pages-demo-dev",
-  genPagesDevTask(DEMO_PAGE_ENTRIES, paths.demo_dir, paths.demo_output_root)
+export const genPagesDemoDev = genPagesDevTask(
+  DEMO_PAGE_ENTRIES,
+  paths.demo_dir,
+  paths.demo_output_root
 );
 
-task(
-  "gen-pages-demo-prod",
-  genPagesProdTask(
-    DEMO_PAGE_ENTRIES,
-    paths.demo_dir,
-    paths.demo_output_root,
-    paths.demo_output_latest,
-    paths.demo_output_es5
-  )
+export const genPagesDemoProd = genPagesProdTask(
+  DEMO_PAGE_ENTRIES,
+  paths.demo_dir,
+  paths.demo_output_root,
+  paths.demo_output_latest,
+  paths.demo_output_es5
 );
 
 const GALLERY_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
-task(
-  "gen-pages-gallery-dev",
-  genPagesDevTask(
-    GALLERY_PAGE_ENTRIES,
-    paths.gallery_dir,
-    paths.gallery_output_root
-  )
+export const genPagesGalleryDev = genPagesDevTask(
+  GALLERY_PAGE_ENTRIES,
+  paths.gallery_dir,
+  paths.gallery_output_root
 );
 
-task(
-  "gen-pages-gallery-prod",
-  genPagesProdTask(
-    GALLERY_PAGE_ENTRIES,
-    paths.gallery_dir,
-    paths.gallery_output_root,
-    paths.gallery_output_latest
-  )
+export const genPagesGalleryProd = genPagesProdTask(
+  GALLERY_PAGE_ENTRIES,
+  paths.gallery_dir,
+  paths.gallery_output_root,
+  paths.gallery_output_latest
 );
 
 const LANDING_PAGE_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
-task(
-  "gen-pages-landing-page-dev",
-  genPagesDevTask(
-    LANDING_PAGE_PAGE_ENTRIES,
-    paths.landingPage_dir,
-    paths.landingPage_output_root
-  )
+export const genPagesLandingPageDev = genPagesDevTask(
+  LANDING_PAGE_PAGE_ENTRIES,
+  paths.landingPage_dir,
+  paths.landingPage_output_root
 );
 
-task(
-  "gen-pages-landing-page-prod",
-  genPagesProdTask(
-    LANDING_PAGE_PAGE_ENTRIES,
-    paths.landingPage_dir,
-    paths.landingPage_output_root,
-    paths.landingPage_output_latest,
-    paths.landingPage_output_es5
-  )
+export const genPagesLandingPageProd = genPagesProdTask(
+  LANDING_PAGE_PAGE_ENTRIES,
+  paths.landingPage_dir,
+  paths.landingPage_output_root,
+  paths.landingPage_output_latest,
+  paths.landingPage_output_es5
 );
 
 const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
 
-task(
-  "gen-pages-hassio-dev",
-  genPagesDevTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    "src",
-    paths.hassio_publicPath
-  )
+export const genPagesHassioDev = genPagesDevTask(
+  HASSIO_PAGE_ENTRIES,
+  paths.hassio_dir,
+  paths.hassio_output_root,
+  "src",
+  paths.hassio_publicPath
 );
 
-task(
-  "gen-pages-hassio-prod",
-  genPagesProdTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    paths.hassio_output_es5,
-    "src"
-  )
+export const genPagesHassioProd = genPagesProdTask(
+  HASSIO_PAGE_ENTRIES,
+  paths.hassio_dir,
+  paths.hassio_output_root,
+  paths.hassio_output_latest,
+  paths.hassio_output_es5,
+  "src"
 );

@@ -1,19 +1,23 @@
-import fs from "node:fs";
 import { glob } from "glob";
-import { parallel, series, task, watch } from "gulp";
+import { parallel, series, watch } from "gulp";
 import yaml from "js-yaml";
 import { marked } from "marked";
+import fs from "node:fs";
 import path from "node:path";
 import paths from "../paths.ts";
-import "./clean.ts";
-import "./entry-html.ts";
-import "./gather-static.ts";
-import "./gen-icons-json.ts";
-import "./rspack.ts";
-import "./service-worker.ts";
-import "./translations.ts";
+import { cleanGallery } from "./clean.ts";
+import { genPagesGalleryDev, genPagesGalleryProd } from "./entry-html.ts";
+import { copyStaticGallery } from "./gather-static.ts";
+import { genIconsJson } from "./gen-icons-json.ts";
+import { buildLocaleData } from "./locale-data.ts";
+import { rspackDevServerGallery, rspackProdGallery } from "./rspack.ts";
+import {
+  buildTranslations,
+  translationsEnableMergeBackend,
+} from "./translations.ts";
 
-task("gather-gallery-pages", async function gatherPages() {
+// gather-gallery-pages
+export const gatherGalleryPages = async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
   const files = await glob(path.resolve(pageDir, "**/*"));
 
@@ -144,52 +148,48 @@ task("gather-gallery-pages", async function gatherPages() {
     content,
     "utf-8"
   );
-});
+};
 
-task(
-  "develop-gallery",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "development";
-    },
-    "clean-gallery",
-    "translations-enable-merge-backend",
-    parallel(
-      "gen-icons-json",
-      "build-translations",
-      "build-locale-data",
-      "gather-gallery-pages"
-    ),
-    "copy-static-gallery",
-    "gen-pages-gallery-dev",
-    parallel("rspack-dev-server-gallery", async function watchMarkdownFiles() {
-      watch(
-        [
-          path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
-          path.resolve(paths.gallery_dir, "sidebar.js"),
-        ],
-        series("gather-gallery-pages")
-      );
-    })
-  )
+// develop-gallery
+export const developGallery = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "development";
+  },
+  cleanGallery,
+  translationsEnableMergeBackend,
+  parallel(
+    genIconsJson,
+    buildTranslations,
+    buildLocaleData,
+    gatherGalleryPages
+  ),
+  copyStaticGallery,
+  genPagesGalleryDev,
+  parallel(rspackDevServerGallery, async function watchMarkdownFiles() {
+    watch(
+      [
+        path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
+        path.resolve(paths.gallery_dir, "sidebar.js"),
+      ],
+      series(gatherGalleryPages)
+    );
+  })
 );
 
-task(
-  "build-gallery",
-  series(
-    async function setEnv() {
-      process.env.NODE_ENV = "production";
-    },
-    "clean-gallery",
-    "translations-enable-merge-backend",
-    parallel(
-      "gen-icons-json",
-      "build-translations",
-      "build-locale-data",
-      "gather-gallery-pages"
-    ),
-    "copy-static-gallery",
-    "rspack-prod-gallery",
-    "gen-pages-gallery-prod"
-  )
+// build-gallery
+export const buildGallery = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "production";
+  },
+  cleanGallery,
+  translationsEnableMergeBackend,
+  parallel(
+    genIconsJson,
+    buildTranslations,
+    buildLocaleData,
+    gatherGalleryPages
+  ),
+  copyStaticGallery,
+  rspackProdGallery,
+  genPagesGalleryProd
 );

@@ -20,7 +20,8 @@
     "prepack": "pinst --disable",
     "postpack": "pinst --enable",
     "test": "vitest run --config test/vitest.config.ts",
-    "test:coverage": "vitest run --config test/vitest.config.ts --coverage"
+    "test:coverage": "vitest run --config test/vitest.config.ts --coverage",
+    "run-task": "tsx ./build-scripts/runTask.ts"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
@@ -218,7 +219,7 @@
     "tar": "7.4.3",
     "terser-webpack-plugin": "5.3.14",
     "ts-lit-plugin": "2.0.2",
-    "ts-node": "10.9.2",
+    "tsx": "4.19.4",
     "typescript": "5.8.3",
     "typescript-eslint": "8.31.1",
     "vite-tsconfig-paths": "5.1.4",

@@ -1,7 +1,7 @@
 import path from "node:path";
 import packageJson from "../package.json" assert { type: "json" };
-import paths, { dirname } from "./paths.ts";
 import { version } from "./env.ts";
+import paths, { dirname } from "./paths.ts";
 
 const dependencies = packageJson.dependencies;
 
@@ -164,7 +164,7 @@ export const babelOptions = ({
       // themselves to prevent self-injection.
       plugins: [
         [
-          path.join(BABEL_PLUGINS, "custom-polyfill-plugin.js"),
+          path.join(BABEL_PLUGINS, "custom-polyfill-plugin.ts"),
           { method: "usage-global" },
         ],
       ],
