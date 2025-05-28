@@ -6,6 +6,7 @@ const HAS_CUSTOM_PREVIEW = ["generic_camera", "template"];
 export interface GenericPreview {
   state: string;
   attributes: Record<string, any>;
+  error?: string;
 }
 
 export const subscribePreviewGeneric = (
