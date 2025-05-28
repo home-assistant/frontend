@@ -150,8 +150,8 @@ export class HuiAreasDashboardStrategyEditor
         .hass=${this.hass}
         .data=${this._config}
         .schema=${SCHEMA}
-        .computeLabel=${this._computeLabelCallback}
-        @value-changed=${this._valueChanged}
+        .computeLabel=${this._computeFormLabelCallback}
+        @value-changed=${this._formValueChanged}
       ></ha-form>
     `;
   }
@@ -212,12 +212,12 @@ export class HuiAreasDashboardStrategyEditor
     fireEvent(this, "config-changed", { config: newConfig });
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _formValueChanged(ev: CustomEvent): void {
     const data = ev.detail.value;
     fireEvent(this, "config-changed", { config: data });
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeFormLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     switch (schema.name) {
       case "show_icons":
         return this.hass?.localize(
