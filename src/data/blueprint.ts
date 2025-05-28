@@ -10,6 +10,7 @@ import {
   mdiDetails,
   mdiDevices,
   mdiExclamation,
+  mdiFile,
   mdiFloorPlan,
   mdiFormatColorFill,
   mdiFormDropdown,
@@ -195,9 +196,9 @@ export const getBlueprintEditorInitData = () => {
   return data;
 };
 
-type BlueprintClipboardBase = {
+interface BlueprintClipboardBase {
   input?: string;
-};
+}
 type AutomationBlueprintClipboard = BlueprintClipboardBase &
   AutomationClipboard;
 export type BlueprintClipboard = AutomationBlueprintClipboard;
@@ -206,8 +207,8 @@ export const INPUT_ICONS = {
   action: mdiGestureTap,
   addOn: mdiPuzzle,
   area: mdiSofa,
-  attribute: mdiDetails,
   assistPipeline: mdiChat,
+  attribute: mdiDetails,
   backupLocation: mdiPin,
   boolean: mdiToggleSwitch,
   colorTemperature: mdiThermostat,
@@ -221,11 +222,12 @@ export const INPUT_ICONS = {
   device: mdiDevices,
   duration: mdiTimer,
   entity: mdiShape,
+  file: mdiFile,
   floor: mdiFloorPlan,
   icon: mdiSimpleIcons,
   label: mdiLabel,
   language: mdiAlpha,
-  location,
+  location: mdiPin,
   media: mdiPlayOutline,
   number: mdiNumeric,
   object: mdiCube,

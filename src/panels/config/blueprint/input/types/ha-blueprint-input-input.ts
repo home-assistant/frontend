@@ -64,9 +64,9 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "area_filter",
+              "assist_pipeline",
               localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.area_filter"
+                "ui.panel.config.blueprint.editor.inputs.type.single.assist_pipeline"
               ),
             ],
             [
@@ -76,9 +76,9 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "assist_pipeline",
+              "backup_location",
               localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.assist_pipeline"
+                "ui.panel.config.blueprint.editor.inputs.type.single.backup_location"
               ),
             ],
             [
@@ -94,6 +94,12 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
+              "color_temp",
+              localize(
+                "ui.panel.config.blueprint.editor.inputs.type.single.color_temp"
+              ),
+            ],
+            [
               "condition",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.condition"
@@ -106,12 +112,6 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "conversation_agent",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.conversation_agent"
-              ),
-            ],
-            [
               "constant",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.constant"
@@ -121,6 +121,12 @@ export class HaBlueprintInputInput extends LitElement {
               "country",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.country"
+              ),
+            ],
+            [
+              "conversation_agent",
+              localize(
+                "ui.panel.config.blueprint.editor.inputs.type.single.conversation_agent"
               ),
             ],
             [
@@ -154,12 +160,6 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "statistic",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.statistic"
-              ),
-            ],
-            [
               "file",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.file"
@@ -172,21 +172,15 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
+              "icon",
+              localize(
+                "ui.panel.config.blueprint.editor.inputs.type.single.icon"
+              ),
+            ],
+            [
               "label",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.label"
-              ),
-            ],
-            [
-              "image",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.image"
-              ),
-            ],
-            [
-              "background",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.background"
               ),
             ],
             [
@@ -196,9 +190,15 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "navigation",
+              "location",
               localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.navigation"
+                "ui.panel.config.blueprint.editor.inputs.type.single.location"
+              ),
+            ],
+            [
+              "media",
+              localize(
+                "ui.panel.config.blueprint.editor.inputs.type.single.media"
               ),
             ],
             [
@@ -226,27 +226,9 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "selector",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.selector"
-              ),
-            ],
-            [
               "state",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.state"
-              ),
-            ],
-            [
-              "backup_location",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.backup_location"
-              ),
-            ],
-            [
-              "stt",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.stt"
               ),
             ],
             [
@@ -274,75 +256,15 @@ export class HaBlueprintInputInput extends LitElement {
               ),
             ],
             [
-              "icon",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.icon"
-              ),
-            ],
-            [
-              "media",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.media"
-              ),
-            ],
-            [
               "theme",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.theme"
               ),
             ],
             [
-              "button_toggle",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.button_toggle"
-              ),
-            ],
-            [
               "trigger",
               localize(
                 "ui.panel.config.blueprint.editor.inputs.type.single.trigger"
-              ),
-            ],
-            [
-              "tts",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.tts"
-              ),
-            ],
-            [
-              "tts_voice",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.tts_voice"
-              ),
-            ],
-            [
-              "location",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.location"
-              ),
-            ],
-            [
-              "color_temp",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.color_temp"
-              ),
-            ],
-            [
-              "ui_action",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.ui_action"
-              ),
-            ],
-            [
-              "ui_color",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.ui_color"
-              ),
-            ],
-            [
-              "ui_state_content",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.ui_state_content"
               ),
             ],
           ],

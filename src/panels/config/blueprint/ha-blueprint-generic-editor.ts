@@ -129,11 +129,17 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     this._saving = true;
 
     try {
+      const blueprint = {
+        ...this._blueprint,
+        blueprint: this._blueprint.metadata,
+        metadata: undefined,
+      };
+
       await saveBlueprint(
         this.hass,
         this._blueprint.metadata.domain,
         this._blueprintPath as string,
-        yaml.dump(this._blueprint),
+        yaml.dump(blueprint),
         this._blueprint.metadata.source_url,
         true
       );
