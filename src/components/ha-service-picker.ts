@@ -33,6 +33,9 @@ class HaServicePicker extends LitElement {
 
   @property() public value?: string;
 
+  @property({ attribute: "show-service-id", type: Boolean })
+  public showServiceId = false;
+
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   public async open() {
@@ -58,7 +61,7 @@ class HaServicePicker extends LitElement {
       ></ha-service-icon>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
-      ${item.service_id
+      ${item.service_id && this.showServiceId
         ? html`<span slot="supporting-text" class="code">
             ${item.service_id}
           </span>`
@@ -96,7 +99,9 @@ class HaServicePicker extends LitElement {
         .service=${serviceId}
       ></ha-service-icon>
       <span slot="headline">${serviceName}</span>
-      <span slot="supporting-text" class="code">${serviceId}</span>
+      ${this.showServiceId
+        ? html`<span slot="supporting-text" class="code">${serviceId}</span>`
+        : nothing}
     `;
   };
 

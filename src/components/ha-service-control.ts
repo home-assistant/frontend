@@ -85,8 +85,11 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
-    false;
+  @property({ attribute: "show-advanced", type: Boolean })
+  public showAdvanced = false;
+
+  @property({ attribute: "show-service-id", type: Boolean })
+  public showServiceId = false;
 
   @property({ attribute: "hide-picker", type: Boolean, reflect: true })
   public hidePicker = false;
@@ -435,6 +438,7 @@ export class HaServiceControl extends LitElement {
           .value=${this._value?.action}
           .disabled=${this.disabled}
           @value-changed=${this._serviceChanged}
+          .showServiceId=${this.showServiceId}
         ></ha-service-picker>`}
     ${this.hideDescription
       ? nothing
