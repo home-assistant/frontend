@@ -176,5 +176,12 @@ export default tseslint.config(
       ],
       "no-use-before-define": "off",
     },
+    settings: {
+      "import/resolver": {
+        node: {
+          extensions: [".ts", ".js"],
+        },
+      },
+    },
   }
 );
