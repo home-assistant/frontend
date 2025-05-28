@@ -19,6 +19,8 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 export class HaActionSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public selector!: ActionSelector;
 
   @property({ attribute: false }) public value?: Action;
@@ -66,6 +68,7 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
         .disabled=${this.disabled}
         .actions=${this._actions(this.value)}
         .hass=${this.hass}
+        .narrow=${this.narrow}
       ></ha-automation-action>
     `;
   }

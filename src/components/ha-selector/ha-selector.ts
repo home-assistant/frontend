@@ -69,6 +69,8 @@ const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
 export class HaSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property() public name?: string;
 
   @property({ attribute: false }) public selector!: Selector;
@@ -127,6 +129,7 @@ export class HaSelector extends LitElement {
     return html`
       ${dynamicElement(`ha-selector-${this._type}`, {
         hass: this.hass,
+        narrow: this.narrow,
         name: this.name,
         selector: this._handleLegacySelector(this.selector),
         value: this.value,
