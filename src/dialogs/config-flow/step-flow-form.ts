@@ -27,6 +27,8 @@ import { configFlowContentStyles } from "./styles";
 class StepFlowForm extends LitElement {
   @property({ attribute: false }) public flowConfig!: FlowConfig;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -63,6 +65,7 @@ class StepFlowForm extends LitElement {
           : ""}
         <ha-form
           .hass=${this.hass}
+          .narrow=${this.narrow}
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
