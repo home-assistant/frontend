@@ -23,6 +23,7 @@ export interface AreasDashboardStrategyConfig {
     order?: string[];
   };
   areas_options?: Record<string, AreaOptions>;
+  show_icons?: boolean;
 }
 
 @customElement("areas-dashboard-strategy")
@@ -65,6 +66,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
 
       return {
         title: area.name,
+        icon: config.show_icons ? area.icon : undefined,
         path: path,
         strategy: {
           type: "area",

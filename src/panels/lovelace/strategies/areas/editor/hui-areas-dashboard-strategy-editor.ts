@@ -22,6 +22,19 @@ import {
   type AreaRegistryEntry,
 } from "../../../../../data/area_registry";
 import { buttonLinkStyle } from "../../../../../resources/styles";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
+
+const SCHEMA = [
+  {
+    name: "show_icons",
+    selector: {
+      boolean: {},
+    },
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -133,6 +146,13 @@ export class HuiAreasDashboardStrategyEditor
         show-navigation-button
         @item-display-navigate-clicked=${this._handleAreaNavigate}
       ></ha-areas-display-editor>
+      <ha-form
+        .hass=${this.hass}
+        .data=${this._config}
+        .schema=${SCHEMA}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
     `;
   }
 
@@ -186,10 +206,27 @@ export class HuiAreasDashboardStrategyEditor
           },
         },
       },
+      show_icons: this._config!.show_icons,
     };
 
     fireEvent(this, "config-changed", { config: newConfig });
   }
+
+  private _valueChanged(ev: CustomEvent): void {
+    const data = ev.detail.value;
+    fireEvent(this, "config-changed", { config: data });
+  }
+
+  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+    switch (schema.name) {
+      case "show_icons":
+        return this.hass?.localize(
+          `ui.panel.lovelace.editor.strategy.areas.show_icons`
+        );
+      default:
+        return "";
+    }
+  };
 
   static get styles() {
     return [
