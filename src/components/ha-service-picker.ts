@@ -18,6 +18,7 @@ import "./ha-service-icon";
 
 interface ServiceComboBoxItem extends PickerComboBoxItem {
   domain_name?: string;
+  service_id?: string;
 }
 
 @customElement("ha-service-picker")
@@ -46,9 +47,10 @@ class HaServicePicker extends LitElement {
   }
 
   private _rowRenderer: ComboBoxLitRenderer<ServiceComboBoxItem> = (
-    item
+    item,
+    { index }
   ) => html`
-    <ha-combo-box-item type="button">
+    <ha-combo-box-item type="button" border-top .borderTop=${index !== 0}>
       <ha-service-icon
         slot="start"
         .hass=${this.hass}
@@ -56,6 +58,11 @@ class HaServicePicker extends LitElement {
       ></ha-service-icon>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
+      ${item.service_id
+        ? html`<span slot="supporting-text" class="code">
+            ${item.service_id}
+          </span>`
+        : nothing}
       ${item.domain_name
         ? html`
             <div slot="trailing-supporting-text" class="domain">
@@ -82,11 +89,6 @@ class HaServicePicker extends LitElement {
       this.hass.services[domain][service].name ||
       service;
 
-    const serviceDescription =
-      this.hass.localize(
-        `component.${domain}.services.${service}.description`
-      ) || this.hass.services[domain][service].description;
-
     return html`
       <ha-service-icon
         slot="start"
@@ -94,9 +96,7 @@ class HaServicePicker extends LitElement {
         .service=${serviceId}
       ></ha-service-icon>
       <span slot="headline">${serviceName}</span>
-      ${serviceDescription
-        ? html` <span slot="supporting-text">${serviceDescription}</span> `
-        : nothing}
+      <span slot="supporting-text" class="code">${serviceId}</span>
     `;
   };
 
@@ -164,6 +164,7 @@ class HaServicePicker extends LitElement {
               primary: name,
               secondary: description,
               domain_name: domainName,
+              service_id: serviceId,
               search_labels: [serviceId, domainName, name, description].filter(
                 Boolean
               ),
