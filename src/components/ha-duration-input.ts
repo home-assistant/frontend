@@ -52,11 +52,11 @@ class HaDurationInput extends LitElement {
         .milliseconds=${this._milliseconds}
         @value-changed=${this._durationChanged}
         no-hours-limit
-        dayLabel="dd"
-        hourLabel="hh"
-        minLabel="mm"
-        secLabel="ss"
-        millisecLabel="ms"
+        day-label="dd"
+        hour-label="hh"
+        min-label="mm"
+        sec-label="ss"
+        ms-label="ms"
       ></ha-base-time-input>
     `;
   }

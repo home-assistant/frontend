@@ -173,7 +173,7 @@ class HassioHardwareDialog extends LitElement {
           font-family: var(--ha-font-family-code);
         }
         code {
-          font-size: 85%;
+          font-size: var(--ha-font-size-s);
           padding: 0.2em 0.4em;
         }
         search-input {

@@ -52,7 +52,7 @@ export class ZWaveJsAddNodeFailed extends LitElement {
     div.note {
       text-align: center;
       margin-top: 16px;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
     ha-button {

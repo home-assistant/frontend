@@ -155,10 +155,10 @@ export class HaMdDialog extends Dialog {
         --md-dialog-supporting-text-color: var(--primary-text-color);
         --md-sys-color-scrim: #000000;
 
-        --md-dialog-headline-weight: 400;
-        --md-dialog-headline-size: 1.574rem;
-        --md-dialog-supporting-text-size: 1rem;
-        --md-dialog-supporting-text-line-height: 1.5rem;
+        --md-dialog-headline-weight: var(--ha-font-weight-normal);
+        --md-dialog-headline-size: var(--ha-font-size-xl);
+        --md-dialog-supporting-text-size: var(--ha-font-size-m);
+        --md-dialog-supporting-text-line-height: var(--ha-line-height-normal);
       }
 
       :host([type="alert"]) {
@@ -168,10 +168,10 @@ export class HaMdDialog extends Dialog {
       @media all and (max-width: 450px), all and (max-height: 500px) {
         :host(:not([type="alert"])) {
           min-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
           );
           max-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
           );
           min-height: 100%;
           max-height: 100%;

@@ -354,15 +354,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       flex-direction: row;
     }
     .box .title {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       margin-left: 8px;
       margin-inline-start: 8px;
       margin-inline-end: initial;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      font-size: 16px;
-      line-height: 40px;
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-expanded);
       color: var(--ha-picture-card-text-color, white);
       align-self: center;
     }
@@ -382,7 +382,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
     .state {
       display: block;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       text-align: center;
       line-height: 12px;
       white-space: nowrap;

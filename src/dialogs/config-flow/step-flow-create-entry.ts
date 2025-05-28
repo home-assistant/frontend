@@ -10,13 +10,13 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
-import { slugify } from "../../common/string/slugify";
 import "../../components/ha-area-picker";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
 import {
+  getAutomaticEntityIds,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
 } from "../../data/entity_registry";
@@ -36,8 +36,7 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
-  @property({ type: Boolean, attribute: "increase-padding-end" })
-  public increasePaddingEnd = false;
+  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
   public navigateToResult = false;
 
@@ -45,17 +44,6 @@ class StepFlowCreateEntry extends LitElement {
     string,
     { name?: string; area?: string }
   > = {};
-
-  private _devices = memoizeOne(
-    (
-      showDevices: boolean,
-      devices: DeviceRegistryEntry[],
-      entry_id?: string
-    ) =>
-      showDevices && entry_id
-        ? devices.filter((device) => device.config_entries.includes(entry_id))
-        : []
-  );
 
   private _deviceEntities = memoizeOne(
     (
@@ -75,22 +63,16 @@ class StepFlowCreateEntry extends LitElement {
       return;
     }
 
-    const devices = this._devices(
-      this.flowConfig.showDevices,
-      Object.values(this.hass.devices),
-      this.step.result?.entry_id
-    );
-
     if (
-      devices.length !== 1 ||
-      devices[0].primary_config_entry !== this.step.result?.entry_id ||
+      this.devices.length !== 1 ||
+      this.devices[0].primary_config_entry !== this.step.result?.entry_id ||
       this.step.result.domain === "voip"
     ) {
       return;
     }
 
     const assistSatellites = this._deviceEntities(
-      devices[0].id,
+      this.devices[0].id,
       Object.values(this.hass.entities),
       "assist_satellite"
     );
@@ -103,26 +85,14 @@ class StepFlowCreateEntry extends LitElement {
       this.navigateToResult = false;
       this._flowDone();
       showVoiceAssistantSetupDialog(this, {
-        deviceId: devices[0].id,
+        deviceId: this.devices[0].id,
       });
     }
   }
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
-    const devices = this._devices(
-      this.flowConfig.showDevices,
-      Object.values(this.hass.devices),
-      this.step.result?.entry_id
-    );
     return html`
-      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
-        ${devices.length
-          ? localize("ui.panel.config.integrations.config_flow.assign_area", {
-              number: devices.length,
-            })
-          : `${localize("ui.panel.config.integrations.config_flow.success")}!`}
-      </h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
         ${this.step.result?.state === "not_loaded"
@@ -132,10 +102,10 @@ class StepFlowCreateEntry extends LitElement {
               )}</span
             >`
           : nothing}
-        ${devices.length === 0 &&
+        ${this.devices.length === 0 &&
         ["options_flow", "repair_flow"].includes(this.flowConfig.flowType)
           ? nothing
-          : devices.length === 0
+          : this.devices.length === 0
             ? html`<p>
                 ${localize(
                   "ui.panel.config.integrations.config_flow.created_config",
@@ -144,7 +114,7 @@ class StepFlowCreateEntry extends LitElement {
               </p>`
             : html`
                 <div class="devices">
-                  ${devices.map(
+                  ${this.devices.map(
                     (device) => html`
                       <div class="device">
                         <div class="device-info">
@@ -203,7 +173,7 @@ class StepFlowCreateEntry extends LitElement {
       <div class="buttons">
         <mwc-button @click=${this._flowDone}
           >${localize(
-            `ui.panel.config.integrations.config_flow.${!devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
+            `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
           )}</mwc-button
         >
       </div>
@@ -212,19 +182,11 @@ class StepFlowCreateEntry extends LitElement {
 
   private async _flowDone(): Promise<void> {
     if (Object.keys(this._deviceUpdate).length) {
-      const renamedDevices: {
-        deviceId: string;
-        oldDeviceName: string | null | undefined;
-        newDeviceName: string;
-      }[] = [];
+      const renamedDevices: string[] = [];
       const deviceUpdates = Object.entries(this._deviceUpdate).map(
         ([deviceId, update]) => {
           if (update.name) {
-            renamedDevices.push({
-              deviceId,
-              oldDeviceName: computeDeviceName(this.hass.devices[deviceId]),
-              newDeviceName: update.name,
-            });
+            renamedDevices.push(deviceId);
           }
           return updateDeviceRegistryEntry(this.hass, deviceId, {
             name_by_user: update.name,
@@ -239,45 +201,47 @@ class StepFlowCreateEntry extends LitElement {
           });
         }
       );
+      await Promise.allSettled(deviceUpdates);
       const entityUpdates: Promise<any>[] = [];
-      renamedDevices.forEach(({ deviceId, oldDeviceName, newDeviceName }) => {
-        if (!oldDeviceName) {
-          return;
-        }
+      const entityIds: string[] = [];
+      renamedDevices.forEach((deviceId) => {
         const entities = this._deviceEntities(
           deviceId,
           Object.values(this.hass.entities)
         );
-        const oldDeviceSlug = slugify(oldDeviceName);
-        const newDeviceSlug = slugify(newDeviceName);
-        entities.forEach((entity) => {
-          const oldId = entity.entity_id;
-
-          if (oldId.includes(oldDeviceSlug)) {
-            const newEntityId = oldId.replace(oldDeviceSlug, newDeviceSlug);
-            entityUpdates.push(
-              updateEntityRegistryEntry(this.hass, entity.entity_id, {
-                new_entity_id: newEntityId,
-              }).catch((err) =>
-                showAlertDialog(this, {
-                  text: this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.error_saving_entity",
-                    { error: err.message }
-                  ),
-                })
-              )
-            );
-          }
-        });
+        entityIds.push(...entities.map((entity) => entity.entity_id));
       });
-      await Promise.allSettled([...deviceUpdates, ...entityUpdates]);
+
+      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+
+      Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
+        if (newEntityId) {
+          entityUpdates.push(
+            updateEntityRegistryEntry(this.hass, oldEntityId, {
+              new_entity_id: newEntityId,
+            }).catch((err) =>
+              showAlertDialog(this, {
+                text: this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.error_saving_entity",
+                  { error: err.message }
+                ),
+              })
+            )
+          );
+        }
+      });
+      await Promise.allSettled(entityUpdates);
     }
 
     fireEvent(this, "flow-update", { step: undefined });
     if (this.step.result && this.navigateToResult) {
-      navigate(
-        `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-      );
+      if (this.devices.length === 1) {
+        navigate(`/config/devices/device/${this.devices[0].id}`);
+      } else {
+        navigate(
+          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+        );
+      }
     }
   }
 
@@ -316,6 +280,12 @@ class StepFlowCreateEntry extends LitElement {
           overflow-y: auto;
           flex-direction: column;
         }
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .devices {
+            /* header - margin content - footer */
+            max-height: calc(100vh - 52px - 20px - 52px);
+          }
+        }
         .device {
           border: 1px solid var(--divider-color);
           padding: 6px;
@@ -351,11 +321,6 @@ class StepFlowCreateEntry extends LitElement {
           margin-left: auto;
           margin-inline-start: auto;
           margin-inline-end: initial;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .device {
-            width: 100%;
-          }
         }
         .error {
           color: var(--error-color);

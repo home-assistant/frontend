@@ -199,8 +199,8 @@ class OnboardingCoreConfig extends LitElement {
     }
 
     p {
-      font-size: 14px;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      line-height: var(--ha-line-height-condensed);
     }
 
     ha-textfield {

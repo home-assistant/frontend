@@ -179,7 +179,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     if (this._config.entity && !stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -224,19 +224,19 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                   filter: colored ? stateColorBrightness(stateObj) : undefined,
                   height: this._config.icon_height
                     ? this._config.icon_height
-                    : "",
+                    : undefined,
                 })}
               ></ha-state-icon>
             `
-          : ""}
+          : nothing}
         ${this._config.show_name
           ? html`<span tabindex="-1" .title=${name}>${name}</span>`
-          : ""}
+          : nothing}
         ${this._config.show_state && stateObj
           ? html`<span class="state">
               ${this.hass.formatEntityState(stateObj)}
             </span>`
-          : ""}
+          : nothing}
       </ha-card>
     `;
   }
@@ -282,7 +282,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           align-items: center;
           text-align: center;
           padding: 4% 0;
-          font-size: 16.8px;
+          font-size: var(--ha-font-size-l);
+          line-height: var(--ha-line-height-condensed);
           height: 100%;
           box-sizing: border-box;
           justify-content: center;

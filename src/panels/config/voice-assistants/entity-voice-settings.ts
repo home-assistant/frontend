@@ -423,8 +423,8 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         .description {
           color: var(--secondary-text-color);
-          font-size: 14px;
-          line-height: 20px;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
           margin-top: 0;
           margin-bottom: 16px;
         }

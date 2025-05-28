@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
+import type { LegendComponentOption } from "echarts/components";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
@@ -53,6 +54,8 @@ export class HuiEnergyDevicesDetailGraphCard
   @state() private _chartData: BarSeriesOption[] = [];
 
   @state() private _data?: EnergyData;
+
+  @state() private _legendData?: LegendComponentOption["data"];
 
   @state() private _start = startOfToday();
 
@@ -184,13 +187,12 @@ export class HuiEnergyDevicesDetailGraphCard
         ...commonOptions,
         legend: {
           show: true,
-          type: "scroll",
-          animationDurationUpdate: 400,
+          type: "custom",
+          data: this._legendData,
           selected: this._hiddenStats.reduce((acc, stat) => {
             acc[stat] = false;
             return acc;
           }, {}),
-          icon: "circle",
         },
         grid: {
           top: 15,
@@ -312,6 +314,13 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     datasets.push(...processedData);
+    this._legendData = processedData.map((d) => ({
+      name: d.name as string,
+      itemStyle: {
+        color: d.color as string,
+        borderColor: d.itemStyle?.borderColor as string,
+      },
+    }));
 
     if (showUntracked) {
       const untrackedData = this._processUntracked(
@@ -321,6 +330,13 @@ export class HuiEnergyDevicesDetailGraphCard
         false
       );
       datasets.push(untrackedData);
+      this._legendData.push({
+        name: untrackedData.name as string,
+        itemStyle: {
+          color: untrackedData.color as string,
+          borderColor: untrackedData.itemStyle?.borderColor as string,
+        },
+      });
     }
 
     fillDataGapsAndRoundCaps(datasets);

@@ -476,8 +476,8 @@ export class HuiBadgePicker extends LitElement {
         }
 
         .badges-container-header {
-          font-size: 16px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
           padding: 12px 8px 4px 8px;
           margin: 0;
           grid-column: 1 / -1;
@@ -507,10 +507,10 @@ export class HuiBadgePicker extends LitElement {
         .badge-header {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
-          font-size: 16px;
-          font-weight: bold;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-bold);
           letter-spacing: -0.012em;
-          line-height: 20px;
+          line-height: var(--ha-line-height-condensed);
           padding: 12px 16px;
           display: block;
           text-align: center;

@@ -16,14 +16,12 @@ export class HaButton extends Button {
       }
       .mdc-button {
         height: var(--button-height, 36px);
-        text-align: var(--ha-button-text-align, center);
       }
       .trailing-icon {
         display: flex;
       }
       .slot-container {
         overflow: var(--button-slot-container-overflow, visible);
-        width: 100%;
       }
       :host([destructive]) {
         --mdc-theme-primary: var(--error-color);

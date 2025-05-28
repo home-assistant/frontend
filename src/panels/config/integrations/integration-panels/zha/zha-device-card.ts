@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../../common/string/compare";
-import { slugify } from "../../../../../common/string/slugify";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
 import "../../../../../components/ha-card";
@@ -14,6 +13,7 @@ import "../../../../../components/ha-textfield";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../../../data/entity_registry";
 import {
+  getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
@@ -23,7 +23,6 @@ import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
-import { getIeeeTail } from "./functions";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -135,30 +134,35 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     }
     const entities = this._deviceEntities(device.device_reg_id, this._entities);
 
-    const oldDeviceEntityId = slugify(oldDeviceName);
-    const newDeviceEntityId = slugify(newDeviceName);
-    const ieeeTail = getIeeeTail(device.ieee);
+    const entityIdsMapping = getAutomaticEntityIds(
+      this.hass,
+      entities.map((entity) => entity.entity_id)
+    );
 
     const updateProms = entities.map((entity) => {
-      const name = entity.name || entity.stateName;
-      let newEntityId: string | null = null;
-      let newName: string | null = null;
+      const name = entity.name;
+      const newEntityId = entityIdsMapping[entity.entity_id];
+      let newName: string | null | undefined;
 
-      if (name && name.includes(oldDeviceName)) {
-        newName = name.replace(` ${ieeeTail}`, "");
-        newName = newName.replace(oldDeviceName, newDeviceName);
-        newEntityId = entity.entity_id.replace(`_${ieeeTail}`, "");
-        newEntityId = newEntityId.replace(oldDeviceEntityId, newDeviceEntityId);
+      if (entity.has_entity_name && !entity.name) {
+        newName = undefined;
+      } else if (
+        entity.has_entity_name &&
+        (entity.name === oldDeviceName || entity.name === newDeviceName)
+      ) {
+        // clear name if it matches the device name and it uses the device name (entity naming)
+        newName = null;
+      } else if (name && name.includes(oldDeviceName)) {
+        newName = name.replace(oldDeviceName, newDeviceName);
       }
 
-      if (!newName && !newEntityId) {
+      if (newName !== undefined && !newEntityId) {
         return undefined;
       }
 
       return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-        name: newName || name,
-        disabled_by: entity.disabled_by,
-        new_entity_id: newEntityId || entity.entity_id,
+        name: newName,
+        new_entity_id: newEntityId || undefined,
       });
     });
     await Promise.all(updateProms);
@@ -212,7 +216,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           width: 30%;
         }
         .device .name {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
         }
         .device .manuf {
           color: var(--secondary-text-color);

@@ -812,7 +812,7 @@ export class VoiceAssistantsExpose extends LitElement {
           top: -4px;
         }
         .selected-txt {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           padding-left: 16px;
           padding-inline-start: 16px;
           direction: var(--direction);
@@ -821,7 +821,7 @@ export class VoiceAssistantsExpose extends LitElement {
           margin-top: 20px;
         }
         .header-toolbar .selected-txt {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         .header-toolbar .header-btns {
           margin-right: -12px;

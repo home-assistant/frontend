@@ -125,8 +125,10 @@ class HaConfigBackupDetails extends LitElement {
                             { location: agentName }
                           )}
                           .hass=${this.hass}
-                          .retention=${this.config?.agents[this.agentId]
-                            ?.retention}
+                          .retention=${!this.config
+                            ? undefined
+                            : this.config.agents[this.agentId]?.retention ||
+                              null}
                           @value-changed=${this._retentionChanged}
                         ></ha-backup-config-retention>`}
                   </ha-card>
@@ -375,7 +377,7 @@ class HaConfigBackupDetails extends LitElement {
       align-items: center;
       flex-direction: row;
       gap: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-condensed);
     }
     .dot {
       display: block;
