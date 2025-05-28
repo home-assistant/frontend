@@ -55,6 +55,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
       return nothing;
     }
 
+    // TODO: Update manual-automation-editor to allow for `!input <scalar>` YAML values
     return html`
       <manual-automation-editor
         .hass=${this.hass}
