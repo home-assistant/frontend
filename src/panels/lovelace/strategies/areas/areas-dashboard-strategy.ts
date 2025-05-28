@@ -66,7 +66,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
 
       return {
         title: area.name,
-        icon: config.show_icons ? area.icon : undefined,
+        icon: config.show_icons && area.icon ? area.icon : undefined,
         path: path,
         strategy: {
           type: "area",
