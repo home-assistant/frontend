@@ -390,6 +390,7 @@ export class HaEntityPicker extends LitElement {
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .label=${this.label}
+        .helper=${this.helper}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${notFoundLabel}
         .placeholder=${placeholder}
