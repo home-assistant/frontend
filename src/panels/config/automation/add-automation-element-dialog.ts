@@ -175,6 +175,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       type: AddAutomationElementDialogParams["type"],
       group: string | undefined,
       filter: string,
+      domains: Set<string> | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
@@ -189,7 +190,18 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         index
       );
 
-      return fuse.multiTermsSearch(filter)?.map((result) => result.item) || [];
+      const results = fuse.multiTermsSearch(filter);
+      if (results) {
+        return results.map((result) => result.item);
+      }
+      return this._getGroupItems(
+        type,
+        group,
+        domains,
+        localize,
+        services,
+        manifests
+      );
     }
   );
 
@@ -464,6 +476,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           this._params.type,
           this._group,
           this._filter,
+          this._domains,
           this.hass.localize,
           this.hass.services,
           this._manifests
