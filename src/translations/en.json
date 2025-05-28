@@ -7837,7 +7837,7 @@
             "areas": {
               "areas_display": "Areas to display",
               "no_entities": "No entities in this group, the section will not be displayed",
-              "show_icons": "Show assigned area icons on the dashboard tabs"
+              "show_icons": "Display area icons"
             }
           },
           "view": {
