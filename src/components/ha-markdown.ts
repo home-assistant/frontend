@@ -77,7 +77,7 @@ export class HaMarkdown extends LitElement {
     pre {
       padding: 16px;
       overflow: auto;
-      line-height: 1.45;
+      line-height: var(--ha-line-height-condensed);
       font-family: var(--ha-font-family-code);
     }
     h1,
