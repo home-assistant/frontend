@@ -95,8 +95,8 @@ export class HaPickerField extends LitElement {
           border-end-start-radius: 0;
           --md-list-item-one-line-container-height: 56px;
           --md-list-item-two-line-container-height: 56px;
-          --md-list-item-top-space: 8px;
-          --md-list-item-bottom-space: 8px;
+          --md-list-item-top-space: 0px;
+          --md-list-item-bottom-space: 0px;
           --md-list-item-leading-space: 8px;
           --md-list-item-trailing-space: 8px;
           --ha-md-list-item-gap: 8px;
