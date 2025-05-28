@@ -273,6 +273,7 @@ export class HaBlueprintInputInput extends LitElement {
           name: "default",
           selector: defaultSelector,
         },
+        // TODO: Sub-selector settings (https://www.home-assistant.io/docs/blueprint/selectors/)
       ] as const
   );
 
@@ -310,7 +311,6 @@ export class HaBlueprintInputInput extends LitElement {
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
-      <!-- TODO: Sub-selector settings -->
     `;
   }
 

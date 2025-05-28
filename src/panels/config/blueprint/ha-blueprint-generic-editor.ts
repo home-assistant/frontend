@@ -47,7 +47,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: false }) public blueprints!: Record<
-    "automation" | "script",
+    BlueprintDomain,
     Blueprints
   >;
 
@@ -147,9 +147,12 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       this._dirty = false;
 
       if (!this.blueprintPath) {
-        navigate(`/config/blueprint/edit/${this._blueprintPath}`, {
-          replace: true,
-        });
+        navigate(
+          `/config/blueprint/edit/${this._blueprint.metadata.domain}/${this._blueprintPath}.yaml`,
+          {
+            replace: true,
+          }
+        );
       }
     } catch (errors: any) {
       showToast(this, {

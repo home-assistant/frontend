@@ -6,7 +6,7 @@ export const loadBlueprintRenameDialog = () =>
 
 export interface RenameDialogParams {
   onClose: () => void;
-  path: string;
+  path?: string;
   blueprint: Blueprint;
   updateBlueprint: (blueprint: Blueprint) => void;
   updatePath: (path: string) => void;

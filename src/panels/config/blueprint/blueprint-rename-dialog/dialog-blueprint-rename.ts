@@ -46,7 +46,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
   public showDialog(params: RenameDialogParams): void {
     this._opened = true;
     this._params = params;
-    this._newPath = params.path;
+    this._newPath = params.path || "";
     this._newName =
       params.blueprint.metadata.name ||
       this.hass.localize(`ui.panel.config.blueprint.editor.default_name`);
@@ -62,7 +62,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
     ];
   }
 
-  public closeDialog(): void {
+  public closeDialog(): boolean {
     this._params.onClose();
 
     if (this._opened) {
@@ -70,6 +70,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
     }
     this._opened = false;
     this._visibleOptionals = [];
+    return true;
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -212,7 +213,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
 
         <div slot="primaryAction">
           <mwc-button @click=${this.closeDialog}>
-            ${this.hass.localize("ui.dialogs.generic.cancel")}
+            ${this.hass.localize("ui.common.cancel")}
           </mwc-button>
           <mwc-button @click=${this._save}>
             ${this.hass.localize(
