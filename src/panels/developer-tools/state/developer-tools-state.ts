@@ -130,6 +130,7 @@ class HaPanelDevState extends LitElement {
               .value=${this._entityId}
               @value-changed=${this._entityIdChanged}
               allow-custom-entity
+              show-entity-id
             ></ha-entity-picker>
             ${this._entityId
               ? html`
