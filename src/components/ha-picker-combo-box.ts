@@ -49,6 +49,12 @@ const DEFAULT_ROW_RENDERER: ComboBoxLitRenderer<PickerComboBoxItem> = (
   </ha-combo-box-item>
 `;
 
+export type PickerComboBoxSearchFn<T extends PickerComboBoxItem> = (
+  search: string,
+  filteredItems: T[],
+  allItems: T[]
+) => T[];
+
 @customElement("ha-picker-combo-box")
 export class HaPickerComboBox extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -83,6 +89,9 @@ export class HaPickerComboBox extends LitElement {
 
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
+
+  @property({ attribute: false })
+  public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
 
   @state() private _opened = false;
 
@@ -237,6 +246,7 @@ export class HaPickerComboBox extends LitElement {
     const fuse = new HaFuse(this._items, { shouldSort: false }, index);
 
     const results = fuse.multiTermsSearch(searchString);
+    let filteredItems = this._items as PickerComboBoxItem[];
     if (results) {
       const items = results.map((result) => result.item);
       if (items.length === 0) {
@@ -246,10 +256,14 @@ export class HaPickerComboBox extends LitElement {
       }
       const additionalItems = this._getAdditionalItems(searchString);
       items.push(...additionalItems);
-      target.filteredItems = items;
-    } else {
-      target.filteredItems = this._items;
+      filteredItems = items;
     }
+
+    if (this.searchFn) {
+      filteredItems = this.searchFn(searchString, filteredItems, this._items);
+    }
+
+    target.filteredItems = filteredItems;
   }
 
   private _setValue(value: string | undefined) {
