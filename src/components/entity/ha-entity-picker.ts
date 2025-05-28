@@ -51,6 +51,9 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
+  @property({ type: Boolean, attribute: "show-entity-id" })
+  public showEntityId = false;
+
   @property() public label?: string;
 
   @property() public value?: string;
@@ -166,11 +169,15 @@ export class HaEntityPicker extends LitElement {
     `;
   };
 
+  private get _showEntityId() {
+    return this.showEntityId || this.hass.userData?.showEntityIdPicker;
+  }
+
   private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
     item,
     { index }
   ) => {
-    const showEntityId = this.hass.userData?.showEntityIdPicker;
+    const showEntityId = this._showEntityId;
 
     return html`
       <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
