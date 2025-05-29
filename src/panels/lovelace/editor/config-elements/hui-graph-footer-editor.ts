@@ -49,7 +49,7 @@ export class HuiGraphFooterEditor
     }
 
     return html`
-      <div class="card-config">
+      <div class="card-config" style="padding-bottom: 2px;">
         <ha-entity-picker
           allow-custom-entity
           .label=${this.hass.localize(
