@@ -494,6 +494,13 @@ export class HaChartBase extends LitElement {
         smooth: false,
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
+      graph: {
+        label: {
+          color: style.getPropertyValue("--primary-text-color"),
+          textBorderColor: style.getPropertyValue("--primary-background-color"),
+          textBorderWidth: 2,
+        },
+      },
       categoryAxis: {
         axisLine: { show: false },
         axisTick: { show: false },
