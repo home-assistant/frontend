@@ -210,11 +210,12 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
     .entity ha-entity-picker {
       flex-grow: 1;
+      min-width: 0;
     }
 
     .special-row {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -233,7 +234,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
   `;

@@ -43,6 +43,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isMobileClient } from "../../../util/is_mobile";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "../repairs/ha-config-repairs";
@@ -105,7 +106,7 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
     },
   ];
 
-  if (hass?.enableShortcuts) {
+  if (hass?.enableShortcuts && !isMobileClient) {
     const localizeParam = {
       keyboard_shortcut: html`<a href="#" @click=${openFn}
         >${hass.localize("ui.tips.keyboard_shortcut")}</a
@@ -386,10 +387,10 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         ha-card:last-child {
-          margin-bottom: env(safe-area-inset-bottom);
+          margin-bottom: var(--safe-area-inset-bottom);
         }
         :host(:not([narrow])) ha-card:last-child {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
         }
         ha-config-section {
           margin: auto;
@@ -407,7 +408,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
           margin: 8px 16px 16px 16px;
         }
         .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding: 16px;
           padding-bottom: 0;
         }
@@ -424,7 +425,7 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         ha-tip {
-          margin-bottom: max(env(safe-area-inset-bottom), 8px);
+          margin-bottom: max(var(--safe-area-inset-bottom), 8px);
         }
 
         .new {

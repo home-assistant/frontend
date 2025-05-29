@@ -5,7 +5,7 @@ import { getIntegrationDescriptions } from "../../data/integrations";
 import { showConfigFlowDialog } from "../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { showMatterAddDeviceDialog } from "../../panels/config/integrations/integration-panels/matter/show-dialog-add-matter-device";
-import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/show-dialog-zwave_js-add-node";
+import { showZWaveJSAddNodeDialog } from "../../panels/config/integrations/integration-panels/zwave_js/add-node/show-dialog-zwave_js-add-node";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isComponentLoaded } from "../config/is_component_loaded";

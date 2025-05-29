@@ -30,10 +30,13 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ attribute: false }) public conditions!: Condition[];
 
+  @property({ attribute: false }) public highlightedConditions?: Condition[];
+
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _showReorder = false;
 
+  @state()
   @storage({
     key: "automationClipboard",
     state: true,
@@ -140,6 +143,7 @@ export default class HaAutomationCondition extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
+                ?highlight=${this.highlightedConditions?.includes(cond)}
               >
                 ${this._showReorder && !this.disabled
                   ? html`

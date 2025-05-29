@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
   mdiCodeBraces,
@@ -39,6 +39,7 @@ import "../../components/ha-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/sl-tab-group";
@@ -60,6 +61,7 @@ import {
   QuickBarMode,
   showQuickBar,
 } from "../../dialogs/quick-bar/show-dialog-quick-bar";
+import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
@@ -73,10 +75,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
+import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
-import "./views/hui-view-container";
-import { showShortcutsDialog } from "../../dialogs/shortcuts/show-shortcuts-dialog";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -264,13 +265,13 @@ class HUIRoot extends LitElement {
       const listItems: TemplateResult[] = [];
       overflowItems.forEach((i) => {
         listItems.push(
-          html`<mwc-list-item
+          html`<ha-list-item
             graphic="icon"
             @request-selected=${i.overflowAction}
           >
             ${[this.hass!.localize(i.key), i.suffix].join(" ")}
             <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
-          </mwc-list-item>`
+          </ha-list-item>`
         );
       });
       result.push(
@@ -299,25 +300,26 @@ class HUIRoot extends LitElement {
 
     const background = curViewConfig?.background || this.config.background;
 
+    const _isTabHiddenForUser = (view: LovelaceViewConfig) =>
+      view.visible !== undefined &&
+      ((Array.isArray(view.visible) &&
+        !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
+        view.visible === false);
+
     const tabs = html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
-      ${views.map(
-        (view, index) => html`
+      ${views.map((view, index) => {
+        const hidden =
+          !this._editMode && (view.subview || _isTabHiddenForUser(view));
+        return html`
           <sl-tab
             slot="nav"
             panel=${index}
             .active=${this._curView === index}
+            .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
             class=${classMap({
               icon: Boolean(view.icon),
-              "hide-tab": Boolean(
-                !this._editMode &&
-                  view.visible !== undefined &&
-                  ((Array.isArray(view.visible) &&
-                    !view.visible.some(
-                      (e) => e.user === this.hass!.user?.id
-                    )) ||
-                    view.visible === false)
-              ),
+              "hide-tab": Boolean(hidden),
             })}
           >
             ${this._editMode
@@ -343,7 +345,8 @@ class HUIRoot extends LitElement {
                     .icon=${view.icon}
                   ></ha-icon>
                 `
-              : view.title || "Unnamed view"}
+              : view.title ||
+                this.hass.localize("ui.panel.lovelace.views.unnamed_view")}
             ${this._editMode
               ? html`
                   <ha-icon-button
@@ -366,8 +369,8 @@ class HUIRoot extends LitElement {
                 `
               : nothing}
           </sl-tab>
-        `
-      )}
+        `;
+      })}
     </sl-tab-group>`;
 
     return html`
@@ -999,7 +1002,7 @@ class HUIRoot extends LitElement {
           width: var(--mdc-top-app-bar-width, 100%);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
           backdrop-filter: var(--app-header-backdrop-filter, none);
-          padding-top: env(safe-area-inset-top);
+          padding-top: var(--safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
         }
@@ -1019,9 +1022,9 @@ class HUIRoot extends LitElement {
           height: var(--header-height);
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
         @media (max-width: 599px) {
@@ -1031,7 +1034,7 @@ class HUIRoot extends LitElement {
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
         .action-items {
@@ -1094,6 +1097,8 @@ class HUIRoot extends LitElement {
         .edit-mode sl-tab-group {
           flex-grow: 0;
           color: var(--app-header-edit-text-color, #fff);
+          --ha-tab-active-text-color: var(--app-header-edit-text-color, #fff);
+          --ha-tab-indicator-color: var(--app-header-edit-text-color, #fff);
         }
         .edit-mode sl-tab {
           height: 54px;
@@ -1128,6 +1133,11 @@ class HUIRoot extends LitElement {
         .edit-icon.view {
           display: none;
         }
+        #add-view {
+          white-space: nowrap;
+          display: flex;
+          align-items: center;
+        }
         #add-view ha-svg-icon {
           background-color: var(--accent-color);
           border-radius: 4px;
@@ -1143,12 +1153,12 @@ class HUIRoot extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          padding-inline-start: env(safe-area-inset-left);
-          padding-inline-end: env(safe-area-inset-right);
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
+          padding-left: var(--safe-area-inset-left);
+          padding-right: var(--safe-area-inset-right);
+          padding-inline-start: var(--safe-area-inset-left);
+          padding-inline-end: var(--safe-area-inset-right);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
         hui-view-container > * {
           flex: 1 1 100%;
@@ -1159,7 +1169,7 @@ class HUIRoot extends LitElement {
          */
         .edit-mode hui-view-container {
           padding-top: calc(
-            var(--header-height) + 48px + env(safe-area-inset-top)
+            var(--header-height) + 48px + var(--safe-area-inset-top)
           );
         }
         .hide-tab {
@@ -1171,7 +1181,7 @@ class HUIRoot extends LitElement {
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
           --mdc-button-outline-color: var(--app-header-edit-text-color, #fff);
-          --mdc-typography-button-font-size: 14px;
+          --mdc-typography-button-font-size: var(--ha-font-size-m);
         }
         .child-view-icon {
           opacity: 0.5;

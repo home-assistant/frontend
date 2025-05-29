@@ -413,7 +413,7 @@ export class HuiEntitiesCardEditor
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 18px;
+          font-size: var(--ha-font-size-l);
         }
 
         hui-header-footer-editor {

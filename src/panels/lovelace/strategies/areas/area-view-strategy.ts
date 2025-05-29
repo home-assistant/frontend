@@ -76,8 +76,15 @@ export class AreaViewStrategy extends ReactiveElement {
 
     const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
-    const { lights, climate, media_players, security, others } =
-      groupedEntities;
+    const {
+      lights,
+      climate,
+      covers,
+      media_players,
+      security,
+      actions,
+      others,
+    } = groupedEntities;
 
     if (lights.length > 0) {
       sections.push({
@@ -88,6 +95,19 @@ export class AreaViewStrategy extends ReactiveElement {
             AREA_STRATEGY_GROUP_ICONS.lights
           ),
           ...lights.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (covers.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.covers"),
+            AREA_STRATEGY_GROUP_ICONS.covers
+          ),
+          ...covers.map(computeTileCard),
         ],
       });
     }
@@ -129,6 +149,19 @@ export class AreaViewStrategy extends ReactiveElement {
             AREA_STRATEGY_GROUP_ICONS.security
           ),
           ...security.map(computeTileCard),
+        ],
+      });
+    }
+
+    if (actions.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize("ui.panel.lovelace.strategy.areas.groups.actions"),
+            AREA_STRATEGY_GROUP_ICONS.actions
+          ),
+          ...actions.map(computeTileCard),
         ],
       });
     }

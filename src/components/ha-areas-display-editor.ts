@@ -44,7 +44,7 @@ export class HaAreasDisplayEditor extends LitElement {
     );
 
     const items: DisplayItem[] = areas.map((area) => {
-      const { floor } = getAreaContext(area.area_id, this.hass!);
+      const { floor } = getAreaContext(area, this.hass!);
       return {
         value: area.area_id,
         label: area.name,

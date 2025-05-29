@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -17,6 +17,7 @@ import "../../../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
@@ -354,7 +355,7 @@ class ZWaveJSNodeConfig extends LitElement {
         >
           ${Object.entries(item.metadata.states).map(
             ([key, entityState]) => html`
-              <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
+              <ha-list-item .value=${key}>${entityState}</ha-list-item>
             `
           )}
         </ha-select>
@@ -601,7 +602,6 @@ class ZWaveJSNodeConfig extends LitElement {
         ha-settings-row {
           --settings-row-prefix-display: contents;
           --settings-row-content-width: 100%;
-          --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
           padding: 4px 16px;
         }
@@ -618,7 +618,7 @@ class ZWaveJSNodeConfig extends LitElement {
           padding-right: 24px;
           padding-inline-end: 24px;
           padding-inline-start: initial;
-          line-height: 1.5em;
+          line-height: var(--ha-line-height-normal);
         }
 
         .prefix span {

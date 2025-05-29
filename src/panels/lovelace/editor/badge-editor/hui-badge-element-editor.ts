@@ -1,8 +1,7 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import "../../../../components/sl-tab-group";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { getBadgeElementClass } from "../../create-element/create-badge-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
@@ -38,7 +37,7 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = tabs[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
@@ -68,21 +67,17 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
         break;
     }
     return html`
-      <mwc-tab-bar
-        .activeIndex=${tabs.indexOf(this._currTab)}
-        @MDCTabBar:activated=${this._handleTabChanged}
-      >
+      <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
         ${tabs.map(
           (tab) => html`
-            <mwc-tab
-              .label=${this.hass.localize(
+            <sl-tab slot="nav" .panel=${tab} .active=${this._currTab === tab}>
+              ${this.hass!.localize(
                 `ui.panel.lovelace.editor.edit_badge.tab_${tab}`
               )}
-            >
-            </mwc-tab>
+            </sl-tab>
           `
         )}
-      </mwc-tab-bar>
+      </sl-tab-group>
       ${content}
     `;
   }
@@ -91,10 +86,15 @@ export class HuiBadgeElementEditor extends HuiTypedElementEditor<LovelaceBadgeCo
     return [
       HuiTypedElementEditor.styles,
       css`
-        mwc-tab-bar {
-          text-transform: uppercase;
+        sl-tab-group {
           margin-bottom: 16px;
-          border-bottom: 1px solid var(--divider-color);
+        }
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

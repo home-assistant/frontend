@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiChevronRight,
   mdiDotsVertical,
@@ -120,6 +120,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
 
   @state() private _selected: string[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "devices-table-search",
@@ -128,6 +129,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
   })
   private _filter: string = history.state?.filter || "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "devices-table-filters-full",
@@ -919,7 +921,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                         .path=${mdiChevronRight}
                       ></ha-svg-icon>
                     </ha-md-menu-item>
-                    <ha-menu slot="menu">${labelItems}</ha-menu>
+                    <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
                   </ha-sub-menu>`
                 : nothing}
               <ha-sub-menu>
@@ -934,7 +936,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                     .path=${mdiChevronRight}
                   ></ha-svg-icon>
                 </ha-md-menu-item>
-                <ha-menu slot="menu">${areaItems}</ha-menu>
+                <ha-md-menu slot="menu">${areaItems}</ha-md-menu>
               </ha-sub-menu>
             </ha-md-button-menu>`
           : nothing}
@@ -1108,7 +1110,6 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };

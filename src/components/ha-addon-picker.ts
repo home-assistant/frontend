@@ -10,20 +10,23 @@ import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./ha-alert";
 import "./ha-combo-box";
 import type { HaComboBox } from "./ha-combo-box";
-import "./ha-list-item";
+import "./ha-combo-box-item";
 
-const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) =>
-  html`<ha-list-item twoline graphic="icon">
-    <span>${item.name}</span>
-    <span slot="secondary">${item.slug}</span>
+const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) => html`
+  <ha-combo-box-item type="button">
+    <span slot="headline">${item.name}</span>
+    <span slot="supporting-text">${item.slug}</span>
     ${item.icon
-      ? html`<img
-          alt=""
-          slot="graphic"
-          .src="/api/hassio/addons/${item.slug}/icon"
-        />`
-      : ""}
-  </ha-list-item>`;
+      ? html`
+          <img
+            alt=""
+            slot="start"
+            .src="/api/hassio/addons/${item.slug}/icon"
+          />
+        `
+      : nothing}
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {

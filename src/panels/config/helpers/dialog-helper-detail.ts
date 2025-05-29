@@ -1,5 +1,5 @@
-import { mdiAlertOutline } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
+import { mdiAlertOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -7,11 +7,15 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import "../../../components/ha-spinner";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { stringCompare } from "../../../common/string/compare";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-tooltip";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-tooltip";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -33,9 +37,6 @@ import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { stringCompare } from "../../../common/string/compare";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 type HelperCreators = Record<
   HelperDomain,
@@ -196,7 +197,7 @@ export class DialogHelperDetail extends LitElement {
             "ui.panel.config.integrations.search_helper"
           )}
         ></search-input>
-        <mwc-list
+        <ha-list
           class="ha-scrollbar"
           innerRole="listbox"
           itemRoles="option"
@@ -248,7 +249,7 @@ export class DialogHelperDetail extends LitElement {
               </ha-list-item>
             `;
           })}
-        </mwc-list>
+        </ha-list>
       `;
     }
 
@@ -403,7 +404,7 @@ export class DialogHelperDetail extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-scroll-divider-color: transparent;
-          --mdc-dialog-max-height: 60vh;
+          --mdc-dialog-max-height: 90vh;
         }
         @media all and (min-width: 550px) {
           ha-dialog {
@@ -423,11 +424,11 @@ export class DialogHelperDetail extends LitElement {
           display: block;
           margin: 16px 16px 0;
         }
-        mwc-list {
+        ha-list {
           height: calc(60vh - 184px);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          mwc-list {
+          ha-list {
             height: calc(100vh - 184px);
           }
         }

@@ -93,8 +93,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           background-color: var(--primary-background-color, #fafafa);
         }
         p {
-          font-size: 14px;
-          line-height: 20px;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-normal);
         }
         .card-content {
           background: var(
@@ -151,8 +151,8 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
           margin-inline-start: initial;
         }
         h1 {
-          font-size: 28px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-3xl);
+          font-weight: var(--ha-font-weight-normal);
           margin-top: 16px;
           margin-bottom: 16px;
         }
@@ -265,7 +265,10 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       );
     }
 
-    if (window.innerWidth > 450) {
+    if (
+      window.innerWidth > 450 &&
+      !matchMedia("(prefers-reduced-motion)").matches
+    ) {
       import("../resources/particles");
     }
 

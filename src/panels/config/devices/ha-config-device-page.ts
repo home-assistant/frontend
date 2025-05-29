@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiDelete,
@@ -8,6 +8,7 @@ import {
   mdiOpenInNew,
   mdiPencil,
   mdiPlusCircle,
+  mdiRestore,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -22,14 +23,13 @@ import { computeEntityEntryName } from "../../../common/entity/compute_entity_na
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
-import { slugify } from "../../../common/string/slugify";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { assistSatelliteSupportsSetupFlow } from "../../../data/assist_satellite";
@@ -62,6 +62,7 @@ import {
 } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
+import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import type { SceneEntities } from "../../../data/scene";
 import { showSceneEditor } from "../../../data/scene";
 import type { RelatedResult } from "../../../data/search";
@@ -106,6 +107,8 @@ export interface DeviceAlert {
   text: string;
 }
 
+const DEVICE_ALERTS_INTERVAL = 30000;
+
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -132,6 +135,8 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceActions?: DeviceAction[];
 
   @state() private _deviceAlerts?: DeviceAlert[];
+
+  private _deviceAlertsTimeout?: number;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -279,6 +284,7 @@ export class HaConfigDevicePage extends LitElement {
     this._getDiagnosticButtons(this._diagnosticDownloadLinks);
     this._getDeleteActions();
     this._getDeviceActions();
+    clearTimeout(this._deviceAlertsTimeout);
     this._getDeviceAlerts();
   }
 
@@ -292,6 +298,11 @@ export class HaConfigDevicePage extends LitElement {
     if (changedProps.has("deviceId")) {
       this._findRelated();
     }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    clearTimeout(this._deviceAlertsTimeout);
   }
 
   protected render() {
@@ -652,7 +663,7 @@ export class HaConfigDevicePage extends LitElement {
         `
       : "";
 
-    return html` <hass-subpage
+    return html`<hass-subpage
       .hass=${this.hass}
       .narrow=${this.narrow}
       .header=${deviceName}
@@ -663,6 +674,21 @@ export class HaConfigDevicePage extends LitElement {
         @click=${this._showSettings}
         .label=${this.hass.localize("ui.panel.config.devices.edit_settings")}
       ></ha-icon-button>
+      <ha-md-button-menu slot="toolbar-icon">
+        <ha-icon-button
+          slot="trigger"
+          .label=${this.hass.localize("ui.common.menu")}
+          .path=${mdiDotsVertical}
+        ></ha-icon-button>
+
+        <ha-md-menu-item .clickAction=${this._resetEntityIds}>
+          <ha-svg-icon slot="start" .path=${mdiRestore}></ha-svg-icon>
+          <div slot="headline">
+            ${this.hass.localize("ui.panel.config.devices.restore_entity_ids")}
+          </div>
+        </ha-md-menu-item>
+      </ha-md-button-menu>
+
       <div class="container">
         <div class="header fullwidth">
           ${area
@@ -776,7 +802,7 @@ export class HaConfigDevicePage extends LitElement {
                               .path=${mdiDotsVertical}
                             ></ha-icon-button>
                             ${actions.map((deviceAction) => {
-                              const listItem = html`<mwc-list-item
+                              const listItem = html`<ha-list-item
                                 class=${ifDefined(deviceAction.classes)}
                                 .action=${deviceAction.action}
                                 @click=${this._deviceActionClicked}
@@ -801,7 +827,7 @@ export class HaConfigDevicePage extends LitElement {
                                       ></ha-svg-icon>
                                     `
                                   : ""}
-                              </mwc-list-item>`;
+                              </ha-list-item>`;
                               return deviceAction.href
                                 ? html`<a
                                     href=${deviceAction.href}
@@ -1152,6 +1178,10 @@ export class HaConfigDevicePage extends LitElement {
 
     if (deviceAlerts.length) {
       this._deviceAlerts = deviceAlerts;
+      this._deviceAlertsTimeout = window.setTimeout(
+        () => this._getDeviceAlerts(),
+        DEVICE_ALERTS_INTERVAL
+      );
     }
   }
 
@@ -1240,7 +1270,14 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  private async _showSettings() {
+  private _resetEntityIds = () => {
+    const entities = this._entities(this.deviceId, this._entityReg).map(
+      (e) => e.entity_id
+    );
+    regenerateEntityIds(this, this.hass, entities);
+  };
+
+  private _showSettings = async () => {
     const device = this.hass.devices[this.deviceId];
     showDeviceRegistryDetailDialog(this, {
       device,
@@ -1326,153 +1363,34 @@ export class HaConfigDevicePage extends LitElement {
         }
         const entities = this._entities(this.deviceId, this._entityReg);
 
-        let renameEntityid = false;
-        let entityIdRenames: { oldId: string; newId?: string }[] = [];
-
-        if (this.showAdvanced) {
-          const oldDeviceSlug = slugify(oldDeviceName);
-          const newDeviceSlug = slugify(newDeviceName);
-          entityIdRenames = entities.map((entity) => {
-            const oldId = entity.entity_id;
-            if (oldId.includes(oldDeviceSlug)) {
-              const newId = oldId.replace(oldDeviceSlug, newDeviceSlug);
-              return { oldId, newId };
-            }
-            return { oldId };
-          });
-
-          const dialogRenames = entityIdRenames
-            .filter((entity) => entity.newId)
-            .map(
-              (entity) =>
-                html`<tr>
-                  <td>${entity.oldId}</td>
-                  <td>${entity.newId}</td>
-                </tr>`
-            );
-          const dialogNoRenames = entityIdRenames
-            .filter((entity) => !entity.newId)
-            .map((entity) => html`<li>${entity.oldId}</li>`);
-
-          if (dialogRenames.length) {
-            renameEntityid = await showConfirmationDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.devices.confirm_rename_entity_ids"
-              ),
-              text: html`${this.hass.localize(
-                  "ui.panel.config.devices.confirm_rename_entity_ids_warning"
-                )} <br /><br />
-                <ha-expansion-panel outlined>
-                  <span slot="header"
-                    >${this.hass.localize(
-                      "ui.panel.config.devices.confirm_rename_entity_will_rename",
-                      { count: dialogRenames.length }
-                    )}</span
-                  >
-                  <div style="overflow: auto;">
-                    <table style="width: 100%; text-align: var(--float-start);">
-                      <tr>
-                        <th>
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.confirm_rename_old"
-                          )}
-                        </th>
-                        <th>
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.confirm_rename_new"
-                          )}
-                        </th>
-                      </tr>
-                      ${dialogRenames}
-                    </table>
-                  </div>
-                </ha-expansion-panel>
-                ${dialogNoRenames.length
-                  ? html`<ha-expansion-panel outlined>
-                      <span slot="header"
-                        >${this.hass.localize(
-                          "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                          {
-                            count: dialogNoRenames.length,
-                            deviceSlug: oldDeviceSlug,
-                          }
-                        )}</span
-                      >
-                      ${dialogNoRenames}</ha-expansion-panel
-                    >`
-                  : nothing} `,
-              confirmText: this.hass.localize("ui.common.rename"),
-              dismissText: this.hass.localize("ui.common.no"),
-              warning: true,
-            });
-          } else if (dialogNoRenames.length) {
-            await showAlertDialog(this, {
-              title: this.hass.localize(
-                "ui.panel.config.devices.confirm_rename_entity_no_renamable_entity_ids"
-              ),
-              text: html`<ha-expansion-panel outlined>
-                <span slot="header"
-                  >${this.hass.localize(
-                    "ui.panel.config.devices.confirm_rename_entity_wont_rename",
-                    {
-                      deviceSlug: oldDeviceSlug,
-                      count: dialogNoRenames.length,
-                    }
-                  )}</span
-                >
-                ${dialogNoRenames}
-              </ha-expansion-panel>`,
-            });
-          }
-        }
-
         const updateProms = entities.map((entity) => {
           const name = entity.name || entity.stateName;
-          let newEntityId: string | undefined;
           let newName: string | null | undefined;
 
-          let shouldUpdateName: boolean;
-          let shouldUpdateEntityId = false;
-
           if (entity.has_entity_name && !entity.name) {
-            shouldUpdateName = false;
-          } else if (
+            return undefined;
+          }
+
+          if (
             entity.has_entity_name &&
             (entity.name === oldDeviceName || entity.name === newDeviceName)
           ) {
-            shouldUpdateName = true;
             // clear name if it matches the device name and it uses the device name (entity naming)
             newName = null;
           } else if (name && name.includes(oldDeviceName)) {
-            shouldUpdateName = true;
             newName = name.replace(oldDeviceName, newDeviceName);
           } else {
-            shouldUpdateName = false;
-          }
-
-          if (renameEntityid) {
-            const entityRename = entityIdRenames?.find(
-              (item) => item.oldId === entity.entity_id
-            );
-            if (entityRename?.newId) {
-              shouldUpdateEntityId = true;
-              newEntityId = entityRename.newId;
-            }
-          }
-
-          if (newName === undefined && newEntityId === undefined) {
             return undefined;
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-            name: shouldUpdateName ? newName : undefined,
-            new_entity_id: shouldUpdateEntityId ? newEntityId : undefined,
+            name: newName,
           });
         });
         await Promise.all(updateProms);
       },
     });
-  }
+  };
 
   private async _enableDevice(): Promise<void> {
     await updateDeviceRegistryEntry(this.hass, this.deviceId, {
@@ -1540,14 +1458,12 @@ export class HaConfigDevicePage extends LitElement {
 
         h1 {
           margin: 0;
-          font-family: var(--paper-font-headline_-_font-family);
-          -webkit-font-smoothing: var(
-            --paper-font-headline_-_-webkit-font-smoothing
-          );
-          font-size: var(--paper-font-headline_-_font-size);
-          font-weight: var(--paper-font-headline_-_font-weight);
-          letter-spacing: var(--paper-font-headline_-_letter-spacing);
-          line-height: var(--paper-font-headline_-_line-height);
+          font-family: var(--ha-font-family-body);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           opacity: var(--dark-primary-opacity);
         }
 
@@ -1561,6 +1477,7 @@ export class HaConfigDevicePage extends LitElement {
           align-items: center;
           padding-left: 8px;
           padding-inline-start: 8px;
+          padding-inline-end: initial;
           direction: var(--direction);
         }
 

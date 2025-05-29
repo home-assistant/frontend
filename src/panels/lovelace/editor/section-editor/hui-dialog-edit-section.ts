@@ -14,7 +14,9 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import "../../../../components/sl-tab-group";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
+import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -25,9 +27,6 @@ import {
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -169,21 +168,21 @@ export class HuiDialogEditSection
           </ha-button-menu>
           ${!this._yamlMode
             ? html`
-                <mwc-tab-bar
-                  .activeIndex=${TABS.indexOf(this._currTab)}
-                  @MDCTabBar:activated=${this._handleTabChanged}
-                >
+                <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
                   ${TABS.map(
                     (tab) => html`
-                      <mwc-tab
-                        .label=${this.hass!.localize(
+                      <sl-tab
+                        slot="nav"
+                        .panel=${tab}
+                        .active=${this._currTab === tab}
+                      >
+                        ${this.hass!.localize(
                           `ui.panel.lovelace.editor.edit_section.${tab.replace("-", "_")}`
                         )}
-                      >
-                      </mwc-tab>
+                      </sl-tab>
                     `
                   )}
-                </mwc-tab-bar>
+                </sl-tab-group>
               `
             : nothing}
         </ha-dialog-header>
@@ -205,7 +204,7 @@ export class HuiDialogEditSection
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = TABS[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
@@ -274,10 +273,12 @@ export class HuiDialogEditSection
         ha-dialog.yaml-mode {
           --dialog-content-padding: 0;
         }
-        mwc-tab-bar {
-          color: var(--primary-text-color);
-          text-transform: uppercase;
-          padding: 0 20px;
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
         @media all and (min-width: 600px) {
           ha-dialog {

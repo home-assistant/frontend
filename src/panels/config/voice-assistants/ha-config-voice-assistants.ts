@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import { mdiDevices, mdiMicrophone } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";

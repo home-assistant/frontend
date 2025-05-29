@@ -5,7 +5,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import type { PageNavigation } from "../layouts/hass-tabs-subpage";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-next";
-import "./ha-list-item";
 import "./ha-svg-icon";
 import "./ha-md-list";
 import "./ha-md-list-item";

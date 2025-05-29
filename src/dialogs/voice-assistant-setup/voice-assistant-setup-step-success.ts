@@ -4,6 +4,11 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import {
+  computeDeviceName,
+  computeDeviceNameDisplay,
+} from "../../common/entity/compute_device_name";
+import "../../components/ha-list-item";
 import "../../components/ha-select";
 import "../../components/ha-tts-voice-picker";
 import type { AssistPipeline } from "../../data/assist_pipeline";
@@ -17,14 +22,15 @@ import {
   setWakeWords,
 } from "../../data/assist_satellite";
 import { fetchCloudStatus } from "../../data/cloud";
+import { updateDeviceRegistryEntry } from "../../data/device_registry";
 import type { InputSelectEntity } from "../../data/input_select";
 import { setSelectOption } from "../../data/select";
 import { showVoiceAssistantPipelineDetailDialog } from "../../panels/config/voice-assistants/show-dialog-voice-assistant-pipeline-detail";
 import "../../panels/lovelace/entity-rows/hui-select-entity-row";
 import type { HomeAssistant } from "../../types";
+import { getTranslation } from "../../util/common-translation";
 import { AssistantSetupStyles } from "./styles";
 import { STEP } from "./voice-assistant-setup-dialog";
-import { getTranslation } from "../../util/common-translation";
 
 @customElement("ha-voice-assistant-setup-step-success")
 export class HaVoiceAssistantSetupStepSuccess extends LitElement {
@@ -38,6 +44,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
   @property({ attribute: false }) public assistEntityId?: string;
 
   @state() private _ttsSettings?: any;
+
+  @state() private _error?: string;
+
+  private _deviceName?: string;
 
   protected override willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
@@ -67,6 +77,8 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         ] as InputSelectEntity)
       : undefined;
 
+    const device = this.hass.devices[this.deviceId];
+
     return html`<div class="content">
         <img
           src="/static/images/voice-assistant/heart.png"
@@ -82,7 +94,20 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
             "ui.panel.config.voice_assistants.satellite_wizard.success.secondary"
           )}
         </p>
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing}
         <div class="rows">
+          <div class="row">
+            <ha-textfield
+              .label=${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.device_name"
+              )}
+              .placeholder=${computeDeviceNameDisplay(device, this.hass)}
+              .value=${this._deviceName ?? computeDeviceName(device)}
+              @change=${this._deviceNameChanged}
+            ></ha-textfield>
+          </div>
           ${this.assistConfiguration &&
           this.assistConfiguration.available_wake_words.length > 1
             ? html`<div class="row">
@@ -155,7 +180,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         </div>
       </div>
       <div class="footer">
-        <ha-button @click=${this._close} unelevated
+        <ha-button @click=${this._done} unelevated
           >${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.success.done"
           )}</ha-button
@@ -185,6 +210,10 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       pipeline = pipelines.pipelines.find((ppln) => ppln.name === pipelineName);
     }
     return [pipeline, pipelines.preferred_pipeline];
+  }
+
+  private _deviceNameChanged(ev) {
+    this._deviceName = ev.target.value;
   }
 
   private async _wakeWordPicked(ev) {
@@ -290,7 +319,20 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     });
   }
 
-  private _close() {
+  private async _done() {
+    if (this._deviceName) {
+      try {
+        updateDeviceRegistryEntry(this.hass, this.deviceId, {
+          name_by_user: this._deviceName,
+        });
+      } catch (error: any) {
+        this._error = this.hass.localize(
+          "ui.panel.config.voice_assistants.satellite_wizard.success.failed_rename",
+          { error: error.message || error }
+        );
+        return;
+      }
+    }
     fireEvent(this, "closed");
   }
 

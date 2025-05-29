@@ -7,7 +7,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { isIPAddress } from "../../../common/string/is_ip_address";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
 import "../../../components/ha-textfield";
 import "../../../components/ha-settings-row";

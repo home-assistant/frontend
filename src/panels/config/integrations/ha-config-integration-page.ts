@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiAlertCircle,
   mdiBookshelf,
@@ -276,9 +275,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.configEntriesInProgress
     );
 
-    const discoveryFlows = configEntriesInProgress.filter(
-      (flow) => !ATTENTION_SOURCES.includes(flow.context.source)
-    );
+    const discoveryFlows = configEntriesInProgress
+      .filter((flow) => !ATTENTION_SOURCES.includes(flow.context.source))
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          a.localized_title || "zzz",
+          b.localized_title || "zzz",
+          this.hass.locale.language
+        )
+      );
 
     const attentionFlows = configEntriesInProgress.filter((flow) =>
       ATTENTION_SOURCES.includes(flow.context.source)
@@ -1801,7 +1806,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           --state-message-color: var(--secondary-text-color);
         }
         .message {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           display: flex;
           align-items: center;
         }

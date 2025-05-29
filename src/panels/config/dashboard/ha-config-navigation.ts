@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -68,7 +66,7 @@ class HaConfigNavigation extends LitElement {
 
   static styles: CSSResultGroup = css`
     ha-navigation-list {
-      --navigation-list-item-title-font-size: 16px;
+      --navigation-list-item-title-font-size: var(--ha-font-size-l);
     }
   `;
 }

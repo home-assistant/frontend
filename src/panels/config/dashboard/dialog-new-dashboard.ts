@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiHome, mdiMap, mdiPencilOutline, mdiShape, mdiWeb } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -8,6 +7,7 @@ import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-req
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
+import "../../../components/ha-list";
 import type { LovelaceRawConfig } from "../../../data/lovelace/config/types";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
@@ -75,7 +75,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
           )
         )}
       >
-        <mwc-list
+        <ha-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel=${this.hass.localize(
@@ -147,7 +147,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
               </ha-list-item>
             `
           )}
-        </mwc-list>
+        </ha-list>
       </ha-dialog>
     `;
   }

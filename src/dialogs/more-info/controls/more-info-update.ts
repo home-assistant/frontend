@@ -9,7 +9,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
-import "../../../components/ha-formfield";
 import "../../../components/ha-markdown";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
@@ -472,8 +471,8 @@ class MoreInfoUpdate extends LitElement {
       position: sticky;
       bottom: 0;
       margin: 0 -24px 0 -24px;
-      margin-bottom: calc(-1 * max(env(safe-area-inset-bottom), 24px));
-      padding-bottom: env(safe-area-inset-bottom);
+      margin-bottom: calc(-1 * max(var(--safe-area-inset-bottom), 24px));
+      padding-bottom: var(--safe-area-inset-bottom);
       box-sizing: border-box;
       display: flex;
       flex-direction: column;

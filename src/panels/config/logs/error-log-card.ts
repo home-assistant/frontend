@@ -1,49 +1,55 @@
-import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail } from "@material/mwc-list";
 
 import {
   mdiArrowCollapseDown,
-  mdiDotsVertical,
   mdiCircle,
+  mdiDotsVertical,
   mdiDownload,
+  mdiFolderTextOutline,
   mdiFormatListNumbered,
   mdiMenuDown,
   mdiRefresh,
   mdiWrap,
   mdiWrapDisabled,
-  mdiFolderTextOutline,
 } from "@mdi/js";
 import {
   css,
   type CSSResultGroup,
   html,
   LitElement,
+  nothing,
   type PropertyValues,
   type TemplateResult,
-  nothing,
 } from "lit";
 import { classMap } from "lit/directives/class-map";
 
 // eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-alert";
 import "../../../components/ha-ansi-to-html";
 import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
-import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
-import "../../../components/ha-spinner";
-import "../../../components/chips/ha-assist-chip";
-import "../../../components/ha-menu";
-import "../../../components/ha-md-menu-item";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu";
+import "../../../components/ha-md-menu-item";
+import "../../../components/ha-spinner";
+import "../../../components/ha-svg-icon";
 
 import { getSignedPath } from "../../../data/auth";
 
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { atLeastVersion } from "../../../common/config/version";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import { debounce } from "../../../common/util/debounce";
+import type { HaMdMenu } from "../../../components/ha-md-menu";
+import type { ConnectionStatus } from "../../../data/connection-status";
 import { fetchErrorLog, getErrorLogDownloadUrl } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -60,14 +66,7 @@ import {
   downloadFileSupported,
   fileDownload,
 } from "../../../util/file_download";
-import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
-import type { ConnectionStatus } from "../../../data/connection-status";
-import { atLeastVersion } from "../../../common/config/version";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { debounce } from "../../../common/util/debounce";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
-import type { HaMenu } from "../../../components/ha-menu";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 
 const NUMBER_OF_LINES = 100;
 
@@ -95,7 +94,7 @@ class ErrorLogCard extends LitElement {
 
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
-  @query("#boots-menu") private _bootsMenu?: HaMenu;
+  @query("#boots-menu") private _bootsMenu?: HaMdMenu;
 
   @state() private _firstCursor?: string;
 
@@ -179,7 +178,7 @@ class ErrorLogCard extends LitElement {
                         .path=${mdiMenuDown}
                       ></ha-svg-icon
                     ></ha-assist-chip>
-                    <ha-menu
+                    <ha-md-menu
                       anchor="boots-anchor"
                       id="boots-menu"
                       positioning="fixed"
@@ -207,7 +206,7 @@ class ErrorLogCard extends LitElement {
                             : nothing}
                         `
                       )}
-                    </ha-menu>
+                    </ha-md-menu>
                   `
                 : nothing}
               ${this._downloadSupported
@@ -777,12 +776,12 @@ class ErrorLogCard extends LitElement {
     .card-header {
       color: var(--ha-card-header-color, var(--primary-text-color));
       font-family: var(--ha-card-header-font-family, inherit);
-      font-size: var(--ha-card-header-font-size, 24px);
+      font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
       letter-spacing: -0.012em;
-      line-height: 48px;
+      line-height: var(--ha-line-height-expanded);
       display: block;
       margin-block-start: 0px;
-      font-weight: normal;
+      font-weight: var(--ha-font-weight-normal);
       white-space: nowrap;
       max-width: calc(100% - 150px);
       overflow: hidden;
@@ -795,7 +794,7 @@ class ErrorLogCard extends LitElement {
 
     .error-log {
       position: relative;
-      font-family: var(--code-font-family, monospace);
+      font-family: var(--ha-font-family-code);
       clear: both;
       text-align: start;
       padding-top: 16px;

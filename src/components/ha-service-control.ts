@@ -83,10 +83,13 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
-    false;
+  @property({ attribute: "show-advanced", type: Boolean })
+  public showAdvanced = false;
+
+  @property({ attribute: "show-service-id", type: Boolean })
+  public showServiceId = false;
 
   @property({ attribute: "hide-picker", type: Boolean, reflect: true })
   public hidePicker = false;
@@ -435,6 +438,7 @@ export class HaServiceControl extends LitElement {
           .value=${this._value?.action}
           .disabled=${this.disabled}
           @value-changed=${this._serviceChanged}
+          .showServiceId=${this.showServiceId}
         ></ha-service-picker>`}
     ${this.hideDescription
       ? nothing
@@ -895,8 +899,10 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       padding: var(--service-control-padding, 0 16px);
     }
+    ha-settings-row[narrow] {
+      padding-bottom: 8px;
+    }
     ha-settings-row {
-      --paper-time-input-justify-content: flex-end;
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
       border-top: var(
@@ -917,7 +923,7 @@ export class HaServiceControl extends LitElement {
       margin: var(--service-control-padding, 0 16px);
       padding: 16px 0;
     }
-    :host([hidePicker]) p {
+    :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {

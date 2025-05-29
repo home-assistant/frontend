@@ -475,7 +475,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      font-size: 20px;
+      font-size: var(--ha-font-size-xl);
       margin-left: auto;
       margin-inline-start: auto;
       margin-inline-end: initial;

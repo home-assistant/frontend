@@ -16,6 +16,11 @@ import "../../layouts/hass-error-screen";
 import type { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
+// When a user presses "m", the user is redirected to the first redirect
+// for which holds true currentPath.startsWith(redirect.redirect)
+// That's why redirects should be sorted with more specific ones first
+// Or else pressing "M" will link to the higher level page.
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -73,14 +78,14 @@ export const getMyRedirects = (): Redirects => ({
       brand: "string",
     },
   },
-  integrations: {
-    redirect: "/config/integrations",
-  },
   integration: {
     redirect: "/config/integrations/integration",
     params: {
       domain: "string",
     },
+  },
+  integrations: {
+    redirect: "/config/integrations",
   },
   config_mqtt: {
     component: "mqtt",
@@ -106,13 +111,37 @@ export const getMyRedirects = (): Redirects => ({
     component: "matter",
     redirect: "/config/matter/add",
   },
+  bluetooth_advertisement_monitor: {
+    component: "bluetooth",
+    redirect: "/config/bluetooth/advertisement-monitor",
+  },
+  bluetooth_connection_monitor: {
+    component: "bluetooth",
+    redirect: "/config/bluetooth/connection-monitor",
+  },
+  bluetooth_visualization: {
+    component: "bluetooth",
+    redirect: "/config/bluetooth/visualization",
+  },
   config_bluetooth: {
     component: "bluetooth",
     redirect: "/config/bluetooth",
   },
+  config_dhcp: {
+    component: "dhcp",
+    redirect: "/config/dhcp",
+  },
   config_energy: {
     component: "energy",
     redirect: "/config/energy/dashboard",
+  },
+  config_ssdp: {
+    component: "ssdp",
+    redirect: "/config/ssdp",
+  },
+  config_zeroconf: {
+    component: "zeroconf",
+    redirect: "/config/zeroconf",
   },
   devices: {
     redirect: "/config/devices/dashboard",
@@ -232,6 +261,9 @@ export const getMyRedirects = (): Redirects => ({
     // customize was removed in 2021.12, fallback to dashboard
     redirect: "/config/dashboard",
   },
+  profile_security: {
+    redirect: "/profile/security",
+  },
   profile: {
     redirect: "/profile",
   },
@@ -247,10 +279,6 @@ export const getMyRedirects = (): Redirects => ({
     component: "media_source",
     redirect: "/media-browser",
   },
-  backup: {
-    component: "backup",
-    redirect: "/config/backup",
-  },
   backup_list: {
     component: "backup",
     redirect: "/config/backup/backups",
@@ -258,6 +286,10 @@ export const getMyRedirects = (): Redirects => ({
   backup_config: {
     component: "backup",
     redirect: "/config/backup/settings",
+  },
+  backup: {
+    component: "backup",
+    redirect: "/config/backup",
   },
   supervisor_snapshots: {
     component: "backup",

@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import "../../../../../components/ha-textfield";
 import type { Cluster, Command, ZHADevice } from "../../../../../data/zha";
@@ -69,9 +69,9 @@ export class ZHAClusterCommands extends LitElement {
           >
             ${this._commands.map(
               (entry) => html`
-                <mwc-list-item .value=${String(entry.id)}>
+                <ha-list-item .value=${String(entry.id)}>
                   ${entry.name + " (id: " + formatAsPaddedHex(entry.id) + ")"}
-                </mwc-list-item>
+                </ha-list-item>
               `
             )}
           </ha-select>

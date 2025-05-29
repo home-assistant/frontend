@@ -25,6 +25,7 @@ import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
+import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -146,6 +147,7 @@ class DialogTodoItemEditor extends LitElement {
                 .label=${this.hass.localize(
                   "ui.components.todo.item.description"
                 )}
+                .helper=${supportsMarkdownHelper(this.hass.localize)}
                 .value=${this._description}
                 @input=${this._handleDescriptionChanged}
                 autogrow
@@ -423,8 +425,8 @@ class DialogTodoItemEditor extends LitElement {
           justify-content: space-between;
         }
         .label {
-          font-size: 12px;
-          font-weight: 500;
+          font-size: var(--ha-font-size-s);
+          font-weight: var(--ha-font-weight-medium);
           color: var(--input-label-ink-color);
         }
         .date-range-details-content {

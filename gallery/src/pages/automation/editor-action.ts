@@ -1,29 +1,30 @@
 import type { TemplateResult } from "lit";
-import { LitElement, html, css } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
+import "../../../../src/components/ha-formfield";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
-import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
-import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockAreaRegistry } from "../../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import type { Action } from "../../../../src/data/script";
 import "../../../../src/panels/config/automation/action/ha-automation-action";
 import { HaChooseAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-choose";
+import { HaConditionAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-condition";
 import { HaDelayAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-delay";
 import { HaDeviceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-device_id";
 import { HaEventAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-event";
+import { HaIfAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-if";
+import { HaParallelAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-parallel";
+import { HaPlayMediaAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-play_media";
 import { HaRepeatAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-repeat";
+import { HaSequenceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-sequence";
 import { HaServiceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-service";
+import { HaStopAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-stop";
 import { HaWaitForTriggerAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_for_trigger";
 import { HaWaitAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-wait_template";
-import type { Action } from "../../../../src/data/script";
-import { HaConditionAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-condition";
-import { HaSequenceAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-sequence";
-import { HaParallelAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-parallel";
-import { HaIfAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-if";
-import { HaStopAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-stop";
-import { HaPlayMediaAction } from "../../../../src/panels/config/automation/action/types/ha-automation-action-play_media";
 
 const SCHEMAS: { name: string; actions: Action[] }[] = [
   { name: "Event", actions: [HaEventAction.defaultConfig] },

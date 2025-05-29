@@ -120,7 +120,6 @@ class PanelDeveloperTools extends LitElement {
       css`
         :host {
           color: var(--primary-text-color);
-          --paper-card-header-color: var(--primary-text-color);
           display: flex;
           min-height: 100vh;
         }
@@ -130,7 +129,7 @@ class PanelDeveloperTools extends LitElement {
           z-index: 4;
           background-color: var(--app-header-background-color);
           width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
+          padding-top: var(--safe-area-inset-top);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           -webkit-backdrop-filter: var(--app-header-backdrop-filter, none);
@@ -140,9 +139,9 @@ class PanelDeveloperTools extends LitElement {
           height: var(--header-height);
           display: flex;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 8px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
         @media (max-width: 599px) {
@@ -152,22 +151,22 @@ class PanelDeveloperTools extends LitElement {
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
         developer-tools-router {
           display: block;
           padding-top: calc(
-            var(--header-height) + 48px + env(safe-area-inset-top)
+            var(--header-height) + 48px + var(--safe-area-inset-top)
           );
-          padding-bottom: calc(env(safe-area-inset-bottom));
+          padding-bottom: calc(var(--safe-area-inset-bottom));
           flex: 1 1 100%;
           max-width: 100%;
         }
         sl-tab-group {
-          --ha-tab-active-text-color: var(--text-primary-color);
-          --ha-tab-track-color: var(--app-header-background-color);
-          --ha-tab-indicator-color: var(--text-primary-color);
+          --ha-tab-active-text-color: var(--app-header-text-color, white);
+          --ha-tab-indicator-color: var(--app-header-text-color, white);
+          --ha-tab-track-color: transparent;
         }
       `,
     ];

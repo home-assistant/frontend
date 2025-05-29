@@ -313,11 +313,11 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
         .encryption-key p {
           margin: 0;
           flex: 1;
-          font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
+          font-family: var(--ha-font-family-code);
           font-style: normal;
-          font-weight: 400;
-          line-height: 28px;
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           text-align: center;
         }
         .encryption-key ha-icon-button {

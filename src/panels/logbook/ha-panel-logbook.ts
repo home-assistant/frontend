@@ -39,6 +39,7 @@ export class HaPanelLogbook extends LitElement {
   @state()
   private _showBack?: boolean;
 
+  @state()
   @storage({
     key: "logbookPickedValue",
     state: true,

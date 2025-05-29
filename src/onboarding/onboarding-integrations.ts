@@ -35,7 +35,9 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
 
   @state() private _entries: ConfigEntry[] = [];
 
-  @state() private _discoveredDomains = new Set<string>();
+  @state() private _discoveredDomains: Set<string> = new Set<string>();
+
+  @state() private _discoveredDomainsReceived = false;
 
   public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
     return [
@@ -53,6 +55,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           "title",
           Array.from(this._discoveredDomains)
         );
+        this._discoveredDomainsReceived = true;
       }),
       subscribeConfigEntries(
         this.hass,
@@ -97,7 +100,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!this._discoveredDomains.size) {
+    if (!this._discoveredDomainsReceived) {
       return nothing;
     }
     // Render discovered and existing entries together sorted by localized title.

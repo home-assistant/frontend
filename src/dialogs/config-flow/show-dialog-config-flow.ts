@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { html, nothing } from "lit";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -73,7 +73,12 @@ export const showConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
+            <ha-markdown
+              .allowDataUrl=${step.handler === "zwave_js"}
+              allow-svg
+              breaks
+              .content=${description}
+            ></ha-markdown>
           `
         : "";
     },
@@ -81,7 +86,8 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldLabel(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`
+          `component.${step.handler}.config.step.${step.step_id}.sections.${field.name}.name`,
+          step.description_placeholders
         );
       }
 
@@ -89,7 +95,8 @@ export const showConfigFlowDialog = (
 
       return (
         hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}`
+          `component.${step.handler}.config.step.${step.step_id}.${prefix}data.${field.name}`,
+          step.description_placeholders
         ) || field.name
       );
     },
@@ -97,7 +104,8 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldHelper(hass, step, field, options) {
       if (field.type === "expandable") {
         return hass.localize(
-          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${field.name}.description`
+          `component.${step.translation_domain || step.handler}.config.step.${step.step_id}.sections.${field.name}.description`,
+          step.description_placeholders
         );
       }
 
@@ -191,13 +199,7 @@ export const showConfigFlowDialog = (
                 .content=${description}
               ></ha-markdown>
             `
-          : ""}
-        <p>
-          ${hass.localize(
-            "ui.panel.config.integrations.config_flow.created_config",
-            { name: step.title }
-          )}
-        </p>
+          : nothing}
       `;
     },
 

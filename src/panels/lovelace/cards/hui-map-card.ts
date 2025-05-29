@@ -141,6 +141,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ? processConfigEntities<MapEntityConfig>(this._config.entities)
       : [];
     this._mapEntities = this._getMapEntities();
+    this._clusterMarkers = this._config.cluster ?? true;
   }
 
   public getCardSize(): number {
@@ -210,24 +211,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             .zoom=${this._config.default_zoom ?? DEFAULT_ZOOM}
             .paths=${this._getHistoryPaths(this._config, this._stateHistory)}
             .autoFit=${this._config.auto_fit || false}
-            .fitZones=${this._config.fit_zones}
+            .fitZones=${this._config.fit_zones || false}
             .themeMode=${themeMode}
             .clusterMarkers=${this._clusterMarkers}
             interactive-zones
             render-passive
           ></ha-map>
           <div id="buttons">
-            <ha-icon-button
-              .label=${this.hass!.localize(
-                "ui.panel.lovelace.cards.map.toggle_grouping"
-              )}
-              .path=${this._clusterMarkers
-                ? mdiGoogleCirclesCommunities
-                : mdiDotsHexagon}
-              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-              @click=${this._toggleClusterMarkers}
-              tabindex="0"
-            ></ha-icon-button>
+            ${this._mapEntities.length > 1
+              ? html`
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.map.toggle_grouping"
+                    )}
+                    .path=${this._clusterMarkers
+                      ? mdiGoogleCirclesCommunities
+                      : mdiDotsHexagon}
+                    style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+                    @click=${this._toggleClusterMarkers}
+                    tabindex="0"
+                  ></ha-icon-button>
+                `
+              : nothing}
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.cards.map.reset_focus"

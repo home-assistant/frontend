@@ -45,9 +45,6 @@ class HaMfaModulesCard extends LitElement {
       margin-inline-end: -0.57em;
       margin-inline-start: initial;
     }
-    ha-list-item {
-      --mdc-list-item-meta-size: auto;
-    }
   `;
 
   private _enable(ev) {

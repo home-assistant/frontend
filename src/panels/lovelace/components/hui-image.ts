@@ -217,6 +217,10 @@ export class HuiImage extends LitElement {
                 muted
                 .hass=${this.hass}
                 .stateObj=${cameraObj}
+                .fitMode=${this.fitMode}
+                .aspectRatio=${this._ratio
+                  ? this._ratio.w / this._ratio.h
+                  : undefined}
                 @load=${this._onVideoLoad}
               ></ha-camera-stream>
             `
@@ -398,6 +402,12 @@ export class HuiImage extends LitElement {
       height: 100%;
       width: 100%;
       object-fit: cover;
+    }
+
+    ha-camera-stream {
+      display: block;
+      height: 100%;
+      width: 100%;
     }
 
     .progress-container {

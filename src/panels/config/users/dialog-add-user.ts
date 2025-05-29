@@ -5,7 +5,6 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-spinner";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-formfield";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";

@@ -1,5 +1,5 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -10,6 +10,7 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
@@ -26,12 +27,26 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+
+export const bluetoothAdvertisementMonitorTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.bluetooth.advertisement_monitor",
+    path: "advertisement-monitor",
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.visualization",
+    path: "visualization",
+  },
+];
 
 @customElement("bluetooth-advertisement-monitor")
 export class BluetoothAdvertisementMonitorPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public address?: string;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -101,6 +116,20 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     if (this._unsub_scanners) {
       this._unsub_scanners();
       this._unsub_scanners = undefined;
+    }
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (this.hasUpdated) {
+      return;
+    }
+
+    const searchParams = extractSearchParamsObject();
+    const address = searchParams.address;
+    if (address) {
+      this.address = address;
     }
   }
 
@@ -193,12 +222,17 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.bluetooth.no_advertisements_found"
+        )}
         @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        filter=${this.address || ""}
         clickable
+        .tabs=${bluetoothAdvertisementMonitorTabs}
       ></hass-tabs-subpage-data-table>
     `;
   }

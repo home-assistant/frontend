@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -16,8 +15,10 @@ import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-list-item";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
@@ -41,7 +42,6 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
-import { computeRTL } from "../../../common/util/compute_rtl";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -121,7 +121,7 @@ export class HaAutomationTrace extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!stateObj}
             @click=${this._showInfo}
@@ -131,7 +131,7 @@ export class HaAutomationTrace extends LitElement {
               slot="graphic"
               .path=${mdiInformationOutline}
             ></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
           ${stateObj?.attributes.id && this.narrow
             ? html`
@@ -141,7 +141,7 @@ export class HaAutomationTrace extends LitElement {
                     stateObj.attributes.id
                   )}"
                 >
-                  <mwc-list-item graphic="icon">
+                  <ha-list-item graphic="icon">
                     ${this.hass.localize(
                       "ui.panel.config.automation.trace.edit_automation"
                     )}
@@ -149,19 +149,19 @@ export class HaAutomationTrace extends LitElement {
                       slot="graphic"
                       .path=${mdiPencil}
                     ></ha-svg-icon>
-                  </mwc-list-item>
+                  </ha-list-item>
                 </a>
               `
             : ""}
 
           <li divider role="separator"></li>
 
-          <mwc-list-item graphic="icon" @click=${this._refreshTraces}>
+          <ha-list-item graphic="icon" @click=${this._refreshTraces}>
             ${this.hass.localize("ui.panel.config.automation.trace.refresh")}
             <ha-svg-icon slot="graphic" .path=${mdiRefresh}></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
 
-          <mwc-list-item
+          <ha-list-item
             graphic="icon"
             .disabled=${!this._trace}
             @click=${this._downloadTrace}
@@ -170,7 +170,7 @@ export class HaAutomationTrace extends LitElement {
               "ui.panel.config.automation.trace.download_trace"
             )}
             <ha-svg-icon slot="graphic" .path=${mdiDownload}></ha-svg-icon>
-          </mwc-list-item>
+          </ha-list-item>
         </ha-button-menu>
 
         <div class="toolbar">
@@ -245,7 +245,9 @@ export class HaAutomationTrace extends LitElement {
                             <button
                               tabindex="0"
                               .view=${view}
-                              class=${classMap({ active: this._view === view })}
+                              class=${classMap({
+                                active: this._view === view,
+                              })}
                               @click=${this._showTab}
                             >
                               ${this.hass!.localize(
@@ -526,11 +528,11 @@ export class HaAutomationTrace extends LitElement {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           height: var(--header-height);
           padding: 4px;
           background-color: var(--primary-background-color);
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;

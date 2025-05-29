@@ -308,6 +308,7 @@ export class StatisticsChart extends LitElement {
         },
       },
       legend: {
+        type: "custom",
         show: !this.hideLegend,
         data: this._legendData,
       },
@@ -450,12 +451,14 @@ export class StatisticsChart extends LitElement {
 
       const hasMean =
         this.statTypes.includes("mean") && statisticsHaveType(stats, "mean");
-      const drawBands =
-        hasMean ||
-        (this.statTypes.includes("min") &&
-          statisticsHaveType(stats, "min") &&
-          this.statTypes.includes("max") &&
-          statisticsHaveType(stats, "max"));
+      const hasMax =
+        this.statTypes.includes("max") && statisticsHaveType(stats, "max");
+      const hasMin =
+        this.statTypes.includes("min") && statisticsHaveType(stats, "min");
+      const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
+
+      const bandTop = hasMax ? "max" : "mean";
+      const bandBottom = hasMin ? "min" : "mean";
 
       const sortedTypes = drawBands
         ? [...this.statTypes].sort((a, b) => {
@@ -472,10 +475,12 @@ export class StatisticsChart extends LitElement {
       let displayedLegend = false;
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
-          const band = drawBands && (type === "min" || type === "max");
+          const band = drawBands && (type === bandTop || type === bandBottom);
           statTypes.push(type);
           const borderColor =
-            band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color;
+            band && hasMin && hasMax && hasMean
+              ? color + (this.hideLegend ? "00" : "7F")
+              : color;
           const backgroundColor = band ? color + "3F" : color + "7F";
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
@@ -510,7 +515,7 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            if (drawBands && type === "max") {
+            if (drawBands && type === bandTop) {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
               };
@@ -553,10 +558,14 @@ export class StatisticsChart extends LitElement {
             } else {
               val.push((stat.sum || 0) - firstSum);
             }
-          } else if (type === "max" && this.chartType === "line") {
-            const max = stat.max || 0;
-            val.push(Math.abs(max - (stat.min || 0)));
-            val.push(max);
+          } else if (
+            type === bandTop &&
+            this.chartType === "line" &&
+            drawBands
+          ) {
+            const top = stat[bandTop] || 0;
+            val.push(Math.abs(top - (stat[bandBottom] || 0)));
+            val.push(top);
           } else {
             val.push(stat[type] ?? null);
           }

@@ -22,10 +22,22 @@ export class HaTooltip extends SlTooltip {
       :host {
         --sl-tooltip-background-color: var(--secondary-background-color);
         --sl-tooltip-color: var(--primary-text-color);
-        --sl-tooltip-font-family: Roboto, sans-serif;
-        --sl-tooltip-font-size: 12px;
-        --sl-tooltip-font-weight: normal;
-        --sl-tooltip-line-height: 1;
+        --sl-tooltip-font-family: var(
+          --ha-tooltip-font-family,
+          var(--ha-font-family-body)
+        );
+        --sl-tooltip-font-size: var(
+          --ha-tooltip-font-size,
+          var(--ha-font-size-s)
+        );
+        --sl-tooltip-font-weight: var(
+          --ha-tooltip-font-weight,
+          var(--ha-font-weight-normal)
+        );
+        --sl-tooltip-line-height: var(
+          --ha-tooltip-line-height,
+          var(--ha-line-height-condensed)
+        );
         --sl-tooltip-padding: 8px;
         --sl-tooltip-border-radius: var(--ha-tooltip-border-radius, 4px);
         --sl-tooltip-arrow-size: var(--ha-tooltip-arrow-size, 8px);

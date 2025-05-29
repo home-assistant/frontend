@@ -16,6 +16,12 @@ import {
 } from "../helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../../types";
 import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
+import { showAreaRegistryDetailDialog } from "../../../../config/areas/show-dialog-area-registry-detail";
+import {
+  updateAreaRegistryEntry,
+  type AreaRegistryEntry,
+} from "../../../../../data/area_registry";
+import { buttonLinkStyle } from "../../../../../resources/styles";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -49,6 +55,28 @@ export class HuiAreasDashboardStrategyEditor
           <ha-icon-button-prev @click=${this._back}></ha-icon-button-prev>
           <p>${area.name}</p>
         </div>
+        <ha-expansion-panel
+          .header=${this.hass!.localize(
+            `ui.panel.lovelace.strategy.areas.header`
+          )}
+          expanded
+          outlined
+        >
+          <p>
+            ${this.hass!.localize(
+              `ui.panel.lovelace.strategy.areas.header_description`,
+              {
+                edit_the_area: html`
+                  <button class="link" @click=${this._editArea} .area=${area}>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.strategy.areas.edit_the_area"
+                    )}
+                  </button>
+                `,
+              }
+            )}
+          </p>
+        </ha-expansion-panel>
         ${AREA_STRATEGY_GROUPS.map((group) => {
           const entities = groups[group] || [];
           const value =
@@ -56,7 +84,7 @@ export class HuiAreasDashboardStrategyEditor
 
           return html`
             <ha-expansion-panel
-              header=${this.hass!.localize(
+              .header=${this.hass!.localize(
                 `ui.panel.lovelace.strategy.areas.groups.${group}`
               )}
               expanded
@@ -114,6 +142,16 @@ export class HuiAreasDashboardStrategyEditor
     }
   }
 
+  private _editArea(ev: Event): void {
+    ev.stopPropagation();
+    const area = (ev.currentTarget! as any).area as AreaRegistryEntry;
+    showAreaRegistryDetailDialog(this, {
+      entry: area,
+      updateEntry: (values) =>
+        updateAreaRegistryEntry(this.hass!, area.area_id, values),
+    });
+  }
+
   private _handleAreaNavigate(ev: CustomEvent): void {
     this._area = ev.detail.value;
   }
@@ -155,13 +193,32 @@ export class HuiAreasDashboardStrategyEditor
 
   static get styles() {
     return [
+      buttonLinkStyle,
       css`
         .toolbar {
           display: flex;
           align-items: center;
+          margin: 0 -20px 8px -20px;
+          --mdc-icon-button-size: 36px;
+          padding: 0 16px;
+        }
+        .toolbar p {
+          margin: 0;
+          font-size: var(--ha-font-size-l);
+          line-height: var(--ha-line-height-normal);
+          font-weight: var(--ha-font-weight-normal);
+          padding: 6px 4px;
         }
         ha-expansion-panel {
           margin-bottom: 8px;
+          max-width: 600px;
+        }
+        ha-expansion-panel p {
+          margin: 8px 2px;
+        }
+        button.link {
+          color: var(--primary-color);
+          text-decoration: none;
         }
       `,
     ];

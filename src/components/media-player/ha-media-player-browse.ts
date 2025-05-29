@@ -1,8 +1,7 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -50,6 +49,8 @@ import "../ha-fab";
 import "../ha-icon-button";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import "../ha-list";
+import "../ha-list-item";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
 import { loadVirtualizer } from "../../resources/virtualizer";
@@ -516,7 +517,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             : ""}
                         `
                       : html`
-                          <mwc-list>
+                          <ha-list>
                             <lit-virtualizer
                               scroller
                               .items=${children}
@@ -527,7 +528,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             ></lit-virtualizer>
                             ${currentItem.not_shown
                               ? html`
-                                  <mwc-list-item
+                                  <ha-list-item
                                     noninteractive
                                     class="not-shown"
                                     .graphic=${mediaClass.show_list_images
@@ -540,10 +541,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                                         { count: currentItem.not_shown }
                                       )}
                                     </span>
-                                  </mwc-list-item>
+                                  </ha-list-item>
                                 `
                               : ""}
-                          </mwc-list>
+                          </ha-list>
                         `
             }
           </div>
@@ -623,7 +624,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         : "none";
 
     return html`
-      <mwc-list-item
+      <ha-list-item
         @click=${this._childClicked}
         .item=${child}
         .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
@@ -660,7 +661,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 : nothing}
             </div>`}
         <span class="title">${child.title}</span>
-      </mwc-list-item>
+      </ha-list-item>
     `;
   };
 
@@ -889,12 +890,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           display: flex;
           flex-direction: row-reverse;
           margin-right: 48px;
+          margin-inline-end: 48px;
+          margin-inline-start: initial;
+          direction: var(--direction);
         }
 
         .highlight-add-button ha-svg-icon {
           position: relative;
           top: -0.5em;
           margin-left: 8px;
+          margin-inline-start: 8px;
+          margin-inline-end: initial;
+          transform: scaleX(var(--scale-direction));
         }
 
         .content {
@@ -958,9 +965,9 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-top: 16px;
         }
         .breadcrumb .title {
-          font-size: 32px;
-          line-height: 1.2;
-          font-weight: bold;
+          font-size: var(--ha-font-size-4xl);
+          line-height: var(--ha-line-height-condensed);
+          font-weight: var(--ha-font-weight-bold);
           margin: 0;
           overflow: hidden;
           display: -webkit-box;
@@ -969,7 +976,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-right: 8px;
         }
         .breadcrumb .previous-title {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           padding-bottom: 8px;
           color: var(--secondary-text-color);
           overflow: hidden;
@@ -978,7 +985,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-icon-size: 14px;
         }
         .breadcrumb .subtitle {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           overflow: hidden;
           text-overflow: ellipsis;
           margin-bottom: 0;
@@ -1001,22 +1008,22 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         /* ============= CHILDREN ============= */
 
-        mwc-list {
+        ha-list {
           --mdc-list-vertical-padding: 0;
           --mdc-list-item-graphic-margin: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           margin-top: 10px;
         }
 
-        mwc-list li:last-child {
+        ha-list li:last-child {
           display: none;
         }
 
-        mwc-list li[divider] {
+        ha-list li[divider] {
           border-bottom-color: var(--divider-color);
         }
 
-        mwc-list-item {
+        ha-list-item {
           width: 100%;
         }
 
@@ -1137,7 +1144,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .child .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding-top: 16px;
           padding-left: 2px;
           overflow: hidden;
@@ -1152,7 +1159,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-left: 16px;
         }
 
-        mwc-list-item .graphic {
+        ha-list-item .graphic {
           background-size: contain;
           background-repeat: no-repeat;
           background-position: center;
@@ -1163,7 +1170,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           line-height: initial;
         }
 
-        mwc-list-item .graphic .play {
+        ha-list-item .graphic .play {
           opacity: 0;
           transition: all 0.5s;
           background-color: rgba(var(--rgb-card-background-color), 0.5);
@@ -1171,17 +1178,17 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-icon-button-size: 40px;
         }
 
-        mwc-list-item:hover .graphic .play {
+        ha-list-item:hover .graphic .play {
           opacity: 1;
           color: var(--primary-text-color);
         }
 
-        mwc-list-item .graphic .play.show {
+        ha-list-item .graphic .play.show {
           opacity: 1;
           background-color: transparent;
         }
 
-        mwc-list-item .title {
+        ha-list-item .title {
           margin-left: 16px;
           margin-inline-start: 16px;
           margin-inline-end: initial;
@@ -1202,7 +1209,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([narrow]) .breadcrumb .title {
-          font-size: 24px;
+          font-size: var(--ha-font-size-2xl);
         }
         :host([narrow]) .header {
           padding: 0;

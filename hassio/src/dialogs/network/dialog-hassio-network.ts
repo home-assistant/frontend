@@ -1,8 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-tab";
-import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -10,14 +6,16 @@ import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-alert";
-import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-list";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-password-field";
 import "../../../../src/components/ha-radio";
+import "../../../../src/components/ha-spinner";
 import "../../../../src/components/ha-textfield";
 import type { HaTextField } from "../../../../src/components/ha-textfield";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -39,6 +37,7 @@ import type { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioNetworkDialogParams } from "./show-dialog-network";
+import "../../../../src/components/sl-tab-group";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -116,19 +115,19 @@ export class DialogHassioNetwork
             ></ha-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
-            ? html`<mwc-tab-bar
-                .activeIndex=${this._curTabIndex}
-                @MDCTabBar:activated=${this._handleTabActivated}
+            ? html`<sl-tab-group @sl-tab-show=${this._handleTabActivated}
                 >${this._interfaces.map(
-                  (device) =>
-                    html`<mwc-tab
+                  (device, index) =>
+                    html`<sl-tab
+                      slot="nav"
                       .id=${device.interface}
-                      .label=${device.interface}
-                      dialogInitialFocus
+                      .panel=${index.toString()}
+                      .active=${this._curTabIndex === index}
                     >
-                    </mwc-tab>`
+                      ${device.interface}
+                    </sl-tab>`
                 )}
-              </mwc-tab-bar>`
+              </sl-tab-group>`
             : ""}
         </div>
         ${cache(this._renderTab())}
@@ -169,12 +168,12 @@ export class DialogHassioNetwork
                 this._accessPoints.accesspoints &&
                 this._accessPoints.accesspoints.length !== 0
                   ? html`
-                      <mwc-list>
+                      <ha-list>
                         ${this._accessPoints.accesspoints
                           .filter((ap) => ap.ssid)
                           .map(
                             (ap) => html`
-                              <mwc-list-item
+                              <ha-list-item
                                 twoline
                                 @click=${this._selectAP}
                                 .activated=${ap.ssid ===
@@ -189,10 +188,10 @@ export class DialogHassioNetwork
                                   )}:
                                   ${ap.signal}
                                 </span>
-                              </mwc-list-item>
+                              </ha-list-item>
                             `
                           )}
-                      </mwc-list>
+                      </ha-list>
                     `
                   : ""}
                 ${this._wifiConfiguration
@@ -485,8 +484,8 @@ export class DialogHassioNetwork
         return;
       }
     }
-    this._curTabIndex = ev.detail.index;
-    this._interface = { ...this._interfaces[ev.detail.index] };
+    this._curTabIndex = Number(ev.detail.name);
+    this._interface = { ...this._interfaces[this._curTabIndex] };
   }
 
   private _handleRadioValueChanged(ev: CustomEvent): void {
@@ -560,11 +559,6 @@ export class DialogHassioNetwork
           flex-shrink: 0;
         }
 
-        mwc-tab-bar {
-          border-bottom: 1px solid
-            var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
-        }
-
         ha-dialog {
           --dialog-content-position: static;
           --dialog-content-padding: 0;
@@ -616,7 +610,7 @@ export class DialogHassioNetwork
           display: flex;
           justify-content: space-between;
           padding: 8px;
-          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+          padding-bottom: max(var(--safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         .warning {
@@ -634,8 +628,16 @@ export class DialogHassioNetwork
         ha-textfield {
           padding: 0 14px;
         }
-        mwc-list-item {
+        ha-list-item {
           --mdc-list-side-padding: 10px;
+        }
+
+        sl-tab {
+          flex: 1;
+        }
+        sl-tab::part(base) {
+          width: 100%;
+          justify-content: center;
         }
       `,
     ];

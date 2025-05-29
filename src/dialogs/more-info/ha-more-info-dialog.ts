@@ -25,6 +25,10 @@ import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
+import {
+  getEntityContext,
+  getEntityEntryContext,
+} from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -58,10 +62,6 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/get_entity_context";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -679,13 +679,13 @@ export class MoreInfoDialog extends LitElement {
 
         .title .main {
           color: var(--primary-text-color);
-          font-size: 20px;
-          line-height: 24px;
+          font-size: var(--ha-font-size-xl);
+          line-height: var(--ha-line-height-condensed);
         }
 
         .title .breadcrumb {
           color: var(--secondary-text-color);
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           line-height: 16px;
           --mdc-icon-size: 16px;
           padding: 4px;

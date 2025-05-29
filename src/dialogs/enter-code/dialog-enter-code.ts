@@ -222,13 +222,12 @@ export class DialogEnterCode
         grid-column-start: 6;
       }
     }
-
     ha-control-button {
       width: 56px;
       height: 56px;
       --control-button-border-radius: 28px;
       --mdc-icon-size: 24px;
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
     }
     .submit {
       --control-button-background-color: var(--green-color);
@@ -237,12 +236,6 @@ export class DialogEnterCode
     .clear {
       --control-button-background-color: var(--red-color);
       --control-button-icon-color: var(--red-color);
-    }
-    .hidden {
-      display: none;
-    }
-    .buttons {
-      margin-top: 12px;
     }
   `;
 }
