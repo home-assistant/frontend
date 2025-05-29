@@ -4,6 +4,7 @@ import {
   mdiDeleteForever,
   mdiHospitalBox,
   mdiInformation,
+  mdiPlus,
   mdiUpload,
   mdiWrench,
 } from "@mdi/js";
@@ -13,6 +14,7 @@ import {
   fetchZwaveIntegrationSettings,
   fetchZwaveIsAnyOTAFirmwareUpdateInProgress,
   fetchZwaveIsNodeFirmwareUpdateInProgress,
+  fetchZwaveNetworkStatus,
   fetchZwaveNodeStatus,
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -24,6 +26,7 @@ import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/inte
 import { showZWaveJSUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
 import type { DeviceAction } from "../../../ha-config-device-page";
 import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
+import { showZWaveJSAddNodeDialog } from "../../../../integrations/integration-panels/zwave_js/add-node/show-dialog-zwave_js-add-node";
 
 export const getZwaveDeviceActions = async (
   el: HTMLElement,
@@ -160,6 +163,19 @@ export const getZwaveDeviceActions = async (
   }
 
   if (nodeStatus.is_controller_node) {
+    const networkStatus = await fetchZwaveNetworkStatus(hass, {
+      entry_id: entryId,
+    });
+    actions.unshift({
+      label: hass.localize("ui.panel.config.zwave_js.common.add_node"),
+      icon: mdiPlus,
+      action: async () => {
+        showZWaveJSAddNodeDialog(el, {
+          entry_id: entryId,
+          longRangeSupported: networkStatus.controller?.supports_long_range,
+        });
+      },
+    });
     actions.push({
       label: hass.localize(
         "ui.panel.config.zwave_js.device_info.hard_reset_controller"
