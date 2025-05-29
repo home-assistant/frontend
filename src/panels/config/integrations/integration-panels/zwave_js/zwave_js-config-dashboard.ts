@@ -133,8 +133,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
+    const provisioningDevices =
+      this._provisioningEntries?.filter((entry) => !entry.nodeId).length ?? 0;
     const notReadyDevices =
-      this._network?.controller.nodes.filter((node) => !node.ready).length ?? 0;
+      (this._network?.controller.nodes.filter((node) => !node.ready).length ??
+        0) + provisioningDevices;
 
     return html`
       <hass-tabs-subpage
@@ -182,7 +185,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               ${this.hass.localize(
                                 `ui.panel.config.zwave_js.dashboard.devices`,
                                 {
-                                  count: this._network.controller.nodes.length,
+                                  count:
+                                    this._network.controller.nodes.length +
+                                    provisioningDevices,
                                 }
                               )}
                               ${notReadyDevices > 0
