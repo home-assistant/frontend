@@ -63,6 +63,7 @@ interface MediaPlayerEntityAttributes extends HassEntityAttributeBase {
   source_list?: string[];
   sound_mode?: string;
   sound_mode_list?: string[];
+  group_members?: string[];
 }
 
 export interface MediaPlayerEntity extends HassEntityBase {
@@ -510,3 +511,12 @@ export const mediaPlayerPlayMedia = (
     ...extra,
   });
 };
+
+export const mediaPlayerJoin = (
+  hass: HomeAssistant,
+  entity_id: string,
+  group_members: string[]
+) => hass.callService("media_player", "join", { group_members }, { entity_id });
+
+export const mediaPlayerUnjoin = (hass: HomeAssistant, entity_id: string) =>
+  hass.callService("media_player", "unjoin", {}, { entity_id });

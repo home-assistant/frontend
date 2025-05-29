@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
@@ -23,6 +23,7 @@ export class MQTTConfigPanel extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-topic-ls",
     state: true,
@@ -30,6 +31,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _topic = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-payload-ls",
     state: true,
@@ -37,6 +39,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _payload = "";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-qos-ls",
     state: true,
@@ -44,6 +47,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _qos = "0";
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-retain-ls",
     state: true,
@@ -51,6 +55,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _retain = false;
 
+  @state()
   @storage({
     key: "panel-dev-mqtt-allow-template-ls",
     state: true,

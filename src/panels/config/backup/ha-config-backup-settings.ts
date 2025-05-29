@@ -41,7 +41,7 @@ import { brandsUrl } from "../../../util/brands-url";
 class HaConfigBackupSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -244,7 +244,7 @@ class HaConfigBackupSettings extends LitElement {
                   `
                 : nothing}
             </div>
-            ${!this.cloudStatus.logged_in
+            ${!this.cloudStatus?.logged_in
               ? html`<ha-card class="cloud-info">
                   <div class="cloud-header">
                     <img
@@ -316,7 +316,7 @@ class HaConfigBackupSettings extends LitElement {
             </div>
           </ha-card>
           ${supervisor
-            ? html` <ha-card>
+            ? html`<ha-card>
                 <div class="card-header">
                   ${this.hass.localize(
                     "ui.panel.config.backup.settings.addon_update_backup.title"
@@ -535,7 +535,7 @@ class HaConfigBackupSettings extends LitElement {
     .cloud-info .cloud-header {
       display: flex;
       gap: 16px;
-      font-size: 22px;
+      font-size: var(--ha-font-size-xl);
       align-items: center;
       padding: 16px;
     }

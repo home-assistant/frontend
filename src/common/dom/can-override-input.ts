@@ -1,5 +1,11 @@
 export const canOverrideAlphanumericInput = (composedPath: EventTarget[]) => {
-  if (composedPath.some((el) => "tagName" in el && el.tagName === "HA-MENU")) {
+  if (
+    composedPath.some(
+      (el) =>
+        "tagName" in el &&
+        (el.tagName === "HA-MENU" || el.tagName === "HA-CODE-EDITOR")
+    )
+  ) {
     return false;
   }
 

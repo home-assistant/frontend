@@ -110,6 +110,7 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _readOnly = false;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaScriptEditor, value) {
@@ -1029,7 +1030,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .errors {
           padding: 20px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           color: var(--error-color);
         }
         .yaml-mode {
@@ -1064,7 +1065,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
@@ -1079,8 +1080,8 @@ export class HaScriptEditor extends SubscribeMixin(
           align-items: center;
         }
         .header .name {
-          font-size: 20px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
         }
         .header a {

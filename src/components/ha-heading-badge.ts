@@ -34,7 +34,7 @@ export class HaBadge extends LitElement {
       align-items: center;
       gap: 3px;
       color: var(--ha-heading-badge-text-color, var(--secondary-text-color));
-      font-size: var(--ha-heading-badge-font-size, 14px);
+      font-size: var(--ha-heading-badge-font-size, var(--ha-font-size-m));
       font-weight: var(--ha-heading-badge-font-weight, 400);
       line-height: var(--ha-heading-badge-line-height, 20px);
       letter-spacing: 0.1px;

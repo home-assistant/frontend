@@ -86,7 +86,7 @@ class HuiEnergyCarbonGaugeCard
     const co2State = this.hass.states[this._data.co2SignalEntity];
 
     if (!co2State) {
-      return html`<hui-warning>
+      return html`<hui-warning .hass=${this.hass}>
         ${createEntityNotFoundWarning(this.hass, this._data.co2SignalEntity)}
       </hui-warning>`;
     }
@@ -190,7 +190,7 @@ class HuiEnergyCarbonGaugeCard
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
 

@@ -16,6 +16,7 @@ import { extractSearchParamsObject } from "../common/url/search-params";
 import { showVoiceCommandDialog } from "../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
 import { showShortcutsDialog } from "../dialogs/shortcuts/show-shortcuts-dialog";
+import type { Redirects } from "../panels/my/ha-panel-my";
 
 declare global {
   interface HASSDomEvents {
@@ -143,49 +144,44 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
       e.preventDefault();
 
       const targetPath = mainWindow.location.pathname;
-      const isHassio = isComponentLoaded(this.hass, "hassio");
       const myParams = new URLSearchParams();
 
-      if (isHassio && targetPath.startsWith("/hassio")) {
+      let redirects: Redirects;
+
+      if (targetPath.startsWith("/hassio")) {
         const myPanelSupervisor = await import(
           "../../hassio/src/hassio-my-redirect"
         );
-        for (const [slug, redirect] of Object.entries(
-          myPanelSupervisor.REDIRECTS
-        )) {
-          if (targetPath.startsWith(redirect.redirect)) {
-            myParams.append("redirect", slug);
-            if (redirect.redirect === "/hassio/addon") {
-              myParams.append("addon", targetPath.split("/")[3]);
-            }
-            window.open(
-              `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-              "_blank"
-            );
-            return;
-          }
-        }
+        redirects = myPanelSupervisor.REDIRECTS;
+      } else {
+        const myPanel = await import("../panels/my/ha-panel-my");
+        redirects = myPanel.getMyRedirects();
       }
 
-      const myPanel = await import("../panels/my/ha-panel-my");
+      for (const [slug, redirect] of Object.entries(redirects)) {
+        if (!targetPath.startsWith(redirect.redirect)) {
+          continue;
+        }
+        myParams.append("redirect", slug);
 
-      for (const [slug, redirect] of Object.entries(myPanel.getMyRedirects())) {
-        if (targetPath.startsWith(redirect.redirect)) {
-          myParams.append("redirect", slug);
-          if (redirect.params) {
-            const params = extractSearchParamsObject();
-            for (const key of Object.keys(redirect.params)) {
-              if (key in params) {
-                myParams.append(key, params[key]);
-              }
+        if (redirect.params) {
+          const params = extractSearchParamsObject();
+          for (const key of Object.keys(redirect.params)) {
+            if (key in params) {
+              myParams.append(key, params[key]);
             }
           }
-          window.open(
-            `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
-            "_blank"
-          );
-          return;
         }
+        if (redirect.redirect === "/config/integrations/integration") {
+          myParams.append("domain", targetPath.split("/")[4]);
+        } else if (redirect.redirect === "/hassio/addon") {
+          myParams.append("addon", targetPath.split("/")[3]);
+        }
+        window.open(
+          `https://my.home-assistant.io/create-link/?${myParams.toString()}`,
+          "_blank"
+        );
+        return;
       }
       showToast(this, {
         message: this.hass.localize(

@@ -22,11 +22,14 @@ import type {
   DeviceConsumptionEnergyPreference,
 } from "../../data/energy";
 import {
+  computeConsumptionData,
   getEnergyDataCollection,
   getEnergyGasUnit,
   getEnergyWaterUnit,
+  getSummedData,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
+import type { StatisticValue } from "../../data/recorder";
 
 const ENERGY_LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -177,24 +180,34 @@ class PanelEnergy extends LitElement {
     const csv: string[] = [];
     csv[0] = headers;
 
-    const processStat = function (stat: string, type: string, unit: string) {
+    const processCsvRow = function (
+      id: string,
+      type: string,
+      unit: string,
+      data: StatisticValue[]
+    ) {
       let n = 0;
       const row: string[] = [];
-      if (!stats[stat]) {
-        return;
-      }
-      row.push(stat);
+      row.push(id);
       row.push(type);
       row.push(unit.normalize("NFKD"));
       times.forEach((t) => {
-        if (n < stats[stat].length && stats[stat][n].start === t) {
-          row.push((stats[stat][n].change ?? "").toString());
+        if (n < data.length && data[n].start === t) {
+          row.push((data[n].change ?? "").toString());
           n++;
         } else {
           row.push("");
         }
       });
       csv.push(row.join(",") + "\n");
+    };
+
+    const processStat = function (stat: string, type: string, unit: string) {
+      if (!stats[stat]) {
+        return;
+      }
+
+      processCsvRow(stat, type, unit, stats[stat]);
     };
 
     const currency = this.hass.config.currency;
@@ -335,6 +348,99 @@ class PanelEnergy extends LitElement {
 
     printCategory("device_consumption", devices, electricUnit);
 
+    const { summedData, compareSummedData: _ } = getSummedData(
+      energyData.state
+    );
+    const { consumption, compareConsumption: __ } = computeConsumptionData(
+      summedData,
+      undefined
+    );
+
+    const processConsumptionData = function (
+      type: string,
+      unit: string,
+      data: Record<number, number>
+    ) {
+      const data2: StatisticValue[] = [];
+
+      Object.entries(data).forEach(([t, value]) => {
+        data2.push({
+          start: Number(t),
+          end: NaN,
+          change: value,
+        });
+      });
+
+      processCsvRow("", type, unit, data2);
+    };
+
+    const hasSolar = !!solar_productions.length;
+    const hasBattery = !!battery_ins.length;
+    const hasGridReturn = !!grid_productions.length;
+    const hasGridSource = !!grid_consumptions.length;
+
+    if (hasGridSource) {
+      processConsumptionData(
+        "calculated_consumed_grid",
+        electricUnit,
+        consumption.used_grid
+      );
+      if (hasBattery) {
+        processConsumptionData(
+          "calculated_grid_to_battery",
+          electricUnit,
+          consumption.grid_to_battery
+        );
+      }
+    }
+    if (hasGridReturn && hasBattery) {
+      processConsumptionData(
+        "calculated_battery_to_grid",
+        electricUnit,
+        consumption.battery_to_grid
+      );
+    }
+    if (hasBattery) {
+      processConsumptionData(
+        "calculated_consumed_battery",
+        electricUnit,
+        consumption.used_battery
+      );
+    }
+
+    if (hasSolar) {
+      processConsumptionData(
+        "calculated_consumed_solar",
+        electricUnit,
+        consumption.used_solar
+      );
+      if (hasBattery) {
+        processConsumptionData(
+          "calculated_solar_to_battery",
+          electricUnit,
+          consumption.solar_to_battery
+        );
+      }
+      if (hasGridReturn) {
+        processConsumptionData(
+          "calculated_solar_to_grid",
+          electricUnit,
+          consumption.solar_to_grid
+        );
+      }
+    }
+
+    if (
+      (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) >
+      1
+    ) {
+      processConsumptionData(
+        "calculated_total_consumption",
+        electricUnit,
+        consumption.used_total
+      );
+    }
+
     const blob = new Blob(csv, {
       type: "text/csv",
     });
@@ -381,7 +487,7 @@ class PanelEnergy extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
+          padding-top: var(--safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
           display: flex;
@@ -402,9 +508,9 @@ class PanelEnergy extends LitElement {
           display: flex;
           flex: 1;
           align-items: center;
-          font-size: 20px;
+          font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
         @media (max-width: 599px) {
@@ -414,7 +520,7 @@ class PanelEnergy extends LitElement {
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
         hui-view-container {
@@ -422,12 +528,12 @@ class PanelEnergy extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          padding-inline-start: env(safe-area-inset-left);
-          padding-inline-end: env(safe-area-inset-right);
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
+          padding-left: var(--safe-area-inset-left);
+          padding-right: var(--safe-area-inset-right);
+          padding-inline-start: var(--safe-area-inset-left);
+          padding-inline-end: var(--safe-area-inset-right);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
         hui-view {
           flex: 1 1 100%;

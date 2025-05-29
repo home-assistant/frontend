@@ -21,19 +21,33 @@ export class HaComboBoxItem extends HaMdListItem {
         --state-icon-color: var(--secondary-text-color);
       }
       [slot="headline"] {
-        line-height: 22px;
-        font-size: 14px;
+        line-height: var(--ha-line-height-normal);
+        font-size: var(--ha-font-size-m);
         white-space: nowrap;
       }
       [slot="supporting-text"] {
-        line-height: 18px;
-        font-size: 12px;
+        line-height: var(--ha-line-height-normal);
+        font-size: var(--ha-font-size-s);
         white-space: nowrap;
       }
       ::slotted(state-badge),
       ::slotted(img) {
         width: 32px;
         height: 32px;
+      }
+      ::slotted(.code) {
+        font-family: var(--ha-font-family-code);
+        font-size: var(--ha-font-size-xs);
+      }
+      ::slotted(.domain) {
+        font-size: var(--ha-font-size-s);
+        font-weight: var(--ha-font-weight-normal);
+        line-height: var(--ha-line-height-normal);
+        align-self: flex-end;
+        max-width: 30%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
     `,
   ];

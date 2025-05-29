@@ -301,7 +301,7 @@ class DialogSystemInformation extends LitElement {
     } else {
       const domains = Object.keys(this._systemInfo).sort(sortKeys);
       for (const domain of domains) {
-        const domainInfo = this._systemInfo[domain];
+        const domainInfo = this._systemInfo[domain]!;
         const keys: TemplateResult[] = [];
 
         for (const key of Object.keys(domainInfo.info)) {
@@ -387,7 +387,7 @@ class DialogSystemInformation extends LitElement {
     const domainParts: string[] = [];
 
     for (const domain of Object.keys(this._systemInfo!).sort(sortKeys)) {
-      const domainInfo = this._systemInfo![domain];
+      const domainInfo = this._systemInfo![domain]!;
       let first = true;
       const parts = [
         `${

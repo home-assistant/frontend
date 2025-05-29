@@ -73,16 +73,20 @@ class HaEntityAttributePicker extends LitElement {
       return nothing;
     }
 
+    const stateObj = this.hass.states[this.entityId!] as HassEntity | undefined;
+
     return html`
       <ha-combo-box
         .hass=${this.hass}
         .value=${this.value
-          ? computeAttributeNameDisplay(
-              this.hass.localize,
-              this.hass.states[this.entityId!],
-              this.hass.entities,
-              this.value
-            )
+          ? stateObj
+            ? computeAttributeNameDisplay(
+                this.hass.localize,
+                stateObj,
+                this.hass.entities,
+                this.value
+              )
+            : this.value
           : ""}
         .autofocus=${this.autofocus}
         .label=${this.label ??

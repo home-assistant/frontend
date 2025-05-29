@@ -106,7 +106,7 @@ export class DemoDateTimeDateTime extends LitElement {
       margin: 12px auto;
     }
     .header {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
     .center {
       text-align: center;

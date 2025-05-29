@@ -42,7 +42,6 @@ class StepFlowMenu extends LitElement {
     );
 
     return html`
-      <h2>${this.flowConfig.renderMenuHeader(this.hass, this.step)}</h2>
       ${description ? html`<div class="content">${description}</div>` : ""}
       <div class="options">
         ${options.map(

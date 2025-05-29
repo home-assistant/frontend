@@ -106,7 +106,7 @@ export const haTheme = EditorView.theme({
     background: "none",
     color: "var(--primary-color)",
     fontFamily:
-      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))",
+      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, var(--ha-font-family-body)))",
     fontSize: "var(--mdc-typography-button-font-size, 0.875rem)",
     height: "36px",
     fontWeight: "var(--mdc-typography-button-font-weight, 500)",

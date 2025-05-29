@@ -363,7 +363,7 @@ export class HuiAreaCard
 
     if (area === null) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${this.hass.localize("ui.card.area.area_not_found")}
         </hui-warning>
       `;
@@ -611,7 +611,7 @@ export class HuiAreaCard
 
     .sensors {
       color: #e3e3e3;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       --mdc-icon-size: 24px;
       opacity: 0.6;
       margin-top: 8px;
@@ -648,7 +648,7 @@ export class HuiAreaCard
 
     .name {
       color: white;
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
     }
 
     .bottom {

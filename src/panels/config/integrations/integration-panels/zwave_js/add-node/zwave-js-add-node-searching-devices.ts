@@ -10,9 +10,10 @@ import { InclusionStrategy } from "../../../../../../data/zwave_js";
 import "../../../../../../components/ha-spinner";
 import "../../../../../../components/ha-button";
 import "../../../../../../components/ha-alert";
+import { WakeLockMixin } from "../../../../../../mixins/wakelock-mixin";
 
 @customElement("zwave-js-add-node-searching-devices")
-export class ZWaveJsAddNodeSearchingDevices extends LitElement {
+export class ZWaveJsAddNodeSearchingDevices extends WakeLockMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, attribute: "smart-start" })
@@ -121,7 +122,7 @@ export class ZWaveJsAddNodeSearchingDevices extends LitElement {
       display: block;
     }
     .note {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
     .searching-spinner {

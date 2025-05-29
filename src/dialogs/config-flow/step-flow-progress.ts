@@ -2,13 +2,13 @@ import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { blankBeforePercent } from "../../common/translations/blank_before_percent";
 import "../../components/ha-progress-ring";
 import "../../components/ha-spinner";
 import type { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { blankBeforePercent } from "../../common/translations/blank_before_percent";
 
 @customElement("step-flow-progress")
 class StepFlowProgress extends LitElement {
@@ -26,9 +26,6 @@ class StepFlowProgress extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h2>
-        ${this.flowConfig.renderShowFormProgressHeader(this.hass, this.step)}
-      </h2>
       <div class="content">
         ${this.progress
           ? html`

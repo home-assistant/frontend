@@ -46,7 +46,7 @@ export class HuiGenericEntityRow extends LitElement {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this.config.entity)}
         </hui-warning>
       `;
@@ -163,6 +163,7 @@ export class HuiGenericEntityRow extends LitElement {
               @touchend=${stopPropagation}
               @keydown=${stopPropagation}
               @click=${stopPropagation}
+              @action=${stopPropagation}
             ></slot>`}
       </div>
     `;

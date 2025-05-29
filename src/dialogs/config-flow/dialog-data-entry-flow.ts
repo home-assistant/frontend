@@ -1,18 +1,20 @@
-import "@material/mwc-button";
 import { mdiClose, mdiHelpCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-dialog";
+import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 import {
   subscribeDataEntryFlowProgress,
   subscribeDataEntryFlowProgressed,
 } from "../../data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
@@ -172,10 +174,110 @@ class DataEntryFlowDialog extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  private _devices = memoizeOne(
+    (
+      showDevices: boolean,
+      devices: DeviceRegistryEntry[],
+      entry_id?: string
+    ) =>
+      showDevices && entry_id
+        ? devices.filter((device) => device.config_entries.includes(entry_id))
+        : []
+  );
+
+  private _getDialogTitle(): string {
+    if (this._loading || !this._step || !this._params) {
+      return "";
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return this._params.flowConfig.renderShowFormStepHeader(
+          this.hass,
+          this._step
+        );
+      case "abort":
+        return this._params.flowConfig.renderAbortHeader
+          ? this._params.flowConfig.renderAbortHeader(this.hass, this._step)
+          : this.hass.localize(
+              `component.${this._params.domain ?? this._step.handler}.title`
+            );
+      case "progress":
+        return this._params.flowConfig.renderShowFormProgressHeader(
+          this.hass,
+          this._step
+        );
+      case "menu":
+        return this._params.flowConfig.renderMenuHeader(this.hass, this._step);
+      case "create_entry": {
+        const devicesLength = this._devices(
+          this._params.flowConfig.showDevices,
+          Object.values(this.hass.devices),
+          this._step.result?.entry_id
+        ).length;
+        return this.hass.localize(
+          `ui.panel.config.integrations.config_flow.${
+            devicesLength ? "device_created" : "success"
+          }`,
+          {
+            number: devicesLength,
+          }
+        );
+      }
+      default:
+        return "";
+    }
+  }
+
+  private _getDialogSubtitle(): string | TemplateResult | undefined {
+    if (this._loading || !this._step || !this._params) {
+      return "";
+    }
+
+    switch (this._step.type) {
+      case "form":
+        return this._params.flowConfig.renderShowFormStepSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "abort":
+        return this._params.flowConfig.renderAbortSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "progress":
+        return this._params.flowConfig.renderShowFormProgressSubheader?.(
+          this.hass,
+          this._step
+        );
+      case "menu":
+        return this._params.flowConfig.renderMenuSubheader?.(
+          this.hass,
+          this._step
+        );
+      default:
+        return "";
+    }
+  }
+
   protected render() {
     if (!this._params) {
       return nothing;
     }
+
+    const showDocumentationLink =
+      ([
+        "form",
+        "menu",
+        "external",
+        "progress",
+        "data_entry_flow_progressed",
+      ].includes(this._step?.type as any) &&
+        this._params.manifest?.is_built_in) ||
+      !!this._params.manifest?.documentation;
+
+    const dialogTitle = this._getDialogTitle();
+    const dialogSubtitle = this._getDialogSubtitle();
 
     return html`
       <ha-dialog
@@ -184,14 +286,57 @@ class DataEntryFlowDialog extends LitElement {
         scrimClickAction
         escapeKeyAction
         hideActions
+        .heading=${dialogTitle}
       >
+        <ha-dialog-header slot="heading">
+          <ha-icon-button
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+            dialogAction="close"
+            slot="navigationIcon"
+          ></ha-icon-button>
+
+          <div
+            slot="title"
+            class="dialog-title${this._step?.type === "form" ? " form" : ""}"
+            title=${dialogTitle}
+          >
+            ${dialogTitle}
+          </div>
+
+          ${dialogSubtitle
+            ? html` <div slot="subtitle">${dialogSubtitle}</div>`
+            : nothing}
+          ${showDocumentationLink && !this._loading && this._step
+            ? html`
+                <a
+                  slot="actionItems"
+                  class="help"
+                  href=${this._params.manifest!.is_built_in
+                    ? documentationUrl(
+                        this.hass,
+                        `/integrations/${this._params.manifest!.domain}`
+                      )
+                    : this._params.manifest!.documentation}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <ha-icon-button
+                    .label=${this.hass.localize("ui.common.help")}
+                    .path=${mdiHelpCircle}
+                  >
+                  </ha-icon-button
+                ></a>
+              `
+            : nothing}
+        </ha-dialog-header>
         <div>
           ${this._loading || this._step === null
             ? html`
                 <step-flow-loading
                   .flowConfig=${this._params.flowConfig}
                   .hass=${this.hass}
-                  .loadingReason=${this._loading}
+                  .loadingReason=${this._loading!}
                   .handler=${this._handler}
                   .step=${this._step}
                 ></step-flow-loading>
@@ -199,46 +344,12 @@ class DataEntryFlowDialog extends LitElement {
             : this._step === undefined
               ? // When we are going to next step, we render 1 round of empty
                 // to reset the element.
-                ""
+                nothing
               : html`
-                  <div class="dialog-actions">
-                    ${([
-                      "form",
-                      "menu",
-                      "external",
-                      "progress",
-                      "data_entry_flow_progressed",
-                    ].includes(this._step?.type as any) &&
-                      this._params.manifest?.is_built_in) ||
-                    this._params.manifest?.documentation
-                      ? html`
-                          <a
-                            href=${this._params.manifest.is_built_in
-                              ? documentationUrl(
-                                  this.hass,
-                                  `/integrations/${this._params.manifest.domain}`
-                                )
-                              : this._params?.manifest?.documentation}
-                            target="_blank"
-                            rel="noreferrer noopener"
-                          >
-                            <ha-icon-button
-                              .label=${this.hass.localize("ui.common.help")}
-                              .path=${mdiHelpCircle}
-                            >
-                            </ha-icon-button
-                          ></a>
-                        `
-                      : ""}
-                    <ha-icon-button
-                      .label=${this.hass.localize("ui.common.close")}
-                      .path=${mdiClose}
-                      dialogAction="close"
-                    ></ha-icon-button>
-                  </div>
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          narrow
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}
@@ -286,7 +397,12 @@ class DataEntryFlowDialog extends LitElement {
                                   .step=${this._step}
                                   .hass=${this.hass}
                                   .navigateToResult=${this._params
-                                    .navigateToResult}
+                                    .navigateToResult ?? false}
+                                  .devices=${this._devices(
+                                    this._params.flowConfig.showDevices,
+                                    Object.values(this.hass.devices),
+                                    this._step.result?.entry_id
+                                  )}
                                 ></step-flow-create-entry>
                               `}
                 `}
@@ -376,16 +492,14 @@ class DataEntryFlowDialog extends LitElement {
         ha-dialog {
           --dialog-content-padding: 0;
         }
-        .dialog-actions {
-          padding: 16px;
-          position: absolute;
-          top: 0;
-          right: 0;
-          inset-inline-start: initial;
-          inset-inline-end: 0px;
-          direction: var(--direction);
+        .dialog-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-        .dialog-actions > * {
+        .dialog-title.form {
+          white-space: normal;
+        }
+        .help {
           color: var(--secondary-text-color);
         }
       `,

@@ -70,7 +70,7 @@ class DownloadLogsDialog extends LitElement {
           <span slot="subtitle">
             ${this._dialogParams.header}${this._dialogParams.boot === 0
               ? ""
-              : ` ⸱ ${this._dialogParams.boot === -1 ? this.hass.localize("ui.panel.config.logs.previous") : this.hass.localize("ui.panel.config.logs.startups_ago", { boot: this._dialogParams.boot * -1 })}`}
+              : ` · ${this._dialogParams.boot === -1 ? this.hass.localize("ui.panel.config.logs.previous") : this.hass.localize("ui.panel.config.logs.startups_ago", { boot: this._dialogParams.boot * -1 })}`}
           </span>
         </ha-dialog-header>
         <div slot="content" class="content">
