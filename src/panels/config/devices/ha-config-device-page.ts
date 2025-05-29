@@ -166,29 +166,34 @@ export class HaConfigDevicePage extends LitElement {
     }
   );
 
-  private _getEntitiesSorted = (entities) =>
-    entities
-      .map((entity) => ({
-        ...entity,
-        stateName: this._computeEntityName(entity),
-      }))
-      .sort((ent1, ent2) =>
-        stringCompare(
-          ent1.stateName || `zzz${ent1.entity_id}`,
-          ent2.stateName || `zzz${ent2.entity_id}`,
-          this.hass.locale.language
-        )
-      );
-
   private _entities = memoizeOne(
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
     ): EntityRegistryStateEntry[] =>
-      this._getEntitiesSorted(
-        entities.filter((entity) => entity.device_id === deviceId)
-      )
+      entities
+        .filter((entity) => entity.device_id === deviceId)
+        .map((entity) => ({
+          ...entity,
+          stateName: this._computeEntityName(entity),
+        }))
+        .sort((ent1, ent2) =>
+          stringCompare(
+            ent1.stateName || `zzz${ent1.entity_id}`,
+            ent2.stateName || `zzz${ent2.entity_id}`,
+            this.hass.locale.language
+          )
+        )
   );
+
+  private _getEntitiesSorted = (entities) =>
+    entities.sort((ent1, ent2) =>
+      stringCompare(
+        ent1.attributes.friendly_name || `zzz${ent1.entity_id}`,
+        ent2.attributes.friendly_name || `zzz${ent2.entity_id}`,
+        this.hass.locale.language
+      )
+    );
 
   private _getRelated = memoizeOne((related?: RelatedResult) => ({
     automation: this._getEntitiesSorted(
