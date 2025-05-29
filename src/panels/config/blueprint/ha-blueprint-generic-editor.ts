@@ -5,6 +5,7 @@ import { classMap } from "lit/directives/class-map";
 import { property, state } from "lit/decorators";
 import yaml from "js-yaml";
 import "../../../layouts/hass-subpage";
+import { ContextProvider } from "@lit/context";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-fab";
 import "../../../components/ha-button-menu";
@@ -17,6 +18,8 @@ import type {
   Blueprints,
 } from "../../../data/blueprint";
 import {
+  BlueprintYamlSchema,
+  yamlSchemaContext,
   getBlueprint,
   getBlueprintEditorInitData,
   saveBlueprint,
@@ -76,6 +79,11 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   protected abstract normalizeBlueprint(
     blueprint: Partial<Blueprint>
   ): Blueprint;
+
+  public _schemaProvider = new ContextProvider(this, {
+    context: yamlSchemaContext,
+    initialValue: BlueprintYamlSchema,
+  });
 
   protected _valueChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
@@ -166,15 +174,13 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
 
   private async _loadBlueprint() {
     try {
-      const inputTag = new yaml.Type("!input", { kind: "scalar" });
-      const schema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
       const blueprintGetResult = await getBlueprint(
         this.hass,
         this._domain,
         this._blueprintPath!
       );
       const blueprint = yaml.load(blueprintGetResult.yaml, {
-        schema,
+        schema: BlueprintYamlSchema,
       }) as Blueprint;
       this._dirty = false;
       this._readOnly = false;

@@ -1,5 +1,8 @@
 import { customElement, property, state } from "lit/decorators";
 import { css, type CSSResultGroup, html, LitElement, nothing } from "lit";
+import { consume } from "@lit/context";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -7,6 +10,7 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../trigger/ha-automation-trigger-row";
 import type { PasteReplaceDialogParams } from "./show-dialog-paste-replace";
+import { yamlSchemaContext } from "../../../../data/blueprint";
 
 @customElement("ha-dialog-paste-replace")
 class DialogPasteReplace extends LitElement implements HassDialog {
@@ -15,6 +19,9 @@ class DialogPasteReplace extends LitElement implements HassDialog {
   @state() private _opened = false;
 
   @state() private _params!: PasteReplaceDialogParams;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   public showDialog(params: PasteReplaceDialogParams): void {
     this._opened = true;
@@ -54,6 +61,7 @@ class DialogPasteReplace extends LitElement implements HassDialog {
         <ha-yaml-editor
           .hass=${this.hass}
           .defaultValue=${this._params?.pastedConfig}
+          .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
           read-only
         ></ha-yaml-editor>
 

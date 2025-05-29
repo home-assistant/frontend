@@ -18,6 +18,8 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -70,6 +72,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import { yamlSchemaContext } from "../../../../data/blueprint";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -132,6 +135,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
@@ -343,6 +349,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     .hass=${this.hass}
                     .defaultValue=${this.trigger}
                     .readOnly=${this.disabled}
+                    .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 `
@@ -568,6 +575,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           read-only
           .hass=${this.hass}
           .defaultValue=${this._triggered}
+          .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
         ></ha-yaml-editor>
       `,
     });

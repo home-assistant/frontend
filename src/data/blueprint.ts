@@ -36,6 +36,9 @@ import {
   mdiTimer,
   mdiToggleSwitch,
 } from "@mdi/js";
+import type { Schema } from "js-yaml";
+import yaml from "js-yaml";
+import { createContext } from "@lit/context";
 import type { HomeAssistant } from "../types";
 import type { AutomationClipboard, ManualAutomationConfig } from "./automation";
 import type { ManualScriptConfig } from "./script";
@@ -118,7 +121,7 @@ export const saveBlueprint = (
   hass: HomeAssistant,
   domain: BlueprintDomain,
   path: string,
-  yaml: string,
+  yamlSource: string,
   source_url?: string,
   allow_override?: boolean
 ) =>
@@ -126,7 +129,7 @@ export const saveBlueprint = (
     type: "blueprint/save",
     domain,
     path,
-    yaml,
+    yamlSource,
     source_url,
     allow_override,
   });
@@ -242,3 +245,8 @@ export const INPUT_ICONS = {
   time: mdiClock,
   trigger: mdiGestureDoubleTap,
 } as const;
+
+const inputTag = new yaml.Type("!input", { kind: "scalar" });
+export const BlueprintYamlSchema = yaml.DEFAULT_SCHEMA.extend([inputTag]);
+
+export const yamlSchemaContext = createContext<Schema>(Symbol("yaml-schema"));
