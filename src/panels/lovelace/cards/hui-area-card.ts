@@ -397,21 +397,20 @@ export class HuiAreaCard
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
-          const value = areaEntity
+          let value = areaEntity
             ? this.hass.formatEntityState(areaEntity)
             : this._average(domain, deviceClass);
-          if (value) {
-            sensors.push(html`
-              <div class="sensor">
-                <ha-domain-icon
-                  .hass=${this.hass}
-                  .domain=${domain}
-                  .deviceClass=${deviceClass}
-                ></ha-domain-icon>
-                ${value}
-              </div>
-            `);
-          }
+          if (!value) value = "—";
+          sensors.push(html`
+            <div class="sensor">
+              <ha-domain-icon
+                .hass=${this.hass}
+                .domain=${domain}
+                .deviceClass=${deviceClass}
+              ></ha-domain-icon>
+              ${value}
+            </div>
+          `);
         }
       });
     });
