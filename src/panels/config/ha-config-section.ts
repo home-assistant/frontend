@@ -63,6 +63,7 @@ export class HaConfigSection extends LitElement {
     .header {
       font-family: var(--ha-font-family-body);
       -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       font-size: var(--ha-font-size-2xl);
       font-weight: var(--ha-font-weight-normal);
       line-height: var(--ha-line-height-condensed);
@@ -76,11 +77,12 @@ export class HaConfigSection extends LitElement {
     .intro {
       font-family: var(--ha-font-family-body);
       -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       font-weight: var(--ha-font-weight-normal);
       line-height: var(--ha-line-height-normal);
       width: 100%;
       opacity: var(--dark-primary-opacity);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       padding-bottom: 20px;
     }
 

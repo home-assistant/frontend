@@ -138,6 +138,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   @state() private _filteredAutomations?: string[] | null;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "automation-table-search",
@@ -146,6 +147,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
   })
   private _filter = "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "automation-table-filters-full",
@@ -1413,7 +1415,6 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };

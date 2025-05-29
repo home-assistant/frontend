@@ -183,6 +183,7 @@ export default class HaAutomationOptionRow extends LitElement {
               )}
               .disabled=${this.disabled}
               .hass=${this.hass}
+              .narrow=${this.narrow}
               @value-changed=${this._conditionChanged}
             ></ha-automation-condition>
             <h4>
@@ -194,6 +195,7 @@ export default class HaAutomationOptionRow extends LitElement {
               .actions=${ensureArray(this.option.sequence) || []}
               .disabled=${this.disabled}
               .hass=${this.hass}
+              .narrow=${this.narrow}
               @value-changed=${this._actionChanged}
             ></ha-automation-action>
           </div>

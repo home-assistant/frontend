@@ -543,7 +543,7 @@ export class HaManualAutomationEditor extends LitElement {
           margin-top: -16px;
         }
         .header .name {
-          font-weight: 400;
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
           margin-bottom: 16px;
         }
@@ -552,7 +552,7 @@ export class HaManualAutomationEditor extends LitElement {
         }
         .header .small {
           font-size: small;
-          font-weight: normal;
+          font-weight: var(--ha-font-weight-normal);
           line-height: 0;
         }
       `,

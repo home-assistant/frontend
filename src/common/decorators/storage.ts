@@ -1,6 +1,5 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { ReactiveElement } from "lit";
-import type { InternalPropertyDeclaration } from "lit/decorators";
+import type { ReactiveElement } from "lit";
 
 type Callback = (oldValue: any, newValue: any) => void;
 
@@ -108,7 +107,6 @@ export function storage(options: {
   storage?: "localStorage" | "sessionStorage";
   subscribe?: boolean;
   state?: boolean;
-  stateOptions?: InternalPropertyDeclaration;
   serializer?: (value: any) => any;
   deserializer?: (value: any) => any;
 }) {
@@ -174,7 +172,7 @@ export function storage(options: {
       performUpdate.call(this);
     };
 
-    if (options.state && options.subscribe) {
+    if (options.subscribe) {
       const connectedCallback = proto.connectedCallback;
       const disconnectedCallback = proto.disconnectedCallback;
 
@@ -191,12 +189,6 @@ export function storage(options: {
         el.__unbsubLocalStorage?.();
         el.__unbsubLocalStorage = undefined;
       };
-    }
-    if (options.state) {
-      ReactiveElement.createProperty(propertyKey, {
-        noAccessor: true,
-        ...options.stateOptions,
-      });
     }
 
     const descriptor = Object.getOwnPropertyDescriptor(proto, propertyKey);

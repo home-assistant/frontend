@@ -223,7 +223,7 @@ class HaConfigSystemNavigation extends LitElement {
       haStyle,
       css`
         :host(:not([narrow])) ha-card {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
         }
 
         ha-config-section {
@@ -235,7 +235,7 @@ class HaConfigSystemNavigation extends LitElement {
         ha-card {
           overflow: hidden;
           margin-bottom: 24px;
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
         }
 
         ha-card a {
@@ -244,7 +244,7 @@ class HaConfigSystemNavigation extends LitElement {
         }
 
         .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding: 16px;
           padding-bottom: 0;
         }
@@ -269,7 +269,7 @@ class HaConfigSystemNavigation extends LitElement {
         }
 
         ha-navigation-list {
-          --navigation-list-item-title-font-size: 16px;
+          --navigation-list-item-title-font-size: var(--ha-font-size-l);
         }
       `,
     ];

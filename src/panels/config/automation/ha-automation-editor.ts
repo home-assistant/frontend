@@ -140,6 +140,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaAutomationEditor, value) {
@@ -1125,7 +1126,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {

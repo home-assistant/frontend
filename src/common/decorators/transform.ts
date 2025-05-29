@@ -1,10 +1,4 @@
-import {
-  ReactiveElement,
-  type PropertyDeclaration,
-  type PropertyValues,
-} from "lit";
-import { shallowEqual } from "../util/shallow-equal";
-
+import type { ReactiveElement, PropertyValues } from "lit";
 /**
  * Transform function type.
  */
@@ -23,7 +17,6 @@ type ReactiveTransformElement = ReactiveElement & {
 export function transform<T, V>(config: {
   transformer: Transformer<T, V>;
   watch?: PropertyKey[];
-  propertyOptions?: PropertyDeclaration;
 }) {
   return <ElemClass extends ReactiveElement>(
     proto: ElemClass,
@@ -84,11 +77,6 @@ export function transform<T, V>(config: {
         curWatch.add(propertyKey);
       });
     }
-    ReactiveElement.createProperty(propertyKey, {
-      noAccessor: true,
-      hasChanged: (v: any, o: any) => !shallowEqual(v, o),
-      ...config.propertyOptions,
-    });
 
     const descriptor = Object.getOwnPropertyDescriptor(proto, propertyKey);
     let newDescriptor: PropertyDescriptor;

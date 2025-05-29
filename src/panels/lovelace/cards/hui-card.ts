@@ -13,7 +13,6 @@ import {
   checkConditionsMet,
 } from "../common/validate-condition";
 import { createCardElement } from "../create-element/create-card-element";
-import { createErrorCardConfig } from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
@@ -191,7 +190,9 @@ export class HuiCard extends ReactiveElement {
             this._element.hass = this.hass;
           }
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
       if (changedProps.has("preview")) {
@@ -200,7 +201,9 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
       if (changedProps.has("layout")) {
@@ -209,7 +212,9 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).isPanel = this.layout === "panel";
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
     }

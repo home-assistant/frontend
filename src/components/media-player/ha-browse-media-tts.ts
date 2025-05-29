@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiContentCopy } from "@mdi/js";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
@@ -17,6 +18,8 @@ import "../ha-language-picker";
 import "../ha-tts-voice-picker";
 import "../ha-card";
 import { fetchCloudStatus } from "../../data/cloud";
+import { copyToClipboard } from "../../common/util/copy-clipboard";
+import { showToast } from "../../util/toast";
 
 export interface TtsMediaPickedEvent {
   item: MediaPlayerItem;
@@ -42,6 +45,7 @@ class BrowseMediaTTS extends LitElement {
 
   @state() private _provider?: TTSEngine;
 
+  @state()
   @storage({
     key: "TtsMessage",
     state: true,
@@ -50,50 +54,69 @@ class BrowseMediaTTS extends LitElement {
   private _message?: string;
 
   protected render() {
-    return html`<ha-card>
-      <div class="card-content">
-        <ha-textarea
-          autogrow
-          .label=${this.hass.localize(
-            "ui.components.media-browser.tts.message"
-          )}
-          .value=${this._message ||
-          this.hass.localize(
-            "ui.components.media-browser.tts.example_message",
-            {
-              name: this.hass.user?.name || "Alice",
-            }
-          )}
-        >
-        </ha-textarea>
-        ${this._provider?.supported_languages?.length
-          ? html` <div class="options">
-              <ha-language-picker
-                .hass=${this.hass}
-                .languages=${this._provider.supported_languages}
-                .value=${this._language}
-                required
-                @value-changed=${this._languageChanged}
-              ></ha-language-picker>
-              <ha-tts-voice-picker
-                .hass=${this.hass}
-                .value=${this._voice}
-                .engineId=${this._provider.engine_id}
-                .language=${this._language}
-                required
-                @value-changed=${this._voiceChanged}
-              ></ha-tts-voice-picker>
-            </div>`
-          : nothing}
-      </div>
-      <div class="card-actions">
-        <mwc-button @click=${this._ttsClicked}>
-          ${this.hass.localize(
-            `ui.components.media-browser.tts.action_${this.action}`
-          )}
-        </mwc-button>
-      </div>
-    </ha-card> `;
+    return html`
+      <ha-card>
+        <div class="card-content">
+          <ha-textarea
+            autogrow
+            .label=${this.hass.localize(
+              "ui.components.media-browser.tts.message"
+            )}
+            .value=${this._message ||
+            this.hass.localize(
+              "ui.components.media-browser.tts.example_message",
+              {
+                name: this.hass.user?.name || "Alice",
+              }
+            )}
+          >
+          </ha-textarea>
+          ${this._provider?.supported_languages?.length
+            ? html` <div class="options">
+                <ha-language-picker
+                  .hass=${this.hass}
+                  .languages=${this._provider.supported_languages}
+                  .value=${this._language}
+                  required
+                  @value-changed=${this._languageChanged}
+                ></ha-language-picker>
+                <ha-tts-voice-picker
+                  .hass=${this.hass}
+                  .value=${this._voice}
+                  .engineId=${this._provider.engine_id}
+                  .language=${this._language}
+                  required
+                  @value-changed=${this._voiceChanged}
+                ></ha-tts-voice-picker>
+              </div>`
+            : nothing}
+        </div>
+        <div class="card-actions">
+          <mwc-button @click=${this._ttsClicked}>
+            ${this.hass.localize(
+              `ui.components.media-browser.tts.action_${this.action}`
+            )}
+          </mwc-button>
+        </div>
+      </ha-card>
+      ${this._voice
+        ? html`
+            <div class="footer">
+              ${this.hass.localize(
+                `ui.components.media-browser.tts.selected_voice_id`
+              )}
+              <code>${this._voice || "-"}</code>
+              <ha-icon-button
+                .path=${mdiContentCopy}
+                @click=${this._copyVoiceId}
+                title=${this.hass.localize(
+                  "ui.components.media-browser.tts.copy_voice_id"
+                )}
+              ></ha-icon-button>
+            </div>
+          `
+        : nothing}
+    `;
   }
 
   protected override willUpdate(changedProps: PropertyValues): void {
@@ -191,9 +214,18 @@ class BrowseMediaTTS extends LitElement {
     item.media_content_id = `${
       item.media_content_id.split("?")[0]
     }?${query.toString()}`;
+    item.media_content_type = "audio/mp3";
     item.can_play = true;
     item.title = message;
     fireEvent(this, "tts-picked", { item });
+  }
+
+  private async _copyVoiceId(ev) {
+    ev.preventDefault();
+    await copyToClipboard(this._voice);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   static override styles = [
@@ -216,6 +248,23 @@ class BrowseMediaTTS extends LitElement {
       }
       button.link {
         color: var(--primary-color);
+      }
+      .footer {
+        font-size: var(--ha-font-size-s);
+        color: var(--secondary-text-color);
+        margin: 16px 0;
+        text-align: center;
+      }
+      .footer code {
+        font-weight: var(--ha-font-weight-bold);
+      }
+      .footer {
+        --mdc-icon-size: 14px;
+        --mdc-icon-button-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
       }
     `,
   ];

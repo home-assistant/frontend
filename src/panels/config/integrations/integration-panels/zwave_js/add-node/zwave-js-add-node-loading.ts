@@ -3,9 +3,10 @@ import { css, html, LitElement, nothing } from "lit";
 
 import "../../../../../../components/ha-fade-in";
 import "../../../../../../components/ha-spinner";
+import { WakeLockMixin } from "../../../../../../mixins/wakelock-mixin";
 
 @customElement("zwave-js-add-node-loading")
-export class ZWaveJsAddNodeLoading extends LitElement {
+export class ZWaveJsAddNodeLoading extends WakeLockMixin(LitElement) {
   @property() public description?: string;
 
   @property({ type: Number }) public delay = 0;

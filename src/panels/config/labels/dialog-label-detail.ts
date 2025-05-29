@@ -4,20 +4,17 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
-import { createCloseHeading } from "../../../components/ha-dialog";
-import "../../../components/ha-switch";
-import "../../../components/ha-textfield";
-import "../../../components/ha-textarea";
-import "../../../components/ha-icon-picker";
 import "../../../components/ha-color-picker";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-icon-picker";
+import "../../../components/ha-switch";
+import "../../../components/ha-textarea";
+import "../../../components/ha-textfield";
+import type { LabelRegistryEntryMutableParams } from "../../../data/label_registry";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { LabelDetailDialogParams } from "./show-dialog-label-detail";
-import type {
-  LabelRegistryEntry,
-  LabelRegistryEntryMutableParams,
-} from "../../../data/label_registry";
 
 @customElement("dialog-label-detail")
 class DialogLabelDetail
@@ -177,7 +174,6 @@ class DialogLabelDetail
 
   private async _updateEntry() {
     this._submitting = true;
-    let newValue: LabelRegistryEntry | undefined;
     try {
       const values: LabelRegistryEntryMutableParams = {
         name: this._name.trim(),
@@ -186,9 +182,9 @@ class DialogLabelDetail
         description: this._description.trim() || null,
       };
       if (this._params!.entry) {
-        newValue = await this._params!.updateEntry!(values);
+        await this._params!.updateEntry!(values);
       } else {
-        newValue = await this._params!.createEntry!(values);
+        await this._params!.createEntry!(values);
       }
       this.closeDialog();
     } catch (err: any) {
@@ -196,7 +192,6 @@ class DialogLabelDetail
     } finally {
       this._submitting = false;
     }
-    return newValue;
   }
 
   private async _deleteEntry() {

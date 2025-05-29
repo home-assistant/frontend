@@ -138,6 +138,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
 
   @state() private _filteredScripts?: string[] | null;
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "script-table-search",
@@ -146,6 +147,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
   })
   private _filter = "";
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "script-table-filters-full",
@@ -1212,7 +1214,6 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };

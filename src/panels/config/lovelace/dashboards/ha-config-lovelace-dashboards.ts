@@ -74,6 +74,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @state() private _dashboards: LovelaceDashboard[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "lovelace-dashboards-table-search",

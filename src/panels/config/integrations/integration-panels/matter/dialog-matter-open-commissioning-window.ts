@@ -256,7 +256,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         }
 
         .code {
-          font-family: monospace;
+          font-family: var(--ha-font-family-code);
         }
 
         .note {

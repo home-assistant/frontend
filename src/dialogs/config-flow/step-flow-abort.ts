@@ -34,11 +34,6 @@ class StepFlowAbort extends LitElement {
       return nothing;
     }
     return html`
-      <h2>
-        ${this.params.flowConfig.renderAbortHeader
-          ? this.params.flowConfig.renderAbortHeader(this.hass, this.step)
-          : this.hass.localize(`component.${this.domain}.title`)}
-      </h2>
       <div class="content">
         ${this.params.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
