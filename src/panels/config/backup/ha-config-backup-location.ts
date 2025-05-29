@@ -118,19 +118,19 @@ class HaConfigBackupDetails extends LitElement {
                             </p>
                           </div>
                         `
-                      : this.config?.agents[this.agentId]
-                        ? html`<ha-backup-config-retention
-                            location-specific
-                            .headline=${this.hass.localize(
-                              `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
-                              { location: agentName }
-                            )}
-                            .hass=${this.hass}
-                            .retention=${this.config?.agents[this.agentId]
-                              ?.retention}
-                            @value-changed=${this._retentionChanged}
-                          ></ha-backup-config-retention>`
-                        : nothing}
+                      : html`<ha-backup-config-retention
+                          location-specific
+                          .headline=${this.hass.localize(
+                            `ui.panel.config.backup.location.retention_for_${isLocalAgent(this.agentId) ? "this_system" : "location"}`,
+                            { location: agentName }
+                          )}
+                          .hass=${this.hass}
+                          .retention=${!this.config
+                            ? undefined
+                            : this.config.agents[this.agentId]?.retention ||
+                              null}
+                          @value-changed=${this._retentionChanged}
+                        ></ha-backup-config-retention>`}
                   </ha-card>
                   <ha-card>
                     <div class="card-header">
@@ -377,7 +377,7 @@ class HaConfigBackupDetails extends LitElement {
       align-items: center;
       flex-direction: row;
       gap: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-condensed);
     }
     .dot {
       display: block;

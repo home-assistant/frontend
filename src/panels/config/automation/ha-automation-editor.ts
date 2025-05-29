@@ -21,7 +21,7 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { property, state } from "lit/decorators";
+import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -81,6 +81,7 @@ import {
 } from "./automation-save-dialog/show-dialog-automation-save";
 import "./blueprint-automation-editor";
 import "./manual-automation-editor";
+import type { HaManualAutomationEditor } from "./manual-automation-editor";
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -134,6 +135,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
   @state() private _blueprintConfig?: BlueprintAutomationConfig;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaAutomationEditor, value) {
@@ -148,6 +150,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry!: EntityRegistryEntry[];
+
+  @query("manual-automation-editor")
+  private _manualEditor?: HaManualAutomationEditor;
 
   private _configSubscriptions: Record<
     string,
@@ -469,6 +474,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                         ></manual-automation-editor>
                       `}
@@ -552,7 +558,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       } as AutomationConfig;
       this._entityId = undefined;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
@@ -952,6 +957,8 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       return;
     }
 
+    this._manualEditor?.resetPastedConfig();
+
     const id = this.automationId || String(Date.now());
     if (!this.automationId) {
       const saved = await this._promptAutomationAlias();
@@ -1110,7 +1117,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {

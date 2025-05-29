@@ -104,7 +104,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -180,17 +180,16 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     .header {
       font-family: var(--ha-font-family-body);
       -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       font-size: var(--ha-font-size-2xl);
       font-weight: var(--ha-font-weight-normal);
-      line-height: var(--ha-line-height-condensed);
-
-      line-height: 40px;
+      line-height: var(--ha-line-height-normal);
       padding: 8px 16px;
     }
 
     .has-plant-image .header {
-      font-size: 16px;
-      font-weight: 500;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
       line-height: 16px;
       padding: 16px;
       color: white;
@@ -233,7 +232,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     .problem {
       color: var(--error-color);
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     .uom {

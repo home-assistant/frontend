@@ -95,23 +95,23 @@ export class HaBadge extends LitElement {
       text-align: center;
     }
     .label {
-      font-size: 10px;
+      font-size: var(--ha-font-size-xs);
       font-style: normal;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
       line-height: 10px;
       letter-spacing: 0.1px;
       color: var(--secondary-text-color);
     }
     .content {
-      font-size: var(--ha-font-size-badge, var(--ha-font-size-s));
+      font-size: var(--ha-badge-font-size, var(--ha-font-size-s));
       font-style: normal;
-      font-weight: 500;
-      line-height: 16px;
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-condensed);
       letter-spacing: 0.1px;
       color: var(--primary-text-color);
     }
     ::slotted([slot="icon"]) {
-      --mdc-icon-size: var(--ha-icon-size-badge, 18px);
+      --mdc-icon-size: var(--ha-badge-icon-size, 18px);
       color: var(--badge-color);
       line-height: 0;
       margin-left: -4px;

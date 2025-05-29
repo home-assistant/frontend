@@ -106,7 +106,7 @@ export class HaDeviceCard extends LitElement {
               <div class="extra-info">
                 ${type === "bluetooth" &&
                 isComponentLoaded(this.hass, "bluetooth")
-                  ? html`${titleCase(type)}
+                  ? html`${titleCase(type)}:
                       <a
                         href="/config/bluetooth/advertisement-monitor?${createSearchParam(
                           { address: value }
@@ -114,7 +114,7 @@ export class HaDeviceCard extends LitElement {
                         >${value.toUpperCase()}</a
                       >`
                   : type === "mac" && isComponentLoaded(this.hass, "dhcp")
-                    ? html`${titleCase(type)}
+                    ? html`MAC:
                         <a
                           href="/config/dhcp?${createSearchParam({
                             mac_address: value,

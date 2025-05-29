@@ -50,9 +50,11 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
 
         const entities = [
           ...groups.lights,
+          ...groups.covers,
           ...groups.climate,
           ...groups.media_players,
           ...groups.security,
+          ...groups.actions,
           ...groups.others,
         ];
 

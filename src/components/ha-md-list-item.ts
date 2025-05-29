@@ -17,6 +17,7 @@ export const haMdListStyles = [
     md-item {
       overflow: var(--md-item-overflow, hidden);
       align-items: var(--md-item-align-items, center);
+      gap: var(--ha-md-list-item-gap, 16px);
     }
   `,
 ];

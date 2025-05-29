@@ -108,7 +108,7 @@ class StateInfo extends LitElement {
 
     .name.in-dialog,
     :host([secondary-line]) .name {
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
     }
 
     .time-ago,

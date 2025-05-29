@@ -23,6 +23,7 @@ import type {
   EntityRegistryUpdate,
   SaveDialogParams,
 } from "./show-dialog-automation-save";
+import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -156,6 +157,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             name="description"
             autogrow
             .value=${this._newDescription}
+            .helper=${supportsMarkdownHelper(this.hass.localize)}
             @input=${this._valueChanged}
           ></ha-textarea>`
         : nothing}

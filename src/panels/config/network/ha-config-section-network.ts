@@ -3,12 +3,17 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../layouts/hass-subpage";
+import "../../../components/ha-card";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-icon-next";
 import type { HomeAssistant, Route } from "../../../types";
 import "./ha-config-network";
-import "./ha-config-network-discovery";
 import "./ha-config-url-form";
 import "./supervisor-hostname";
 import "./supervisor-network";
+
+const NETWORK_BROWSERS = ["dhcp", "ssdp", "zeroconf"] as const;
 
 @customElement("ha-config-section-network")
 class HaConfigSectionNetwork extends LitElement {
@@ -36,10 +41,38 @@ class HaConfigSectionNetwork extends LitElement {
             : ""}
           <ha-config-url-form .hass=${this.hass}></ha-config-url-form>
           <ha-config-network .hass=${this.hass}></ha-config-network>
-          ${isComponentLoaded(this.hass, "zeroconf")
-            ? html`<ha-config-network-discovery
-                .hass=${this.hass}
-              ></ha-config-network-discovery>`
+          ${NETWORK_BROWSERS.some((component) =>
+            isComponentLoaded(this.hass, component)
+          )
+            ? html`
+                <ha-card
+                  outlined
+                  class="discovery-card"
+                  header=${this.hass.localize(
+                    "ui.panel.config.network.discovery.title"
+                  )}
+                >
+                  <ha-md-list>
+                    ${NETWORK_BROWSERS.map(
+                      (domain) => html`
+                        <ha-md-list-item type="link" href="/config/${domain}">
+                          <div slot="headline">
+                            ${this.hass.localize(
+                              `ui.panel.config.network.discovery.${domain}`
+                            )}
+                          </div>
+                          <div slot="supporting-text">
+                            ${this.hass.localize(
+                              `ui.panel.config.network.discovery.${domain}_info`
+                            )}
+                          </div>
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-md-list-item>
+                      `
+                    )}
+                  </ha-md-list>
+                </ha-card>
+              `
             : ""}
         </div>
       </hass-subpage>
@@ -56,11 +89,14 @@ class HaConfigSectionNetwork extends LitElement {
     supervisor-network,
     ha-config-url-form,
     ha-config-network,
-    ha-config-network-discovery {
+    .discovery-card {
       display: block;
       margin: 0 auto;
       margin-bottom: 24px;
       max-width: 600px;
+    }
+    .discovery-card ha-md-list {
+      padding-top: 0;
     }
   `;
 }

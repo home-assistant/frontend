@@ -147,8 +147,10 @@ export class HuiHeadingBadgesEditor extends LitElement {
         <ha-entity-picker
           .hass=${this.hass}
           id="input"
-          .type=${"entity_id"}
-          .label=${this.hass.localize(
+          .placeholder=${this.hass.localize(
+            "ui.components.target-picker.add_entity_id"
+          )}
+          .searchLabel=${this.hass.localize(
             "ui.components.target-picker.add_entity_id"
           )}
           @value-changed=${this._entityPicked}
@@ -251,7 +253,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .badge-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -270,7 +272,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

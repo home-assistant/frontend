@@ -10,10 +10,10 @@ export interface LabelDetailDialogParams {
   createEntry?: (
     values: LabelRegistryEntryMutableParams,
     labelId?: string
-  ) => Promise<LabelRegistryEntry>;
+  ) => Promise<unknown>;
   updateEntry?: (
     updates: Partial<LabelRegistryEntryMutableParams>
-  ) => Promise<LabelRegistryEntry>;
+  ) => Promise<unknown>;
   removeEntry?: () => Promise<boolean>;
 }
 

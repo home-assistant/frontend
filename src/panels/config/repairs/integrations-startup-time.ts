@@ -111,7 +111,7 @@ class IntegrationsStartupTime extends LitElement {
       border-radius: 0;
     }
     div[slot="end"] {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
     }
   `;
 }

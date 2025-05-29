@@ -14,8 +14,13 @@ import { getEnergyColor } from "./common/color";
 import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import type { EnergyData, EnergySumData } from "../../../../data/energy";
+import type {
+  EnergyData,
+  EnergySumData,
+  EnergyConsumptionData,
+} from "../../../../data/energy";
 import {
+  computeConsumptionData,
   getEnergyDataCollection,
   getSummedData,
 } from "../../../../data/energy";
@@ -283,6 +288,10 @@ export class HuiEnergyUsageGraphCard
     this._compareEnd = energyData.endCompare;
 
     const { summedData, compareSummedData } = getSummedData(energyData);
+    const { consumption, compareConsumption } = computeConsumptionData(
+      summedData,
+      compareSummedData
+    );
 
     if (energyData.statsCompare) {
       datasets.push(
@@ -290,6 +299,7 @@ export class HuiEnergyUsageGraphCard
           energyData.statsCompare,
           energyData.statsMetadata,
           compareSummedData!,
+          compareConsumption!,
           statIds,
           colorIndices,
           computedStyles,
@@ -315,6 +325,7 @@ export class HuiEnergyUsageGraphCard
         energyData.stats,
         energyData.statsMetadata,
         summedData,
+        consumption,
         statIds,
         colorIndices,
         computedStyles,
@@ -333,6 +344,7 @@ export class HuiEnergyUsageGraphCard
     statistics: Statistics,
     statisticsMetaData: Record<string, StatisticsMetaData>,
     summedData: EnergySumData,
+    consumptionData: EnergyConsumptionData,
     statIdsByCat: {
       to_grid?: string[] | undefined;
       from_grid?: string[] | undefined;
@@ -361,8 +373,7 @@ export class HuiEnergyUsageGraphCard
     } = {};
 
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
-      const add = !["solar", "from_battery"].includes(key);
-      if (!add) {
+      if (!["to_grid", "from_grid", "to_battery"].includes(key)) {
         return;
       }
       const sets: Record<string, Record<number, number>> = {};
@@ -387,47 +398,22 @@ export class HuiEnergyUsageGraphCard
       combinedData[key] = sets;
     });
 
-    const grid_to_battery = {};
-    const battery_to_grid = {};
-    if ((summedData.to_grid || summedData.to_battery) && summedData.solar) {
-      const used_solar = {};
-      for (const start of Object.keys(summedData.solar)) {
-        used_solar[start] =
-          (summedData.solar[start] || 0) -
-          (summedData.to_grid?.[start] || 0) -
-          (summedData.to_battery?.[start] || 0);
-        if (used_solar[start] < 0) {
-          if (summedData.to_battery) {
-            grid_to_battery[start] = used_solar[start] * -1;
-            if (grid_to_battery[start] > (summedData.from_grid?.[start] || 0)) {
-              battery_to_grid[start] =
-                grid_to_battery[start] - (summedData.from_grid?.[start] || 0);
-              grid_to_battery[start] = summedData.from_grid?.[start];
-            }
-          }
-          used_solar[start] = 0;
-        }
-      }
-      combinedData.used_solar = { used_solar };
-    }
-
-    if (summedData.from_battery) {
-      if (summedData.to_grid) {
-        const used_battery = {};
-        for (const start of Object.keys(summedData.from_battery)) {
-          used_battery[start] =
-            (summedData.from_battery![start] || 0) -
-            (battery_to_grid[start] || 0);
-        }
-        combinedData.used_battery = { used_battery };
-      } else {
-        combinedData.used_battery = { used_battery: summedData.from_battery };
-      }
-    }
+    combinedData.used_solar = { used_solar: consumptionData.used_solar };
+    combinedData.used_battery = {
+      used_battery: consumptionData.used_battery,
+    };
 
     if (combinedData.from_grid && summedData.to_battery) {
       const used_grid = {};
-      for (const start of Object.keys(grid_to_battery)) {
+      // If we have to_battery and multiple grid sources in the same period, we
+      // can't determine which source was used. So delete all the individual
+      // sources and replace with a 'combined from grid' value.
+      for (const [start, grid_to_battery] of Object.entries(
+        consumptionData.grid_to_battery
+      )) {
+        if (!grid_to_battery) {
+          continue;
+        }
         let noOfSources = 0;
         let source: string;
         for (const [key, stats] of Object.entries(combinedData.from_grid)) {
@@ -440,30 +426,19 @@ export class HuiEnergyUsageGraphCard
           }
         }
         if (noOfSources === 1) {
-          combinedData.from_grid[source!][start] -= grid_to_battery[start] || 0;
+          combinedData.from_grid[source!][start] =
+            consumptionData.used_grid[start];
         } else {
-          let total_from_grid = 0;
           Object.values(combinedData.from_grid).forEach((stats) => {
-            total_from_grid += stats[start] || 0;
             delete stats[start];
           });
-          used_grid[start] = total_from_grid - (grid_to_battery[start] || 0);
+          used_grid[start] = consumptionData.used_grid[start];
         }
       }
       combinedData.used_grid = { used_grid };
     }
 
-    let allKeys: string[] = [];
-
-    Object.values(combinedData).forEach((sources) => {
-      Object.values(sources).forEach((source) => {
-        allKeys = allKeys.concat(Object.keys(source));
-      });
-    });
-
-    const uniqueKeys = Array.from(new Set(allKeys)).sort(
-      (a, b) => Number(a) - Number(b)
-    );
+    const uniqueKeys = summedData.timestamps;
 
     const compareTransform = getCompareTransform(
       this._start,
@@ -477,20 +452,20 @@ export class HuiEnergyUsageGraphCard
         for (const key of uniqueKeys) {
           const value = source[key] || 0;
           const dataPoint = [
-            Number(key),
+            new Date(key),
             value && ["to_grid", "to_battery"].includes(type)
               ? -1 * value
               : value,
           ];
           if (compare) {
             dataPoint[2] = dataPoint[0];
-            dataPoint[0] = compareTransform(dataPoint[0]);
+            dataPoint[0] = compareTransform(dataPoint[0] as Date);
           }
           points.push(dataPoint);
         }
 
         data.push({
-          id: compare ? "compare-" + statId : statId,
+          id: `${compare ? "compare-" : ""}${statId}-${type}`,
           type: "bar",
           cursor: "default",
           name:

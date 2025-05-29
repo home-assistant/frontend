@@ -610,7 +610,7 @@ export class DialogHassioNetwork
           display: flex;
           justify-content: space-between;
           padding: 8px;
-          padding-bottom: max(env(safe-area-inset-bottom), 8px);
+          padding-bottom: max(var(--safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         .warning {

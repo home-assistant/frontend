@@ -12,11 +12,12 @@ import type {
 import { registerStyles } from "@vaadin/vaadin-themable-mixin/register-styles";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
+import "./ha-combo-box-textfield";
 import "./ha-icon-button";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
@@ -108,9 +109,14 @@ export class HaComboBox extends LitElement {
   @property({ type: Boolean, attribute: "hide-clear-icon" })
   public hideClearIcon = false;
 
+  @property({ type: Boolean, attribute: "clear-initial-value" })
+  public clearInitialValue = false;
+
   @query("vaadin-combo-box-light", true) private _comboBox!: ComboBoxLight;
 
-  @query("ha-textfield", true) private _inputElement!: HaTextField;
+  @query("ha-combo-box-textfield", true) private _inputElement!: HaTextField;
+
+  @state({ type: Boolean }) private _disableSetValue = false;
 
   private _overlayMutationObserver?: MutationObserver;
 
@@ -147,6 +153,10 @@ export class HaComboBox extends LitElement {
     this._comboBox.value = value;
   }
 
+  public setTextFieldValue(value: string) {
+    this._inputElement.value = value;
+  }
+
   protected render(): TemplateResult {
     return html`
       <!-- @ts-ignore Tag definition is not included in theme folder -->
@@ -167,7 +177,7 @@ export class HaComboBox extends LitElement {
         @value-changed=${this._valueChanged}
         attr-for-value="value"
       >
-        <ha-textfield
+        <ha-combo-box-textfield
           label=${ifDefined(this.label)}
           placeholder=${ifDefined(this.placeholder)}
           ?disabled=${this.disabled}
@@ -187,9 +197,10 @@ export class HaComboBox extends LitElement {
           .invalid=${this.invalid}
           .helper=${this.helper}
           helperPersistent
+          .disableSetValue=${this._disableSetValue}
         >
           <slot name="icon" slot="leadingIcon"></slot>
-        </ha-textfield>
+        </ha-combo-box-textfield>
         ${this.value && !this.hideClearIcon
           ? html`<ha-svg-icon
               role="button"
@@ -242,8 +253,20 @@ export class HaComboBox extends LitElement {
     // delay this so we can handle click event for toggle button before setting _opened
     setTimeout(() => {
       this.opened = opened;
+      fireEvent(this, "opened-changed", { value: ev.detail.value });
     }, 0);
-    fireEvent(this, "opened-changed", { value: ev.detail.value });
+
+    if (this.clearInitialValue) {
+      this.setTextFieldValue("");
+      if (opened) {
+        // Wait 100ms to be sure vaddin-combo-box-light already tried to set the value
+        setTimeout(() => {
+          this._disableSetValue = false;
+        }, 100);
+      } else {
+        this._disableSetValue = true;
+      }
+    }
 
     if (opened) {
       const overlay = document.querySelector<HTMLElement>(
@@ -338,10 +361,10 @@ export class HaComboBox extends LitElement {
       position: relative;
       --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
     }
-    ha-textfield {
+    ha-combo-box-textfield {
       width: 100%;
     }
-    ha-textfield > ha-icon-button {
+    ha-combo-box-textfield > ha-icon-button {
       --mdc-icon-button-size: 24px;
       padding: 2px;
       color: var(--secondary-text-color);

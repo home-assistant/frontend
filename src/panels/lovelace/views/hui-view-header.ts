@@ -54,6 +54,7 @@ export class HuiViewHeader extends LitElement {
 
   private _dragScrollController = new DragScrollController(this, {
     selector: ".scroll",
+    enabled: false,
   });
 
   connectedCallback(): void {
@@ -79,6 +80,11 @@ export class HuiViewHeader extends LitElement {
       changedProperties.has("card")
     ) {
       this._checkHidden();
+    }
+
+    if (changedProperties.has("config") || changedProperties.has("lovelace")) {
+      this._dragScrollController.enabled =
+        !this.lovelace.editMode && this.config?.badges_wrap === "scroll";
     }
 
     if (changedProperties.has("config")) {
@@ -196,6 +202,9 @@ export class HuiViewHeader extends LitElement {
       this.config?.badges_position ?? DEFAULT_VIEW_HEADER_BADGES_POSITION;
     const badgesWrap =
       this.config?.badges_wrap ?? DEFAULT_VIEW_HEADER_BADGES_WRAP;
+    const badgeDragging = this._dragScrollController.scrolling
+      ? "dragging"
+      : "";
 
     const hasHeading = card !== undefined;
     const hasBadges = this.badges.length > 0;
@@ -258,10 +267,7 @@ export class HuiViewHeader extends LitElement {
           ${this.lovelace && (editMode || this.badges.length > 0)
             ? html`
                 <div
-                  class="badges ${badgesPosition} ${badgesWrap} ${this
-                    ._dragScrollController.scrolling
-                    ? "dragging"
-                    : ""}"
+                  class="badges ${badgesPosition} ${badgesWrap} ${badgeDragging}"
                 >
                   <hui-view-badges
                     .badges=${this.badges}
@@ -350,7 +356,7 @@ export class HuiViewHeader extends LitElement {
 
     .container:not(.edit-mode) .badges.scroll {
       overflow: auto;
-      max-width: calc(100% - 16px);
+      max-width: 100%;
       scrollbar-color: var(--scrollbar-thumb-color) transparent;
       scrollbar-width: none;
       mask-image: linear-gradient(
@@ -360,7 +366,6 @@ export class HuiViewHeader extends LitElement {
         black calc(100% - 16px),
         transparent 100%
       );
-      padding-left: 16px;
     }
 
     hui-view-badges {
@@ -398,7 +403,7 @@ export class HuiViewHeader extends LitElement {
     .container:not(.edit-mode) .layout.badges-scroll hui-view-badges {
       --badges-wrap: nowrap;
       --badges-aligmnent: flex-start;
-      --badges-padding-right: 16px;
+      --badge-padding: 16px;
     }
 
     .container:not(.edit-mode) .layout.center.badges-scroll hui-view-badges {
@@ -419,7 +424,7 @@ export class HuiViewHeader extends LitElement {
         hui-view-badges {
         --badges-wrap: wrap;
         --badges-aligmnent: flex-end;
-        --badges-padding-right: 0;
+        --badge-padding: 0;
       }
       .layout.responsive.has-heading hui-view-badges {
         --badges-aligmnent: flex-end;
@@ -471,7 +476,7 @@ export class HuiViewHeader extends LitElement {
       border-color: var(--primary-color);
       --mdc-icon-size: 18px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       color: var(--primary-text-color);
       --ha-ripple-color: var(--primary-color);
       --ha-ripple-hover-opacity: 0.04;

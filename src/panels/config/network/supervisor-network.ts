@@ -832,7 +832,7 @@ export class HassioNetwork extends LitElement {
         }
 
         sl-tab-group {
-          line-height: 24px;
+          line-height: var(--ha-line-height-normal);
         }
         sl-tab {
           flex: 1;

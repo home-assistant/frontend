@@ -164,6 +164,8 @@ export class HaDataTable extends LitElement {
 
   @state() private _collapsedGroups: string[] = [];
 
+  @state() private _lastSelectedRowId: string | null = null;
+
   private _checkableRowsCount?: number;
 
   private _checkedRows: string[] = [];
@@ -187,6 +189,7 @@ export class HaDataTable extends LitElement {
 
   public clearSelection(): void {
     this._checkedRows = [];
+    this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
 
@@ -194,6 +197,7 @@ export class HaDataTable extends LitElement {
     this._checkedRows = this._filteredData
       .filter((data) => data.selectable !== false)
       .map((data) => data[this.id]);
+    this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
 
@@ -207,6 +211,7 @@ export class HaDataTable extends LitElement {
         this._checkedRows.push(id);
       }
     });
+    this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
 
@@ -217,6 +222,7 @@ export class HaDataTable extends LitElement {
         this._checkedRows.splice(index, 1);
       }
     });
+    this._lastSelectedRowId = null;
     this._checkedRowsChanged();
   }
 
@@ -261,6 +267,7 @@ export class HaDataTable extends LitElement {
           if (this.columns[columnId].direction) {
             this.sortDirection = this.columns[columnId].direction!;
             this.sortColumn = columnId;
+            this._lastSelectedRowId = null;
 
             fireEvent(this, "sorting-changed", {
               column: columnId,
@@ -286,6 +293,7 @@ export class HaDataTable extends LitElement {
 
     if (properties.has("filter")) {
       this._debounceSearch(this.filter);
+      this._lastSelectedRowId = null;
     }
 
     if (properties.has("data")) {
@@ -296,9 +304,11 @@ export class HaDataTable extends LitElement {
 
     if (!this.hasUpdated && this.initialCollapsedGroups) {
       this._collapsedGroups = this.initialCollapsedGroups;
+      this._lastSelectedRowId = null;
       fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
     } else if (properties.has("groupColumn")) {
       this._collapsedGroups = [];
+      this._lastSelectedRowId = null;
       fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
     }
 
@@ -310,6 +320,14 @@ export class HaDataTable extends LitElement {
       properties.has("sortDirection")
     ) {
       this._sortFilterData();
+    }
+
+    if (
+      properties.has("_filter") ||
+      properties.has("sortColumn") ||
+      properties.has("sortDirection")
+    ) {
+      this._lastSelectedRowId = null;
     }
 
     if (properties.has("selectable") || properties.has("hiddenColumns")) {
@@ -542,7 +560,7 @@ export class HaDataTable extends LitElement {
               >
                 <ha-checkbox
                   class="mdc-data-table__row-checkbox"
-                  @change=${this._handleRowCheckboxClick}
+                  @click=${this._handleRowCheckboxClicked}
                   .rowId=${row[this.id]}
                   .disabled=${row.selectable === false}
                   .checked=${this._checkedRows.includes(String(row[this.id]))}
@@ -603,7 +621,7 @@ export class HaDataTable extends LitElement {
                           .map(
                             ([key2, column2], i) =>
                               html`${i !== 0
-                                ? " ⸱ "
+                                ? " · "
                                 : nothing}${column2.template
                                 ? column2.template(row)
                                 : row[key2]}`
@@ -724,6 +742,7 @@ export class HaDataTable extends LitElement {
           Object.entries(sorted).forEach(([groupName, rows]) => {
             groupedItems.push({
               append: true,
+              selectable: false,
               content: html`<div
                 class="mdc-data-table__cell group-header"
                 role="cell"
@@ -750,7 +769,7 @@ export class HaDataTable extends LitElement {
         }
 
         if (appendRow) {
-          items.push({ append: true, content: appendRow });
+          items.push({ append: true, selectable: false, content: appendRow });
         }
 
         if (hasFab) {
@@ -800,22 +819,83 @@ export class HaDataTable extends LitElement {
       this._checkedRows = [];
       this._checkedRowsChanged();
     }
+    this._lastSelectedRowId = null;
   }
 
-  private _handleRowCheckboxClick = (ev: Event) => {
+  private _handleRowCheckboxClicked = (ev: Event) => {
     const checkbox = ev.currentTarget as HaCheckbox;
     const rowId = (checkbox as any).rowId;
 
-    if (checkbox.checked) {
-      if (this._checkedRows.includes(rowId)) {
-        return;
+    const groupedData = this._groupData(
+      this._filteredData,
+      this.localizeFunc || this.hass.localize,
+      this.appendRow,
+      this.hasFab,
+      this.groupColumn,
+      this.groupOrder,
+      this._collapsedGroups
+    );
+
+    if (
+      groupedData.find((data) => data[this.id] === rowId)?.selectable === false
+    ) {
+      return;
+    }
+
+    const rowIndex = groupedData.findIndex((data) => data[this.id] === rowId);
+
+    if (
+      ev instanceof MouseEvent &&
+      ev.shiftKey &&
+      this._lastSelectedRowId !== null
+    ) {
+      const lastSelectedRowIndex = groupedData.findIndex(
+        (data) => data[this.id] === this._lastSelectedRowId
+      );
+
+      if (lastSelectedRowIndex > -1 && rowIndex > -1) {
+        this._checkedRows = [
+          ...this._checkedRows,
+          ...this._selectRange(groupedData, lastSelectedRowIndex, rowIndex),
+        ];
       }
-      this._checkedRows = [...this._checkedRows, rowId];
+    } else if (!checkbox.checked) {
+      if (!this._checkedRows.includes(rowId)) {
+        this._checkedRows = [...this._checkedRows, rowId];
+      }
     } else {
       this._checkedRows = this._checkedRows.filter((row) => row !== rowId);
     }
+
+    if (rowIndex > -1) {
+      this._lastSelectedRowId = rowId;
+    }
     this._checkedRowsChanged();
   };
+
+  private _selectRange(
+    groupedData: DataTableRowData[],
+    startIndex: number,
+    endIndex: number
+  ) {
+    const start = Math.min(startIndex, endIndex);
+    const end = Math.max(startIndex, endIndex);
+
+    const checkedRows: string[] = [];
+
+    for (let i = start; i <= end; i++) {
+      const row = groupedData[i];
+      if (
+        row &&
+        row.selectable !== false &&
+        !this._checkedRows.includes(row[this.id])
+      ) {
+        checkedRows.push(row[this.id]);
+      }
+    }
+
+    return checkedRows;
+  }
 
   private _handleRowClick = (ev: Event) => {
     if (
@@ -858,6 +938,7 @@ export class HaDataTable extends LitElement {
     if (this.filter) {
       return;
     }
+    this._lastSelectedRowId = null;
     this._debounceSearch(ev.detail.value);
   }
 
@@ -894,11 +975,13 @@ export class HaDataTable extends LitElement {
     } else {
       this._collapsedGroups = [...this._collapsedGroups, groupName];
     }
+    this._lastSelectedRowId = null;
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   };
 
   public expandAllGroups() {
     this._collapsedGroups = [];
+    this._lastSelectedRowId = null;
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   }
 
@@ -916,6 +999,7 @@ export class HaDataTable extends LitElement {
       delete grouped.undefined;
     }
     this._collapsedGroups = Object.keys(grouped);
+    this._lastSelectedRowId = null;
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
   }
 
@@ -928,12 +1012,12 @@ export class HaDataTable extends LitElement {
           height: 100%;
         }
         .mdc-data-table__content {
-          font-family: Roboto, sans-serif;
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
+          font-family: var(--ha-font-family-body);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
           font-size: 0.875rem;
-          line-height: 1.25rem;
-          font-weight: 400;
+          line-height: var(--ha-line-height-condensed);
+          font-weight: var(--ha-font-weight-normal);
           letter-spacing: 0.0178571429em;
           text-decoration: inherit;
           text-transform: inherit;
@@ -1048,12 +1132,12 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__cell {
-          font-family: Roboto, sans-serif;
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
+          font-family: var(--ha-font-family-body);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
           font-size: 0.875rem;
-          line-height: 1.25rem;
-          font-weight: 400;
+          line-height: var(--ha-line-height-condensed);
+          font-weight: var(--ha-font-weight-normal);
           letter-spacing: 0.0178571429em;
           text-decoration: inherit;
           text-transform: inherit;
@@ -1170,12 +1254,12 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__header-cell {
-          font-family: Roboto, sans-serif;
-          -moz-osx-font-smoothing: grayscale;
-          -webkit-font-smoothing: antialiased;
-          font-size: 0.875rem;
-          line-height: 1.375rem;
-          font-weight: 500;
+          font-family: var(--ha-font-family-body);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-normal);
+          font-weight: var(--ha-font-weight-medium);
           letter-spacing: 0.0071428571em;
           text-decoration: inherit;
           text-transform: inherit;
@@ -1199,7 +1283,7 @@ export class HaDataTable extends LitElement {
           padding-inline-start: 12px;
           padding-inline-end: initial;
           width: 100%;
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           display: flex;
           align-items: center;
           cursor: pointer;

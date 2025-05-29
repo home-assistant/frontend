@@ -112,6 +112,9 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         .data=${this._dataWithIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.zeroconf.no_devices_found"
+        )}
         @row-click=${this._handleRowClicked}
         clickable
       ></hass-tabs-subpage-data-table>

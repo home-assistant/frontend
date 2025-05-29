@@ -9,6 +9,7 @@ export const integrationsWithPanel = {
   dhcp: "config/dhcp",
   matter: "config/matter",
   mqtt: "config/mqtt",
+  ssdp: "config/ssdp",
   thread: "config/thread",
   zeroconf: "config/zeroconf",
   zha: "config/zha/dashboard",

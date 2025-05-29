@@ -60,7 +60,7 @@ export class HuiGraphFooterEditor
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
           .required=${true}
-          @change=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></ha-entity-picker>
         <div class="side-by-side">
           <ha-formfield

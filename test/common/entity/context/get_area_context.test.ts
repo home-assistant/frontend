@@ -1,53 +1,53 @@
 import { describe, it, expect } from "vitest";
 import { getAreaContext } from "../../../../src/common/entity/context/get_area_context";
 import type { HomeAssistant } from "../../../../src/types";
+import { mockArea, mockFloor } from "./context-mock";
 
 describe("getAreaContext", () => {
-  it("should return null values when the area does not exist", () => {
-    const hass = {
-      areas: {},
-      floors: {},
-    } as unknown as HomeAssistant;
-
-    const result = getAreaContext("nonexistent.area", hass);
-
-    expect(result).toEqual({
-      area: null,
-      floor: null,
-    });
-  });
-
   it("should return the correct context when the area exists without a floor", () => {
+    const area = mockArea({
+      area_id: "area_1",
+    });
+
     const hass = {
       areas: {
-        area_1: { id: "area_1" },
+        area_1: area,
       },
       floors: {},
     } as unknown as HomeAssistant;
 
-    const result = getAreaContext("area_1", hass);
+    const result = getAreaContext(area, hass);
 
     expect(result).toEqual({
-      area: { id: "area_1" },
+      area,
       floor: null,
     });
   });
 
   it("should return the correct context when the area exists with a floor", () => {
+    const area = mockArea({
+      area_id: "area_2",
+      floor_id: "floor_1",
+    });
+
+    const floor = mockFloor({
+      floor_id: "floor_1",
+    });
+
     const hass = {
       areas: {
-        area_2: { id: "area_2", floor_id: "floor_1" },
+        area_2: area,
       },
       floors: {
-        floor_1: { id: "floor_1" },
+        floor_1: floor,
       },
     } as unknown as HomeAssistant;
 
-    const result = getAreaContext("area_2", hass);
+    const result = getAreaContext(area, hass);
 
     expect(result).toEqual({
-      area: { id: "area_2", floor_id: "floor_1" },
-      floor: { id: "floor_1" },
+      area,
+      floor,
     });
   });
 });

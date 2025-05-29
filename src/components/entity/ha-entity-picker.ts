@@ -1,11 +1,8 @@
-import { mdiMagnify, mdiPlus } from "@mdi/js";
+import { mdiPlus, mdiShape } from "@mdi/js";
 import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
-import Fuse from "fuse.js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
+import { html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
@@ -13,64 +10,35 @@ import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityContext } from "../../common/entity/get_entity_context";
-import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
-import type { HelperDomain } from "../../panels/config/helpers/const";
-import { isHelperDomain } from "../../panels/config/helpers/const";
+import {
+  isHelperDomain,
+  type HelperDomain,
+} from "../../panels/config/helpers/const";
 import { showHelperDetailDialog } from "../../panels/config/helpers/show-dialog-helper-detail";
-import { HaFuse } from "../../resources/fuse";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
-import "../ha-combo-box";
-import type { HaComboBox } from "../ha-combo-box";
+import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
-import "../ha-icon-button";
+import "../ha-generic-picker";
+import type { HaGenericPicker } from "../ha-generic-picker";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
+import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
 
-const FAKE_ENTITY: HassEntity = {
-  entity_id: "",
-  state: "",
-  last_changed: "",
-  last_updated: "",
-  context: { id: "", user_id: null, parent_id: null },
-  attributes: {},
-};
-
-interface EntityPickerItem extends HassEntity {
-  label: string;
-  primary: string;
-  secondary?: string;
-  translated_domain?: string;
-  show_entity_id?: boolean;
-  entity_name?: string;
-  area_name?: string;
-  device_name?: string;
-  friendly_name?: string;
-  sorting_label?: string;
-  icon_path?: string;
+interface EntityComboBoxItem extends PickerComboBoxItem {
+  domain_name?: string;
+  stateObj?: HassEntity;
 }
 
 export type HaEntityPickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 const CREATE_ID = "___create-new-entity___";
-
-const DOMAIN_STYLE = styleMap({
-  fontSize: "12px",
-  fontWeight: "400",
-  lineHeight: "18px",
-  alignSelf: "flex-end",
-  maxWidth: "30%",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-});
-
-const ENTITY_ID_STYLE = styleMap({
-  fontFamily: "var(--code-font-family, monospace)",
-  fontSize: "11px",
-});
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -86,11 +54,19 @@ export class HaEntityPicker extends LitElement {
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
 
+  @property({ type: Boolean, attribute: "show-entity-id" })
+  public showEntityId = false;
+
   @property() public label?: string;
 
   @property() public value?: string;
 
   @property() public helper?: string;
+
+  @property() public placeholder?: string;
+
+  @property({ type: String, attribute: "search-label" })
+  public searchLabel?: string;
 
   @property({ attribute: false, type: Array }) public createDomains?: string[];
 
@@ -148,66 +124,151 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
-  @property({ attribute: "item-label-path" }) public itemLabelPath = "label";
-
-  @state() private _opened = false;
-
-  @query("ha-combo-box", true) public comboBox!: HaComboBox;
-
-  public async open() {
-    await this.updateComplete;
-    await this.comboBox?.open();
-  }
-
-  public async focus() {
-    await this.updateComplete;
-    await this.comboBox?.focus();
-  }
-
-  private _initialItems = false;
-
-  private _items: EntityPickerItem[] = [];
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+    // Load title translations so it is available when the combo-box opens
     this.hass.loadBackendTranslation("title");
   }
 
-  private _rowRenderer: ComboBoxLitRenderer<EntityPickerItem> = (
+  private _valueRenderer: PickerValueRenderer = (value) => {
+    const entityId = value || "";
+
+    const stateObj = this.hass.states[entityId];
+
+    if (!stateObj) {
+      return html`
+        <ha-svg-icon
+          slot="start"
+          .path=${mdiShape}
+          style="margin: 0 4px"
+        ></ha-svg-icon>
+        <span slot="headline">${entityId}</span>
+      `;
+    }
+
+    const { area, device } = getEntityContext(stateObj, this.hass);
+
+    const entityName = computeEntityName(stateObj, this.hass);
+    const deviceName = device ? computeDeviceName(device) : undefined;
+    const areaName = area ? computeAreaName(area) : undefined;
+
+    const isRTL = computeRTL(this.hass);
+
+    const primary = entityName || deviceName || entityId;
+    const secondary = [areaName, entityName ? deviceName : undefined]
+      .filter(Boolean)
+      .join(isRTL ? " ◂ " : " ▸ ");
+
+    return html`
+      <state-badge
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        slot="start"
+      ></state-badge>
+      <span slot="headline">${primary}</span>
+      <span slot="supporting-text">${secondary}</span>
+    `;
+  };
+
+  private get _showEntityId() {
+    return this.showEntityId || this.hass.userData?.showEntityIdPicker;
+  }
+
+  private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
     item,
     { index }
-  ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
-      ${item.icon_path
-        ? html`<ha-svg-icon slot="start" .path=${item.icon_path}></ha-svg-icon>`
-        : html`
-            <state-badge
-              slot="start"
-              .stateObj=${item}
-              .hass=${this.hass}
-            ></state-badge>
-          `}
+  ) => {
+    const showEntityId = this._showEntityId;
 
-      <span slot="headline">${item.primary} </span>
-      ${item.secondary
-        ? html`<span slot="supporting-text">${item.secondary}</span>`
-        : nothing}
-      ${item.entity_id && item.show_entity_id
-        ? html`<span slot="supporting-text" style=${ENTITY_ID_STYLE}
-            >${item.entity_id}</span
-          >`
-        : nothing}
-      ${item.translated_domain && !item.show_entity_id
-        ? html`<div slot="trailing-supporting-text" style=${DOMAIN_STYLE}>
-            ${item.translated_domain}
-          </div>`
-        : nothing}
-    </ha-combo-box-item>
-  `;
+    return html`
+      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+        ${item.icon_path
+          ? html`
+              <ha-svg-icon
+                slot="start"
+                style="margin: 0 4px"
+                .path=${item.icon_path}
+              ></ha-svg-icon>
+            `
+          : html`
+              <state-badge
+                slot="start"
+                .stateObj=${item.stateObj}
+                .hass=${this.hass}
+              ></state-badge>
+            `}
+        <span slot="headline">${item.primary}</span>
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
+          : nothing}
+        ${item.stateObj && showEntityId
+          ? html`
+              <span slot="supporting-text" class="code">
+                ${item.stateObj.entity_id}
+              </span>
+            `
+          : nothing}
+        ${item.domain_name && !showEntityId
+          ? html`
+              <div slot="trailing-supporting-text" class="domain">
+                ${item.domain_name}
+              </div>
+            `
+          : nothing}
+      </ha-combo-box-item>
+    `;
+  };
 
-  private _getItems = memoizeOne(
+  private _getAdditionalItems = () =>
+    this._getCreateItems(this.hass.localize, this.createDomains);
+
+  private _getCreateItems = memoizeOne(
     (
-      _opened: boolean,
+      localize: this["hass"]["localize"],
+      createDomains: this["createDomains"]
+    ) => {
+      if (!createDomains?.length) {
+        return [];
+      }
+
+      return createDomains.map((domain) => {
+        const primary = localize(
+          "ui.components.entity.entity-picker.create_helper",
+          {
+            domain: isHelperDomain(domain)
+              ? localize(
+                  `ui.panel.config.helpers.types.${domain as HelperDomain}`
+                )
+              : domainToName(localize, domain),
+          }
+        );
+
+        return {
+          id: CREATE_ID + domain,
+          primary: primary,
+          secondary: localize("ui.components.entity.entity-picker.new_entity"),
+          icon_path: mdiPlus,
+        } satisfies EntityComboBoxItem;
+      });
+    }
+  );
+
+  private _getItems = () =>
+    this._getEntities(
+      this.hass,
+      this.includeDomains,
+      this.excludeDomains,
+      this.entityFilter,
+      this.includeDeviceClasses,
+      this.includeUnitOfMeasurement,
+      this.includeEntities,
+      this.excludeEntities
+    );
+
+  private _getEntities = memoizeOne(
+    (
       hass: this["hass"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
@@ -215,57 +276,11 @@ export class HaEntityPicker extends LitElement {
       includeDeviceClasses: this["includeDeviceClasses"],
       includeUnitOfMeasurement: this["includeUnitOfMeasurement"],
       includeEntities: this["includeEntities"],
-      excludeEntities: this["excludeEntities"],
-      createDomains: this["createDomains"]
-    ): EntityPickerItem[] => {
-      let states: EntityPickerItem[] = [];
+      excludeEntities: this["excludeEntities"]
+    ): EntityComboBoxItem[] => {
+      let items: EntityComboBoxItem[] = [];
 
-      if (!hass) {
-        return [];
-      }
       let entityIds = Object.keys(hass.states);
-
-      const createItems = createDomains?.length
-        ? createDomains.map((domain) => {
-            const primary = hass.localize(
-              "ui.components.entity.entity-picker.create_helper",
-              {
-                domain: isHelperDomain(domain)
-                  ? hass.localize(
-                      `ui.panel.config.helpers.types.${domain as HelperDomain}`
-                    )
-                  : domainToName(hass.localize, domain),
-              }
-            );
-
-            return {
-              ...FAKE_ENTITY,
-              entity_id: CREATE_ID + domain,
-              primary: primary,
-              label: primary,
-              secondary: this.hass.localize(
-                "ui.components.entity.entity-picker.new_entity"
-              ),
-              icon_path: mdiPlus,
-            };
-          })
-        : [];
-
-      if (!entityIds.length) {
-        return [
-          {
-            ...FAKE_ENTITY,
-            primary: this.hass!.localize(
-              "ui.components.entity.entity-picker.no_entities"
-            ),
-            label: this.hass!.localize(
-              "ui.components.entity.entity-picker.no_entities"
-            ),
-            icon_path: mdiMagnify,
-          },
-          ...createItems,
-        ];
-      }
 
       if (includeEntities) {
         entityIds = entityIds.filter((entityId) =>
@@ -293,180 +308,149 @@ export class HaEntityPicker extends LitElement {
 
       const isRTL = computeRTL(this.hass);
 
-      states = entityIds
-        .map<EntityPickerItem>((entityId) => {
-          const stateObj = hass!.states[entityId];
+      items = entityIds.map<EntityComboBoxItem>((entityId) => {
+        const stateObj = hass!.states[entityId];
 
-          const { area, device } = getEntityContext(stateObj, hass);
+        const { area, device } = getEntityContext(stateObj, hass);
 
-          const friendlyName = computeStateName(stateObj); // Keep this for search
-          const entityName = computeEntityName(stateObj, hass);
-          const deviceName = device ? computeDeviceName(device) : undefined;
-          const areaName = area ? computeAreaName(area) : undefined;
+        const friendlyName = computeStateName(stateObj); // Keep this for search
+        const entityName = computeEntityName(stateObj, hass);
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
 
-          const primary = entityName || deviceName || entityId;
-          const secondary = [areaName, entityName ? deviceName : undefined]
-            .filter(Boolean)
-            .join(isRTL ? " ◂ " : " ▸ ");
-
-          const translatedDomain = domainToName(
-            this.hass.localize,
-            computeDomain(entityId)
-          );
-
-          return {
-            ...hass!.states[entityId],
-            primary: primary,
-            secondary:
-              secondary ||
-              this.hass.localize("ui.components.device-picker.no_area"),
-            label: friendlyName,
-            translated_domain: translatedDomain,
-            sorting_label: [deviceName, entityName].filter(Boolean).join("-"),
-            entity_name: entityName || deviceName,
-            area_name: areaName,
-            device_name: deviceName,
-            friendly_name: friendlyName,
-            show_entity_id: hass.userData?.showEntityIdPicker,
-          };
-        })
-        .sort((entityA, entityB) =>
-          caseInsensitiveStringCompare(
-            entityA.sorting_label!,
-            entityB.sorting_label!,
-            this.hass.locale.language
-          )
+        const domainName = domainToName(
+          this.hass.localize,
+          computeDomain(entityId)
         );
 
+        const primary = entityName || deviceName || entityId;
+        const secondary = [areaName, entityName ? deviceName : undefined]
+          .filter(Boolean)
+          .join(isRTL ? " ◂ " : " ▸ ");
+        const a11yLabel = [deviceName, entityName].filter(Boolean).join(" - ");
+
+        return {
+          id: entityId,
+          primary: primary,
+          secondary: secondary,
+          domain_name: domainName,
+          sorting_label: [deviceName, entityName].filter(Boolean).join("_"),
+          search_labels: [
+            entityName,
+            deviceName,
+            areaName,
+            domainName,
+            friendlyName,
+            entityId,
+          ].filter(Boolean) as string[],
+          a11y_label: a11yLabel,
+          stateObj: stateObj,
+        };
+      });
+
       if (includeDeviceClasses) {
-        states = states.filter(
-          (stateObj) =>
+        items = items.filter(
+          (item) =>
             // We always want to include the entity of the current value
-            stateObj.entity_id === this.value ||
-            (stateObj.attributes.device_class &&
-              includeDeviceClasses.includes(stateObj.attributes.device_class))
+            item.id === this.value ||
+            (item.stateObj?.attributes.device_class &&
+              includeDeviceClasses.includes(
+                item.stateObj.attributes.device_class
+              ))
         );
       }
 
       if (includeUnitOfMeasurement) {
-        states = states.filter(
-          (stateObj) =>
+        items = items.filter(
+          (item) =>
             // We always want to include the entity of the current value
-            stateObj.entity_id === this.value ||
-            (stateObj.attributes.unit_of_measurement &&
+            item.id === this.value ||
+            (item.stateObj?.attributes.unit_of_measurement &&
               includeUnitOfMeasurement.includes(
-                stateObj.attributes.unit_of_measurement
+                item.stateObj.attributes.unit_of_measurement
               ))
         );
       }
 
       if (entityFilter) {
-        states = states.filter(
-          (stateObj) =>
+        items = items.filter(
+          (item) =>
             // We always want to include the entity of the current value
-            stateObj.entity_id === this.value || entityFilter!(stateObj)
+            item.id === this.value ||
+            (item.stateObj && entityFilter!(item.stateObj))
         );
       }
 
-      if (!states.length) {
-        return [
-          {
-            ...FAKE_ENTITY,
-            primary: this.hass!.localize(
-              "ui.components.entity.entity-picker.no_match"
-            ),
-            label: this.hass!.localize(
-              "ui.components.entity.entity-picker.no_match"
-            ),
-            icon_path: mdiMagnify,
-          },
-          ...createItems,
-        ];
-      }
-
-      if (createItems?.length) {
-        states.push(...createItems);
-      }
-
-      return states;
+      return items;
     }
   );
 
-  protected shouldUpdate(changedProps: PropertyValues) {
-    if (
-      changedProps.has("value") ||
-      changedProps.has("label") ||
-      changedProps.has("disabled")
-    ) {
-      return true;
-    }
-    return !(!changedProps.has("_opened") && this._opened);
-  }
+  protected render() {
+    const placeholder =
+      this.placeholder ??
+      this.hass.localize("ui.components.entity.entity-picker.placeholder");
+    const notFoundLabel = this.hass.localize(
+      "ui.components.entity.entity-picker.no_match"
+    );
 
-  public willUpdate(changedProps: PropertyValues) {
-    if (!this._initialItems || (changedProps.has("_opened") && this._opened)) {
-      this._items = this._getItems(
-        this._opened,
-        this.hass,
-        this.includeDomains,
-        this.excludeDomains,
-        this.entityFilter,
-        this.includeDeviceClasses,
-        this.includeUnitOfMeasurement,
-        this.includeEntities,
-        this.excludeEntities,
-        this.createDomains
-      );
-      if (this._initialItems) {
-        this.comboBox.filteredItems = this._items;
-      }
-      this._initialItems = true;
-    }
-
-    if (changedProps.has("createDomains") && this.createDomains?.length) {
-      this.hass.loadFragmentTranslation("config");
-    }
-  }
-
-  protected render(): TemplateResult {
     return html`
-      <ha-combo-box
-        item-value-path="entity_id"
-        .itemLabelPath=${this.itemLabelPath}
+      <ha-generic-picker
         .hass=${this.hass}
-        .value=${this._value}
-        .label=${this.label === undefined
-          ? this.hass.localize("ui.components.entity.entity-picker.entity")
-          : this.label}
-        .helper=${this.helper}
-        .allowCustomValue=${this.allowCustomEntity}
-        .filteredItems=${this._items}
-        .renderer=${this._rowRenderer}
-        .required=${this.required}
         .disabled=${this.disabled}
+        .autofocus=${this.autofocus}
+        .allowCustomValue=${this.allowCustomEntity}
+        .label=${this.label}
+        .helper=${this.helper}
+        .searchLabel=${this.searchLabel}
+        .notFoundLabel=${notFoundLabel}
+        .placeholder=${placeholder}
+        .value=${this.value}
+        .rowRenderer=${this._rowRenderer}
+        .getItems=${this._getItems}
+        .getAdditionalItems=${this._getAdditionalItems}
         .hideClearIcon=${this.hideClearIcon}
-        @opened-changed=${this._openedChanged}
+        .searchFn=${this._searchFn}
+        .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
-        @filter-changed=${this._filterChanged}
       >
-      </ha-combo-box>
+      </ha-generic-picker>
     `;
   }
 
-  private get _value() {
-    return this.value || "";
+  private _searchFn: PickerComboBoxSearchFn<EntityComboBoxItem> = (
+    search,
+    filteredItems
+  ) => {
+    // If there is exact match for entity id, put it first
+    const index = filteredItems.findIndex(
+      (item) => item.stateObj?.entity_id === search
+    );
+    if (index === -1) {
+      return filteredItems;
+    }
+
+    const [exactMatch] = filteredItems.splice(index, 1);
+    filteredItems.unshift(exactMatch);
+    return filteredItems;
+  };
+
+  public async open() {
+    await this.updateComplete;
+    await this._picker?.open();
   }
 
-  private _openedChanged(ev: ValueChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
-  }
-
-  private _valueChanged(ev: ValueChangedEvent<string | undefined>) {
+  private _valueChanged(ev) {
     ev.stopPropagation();
-    const newValue = ev.detail.value?.trim();
+    const value = ev.detail.value;
 
-    if (newValue && newValue.startsWith(CREATE_ID)) {
-      const domain = newValue.substring(CREATE_ID.length);
+    if (!value) {
+      this._setValue(undefined);
+      return;
+    }
+
+    if (value.startsWith(CREATE_ID)) {
+      const domain = value.substring(CREATE_ID.length);
+
       showHelperDetailDialog(this, {
         domain,
         dialogClosedCallback: (item) => {
@@ -476,48 +460,18 @@ export class HaEntityPicker extends LitElement {
       return;
     }
 
-    if (newValue !== this._value) {
-      this._setValue(newValue);
+    if (!isValidEntityId(value)) {
+      return;
     }
-  }
 
-  private _fuseIndex = memoizeOne((states: EntityPickerItem[]) =>
-    Fuse.createIndex(
-      [
-        "entity_name",
-        "device_name",
-        "area_name",
-        "translated_domain",
-        "friendly_name", // for backwards compatibility
-        "entity_id", // for technical search
-      ],
-      states
-    )
-  );
-
-  private _filterChanged(ev: CustomEvent): void {
-    if (!this._opened) return;
-
-    const target = ev.target as HaComboBox;
-    const filterString = ev.detail.value.trim().toLowerCase() as string;
-
-    const index = this._fuseIndex(this._items);
-    const fuse = new HaFuse(this._items, {}, index);
-
-    const results = fuse.multiTermsSearch(filterString);
-    if (results) {
-      target.filteredItems = results.map((result) => result.item);
-    } else {
-      target.filteredItems = this._items;
-    }
+    this._setValue(value);
   }
 
   private _setValue(value: string | undefined) {
     this.value = value;
-    setTimeout(() => {
-      fireEvent(this, "value-changed", { value });
-      fireEvent(this, "change");
-    }, 0);
+
+    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "change");
   }
 }
 
