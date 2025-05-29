@@ -4497,10 +4497,6 @@
             "default_name": "New blueprint",
             "unsaved_confirm_title": "Leave editor?",
             "unsaved_confirm_text": "Unsaved changes will be lost.",
-            "new_blueprint_setup_failed_title": "New {type} setup failed",
-            "new_blueprint_setup_failed_text": "Your new {type} has saved, but waiting for it to setup has timed out. This could be due to errors parsing your configuration.yaml, please check the configuration in developer tools. Your {type} will not be visible until this is corrected, and {types} are reloaded. Changes to area, category, or labels were not saved and must be reapplied.",
-            "type_blueprint": "blueprint",
-            "type_blueprint_plural": "[%key:ui::panel::config::blueprint::overview::types_plural::blueprint%]",
             "save": "Save",
             "rename": "Rename",
             "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
@@ -4522,11 +4518,8 @@
               "section_description": "Inputs are variables that make blueprints generic. The exact value will be determined when an instance of this blueprint is created",
               "learn_more": "Learn more about inputs",
               "add": "Add new input",
-              "paste": "Paste",
-              "test": "Test input",
               "testing_pass": "Input passes",
               "testing_error": "Input did not pass",
-              "test_failed": "",
               "copy": "Copy",
               "cut": "Cut",
               "rename": "Rename",
@@ -4598,8 +4591,7 @@
               "add_minimum_version": "Add Minimum Version"
             },
             "description": {
-              "label": "Description",
-              "placeholder": "Motion sensor for light"
+              "label": "Description"
             },
             "author": {
               "label": "Author",
