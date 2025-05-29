@@ -8,7 +8,6 @@ import "../../../../../components/ha-textfield";
 import "../../../../../components/ha-select";
 import "@material/mwc-list/mwc-list-item";
 import "../../../../../components/ha-selector/ha-selector";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { Selector } from "../../../../../data/selector";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -31,7 +30,7 @@ export class HaBlueprintInputInput extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, defaultSelector: Selector) =>
+    (defaultSelector: Selector) =>
       [
         {
           name: "name",
@@ -43,237 +42,12 @@ export class HaBlueprintInputInput extends LitElement {
         },
         {
           name: "selector",
-          type: "select",
-          options: [
-            [
-              "action",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.action"
-              ),
-            ],
-            [
-              "addon",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.addon"
-              ),
-            ],
-            [
-              "area",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.area"
-              ),
-            ],
-            [
-              "assist_pipeline",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.assist_pipeline"
-              ),
-            ],
-            [
-              "attribute",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.attribute"
-              ),
-            ],
-            [
-              "backup_location",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.backup_location"
-              ),
-            ],
-            [
-              "boolean",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.boolean"
-              ),
-            ],
-            [
-              "color_rgb",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.color_rgb"
-              ),
-            ],
-            [
-              "color_temp",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.color_temp"
-              ),
-            ],
-            [
-              "condition",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.condition"
-              ),
-            ],
-            [
-              "config_entry",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.config_entry"
-              ),
-            ],
-            [
-              "constant",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.constant"
-              ),
-            ],
-            [
-              "country",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.country"
-              ),
-            ],
-            [
-              "conversation_agent",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.conversation_agent"
-              ),
-            ],
-            [
-              "date",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.date"
-              ),
-            ],
-            [
-              "datetime",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.datetime"
-              ),
-            ],
-            [
-              "device",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.device"
-              ),
-            ],
-            [
-              "duration",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.duration"
-              ),
-            ],
-            [
-              "entity",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.entity"
-              ),
-            ],
-            [
-              "file",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.file"
-              ),
-            ],
-            [
-              "floor",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.floor"
-              ),
-            ],
-            [
-              "icon",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.icon"
-              ),
-            ],
-            [
-              "label",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.label"
-              ),
-            ],
-            [
-              "language",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.language"
-              ),
-            ],
-            [
-              "location",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.location"
-              ),
-            ],
-            [
-              "media",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.media"
-              ),
-            ],
-            [
-              "number",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.number"
-              ),
-            ],
-            [
-              "object",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.object"
-              ),
-            ],
-            [
-              "qr_code",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.qr_code"
-              ),
-            ],
-            [
-              "select",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.select"
-              ),
-            ],
-            [
-              "state",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.state"
-              ),
-            ],
-            [
-              "target",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.target"
-              ),
-            ],
-            [
-              "template",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.template"
-              ),
-            ],
-            [
-              "text",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.text"
-              ),
-            ],
-            [
-              "time",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.time"
-              ),
-            ],
-            [
-              "theme",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.theme"
-              ),
-            ],
-            [
-              "trigger",
-              localize(
-                "ui.panel.config.blueprint.editor.inputs.type.single.trigger"
-              ),
-            ],
-          ],
+          selector: { selector: {} },
         },
         {
           name: "default",
           selector: defaultSelector,
         },
-        // TODO: Sub-selector settings (https://www.home-assistant.io/docs/blueprint/selectors/)
       ] as const
   );
 
@@ -287,25 +61,18 @@ export class HaBlueprintInputInput extends LitElement {
   private _valueChanged(e: CustomEvent) {
     e.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: {
-        ...e.detail.value,
-        selector: { [e.detail.value.selector]: {} },
-      },
+      value: { ...e.detail.value },
     });
   }
 
   protected render() {
     const selector = this.input.selector ?? { text: {} };
-    const schema = this._schema(this.hass.localize, selector);
-    const data = {
-      ...this.input,
-      selector: Object.keys(this.input.selector ?? selector)[0],
-    };
+    const schema = this._schema(selector);
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
+        .data=${this.input}
         .schema=${schema}
         .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
