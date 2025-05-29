@@ -56,8 +56,7 @@ export interface HaMapEntity {
   color: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
-  prefix?: string;
-  suffix?: string;
+  unit?: string;
   name?: string;
   focus?: boolean;
 }
@@ -551,17 +550,11 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && entity.label_mode === "icon";
       entityMarker.entityId = getEntityId(entity);
       entityMarker.entityName = entityName;
-      entityMarker.entityPrefix =
+      entityMarker.entityUnit =
         typeof entity !== "string" &&
-        entity.prefix &&
+        entity.unit &&
         entity.label_mode === "attribute"
-          ? entity.prefix
-          : "";
-      entityMarker.entitySuffix =
-        typeof entity !== "string" &&
-        entity.suffix &&
-        entity.label_mode === "attribute"
-          ? entity.suffix
+          ? entity.unit
           : "";
       entityMarker.entityPicture =
         entityPicture && (typeof entity === "string" || !entity.label_mode)
