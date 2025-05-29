@@ -12,9 +12,7 @@ class HaEntityMarker extends LitElement {
 
   @property({ attribute: "entity-name" }) public entityName?: string;
 
-  @property({ attribute: "entity-prefix" }) public entityPrefix?: string;
-
-  @property({ attribute: "entity-suffix" }) public entitySuffix?: string;
+  @property({ attribute: "entity-unit" }) public entityUnit?: string;
 
   @property({ attribute: "entity-picture" }) public entityPicture?: string;
 
@@ -41,19 +39,14 @@ class HaEntityMarker extends LitElement {
                 .hass=${this.hass}
                 .stateObj=${this.hass?.states[this.entityId]}
               ></ha-state-icon>`
-            : !this.entityPrefix && !this.entitySuffix
+            : !this.entityUnit
               ? this.entityName
               : html`
-                  <span
-                    class="prefix"
-                    style="display: ${this.entityPrefix ? "initial" : "none"}"
-                    >${this.entityPrefix}</span
-                  >
                   ${this.entityName}
                   <span
-                    class="suffix"
-                    style="display: ${this.entitySuffix ? "initial" : "none"}"
-                    >${this.entitySuffix}</span
+                    class="unit"
+                    style="display: ${this.entityUnit ? "initial" : "none"}"
+                    >${this.entityUnit}</span
                   >
                 `}
       </div>
@@ -90,11 +83,8 @@ class HaEntityMarker extends LitElement {
       height: 100%;
       width: 100%;
     }
-    .prefix {
-      margin-right: var(--ha-marker-prefix-margin, 2px);
-    }
-    .suffix {
-      margin-left: var(--ha-marker-suffix-margin, 2px);
+    .unit {
+      margin-left: 2px;
     }
   `;
 }
