@@ -1782,7 +1782,7 @@
         "buttons": {
           "add": "Add devices via this device",
           "remove": "Remove",
-          "manage": "Manage zigbee device",
+          "manage": "Manage Zigbee device",
           "reconfigure": "Reconfigure",
           "view_network": "View network"
         },
