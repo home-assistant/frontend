@@ -72,7 +72,9 @@ export class HaGenericPicker extends LitElement {
 
   protected render() {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      ${this.label
+        ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+        : nothing}
       <div class="container">
         ${!this._opened
           ? html`
@@ -116,7 +118,9 @@ export class HaGenericPicker extends LitElement {
 
   private _renderHelper() {
     return this.helper
-      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
       : nothing;
   }
 
@@ -164,6 +168,9 @@ export class HaGenericPicker extends LitElement {
         .container {
           position: relative;
           display: block;
+        }
+        label[disabled] {
+          color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
         }
         label {
           display: block;
