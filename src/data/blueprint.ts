@@ -129,7 +129,7 @@ export const saveBlueprint = (
     type: "blueprint/save",
     domain,
     path,
-    yamlSource,
+    yaml: yamlSource,
     source_url,
     allow_override,
   });
