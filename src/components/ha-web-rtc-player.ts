@@ -1,4 +1,4 @@
-import "./ha-circular-progress";
+import "./ha-spinner";
 import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -179,11 +179,10 @@ class HaWebRtcPlayer extends LitElement {
         ? nothing
         : html`
             <div class="video-progress">
-              <ha-circular-progress
+              <ha-spinner
                 class="render-spinner"
-                indeterminate
                 size="medium"
-              ></ha-circular-progress>
+              ></ha-spinner>
             </div>
           `;
     // Custom controls are required for two way audio to allow muting/unmuting
@@ -597,37 +596,35 @@ class HaWebRtcPlayer extends LitElement {
       width: 100%;
       max-height: var(--video-max-height, calc(100vh - 97px));
     }
+
+    .video-container {
+      position: relative;
+    }
+
+    .video-controls {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .video-progress {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 10;
+    }
+
+    .video-controls-right {
+      float: right;
+    }
+
+    mwc-button {
+      --mdc-theme-primary: white;
+    }
   `;
-
-      .video-container {
-        position: relative;
-      }
-
-      .video-controls {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.35);
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        z-index: 10;
-      }
-
-      .video-progress {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        z-index: 10;
-      }
-
-      .video-controls-right {
-        float: right;
-      }
-
-      mwc-button {
-        --mdc-theme-primary: white;
-      }
-    `;
-  }
 }
 
 declare global {
