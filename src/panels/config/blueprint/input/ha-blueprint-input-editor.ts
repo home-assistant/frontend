@@ -58,7 +58,7 @@ export default class HaBlueprintInputEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
   static styles = haStyle;
