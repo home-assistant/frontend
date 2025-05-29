@@ -319,8 +319,7 @@ interface GeoLocationSourceConfig {
   source: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
-  prefix?: string;
-  suffix?: string;
+  unit?: string;
   focus?: boolean;
 }
 
