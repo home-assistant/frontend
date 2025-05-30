@@ -14,6 +14,7 @@ import {
   literal,
   is,
   boolean,
+  refine,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
@@ -29,6 +30,7 @@ import { migrateAutomationTrigger } from "./automation";
 import type { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { createSearchParam } from "../common/url/search-params";
+import { hasTemplate } from "../common/string/has-template";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -54,7 +56,12 @@ export const serviceActionStruct: Describe<ServiceAction> = assign(
     action: optional(string()),
     service_template: optional(string()),
     entity_id: optional(string()),
-    target: optional(targetStruct),
+    target: optional(
+      union([
+        targetStruct,
+        refine(string(), "has_template", (val) => hasTemplate(val)),
+      ])
+    ),
     data: optional(object()),
     response_variable: optional(string()),
     metadata: optional(object()),
@@ -125,7 +132,7 @@ export interface ServiceAction extends BaseAction {
   action?: string;
   service_template?: string;
   entity_id?: string;
-  target?: HassServiceTarget;
+  target?: HassServiceTarget | string;
   data?: Record<string, unknown>;
   response_variable?: string;
   metadata?: Record<string, unknown>;
