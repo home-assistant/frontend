@@ -50,7 +50,7 @@ export const targetStruct = object({
   label_id: optional(union([string(), array(string())])),
 });
 
-export const serviceActionStruct: Describe<ServiceAction> = assign(
+export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(
   baseActionStruct,
   object({
     action: optional(string()),
@@ -132,11 +132,17 @@ export interface ServiceAction extends BaseAction {
   action?: string;
   service_template?: string;
   entity_id?: string;
-  target?: HassServiceTarget | string;
+  target?: HassServiceTarget;
   data?: Record<string, unknown>;
   response_variable?: string;
   metadata?: Record<string, unknown>;
 }
+
+type ServiceActionWithTemplate = ServiceAction & {
+  target?: HassServiceTarget | string;
+};
+
+export type { ServiceActionWithTemplate };
 
 export interface DeviceAction extends BaseAction {
   type: string;
