@@ -1110,6 +1110,16 @@ class HUIRoot extends LitElement {
           display: inline-flex;
         }
         sl-tab::part(base) {
+          padding-inline-start: var(
+            --ha-tab-padding-start,
+            var(--sl-spacing-large)
+          );
+          padding-inline-end: var(
+            --ha-tab-padding-end,
+            var(--sl-spacing-large)
+          );
+        }
+        sl-tab::part(base) {
           padding-top: calc((var(--header-height) - 20px) / 2);
           padding-bottom: calc((var(--header-height) - 20px) / 2 - 2px);
         }
