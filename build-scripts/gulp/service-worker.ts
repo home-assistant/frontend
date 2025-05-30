@@ -1,11 +1,10 @@
 // Generate service workers
 
 import { deleteAsync } from "del";
-import gulp from "gulp";
 import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
 import { basename, join, relative } from "node:path";
 import { injectManifest } from "workbox-build";
-import paths from "../paths.cjs";
+import paths from "../paths.ts";
 
 const SW_MAP = {
   [paths.app_output_latest]: "modern",
@@ -23,7 +22,7 @@ self.addEventListener('install', (event) => {
 });
   `.trim() + "\n";
 
-gulp.task("gen-service-worker-app-dev", async () => {
+export const genServiceWorkerAppDev = async () => {
   await mkdir(paths.app_output_root, { recursive: true });
   await Promise.all(
     Object.values(SW_MAP).map((build) =>
@@ -32,9 +31,9 @@ gulp.task("gen-service-worker-app-dev", async () => {
       })
     )
   );
-});
+};
 
-gulp.task("gen-service-worker-app-prod", () =>
+export const genServiceWorkerAppProd = () =>
   Promise.all(
     Object.entries(SW_MAP).map(async ([outPath, build]) => {
       const manifest = JSON.parse(
@@ -83,5 +82,4 @@ gulp.task("gen-service-worker-app-prod", () =>
         await symlink(basename(swDest), swOld);
       }
     })
-  )
-);
+  );

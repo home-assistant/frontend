@@ -54,15 +54,6 @@ export default tseslint.config(
         },
       },
     },
-
-    settings: {
-      "import/resolver": {
-        webpack: {
-          config: "./rspack.config.cjs",
-        },
-      },
-    },
-
     rules: {
       "class-methods-use-this": "off",
       "new-cap": "off",
@@ -184,6 +175,13 @@ export default tseslint.config(
         },
       ],
       "no-use-before-define": "off",
+    },
+    settings: {
+      "import/resolver": {
+        node: {
+          extensions: [".ts", ".js"],
+        },
+      },
     },
   }
 );

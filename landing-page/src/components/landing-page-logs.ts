@@ -1,5 +1,6 @@
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
+
 // eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";

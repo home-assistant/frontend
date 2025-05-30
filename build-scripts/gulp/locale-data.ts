@@ -1,8 +1,8 @@
 import { deleteSync } from "del";
-import { mkdir, readFile, writeFile } from "fs/promises";
-import gulp from "gulp";
+import { series } from "gulp";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import paths from "../paths.cjs";
+import paths from "../paths.ts";
 
 const formatjsDir = join(paths.root_dir, "node_modules", "@formatjs");
 const outDir = join(paths.build_dir, "locale-data");
@@ -31,7 +31,7 @@ const convertToJSON = async (
       join(formatjsDir, pkg, subDir, `${language}.js`),
       "utf-8"
     );
-  } catch (e) {
+  } catch (e: any) {
     // Ignore if language is missing (i.e. not supported by @formatjs)
     if (e.code === "ENOENT" && skipMissing) {
       console.warn(`Skipped missing data for language ${lang} from ${pkg}`);
@@ -54,16 +54,16 @@ const convertToJSON = async (
   await writeFile(join(outDir, `${pkg}/${lang}.json`), localeData);
 };
 
-gulp.task("clean-locale-data", async () => deleteSync([outDir]));
+const cleanLocaleData = async () => deleteSync([outDir]);
 
-gulp.task("create-locale-data", async () => {
+const createLocaleData = async () => {
   const translationMeta = JSON.parse(
     await readFile(
       resolve(paths.translations_src, "translationMetadata.json"),
       "utf-8"
     )
   );
-  const conversions = [];
+  const conversions: any[] = [];
   for (const pkg of Object.keys(INTL_POLYFILLS)) {
     // eslint-disable-next-line no-await-in-loop
     await mkdir(join(outDir, pkg), { recursive: true });
@@ -81,9 +81,6 @@ gulp.task("create-locale-data", async () => {
     )
   );
   await Promise.all(conversions);
-});
+};
 
-gulp.task(
-  "build-locale-data",
-  gulp.series("clean-locale-data", "create-locale-data")
-);
+export const buildLocaleData = series(cleanLocaleData, createLocaleData);

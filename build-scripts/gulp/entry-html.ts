@@ -6,12 +6,11 @@ import {
   getPreUserAgentRegexes,
 } from "browserslist-useragent-regexp";
 import fs from "fs-extra";
-import gulp from "gulp";
 import { minify } from "html-minifier-terser";
 import template from "lodash.template";
 import { dirname, extname, resolve } from "node:path";
-import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
-import paths from "../paths.cjs";
+import { htmlMinifierOptions, terserOptions } from "../bundle.ts";
+import paths from "../paths.ts";
 
 // macOS companion app has no way to obtain the Safari version used by WKWebView,
 // and it is not in the default user agent string. So we add an additional regex
@@ -34,9 +33,9 @@ const getCommonTemplateVars = () => {
     mobileToDesktop: true,
     throwOnMissing: true,
   });
-  const minSafariVersion = browserRegexes.find(
-    (regex) => regex.family === "safari"
-  )?.matchedVersions[0][0];
+  const minSafariVersion =
+    browserRegexes.find((regex) => regex.family === "safari")
+      ?.matchedVersions[0][0] ?? 18;
   const minMacOSVersion = SAFARI_TO_MACOS[minSafariVersion];
   if (!minMacOSVersion) {
     throw Error(
@@ -106,10 +105,10 @@ const genPagesDevTask =
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
-          latestEntryJS: entries.map(
+          latestEntryJS: (entries as string[]).map(
             (entry) => `${publicRoot}/frontend_latest/${entry}.js`
           ),
-          es5EntryJS: entries.map(
+          es5EntryJS: (entries as string[]).map(
             (entry) => `${publicRoot}/frontend_es5/${entry}.js`
           ),
           latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
@@ -128,7 +127,7 @@ const genPagesProdTask =
     inputRoot,
     outputRoot,
     outputLatest,
-    outputES5,
+    outputES5?: string,
     inputSub = "src/html"
   ) =>
   async () => {
@@ -139,14 +138,18 @@ const genPagesProdTask =
       ? fs.readJsonSync(resolve(outputES5, "manifest.json"))
       : {};
     const commonVars = getCommonTemplateVars();
-    const minifiedHTML = [];
+    const minifiedHTML: Promise<void>[] = [];
     for (const [page, entries] of Object.entries(pageEntries)) {
       const content = renderTemplate(
         resolve(inputRoot, inputSub, `${page}.template`),
         {
           ...commonVars,
-          latestEntryJS: entries.map((entry) => latestManifest[`${entry}.js`]),
-          es5EntryJS: entries.map((entry) => es5Manifest[`${entry}.js`]),
+          latestEntryJS: (entries as string[]).map(
+            (entry) => latestManifest[`${entry}.js`]
+          ),
+          es5EntryJS: (entries as string[]).map(
+            (entry) => es5Manifest[`${entry}.js`]
+          ),
           latestCustomPanelJS: latestManifest["custom-panel.js"],
           es5CustomPanelJS: es5Manifest["custom-panel.js"],
         }
@@ -167,20 +170,18 @@ const APP_PAGE_ENTRIES = {
   "index.html": ["core", "app"],
 };
 
-gulp.task(
-  "gen-pages-app-dev",
-  genPagesDevTask(APP_PAGE_ENTRIES, paths.root_dir, paths.app_output_root)
+export const genPagesAppDev = genPagesDevTask(
+  APP_PAGE_ENTRIES,
+  paths.root_dir,
+  paths.app_output_root
 );
 
-gulp.task(
-  "gen-pages-app-prod",
-  genPagesProdTask(
-    APP_PAGE_ENTRIES,
-    paths.root_dir,
-    paths.app_output_root,
-    paths.app_output_latest,
-    paths.app_output_es5
-  )
+export const genPagesAppProd = genPagesProdTask(
+  APP_PAGE_ENTRIES,
+  paths.root_dir,
+  paths.app_output_root,
+  paths.app_output_latest,
+  paths.app_output_es5
 );
 
 const CAST_PAGE_ENTRIES = {
@@ -190,104 +191,82 @@ const CAST_PAGE_ENTRIES = {
   "receiver.html": ["receiver"],
 };
 
-gulp.task(
-  "gen-pages-cast-dev",
-  genPagesDevTask(CAST_PAGE_ENTRIES, paths.cast_dir, paths.cast_output_root)
+export const genPagesCastDev = genPagesDevTask(
+  CAST_PAGE_ENTRIES,
+  paths.cast_dir,
+  paths.cast_output_root
 );
 
-gulp.task(
-  "gen-pages-cast-prod",
-  genPagesProdTask(
-    CAST_PAGE_ENTRIES,
-    paths.cast_dir,
-    paths.cast_output_root,
-    paths.cast_output_latest,
-    paths.cast_output_es5
-  )
+export const genPagesCastProd = genPagesProdTask(
+  CAST_PAGE_ENTRIES,
+  paths.cast_dir,
+  paths.cast_output_root,
+  paths.cast_output_latest,
+  paths.cast_output_es5
 );
 
 const DEMO_PAGE_ENTRIES = { "index.html": ["main"] };
 
-gulp.task(
-  "gen-pages-demo-dev",
-  genPagesDevTask(DEMO_PAGE_ENTRIES, paths.demo_dir, paths.demo_output_root)
+export const genPagesDemoDev = genPagesDevTask(
+  DEMO_PAGE_ENTRIES,
+  paths.demo_dir,
+  paths.demo_output_root
 );
 
-gulp.task(
-  "gen-pages-demo-prod",
-  genPagesProdTask(
-    DEMO_PAGE_ENTRIES,
-    paths.demo_dir,
-    paths.demo_output_root,
-    paths.demo_output_latest,
-    paths.demo_output_es5
-  )
+export const genPagesDemoProd = genPagesProdTask(
+  DEMO_PAGE_ENTRIES,
+  paths.demo_dir,
+  paths.demo_output_root,
+  paths.demo_output_latest,
+  paths.demo_output_es5
 );
 
 const GALLERY_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
-gulp.task(
-  "gen-pages-gallery-dev",
-  genPagesDevTask(
-    GALLERY_PAGE_ENTRIES,
-    paths.gallery_dir,
-    paths.gallery_output_root
-  )
+export const genPagesGalleryDev = genPagesDevTask(
+  GALLERY_PAGE_ENTRIES,
+  paths.gallery_dir,
+  paths.gallery_output_root
 );
 
-gulp.task(
-  "gen-pages-gallery-prod",
-  genPagesProdTask(
-    GALLERY_PAGE_ENTRIES,
-    paths.gallery_dir,
-    paths.gallery_output_root,
-    paths.gallery_output_latest
-  )
+export const genPagesGalleryProd = genPagesProdTask(
+  GALLERY_PAGE_ENTRIES,
+  paths.gallery_dir,
+  paths.gallery_output_root,
+  paths.gallery_output_latest
 );
 
 const LANDING_PAGE_PAGE_ENTRIES = { "index.html": ["entrypoint"] };
 
-gulp.task(
-  "gen-pages-landing-page-dev",
-  genPagesDevTask(
-    LANDING_PAGE_PAGE_ENTRIES,
-    paths.landingPage_dir,
-    paths.landingPage_output_root
-  )
+export const genPagesLandingPageDev = genPagesDevTask(
+  LANDING_PAGE_PAGE_ENTRIES,
+  paths.landingPage_dir,
+  paths.landingPage_output_root
 );
 
-gulp.task(
-  "gen-pages-landing-page-prod",
-  genPagesProdTask(
-    LANDING_PAGE_PAGE_ENTRIES,
-    paths.landingPage_dir,
-    paths.landingPage_output_root,
-    paths.landingPage_output_latest,
-    paths.landingPage_output_es5
-  )
+export const genPagesLandingPageProd = genPagesProdTask(
+  LANDING_PAGE_PAGE_ENTRIES,
+  paths.landingPage_dir,
+  paths.landingPage_output_root,
+  paths.landingPage_output_latest,
+  paths.landingPage_output_es5
 );
 
 const HASSIO_PAGE_ENTRIES = { "entrypoint.js": ["entrypoint"] };
 
-gulp.task(
-  "gen-pages-hassio-dev",
-  genPagesDevTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    "src",
-    paths.hassio_publicPath
-  )
+export const genPagesHassioDev = genPagesDevTask(
+  HASSIO_PAGE_ENTRIES,
+  paths.hassio_dir,
+  paths.hassio_output_root,
+  "src",
+  paths.hassio_publicPath
 );
 
-gulp.task(
-  "gen-pages-hassio-prod",
-  genPagesProdTask(
-    HASSIO_PAGE_ENTRIES,
-    paths.hassio_dir,
-    paths.hassio_output_root,
-    paths.hassio_output_latest,
-    paths.hassio_output_es5,
-    "src"
-  )
+export const genPagesHassioProd = genPagesProdTask(
+  HASSIO_PAGE_ENTRIES,
+  paths.hassio_dir,
+  paths.hassio_output_root,
+  paths.hassio_output_latest,
+  paths.hassio_output_es5,
+  "src"
 );

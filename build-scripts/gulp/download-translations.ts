@@ -1,10 +1,10 @@
-import fs from "fs/promises";
-import gulp from "gulp";
-import path from "path";
-import mapStream from "map-stream";
-import transform from "gulp-json-transform";
 import { LokaliseApi } from "@lokalise/node-api";
+import { dest, series, src } from "gulp";
+import transform from "gulp-json-transform";
 import JSZip from "jszip";
+import mapStream from "map-stream";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 const inDir = "translations";
 const inDirFrontend = `${inDir}/frontend`;
@@ -12,11 +12,14 @@ const inDirBackend = `${inDir}/backend`;
 const srcMeta = "src/translations/translationMetadata.json";
 const encoding = "utf8";
 
-function hasHtml(data) {
-  return /<\S*>/i.test(data);
-}
+const hasHtml = (data) => /<\S*>/i.test(data);
 
-function recursiveCheckHasHtml(file, data, errors, recKey) {
+const recursiveCheckHasHtml = (
+  file,
+  data,
+  errors: string[],
+  recKey?: string
+) => {
   Object.keys(data).forEach(function (key) {
     if (typeof data[key] === "object") {
       const nextRecKey = recKey ? `${recKey}.${key}` : key;
@@ -25,9 +28,9 @@ function recursiveCheckHasHtml(file, data, errors, recKey) {
       errors.push(`HTML found in ${file.path} at key ${recKey}.${key}`);
     }
   });
-}
+};
 
-function checkHtml() {
+const checkHtml = () => {
   const errors = [];
 
   return mapStream(function (file, cb) {
@@ -44,9 +47,9 @@ function checkHtml() {
     }
     cb(error, file);
   });
-}
+};
 
-function convertBackendTranslations(data, _file) {
+const convertBackendTranslationsTransform = (data, _file) => {
   const output = { component: {} };
   if (!data.component) {
     return output;
@@ -62,25 +65,22 @@ function convertBackendTranslations(data, _file) {
     });
   });
   return output;
-}
+};
 
-gulp.task("convert-backend-translations", function () {
-  return gulp
-    .src([`${inDirBackend}/*.json`])
-    .pipe(transform((data, file) => convertBackendTranslations(data, file)))
-    .pipe(gulp.dest(inDirBackend));
-});
+const convertBackendTranslations = () =>
+  src([`${inDirBackend}/*.json`])
+    .pipe(
+      transform((data, file) => convertBackendTranslationsTransform(data, file))
+    )
+    .pipe(dest(inDirBackend));
 
-gulp.task("check-translations-html", function () {
-  return gulp
-    .src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`])
-    .pipe(checkHtml());
-});
+const checkTranslationsHtml = () =>
+  src([`${inDirFrontend}/*.json`, `${inDirBackend}/*.json`]).pipe(checkHtml());
 
-gulp.task("check-all-files-exist", async function () {
+const checkAllFilesExist = async () => {
   const file = await fs.readFile(srcMeta, { encoding });
   const meta = JSON.parse(file);
-  const writings = [];
+  const writings: Promise<void>[] = [];
   Object.keys(meta).forEach((lang) => {
     writings.push(
       fs.writeFile(`${inDirFrontend}/${lang}.json`, JSON.stringify({}), {
@@ -92,14 +92,14 @@ gulp.task("check-all-files-exist", async function () {
     );
   });
   await Promise.allSettled(writings);
-});
+};
 
 const lokaliseProjects = {
   backend: "130246255a974bd3b5e8a1.51616605",
   frontend: "3420425759f6d6d241f598.13594006",
 };
 
-gulp.task("fetch-lokalise", async function () {
+const fetchLokalise = async () => {
   let apiKey;
   try {
     apiKey =
@@ -168,14 +168,11 @@ gulp.task("fetch-lokalise", async function () {
         })
     )
   );
-});
+};
 
-gulp.task(
-  "download-translations",
-  gulp.series(
-    "fetch-lokalise",
-    "convert-backend-translations",
-    "check-translations-html",
-    "check-all-files-exist"
-  )
+export const downloadTranslations = series(
+  fetchLokalise,
+  convertBackendTranslations,
+  checkTranslationsHtml,
+  checkAllFilesExist
 );
