@@ -12,6 +12,8 @@ class HaEntityMarker extends LitElement {
 
   @property({ attribute: "entity-name" }) public entityName?: string;
 
+  @property({ attribute: "entity-unit" }) public entityUnit?: string;
+
   @property({ attribute: "entity-picture" }) public entityPicture?: string;
 
   @property({ attribute: "entity-color" }) public entityColor?: string;
@@ -37,7 +39,16 @@ class HaEntityMarker extends LitElement {
                 .hass=${this.hass}
                 .stateObj=${this.hass?.states[this.entityId]}
               ></ha-state-icon>`
-            : this.entityName}
+            : !this.entityUnit
+              ? this.entityName
+              : html`
+                  ${this.entityName}
+                  <span
+                    class="unit"
+                    style="display: ${this.entityUnit ? "initial" : "none"}"
+                    >${this.entityUnit}</span
+                  >
+                `}
       </div>
     `;
   }
@@ -71,6 +82,9 @@ class HaEntityMarker extends LitElement {
       background-size: cover;
       height: 100%;
       width: 100%;
+    }
+    .unit {
+      margin-left: 2px;
     }
   `;
 }
