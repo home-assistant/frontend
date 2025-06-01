@@ -130,6 +130,12 @@ export const createErrorHeadingBadgeElement = (
   return el;
 };
 
+export const createErrorCardConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
 export const createErrorBadgeConfig = (error, origConfig) => ({
   type: "error",
   error,
@@ -167,7 +173,7 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
       createErrorHeadingBadgeConfig(error, config)
     );
   }
-  return createErrorCardElement({ type: "error" });
+  return createErrorCardElement(createErrorCardConfig(error, config));
 };
 
 const _customCreate = <T extends keyof CreateElementConfigTypes>(
