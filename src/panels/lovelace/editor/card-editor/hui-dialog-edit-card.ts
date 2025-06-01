@@ -324,7 +324,7 @@ export class HuiDialogEditCard
     (cardConfig: LovelaceCardConfig) => {
       try {
         tryCreateCardElement(cardConfig);
-        return nothing;
+        return undefined;
       } catch (err: any) {
         return err.message;
       }
