@@ -225,6 +225,40 @@ export class HuiPictureElementsCardEditor
     }
   };
 
+  private _handleImageClick(ev: CustomEvent<{x: number; y: number}>) {
+    const { x, y } = ev.detail;
+
+    if (!this._subElementEditorConfig?.elementConfig) {
+      return;
+    }
+
+    const elementConfig = this._subElementEditorConfig.elementConfig as LovelaceElementConfig;
+    const newElement = {
+      ...elementConfig,
+      style: {
+        ...(elementConfig.style || {}),
+        left: `${Math.round(x)}%`,
+        top: `${Math.round(y)}%`,
+      },
+    };
+
+    const updateEvent = new CustomEvent("config-changed", {
+      detail: { config: newElement },
+    });
+    updateEvent.stopPropagation = () => {};
+    this._handleSubElementChanged(updateEvent);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("picture-elements-clicked", this._handleImageClick.bind(this));
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener("picture-elements-clicked", this._handleImageClick.bind(this));
+    super.disconnectedCallback();
+  }
+
   static get styles(): CSSResultGroup {
     return [configElementStyle];
   }
@@ -233,5 +267,9 @@ export class HuiPictureElementsCardEditor
 declare global {
   interface HTMLElementTagNameMap {
     "hui-picture-elements-card-editor": HuiPictureElementsCardEditor;
+  }
+
+  interface WindowEventMap {
+    "picture-elements-clicked": CustomEvent<{x: number; y: number}>;
   }
 }
