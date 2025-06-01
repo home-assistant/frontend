@@ -32,6 +32,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-card-element-editor";
 import type { HuiCardElementEditor } from "./hui-card-element-editor";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { tryCreateCardElement } from "../../create-element/create-card-element";
 
 declare global {
   // for fire event
@@ -214,6 +215,16 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
+            ${this._cardConfigOutView(this._cardConfig)
+              ? html`<ha-alert
+                  alert-type="error"
+                  .title=${this.hass?.localize(
+                    "ui.errors.config.configuration_error"
+                  )}
+                >
+                  ${this._cardConfigOutView(this._cardConfig)}
+                </ha-alert>`
+              : nothing}
             ${this._sectionConfig
               ? html`
                   <hui-section
@@ -308,6 +319,16 @@ export class HuiDialogEditCard
     window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._cardEditorEl?.focusYamlEditor();
   }
+
+  private _cardConfigOutView = memoizeOne((cardConfig: LovelaceCardConfig) => {
+    try {
+      tryCreateCardElement(cardConfig);
+      return nothing;
+    } catch (err: any) {
+      this._error = err.message;
+      return err.message;
+    }
+  });
 
   private _cardConfigInSection = memoizeOne(
     (cardConfig: LovelaceCardConfig) => {
