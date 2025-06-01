@@ -215,14 +215,14 @@ export class HuiDialogEditCard
             ></hui-card-element-editor>
           </div>
           <div class="element-preview">
-            ${this._cardConfigOutView(this._cardConfig)
+            ${this._cardConfigErrorMessage(this._cardConfig)
               ? html`<ha-alert
                   alert-type="error"
                   .title=${this.hass?.localize(
                     "ui.errors.config.configuration_error"
                   )}
                 >
-                  ${this._cardConfigOutView(this._cardConfig)}
+                  ${this._cardConfigErrorMessage(this._cardConfig)}
                 </ha-alert>`
               : nothing}
             ${this._sectionConfig
@@ -320,15 +320,16 @@ export class HuiDialogEditCard
     this._cardEditorEl?.focusYamlEditor();
   }
 
-  private _cardConfigOutView = memoizeOne((cardConfig: LovelaceCardConfig) => {
-    try {
-      tryCreateCardElement(cardConfig);
-      return nothing;
-    } catch (err: any) {
-      this._error = err.message;
-      return err.message;
+  private _cardConfigErrorMessage = memoizeOne(
+    (cardConfig: LovelaceCardConfig) => {
+      try {
+        tryCreateCardElement(cardConfig);
+        return nothing;
+      } catch (err: any) {
+        return err.message;
+      }
     }
-  });
+  );
 
   private _cardConfigInSection = memoizeOne(
     (cardConfig: LovelaceCardConfig) => {
