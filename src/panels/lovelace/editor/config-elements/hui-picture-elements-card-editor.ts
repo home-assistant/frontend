@@ -225,10 +225,11 @@ export class HuiPictureElementsCardEditor
     }
   };
 
-  private _handleImageClick(ev: CustomEvent<{x: number; y: number}>) {
+  private _handleImageClick = (ev: CustomEvent<{x: number; y: number}>) => {
     const { x, y } = ev.detail;
 
-    if (!this._subElementEditorConfig?.elementConfig) {
+    // Only handle clicks when actively editing an element
+    if (!this._subElementEditorConfig?.elementConfig || this._subElementEditorConfig.type !== "element") {
       return;
     }
 
@@ -247,15 +248,15 @@ export class HuiPictureElementsCardEditor
     });
     updateEvent.stopPropagation = () => {};
     this._handleSubElementChanged(updateEvent);
-  }
+  };
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("picture-elements-clicked", this._handleImageClick.bind(this));
+    window.addEventListener("picture-elements-clicked", this._handleImageClick);
   }
 
   disconnectedCallback() {
-    window.removeEventListener("picture-elements-clicked", this._handleImageClick.bind(this));
+    window.removeEventListener("picture-elements-clicked", this._handleImageClick);
     super.disconnectedCallback();
   }
 
