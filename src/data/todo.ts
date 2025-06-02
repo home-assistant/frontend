@@ -25,6 +25,7 @@ export enum TodoSortMode {
 export interface TodoItem {
   uid: string;
   summary: string;
+  icon?: string | null;
   status: TodoItemStatus | null;
   description?: string | null;
   due?: string | null;
@@ -38,6 +39,7 @@ export const enum TodoListEntityFeature {
   SET_DUE_DATE_ON_ITEM = 16,
   SET_DUE_DATETIME_ON_ITEM = 32,
   SET_DESCRIPTION_ON_ITEM = 64,
+  SET_ICON_ON_ITEM = 128,
 }
 
 export const getTodoLists = (hass: HomeAssistant): TodoList[] =>
@@ -90,6 +92,7 @@ export const updateItem = (
     {
       item: item.uid,
       rename: item.summary,
+      icon: item.icon,
       status: item.status,
       description: item.description,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
@@ -111,6 +114,7 @@ export const createItem = (
     "add_item",
     {
       item: item.summary,
+      icon: item.icon || undefined,
       description: item.description || undefined,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
