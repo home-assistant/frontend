@@ -4315,10 +4315,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chromecast-caf-receiver@npm:6.0.21":
-  version: 6.0.21
-  resolution: "@types/chromecast-caf-receiver@npm:6.0.21"
-  checksum: 10/3705395154d40a32c2b9c5df06b36fe614081f7c9a9c500847c25c44433df07f5bdf1372c448fed636fcceaa6b9cdafef745997100fa0c5ed4210d102c671cf5
+"@types/chromecast-caf-receiver@npm:6.0.22":
+  version: 6.0.22
+  resolution: "@types/chromecast-caf-receiver@npm:6.0.22"
+  checksum: 10/6c51cb52527776ddfa187a261b88184c98bdd61c129dd8719cba213894d565cf69073734d6473696ffd60a768f6fb5a3fe9932693f43174fbc5e7af201db8a90
   languageName: node
   linkType: hard
 
@@ -9299,7 +9299,7 @@ __metadata:
     "@tsparticles/engine": "npm:3.8.1"
     "@tsparticles/preset-links": "npm:3.2.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
-    "@types/chromecast-caf-receiver": "npm:6.0.21"
+    "@types/chromecast-caf-receiver": "npm:6.0.22"
     "@types/chromecast-caf-sender": "npm:1.0.11"
     "@types/color-name": "npm:2.0.0"
     "@types/glob": "npm:8.1.0"
