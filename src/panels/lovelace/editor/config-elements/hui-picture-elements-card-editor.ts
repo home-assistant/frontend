@@ -246,7 +246,7 @@ export class HuiPictureElementsCardEditor
     const updateEvent = new CustomEvent("config-changed", {
       detail: { config: newElement },
     });
-    updateEvent.stopPropagation = () => {};
+    updateEvent.stopPropagation = () => undefined;
     this._handleSubElementChanged(updateEvent);
   };
 
