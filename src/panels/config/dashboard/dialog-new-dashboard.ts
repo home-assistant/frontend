@@ -247,7 +247,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
         .cards-container-header {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
-          padding: 12px 0px;
+          padding: 12px 8px;
           margin: 0;
           grid-column: 1 / -1;
           position: sticky;
