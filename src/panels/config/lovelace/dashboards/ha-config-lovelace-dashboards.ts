@@ -255,7 +255,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
     const defaultMode = (
       this.hass.panels?.lovelace?.config as LovelacePanelConfig
     ).mode;
-    const defaultUrlPath = this.hass.defaultPanel;
+    const defaultUrlPath = this.hass.sidebar.defaultPanel;
     const isDefault = defaultUrlPath === "lovelace";
     const result: DataTableItem[] = [
       {

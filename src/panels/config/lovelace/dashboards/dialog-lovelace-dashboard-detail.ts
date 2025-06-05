@@ -13,10 +13,11 @@ import type {
   LovelaceDashboardCreateParams,
   LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace/dashboard";
-import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
+import { DEFAULT_PANEL } from "../../../../data/panel";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { saveFrontendUserData } from "../../../../data/frontend";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -59,7 +60,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params || !this._data) {
       return nothing;
     }
-    const defaultPanelUrlPath = this.hass.defaultPanel;
+    const defaultPanelUrlPath = this.hass.sidebar.defaultPanel;
     const titleInvalid = !this._data.title || !this._data.title.trim();
 
     return html`
@@ -249,15 +250,17 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     };
   }
 
-  private _toggleDefault() {
+  private async _toggleDefault() {
     const urlPath = this._params?.urlPath;
     if (!urlPath) {
       return;
     }
-    setDefaultPanel(
-      this,
-      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
-    );
+    await saveFrontendUserData(this.hass!.connection, "sidebar", {
+      panelOrder: this.hass!.sidebar.panelOrder,
+      hiddenPanels: this.hass!.sidebar.hiddenPanels,
+      defaultPanel:
+        urlPath === this.hass.sidebar.defaultPanel ? DEFAULT_PANEL : urlPath,
+    });
   }
 
   private async _updateDashboard() {

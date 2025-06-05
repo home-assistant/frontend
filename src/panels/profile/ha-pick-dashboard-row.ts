@@ -6,8 +6,8 @@ import "../../components/ha-select";
 import "../../components/ha-settings-row";
 import type { LovelaceDashboard } from "../../data/lovelace/dashboard";
 import { fetchDashboards } from "../../data/lovelace/dashboard";
-import { setDefaultPanel } from "../../data/panel";
 import type { HomeAssistant } from "../../types";
+import { saveFrontendUserData } from "../../data/frontend";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
@@ -37,7 +37,7 @@ class HaPickDashboardRow extends LitElement {
                 "ui.panel.profile.dashboard.dropdown_label"
               )}
               .disabled=${!this._dashboards?.length}
-              .value=${this.hass.defaultPanel}
+              .value=${this.hass.sidebar.defaultPanel}
               @selected=${this._dashboardChanged}
               naturalMenuWidth
             >
@@ -71,12 +71,16 @@ class HaPickDashboardRow extends LitElement {
     this._dashboards = await fetchDashboards(this.hass);
   }
 
-  private _dashboardChanged(ev) {
+  private async _dashboardChanged(ev) {
     const urlPath = ev.target.value;
-    if (!urlPath || urlPath === this.hass.defaultPanel) {
+    if (!urlPath || urlPath === this.hass.sidebar.defaultPanel) {
       return;
     }
-    setDefaultPanel(this, urlPath);
+    await saveFrontendUserData(this.hass!.connection, "sidebar", {
+      panelOrder: this.hass!.sidebar.panelOrder,
+      hiddenPanels: this.hass!.sidebar.hiddenPanels,
+      defaultPanel: urlPath,
+    });
   }
 }
 

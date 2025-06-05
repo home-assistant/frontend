@@ -77,7 +77,7 @@ export class HuiDialogSelectView extends LitElement {
                 "ui.panel.lovelace.editor.select_view.dashboard_label"
               )}
               .disabled=${!this._dashboards.length}
-              .value=${this._urlPath || this.hass.defaultPanel}
+              .value=${this._urlPath || this.hass.sidebar.defaultPanel}
               @selected=${this._dashboardChanged}
               @closed=${stopPropagation}
               fixedMenuPosition
