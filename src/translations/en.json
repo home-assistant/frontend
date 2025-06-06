@@ -902,6 +902,8 @@
         "hidden": "{number} hidden",
         "clear": "Clear",
         "ungrouped": "Ungrouped",
+        "collapse": "Collapse",
+        "expand": "Expand",
         "settings": {
           "header": "Customize",
           "hide": "Hide column {title}",

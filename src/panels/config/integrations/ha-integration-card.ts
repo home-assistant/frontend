@@ -163,6 +163,7 @@ export class HaIntegrationCard extends LitElement {
                   : "custom"}"
               >
                 <ha-tooltip
+                  hoist
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
                   .content=${this.hass.localize(
                     this.manifest.overwrites_built_in
@@ -177,6 +178,7 @@ export class HaIntegrationCard extends LitElement {
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
             ? html`<div class="icon cloud">
                 <ha-tooltip
+                  hoist
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
                   .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -191,6 +193,7 @@ export class HaIntegrationCard extends LitElement {
           !this.items.every((itm) => itm.source === "system")
             ? html`<div class="icon yaml">
                 <ha-tooltip
+                  hoist
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
                   .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"

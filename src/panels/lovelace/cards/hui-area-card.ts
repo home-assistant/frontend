@@ -384,15 +384,22 @@ export class HuiAreaCard
             areaSensorEntityId = area.humidity_entity_id;
             break;
         }
-        const areaEntity = areaSensorEntityId
-          ? this.hass.states[areaSensorEntityId]
-          : undefined;
+        const areaEntity =
+          areaSensorEntityId &&
+          this.hass.states[areaSensorEntityId] &&
+          !isUnavailableState(this.hass.states[areaSensorEntityId].state)
+            ? this.hass.states[areaSensorEntityId]
+            : undefined;
         if (
           areaEntity ||
           entitiesByDomain[domain].some(
             (entity) => entity.attributes.device_class === deviceClass
           )
         ) {
+          let value = areaEntity
+            ? this.hass.formatEntityState(areaEntity)
+            : this._average(domain, deviceClass);
+          if (!value) value = "—";
           sensors.push(html`
             <div class="sensor">
               <ha-domain-icon
@@ -400,9 +407,7 @@ export class HuiAreaCard
                 .domain=${domain}
                 .deviceClass=${deviceClass}
               ></ha-domain-icon>
-              ${areaEntity
-                ? this.hass.formatEntityState(areaEntity)
-                : this._average(domain, deviceClass)}
+              ${value}
             </div>
           `);
         }

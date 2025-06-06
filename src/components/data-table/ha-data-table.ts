@@ -740,6 +740,7 @@ export class HaDataTable extends LitElement {
             }, {});
           const groupedItems: DataTableRowData[] = [];
           Object.entries(sorted).forEach(([groupName, rows]) => {
+            const collapsed = collapsedGroups.includes(groupName);
             groupedItems.push({
               append: true,
               selectable: false,
@@ -751,9 +752,10 @@ export class HaDataTable extends LitElement {
               >
                 <ha-icon-button
                   .path=${mdiChevronUp}
-                  class=${collapsedGroups.includes(groupName)
-                    ? "collapsed"
-                    : ""}
+                  .label=${this.hass.localize(
+                    `ui.components.data-table.${collapsed ? "expand" : "collapse"}`
+                  )}
+                  class=${collapsed ? "collapsed" : ""}
                 >
                 </ha-icon-button>
                 ${groupName === UNDEFINED_GROUP_KEY

@@ -626,12 +626,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this._tooltipHideTimeout = undefined;
     }
     const tooltip = this._tooltip;
-    const listbox = this.shadowRoot!.querySelector("ha-md-list")!;
-    let top = item.offsetTop + 11;
-    if (listbox.contains(item)) {
-      top += listbox.offsetTop;
-      top -= listbox.scrollTop;
-    }
+    const allListbox = this.shadowRoot!.querySelectorAll("ha-md-list")!;
+    const listbox = [...allListbox].find((lb) => lb.contains(item));
+
+    const top =
+      item.offsetTop +
+      11 +
+      (listbox?.offsetTop ?? 0) -
+      (listbox?.scrollTop ?? 0);
+
     tooltip.innerText = (
       item.querySelector(".item-text") as HTMLElement
     ).innerText;
