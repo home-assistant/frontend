@@ -30,7 +30,7 @@
     "@braintree/sanitize-url": "7.1.1",
     "@codemirror/autocomplete": "6.18.6",
     "@codemirror/commands": "6.8.1",
-    "@codemirror/language": "6.11.0",
+    "@codemirror/language": "6.11.1",
     "@codemirror/legacy-modes": "6.5.1",
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
