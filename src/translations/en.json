@@ -4551,8 +4551,8 @@
             "load_error_unknown": "Error loading blueprint ({err_no}).",
             "move_up": "Move up",
             "move_down": "Move down",
-            "edit_ui": "UI Editor",
-            "edit_yaml": "YAML Editor",
+            "edit_ui": "UI editor",
+            "edit_yaml": "YAML editor",
             "path": "Path",
             "name": "Name",
             "missing_path": "Cannot save blueprint without a path",
@@ -4571,10 +4571,10 @@
               "copy": "Copy",
               "cut": "Cut",
               "rename": "Rename",
-              "delete_confirm_title": "Delete Input",
+              "delete_confirm_title": "Delete input",
               "delete_confirm_text": "Do you want to delete this input from your blueprint?",
               "id": "ID",
-              "change_id": "Change Input ID",
+              "change_id": "Change input ID",
               "type": {
                 "new": {
                   "input": "Input",
@@ -4591,15 +4591,15 @@
                 "single": {
                   "name": "Name",
                   "description": "Description",
-                  "default": "Default Value",
+                  "default": "Default value",
                   "selector": "Selector"
                 }
               }
             },
             "dialog": {
-              "add_description": "Add Description",
-              "add_author": "Add Author",
-              "add_minimum_version": "Add Minimum Version"
+              "add_description": "Add description",
+              "add_author": "Add author",
+              "add_minimum_version": "Add minimum version"
             },
             "description": {
               "label": "Description"
@@ -4609,7 +4609,7 @@
               "placeholder": "Linus Torvalds"
             },
             "minimum_version": {
-              "label": "Minimum Version",
+              "label": "Minimum version",
               "placeholder": "2025.1.0"
             }
           }
