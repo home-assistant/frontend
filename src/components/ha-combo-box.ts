@@ -208,6 +208,7 @@ export class HaComboBox extends LitElement {
               aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
               class="clear-button"
               .path=${mdiClose}
+              ?disabled=${this.disabled}
               @click=${this._clearValue}
             ></ha-svg-icon>`
           : ""}
@@ -384,7 +385,8 @@ export class HaComboBox extends LitElement {
     :host([opened]) .toggle-button {
       color: var(--primary-color);
     }
-    .toggle-button[disabled] {
+    .toggle-button[disabled],
+    .clear-button[disabled] {
       color: var(--disabled-text-color);
       pointer-events: none;
     }

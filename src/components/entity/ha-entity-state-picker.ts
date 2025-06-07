@@ -20,6 +20,8 @@ class HaEntityStatePicker extends LitElement {
 
   @property({ attribute: false }) public extraOptions?: any[];
 
+  @property({ attribute: false }) public excludeOptions?: string[];
+
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
@@ -49,7 +51,8 @@ class HaEntityStatePicker extends LitElement {
       (changedProps.has("_opened") && this._opened) ||
       changedProps.has("entityId") ||
       changedProps.has("attribute") ||
-      changedProps.has("extraOptions")
+      changedProps.has("extraOptions") ||
+      changedProps.has("excludeOptions")
     ) {
       const stateObj = this.entityId
         ? this.hass.states[this.entityId]
@@ -68,7 +71,7 @@ class HaEntityStatePicker extends LitElement {
                   ),
             }))
           : []),
-      ];
+      ].filter((item) => !(this.excludeOptions || []).includes(item.value));
     }
   }
 
