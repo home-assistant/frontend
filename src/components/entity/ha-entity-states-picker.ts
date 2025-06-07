@@ -1,10 +1,11 @@
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../common/dom/fire_event";
 import { ensureArray } from "../../common/array/ensure-array";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../../types";
 import "./ha-entity-state-picker";
 
 @customElement("ha-entity-states-picker")
@@ -95,7 +96,6 @@ export class HaEntityStatesPicker extends LitElement {
                 .disabled=${this.disabled}
                 .required=${this.required && !value.length}
                 @value-changed=${this._addValue}
-                .placeholder=${this.placeholder}
               ></ha-entity-state-picker>`
             )}
       </div>
@@ -105,16 +105,20 @@ export class HaEntityStatesPicker extends LitElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const newState = ev.detail.value;
-    const newValue = [...this.value];
+    const newValue = [...this.value!];
+    const index = (ev.currentTarget as any)?.index;
+    if (!index) {
+      return;
+    }
     if (newState === undefined) {
-      newValue.splice(ev.currentTarget.index, 1);
-      this._keys.splice(ev.currentTarget.index, 1);
+      newValue.splice(index, 1);
+      this._keys.splice(index, 1);
       fireEvent(this, "value-changed", {
         value: newValue,
       });
       return;
     }
-    newValue[ev.currentTarget.index] = newState;
+    newValue[index] = newState;
     fireEvent(this, "value-changed", {
       value: newValue,
     });
