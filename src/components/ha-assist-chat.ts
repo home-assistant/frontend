@@ -509,7 +509,7 @@ export class HaAssistChat extends LitElement {
         this.requestUpdate("_conversation");
       },
       processEvent: (event: PipelineRunEvent) => {
-        if (event.type === "intent-progress") {
+        if (event.type === "intent-progress" && event.data.chat_log_delta) {
           const delta = event.data.chat_log_delta;
 
           // new message
