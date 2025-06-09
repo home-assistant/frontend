@@ -108,9 +108,9 @@ body:
       render: yaml
   - type: textarea
     attributes:
-      label: Javascript errors shown in your browser console/inspector
+      label: JavaScript errors shown in your browser console/inspector
       description: >
-        If you come across any Javascript or other error logs, e.g., in your
+        If you come across any JavaScript or other error logs, e.g., in your
         browser console/inspector please provide them.
       render: txt
   - type: textarea
