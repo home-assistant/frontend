@@ -1,6 +1,9 @@
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { IFuseOptions } from "fuse.js";
+import Fuse from "fuse.js";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/search-input";
@@ -17,6 +20,8 @@ const EMPTY_CONFIG: LovelaceRawConfig = { views: [{ title: "Home" }] };
 interface Strategy {
   type: string;
   images: { dark: string; light: string };
+  name: string;
+  description: string;
 }
 
 const STRATEGIES = [
@@ -27,6 +32,9 @@ const STRATEGIES = [
         "/static/images/dashboard-options/light/icon-dashboard-default.svg",
       dark: "/static/images/dashboard-options/dark/icon-dashboard-default.svg",
     },
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.default.title",
+    description:
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.default.description",
   },
   {
     type: "areas",
@@ -34,6 +42,9 @@ const STRATEGIES = [
       light: "/static/images/dashboard-options/light/icon-dashboard-areas.svg",
       dark: "/static/images/dashboard-options/dark/icon-dashboard-areas.svg",
     },
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.title",
+    description:
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.description",
   },
   {
     type: "map",
@@ -41,6 +52,9 @@ const STRATEGIES = [
       light: "/static/images/dashboard-options/light/icon-dashboard-map.svg",
       dark: "/static/images/dashboard-options/dark/icon-dashboard-map.svg",
     },
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.map.title",
+    description:
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.map.description",
   },
   {
     type: "iframe",
@@ -49,6 +63,9 @@ const STRATEGIES = [
         "/static/images/dashboard-options/light/icon-dashboard-webpage.svg",
       dark: "/static/images/dashboard-options/dark/icon-dashboard-webpage.svg",
     },
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.iframe.title",
+    description:
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.iframe.description",
   },
 ] as const satisfies Strategy[];
 
@@ -62,9 +79,21 @@ class DialogNewDashboard extends LitElement implements HassDialog {
 
   @state() private _filter = "";
 
+  @state() private _localizedStrategies: (Strategy & {
+    localizedName: string;
+    localizedDescription: string;
+  })[] = [];
+
   public showDialog(params: NewDashboardDialogParams): void {
     this._opened = true;
     this._params = params;
+    this._localizedStrategies = STRATEGIES.map((strategy) => ({
+      ...strategy,
+      localizedName: this.hass.localize(strategy.name as LocalizeKeys),
+      localizedDescription: this.hass.localize(
+        strategy.description as LocalizeKeys
+      ),
+    }));
   }
 
   public closeDialog() {
@@ -105,21 +134,18 @@ class DialogNewDashboard extends LitElement implements HassDialog {
           ${this._filter
             ? html`
                 <div class="cards-container">
-                  ${this._filterStrategies(STRATEGIES, this._filter).map(
+                  ${this._filterStrategies(
+                    this._localizedStrategies,
+                    this._filter
+                  ).map(
                     (strategy) => html`
                       <dashboard-card
-                        .name=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.title` as LocalizeKeys
-                        )}
-                        .description=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.description`
-                        )}
+                        .name=${strategy.localizedName}
+                        .description=${strategy.localizedDescription}
                         .img=${this.hass.themes.darkMode
                           ? strategy.images.dark
                           : strategy.images.light}
-                        .alt=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.title` as LocalizeKeys
-                        )}
+                        .alt=${strategy.localizedName}
                         @click=${this._selected}
                         .strategy=${strategy.type}
                       ></dashboard-card>
@@ -152,21 +178,15 @@ class DialogNewDashboard extends LitElement implements HassDialog {
                       `ui.panel.config.lovelace.dashboards.dialog_new.heading.default`
                     )}
                   </div>
-                  ${STRATEGIES.map(
+                  ${this._localizedStrategies.map(
                     (strategy) => html`
                       <dashboard-card
-                        .name=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.title`
-                        )}
-                        .description=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.description`
-                        )}
+                        .name=${strategy.localizedName}
+                        .description=${strategy.localizedDescription}
                         .img=${this.hass.themes.darkMode
                           ? strategy.images.dark
                           : strategy.images.light}
-                        .alt=${this.hass.localize(
-                          `ui.panel.config.lovelace.dashboards.dialog_new.strategy.${strategy.type}.title`
-                        )}
+                        .alt=${strategy.localizedName}
                         @click=${this._selected}
                         .strategy=${strategy.type}
                       ></dashboard-card>
@@ -183,14 +203,31 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     this._filter = ev.detail.value;
   }
 
-  private _filterStrategies(
-    strategies: readonly Strategy[],
-    filter: string
-  ): readonly Strategy[] {
-    if (!filter) return strategies;
-    const lower = filter.toLowerCase();
-    return strategies.filter((s) => s.type.toLowerCase().includes(lower));
-  }
+  private _filterStrategies = memoizeOne(
+    (
+      strategies: (Strategy & {
+        localizedName: string;
+        localizedDescription: string;
+      })[],
+      filter?: string
+    ): readonly (Strategy & {
+      localizedName: string;
+      localizedDescription: string;
+    })[] => {
+      if (!filter) {
+        return strategies;
+      }
+      const options: IFuseOptions<(typeof strategies)[0]> = {
+        keys: ["type", "localizedName", "localizedDescription"],
+        isCaseSensitive: false,
+        threshold: 0.3,
+        ignoreLocation: true,
+        minMatchCharLength: Math.min(filter.length, 2),
+      };
+      const fuse = new Fuse(strategies, options);
+      return fuse.search(filter).map((result) => result.item);
+    }
+  );
 
   private _generateStrategyConfig(strategy: string) {
     return {
@@ -200,7 +237,7 @@ class DialogNewDashboard extends LitElement implements HassDialog {
     };
   }
 
-  private async _selected(ev) {
+  private async _selected(ev: Event) {
     const target = ev.currentTarget as any;
     let config: any = null;
 
