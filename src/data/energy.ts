@@ -30,7 +30,6 @@ import { fetchStatistics, getStatisticMetadata } from "./recorder";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
-import { firstWeekdayIndex } from "../common/datetime/first_weekday";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -681,13 +680,8 @@ export const getEnergyDataCollection = (
     preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
 
   const [start, end] = calcDateRange(hass, period);
-  const weekStartsOn = firstWeekdayIndex(hass.locale);
-  collection.start = calcDate(start, startOfDay, hass.locale, hass.config, {
-    weekStartsOn,
-  });
-  collection.end = calcDate(end, endOfDay, hass.locale, hass.config, {
-    weekStartsOn,
-  });
+  collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
+  collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
