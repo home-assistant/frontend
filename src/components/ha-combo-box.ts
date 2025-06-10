@@ -118,6 +118,8 @@ export class HaComboBox extends LitElement {
 
   @state({ type: Boolean }) private _disableSetValue = false;
 
+  @state() private _focusedItemId?: string;
+
   private _overlayMutationObserver?: MutationObserver;
 
   private _bodyMutationObserver?: MutationObserver;
@@ -131,6 +133,12 @@ export class HaComboBox extends LitElement {
     await this.updateComplete;
     await this._inputElement?.updateComplete;
     this._inputElement?.focus();
+  }
+
+  private _onItemFocused(ev: CustomEvent) {
+    const index = ev.detail.value;
+    const item = this.filteredItems?.[index];
+    this._focusedItemId = item ? `${item.id}` : undefined;
   }
 
   public disconnectedCallback() {
@@ -176,6 +184,7 @@ export class HaComboBox extends LitElement {
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
         attr-for-value="value"
+        @vaadin-combo-box-item-focused=${this._onItemFocused}
       >
         <ha-combo-box-textfield
           label=${ifDefined(this.label)}
@@ -198,6 +207,8 @@ export class HaComboBox extends LitElement {
           .helper=${this.helper}
           helperPersistent
           .disableSetValue=${this._disableSetValue}
+          aria-activedescendant=${ifDefined(this._focusedItemId)}
+          tabindex="0"
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-combo-box-textfield>

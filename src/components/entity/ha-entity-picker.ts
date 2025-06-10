@@ -183,7 +183,14 @@ export class HaEntityPicker extends LitElement {
     const showEntityId = this._showEntityId;
 
     return html`
-      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+      <ha-combo-box-item
+        id=${`entity-option-${item.id}`}
+        role="option"
+        aria-selected=${this.value === item.id ? "true" : "false"}
+        type="button"
+        compact
+        .borderTop=${index !== 0}
+      >
         ${item.icon_path
           ? html`
               <ha-svg-icon
@@ -250,6 +257,7 @@ export class HaEntityPicker extends LitElement {
           primary: primary,
           secondary: localize("ui.components.entity.entity-picker.new_entity"),
           icon_path: mdiPlus,
+          a11y_label: primary,
         } satisfies EntityComboBoxItem;
       });
     }
@@ -380,7 +388,6 @@ export class HaEntityPicker extends LitElement {
             (item.stateObj && entityFilter!(item.stateObj))
         );
       }
-
       return items;
     }
   );
@@ -412,6 +419,7 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
+        itemLabelPath="a11y_label"
       >
       </ha-generic-picker>
     `;
