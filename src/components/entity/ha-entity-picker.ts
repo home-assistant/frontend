@@ -257,7 +257,6 @@ export class HaEntityPicker extends LitElement {
           primary: primary,
           secondary: localize("ui.components.entity.entity-picker.new_entity"),
           icon_path: mdiPlus,
-          a11y_label: primary,
         } satisfies EntityComboBoxItem;
       });
     }
