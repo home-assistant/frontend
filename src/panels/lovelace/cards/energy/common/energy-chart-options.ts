@@ -10,6 +10,8 @@ import {
   addYears,
   addMonths,
   addHours,
+  startOfDay,
+  addDays,
 } from "date-fns";
 import type {
   BarSeriesOption,
@@ -281,6 +283,10 @@ export function getCompareTransform(start: Date, compareStart?: Date) {
     start.getTime() === startOfMonth(start).getTime()
   ) {
     return (ts: Date) => addMonths(ts, compareMonthDiff);
+  }
+  const compareDayDiff = differenceInDays(start, compareStart);
+  if (compareDayDiff !== 0 && start.getTime() === startOfDay(start).getTime()) {
+    return (ts: Date) => addDays(ts, compareDayDiff);
   }
   const compareOffset = start.getTime() - compareStart.getTime();
   return (ts: Date) => addMilliseconds(ts, compareOffset);
