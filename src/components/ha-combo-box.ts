@@ -356,8 +356,10 @@ export class HaComboBox extends LitElement {
       // @ts-ignore
       this._comboBox._closeOnBlurIsPrevented = true;
     }
+    if (!this.opened) {
+      return;
+    }
     const newValue = ev.detail.value;
-
     if (newValue !== this.value) {
       fireEvent(this, "value-changed", { value: newValue || undefined });
     }

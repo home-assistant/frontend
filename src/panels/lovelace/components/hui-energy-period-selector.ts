@@ -297,24 +297,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   }
 
   private _dateRangeChanged(ev) {
-    const weekStartsOn = firstWeekdayIndex(this.hass.locale);
     this._startDate = calcDate(
       ev.detail.value.startDate,
       startOfDay,
       this.hass.locale,
-      this.hass.config,
-      {
-        weekStartsOn,
-      }
+      this.hass.config
     );
     this._endDate = calcDate(
       ev.detail.value.endDate,
       endOfDay,
       this.hass.locale,
-      this.hass.config,
-      {
-        weekStartsOn,
-      }
+      this.hass.config
     );
 
     this._updateCollectionPeriod();
