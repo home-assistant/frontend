@@ -181,10 +181,7 @@ class HuiEnergyDistrubutionCard
       batteryConsumption = Math.max(consumption.total.used_battery, 0);
     }
 
-    let gridConsumption: number | null = null;
-    if (hasGrid) {
-      gridConsumption = Math.max(consumption.total.used_grid, 0);
-    }
+    const gridConsumption = hasGrid ? Math.max(consumption.total.used_grid, 0) : 0;
 
     const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
