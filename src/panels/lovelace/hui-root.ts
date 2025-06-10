@@ -57,6 +57,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import {
   QuickBarMode,
   showQuickBar,
@@ -75,9 +76,9 @@ import { getLovelaceStrategy } from "./strategies/get-strategy";
 import { isLegacyStrategyConfig } from "./strategies/legacy-strategy";
 import type { Lovelace } from "./types";
 import "./views/hui-view";
-import "./views/hui-view-container";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
+import "./views/hui-view-container";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -490,7 +491,16 @@ class HUIRoot extends LitElement {
     } else if (searchParams.conversation === "1") {
       this._clearParam("conversation");
       this._showVoiceCommandDialog();
+    } else if (searchParams["more-info-entity-id"]) {
+      const entityId = searchParams["more-info-entity-id"];
+      this._clearParam("more-info-entity-id");
+      // Wait for the next render to ensure the view is fully loaded
+      // because the more info dialog is closed when the url changes
+      afterNextRender(() => {
+        this._showMoreInfoDialog(entityId);
+      });
     }
+
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
@@ -728,6 +738,10 @@ class HUIRoot extends LitElement {
 
   private _showVoiceCommandDialog(): void {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
+  }
+
+  private _showMoreInfoDialog(entityId: string): void {
+    showMoreInfoDialog(this, { entityId });
   }
 
   private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
