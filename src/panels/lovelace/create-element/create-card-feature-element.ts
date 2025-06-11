@@ -1,9 +1,9 @@
 import "../card-features/hui-alarm-modes-card-feature";
 import "../card-features/hui-climate-fan-modes-card-feature";
-import "../card-features/hui-climate-swing-modes-card-feature";
-import "../card-features/hui-climate-swing-horizontal-modes-card-feature";
 import "../card-features/hui-climate-hvac-modes-card-feature";
 import "../card-features/hui-climate-preset-modes-card-feature";
+import "../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import "../card-features/hui-climate-swing-modes-card-feature";
 import "../card-features/hui-counter-actions-card-feature";
 import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
@@ -21,12 +21,13 @@ import "../card-features/hui-lock-open-door-card-feature";
 import "../card-features/hui-media-player-volume-slider-card-feature";
 import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
-import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-target-humidity-card-feature";
+import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-toggle-card-feature";
 import "../card-features/hui-update-actions-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
+import "../card-features/hui-area-controls-card-feature";
 
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import {
@@ -36,6 +37,7 @@ import {
 
 const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "alarm-modes",
+  "area-controls",
   "climate-fan-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",

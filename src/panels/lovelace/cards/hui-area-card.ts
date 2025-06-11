@@ -1,5 +1,5 @@
 import { mdiTextureBox } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -19,6 +19,8 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { isUnavailableState } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
+import "../card-features/hui-card-features";
+import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { AreaCardConfig } from "./types";
@@ -38,13 +40,22 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: AreaCardConfig;
 
+  @state() private _featureContext: LovelaceCardFeatureContext = {};
+
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-area-card-editor");
     return document.createElement("hui-area-card-editor");
   }
 
   public setConfig(config: AreaCardConfig): void {
+    if (!config.area) {
+      throw new Error("Specify an area");
+    }
+
     this._config = config;
+    this._featureContext = {
+      area_id: config.area,
+    };
   }
 
   public static async getStubConfig(
@@ -175,7 +186,28 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return sensorStates;
   }
 
+  private _featurePosition = memoizeOne((config: AreaCardConfig) => {
+    if (config.vertical) {
+      return "bottom";
+    }
+    return config.features_position || "bottom";
+  });
+
+  private _displayedFeatures = memoizeOne((config: AreaCardConfig) => {
+    const features = config.features || [];
+    const featurePosition = this._featurePosition(config);
+
+    if (featurePosition === "inline") {
+      return features.slice(0, 1);
+    }
+    return features;
+  });
+
   protected render() {
+    if (!this._config || !this.hass) {
+      return nothing;
+    }
+
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
 
@@ -193,6 +225,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const primary = name;
     const secondary = this._computeSensorsDisplay();
+
+    const features = this._displayedFeatures(this._config);
 
     return html`
       <ha-card>
@@ -224,6 +258,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
               .secondary=${secondary}
             ></ha-tile-info>
           </div>
+          ${features.length > 0
+            ? html`
+                <hui-card-features
+                  .hass=${this.hass}
+                  .context=${this._featureContext}
+                  .color=${this._config.color}
+                  .features=${features}
+                ></hui-card-features>
+              `
+            : nothing}
         </div>
       </ha-card>
     `;
