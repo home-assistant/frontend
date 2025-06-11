@@ -7832,6 +7832,11 @@
                   "ask": "Ask"
                 },
                 "backup_not_supported": "Backup is not supported."
+              },
+              "area-controls": {
+                "label": "Area controls",
+                "controls": "Controls",
+                "customize_controls": "Customize controls"
               }
             }
           },

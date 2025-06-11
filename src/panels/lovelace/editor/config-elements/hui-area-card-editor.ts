@@ -1,31 +1,47 @@
-import { html, LitElement, nothing } from "lit";
+import { mdiListBox } from "@mdi/js";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
+  any,
   array,
   assert,
   assign,
   boolean,
+  enums,
   object,
   optional,
   string,
 } from "superstruct";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { SelectOption } from "../../../../data/selector";
 import { getSensorNumericDeviceClasses } from "../../../../data/sensor";
 import type { HomeAssistant } from "../../../../types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
 import {
-  DEVICE_CLASSES,
   DEFAULT_ASPECT_RATIO,
+  DEVICE_CLASSES,
 } from "../../cards/hui-area-card";
 import type { AreaCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
+import type { EditDetailElementEvent, EditSubElementEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
+import { getSupportedFeaturesType } from "./hui-card-features-editor";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -38,6 +54,9 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
+    vertical: optional(boolean()),
+    features: optional(array(any())),
+    features_position: optional(enums(["bottom", "inline"])),
   })
 );
 
@@ -51,6 +70,12 @@ export class HuiAreaCardEditor
   @state() private _config?: AreaCardConfig;
 
   @state() private _numericDeviceClasses?: string[];
+
+  private _featureContext = memoizeOne(
+    (areaId?: string): LovelaceCardFeatureContext => ({
+      area_id: areaId,
+    })
+  );
 
   private _schema = memoizeOne(
     (
@@ -209,10 +234,47 @@ export class HuiAreaCardEditor
     }
   }
 
+  private _featuresSchema = memoizeOne(
+    (localize: LocalizeFunc, vertical: boolean) =>
+      [
+        {
+          name: "features_position",
+          required: true,
+          selector: {
+            select: {
+              mode: "box",
+              options: ["bottom", "inline"].map((value) => ({
+                label: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}`
+                ),
+                description: localize(
+                  `ui.panel.lovelace.editor.card.tile.features_position_options.${value}_description`
+                ),
+                value,
+                image: {
+                  src: `/static/images/form/tile_features_position_${value}.svg`,
+                  src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
+                  flip_rtl: true,
+                },
+                disabled: vertical && value === "inline",
+              })),
+            },
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
+  private _hasCompatibleFeatures = memoizeOne(
+    (context: LovelaceCardFeatureContext) =>
+      getSupportedFeaturesType(this.hass!, context).length > 0
+  );
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
+
+    const areaId = this._config!.area;
 
     const possibleBinaryClasses = this._binaryClassesForArea(this._config.area);
     const possibleSensorClasses = this._sensorClassesForArea(
@@ -235,12 +297,20 @@ export class HuiAreaCardEditor
       sensorSelectOptions
     );
 
+    const featuresSchema = this._featuresSchema(
+      this.hass.localize,
+      this._config.vertical ?? false
+    );
+
     const data = {
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
       ...this._config,
     };
+
+    const featureContext = this._featureContext(areaId);
+    const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
 
     return html`
       <ha-form
@@ -250,19 +320,101 @@ export class HuiAreaCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
+      <ha-expansion-panel outlined>
+        <ha-svg-icon slot="leading-icon" .path=${mdiListBox}></ha-svg-icon>
+        <h3 slot="header">
+          ${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.features"
+          )}
+        </h3>
+        <div class="content">
+          ${hasCompatibleFeatures
+            ? html`
+                <ha-form
+                  class="features-form"
+                  .hass=${this.hass}
+                  .data=${data}
+                  .schema=${featuresSchema}
+                  .computeLabel=${this._computeLabelCallback}
+                  .computeHelper=${this._computeHelperCallback}
+                  @value-changed=${this._valueChanged}
+                ></ha-form>
+              `
+            : nothing}
+          <hui-card-features-editor
+            .hass=${this.hass}
+            .context=${featureContext}
+            .features=${this._config!.features ?? []}
+            @features-changed=${this._featuresChanged}
+            @edit-detail-element=${this._editDetailElement}
+          ></hui-card-features-editor>
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
+    const newConfig = ev.detail.value as AreaCardConfig;
+
+    const config: AreaCardConfig = {
+      features: this._config!.features,
+      ...newConfig,
+    };
+
     if (!config.show_camera) {
       delete config.camera_view;
     }
     fireEvent(this, "config-changed", { config });
   }
 
+  private _featuresChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const features = ev.detail.features as LovelaceCardFeatureConfig[];
+    const config: AreaCardConfig = {
+      ...this._config,
+      features,
+    };
+
+    if (features.length === 0) {
+      delete config.features;
+    }
+
+    fireEvent(this, "config-changed", { config });
+  }
+
+  private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
+    const index = ev.detail.subElementConfig.index;
+    const config = this._config!.features![index!];
+    const featureContext = this._featureContext(this._config!.entity);
+
+    fireEvent(this, "edit-sub-element", {
+      config: config,
+      saveConfig: (newConfig) => this._updateFeature(index!, newConfig),
+      context: featureContext,
+      type: "feature",
+    } as EditSubElementEvent<
+      LovelaceCardFeatureConfig,
+      LovelaceCardFeatureContext
+    >);
+  }
+
+  private _updateFeature(index: number, feature: LovelaceCardFeatureConfig) {
+    const features = this._config!.features!.concat();
+    features[index] = feature;
+    const config = { ...this._config!, features };
+    fireEvent(this, "config-changed", {
+      config: config,
+    });
+  }
+
   private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
+    schema:
+      | SchemaUnion<ReturnType<typeof this._schema>>
+      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
       case "theme":
@@ -285,11 +437,57 @@ export class HuiAreaCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.camera_view"
         );
+      case "features_position":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.${schema.name}`
+        );
     }
     return this.hass!.localize(
       `ui.panel.lovelace.editor.card.area.${schema.name}`
     );
   };
+
+  private _computeHelperCallback = (
+    schema:
+      | SchemaUnion<ReturnType<typeof this._schema>>
+      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
+  ) => {
+    switch (schema.name) {
+      case "features_position":
+        if (this._config?.vertical) {
+          return this.hass!.localize(
+            `ui.panel.lovelace.editor.card.tile.${schema.name}_helper_vertical`
+          );
+        }
+        return undefined;
+      default:
+        return undefined;
+    }
+  };
+
+  static get styles() {
+    return [
+      configElementStyle,
+      css`
+        .container {
+          display: flex;
+          flex-direction: column;
+        }
+        ha-form {
+          display: block;
+          margin-bottom: 24px;
+        }
+        .info {
+          color: var(--secondary-text-color);
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        .features-form {
+          margin-bottom: 8px;
+        }
+      `,
+    ];
+  }
 }
 
 declare global {
