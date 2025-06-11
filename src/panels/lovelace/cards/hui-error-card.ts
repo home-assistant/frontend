@@ -1,11 +1,11 @@
+import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
+import "../../../components/ha-card";
+import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { ErrorCardConfig } from "./types";
-import "../../../components/ha-card";
-import "../../../components/ha-svg-icon";
 
 const ERROR_ICONS = {
   warning: mdiAlertOutline,
@@ -30,9 +30,10 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
   public getGridOptions(): LovelaceGridOptions {
     return {
       columns: 6,
-      rows: 1,
+      rows: this.preview ? "auto" : 1,
       min_rows: 1,
       min_columns: 6,
+      fixed_rows: this.preview,
     };
   }
 
@@ -45,17 +46,24 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     const error =
       this._config?.error ||
       this.hass?.localize("ui.errors.config.configuration_error");
-    const showTitle = this.hass === undefined || this.hass?.user?.is_admin;
+    const showTitle =
+      this.hass === undefined || this.hass?.user?.is_admin || this.preview;
+    const showMessage = this.preview;
 
     return html`
       <ha-card class="${this.severity} ${showTitle ? "" : "no-title"}">
-        <div class="icon">
-          <slot name="icon">
-            <ha-svg-icon .path=${ERROR_ICONS[this.severity]}></ha-svg-icon>
-          </slot>
+        <div class="header">
+          <div class="icon">
+            <slot name="icon">
+              <ha-svg-icon .path=${ERROR_ICONS[this.severity]}></ha-svg-icon>
+            </slot>
+          </div>
+          ${showTitle
+            ? html`<div class="title"><slot>${error}</slot></div>`
+            : nothing}
         </div>
-        ${showTitle
-          ? html`<div class="title"><slot>${error}</slot></div>`
+        ${showMessage && this._config?.message
+          ? html`<div class="message">${this._config.message}</div>`
           : nothing}
       </ha-card>
     `;
@@ -65,10 +73,6 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     ha-card {
       height: 100%;
       border-width: 0;
-      display: flex;
-      align-items: center;
-      column-gap: 16px;
-      padding: 16px;
     }
     ha-card::after {
       position: absolute;
@@ -81,6 +85,15 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       content: "";
       border-radius: var(--ha-card-border-radius, 12px);
     }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+    }
+    .message {
+      padding: 0 16px 16px 16px;
+    }
     .no-title {
       justify-content: center;
     }
@@ -90,13 +103,13 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       text-overflow: ellipsis;
       font-weight: var(--ha-font-weight-bold);
     }
-    ha-card.warning > .icon {
+    ha-card.warning .icon {
       color: var(--warning-color);
     }
     ha-card.warning::after {
       background-color: var(--warning-color);
     }
-    ha-card.error > .icon {
+    ha-card.error .icon {
       color: var(--error-color);
     }
     ha-card.error::after {
