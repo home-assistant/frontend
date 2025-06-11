@@ -183,14 +183,7 @@ export class HaEntityPicker extends LitElement {
     const showEntityId = this._showEntityId;
 
     return html`
-      <ha-combo-box-item
-        id=${`entity-option-${item.id}`}
-        role="option"
-        aria-selected=${this.value === item.id}
-        type="button"
-        compact
-        .borderTop=${index !== 0}
-      >
+      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
         ${item.icon_path
           ? html`
               <ha-svg-icon
