@@ -255,6 +255,7 @@ export class HaConfigDevicePage extends LitElement {
     super.willUpdate(changedProps);
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
+      this._deviceActions = [];
       this._fetchData();
     }
   }
@@ -1037,7 +1038,6 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceActions() {
-    this._deviceActions = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
