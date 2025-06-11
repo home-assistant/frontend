@@ -127,16 +127,15 @@ export class HaConfigDevicePage extends LitElement {
 
   @state() private _related?: RelatedResult;
 
-  // If a number, it's the request ID so we make sure we don't show older info
-  @state() private _diagnosticDownloadLinks?: number | DeviceAction[];
+  @state() private _diagnosticDownloadLinks: DeviceAction[] = [];
 
-  @state() private _deleteButtons?: DeviceAction[];
+  @state() private _deleteButtons: DeviceAction[] = [];
 
-  @state() private _deviceActions?: DeviceAction[];
+  @state() private _deviceActions: DeviceAction[] = [];
 
-  @state() private _deviceAlerts?: DeviceAlert[];
+  @state() private _deviceAlerts: DeviceAlert[] = [];
 
-  private _deviceAlertsTimeout?: number;
+  private _deviceAlertsActionsTimeout?: number;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -255,42 +254,15 @@ export class HaConfigDevicePage extends LitElement {
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
 
-    if (
-      changedProps.has("deviceId") ||
-      changedProps.has("devices") ||
-      changedProps.has("entries")
-    ) {
-      this._diagnosticDownloadLinks = undefined;
-      this._deleteButtons = undefined;
-      this._deviceActions = undefined;
-      this._deviceAlerts = undefined;
+    if (changedProps.has("deviceId") || changedProps.has("entries")) {
+      this._fetchData();
     }
-
-    if (
-      (this._diagnosticDownloadLinks &&
-        this._deleteButtons &&
-        this._deviceActions &&
-        this._deviceAlerts) ||
-      !this.deviceId ||
-      !this.entries
-    ) {
-      return;
-    }
-
-    this._diagnosticDownloadLinks = Math.random();
-    this._deleteButtons = []; // To prevent re-rendering if no delete buttons
-    this._deviceActions = [];
-    this._deviceAlerts = [];
-    this._getDiagnosticButtons(this._diagnosticDownloadLinks);
-    this._getDeleteActions();
-    this._getDeviceActions();
-    clearTimeout(this._deviceAlertsTimeout);
-    this._getDeviceAlerts();
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
+    this._fetchData();
   }
 
   protected updated(changedProps) {
@@ -302,7 +274,7 @@ export class HaConfigDevicePage extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    clearTimeout(this._deviceAlertsTimeout);
+    clearTimeout(this._deviceAlertsActionsTimeout);
   }
 
   protected render() {
@@ -909,7 +881,18 @@ export class HaConfigDevicePage extends LitElement {
     </hass-subpage>`;
   }
 
-  private async _getDiagnosticButtons(requestId: number): Promise<void> {
+  private _fetchData() {
+    if (this.deviceId && this.entries.length) {
+      this._getDiagnosticButtons();
+      this._getDeleteActions();
+      clearTimeout(this._deviceAlertsActionsTimeout);
+      this._getDeviceActions();
+      this._getDeviceAlerts();
+    }
+  }
+
+  private async _getDiagnosticButtons(): Promise<void> {
+    const deviceId = this.deviceId;
     if (!isComponentLoaded(this.hass, "diagnostics")) {
       return;
     }
@@ -951,7 +934,8 @@ export class HaConfigDevicePage extends LitElement {
 
     links = links.filter(Boolean);
 
-    if (this._diagnosticDownloadLinks !== requestId) {
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
       return;
     }
     if (links.length > 0) {
@@ -977,6 +961,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _getDeleteActions() {
+    this._deleteButtons = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1052,6 +1037,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceActions() {
+    this._deviceActions = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1153,6 +1139,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceAlerts() {
+    this._deviceAlerts = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1178,10 +1165,10 @@ export class HaConfigDevicePage extends LitElement {
 
     if (deviceAlerts.length) {
       this._deviceAlerts = deviceAlerts;
-      this._deviceAlertsTimeout = window.setTimeout(
-        () => this._getDeviceAlerts(),
-        DEVICE_ALERTS_INTERVAL
-      );
+      this._deviceAlertsActionsTimeout = window.setTimeout(() => {
+        this._getDeviceAlerts();
+        this._getDeviceActions();
+      }, DEVICE_ALERTS_INTERVAL);
     }
   }
 
