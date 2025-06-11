@@ -418,7 +418,6 @@ export class HaEntityPicker extends LitElement {
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
-        itemLabelPath="a11y_label"
       >
       </ha-generic-picker>
     `;
