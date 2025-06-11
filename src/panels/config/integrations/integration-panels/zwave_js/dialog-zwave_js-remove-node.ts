@@ -2,6 +2,7 @@ import {
   mdiCheckCircle,
   mdiClose,
   mdiCloseCircle,
+  mdiRobotDead,
   mdiVectorSquareRemove,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -17,6 +18,13 @@ import "../../../../../components/ha-spinner";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
+import {
+  fetchZwaveNodeStatus,
+  NodeStatus,
+  removeFailedZwaveNode,
+} from "../../../../../data/zwave_js";
+import "../../../../../components/ha-list-item";
+import "../../../../../components/ha-icon-next";
 
 const EXCLUSION_TIMEOUT_SECONDS = 120;
 
@@ -30,10 +38,14 @@ export interface ZWaveJSRemovedNode {
 class DialogZWaveJSRemoveNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private entry_id?: string;
+  @state() private _entryId?: string;
+
+  @state() private _deviceId?: string;
 
   @state() private _step:
     | "start"
+    | "start_exclusion"
+    | "start_removal"
     | "exclusion"
     | "remove"
     | "finished"
@@ -42,7 +54,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   @state() private _node?: ZWaveJSRemovedNode;
 
-  @state() private _removedCallback?: () => void;
+  @state() private _onClose?: () => void;
 
   private _removeNodeTimeoutHandle?: number;
 
@@ -58,15 +70,22 @@ class DialogZWaveJSRemoveNode extends LitElement {
   public async showDialog(
     params: ZWaveJSRemoveNodeDialogParams
   ): Promise<void> {
-    this.entry_id = params.entry_id;
-    this._removedCallback = params.removedCallback;
-    if (params.skipConfirmation) {
+    this._entryId = params.entryId;
+    this._deviceId = params.deviceId;
+    this._onClose = params.onClose;
+    if (this._deviceId) {
+      const nodeStatus = await fetchZwaveNodeStatus(this.hass, this._deviceId!);
+      this._step =
+        nodeStatus.status === NodeStatus.Dead ? "start_removal" : "start";
+    } else if (params.skipConfirmation) {
       this._startExclusion();
+    } else {
+      this._step = "start_exclusion";
     }
   }
 
   protected render() {
-    if (!this.entry_id) {
+    if (!this._entryId) {
       return nothing;
     }
 
@@ -98,6 +117,46 @@ class DialogZWaveJSRemoveNode extends LitElement {
         <p>
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.introduction"
+          )}
+        </p>
+        <div class="menu-options">
+          <ha-list-item hasMeta @click=${this._startExclusion}>
+            <span
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.remove_failed_node.exclude_device"
+              )}</span
+            >
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>
+          <ha-list-item hasMeta @click=${this._startRemoval}>
+            <span
+              >${this.hass.localize(
+                "ui.panel.config.zwave_js.remove_failed_node.remove_device"
+              )}</span
+            >
+            <ha-icon-next slot="meta"></ha-icon-next>
+          </ha-list-item>
+        </div>
+      `;
+    }
+
+    if (this._step === "start_removal") {
+      return html`
+        <ha-svg-icon .path=${mdiRobotDead}></ha-svg-icon>
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.remove_node.failed_node_intro"
+          )}
+        </p>
+      `;
+    }
+
+    if (this._step === "start_exclusion") {
+      return html`
+        <ha-svg-icon .path=${mdiVectorSquareRemove}></ha-svg-icon>
+        <p>
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.remove_node.exclusion_intro"
           )}
         </p>
       `;
@@ -143,30 +202,47 @@ class DialogZWaveJSRemoveNode extends LitElement {
     `;
   }
 
-  private _renderAction(): TemplateResult {
+  private _renderAction() {
+    if (this._step === "start") {
+      return nothing;
+    }
+
+    if (this._step === "start_removal") {
+      return html`
+        <ha-button slot="primaryAction" @click=${this._startRemoval}>
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.remove_node.remove_device"
+          )}
+        </ha-button>
+      `;
+    }
+
+    if (this._step === "start_exclusion") {
+      return html`
+        <ha-button slot="primaryAction" @click=${this._startExclusion}>
+          ${this.hass.localize(
+            "ui.panel.config.zwave_js.remove_node.start_exclusion"
+          )}
+        </ha-button>
+      `;
+    }
+
     return html`
-      <ha-button
-        slot="primaryAction"
-        @click=${this._step === "start"
-          ? this._startExclusion
-          : this.closeDialog}
-      >
+      <ha-button slot="primaryAction" @click=${this.closeDialog}>
         ${this.hass.localize(
-          this._step === "start"
-            ? "ui.panel.config.zwave_js.remove_node.start_exclusion"
-            : this._step === "exclusion"
-              ? "ui.panel.config.zwave_js.remove_node.cancel_exclusion"
-              : "ui.common.close"
+          this._step === "exclusion"
+            ? "ui.panel.config.zwave_js.remove_node.cancel_exclusion"
+            : "ui.common.close"
         )}
       </ha-button>
     `;
   }
 
-  private _startExclusion(): void {
+  private _startExclusion() {
     this._subscribed = this.hass.connection
       .subscribeMessage((message) => this._handleMessage(message), {
         type: "zwave_js/remove_node",
-        entry_id: this.entry_id,
+        entry_id: this._entryId,
       })
       .catch((err) => {
         this._step = "failed";
@@ -178,6 +254,19 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._unsubscribe();
       this._step = "timeout";
     }, EXCLUSION_TIMEOUT_SECONDS * 1000);
+  }
+
+  private _startRemoval() {
+    this._subscribed = removeFailedZwaveNode(
+      this.hass,
+      this._deviceId!,
+      (message: any) => this._handleMessage(message)
+    ).catch((err) => {
+      this._step = "failed";
+      this._error = err.message;
+      return undefined;
+    });
+    this._step = "remove";
   }
 
   private _handleMessage(message: any): void {
@@ -192,9 +281,6 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._step = "finished";
       this._node = message.node;
       this._unsubscribe();
-      if (this._removedCallback) {
-        this._removedCallback();
-      }
     }
   }
 
@@ -202,7 +288,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     try {
       this.hass.callWS({
         type: "zwave_js/stop_exclusion",
-        entry_id: this.entry_id,
+        entry_id: this._entryId,
       });
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -225,8 +311,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   public closeDialog(): void {
     this._unsubscribe();
-    this.entry_id = undefined;
+    this._entryId = undefined;
     this._step = "start";
+    if (this._onClose) {
+      this._onClose();
+    }
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }

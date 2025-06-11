@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSRemoveFailedNodeDialogParams {
   device_id: string;
+  config_entry_id: string;
 }
 
 export const loadRemoveFailedNodeDialog = () =>

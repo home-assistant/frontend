@@ -604,7 +604,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     history.back();
   }
 
-  private async _fetchData() {
+  private _fetchData = async () => {
     if (!this.configEntryId) {
       return;
     }
@@ -646,10 +646,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
-      entry_id: this.configEntryId!,
+      entryId: this.configEntryId!,
       skipConfirmation:
         this._network?.controller.inclusion_state === InclusionState.Excluding,
-      removedCallback: () => this._fetchData(),
+        onClose: this._fetchData,
     });
   }
 
