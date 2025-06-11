@@ -256,6 +256,9 @@ export class HaConfigDevicePage extends LitElement {
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
       this._deviceActions = [];
+      this._deviceAlerts = [];
+      this._deleteButtons = [];
+      this._diagnosticDownloadLinks = [];
       this._fetchData();
     }
   }
@@ -962,7 +965,6 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _getDeleteActions() {
-    this._deleteButtons = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1139,7 +1141,6 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceAlerts() {
-    this._deviceAlerts = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1163,8 +1164,8 @@ export class HaConfigDevicePage extends LitElement {
       deviceAlerts.push(...alerts);
     }
 
+    this._deviceAlerts = deviceAlerts;
     if (deviceAlerts.length) {
-      this._deviceAlerts = deviceAlerts;
       this._deviceAlertsActionsTimeout = window.setTimeout(() => {
         this._getDeviceAlerts();
         this._getDeviceActions();
