@@ -186,7 +186,7 @@ export class HaEntityPicker extends LitElement {
       <ha-combo-box-item
         id=${`entity-option-${item.id}`}
         role="option"
-        aria-selected=${this.value === item.id ? "true" : "false"}
+        aria-selected=${this.value === item.id}
         type="button"
         compact
         .borderTop=${index !== 0}
