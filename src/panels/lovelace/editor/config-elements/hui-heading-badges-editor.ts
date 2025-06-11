@@ -8,8 +8,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefault } from "../../../../common/dom/prevent_default";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import type { HaEntityComboBox } from "../../../../components/entity/ha-entity-combo-box";
 import "../../../../components/entity/ha-entity-picker";
+import type { HaEntityPicker } from "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
@@ -33,7 +33,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
   @query(".add-container", true) private _addContainer?: HTMLDivElement;
 
-  @query("ha-entity-combo-box") private _entityCombobox?: HaEntityComboBox;
+  @query("ha-entity-picker") private _entityPicker?: HaEntityPicker;
 
   @state() private _addMode = false;
 
@@ -144,16 +144,19 @@ export class HuiHeadingBadgesEditor extends LitElement {
         @opened-changed=${this._openedChanged}
         @input=${stopPropagation}
       >
-        <ha-entity-combo-box
+        <ha-entity-picker
           .hass=${this.hass}
           id="input"
-          .label=${this.hass.localize(
+          .placeholder=${this.hass.localize(
+            "ui.components.target-picker.add_entity_id"
+          )}
+          .searchLabel=${this.hass.localize(
             "ui.components.target-picker.add_entity_id"
           )}
           @value-changed=${this._entityPicked}
           @click=${preventDefault}
           allow-custom-entity
-        ></ha-entity-combo-box>
+        ></ha-entity-picker>
       </mwc-menu-surface>
     `;
   }
@@ -167,8 +170,8 @@ export class HuiHeadingBadgesEditor extends LitElement {
     if (!this._addMode) {
       return;
     }
-    await this._entityCombobox?.focus();
-    await this._entityCombobox?.open();
+    await this._entityPicker?.focus();
+    await this._entityPicker?.open();
     this._opened = true;
   }
 
@@ -250,7 +253,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
 
     .badge-content {
       height: 60px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -269,7 +272,7 @@ export class HuiHeadingBadgesEditor extends LitElement {
     }
 
     .secondary {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

@@ -15,16 +15,10 @@ class StepFlowExternal extends LitElement {
 
   @property({ attribute: false }) public step!: DataEntryFlowStepExternal;
 
-  @property({ type: Boolean, attribute: "increase-padding-end" })
-  public increasePaddingEnd = false;
-
   protected render(): TemplateResult {
     const localize = this.hass.localize;
 
     return html`
-      <h2 class=${this.increasePaddingEnd ? "end-space" : ""}>
-        ${this.flowConfig.renderExternalStepHeader(this.hass, this.step)}
-      </h2>
       <div class="content">
         ${this.flowConfig.renderExternalStepDescription(this.hass, this.step)}
         <div class="open-button">
@@ -55,9 +49,6 @@ class StepFlowExternal extends LitElement {
         }
         .open-button a {
           text-decoration: none;
-        }
-        h2.end-space {
-          padding-inline-end: 72px;
         }
       `,
     ];

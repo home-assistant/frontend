@@ -130,6 +130,7 @@ class HaPanelDevState extends LitElement {
               .value=${this._entityId}
               @value-changed=${this._entityIdChanged}
               allow-custom-entity
+              show-entity-id
             ></ha-entity-picker>
             ${this._entityId
               ? html`
@@ -596,10 +597,10 @@ class HaPanelDevState extends LitElement {
           -moz-user-select: initial;
           display: block;
           padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
+          padding: max(16px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(16px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
         }
 
         ha-textfield {

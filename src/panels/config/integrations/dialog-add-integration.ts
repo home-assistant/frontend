@@ -771,9 +771,15 @@ class AddIntegrationDialog extends LitElement {
         margin-inline-end: initial;
         padding: 24px 24px 0 24px;
         color: var(--mdc-dialog-heading-ink-color, rgba(0, 0, 0, 0.87));
-        font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+        font-size: var(
+          --mdc-typography-headline6-font-size,
+          var(--ha-font-size-l)
+        );
         line-height: var(--mdc-typography-headline6-line-height, 2rem);
-        font-weight: var(--mdc-typography-headline6-font-weight, 500);
+        font-weight: var(
+          --mdc-typography-headline6-font-weight,
+          var(--ha-font-weight-medium)
+        );
         letter-spacing: var(
           --mdc-typography-headline6-letter-spacing,
           0.0125em

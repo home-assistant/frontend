@@ -66,7 +66,7 @@ class HaConfigNavigation extends LitElement {
 
   static styles: CSSResultGroup = css`
     ha-navigation-list {
-      --navigation-list-item-title-font-size: 16px;
+      --navigation-list-item-title-font-size: var(--ha-font-size-l);
     }
   `;
 }

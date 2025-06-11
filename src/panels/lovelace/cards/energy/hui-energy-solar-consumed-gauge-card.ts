@@ -9,6 +9,7 @@ import "../../../../components/ha-gauge";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
+  calculateSolarConsumedGauge,
   getEnergyDataCollection,
   getSummedData,
 } from "../../../../data/energy";
@@ -78,18 +79,12 @@ class HuiEnergySolarGaugeCard
       return nothing;
     }
 
-    const totalSolarProduction = summedData.total.solar;
-
     const productionReturnedToGrid = summedData.total.to_grid ?? null;
 
     let value: number | undefined;
-
-    if (productionReturnedToGrid !== null && totalSolarProduction) {
-      const consumedSolar = Math.max(
-        0,
-        totalSolarProduction - productionReturnedToGrid
-      );
-      value = (consumedSolar / totalSolarProduction) * 100;
+    if (productionReturnedToGrid !== null) {
+      const hasBattery = !!summedData.to_battery || !!summedData.from_battery;
+      value = calculateSolarConsumedGauge(hasBattery, summedData);
     }
 
     return html`
@@ -125,7 +120,7 @@ class HuiEnergySolarGaugeCard
                 )}
               </div>
             `
-          : totalSolarProduction === 0
+          : productionReturnedToGrid !== null
             ? this.hass.localize(
                 "ui.panel.lovelace.cards.energy.solar_consumed_gauge.not_produced_solar_energy"
               )
@@ -169,7 +164,7 @@ class HuiEnergySolarGaugeCard
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
 

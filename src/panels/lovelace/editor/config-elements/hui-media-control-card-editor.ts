@@ -58,7 +58,7 @@ export class HuiMediaControlCardEditor
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
           .required=${true}
-          @change=${this._valueChanged}
+          @value-changed=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <ha-theme-picker

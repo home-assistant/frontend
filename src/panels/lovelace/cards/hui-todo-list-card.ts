@@ -241,7 +241,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._entityId)}
         </hui-warning>
       `;
@@ -797,7 +797,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     .header h2 {
       color: var(--primary-text-color);
       font-size: inherit;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
 
     .empty {
@@ -838,7 +838,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .description,
     .due {
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       color: var(--secondary-text-color);
     }
 

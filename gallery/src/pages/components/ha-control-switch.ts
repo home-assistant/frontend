@@ -112,7 +112,7 @@ export class DemoHaControlSwitch extends LitElement {
       margin: 0;
     }
     label {
-      font-weight: 600;
+      font-weight: var(--ha-font-weight-bold);
     }
     .custom {
       --control-switch-on-color: var(--green-color);

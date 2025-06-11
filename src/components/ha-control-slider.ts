@@ -368,7 +368,7 @@ export class HaControlSlider extends LitElement {
       --control-slider-background-opacity: 0.2;
       --control-slider-thickness: 40px;
       --control-slider-border-radius: 10px;
-      --control-slider-tooltip-font-size: 14px;
+      --control-slider-tooltip-font-size: var(--ha-font-size-m);
       height: var(--control-slider-thickness);
       width: 100%;
       border-radius: var(--control-slider-border-radius);

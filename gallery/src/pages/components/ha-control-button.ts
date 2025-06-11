@@ -150,7 +150,7 @@ export class DemoHaBarButton extends LitElement {
       margin: 0;
     }
     label {
-      font-weight: 600;
+      font-weight: var(--ha-font-weight-bold);
     }
     .custom {
       --control-button-icon-color: var(--primary-color);

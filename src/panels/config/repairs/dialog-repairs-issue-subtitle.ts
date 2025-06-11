@@ -40,7 +40,7 @@ class DialogRepairsIssueSubtitle extends LitElement {
   static styles = css`
     :host {
       display: block;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
       margin-bottom: 8px;
       color: var(--secondary-text-color);
       text-overflow: ellipsis;

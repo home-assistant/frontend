@@ -269,7 +269,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       margin: 0 16px 0 8px;
     }
     .name {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
     }
     .name:dir(rtl) {
       margin-inline-start: 8px;

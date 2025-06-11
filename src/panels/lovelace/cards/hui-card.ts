@@ -12,8 +12,8 @@ import {
   attachConditionMediaQueriesListeners,
   checkConditionsMet,
 } from "../common/validate-condition";
-import { createCardElement } from "../create-element/create-card-element";
-import { createErrorCardConfig } from "../create-element/create-element-base";
+import { tryCreateCardElement } from "../create-element/create-card-element";
+import { createErrorCardElement } from "../create-element/create-element-base";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 
 declare global {
@@ -72,10 +72,23 @@ export class HuiCard extends ReactiveElement {
   public getGridOptions(): LovelaceGridOptions {
     const elementOptions = this.getElementGridOptions();
     const configOptions = this.getConfigGridOptions();
-    return {
+    const mergedConfig = {
       ...elementOptions,
       ...configOptions,
     };
+
+    // If the element has fixed rows or columns, we use the values from the element
+    if (elementOptions.fixed_rows) {
+      mergedConfig.rows = elementOptions.rows;
+      delete mergedConfig.min_rows;
+      delete mergedConfig.max_rows;
+    }
+    if (elementOptions.fixed_columns) {
+      mergedConfig.columns = elementOptions.columns;
+      delete mergedConfig.min_columns;
+      delete mergedConfig.max_columns;
+    }
+    return mergedConfig;
   }
 
   // options provided by the element
@@ -120,7 +133,15 @@ export class HuiCard extends ReactiveElement {
   }
 
   private _loadElement(config: LovelaceCardConfig) {
-    this._element = createCardElement(config);
+    try {
+      this._element = tryCreateCardElement(config);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : undefined;
+      this._element = createErrorCardElement({
+        type: "error",
+        message: errorMessage,
+      });
+    }
     this._elementConfig = config;
     if (this.hass) {
       this._element.hass = this.hass;
@@ -191,7 +212,9 @@ export class HuiCard extends ReactiveElement {
             this._element.hass = this.hass;
           }
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
       if (changedProps.has("preview")) {
@@ -199,8 +222,11 @@ export class HuiCard extends ReactiveElement {
           this._element.preview = this.preview;
           // For backwards compatibility
           (this._element as any).editMode = this.preview;
+          fireEvent(this, "card-updated");
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
       if (changedProps.has("layout")) {
@@ -209,7 +235,9 @@ export class HuiCard extends ReactiveElement {
           // For backwards compatibility
           (this._element as any).isPanel = this.layout === "panel";
         } catch (e: any) {
-          this._loadElement(createErrorCardConfig(e.message, null));
+          // eslint-disable-next-line no-console
+          console.error(this.config?.type, e);
+          this._loadElement({ type: "error" });
         }
       }
     }

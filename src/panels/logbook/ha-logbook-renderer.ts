@@ -586,7 +586,7 @@ class HaLogbookRenderer extends LitElement {
           position: relative;
           display: flex;
           width: 100%;
-          line-height: 2em;
+          line-height: var(--ha-line-height-expanded);
           padding: 8px 16px;
           box-sizing: border-box;
           border-top: 1px solid var(--divider-color);
@@ -636,8 +636,8 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .secondary {
-          font-size: 12px;
-          line-height: 1.7;
+          font-size: var(--ha-font-size-s);
+          line-height: var(--ha-line-height-normal);
         }
 
         .secondary a {
@@ -700,7 +700,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .narrow .entry {
-          line-height: 1.5;
+          line-height: var(--ha-line-height-normal);
         }
 
         .narrow .icon-message state-badge {

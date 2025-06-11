@@ -965,9 +965,9 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-top: 16px;
         }
         .breadcrumb .title {
-          font-size: 32px;
-          line-height: 1.2;
-          font-weight: bold;
+          font-size: var(--ha-font-size-4xl);
+          line-height: var(--ha-line-height-condensed);
+          font-weight: var(--ha-font-weight-bold);
           margin: 0;
           overflow: hidden;
           display: -webkit-box;
@@ -976,7 +976,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-right: 8px;
         }
         .breadcrumb .previous-title {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           padding-bottom: 8px;
           color: var(--secondary-text-color);
           overflow: hidden;
@@ -985,7 +985,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-icon-size: 14px;
         }
         .breadcrumb .subtitle {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           overflow: hidden;
           text-overflow: ellipsis;
           margin-bottom: 0;
@@ -1144,7 +1144,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         .child .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding-top: 16px;
           padding-left: 2px;
           overflow: hidden;
@@ -1209,7 +1209,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
 
         :host([narrow]) .breadcrumb .title {
-          font-size: 24px;
+          font-size: var(--ha-font-size-2xl);
         }
         :host([narrow]) .header {
           padding: 0;

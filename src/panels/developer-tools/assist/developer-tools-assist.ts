@@ -236,10 +236,10 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
       css`
         .content {
           padding: 28px 20px 16px;
-          padding: max(28px, calc(12px + env(safe-area-inset-top)))
-            max(20px, calc(4px + env(safe-area-inset-right)))
-            max(16px, env(safe-area-inset-bottom))
-            max(20px, calc(4px + env(safe-area-inset-left)));
+          padding: max(28px, calc(12px + var(--safe-area-inset-top)))
+            max(20px, calc(4px + var(--safe-area-inset-right)))
+            max(16px, var(--safe-area-inset-bottom))
+            max(20px, calc(4px + var(--safe-area-inset-left)));
           max-width: 1040px;
           margin: 0 auto;
         }
@@ -264,7 +264,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           margin-bottom: 16px;
         }
         .sentence {
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           margin-bottom: 8px;
           display: flex;
           flex-direction: row;

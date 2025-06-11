@@ -241,14 +241,20 @@ export class StatisticsChart extends LitElement {
         minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
       }
     } else if (this.logarithmicScale) {
-      minYAxis = ({ min }) => Math.floor(min > 0 ? min * 0.95 : min * 1.05);
+      minYAxis = ({ min }) => {
+        const value = min > 0 ? min * 0.95 : min * 1.05;
+        return Math.abs(value) < 1 ? value : Math.floor(value);
+      };
     }
     if (typeof maxYAxis === "number") {
       if (this.fitYData) {
         maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
       }
     } else if (this.logarithmicScale) {
-      maxYAxis = ({ max }) => Math.ceil(max > 0 ? max * 1.05 : max * 0.95);
+      maxYAxis = ({ max }) => {
+        const value = max > 0 ? max * 1.05 : max * 0.95;
+        return Math.abs(value) < 1 ? value : Math.ceil(value);
+      };
     }
     const endTime = this.endTime ?? new Date();
     let startTime = this.startTime;
@@ -308,6 +314,7 @@ export class StatisticsChart extends LitElement {
         },
       },
       legend: {
+        type: "custom",
         show: !this.hideLegend,
         data: this._legendData,
       },
@@ -618,10 +625,10 @@ export class StatisticsChart extends LitElement {
     if (this.logarithmicScale) {
       // log(0) is -Infinity, so we need to set a minimum value
       if (typeof value === "number") {
-        return Math.max(value, 0.1);
+        return Math.max(value, Number.EPSILON);
       }
       if (typeof value === "function") {
-        return (values: any) => Math.max(value(values), 0.1);
+        return (values: any) => Math.max(value(values), Number.EPSILON);
       }
     }
     return value;

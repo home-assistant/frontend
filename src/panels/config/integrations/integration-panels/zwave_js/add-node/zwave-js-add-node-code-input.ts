@@ -80,7 +80,7 @@ export class ZWaveJsAddNodeCodeInput extends LitElement {
       margin-bottom: 16px;
     }
     div {
-      font-family: "Roboto Mono", "Consolas", "Menlo", monospace;
+      font-family: var(--ha-font-family-code);
       margin-top: 16px;
     }
     div span {

@@ -126,17 +126,17 @@ export class CloudDiscover extends LitElement {
       justify-content: space-between;
     }
     .header {
-      font-weight: 400;
-      font-size: 28px;
-      line-height: 36px;
+      font-size: var(--ha-font-size-3xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       text-align: center;
       max-width: 600px;
       margin: 0 auto 8px auto;
     }
     @media (min-width: 800px) {
       .header {
-        font-size: 32px;
-        line-height: 40px;
+        font-size: var(--ha-font-size-4xl);
+        line-height: var(--ha-line-height-condensed);
         margin-bottom: 16px;
       }
     }
@@ -173,19 +173,19 @@ export class CloudDiscover extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: var(--ha-font-size-2xl);
     }
     .feature h2 {
-      font-weight: 500;
-      font-size: 16px;
-      line-height: 24px;
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+      line-height: var(--ha-line-height-normal);
       margin-top: 0;
       margin-bottom: 8px;
     }
     .feature p {
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 20px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
       margin: 0;
     }
     .more {
@@ -196,8 +196,8 @@ export class CloudDiscover extends LitElement {
     .more a {
       text-decoration: none;
       color: var(--primary-color);
-      font-weight: 500;
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-medium);
     }
     .more a ha-svg-icon {
       --mdc-icon-size: 16px;

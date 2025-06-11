@@ -34,6 +34,8 @@ const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
 export class HaForm extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
   @property({ attribute: false }) public schema!: readonly HaFormSchema[];
@@ -135,6 +137,7 @@ export class HaForm extends LitElement implements HaFormElement {
               ? html`<ha-selector
                   .schema=${item}
                   .hass=${this.hass}
+                  .narrow=${this.narrow}
                   .name=${item.name}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}

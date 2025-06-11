@@ -565,7 +565,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
         var(--card-background-color, white)
       );
       border-top: 1px solid var(--divider-color);
-      padding-bottom: env(safe-area-inset-bottom);
+      padding-bottom: var(--safe-area-inset-bottom);
     }
 
     mwc-linear-progress {
@@ -706,7 +706,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     }
 
     ha-list-item[selected] {
-      font-weight: bold;
+      font-weight: var(--ha-font-weight-bold);
     }
 
     span[slot="icon"] {
