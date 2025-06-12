@@ -14,7 +14,9 @@ import { blankBeforeUnit } from "../../../common/translations/blank_before_unit"
 import "../../../components/ha-card";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import "../../../components/ha-icon";
 import "../../../components/ha-ripple";
+import "../../../components/ha-svg-icon";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { isUnavailableState } from "../../../data/entity";
@@ -240,6 +242,21 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
+        <div class="header">
+          <div class="picture ${!area.picture ? "placeholder" : ""}">
+            ${area.picture
+              ? html`
+                  <hui-image
+                    .image=${area.picture}
+                    .hass=${this.hass}
+                    fit-mode="cover"
+                  ></hui-image>
+                `
+              : area.icon
+                ? html`<ha-icon .icon=${area.icon}></ha-icon>`
+                : nothing}
+          </div>
+        </div>
         <div class="container">
           <div class="content">
             <ha-tile-icon>
@@ -312,6 +329,39 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       border-radius: var(--ha-card-border-radius, 12px);
       margin: calc(-1 * var(--ha-card-border-width, 1px));
       overflow: hidden;
+    }
+    .header {
+      height: 150px;
+      overflow: hidden;
+      border-radius: var(--ha-card-border-radius, 12px);
+      border-end-end-radius: 0;
+      border-end-start-radius: 0;
+      pointer-events: none;
+    }
+    .picture {
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      --mdc-icon-size: 48px;
+      color: var(--tile-color);
+    }
+    .picture hui-image {
+      height: 100%;
+    }
+    .picture.placeholder::before {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 100%;
+      background-color: var(--tile-color);
+      opacity: 0.12;
     }
     .container {
       margin: calc(-1 * var(--ha-card-border-width, 1px));

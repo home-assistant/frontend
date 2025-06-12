@@ -54,7 +54,10 @@ export class HuiImage extends LitElement {
 
   @property({ attribute: false }) public darkModeFilter?: string;
 
-  @property({ attribute: false }) public fitMode?: "cover" | "contain" | "fill";
+  @property({ attribute: "fit-mode", type: String }) public fitMode?:
+    | "cover"
+    | "contain"
+    | "fill";
 
   @state() private _imageVisible? = false;
 
