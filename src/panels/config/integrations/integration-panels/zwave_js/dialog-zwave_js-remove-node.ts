@@ -287,7 +287,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._node = message.node;
       this._unsubscribe();
     }
-  }
+  };
 
   private _stopExclusion(): void {
     try {
