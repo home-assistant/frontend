@@ -143,7 +143,6 @@ export const getZwaveDeviceActions = async (
           showZWaveJSRemoveNodeDialog(el, {
             deviceId: device.id,
             entryId,
-            onClose: () => window.history.back(),
           }),
       }
     );

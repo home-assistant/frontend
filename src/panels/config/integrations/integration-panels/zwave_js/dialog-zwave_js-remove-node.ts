@@ -94,7 +94,12 @@ class DialogZWaveJSRemoveNode extends LitElement {
     );
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} .heading=${dialogTitle}>
+      <ha-dialog
+        open
+        @closed=${this.handleDialogClosed}
+        .heading=${dialogTitle}
+        .hideActions=${this._step === "start"}
+      >
         <ha-dialog-header slot="heading">
           <ha-icon-button
             slot="navigationIcon"
@@ -123,7 +128,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
           <ha-list-item hasMeta @click=${this._startExclusion}>
             <span
               >${this.hass.localize(
-                "ui.panel.config.zwave_js.remove_failed_node.exclude_device"
+                "ui.panel.config.zwave_js.remove_node.menu_exclude_device"
               )}</span
             >
             <ha-icon-next slot="meta"></ha-icon-next>
@@ -131,7 +136,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
           <ha-list-item hasMeta @click=${this._startRemoval}>
             <span
               >${this.hass.localize(
-                "ui.panel.config.zwave_js.remove_failed_node.remove_device"
+                "ui.panel.config.zwave_js.remove_node.menu_remove_device"
               )}</span
             >
             <ha-icon-next slot="meta"></ha-icon-next>
@@ -240,7 +245,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
   private _startExclusion() {
     this._subscribed = this.hass.connection
-      .subscribeMessage((message) => this._handleMessage(message), {
+      .subscribeMessage(this._handleMessage, {
         type: "zwave_js/remove_node",
         entry_id: this._entryId,
       })
@@ -260,7 +265,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this._subscribed = removeFailedZwaveNode(
       this.hass,
       this._deviceId!,
-      (message: any) => this._handleMessage(message)
+      this._handleMessage
     ).catch((err) => {
       this._step = "failed";
       this._error = err.message;
@@ -269,7 +274,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this._step = "remove";
   }
 
-  private _handleMessage(message: any): void {
+  private _handleMessage = (message: any) => {
     if (message.event === "exclusion failed") {
       this._unsubscribe();
       this._step = "failed";
@@ -310,13 +315,16 @@ class DialogZWaveJSRemoveNode extends LitElement {
   };
 
   public closeDialog(): void {
+    this._entryId = undefined;
+  }
+
+  public handleDialogClosed(): void {
     this._unsubscribe();
     this._entryId = undefined;
     this._step = "start";
     if (this._onClose) {
       this._onClose();
     }
-
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -354,6 +362,14 @@ class DialogZWaveJSRemoveNode extends LitElement {
         }
         ha-alert {
           width: 100%;
+        }
+
+        .menu-options {
+          align-self: stretch;
+        }
+
+        ha-list-item {
+          --mdc-list-side-padding: 24px;
         }
       `,
     ];

@@ -6139,15 +6139,17 @@
           },
           "remove_node": {
             "title": "Remove a Z-Wave device",
-            "introduction": "Would you like to exclude the device or remove it from your Z-Wave network?",
+            "introduction": "There are two ways to remove a device from your Z-Wave network depending on the state of the device. If the device is working, you can exclude it by following the instructions that came with your device to put it into exclusion mode. If the device is dead, you can force remove it from the network.",
             "exclusion_intro": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
             "failed_node_intro": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
+            "menu_remove_device": "Force remove a failed device",
+            "menu_exclude_device": "Exclude a working device",
             "start_exclusion": "Start exclusion",
             "remove_device": "Remove device",
             "cancel_exclusion": "Cancel exclusion",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
             "removing_device": "Removing device",
-            "exclusion_failed": "An error occurred during exclusion. Please check the logs for more information.",
+            "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
