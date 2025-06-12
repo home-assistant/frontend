@@ -339,7 +339,7 @@ export const computeBackupSize = (backup: BackupContent) =>
 
 export type BackupType = "automatic" | "manual" | "addon_update";
 
-const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "manual", "addon_update"];
+const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "addon_update", "manual"];
 
 export const getBackupTypes = memoize((isHassio: boolean) =>
   isHassio
