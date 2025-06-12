@@ -255,6 +255,10 @@ export class HaConfigDevicePage extends LitElement {
     super.willUpdate(changedProps);
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
+      this._deviceActions = [];
+      this._deviceAlerts = [];
+      this._deleteButtons = [];
+      this._diagnosticDownloadLinks = [];
       this._fetchData();
     }
   }
@@ -1163,8 +1167,8 @@ export class HaConfigDevicePage extends LitElement {
       deviceAlerts.push(...alerts);
     }
 
+    this._deviceAlerts = deviceAlerts;
     if (deviceAlerts.length) {
-      this._deviceAlerts = deviceAlerts;
       this._deviceAlertsActionsTimeout = window.setTimeout(() => {
         this._getDeviceAlerts();
         this._getDeviceActions();
