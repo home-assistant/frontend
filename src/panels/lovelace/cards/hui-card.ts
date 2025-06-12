@@ -96,7 +96,9 @@ export class HuiCard extends ReactiveElement {
     if (!this._element) return {};
 
     if (this._element.getGridOptions) {
-      return this._element.getGridOptions();
+      const options = this._element.getGridOptions();
+      // Some custom cards might return undefined, so we ensure we return an object
+      return options || {};
     }
     if (this._element.getLayoutOptions) {
       // Disabled for now to avoid spamming the console, need to be re-enabled when hui-card performance are fixed
