@@ -638,7 +638,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
-  }
+  };
 
   private async _addNodeClicked() {
     this._openInclusionDialog();
@@ -649,7 +649,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       entryId: this.configEntryId!,
       skipConfirmation:
         this._network?.controller.inclusion_state === InclusionState.Excluding,
-        onClose: this._fetchData,
+      onClose: this._fetchData,
     });
   }
 

@@ -965,7 +965,6 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _getDeleteActions() {
-    this._deleteButtons = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1041,7 +1040,6 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceActions() {
-    this._deviceActions = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1143,7 +1141,6 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _getDeviceAlerts() {
-    this._deviceAlerts = [];
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
