@@ -48,7 +48,6 @@ const cardConfigStruct = assign(
   object({
     area: optional(string()),
     navigation_path: optional(string()),
-    theme: optional(string()),
     show_camera: optional(boolean()),
     camera_view: optional(string()),
     aspect_ratio: optional(string()),
@@ -114,7 +113,6 @@ export class HuiAreaCardEditor
               required: false,
               selector: { navigation: {} },
             },
-            { name: "theme", required: false, selector: { theme: {} } },
             {
               name: "aspect_ratio",
               default: DEFAULT_ASPECT_RATIO,
@@ -309,6 +307,11 @@ export class HuiAreaCardEditor
       ...this._config,
     };
 
+    // Default features position to bottom and force it to bottom in vertical mode
+    if (!data.features_position || data.vertical) {
+      data.features_position = "bottom";
+    }
+
     const featureContext = this._featureContext(areaId);
     const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
 
@@ -417,12 +420,6 @@ export class HuiAreaCardEditor
       | SchemaUnion<ReturnType<typeof this._featuresSchema>>
   ) => {
     switch (schema.name) {
-      case "theme":
-        return `${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.theme"
-        )} (${this.hass!.localize(
-          "ui.panel.lovelace.editor.card.config.optional"
-        )})`;
       case "area":
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
       case "navigation_path":
