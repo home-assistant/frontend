@@ -26,6 +26,7 @@ import {
 import type { EntityRegistryEntry } from "./entity_registry";
 import type { FrontendLocaleData } from "./translation";
 import { isTriggerList } from "./trigger";
+import { hasTemplate } from "../common/string/has-template";
 
 const triggerTranslationBaseKey =
   "ui.panel.config.automation.editor.triggers.type";
@@ -820,6 +821,12 @@ const tryDescribeCondition = (
   entityRegistry: EntityRegistryEntry[],
   ignoreAlias = false
 ) => {
+  if (typeof condition === "string" && hasTemplate(condition)) {
+    return hass.localize(
+      `${conditionsTranslationBaseKey}.template.description.full`
+    );
+  }
+
   if (condition.alias && !ignoreAlias) {
     return condition.alias;
   }
