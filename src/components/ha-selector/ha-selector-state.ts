@@ -4,6 +4,7 @@ import type { StateSelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-state-picker";
+import "../entity/ha-entity-states-picker";
 
 @customElement("ha-selector-state")
 export class HaSelectorState extends SubscribeMixin(LitElement) {
@@ -27,6 +28,24 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
   };
 
   protected render() {
+    if (this.selector.state?.multiple) {
+      return html`
+        <ha-entity-states-picker
+          .hass=${this.hass}
+          .entityId=${this.selector.state?.entity_id ||
+          this.context?.filter_entity}
+          .attribute=${this.selector.state?.attribute ||
+          this.context?.filter_attribute}
+          .extraOptions=${this.selector.state?.extra_options}
+          .value=${this.value}
+          .label=${this.label}
+          .helper=${this.helper}
+          .disabled=${this.disabled}
+          .required=${this.required}
+          allow-custom-value
+        ></ha-entity-states-picker>
+      `;
+    }
     return html`
       <ha-entity-state-picker
         .hass=${this.hass}
