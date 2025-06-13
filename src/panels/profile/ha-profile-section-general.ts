@@ -167,6 +167,10 @@ class HaProfileSectionGeneral extends LitElement {
                 )}
               </mwc-button>
             </ha-settings-row>
+            <ha-pick-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-dashboard-row>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
@@ -200,10 +204,6 @@ class HaProfileSectionGeneral extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-theme-row>
-            <ha-pick-dashboard-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-pick-dashboard-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

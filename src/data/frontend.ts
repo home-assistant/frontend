@@ -8,6 +8,7 @@ export interface CoreFrontendUserData {
 export interface SidebarFrontendUserData {
   panelOrder: string[];
   hiddenPanels: string[];
+  defaultPanel?: string;
 }
 
 declare global {
