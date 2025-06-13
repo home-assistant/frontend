@@ -5,6 +5,7 @@ import type { LovelaceStrategyConfig } from "./strategy";
 export interface LovelaceBaseSectionConfig {
   visibility?: Condition[];
   column_span?: number;
+  hidden?: boolean;
   row_span?: number;
   /**
    * @deprecated Use heading card instead.
