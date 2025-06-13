@@ -37,6 +37,7 @@ import {
   mdiRoomService,
   mdiScriptText,
   mdiSpeakerMessage,
+  mdiStarFourPoints,
   mdiThermostat,
   mdiTimerOutline,
   mdiToggleSwitch,
@@ -66,6 +67,7 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 
 /** Fallback icons for each domain */
 export const FALLBACK_DOMAIN_ICONS = {
+  ai_task: mdiStarFourPoints,
   air_quality: mdiAirFilter,
   alert: mdiAlert,
   automation: mdiRobot,
