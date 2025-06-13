@@ -6111,10 +6111,8 @@
             "unprovision": "Unprovision",
             "included": "Included",
             "not_included": "Not Included",
-            "confirm_unprovision_title": "Are you sure you want to unprovision the device?",
-            "confirm_unprovision_text": "If you unprovision the device it will be removed from Home Assistant.",
-            "confirm_unprovision_text_included": "This device is already included in your Z-Wave network. If you unprovision the device it will not be removed from Home Assistant or your Z-Wave network. Only the provisioning entry will be removed from the controller.",
-            "confirm_unprovision_text_device": "This device is only provisioned but not included in your Z-Wave network. In order to delete it from Home Assistant, you must unprovision it."
+            "confirm_unprovision_title": "Remove device?",
+            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network."
           },
           "security_classes": {
             "None": {
@@ -6141,26 +6139,15 @@
             "title": "Remove a Z-Wave device",
             "introduction": "There are two ways to remove a device from your Z-Wave network depending on the state of the device. If the device is working, you can exclude it by following the instructions that came with your device to put it into exclusion mode. If the device is dead, you can force remove it from the network.",
             "exclusion_intro": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
-            "failed_node_intro": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
+            "failed_node_intro": "{name} is unable to connect to your Z-wave Network. Home Assistant can force remove a device for you. After removing it you might need to factory reset your device.",
             "menu_remove_device": "Force remove a failed device",
             "menu_exclude_device": "Exclude a working device",
             "start_exclusion": "Start exclusion",
-            "remove_device": "Remove device",
             "cancel_exclusion": "Cancel exclusion",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
             "removing_device": "Removing device",
             "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
-          },
-          "remove_failed_node": {
-            "title": "Remove a failed Z-Wave device",
-            "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
-            "exclusion_prompt": "Would you like to exclude the device or remove it from your Z-Wave network?",
-            "remove_device": "Remove device",
-            "exclude_device": "Exclude device",
-            "in_progress": "The device removal is in progress.",
-            "removal_finished": "Device {id} has been removed from your Z-Wave network.",
-            "removal_failed": "The device could not be removed from your Z-Wave network."
           },
           "reinterview_node": {
             "title": "Re-interview a Z-Wave device",

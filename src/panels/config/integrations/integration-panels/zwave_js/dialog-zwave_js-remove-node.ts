@@ -25,6 +25,7 @@ import {
 } from "../../../../../data/zwave_js";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-icon-next";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 
 const EXCLUSION_TIMEOUT_SECONDS = 120;
 
@@ -41,6 +42,8 @@ class DialogZWaveJSRemoveNode extends LitElement {
   @state() private _entryId?: string;
 
   @state() private _deviceId?: string;
+
+  private _device?: DeviceRegistryEntry;
 
   @state() private _step:
     | "start"
@@ -75,6 +78,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     this._onClose = params.onClose;
     if (this._deviceId) {
       const nodeStatus = await fetchZwaveNodeStatus(this.hass, this._deviceId!);
+      this._device = this.hass.devices[this._deviceId];
       this._step =
         nodeStatus.status === NodeStatus.Dead ? "start_removal" : "start";
     } else if (params.skipConfirmation) {
@@ -150,7 +154,8 @@ class DialogZWaveJSRemoveNode extends LitElement {
         <ha-svg-icon .path=${mdiRobotDead}></ha-svg-icon>
         <p>
           ${this.hass.localize(
-            "ui.panel.config.zwave_js.remove_node.failed_node_intro"
+            "ui.panel.config.zwave_js.remove_node.failed_node_intro",
+            { name: this._device!.name_by_user || this._device!.name }
           )}
         </p>
       `;
@@ -214,17 +219,29 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_removal") {
       return html`
-        <ha-button slot="primaryAction" @click=${this._startRemoval}>
-          ${this.hass.localize(
-            "ui.panel.config.zwave_js.remove_node.remove_device"
-          )}
+        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this.hass.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          @click=${this._startRemoval}
+          destructive
+        >
+          ${this.hass.localize("ui.common.remove")}
         </ha-button>
       `;
     }
 
     if (this._step === "start_exclusion") {
       return html`
-        <ha-button slot="primaryAction" @click=${this._startExclusion}>
+        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this.hass.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          @click=${this._startExclusion}
+          destructive
+        >
           ${this.hass.localize(
             "ui.panel.config.zwave_js.remove_node.start_exclusion"
           )}

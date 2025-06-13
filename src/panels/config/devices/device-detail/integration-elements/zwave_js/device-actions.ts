@@ -69,11 +69,10 @@ export const getZwaveDeviceActions = async (
               "ui.panel.config.zwave_js.provisioned.confirm_unprovision_title"
             ),
             text: hass.localize(
-              "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text_device"
+              "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text",
+              { name: device.name_by_user || device.name }
             ),
-            confirmText: hass.localize(
-              "ui.panel.config.zwave_js.provisioned.unprovision"
-            ),
+            confirmText: hass.localize("ui.common.remove"),
             destructive: true,
           });
 
