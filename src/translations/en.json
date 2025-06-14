@@ -3266,7 +3266,15 @@
                 "areas": {
                   "title": "Areas (experimental)",
                   "description": "Display your devices with a view for each area"
+                },
+                "default": {
+                  "title": "Default dashboard",
+                  "description": "Display your devices grouped by area"
                 }
+              },
+              "search_dashboards": "Search dashboards",
+              "heading": {
+                "default": "Dashboards"
               }
             },
             "picker": {
