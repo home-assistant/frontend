@@ -5,6 +5,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-time-input";
 import "../../../../components/ha-textfield";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
@@ -15,6 +16,8 @@ class HaTimerForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public new = false;
+
+  @property({ attribute: "enable-second", type: Boolean }) enableSecond = true;
 
   private _item?: Timer;
 
@@ -79,14 +82,14 @@ class HaTimerForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-picker>
-        <ha-textfield
+        <ha-time-input
           .configValue=${"duration"}
           .value=${this._duration}
-          @input=${this._valueChanged}
-          .label=${this.hass.localize(
-            "ui.dialogs.helper_settings.timer.duration"
-          )}
-        ></ha-textfield>
+          .locale=${this.hass.locale}
+          clearable
+          .enableSecond=${this.enableSecond}
+          @value-changed=${this._valueChanged}
+        ></ha-time-input>
         <ha-formfield
           .label=${this.hass.localize(
             "ui.dialogs.helper_settings.timer.restore"
@@ -138,7 +141,8 @@ class HaTimerForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-textfield {
+        ha-textfield,
+        ha-time-input {
           display: block;
           margin: 8px 0;
         }
