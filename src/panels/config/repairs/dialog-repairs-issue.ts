@@ -1,4 +1,4 @@
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
@@ -8,6 +8,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-md-dialog";
 import type { HaMdDialog } from "../../../components/ha-md-dialog";
 import "../../../components/ha-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-dialog-header";
 import "./dialog-repairs-issue-subtitle";
 import "../../../components/ha-markdown";
@@ -122,14 +123,15 @@ class DialogRepairsIssue extends LitElement {
             : ""}
         </div>
         <div slot="actions">
-          <ha-button @click=${this._ignoreIssue}>
+          <ha-button appearance="plain" @click=${this._ignoreIssue}>
             ${this._issue!.ignored
               ? this.hass!.localize("ui.panel.config.repairs.dialog.unignore")
               : this.hass!.localize("ui.panel.config.repairs.dialog.ignore")}
           </ha-button>
           ${this._issue.learn_more_url
             ? html`
-                <a
+                <ha-button
+                  appearance="filled"
                   rel="noopener noreferrer"
                   href=${learnMoreUrlIsHomeAssistant
                     ? this._issue.learn_more_url.replace(
@@ -138,17 +140,13 @@ class DialogRepairsIssue extends LitElement {
                       )
                     : this._issue.learn_more_url}
                   .target=${learnMoreUrlIsHomeAssistant ? "" : "_blank"}
+                  @click=${learnMoreUrlIsHomeAssistant
+                    ? this.closeDialog
+                    : undefined}
                 >
-                  <ha-button
-                    @click=${learnMoreUrlIsHomeAssistant
-                      ? this.closeDialog
-                      : undefined}
-                  >
-                    ${this.hass!.localize(
-                      "ui.panel.config.repairs.dialog.learn"
-                    )}
-                  </ha-button>
-                </a>
+                  ${this.hass!.localize("ui.panel.config.repairs.dialog.learn")}
+                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                </ha-button>
               `
             : ""}
         </div>

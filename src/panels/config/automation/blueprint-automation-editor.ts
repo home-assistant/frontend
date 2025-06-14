@@ -1,8 +1,8 @@
-import "@material/mwc-button/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
@@ -26,11 +26,16 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.disabled"
               )}
-              <mwc-button slot="action" @click=${this._enable}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                slot="action"
+                @click=${this._enable}
+              >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-alert>
           `
         : ""}

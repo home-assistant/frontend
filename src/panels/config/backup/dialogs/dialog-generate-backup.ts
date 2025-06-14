@@ -204,7 +204,7 @@ class DialogGenerateBackup extends LitElement implements HassDialog {
         <div slot="actions">
           ${isFirstStep
             ? html`
-                <ha-button @click=${this.closeDialog}>
+                <ha-button @click=${this.closeDialog} appearance="plain">
                   ${this.hass.localize("ui.common.cancel")}
                 </ha-button>
               `

@@ -26,6 +26,7 @@ import { stringCompare } from "../../../common/string/compare";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -381,9 +382,13 @@ export class HaConfigDevicePage extends LitElement {
         ${device.disabled_by === "user"
           ? html`
               <div class="card-actions" slot="actions">
-                <mwc-button unelevated @click=${this._enableDevice}>
+                <ha-button
+                  variant="warning"
+                  size="small"
+                  @click=${this._enableDevice}
+                >
                   ${this.hass.localize("ui.common.enable")}
-                </mwc-button>
+                </ha-button>
               </div>
             `
           : ""}
@@ -734,39 +739,35 @@ export class HaConfigDevicePage extends LitElement {
               ? html`
                   <div class="card-actions" slot="actions">
                     <div>
-                      <a
+                      <ha-button
                         href=${ifDefined(firstDeviceAction!.href)}
                         rel=${ifDefined(
                           firstDeviceAction!.target ? "noreferrer" : undefined
                         )}
                         target=${ifDefined(firstDeviceAction!.target)}
+                        class=${ifDefined(firstDeviceAction!.classes)}
+                        .action=${firstDeviceAction!.action}
+                        @click=${this._deviceActionClicked}
                       >
-                        <mwc-button
-                          class=${ifDefined(firstDeviceAction!.classes)}
-                          .action=${firstDeviceAction!.action}
-                          @click=${this._deviceActionClicked}
-                          graphic="icon"
-                        >
-                          ${firstDeviceAction!.label}
-                          ${firstDeviceAction!.icon
-                            ? html`
-                                <ha-svg-icon
-                                  class=${ifDefined(firstDeviceAction!.classes)}
-                                  .path=${firstDeviceAction!.icon}
-                                  slot="graphic"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                          ${firstDeviceAction!.trailingIcon
-                            ? html`
-                                <ha-svg-icon
-                                  .path=${firstDeviceAction!.trailingIcon}
-                                  slot="trailingIcon"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                        </mwc-button>
-                      </a>
+                        ${firstDeviceAction!.label}
+                        ${firstDeviceAction!.icon
+                          ? html`
+                              <ha-svg-icon
+                                class=${ifDefined(firstDeviceAction!.classes)}
+                                .path=${firstDeviceAction!.icon}
+                                slot="prefix"
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                        ${firstDeviceAction!.trailingIcon
+                          ? html`
+                              <ha-svg-icon
+                                .path=${firstDeviceAction!.trailingIcon}
+                                slot="suffix"
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                      </ha-button>
                     </div>
 
                     ${actions.length

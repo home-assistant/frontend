@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiCalendarClock } from "@mdi/js";
 import { toDate } from "date-fns-tz";
 import { addDays, isSameDay } from "date-fns";
@@ -12,6 +11,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-time-input";
@@ -99,24 +99,25 @@ class DialogCalendarEventDetail extends LitElement {
         </div>
         ${this._params.canDelete
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEvent}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.calendar.event.delete")}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         ${this._params.canEdit
-          ? html`<mwc-button
+          ? html`<ha-button
               slot="primaryAction"
               @click=${this._editEvent}
               .disabled=${this._submitting}
             >
               ${this.hass.localize("ui.components.calendar.event.edit")}
-            </mwc-button>`
+            </ha-button>`
           : ""}
       </ha-dialog>
     `;

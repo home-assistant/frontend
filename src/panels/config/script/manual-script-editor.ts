@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";

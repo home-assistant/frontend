@@ -1,5 +1,4 @@
 import "@lit-labs/virtualizer";
-import "@material/mwc-button";
 import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -12,6 +11,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-check-list-item";
 import "../../../components/search-input";
 import "../../../components/ha-dialog";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-list";
@@ -95,7 +95,14 @@ class DialogExposeEntity extends LitElement {
           >
           </lit-virtualizer>
         </ha-list>
-        <mwc-button
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._expose}
           .disabled=${this._selected.length === 0}
@@ -104,7 +111,7 @@ class DialogExposeEntity extends LitElement {
             "ui.panel.config.voice_assistants.expose.expose_dialog.expose_entities",
             { count: this._selected.length }
           )}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

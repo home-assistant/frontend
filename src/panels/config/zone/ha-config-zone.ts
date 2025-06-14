@@ -10,6 +10,7 @@ import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
@@ -136,8 +137,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             <div class="empty">
               ${hass.localize("ui.panel.config.zone.no_zones_created_yet")}
               <br />
-              <mwc-button @click=${this._createZone}>
-                ${hass.localize("ui.panel.config.zone.create_zone")}</mwc-button
+              <ha-button size="small" @click=${this._createZone}>
+                ${hass.localize("ui.panel.config.zone.create_zone")}</ha-button
               >
             </div>
           `

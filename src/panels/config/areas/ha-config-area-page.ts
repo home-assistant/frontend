@@ -1,5 +1,4 @@
 import { consume } from "@lit/context";
-import "@material/mwc-button";
 import { mdiDelete, mdiDotsVertical, mdiImagePlus, mdiPencil } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup } from "lit";
@@ -16,6 +15,7 @@ import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-list-item";
@@ -266,15 +266,18 @@ class HaConfigAreaPage extends LitElement {
                     class="img-edit-btn"
                   ></ha-icon-button>
                 </div>`
-              : html`<mwc-button
+              : html`<ha-button
+                  appearance="filled"
+                  size="small"
                   .entry=${area}
                   @click=${this._showSettings}
-                  .label=${this.hass.localize(
-                    "ui.panel.config.areas.add_picture"
-                  )}
                 >
-                  <ha-svg-icon .path=${mdiImagePlus} slot="icon"></ha-svg-icon>
-                </mwc-button>`}
+                  <ha-svg-icon
+                    .path=${mdiImagePlus}
+                    slot="prefix"
+                  ></ha-svg-icon>
+                  ${this.hass.localize("ui.panel.config.areas.add_picture")}
+                </ha-button>`}
             <ha-card
               outlined
               .header=${this.hass.localize("ui.panel.config.devices.caption")}
@@ -738,11 +741,6 @@ class HaConfigAreaPage extends LitElement {
           text-align: center;
           padding: 16px;
           color: var(--secondary-text-color);
-        }
-
-        mwc-button > ha-svg-icon {
-          margin-inline-start: 0;
-          margin-inline-end: 8px;
         }
       `,
     ];

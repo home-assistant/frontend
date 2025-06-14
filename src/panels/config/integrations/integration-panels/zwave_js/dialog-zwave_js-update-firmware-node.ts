@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -9,6 +8,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
@@ -130,7 +130,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               .schema=${firmwareTargetSchema}
               @value-changed=${this._firmwareTargetChanged}
             ></ha-form>`}
-      <mwc-button
+      <ha-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
         .disabled=${this._firmwareFile === undefined}
@@ -138,7 +138,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.begin_update"
         )}
-      </mwc-button>`;
+      </ha-button>`;
 
     const status = this._updateFinishedMessage
       ? this._updateFinishedMessage.success
@@ -153,11 +153,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
       ? nothing
       : html`
-          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+          <ha-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
             ${this.hass.localize(
               "ui.panel.config.zwave_js.update_firmware.abort"
             )}
-          </mwc-button>
+          </ha-button>
         `;
 
     return html`

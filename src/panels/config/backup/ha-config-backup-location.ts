@@ -189,7 +189,7 @@ class HaConfigBackupDetails extends LitElement {
                                   <ha-button
                                     slot="end"
                                     @click=${this._turnOffEncryption}
-                                    destructive
+                                    variant="danger"
                                   >
                                     ${this.hass.localize(
                                       "ui.panel.config.backup.location.encryption.encryption_turn_off"

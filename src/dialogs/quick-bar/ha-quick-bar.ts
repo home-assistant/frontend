@@ -37,6 +37,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
+import "../../components/ha-button";
 import "../../components/ha-list";
 import "../../components/ha-md-list-item";
 import "../../components/ha-spinner";
@@ -246,10 +247,13 @@ export class QuickBar extends LitElement {
                     ></ha-icon-button>`}
                     ${this._narrow
                       ? html`
-                          <mwc-button
-                            .label=${this.hass!.localize("ui.common.close")}
+                          <ha-button
+                            appearance="plain"
+                            size="small"
                             @click=${this.closeDialog}
-                          ></mwc-button>
+                          >
+                            ${this.hass!.localize("ui.common.close")}
+                          </ha-button>
                         `
                       : ""}
                   </div>

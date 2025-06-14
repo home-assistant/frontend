@@ -1,10 +1,9 @@
-import "@material/mwc-button";
-
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-language-picker";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
@@ -103,9 +102,9 @@ export class CloudTTSPref extends LitElement {
           </div>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._openTryDialog}>
+          <ha-button @click=${this._openTryDialog}>
             ${this.hass.localize("ui.panel.config.cloud.account.tts.try")}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;

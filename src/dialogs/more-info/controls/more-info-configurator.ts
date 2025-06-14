@@ -1,9 +1,8 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
+import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import "../../../components/ha-textfield";
 import type { HomeAssistant } from "../../../types";
@@ -46,19 +45,13 @@ export class MoreInfoConfigurator extends LitElement {
         )}
         ${this.stateObj.attributes.submit_caption
           ? html`<p class="submit">
-              <mwc-button
-                raised
+              <ha-button
                 .disabled=${this._isConfiguring}
                 @click=${this._submitClicked}
+                .loading=${this._isConfiguring}
               >
-                ${this._isConfiguring
-                  ? html`<ha-spinner
-                      size="tiny"
-                      aria-label="Configuring"
-                    ></ha-spinner>`
-                  : ""}
                 ${this.stateObj.attributes.submit_caption}
-              </mwc-button>
+              </ha-button>
             </p>`
           : ""}
       </div>
@@ -112,12 +105,6 @@ export class MoreInfoConfigurator extends LitElement {
     p.submit {
       text-align: center;
       height: 41px;
-    }
-
-    ha-spinner {
-      --ha-spinner-indicator-color: var(--primary-text-color);
-      margin-right: auto;
-      margin-left: auto;
     }
   `;
 }

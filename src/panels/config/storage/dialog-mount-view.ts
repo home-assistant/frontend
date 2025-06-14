@@ -271,19 +271,24 @@ class ViewMountDialog extends LitElement {
         ${this._existing
           ? html`<ha-button
               @click=${this._deleteMount}
-              destructive
+              variant="danger"
               slot="secondaryAction"
+              appearance="plain"
             >
               ${this.hass.localize("ui.common.delete")}
             </ha-button>`
           : nothing}
 
         <div slot="primaryAction">
-          <ha-button @click=${this.closeDialog} dialogInitialFocus>
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            dialogInitialFocus
+          >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-progress-button
-            .progress=${this._waiting}
+            .progress=${!!this._waiting}
             @click=${this._connectMount}
           >
             ${this._existing

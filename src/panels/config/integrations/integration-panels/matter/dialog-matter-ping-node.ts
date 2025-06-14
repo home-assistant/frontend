@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -7,6 +6,7 @@ import { fireEvent } from "../../../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-list";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-spinner";
 import { pingMatterNode } from "../../../../../data/matter";
@@ -71,9 +71,9 @@ class DialogMatterPingNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : this._pingResultEntries
             ? html`
@@ -98,9 +98,9 @@ class DialogMatterPingNode extends LitElement {
                       </ha-list-item>`
                   )}
                 </ha-list>
-                <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                <ha-button slot="primaryAction" @click=${this.closeDialog}>
                   ${this.hass.localize("ui.common.close")}
-                </mwc-button>
+                </ha-button>
               `
             : this._status === "started"
               ? html`
@@ -116,9 +116,9 @@ class DialogMatterPingNode extends LitElement {
                       </p>
                     </div>
                   </div>
-                  <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
                     ${this.hass.localize("ui.common.close")}
-                  </mwc-button>
+                  </ha-button>
                 `
               : html`
                   <p>
@@ -133,11 +133,11 @@ class DialogMatterPingNode extends LitElement {
                       )}
                     </em>
                   </p>
-                  <mwc-button slot="primaryAction" @click=${this._startPing}>
+                  <ha-button slot="primaryAction" @click=${this._startPing}>
                     ${this.hass.localize(
                       "ui.panel.config.matter.ping_node.start_ping"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 `}
       </ha-dialog>
     `;

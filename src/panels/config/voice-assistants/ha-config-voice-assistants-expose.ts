@@ -27,6 +27,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-tooltip";
 import type { AlexaEntity } from "../../../data/alexa";
 import { fetchCloudAlexaEntities } from "../../../data/alexa";
@@ -588,15 +589,21 @@ export class VoiceAssistantsExpose extends LitElement {
               <div class="header-btns" slot="selection-bar">
                 ${!this.narrow
                   ? html`
-                      <mwc-button @click=${this._exposeSelected}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._exposeSelected}
                         >${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
-                        )}</mwc-button
+                        )}</ha-button
                       >
-                      <mwc-button @click=${this._unexposeSelected}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._unexposeSelected}
                         >${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                     `
                   : html`
@@ -831,7 +838,7 @@ export class VoiceAssistantsExpose extends LitElement {
         .header-btns {
           display: flex;
         }
-        .header-btns > mwc-button,
+        .header-btns > ha-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }

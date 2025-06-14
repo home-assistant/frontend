@@ -150,6 +150,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
           </div>
           <div class="card-actions">
             <ha-button
+              appearance="filled"
               @click=${this._parse}
               .disabled=${!this._language || !this._validInput}
             >
@@ -163,7 +164,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ${this._results.length
           ? html`
               <div class="result-toolbar">
-                <ha-button outlined @click=${this._clear} destructive>
+                <ha-button outlined @click=${this._clear} variant="danger">
                   <ha-svg-icon slot="icon" .path=${mdiTrashCan}></ha-svg-icon>
                   ${this.hass.localize("ui.common.clear")}
                 </ha-button>

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle, mdiStethoscope } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-spinner";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
@@ -83,14 +83,14 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                   )}
                 </em>
               </p>
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._startRebuildingRoutes}
               >
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.rebuild_node_routes.start_rebuilding_routes"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "started"
@@ -110,9 +110,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "failed"
@@ -147,9 +147,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "finished"
@@ -172,9 +172,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "rebuilding-routes"
@@ -192,9 +192,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
       </ha-dialog>

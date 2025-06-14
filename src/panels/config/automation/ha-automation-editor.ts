@@ -1,5 +1,4 @@
 import { consume } from "@lit/context";
-import "@material/mwc-button";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -31,6 +30,7 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -214,11 +214,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
       >
         ${this._config?.id && !this.narrow
           ? html`
-              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+              <ha-button
+                appearance="plain"
+                @click=${this._showTrace}
+                slot="toolbar-icon"
+              >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.show_trace"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         <ha-button-menu slot="toolbar-icon">
@@ -427,11 +431,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   "ui.panel.config.automation.editor.confirm_take_control"
                 )}
                 <div slot="action" style="display: flex;">
-                  <mwc-button @click=${this._takeControlSave}
-                    >${this.hass.localize("ui.common.yes")}</mwc-button
+                  <ha-button appearance="plain" @click=${this._takeControlSave}
+                    >${this.hass.localize("ui.common.yes")}</ha-button
                   >
-                  <mwc-button @click=${this._revertBlueprint}
-                    >${this.hass.localize("ui.common.no")}</mwc-button
+                  <ha-button appearance="plain" @click=${this._revertBlueprint}
+                    >${this.hass.localize("ui.common.no")}</ha-button
                   >
                 </div>
               </ha-alert>`
@@ -440,11 +444,17 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   >${this.hass.localize(
                     "ui.panel.config.automation.editor.read_only"
                   )}
-                  <mwc-button slot="action" @click=${this._duplicate}>
+                  <ha-button
+                    appearance="filled"
+                    size="small"
+                    variant="warning"
+                    slot="action"
+                    @click=${this._duplicate}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.migrate"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </ha-alert>`
               : nothing}
           ${this._mode === "gui"
@@ -487,11 +497,16 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           ${this.hass.localize(
                             "ui.panel.config.automation.editor.disabled"
                           )}
-                          <mwc-button slot="action" @click=${this._toggle}>
+                          <ha-button
+                            appearance="filled"
+                            size="small"
+                            slot="action"
+                            @click=${this._toggle}
+                          >
                             ${this.hass.localize(
                               "ui.panel.config.automation.editor.enable"
                             )}
-                          </mwc-button>
+                          </ha-button>
                         </ha-alert>
                       `
                     : ""}

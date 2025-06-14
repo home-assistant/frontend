@@ -11,6 +11,7 @@ import type {
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-help-tooltip";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-icon-overflow-menu";
@@ -176,10 +177,14 @@ export class HaConfigApplicationCredentials extends LitElement {
         <div class="header-btns" slot="selection-bar">
           ${!this.narrow
             ? html`
-                <mwc-button @click=${this._deleteSelected} class="warning"
+                <ha-button
+                  appearance="plain"
+                  size="small"
+                  @click=${this._deleteSelected}
+                  variant="danger"
                   >${this.hass.localize(
                     "ui.panel.config.application_credentials.picker.remove_selected.button"
-                  )}</mwc-button
+                  )}</ha-button
                 >
               `
             : html`
@@ -349,7 +354,7 @@ export class HaConfigApplicationCredentials extends LitElement {
     .header-btns {
       display: flex;
     }
-    .header-btns > mwc-button,
+    .header-btns > ha-button,
     .header-btns > ha-icon-button {
       margin: 8px;
     }
