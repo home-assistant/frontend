@@ -11,6 +11,7 @@ import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import { configs as litConfigs } from "eslint-plugin-lit";
 import { configs as wcConfigs } from "eslint-plugin-wc";
+import { configs as a11yConfigs } from "eslint-plugin-lit-a11y";
 
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
@@ -21,13 +22,14 @@ const compat = new FlatCompat({
 });
 
 export default tseslint.config(
-  ...compat.extends("airbnb-base", "plugin:lit-a11y/recommended"),
+  ...compat.extends("airbnb-base"),
   eslintConfigPrettier,
   litConfigs["flat/all"],
   tseslint.configs.recommended,
   tseslint.configs.strict,
   tseslint.configs.stylistic,
   wcConfigs["flat/recommended"],
+  a11yConfigs.recommended,
   {
     plugins: {
       "unused-imports": unusedImports,
