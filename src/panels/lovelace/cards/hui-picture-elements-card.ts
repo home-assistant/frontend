@@ -113,6 +113,22 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _handleImageClick(ev: MouseEvent) {
+    if (!this._config) return;
+
+    const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ((ev.clientX - rect.left) / rect.width) * 100;
+    const y = ((ev.clientY - rect.top) / rect.height) * 100;
+
+    this.dispatchEvent(
+      new CustomEvent("picture-elements-clicked", {
+        detail: { x, y },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
@@ -149,6 +165,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .aspectRatio=${this._config.aspect_ratio}
             .darkModeFilter=${this._config.dark_mode_filter}
             .darkModeImage=${this._config.dark_mode_image}
+            @click=${this._handleImageClick}
           ></hui-image>
           ${this._elements}
         </div>
