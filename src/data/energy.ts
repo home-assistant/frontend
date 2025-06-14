@@ -679,7 +679,9 @@ export const getEnergyDataCollection = (
   const period =
     preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
 
-  [collection.start, collection.end] = calcDateRange(hass, period);
+  const [start, end] = calcDateRange(hass, period);
+  collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
+  collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
