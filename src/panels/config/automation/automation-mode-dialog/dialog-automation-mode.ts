@@ -5,6 +5,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-list-item";
@@ -12,10 +13,15 @@ import "../../../../components/ha-md-list";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-select";
+import "../../../../components/ha-list-item";
 
+import type { AutomationConfigMaxExceeded } from "../../../../data/automation";
 import {
   AUTOMATION_DEFAULT_MAX,
   AUTOMATION_DEFAULT_MODE,
+  AUTOMATION_DEFAULT_MAX_EXCEEDED,
+  automationConfigMaxExceededOptions,
 } from "../../../../data/automation";
 import { MODES, isMaxMode } from "../../../../data/script";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -36,6 +42,11 @@ class DialogAutomationMode extends LitElement implements HassDialog {
 
   @state() private _newMax?: number;
 
+  @state() private _maxExceeded?: AutomationConfigMaxExceeded =
+    AUTOMATION_DEFAULT_MAX_EXCEEDED;
+
+  @state() private _newMaxExceeded?: AutomationConfigMaxExceeded;
+
   public showDialog(params: AutomationModeDialog): void {
     this._opened = true;
     this._params = params;
@@ -43,6 +54,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     this._newMax = isMaxMode(this._newMode)
       ? params.config.max || AUTOMATION_DEFAULT_MAX
       : undefined;
+    this._maxExceeded =
+      params.config.max_exceeded || AUTOMATION_DEFAULT_MAX_EXCEEDED;
   }
 
   public closeDialog() {
@@ -158,6 +171,25 @@ class DialogAutomationMode extends LitElement implements HassDialog {
             `
           : nothing}
 
+        <div class="options">
+          <ha-select
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.max_exceeded"
+            )}
+            .value=${this._maxExceeded}
+            name="max_exceeded"
+            @selected=${this._valueChanged}
+            @closed=${stopPropagation}
+            naturalMenuWidth
+          >
+            ${automationConfigMaxExceededOptions.map(
+              (option) => html`
+                <ha-list-item .value=${option}>${option}</ha-list-item>
+              `
+            )}
+          </ha-select>
+        </div>
+
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
@@ -183,6 +215,8 @@ class DialogAutomationMode extends LitElement implements HassDialog {
     const target = ev.target as any;
     if (target.name === "max") {
       this._newMax = Number(target.value);
+    } else if (target.name === "max_exceeded") {
+      this._newMaxExceeded = target.value;
     }
   }
 
@@ -191,6 +225,7 @@ class DialogAutomationMode extends LitElement implements HassDialog {
       ...this._params.config,
       mode: this._newMode,
       max: this._newMax,
+      max_exceeded: this._newMaxExceeded,
     });
     this.closeDialog();
   }
@@ -211,6 +246,9 @@ class DialogAutomationMode extends LitElement implements HassDialog {
         }
         ha-dialog-header a {
           color: inherit;
+        }
+        ha-select {
+          width: 100%;
         }
       `,
     ];
