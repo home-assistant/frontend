@@ -185,7 +185,7 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
-  private _getEntitiesSorted = (entities) =>
+  private _getEntitiesSorted = (entities : HassEntity[]) =>
     entities.sort((ent1, ent2) =>
       stringCompare(
         ent1.attributes.friendly_name || `zzz${ent1.entity_id}`,
