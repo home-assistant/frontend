@@ -225,15 +225,19 @@ export class HuiPictureElementsCardEditor
     }
   };
 
-  private _handleImageClick = (ev: CustomEvent<{x: number; y: number}>) => {
+  private _handleImageClick = (ev: CustomEvent<{ x: number; y: number }>) => {
     const { x, y } = ev.detail;
 
     // Only handle clicks when actively editing an element
-    if (!this._subElementEditorConfig?.elementConfig || this._subElementEditorConfig.type !== "element") {
+    if (
+      !this._subElementEditorConfig?.elementConfig ||
+      this._subElementEditorConfig.type !== "element"
+    ) {
       return;
     }
 
-    const elementConfig = this._subElementEditorConfig.elementConfig as LovelaceElementConfig;
+    const elementConfig = this._subElementEditorConfig
+      .elementConfig as LovelaceElementConfig;
     const newElement = {
       ...elementConfig,
       style: {
@@ -256,7 +260,10 @@ export class HuiPictureElementsCardEditor
   }
 
   disconnectedCallback() {
-    window.removeEventListener("picture-elements-clicked", this._handleImageClick);
+    window.removeEventListener(
+      "picture-elements-clicked",
+      this._handleImageClick
+    );
     super.disconnectedCallback();
   }
 
@@ -271,6 +278,6 @@ declare global {
   }
 
   interface WindowEventMap {
-    "picture-elements-clicked": CustomEvent<{x: number; y: number}>;
+    "picture-elements-clicked": CustomEvent<{ x: number; y: number }>;
   }
 }
