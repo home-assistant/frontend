@@ -26,6 +26,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
+import "../../components/ha-icon-picker";
 
 @customElement("dialog-todo-item-editor")
 class DialogTodoItemEditor extends LitElement {
@@ -36,6 +37,8 @@ class DialogTodoItemEditor extends LitElement {
   @state() private _params?: TodoItemEditDialogParams;
 
   @state() private _summary = "";
+
+  @state() private _icon? = "";
 
   @state() private _description? = "";
 
@@ -64,6 +67,7 @@ class DialogTodoItemEditor extends LitElement {
       const entry = params.item;
       this._checked = entry.status === TodoItemStatus.Completed;
       this._summary = entry.summary;
+      this._icon = entry.icon || "";
       this._description = entry.description || "";
       this._hasTime = entry.due?.includes("T") || false;
       this._due = entry.due
@@ -138,6 +142,17 @@ class DialogTodoItemEditor extends LitElement {
               .disabled=${!canUpdate}
             ></ha-textfield>
           </div>
+          ${this._todoListSupportsFeature(
+            TodoListEntityFeature.SET_ICON_ON_ITEM
+          )
+            ? html`<ha-icon-picker
+                name="icon"
+                .label=${this.hass.localize("ui.components.todo.item.icon")}
+                .value=${this._icon}
+                @value-changed=${this._iconChanged}
+                .disabled=${!canUpdate}
+              ></ha-icon-picker>`
+            : nothing}
           ${this._todoListSupportsFeature(
             TodoListEntityFeature.SET_DESCRIPTION_ON_ITEM
           )
@@ -264,6 +279,10 @@ class DialogTodoItemEditor extends LitElement {
     this._summary = ev.target.value;
   }
 
+  private _iconChanged(ev) {
+    this._icon = ev.target.value;
+  }
+
   private _handleDescriptionChanged(ev) {
     this._description = ev.target.value;
   }
@@ -297,6 +316,7 @@ class DialogTodoItemEditor extends LitElement {
       await createItem(this.hass!, this._params!.entity, {
         summary: this._summary,
         description: this._description,
+        icon: this._icon,
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()
@@ -327,6 +347,11 @@ class DialogTodoItemEditor extends LitElement {
       await updateItem(this.hass!, this._params!.entity, {
         ...entry,
         summary: this._summary,
+        icon:
+          this._icon ||
+          (this._todoListSupportsFeature(TodoListEntityFeature.SET_ICON_ON_ITEM)
+            ? null
+            : undefined),
         description:
           this._description ||
           (this._todoListSupportsFeature(

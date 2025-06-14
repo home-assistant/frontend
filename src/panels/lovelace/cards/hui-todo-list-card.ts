@@ -486,27 +486,36 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               @request-selected=${this._requestSelected}
               @keydown=${this._handleKeydown}
             >
-              <div class="column">
-                <span class="summary">${item.summary}</span>
-                ${item.description
-                  ? html`<ha-markdown-element
-                      class="description"
-                      .content=${item.description}
-                    ></ha-markdown-element>`
-                  : nothing}
-                ${due
-                  ? html`<div class="due ${due < new Date() ? "overdue" : ""}">
-                      <ha-svg-icon .path=${mdiClock}></ha-svg-icon>${today
-                        ? this.hass!.localize(
-                            "ui.panel.lovelace.cards.todo-list.today"
-                          )
-                        : html`<ha-relative-time
-                            capitalize
-                            .hass=${this.hass}
-                            .datetime=${due}
-                          ></ha-relative-time>`}
+              <div class="row">
+                ${item.icon
+                  ? html`<div class="column">
+                      <ha-icon .icon=${item.icon} class="icon"></ha-icon>
                     </div>`
                   : nothing}
+                <div class="column">
+                  <span class="summary">${item.summary}</span>
+                  ${item.description
+                    ? html`<ha-markdown-element
+                        class="description"
+                        .content=${item.description}
+                      ></ha-markdown-element>`
+                    : nothing}
+                  ${due
+                    ? html`<div
+                        class="due ${due < new Date() ? "overdue" : ""}"
+                      >
+                        <ha-svg-icon .path=${mdiClock}></ha-svg-icon>${today
+                          ? this.hass!.localize(
+                              "ui.panel.lovelace.cards.todo-list.today"
+                            )
+                          : html`<ha-relative-time
+                              capitalize
+                              .hass=${this.hass}
+                              .datetime=${due}
+                            ></ha-relative-time>`}
+                      </div>`
+                    : nothing}
+                </div>
               </div>
               ${showReorder
                 ? html`
@@ -877,6 +886,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .completed .due.overdue {
       color: var(--secondary-text-color);
+    }
+
+    .icon {
+      padding: 0 8px;
     }
 
     .handle {
