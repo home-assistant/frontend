@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiAlertCircle,
   mdiCheckCircle,
@@ -14,6 +13,7 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-icon-button";
@@ -149,24 +149,24 @@ class ZHAConfigDashboard extends LitElement {
           </div>
           ${this.configEntryId
             ? html`<div class="card-actions">
-                <a
+                <ha-button
                   href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+                  appearance="plain"
+                  size="small"
                 >
-                  <mwc-button
-                    >${this.hass.localize(
-                      "ui.panel.config.devices.caption"
-                    )}</mwc-button
-                  >
-                </a>
-                <a
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.caption"
+                  )}</ha-button
+                >
+                <ha-button
+                  appearance="plain"
+                  size="small"
                   href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
-                  <mwc-button
-                    >${this.hass.localize(
-                      "ui.panel.config.entities.caption"
-                    )}</mwc-button
-                  >
-                </a>
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.caption"
+                  )}</ha-button
+                >
               </div>`
             : ""}
         </ha-card>
@@ -246,6 +246,7 @@ class ZHAConfigDashboard extends LitElement {
             : ""}
           <div class="card-actions">
             <ha-progress-button
+              appearance="plain"
               @click=${this._createAndDownloadBackup}
               .progress=${this._generatingBackup}
               .disabled=${!this._networkSettings || this._generatingBackup}
@@ -254,11 +255,11 @@ class ZHAConfigDashboard extends LitElement {
                 "ui.panel.config.zha.configuration_page.download_backup"
               )}
             </ha-progress-button>
-            <mwc-button class="warning" @click=${this._openOptionFlow}>
+            <ha-button variant="danger" @click=${this._openOptionFlow}>
               ${this.hass.localize(
                 "ui.panel.config.zha.configuration_page.migrate_radio"
               )}
-            </mwc-button>
+            </ha-button>
           </div>
         </ha-card>
         ${this._configuration
@@ -287,11 +288,11 @@ class ZHAConfigDashboard extends LitElement {
           : ""}
         <ha-card>
           <div class="card-actions">
-            <mwc-button @click=${this._updateConfiguration}>
+            <ha-button @click=${this._updateConfiguration}>
               ${this.hass.localize(
                 "ui.panel.config.zha.configuration_page.update_button"
               )}
-            </mwc-button>
+            </ha-button>
           </div>
         </ha-card>
 

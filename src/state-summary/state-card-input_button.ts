@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
+import "../components/ha-button";
 import { UNAVAILABLE } from "../data/entity";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
@@ -26,12 +26,13 @@ class StateCardInputButton extends LitElement {
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
-        <mwc-button
+        <ha-button
+          appearance="plain"
           @click=${this._pressButton}
           .disabled=${stateObj.state === UNAVAILABLE}
         >
           ${this.hass.localize("ui.card.button.press")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }

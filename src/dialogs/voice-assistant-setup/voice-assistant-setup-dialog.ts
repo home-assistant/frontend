@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiChevronLeft, mdiClose, mdiMenuDown } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";

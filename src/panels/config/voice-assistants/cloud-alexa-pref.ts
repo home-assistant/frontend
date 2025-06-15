@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -180,24 +180,23 @@ export class CloudAlexaPref extends LitElement {
         </div>
         ${alexa_enabled
           ? html`<div class="card-actions">
-              <a
+              <ha-button
+                appearance="plain"
                 href="/config/voice-assistants/expose?assistants=cloud.alexa&historyBack"
               >
-                <mwc-button>
-                  ${manualConfig
-                    ? this.hass!.localize(
-                        "ui.panel.config.cloud.account.alexa.show_entities"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.cloud.account.alexa.exposed_entities",
-                        {
-                          number: this.exposedEntities
-                            ? this._exposedEntitiesCount(this.exposedEntities)
-                            : 0,
-                        }
-                      )}
-                </mwc-button>
-              </a>
+                ${manualConfig
+                  ? this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.show_entities"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.cloud.account.alexa.exposed_entities",
+                      {
+                        number: this.exposedEntities
+                          ? this._exposedEntitiesCount(this.exposedEntities)
+                          : 0,
+                      }
+                    )}
+              </ha-button>
             </div>`
           : nothing}
       </ha-card>

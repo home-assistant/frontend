@@ -1,11 +1,9 @@
-import "@material/mwc-button/mwc-button";
-
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
+import "../../../components/ha-button";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-radio";
@@ -66,11 +64,13 @@ export class HassioHostname extends LitElement {
           </ha-textfield>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save} .disabled=${this._processing}>
-            ${this._processing
-              ? html`<ha-spinner size="small"></ha-spinner>`
-              : this.hass.localize("ui.common.save")}
-          </mwc-button>
+          <ha-button
+            .loading=${this._processing}
+            @click=${this._save}
+            .disabled=${this._processing}
+          >
+            ${this.hass.localize("ui.common.save")}
+          </ha-button>
         </div>
       </ha-card>
     `;

@@ -8,6 +8,7 @@ import "../../../components/buttons/ha-progress-button";
 import type { HaProgressButton } from "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-country-picker";
@@ -252,8 +253,12 @@ class HaConfigSectionGeneral extends LitElement {
                   "ui.panel.config.core.section.core.core_config.edit_location_description"
                 )}
               </div>
-              <mwc-button @click=${this._editLocation} .disabled=${disabled}
-                >${this.hass.localize("ui.common.edit")}</mwc-button
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._editLocation}
+                .disabled=${disabled}
+                >${this.hass.localize("ui.common.edit")}</ha-button
               >
             </ha-settings-row>
             <div class="card-actions">
@@ -261,7 +266,7 @@ class HaConfigSectionGeneral extends LitElement {
                 @click=${this._updateEntry}
                 .disabled=${disabled}
               >
-                ${this.hass!.localize("ui.panel.config.zone.detail.update")}
+                ${this.hass!.localize("ui.common.save")}
               </ha-progress-button>
             </div>
           </ha-card>

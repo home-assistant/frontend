@@ -131,7 +131,6 @@ class HaAlert extends LitElement {
       margin-top: 2px;
       font-weight: var(--ha-font-weight-bold);
     }
-    .action mwc-button,
     .action ha-icon-button {
       --mdc-theme-primary: var(--primary-text-color);
       --mdc-icon-button-size: 36px;

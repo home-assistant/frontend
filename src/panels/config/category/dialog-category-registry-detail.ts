@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import "../../../components/ha-alert";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-icon-picker";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-button";
 import "../../../components/ha-textfield";
 import type {
   CategoryRegistryEntry,
@@ -96,18 +96,22 @@ class DialogCategoryDetail extends LitElement {
             ></ha-icon-picker>
           </div>
         </div>
-        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
-          .disabled=${nameInvalid || this._submitting}
+          .disabled=${nameInvalid || !!this._submitting}
         >
           ${entry
             ? this.hass.localize("ui.common.save")
             : this.hass.localize("ui.common.add")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

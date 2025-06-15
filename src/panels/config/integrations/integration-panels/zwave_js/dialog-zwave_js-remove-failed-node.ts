@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle, mdiRobotDead } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -6,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-button";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import type { ZWaveJSRemovedNode } from "../../../../../data/zwave_js";
 import { removeFailedZwaveNode } from "../../../../../data/zwave_js";
@@ -80,11 +80,15 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
                   )}
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this._startExclusion}>
+              <ha-button
+                variant="danger"
+                slot="primaryAction"
+                @click=${this._startExclusion}
+              >
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.remove_failed_node.remove_device"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "started"
@@ -121,9 +125,9 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
                     : ``}
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "finished"
@@ -142,12 +146,12 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this.closeDialogFinished}
               >
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
       </ha-dialog>

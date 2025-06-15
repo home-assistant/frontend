@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiDelete } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
@@ -6,9 +5,10 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
 import "../../components/ha-card";
-import "../../components/ha-settings-row";
 import "../../components/ha-icon-button";
+import "../../components/ha-settings-row";
 import type { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
@@ -88,11 +88,11 @@ class HaLongLivedTokens extends LitElement {
         </div>
 
         <div class="card-actions">
-          <mwc-button @click=${this._createToken}>
+          <ha-button @click=${this._createToken}>
             ${this.hass.localize(
               "ui.panel.profile.long_lived_access_tokens.create"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;
@@ -175,11 +175,12 @@ class HaLongLivedTokens extends LitElement {
         a {
           color: var(--primary-color);
         }
-        mwc-button {
-          --mdc-theme-primary: var(--primary-color);
-        }
         ha-icon-button {
           color: var(--primary-text-color);
+        }
+        .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
       `,
     ];

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-button";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import type { ZoneMutableParams } from "../../../data/zone";
 import { getZoneEditorInitData } from "../../../data/zone";
@@ -102,25 +102,33 @@ class DialogZoneDetail extends LitElement {
         </div>
         ${this._params.entry
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
-              </mwc-button>
+              </ha-button>
             `
           : nothing}
-        <mwc-button
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${!valid || this._submitting}
         >
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.zone.detail.update")
+            ? this.hass!.localize("ui.common.save")
             : this.hass!.localize("ui.panel.config.zone.detail.create")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

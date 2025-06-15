@@ -115,10 +115,13 @@ export class HuiConditionalCardEditor
                         .path=${mdiContentCopy}
                         @click=${this._handleCopyCard}
                       ></ha-icon-button>
-                      <mwc-button @click=${this._handleReplaceCard}
+                      <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"
-                        )}</mwc-button
+                        )}</ha-button
                       >
                     </div>
                     <hui-card-element-editor

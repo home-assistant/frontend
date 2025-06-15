@@ -14,12 +14,13 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
 import "../../components/ha-label";
-import "../../components/ha-settings-row";
 import "../../components/ha-list-item";
+import "../../components/ha-settings-row";
 import { deleteAllRefreshTokens } from "../../data/auth";
 import type { RefreshToken } from "../../data/refresh_token";
 import {
@@ -191,11 +192,16 @@ class HaRefreshTokens extends LitElement {
             : nothing}
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this._deleteAllTokens}>
+          <ha-button
+            variant="danger"
+            appearance="filled"
+            size="small"
+            @click=${this._deleteAllTokens}
+          >
             ${this.hass.localize(
               "ui.panel.profile.refresh_tokens.delete_all_tokens"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;

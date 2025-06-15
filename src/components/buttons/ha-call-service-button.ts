@@ -30,6 +30,7 @@ class HaCallServiceButton extends LitElement {
       <ha-progress-button
         .progress=${this.progress}
         .disabled=${this.disabled}
+        appearance="plain"
         @click=${this._buttonTapped}
         tabindex="0"
       >

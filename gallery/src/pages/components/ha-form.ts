@@ -1,5 +1,4 @@
 /* eslint-disable lit/no-template-arrow */
-import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";

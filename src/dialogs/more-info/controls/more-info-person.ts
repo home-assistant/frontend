@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-attributes";
+import "../../../components/ha-button";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
 import type { HomeAssistant } from "../../../types";
@@ -38,11 +38,15 @@ class MoreInfoPerson extends LitElement {
       this.stateObj.attributes.longitude
         ? html`
             <div class="actions">
-              <mwc-button @click=${this._handleAction}>
+              <ha-button
+                appearance="plain"
+                size="small"
+                @click=${this._handleAction}
+              >
                 ${this.hass.localize(
                   "ui.dialogs.more_info_control.person.create_zone"
                 )}
-              </mwc-button>
+              </ha-button>
             </div>
           `
         : ""}

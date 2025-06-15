@@ -6,10 +6,11 @@ import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
-import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-spinner";
+import "../../../../components/ha-button";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import { ensureBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -255,7 +256,8 @@ export class HuiDialogEditBadge
         </div>
         ${this._badgeConfig !== undefined
           ? html`
-              <mwc-button
+              <ha-button
+                appearance="plain"
                 slot="secondaryAction"
                 @click=${this._toggleMode}
                 .disabled=${!this._guiModeAvailable}
@@ -266,31 +268,29 @@ export class HuiDialogEditBadge
                     ? "ui.panel.lovelace.editor.edit_badge.show_code_editor"
                     : "ui.panel.lovelace.editor.edit_badge.show_visual_editor"
                 )}
-              </mwc-button>
+              </ha-button>
             `
-          : ""}
-        <div slot="primaryAction" @click=${this._save}>
-          <mwc-button @click=${this._cancel} dialogInitialFocus>
-            ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
-          ${this._badgeConfig !== undefined && this._dirty
-            ? html`
-                <mwc-button
-                  ?disabled=${!this._canSave || this._saving}
-                  @click=${this._save}
-                >
-                  ${this._saving
-                    ? html`
-                        <ha-spinner
-                          aria-label="Saving"
-                          size="small"
-                        ></ha-spinner>
-                      `
-                    : this.hass!.localize("ui.common.save")}
-                </mwc-button>
-              `
-            : ``}
-        </div>
+          : nothing}
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
+          @click=${this._cancel}
+          dialogInitialFocus
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        ${this._badgeConfig !== undefined && this._dirty
+          ? html`
+              <ha-button
+                slot="primaryAction"
+                ?disabled=${!this._canSave || this._saving}
+                @click=${this._save}
+                .loading=${this._saving}
+              >
+                ${this.hass!.localize("ui.common.save")}
+              </ha-button>
+            `
+          : nothing}
       </ha-dialog>
     `;
   }

@@ -41,7 +41,10 @@ export class HuiPersistentNotificationItem extends LitElement {
           </span>
         </div>
 
-        <ha-button slot="actions" @click=${this._handleDismiss}
+        <ha-button
+          appearance="plain"
+          slot="actions"
+          @click=${this._handleDismiss}
           >${this.hass.localize(
             "ui.card.persistent_notification.dismiss"
           )}</ha-button

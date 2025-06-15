@@ -285,7 +285,7 @@ class HaBackupBackupsSummary extends LitElement {
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <ha-button @click=${this._configure}>
+          <ha-button @click=${this._configure} appearance="filled">
             ${this.hass.localize(
               "ui.panel.config.backup.overview.settings.configure"
             )}
