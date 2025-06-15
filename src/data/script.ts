@@ -14,6 +14,7 @@ import {
   literal,
   is,
   boolean,
+  refine,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
@@ -49,13 +50,18 @@ export const targetStruct = object({
   label_id: optional(union([string(), array(string())])),
 });
 
-export const serviceActionStruct: Describe<ServiceAction> = assign(
+export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(
   baseActionStruct,
   object({
     action: optional(string()),
     service_template: optional(string()),
     entity_id: optional(string()),
-    target: optional(targetStruct),
+    target: optional(
+      union([
+        targetStruct,
+        refine(string(), "has_template", (val) => hasTemplate(val)),
+      ])
+    ),
     data: optional(object()),
     response_variable: optional(string()),
     metadata: optional(object()),
@@ -131,6 +137,12 @@ export interface ServiceAction extends BaseAction {
   response_variable?: string;
   metadata?: Record<string, unknown>;
 }
+
+type ServiceActionWithTemplate = ServiceAction & {
+  target?: HassServiceTarget | string;
+};
+
+export type { ServiceActionWithTemplate };
 
 export interface DeviceAction extends BaseAction {
   type: string;
