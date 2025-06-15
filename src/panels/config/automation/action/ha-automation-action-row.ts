@@ -19,6 +19,8 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import { storage } from "../../../../common/decorators/storage";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -76,6 +78,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { yamlSchemaContext } from "../../../../data/blueprint";
 
 export const getType = (action: Action | undefined) => {
   if (!action) {
@@ -153,6 +156,9 @@ export default class HaAutomationActionRow extends LitElement {
   @state()
   @consume({ context: floorsContext, subscribe: true })
   _floorReg!: Record<string, FloorRegistryEntry>;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   @state() private _warnings?: string[];
 
@@ -413,6 +419,7 @@ export default class HaAutomationActionRow extends LitElement {
                     .hass=${this.hass}
                     .defaultValue=${this.action}
                     .readOnly=${this.disabled}
+                    .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 `

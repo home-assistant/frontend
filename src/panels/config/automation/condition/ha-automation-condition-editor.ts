@@ -1,6 +1,9 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { consume } from "@lit/context";
 import memoizeOne from "memoize-one";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
@@ -19,6 +22,7 @@ import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
+import { yamlSchemaContext } from "../../../../data/blueprint";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -29,6 +33,9 @@ export default class HaAutomationConditionEditor extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ attribute: false }) public yamlMode = false;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
@@ -56,6 +63,7 @@ export default class HaAutomationConditionEditor extends LitElement {
               .defaultValue=${this.condition}
               @value-changed=${this._onYamlChange}
               .readOnly=${this.disabled}
+              .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
             ></ha-yaml-editor>
           `
         : html`

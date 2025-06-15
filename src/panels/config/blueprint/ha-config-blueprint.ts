@@ -6,6 +6,7 @@ import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
 import "./ha-blueprint-overview";
+import "./ha-blueprint-editor";
 
 declare global {
   // for fire event
@@ -68,8 +69,13 @@ class HaConfigBlueprint extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "edit"
     ) {
-      const blueprintId = this.routeTail.path.substr(1);
-      pageEl.blueprintId = blueprintId === "new" ? null : blueprintId;
+      const blueprintFullPath = this.routeTail.path.substring(1);
+      const firstSlash = blueprintFullPath.indexOf("/");
+      const domain = blueprintFullPath.substring(0, firstSlash);
+      const blueprintPath = blueprintFullPath.substring(firstSlash + 1);
+
+      pageEl.domain = domain;
+      pageEl.blueprintPath = blueprintPath === "new" ? "" : blueprintPath;
     }
   }
 }
