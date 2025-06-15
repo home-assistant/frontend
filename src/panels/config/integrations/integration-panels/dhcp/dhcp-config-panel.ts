@@ -60,6 +60,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
           title: localize("ui.panel.config.dhcp.ip_address"),
           filterable: true,
           sortable: true,
+          type: "ip",
         },
       };
 
