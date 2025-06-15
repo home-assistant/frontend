@@ -429,7 +429,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               </ha-card>
               <ha-card>
                 <div class="card-header">
-                  <h1>Third-Party Data Reporting</h1>
+                  <h1>Third-party data reporting</h1>
                   ${this._dataCollectionOptIn !== undefined
                     ? html`
                         <ha-switch

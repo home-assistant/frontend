@@ -3266,7 +3266,15 @@
                 "areas": {
                   "title": "Areas (experimental)",
                   "description": "Display your devices with a view for each area"
+                },
+                "default": {
+                  "title": "Default dashboard",
+                  "description": "Display your devices grouped by area"
                 }
+              },
+              "search_dashboards": "Search dashboards",
+              "heading": {
+                "default": "Dashboards"
               }
             },
             "picker": {
@@ -4278,7 +4286,8 @@
                   "action": "Action",
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
-                    "no_device": "Device action"
+                    "no_device": "Device action",
+                    "perform_device_action": "Perform action with {device}"
                   }
                 },
                 "repeat": {
@@ -4959,7 +4968,6 @@
               "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
               "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
-              "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
@@ -5890,8 +5898,8 @@
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
             "nvm_backup": {
-              "title": "Backup and Restore",
-              "description": "Back up or restore your Z-Wave controller's Non-Volatile Memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "title": "Backup and restore",
+              "description": "Back up or restore your Z-Wave controller's non-volatile memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
               "download_backup": "Download backup",
               "restore_backup": "Restore from backup",
               "backup_failed": "Failed to download backup",
@@ -6096,9 +6104,9 @@
             "default": "Default"
           },
           "network_status": {
-            "connected": "Connected",
-            "connecting": "Connecting",
-            "unknown": "Unknown"
+            "connected": "status: connected",
+            "connecting": "status: connecting",
+            "unknown": "status: unknown"
           },
           "add_node": {
             "title": "Add a Z-Wave device",
