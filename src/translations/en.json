@@ -4286,7 +4286,8 @@
                   "action": "Action",
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
-                    "no_device": "Device action"
+                    "no_device": "Device action",
+                    "perform_device_action": "Perform action with {device}"
                   }
                 },
                 "repeat": {
