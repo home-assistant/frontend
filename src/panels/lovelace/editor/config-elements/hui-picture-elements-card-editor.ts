@@ -238,6 +238,12 @@ export class HuiPictureElementsCardEditor
 
     const elementConfig = this._subElementEditorConfig
       .elementConfig as LovelaceElementConfig;
+
+    const currentPosition = elementConfig.style?.position;
+    if (currentPosition && currentPosition !== "absolute") {
+      return;
+    }
+
     const newElement = {
       ...elementConfig,
       style: {
