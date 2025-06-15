@@ -8,7 +8,7 @@ const STORED_STATE = [
   "debugConnection",
   "suspendWhenHidden",
   "enableShortcuts",
-  "defaultPanel",
+  "sidebar",
 ];
 
 export function storeState(hass: HomeAssistant) {

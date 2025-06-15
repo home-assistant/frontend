@@ -50,6 +50,7 @@ import type { HaMdListItem } from "./ha-md-list-item";
 import "./ha-spinner";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
+import { DEFAULT_PANEL } from "../data/panel";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools"];
 
@@ -140,9 +141,9 @@ const defaultPanelSorter = (
 export const computePanels = memoizeOne(
   (
     panels: HomeAssistant["panels"],
-    defaultPanel: HomeAssistant["defaultPanel"],
-    panelsOrder: string[],
-    hiddenPanels: string[],
+    defaultPanel: HomeAssistant["sidebar"]["defaultPanel"],
+    panelsOrder: HomeAssistant["sidebar"]["panelOrder"],
+    hiddenPanels: HomeAssistant["sidebar"]["hiddenPanels"],
     locale: HomeAssistant["locale"]
   ): [PanelInfo[], PanelInfo[]] => {
     if (!panels) {
@@ -195,10 +196,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   @state() private _issuesCount = 0;
 
-  @state() private _panelOrder?: string[];
-
-  @state() private _hiddenPanels?: string[];
-
   private _mouseLeaveTimeout?: number;
 
   private _tooltipHideTimeout?: number;
@@ -213,18 +210,32 @@ class HaSidebar extends SubscribeMixin(LitElement) {
         this.hass.connection,
         "sidebar",
         ({ value }) => {
-          this._panelOrder = value?.panelOrder;
-          this._hiddenPanels = value?.hiddenPanels;
+          let panelOrder = value?.panelOrder;
+          let hiddenPanels = value?.hiddenPanels;
+          let defaultPanel = value?.defaultPanel;
 
           // fallback to old localStorage values
-          if (!this._panelOrder) {
+          if (!panelOrder) {
             const storedOrder = localStorage.getItem("sidebarPanelOrder");
-            this._panelOrder = storedOrder ? JSON.parse(storedOrder) : [];
+            panelOrder = storedOrder ? JSON.parse(storedOrder) : [];
           }
-          if (!this._hiddenPanels) {
+          if (!hiddenPanels) {
             const storedHidden = localStorage.getItem("sidebarHiddenPanels");
-            this._hiddenPanels = storedHidden ? JSON.parse(storedHidden) : [];
+            hiddenPanels = storedHidden ? JSON.parse(storedHidden) : [];
           }
+          if (!defaultPanel) {
+            const storedDefault = localStorage.getItem("defaultPanel");
+            defaultPanel = storedDefault
+              ? JSON.parse(storedDefault)
+              : DEFAULT_PANEL;
+          }
+
+          fireEvent(this, "hass-set-sidebar-data", {
+            ...value,
+            defaultPanel: defaultPanel as string,
+            panelOrder: panelOrder as string[],
+            hiddenPanels: hiddenPanels as string[],
+          });
         }
       ),
       subscribeNotifications(this.hass.connection, (notifications) => {
@@ -275,8 +286,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
       changedProps.has("_notifications") ||
-      changedProps.has("_hiddenPanels") ||
-      changedProps.has("_panelOrder")
+      (changedProps.has("hass") &&
+        changedProps.get("hass")?.sidebar !== this.hass.sidebar)
     ) {
       return true;
     }
@@ -295,7 +306,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       hass.localize !== oldHass.localize ||
       hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
-      hass.defaultPanel !== oldHass.defaultPanel ||
+      hass.sidebar !== oldHass.sidebar ||
       hass.connected !== oldHass.connected
     );
   }
@@ -365,7 +376,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
   }
 
   private _renderAllPanels(selectedPanel: string) {
-    if (!this._panelOrder || !this._hiddenPanels) {
+    if (!this.hass.sidebar.panelOrder || !this.hass.sidebar.hiddenPanels) {
       return html`
         <ha-fade-in .delay=${500}
           ><ha-spinner size="small"></ha-spinner
@@ -375,9 +386,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
     const [beforeSpacer, afterSpacer] = computePanels(
       this.hass.panels,
-      this.hass.defaultPanel,
-      this._panelOrder,
-      this._hiddenPanels,
+      this.hass.sidebar.defaultPanel,
+      this.hass.sidebar.panelOrder,
+      this.hass.sidebar.hiddenPanels,
       this.hass.locale
     );
 
@@ -402,11 +413,11 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     return panels.map((panel) =>
       this._renderPanel(
         panel.url_path,
-        panel.url_path === this.hass.defaultPanel
+        panel.url_path === this.hass.sidebar.defaultPanel
           ? panel.title || this.hass.localize("panel.states")
           : this.hass.localize(`panel.${panel.title}`) || panel.title,
         panel.icon,
-        panel.url_path === this.hass.defaultPanel && !panel.icon
+        panel.url_path === this.hass.sidebar.defaultPanel && !panel.icon
           ? PANEL_ICONS.lovelace
           : panel.url_path in PANEL_ICONS
             ? PANEL_ICONS[panel.url_path]
