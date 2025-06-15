@@ -1,6 +1,7 @@
 import {
   mdiChatQuestion,
   mdiCog,
+  mdiDelete,
   mdiDeleteForever,
   mdiHospitalBox,
   mdiInformation,
@@ -16,17 +17,19 @@ import {
   fetchZwaveIsNodeFirmwareUpdateInProgress,
   fetchZwaveNetworkStatus,
   fetchZwaveNodeStatus,
+  fetchZwaveProvisioningEntries,
+  unprovisionZwaveSmartStartNode,
 } from "../../../../../../data/zwave_js";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
 import { showZWaveJSRebuildNodeRoutesDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-rebuild-node-routes";
 import { showZWaveJSNodeStatisticsDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-node-statistics";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
-import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
 import { showZWaveJSUpdateFirmwareNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-update-firmware-node";
 import type { DeviceAction } from "../../../ha-config-device-page";
 import { showZWaveJSHardResetControllerDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-hard-reset-controller";
 import { showZWaveJSAddNodeDialog } from "../../../../integrations/integration-panels/zwave_js/add-node/show-dialog-zwave_js-add-node";
+import { showZWaveJSRemoveNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-node";
 
 export const getZwaveDeviceActions = async (
   el: HTMLElement,
@@ -47,6 +50,43 @@ export const getZwaveDeviceActions = async (
 
   const entryId = configEntry.entry_id;
 
+  const provisioningEntries = await fetchZwaveProvisioningEntries(
+    hass,
+    entryId
+  );
+  const provisioningEntry = provisioningEntries.find(
+    (entry) => entry.device_id === device.id
+  );
+  if (provisioningEntry && !provisioningEntry.nodeId) {
+    return [
+      {
+        label: hass.localize("ui.panel.config.devices.delete_device"),
+        classes: "warning",
+        icon: mdiDelete,
+        action: async () => {
+          const confirm = await showConfirmationDialog(el, {
+            title: hass.localize(
+              "ui.panel.config.zwave_js.provisioned.confirm_unprovision_title"
+            ),
+            text: hass.localize(
+              "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text",
+              { name: device.name_by_user || device.name }
+            ),
+            confirmText: hass.localize("ui.common.remove"),
+            destructive: true,
+          });
+
+          if (confirm) {
+            await unprovisionZwaveSmartStartNode(
+              hass,
+              entryId,
+              provisioningEntry.dsk
+            );
+          }
+        },
+      },
+    ];
+  }
   const nodeStatus = await fetchZwaveNodeStatus(hass, device.id);
 
   if (!nodeStatus) {
@@ -86,22 +126,22 @@ export const getZwaveDeviceActions = async (
       },
       {
         label: hass.localize(
-          "ui.panel.config.zwave_js.device_info.remove_failed"
-        ),
-        icon: mdiDeleteForever,
-        action: () =>
-          showZWaveJSRemoveFailedNodeDialog(el, {
-            device_id: device.id,
-          }),
-      },
-      {
-        label: hass.localize(
           "ui.panel.config.zwave_js.device_info.node_statistics"
         ),
         icon: mdiInformation,
         action: () =>
           showZWaveJSNodeStatisticsDialog(el, {
             device,
+          }),
+      },
+      {
+        label: hass.localize("ui.panel.config.devices.delete_device"),
+        classes: "warning",
+        icon: mdiDelete,
+        action: () =>
+          showZWaveJSRemoveNodeDialog(el, {
+            deviceId: device.id,
+            entryId,
           }),
       }
     );
