@@ -53,8 +53,6 @@ const sortData = (
     let valB = column.filterKey
       ? b[column.valueColumn || sortColumn][column.filterKey]
       : b[column.valueColumn || sortColumn];
-    // eslint-disable-next-line no-console
-    console.log("column type ", column.type);
 
     if (column.type === "numeric") {
       valA = isNaN(valA) ? undefined : Number(valA);
