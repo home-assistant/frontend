@@ -225,6 +225,54 @@ export class HuiPictureElementsCardEditor
     }
   };
 
+  private _handleImageClick = (ev: CustomEvent<{ x: number; y: number }>) => {
+    const { x, y } = ev.detail;
+
+    // Only handle clicks when actively editing an element
+    if (
+      !this._subElementEditorConfig?.elementConfig ||
+      this._subElementEditorConfig.type !== "element"
+    ) {
+      return;
+    }
+
+    const elementConfig = this._subElementEditorConfig
+      .elementConfig as LovelaceElementConfig;
+
+    const currentPosition = elementConfig.style?.position;
+    if (currentPosition && currentPosition !== "absolute") {
+      return;
+    }
+
+    const newElement = {
+      ...elementConfig,
+      style: {
+        ...(elementConfig.style || {}),
+        left: `${Math.round(x)}%`,
+        top: `${Math.round(y)}%`,
+      },
+    };
+
+    const updateEvent = new CustomEvent("config-changed", {
+      detail: { config: newElement },
+    });
+    updateEvent.stopPropagation = () => undefined;
+    this._handleSubElementChanged(updateEvent);
+  };
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener("picture-elements-clicked", this._handleImageClick);
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener(
+      "picture-elements-clicked",
+      this._handleImageClick
+    );
+    super.disconnectedCallback();
+  }
+
   static get styles(): CSSResultGroup {
     return [configElementStyle];
   }
@@ -233,5 +281,9 @@ export class HuiPictureElementsCardEditor
 declare global {
   interface HTMLElementTagNameMap {
     "hui-picture-elements-card-editor": HuiPictureElementsCardEditor;
+  }
+
+  interface WindowEventMap {
+    "picture-elements-clicked": CustomEvent<{ x: number; y: number }>;
   }
 }
