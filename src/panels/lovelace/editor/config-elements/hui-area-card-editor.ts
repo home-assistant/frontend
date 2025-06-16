@@ -49,11 +49,11 @@ const cardConfigStruct = assign(
     area: optional(string()),
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
+    image_type: optional(enums(["none", "icon", "picture", "camera"])),
     camera_view: optional(string()),
     aspect_ratio: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
-    vertical: optional(boolean()),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
   })
@@ -85,7 +85,21 @@ export class HuiAreaCardEditor
     ) =>
       [
         { name: "area", selector: { area: {} } },
-        { name: "show_camera", required: false, selector: { boolean: {} } },
+        {
+          name: "image_type",
+          selector: {
+            select: {
+              options: ["none", "icon", "picture", "camera"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.area.image_type_options.${value}`
+                ),
+              })),
+              mode: "dropdown",
+            },
+          },
+        },
+
         ...(showCamera
           ? ([
               {
@@ -142,7 +156,7 @@ export class HuiAreaCardEditor
             },
           },
         },
-      ] as const
+      ] as const satisfies readonly HaFormSchema[]
   );
 
   private _binaryClassesForArea = memoizeOne(
@@ -233,7 +247,7 @@ export class HuiAreaCardEditor
   }
 
   private _featuresSchema = memoizeOne(
-    (localize: LocalizeFunc, vertical: boolean) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "features_position",
@@ -254,7 +268,6 @@ export class HuiAreaCardEditor
                   src_dark: `/static/images/form/tile_features_position_${value}_dark.svg`,
                   flip_rtl: true,
                 },
-                disabled: vertical && value === "inline",
               })),
             },
           },
@@ -288,29 +301,24 @@ export class HuiAreaCardEditor
       this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
 
+    const showCamera = this._config.image_type === "camera";
+
     const schema = this._schema(
       this.hass.localize,
-      this._config.show_camera || false,
+      showCamera,
       binarySelectOptions,
       sensorSelectOptions
     );
 
-    const featuresSchema = this._featuresSchema(
-      this.hass.localize,
-      this._config.vertical ?? false
-    );
+    const featuresSchema = this._featuresSchema(this.hass.localize);
 
     const data = {
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
+      image_type: "none",
       ...this._config,
     };
-
-    // Default features position to bottom and force it to bottom in vertical mode
-    if (!data.features_position || data.vertical) {
-      data.features_position = "bottom";
-    }
 
     const featureContext = this._featureContext(areaId);
     const hasCompatibleFeatures = this._hasCompatibleFeatures(featureContext);
@@ -339,7 +347,6 @@ export class HuiAreaCardEditor
                   .data=${data}
                   .schema=${featuresSchema}
                   .computeLabel=${this._computeLabelCallback}
-                  .computeHelper=${this._computeHelperCallback}
                   @value-changed=${this._valueChanged}
                 ></ha-form>
               `
@@ -364,7 +371,7 @@ export class HuiAreaCardEditor
       ...newConfig,
     };
 
-    if (!config.show_camera) {
+    if (config.image_type !== "camera") {
       delete config.camera_view;
     }
     fireEvent(this, "config-changed", { config });
@@ -442,24 +449,6 @@ export class HuiAreaCardEditor
     return this.hass!.localize(
       `ui.panel.lovelace.editor.card.area.${schema.name}`
     );
-  };
-
-  private _computeHelperCallback = (
-    schema:
-      | SchemaUnion<ReturnType<typeof this._schema>>
-      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
-  ) => {
-    switch (schema.name) {
-      case "features_position":
-        if (this._config?.vertical) {
-          return this.hass!.localize(
-            `ui.panel.lovelace.editor.card.tile.${schema.name}_helper_vertical`
-          );
-        }
-        return undefined;
-      default:
-        return undefined;
-    }
   };
 
   static get styles() {

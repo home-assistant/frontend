@@ -103,6 +103,8 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
   navigation_path?: string;
+  image_type?: "none" | "icon" | "picture" | "camera";
+  /** @deprecated Use `image_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
   aspect_ratio?: string;

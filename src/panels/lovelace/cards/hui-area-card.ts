@@ -24,7 +24,11 @@ import type { HomeAssistant } from "../../../types";
 import "../card-features/hui-card-features";
 import type { LovelaceCardFeatureContext } from "../card-features/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { AreaCardConfig } from "./types";
 
 export const DEFAULT_ASPECT_RATIO = "16:9";
@@ -71,6 +75,32 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return 1;
   }
 
+  public getGridOptions(): LovelaceGridOptions {
+    const columns = 6;
+    let min_columns = 6;
+    let rows = 1;
+    const featurePosition = this._config && this._featurePosition(this._config);
+    const featuresCount = this._config?.features?.length || 0;
+    if (featuresCount) {
+      if (featurePosition === "inline") {
+        min_columns = 12;
+      } else {
+        rows += featuresCount;
+      }
+    }
+
+    if (this._config?.image_type && this._config?.image_type !== "none") {
+      rows += 2;
+    }
+
+    return {
+      columns,
+      rows,
+      min_columns,
+      min_rows: rows,
+    };
+  }
+
   private get _hasCardAction() {
     return this._config?.navigation_path;
   }
@@ -105,6 +135,21 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         acc.get(deviceClass)!.push(stateObj.entity_id);
         return acc;
       }, new Map<string, string[]>());
+    }
+  );
+
+  private _getCameraEntity = memoizeOne(
+    (
+      entities: HomeAssistant["entities"],
+      areaId: string
+    ): string | undefined => {
+      const cameraFilter = generateEntityFilter(this.hass, {
+        area: areaId,
+        entity_category: "none",
+        domain: "camera",
+      });
+      const cameraEntities = Object.keys(entities).filter(cameraFilter);
+      return cameraEntities.length > 0 ? cameraEntities[0] : undefined;
     }
   );
 
@@ -188,12 +233,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return sensorStates;
   }
 
-  private _featurePosition = memoizeOne((config: AreaCardConfig) => {
-    if (config.vertical) {
-      return "bottom";
-    }
-    return config.features_position || "bottom";
-  });
+  private _featurePosition = memoizeOne(
+    (config: AreaCardConfig) => config.features_position || "bottom"
+  );
 
   private _displayedFeatures = memoizeOne((config: AreaCardConfig) => {
     const features = config.features || [];
@@ -228,7 +270,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const primary = name;
     const secondary = this._computeSensorsDisplay();
 
+    const featurePosition = this._featurePosition(this._config);
     const features = this._displayedFeatures(this._config);
+
+    const containerOrientationClass =
+      featurePosition === "inline" ? "horizontal" : "";
+
+    const cameraEntityId =
+      this._config.image_type === "camera"
+        ? this._getCameraEntity(this.hass.entities, area.area_id)
+        : undefined;
+
+    const imageType = this._config.image_type || "none";
 
     return html`
       <ha-card>
@@ -242,22 +295,33 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
-        <div class="header">
-          <div class="picture ${!area.picture ? "placeholder" : ""}">
-            ${area.picture
-              ? html`
-                  <hui-image
-                    .image=${area.picture}
-                    .hass=${this.hass}
-                    fit-mode="cover"
-                  ></hui-image>
-                `
-              : area.icon
-                ? html`<ha-icon .icon=${area.icon}></ha-icon>`
-                : nothing}
-          </div>
-        </div>
-        <div class="container">
+        ${imageType !== "none"
+          ? html`
+              <div class="header">
+                <div class="picture">
+                  ${(imageType === "picture" || imageType === "camera") &&
+                  (cameraEntityId || area.picture)
+                    ? html`
+                        <hui-image
+                          .cameraImage=${cameraEntityId}
+                          .cameraView=${this._config.camera_view}
+                          .image=${area.picture ? area.picture : undefined}
+                          .hass=${this.hass}
+                          fit-mode="cover"
+                        ></hui-image>
+                      `
+                    : area.icon
+                      ? html`
+                          <div class="icon-container">
+                            <ha-icon .icon=${area.icon}></ha-icon>
+                          </div>
+                        `
+                      : nothing}
+                </div>
+              </div>
+            `
+          : nothing}
+        <div class="container ${containerOrientationClass}">
           <div class="content">
             <ha-tile-icon>
               ${icon
@@ -331,7 +395,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       overflow: hidden;
     }
     .header {
-      height: 150px;
+      flex: 1;
       overflow: hidden;
       border-radius: var(--ha-card-border-radius, 12px);
       border-end-end-radius: 0;
@@ -345,17 +409,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       background-position: center;
       position: relative;
     }
-    .placeholder {
+    .picture hui-image {
+      height: 100%;
+    }
+    .picture .icon-container {
+      height: 100%;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       --mdc-icon-size: 48px;
       color: var(--tile-color);
     }
-    .picture hui-image {
-      height: 100%;
-    }
-    .picture.placeholder::before {
+    .picture .icon-container::before {
       position: absolute;
       content: "";
       width: 100%;
@@ -368,6 +434,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       display: flex;
       flex-direction: column;
       flex: 1;
+    }
+    .header + .container {
+      height: auto;
+      flex: none;
     }
     .container.horizontal {
       flex-direction: row;
@@ -386,15 +456,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       gap: 10px;
     }
 
-    .vertical {
-      flex-direction: column;
-      text-align: center;
-      justify-content: center;
-    }
-    .vertical ha-tile-info {
-      width: 100%;
-      flex: none;
-    }
     ha-tile-icon {
       --tile-icon-color: var(--tile-color);
       position: relative;

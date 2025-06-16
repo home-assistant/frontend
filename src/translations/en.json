@@ -7175,7 +7175,14 @@
               "alert_classes": "Alert Classes",
               "sensor_classes": "Sensor Classes",
               "description": "The Area card automatically displays entities of a specific area.",
-              "show_camera": "Show camera feed instead of area picture"
+              "show_camera": "Show camera feed instead of area picture",
+              "image_type": "Image type",
+              "image_type_options": {
+                "none": "No image",
+                "icon": "Area icon",
+                "picture": "Area picture",
+                "camera": "Camera feed"
+              }
             },
             "calendar": {
               "name": "Calendar",
