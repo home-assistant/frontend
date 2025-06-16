@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 
 import { css, html, LitElement, nothing } from "lit";
+import { mdiContentCopy } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -20,6 +21,8 @@ import {
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import { showToast } from "../../../../util/toast";
 
 export const getCloudTtsSupportedVoices = (
   language: string,
@@ -45,6 +48,8 @@ export class CloudTTSPref extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public cloudStatus?: CloudStatusLoggedIn;
+
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @state() private savingPreferences = false;
 
@@ -103,6 +108,25 @@ export class CloudTTSPref extends LitElement {
           </div>
         </div>
         <div class="card-actions">
+          <div class="voice-id" @click=${this._copyVoiceId}>
+            <div class="label">
+              ${this.hass.localize(
+                `ui.components.media-browser.tts.selected_voice_id`
+              )}
+            </div>
+            <code>${defaultVoice[1]}</code>
+            ${this.narrow
+              ? nothing
+              : html`
+                  <ha-icon-button
+                    .path=${mdiContentCopy}
+                    title=${this.hass.localize(
+                      "ui.components.media-browser.tts.copy_voice_id"
+                    )}
+                  ></ha-icon-button>
+                `}
+          </div>
+          <div class="flex"></div>
           <mwc-button @click=${this._openTryDialog}>
             ${this.hass.localize("ui.panel.config.cloud.account.tts.try")}
           </mwc-button>
@@ -196,6 +220,14 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
+  private async _copyVoiceId(ev) {
+    ev.preventDefault();
+    await copyToClipboard(this.cloudStatus!.prefs.tts_default_voice[1]);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
+  }
+
   static styles = css`
     a {
       color: var(--primary-color);
@@ -226,7 +258,27 @@ export class CloudTTSPref extends LitElement {
     }
     .card-actions {
       display: flex;
-      flex-direction: row-reverse;
+      align-items: center;
+    }
+    code {
+      margin-left: 8px;
+      background-color: var(--divider-color);
+      padding: 0px 8px;
+      border-radius: 5px;
+    }
+    .voice-id {
+      display: flex;
+      align-items: center;
+    }
+    :host([narrow]) .voice-id {
+      flex-direction: column;
+      font-size: x-small;
+    }
+    :host([narrow]) .label {
+      text-transform: uppercase;
+    }
+    .flex {
+      flex: 1;
     }
   `;
 }
