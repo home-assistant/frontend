@@ -5575,6 +5575,7 @@
           "source_address": "Source address",
           "updated": "Updated",
           "device": "Device",
+          "manufacturer": "Manufacturer",
           "device_information": "Device information",
           "advertisement_data": "Advertisement data",
           "manufacturer_data": "Manufacturer data",

@@ -49,6 +49,15 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
       return nothing;
     }
 
+    const manufacturerCode = this._params.entry.manufacturer_data
+      ? Object.keys(this._params.entry.manufacturer_data)[0]
+      : undefined;
+
+    const manufacturerName =
+      manufacturerCode && this._params.manufacturers[manufacturerCode]
+        ? this._params.manufacturers[manufacturerCode]
+        : undefined;
+
     return html`
       <ha-dialog
         open
@@ -67,6 +76,16 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
           <br />
           <b>${this.hass.localize("ui.panel.config.bluetooth.source")}</b>:
           ${this._params.entry.source}
+          ${manufacturerName
+            ? html`
+                <br />
+                <b>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.manufacturer"
+                  )}</b
+                >: ${manufacturerName}
+              `
+            : nothing}
         </p>
 
         <h3>
