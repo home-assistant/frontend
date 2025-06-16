@@ -468,9 +468,17 @@ const tryDescribeAction = <T extends ActionType>(
       return localized;
     }
     const stateObj = hass.states[config.entity_id];
-    return `${config.type || "Perform action with"} ${
-      stateObj ? computeStateName(stateObj) : config.entity_id
-    }`;
+    if (config.type) {
+      return `${config.type} ${
+        stateObj ? computeStateName(stateObj) : config.entity_id
+      }`;
+    }
+    return hass.localize(
+      `${actionTranslationBaseKey}.device_id.description.perform_device_action`,
+      {
+        device: stateObj ? computeStateName(stateObj) : config.entity_id,
+      }
+    );
   }
 
   if (actionType === "sequence") {
