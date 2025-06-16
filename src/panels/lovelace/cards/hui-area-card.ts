@@ -1,4 +1,5 @@
 import { mdiTextureBox } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -170,14 +171,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const sensorStates = sensorClasses
       .map((sensorClass) => {
         if (sensorClass === "temperature" && area.temperature_entity_id) {
-          const stateObj = this.hass.states[area.temperature_entity_id];
-          return isUnavailableState(stateObj.state)
+          const stateObj = this.hass.states[area.temperature_entity_id] as
+            | HassEntity
+            | undefined;
+          return !stateObj || isUnavailableState(stateObj.state)
             ? ""
             : this.hass.formatEntityState(stateObj);
         }
         if (sensorClass === "humidity" && area.humidity_entity_id) {
-          const stateObj = this.hass.states[area.humidity_entity_id];
-          return isUnavailableState(stateObj.state)
+          const stateObj = this.hass.states[area.humidity_entity_id] as
+            | HassEntity
+            | undefined;
+          return !stateObj || isUnavailableState(stateObj.state)
             ? ""
             : this.hass.formatEntityState(stateObj);
         }
