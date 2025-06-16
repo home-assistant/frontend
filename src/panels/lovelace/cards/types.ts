@@ -102,6 +102,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 
 export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
+  name?: string;
   navigation_path?: string;
   image_type?: "none" | "icon" | "picture" | "camera";
   /** @deprecated Use `image_type` instead */

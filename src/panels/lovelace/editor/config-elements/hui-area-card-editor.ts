@@ -1,4 +1,4 @@
-import { mdiListBox } from "@mdi/js";
+import { mdiGestureTap, mdiListBox, mdiTextShort } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -47,6 +47,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     area: optional(string()),
+    name: optional(string()),
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
     image_type: optional(enums(["none", "icon", "picture", "camera"])),
@@ -79,6 +80,7 @@ export class HuiAreaCardEditor
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
+      showImage: boolean,
       showCamera: boolean,
       binaryClasses: SelectOption[],
       sensorClasses: SelectOption[]
@@ -86,75 +88,103 @@ export class HuiAreaCardEditor
       [
         { name: "area", selector: { area: {} } },
         {
-          name: "image_type",
-          selector: {
-            select: {
-              options: ["none", "icon", "picture", "camera"].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.area.image_type_options.${value}`
-                ),
-              })),
-              mode: "dropdown",
-            },
-          },
-        },
-
-        ...(showCamera
-          ? ([
-              {
-                name: "camera_view",
-                selector: {
-                  select: {
-                    options: ["auto", "live"].map((value) => ({
-                      value,
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+          name: "content",
+          flatten: true,
+          type: "expandable",
+          iconPath: mdiTextShort,
+          schema: [
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                { name: "name", selector: { text: {} } },
+                {
+                  name: "image_type",
+                  selector: {
+                    select: {
+                      options: ["none", "icon", "picture", "camera"].map(
+                        (value) => ({
+                          value,
+                          label: localize(
+                            `ui.panel.lovelace.editor.card.area.image_type_options.${value}`
+                          ),
+                        })
                       ),
-                    })),
-                    mode: "dropdown",
+                      mode: "dropdown",
+                    },
                   },
                 },
+              ],
+            },
+            {
+              name: "",
+              type: "grid",
+              schema: [
+                ...(showImage
+                  ? ([
+                      {
+                        name: "aspect_ratio",
+                        default: DEFAULT_ASPECT_RATIO,
+                        selector: { text: {} },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
+                ...(showCamera
+                  ? ([
+                      {
+                        name: "camera_view",
+                        selector: {
+                          select: {
+                            options: ["auto", "live"].map((value) => ({
+                              value,
+                              label: localize(
+                                `ui.panel.lovelace.editor.card.generic.camera_view_options.${value}`
+                              ),
+                            })),
+                            mode: "dropdown",
+                          },
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
+              ],
+            },
+            {
+              name: "alert_classes",
+              selector: {
+                select: {
+                  reorder: true,
+                  multiple: true,
+                  custom_value: true,
+                  options: binaryClasses,
+                },
               },
-            ] as const)
-          : []),
+            },
+            {
+              name: "sensor_classes",
+              selector: {
+                select: {
+                  reorder: true,
+                  multiple: true,
+                  custom_value: true,
+                  options: sensorClasses,
+                },
+              },
+            },
+          ],
+        },
         {
-          name: "",
-          type: "grid",
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
           schema: [
             {
               name: "navigation_path",
               required: false,
               selector: { navigation: {} },
             },
-            {
-              name: "aspect_ratio",
-              default: DEFAULT_ASPECT_RATIO,
-              selector: { text: {} },
-            },
           ],
-        },
-        {
-          name: "alert_classes",
-          selector: {
-            select: {
-              reorder: true,
-              multiple: true,
-              custom_value: true,
-              options: binaryClasses,
-            },
-          },
-        },
-        {
-          name: "sensor_classes",
-          selector: {
-            select: {
-              reorder: true,
-              multiple: true,
-              custom_value: true,
-              options: sensorClasses,
-            },
-          },
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -302,9 +332,12 @@ export class HuiAreaCardEditor
     );
 
     const showCamera = this._config.image_type === "camera";
+    const showImage =
+      (this._config.image_type && this._config.image_type !== "none") || false;
 
     const schema = this._schema(
       this.hass.localize,
+      showImage,
       showCamera,
       binarySelectOptions,
       sensorSelectOptions
@@ -429,18 +462,19 @@ export class HuiAreaCardEditor
     switch (schema.name) {
       case "area":
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
+
+      case "name":
+      case "aspect_ratio":
+      case "camera_view":
+      case "content":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.generic.${schema.name}`
+        );
       case "navigation_path":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.action-editor.navigation_path"
         );
-      case "aspect_ratio":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.aspect_ratio"
-        );
-      case "camera_view":
-        return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.generic.camera_view"
-        );
+      case "interactions":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
@@ -455,18 +489,9 @@ export class HuiAreaCardEditor
     return [
       configElementStyle,
       css`
-        .container {
-          display: flex;
-          flex-direction: column;
-        }
         ha-form {
           display: block;
           margin-bottom: 24px;
-        }
-        .info {
-          color: var(--secondary-text-color);
-          margin-top: 0;
-          margin-bottom: 8px;
         }
         .features-form {
           margin-bottom: 8px;

@@ -265,7 +265,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const icon = area.icon;
 
-    const name = computeAreaName(area);
+    const name = this._config.name || computeAreaName(area);
 
     const primary = name;
     const secondary = this._computeSensorsDisplay();
