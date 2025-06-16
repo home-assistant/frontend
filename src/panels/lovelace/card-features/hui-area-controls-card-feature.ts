@@ -24,7 +24,6 @@ import type {
 import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
-  translationKey: string;
   iconPath: string;
   onService: string;
   offService: string;
@@ -34,7 +33,6 @@ interface AreaControlsButton {
 
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
   light: {
-    translationKey: "light",
     iconPath: mdiLightbulb,
     filter: {
       domain: "light",
@@ -44,7 +42,6 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     offService: "light.turn_off",
   },
   fan: {
-    translationKey: "fan",
     iconPath: mdiFan,
     filter: {
       domain: "fan",
@@ -54,7 +51,6 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     offService: "fan.turn_off",
   },
   cover: {
-    translationKey: "cover",
     iconPath: mdiBlindsHorizontal,
     filter: {
       domain: "cover",
@@ -210,10 +206,6 @@ class HuiAreaControlsCardFeature
               class=${active ? "active" : ""}
               style=${styleMap({ "--active-color": color })}
               .control=${control}
-              .label=${this.hass!.localize(
-                // @ts-ignore
-                `ui.dialogs.more_info_control.lawn_mower.${button.translationKey}`
-              )}
               @click=${this._handleButtonTap}
             >
               <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>

@@ -7842,8 +7842,13 @@
               },
               "area-controls": {
                 "label": "Area controls",
+                "customize_controls": "Customize controls",
                 "controls": "Controls",
-                "customize_controls": "Customize controls"
+                "controls_options": {
+                  "light": "Light",
+                  "fan": "Fan",
+                  "cover": "Cover"
+                }
               }
             }
           },

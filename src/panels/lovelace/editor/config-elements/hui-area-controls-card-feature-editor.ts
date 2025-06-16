@@ -2,6 +2,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -35,7 +36,7 @@ export class HuiAreaControlsCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (customizeControls: boolean) =>
+    (localize: LocalizeFunc, customizeControls: boolean) =>
       [
         {
           name: "customize_controls",
@@ -53,7 +54,9 @@ export class HuiAreaControlsCardFeatureEditor
                     multiple: true,
                     options: AREA_CONTROLS.concat().map((control) => ({
                       value: control,
-                      label: control,
+                      label: localize(
+                        `ui.panel.lovelace.editor.features.types.area-controls.controls_options.${control}`
+                      ),
                     })),
                   },
                 },
@@ -73,7 +76,7 @@ export class HuiAreaControlsCardFeatureEditor
       customize_controls: this._config.controls !== undefined,
     };
 
-    const schema = this._schema(data.customize_controls);
+    const schema = this._schema(this.hass.localize, data.customize_controls);
 
     return html`
       <ha-form
