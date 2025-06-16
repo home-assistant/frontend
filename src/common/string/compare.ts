@@ -33,6 +33,22 @@ export const stringCompare = (
   return fallbackStringCompare(a, b);
 };
 
+export const ipCompare = (a: string, b: string) => {
+   const num1 = Number(
+     a
+       .split(".")
+       .map((num) => `000${num}`.slice(-3))
+       .join("")
+   );
+   const num2 = Number(
+     b
+       .split(".")
+       .map((num) => `000${num}`.slice(-3))
+       .join("")
+   );
+   return num1 - num2;
+ };
+
 export const caseInsensitiveStringCompare = (
   a: string,
   b: string,
