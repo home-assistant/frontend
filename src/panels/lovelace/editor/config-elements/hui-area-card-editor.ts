@@ -32,10 +32,7 @@ import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
-import {
-  DEFAULT_ASPECT_RATIO,
-  DEVICE_CLASSES,
-} from "../../cards/hui-area-card";
+import { DEVICE_CLASSES } from "../../cards/hui-area-card";
 import type { AreaCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -52,7 +49,6 @@ const cardConfigStruct = assign(
     show_camera: optional(boolean()),
     image_type: optional(enums(["none", "icon", "picture", "camera"])),
     camera_view: optional(string()),
-    aspect_ratio: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
     features: optional(array(any())),
@@ -80,7 +76,6 @@ export class HuiAreaCardEditor
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
-      showImage: boolean,
       showCamera: boolean,
       binaryClasses: SelectOption[],
       sensorClasses: SelectOption[]
@@ -120,15 +115,6 @@ export class HuiAreaCardEditor
               name: "",
               type: "grid",
               schema: [
-                ...(showImage
-                  ? ([
-                      {
-                        name: "aspect_ratio",
-                        default: DEFAULT_ASPECT_RATIO,
-                        selector: { text: {} },
-                      },
-                    ] as const satisfies readonly HaFormSchema[])
-                  : []),
                 ...(showCamera
                   ? ([
                       {
@@ -332,12 +318,9 @@ export class HuiAreaCardEditor
     );
 
     const showCamera = this._config.image_type === "camera";
-    const showImage =
-      (this._config.image_type && this._config.image_type !== "none") || false;
 
     const schema = this._schema(
       this.hass.localize,
-      showImage,
       showCamera,
       binarySelectOptions,
       sensorSelectOptions
@@ -481,7 +464,6 @@ export class HuiAreaCardEditor
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
 
       case "name":
-      case "aspect_ratio":
       case "camera_view":
       case "content":
         return this.hass!.localize(

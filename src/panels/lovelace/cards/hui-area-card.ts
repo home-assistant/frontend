@@ -1,6 +1,13 @@
 import { mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
@@ -13,6 +20,7 @@ import {
   isNumericState,
 } from "../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
@@ -51,6 +59,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   @state() private _config?: AreaCardConfig;
 
   @state() private _featureContext: LovelaceCardFeatureContext = {};
+
+  private _ratio: {
+    w: number;
+    h: number;
+  } | null = null;
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-area-card-editor");
@@ -183,12 +196,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
+  private _computeActiveAlertClasses(): string[] {
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
     const alertClasses = this._config?.alert_classes;
     if (!area || !alertClasses) {
-      return nothing;
+      return [];
     }
     const groupedEntities = this._groupedBinarySensorEntityIds(
       this.hass.entities,
@@ -196,34 +209,61 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       alertClasses
     );
 
-    const classStates = alertClasses.map((alertClass) => {
+    return alertClasses.filter((alertClass) => {
       const entityIds = groupedEntities.get(alertClass);
       if (!entityIds) {
-        return [alertClass, false] satisfies [string, boolean];
+        return false;
       }
 
-      const isOn = entityIds
+      return entityIds
         .map((entityId) => this.hass.states[entityId] as HassEntity | undefined)
         .some((stateObj) => stateObj?.state === BINARY_STATE_ON);
-
-      return [alertClass, isOn] satisfies [string, boolean];
     });
+  }
 
-    for (const [alertClass, isOn] of classStates) {
-      if (isOn) {
-        return html`
-          <ha-tile-badge class="alert-badge">
-            <ha-domain-icon
-              .hass=${this.hass}
-              domain="binary_sensor"
-              .deviceClass=${alertClass}
-              state="on"
-            ></ha-domain-icon>
-          </ha-tile-badge>
-        `;
-      }
+  private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
+    const activeAlertClasses = this._computeActiveAlertClasses();
+
+    const firstActiveAlertClass = activeAlertClasses[0] as string | undefined;
+
+    if (!firstActiveAlertClass) {
+      return nothing;
     }
-    return nothing;
+
+    return html`
+      <ha-tile-badge class="alert-badge">
+        <ha-domain-icon
+          .hass=${this.hass}
+          domain="binary_sensor"
+          .deviceClass=${firstActiveAlertClass}
+          state="on"
+        ></ha-domain-icon>
+      </ha-tile-badge>
+    `;
+  }
+
+  private _renderAlertSensorPills(): TemplateResult<1> | typeof nothing {
+    const activeAlertClasses = this._computeActiveAlertClasses();
+
+    if (activeAlertClasses.length === 0) {
+      return nothing;
+    }
+    return html`
+      <div class="alert-pills">
+        ${activeAlertClasses.map(
+          (alertClass) => html`
+            <div class="alert-pill">
+              <ha-domain-icon
+                .hass=${this.hass}
+                domain="binary_sensor"
+                .deviceClass=${alertClass}
+                state="on"
+              ></ha-domain-icon>
+            </div>
+          `
+        )}
+      </div>
+    `;
   }
 
   private _computeSensorsDisplay(): string | undefined {
@@ -324,6 +364,18 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return features;
   });
 
+  public willUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("_config") || this._ratio === null) {
+      this._ratio = this._config?.aspect_ratio
+        ? parseAspectRatio(this._config?.aspect_ratio)
+        : null;
+
+      if (this._ratio === null || this._ratio.w <= 0 || this._ratio.h <= 0) {
+        this._ratio = parseAspectRatio(DEFAULT_ASPECT_RATIO);
+      }
+    }
+  }
+
   protected render() {
     if (!this._config || !this.hass) {
       return nothing;
@@ -360,6 +412,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const imageType = this._config.image_type || "none";
 
+    const ignoreAspectRatio = this.layout === "grid";
+
     return html`
       <ha-card>
         <div
@@ -385,6 +439,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                           .image=${area.picture ? area.picture : undefined}
                           .hass=${this.hass}
                           fit-mode="cover"
+                          .aspectRatio=${ignoreAspectRatio
+                            ? undefined
+                            : this._config.aspect_ratio || DEFAULT_ASPECT_RATIO}
                         ></hui-image>
                       `
                     : area.icon
@@ -395,13 +452,14 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                         `
                       : nothing}
                 </div>
+                ${this._renderAlertSensorPills()}
               </div>
             `
           : nothing}
         <div class="container ${containerOrientationClass}">
           <div class="content">
             <ha-tile-icon>
-              ${this._renderAlertSensorBadge()}
+              ${imageType === "none" ? this._renderAlertSensorBadge() : nothing}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
                 : html`
@@ -566,6 +624,30 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
     .alert-badge {
       --tile-badge-background-color: var(--orange-color);
+    }
+    .alert-pills {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      padding: 4px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .alert-pill {
+      background-color: var(--orange-color);
+      border-radius: 12px;
+      width: 24px;
+      height: 24px;
+      padding: 2px;
+      box-sizing: border-box;
+      --mdc-icon-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
     }
   `;
 }
