@@ -111,7 +111,7 @@ export class CloudTTSPref extends LitElement {
           <div class="voice-id" @click=${this._copyVoiceId}>
             <div class="label">
               ${this.hass.localize(
-                `ui.components.media-browser.tts.selected_voice_id`
+                "ui.components.media-browser.tts.selected_voice_id"
               )}
             </div>
             <code>${defaultVoice[1]}</code>
