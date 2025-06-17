@@ -9,7 +9,9 @@ const _extractCssVars = (
   cssString.split(";").forEach((rawLine) => {
     const line = rawLine.substring(rawLine.indexOf("--")).trim();
     if (line.startsWith("--") && condition(line)) {
-      const [name, value] = line.split(":").map((part) => part.trim());
+      const [name, value] = line
+        .split(":")
+        .map((part) => part.replaceAll("}", "").trim());
       variables[name.substring(2, name.length)] = value;
     }
   });
@@ -25,7 +27,10 @@ export const extractVar = (css: CSSResult, varName: string) => {
   }
 
   const endIndex = cssString.indexOf(";", startIndex + search.length);
-  return cssString.substring(startIndex + search.length, endIndex).trim();
+  return cssString
+    .substring(startIndex + search.length, endIndex)
+    .replaceAll("}", "")
+    .trim();
 };
 
 export const extractVars = (css: CSSResult) => {
