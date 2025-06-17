@@ -350,6 +350,7 @@ export class HuiAreaCardEditor
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
       image_type: "none",
+      features_position: "bottom",
       ...this._config,
     };
 
