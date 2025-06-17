@@ -261,21 +261,28 @@ export class CloudTTSPref extends LitElement {
       align-items: center;
     }
     code {
-      margin-left: 8px;
-      background-color: var(--divider-color);
-      padding: 0px 8px;
-      border-radius: 5px;
+      margin-left: 6px;
+      font-weight: var(--ha-font-weight-bold);
     }
     .voice-id {
       display: flex;
       align-items: center;
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
+      --mdc-icon-size: 14px;
+      --mdc-icon-button-size: 24px;
     }
     :host([narrow]) .voice-id {
       flex-direction: column;
-      font-size: x-small;
+      font-size: var(--ha-font-size-xs);
+      align-items: start;
+      align-items: left;
     }
     :host([narrow]) .label {
       text-transform: uppercase;
+    }
+    :host([narrow]) code {
+      margin-left: 0;
     }
     .flex {
       flex: 1;
