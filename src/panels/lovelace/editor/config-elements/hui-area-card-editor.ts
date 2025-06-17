@@ -363,6 +363,7 @@ export class HuiAreaCardEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-expansion-panel outlined>
@@ -454,6 +455,21 @@ export class HuiAreaCardEditor
       config: config,
     });
   }
+
+  private _computeHelperCallback = (
+    schema:
+      | SchemaUnion<ReturnType<typeof this._schema>>
+      | SchemaUnion<ReturnType<typeof this._featuresSchema>>
+  ): string | undefined => {
+    switch (schema.name) {
+      case "alert_classes":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.area.alert_classes_helper`
+        );
+      default:
+        return undefined;
+    }
+  };
 
   private _computeLabelCallback = (
     schema:
