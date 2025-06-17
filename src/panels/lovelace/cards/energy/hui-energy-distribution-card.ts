@@ -204,7 +204,7 @@ class HuiEnergyDistrubutionCard
     let homeHighCarbonCircumference: number | undefined;
 
     // This fallback is used in the demo
-    let electricityMapUrl = "https://app.electricitymap.org";
+    let electricityMapUrl = "https://app.electricitymaps.com";
 
     if (this._data.co2SignalEntity && this._data.fossilEnergyConsumption) {
       // Calculate high carbon consumption
