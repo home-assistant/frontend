@@ -49,6 +49,9 @@ export class HaChartBase extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "small-controls", type: Boolean })
+  public smallControls?: boolean;
+
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
 
@@ -194,7 +197,7 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        <div class="chart-controls">
+        <div class="chart-controls ${classMap({ small: this.smallControls })}">
           ${this._isZoomed
             ? html`<ha-icon-button
                 class="zoom-reset"
@@ -784,6 +787,10 @@ export class HaChartBase extends LitElement {
       flex-direction: column;
       gap: 4px;
     }
+    .chart-controls.small {
+      top: 0;
+      flex-direction: row;
+    }
     .chart-controls ha-icon-button,
     .chart-controls ::slotted(ha-icon-button) {
       background: var(--card-background-color);
@@ -791,6 +798,11 @@ export class HaChartBase extends LitElement {
       --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
+    }
+    .chart-controls.small ha-icon-button,
+    .chart-controls.small ::slotted(ha-icon-button) {
+      --mdc-icon-button-size: 22px;
+      --mdc-icon-size: 16px;
     }
     .chart-controls ha-icon-button.inactive,
     .chart-controls ::slotted(ha-icon-button.inactive) {
