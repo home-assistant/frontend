@@ -1,9 +1,10 @@
 import { mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import { navigate } from "../../../common/navigate";
@@ -15,9 +16,11 @@ import { blankBeforeUnit } from "../../../common/translations/blank_before_unit"
 import "../../../components/ha-card";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon";
 import "../../../components/ha-ripple";
 import "../../../components/ha-svg-icon";
+import "../../../components/tile/ha-tile-badge";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { isUnavailableState } from "../../../data/entity";
@@ -139,6 +142,32 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
+  private _groupedBinarySensorEntityIds = memoizeOne(
+    (
+      entities: HomeAssistant["entities"],
+      areaId: string,
+      binarySensorClasses: string[]
+    ): Map<string, string[]> => {
+      const binarySensorFilter = generateEntityFilter(this.hass, {
+        area: areaId,
+        entity_category: "none",
+        domain: "binary_sensor",
+        device_class: binarySensorClasses,
+      });
+      const entityIds = Object.keys(entities).filter(binarySensorFilter);
+      // Group entities by device class
+      return entityIds.reduce((acc, entityId) => {
+        const stateObj = this.hass.states[entityId];
+        const deviceClass = stateObj.attributes.device_class!;
+        if (!acc.has(deviceClass)) {
+          acc.set(deviceClass, []);
+        }
+        acc.get(deviceClass)!.push(stateObj.entity_id);
+        return acc;
+      }, new Map<string, string[]>());
+    }
+  );
+
   private _getCameraEntity = memoizeOne(
     (
       entities: HomeAssistant["entities"],
@@ -153,6 +182,49 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       return cameraEntities.length > 0 ? cameraEntities[0] : undefined;
     }
   );
+
+  private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
+    const areaId = this._config?.area;
+    const area = areaId ? this.hass.areas[areaId] : undefined;
+    const alertClasses = this._config?.alert_classes;
+    if (!area || !alertClasses) {
+      return nothing;
+    }
+    const groupedEntities = this._groupedBinarySensorEntityIds(
+      this.hass.entities,
+      area.area_id,
+      alertClasses
+    );
+
+    const classStates = alertClasses.map((alertClass) => {
+      const entityIds = groupedEntities.get(alertClass);
+      if (!entityIds) {
+        return [alertClass, false] satisfies [string, boolean];
+      }
+
+      const isOn = entityIds
+        .map((entityId) => this.hass.states[entityId] as HassEntity | undefined)
+        .some((stateObj) => stateObj?.state === BINARY_STATE_ON);
+
+      return [alertClass, isOn] satisfies [string, boolean];
+    });
+
+    for (const [alertClass, isOn] of classStates) {
+      if (isOn) {
+        return html`
+          <ha-tile-badge class="alert-badge">
+            <ha-domain-icon
+              .hass=${this.hass}
+              domain="binary_sensor"
+              .deviceClass=${alertClass}
+              state="on"
+            ></ha-domain-icon>
+          </ha-tile-badge>
+        `;
+      }
+    }
+    return nothing;
+  }
 
   private _computeSensorsDisplay(): string | undefined {
     const areaId = this._config?.area;
@@ -329,6 +401,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         <div class="container ${containerOrientationClass}">
           <div class="content">
             <ha-tile-icon>
+              ${this._renderAlertSensorBadge()}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
                 : html`
@@ -490,6 +563,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       --feature-height: 36px;
       padding: 0 12px;
       padding-inline-start: 0;
+    }
+    .alert-badge {
+      --tile-badge-background-color: var(--orange-color);
     }
   `;
 }
