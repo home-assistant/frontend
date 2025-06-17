@@ -9377,7 +9377,7 @@ __metadata:
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
-    lint-staged: "npm:16.1.0"
+    lint-staged: "npm:16.1.1"
     lit: "npm:3.3.0"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.0"
@@ -10750,9 +10750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:16.1.0":
-  version: 16.1.0
-  resolution: "lint-staged@npm:16.1.0"
+"lint-staged@npm:16.1.1":
+  version: 16.1.1
+  resolution: "lint-staged@npm:16.1.1"
   dependencies:
     chalk: "npm:^5.4.1"
     commander: "npm:^14.0.0"
@@ -10766,7 +10766,7 @@ __metadata:
     yaml: "npm:^2.8.0"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/c7a52ac9551f284b09d389d515ee0951055e13f71aa18990e0804fb8738d50763aa6e262879a4f0f1cf376a4c1772748f6782e8fe98a4cb322b168af16711ba6
+  checksum: 10/f0fe2251d8560f9dca0529268a29202591c2733fb51c69acc89552341939cd1f0d96653f61f7110a68fe0eff0ebfda45f2da887c533220ce5cd95e22f042b6da
   languageName: node
   linkType: hard
 
