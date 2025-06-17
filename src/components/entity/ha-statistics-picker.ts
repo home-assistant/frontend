@@ -173,7 +173,6 @@ class HaStatisticsPicker extends LitElement {
 
   static styles = css`
     :host {
-      width: 200px;
       display: block;
     }
     ha-statistic-picker {
