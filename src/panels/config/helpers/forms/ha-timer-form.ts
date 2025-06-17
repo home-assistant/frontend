@@ -5,19 +5,19 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-time-input";
+import "../../../../components/ha-duration-input";
 import "../../../../components/ha-textfield";
 import type { DurationDict, Timer } from "../../../../data/timer";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { createDurationData } from "../../../../common/datetime/create_duration_data";
+import type { HaDurationData } from "../../../../components/ha-duration-input";
 
 @customElement("ha-timer-form")
 class HaTimerForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public new = false;
-
-  @property({ attribute: "enable-second", type: Boolean }) enableSecond = true;
 
   private _item?: Timer;
 
@@ -26,6 +26,8 @@ class HaTimerForm extends LitElement {
   @state() private _icon!: string;
 
   @state() private _duration!: string | number | DurationDict;
+
+  @state() private _duration_data!: HaDurationData | undefined;
 
   @state() private _restore!: boolean;
 
@@ -42,6 +44,8 @@ class HaTimerForm extends LitElement {
       this._duration = "00:00:00";
       this._restore = false;
     }
+
+    this._duration_data = createDurationData(this._duration);
   }
 
   public focus() {
@@ -82,14 +86,11 @@ class HaTimerForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-picker>
-        <ha-time-input
-           .configValue=${"duration"}
-           .value=${this._duration}
-           .locale=${this.hass.locale}
-           clearable
-           .enableSecond=${this.enableSecond}
-           @value-changed=${this._valueChanged}
-         ></ha-time-input>
+        <ha-duration-input
+          .configValue=${"duration"}
+          .data=${this._duration_data}
+          @value-changed=${this._valueChanged}
+        ></ha-duration-input>
         <ha-formfield
           .label=${this.hass.localize(
             "ui.dialogs.helper_settings.timer.restore"
@@ -141,7 +142,7 @@ class HaTimerForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-textfield, 
+        ha-textfield,
         ha-time-input {
           display: block;
           margin: 8px 0;
