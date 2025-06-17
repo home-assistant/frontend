@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
+import "../../components/ha-button";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { ConfigEntryMutableParams } from "../../data/config_entries";
 import { updateConfigEntry } from "../../data/config_entries";
@@ -113,20 +113,21 @@ class DialogConfigEntrySystemOptions extends LitElement {
             .disabled=${this._submitting}
           ></ha-switch>
         </ha-formfield>
-        <mwc-button
-          slot="secondaryAction"
+        <ha-button
+          appearance="plain"
+          slot="primaryAction"
           @click=${this.closeDialog}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
           ${this.hass.localize("ui.dialogs.config_entry_system_options.update")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

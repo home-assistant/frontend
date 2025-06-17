@@ -108,23 +108,26 @@ export default class HaAutomationAction extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
+              appearance="filled"
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addActionDialog}
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add"
               )}
-              @click=${this._addActionDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             <ha-button
+              appearance="plain"
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addActionBuildingBlockDialog}
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add_building_block"
               )}
-              @click=${this._addActionBuildingBlockDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
           </div>
         </div>

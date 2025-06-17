@@ -157,23 +157,26 @@ export default class HaAutomationCondition extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
+              appearance="filled"
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addConditionDialog}
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add"
               )}
-              @click=${this._addConditionDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             <ha-button
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              appearance="plain"
+              @click=${this._addConditionBuildingBlockDialog}
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add_building_block"
               )}
-              @click=${this._addConditionBuildingBlockDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
           </div>
         </div>

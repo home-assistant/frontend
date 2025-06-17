@@ -236,7 +236,8 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           ? html`
               <ha-button
                 slot="secondaryAction"
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 @click=${this._deleteEntry}
                 .disabled=${(this._user && this._user.is_owner) ||
                 this._submitting}
@@ -247,11 +248,18 @@ class DialogPersonDetail extends LitElement implements HassDialog {
           : nothing}
         <ha-button
           slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.person.detail.update")
+            ? this.hass!.localize("ui.common.save")
             : this.hass!.localize("ui.panel.config.person.detail.create")}
         </ha-button>
       </ha-dialog>

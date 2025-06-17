@@ -12,6 +12,7 @@ import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -311,23 +312,27 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                     ? html`<div class="card-actions">
                         ${boardConfigEntries.length
                           ? html`
-                              <mwc-button
+                              <ha-button
                                 .entry=${boardConfigEntries[0]}
                                 @click=${this._openOptionsFlow}
+                                appearance="plain"
                               >
                                 ${this.hass.localize(
                                   "ui.panel.config.hardware.configure"
                                 )}
-                              </mwc-button>
+                              </ha-button>
                             `
                           : nothing}
                         ${isComponentLoaded(this.hass, "hassio")
                           ? html`
-                              <mwc-button @click=${this._openHardware}>
+                              <ha-button
+                                @click=${this._openHardware}
+                                appearance="plain"
+                              >
                                 ${this.hass.localize(
                                   "ui.panel.config.hardware.available_hardware.title"
                                 )}
-                              </mwc-button>
+                              </ha-button>
                             `
                           : nothing}
                       </div>`
@@ -345,14 +350,15 @@ class HaConfigHardware extends SubscribeMixin(LitElement) {
                     )[0];
                   return html`<div class="row">
                     ${dongle.name}${configEntry
-                      ? html`<mwc-button
+                      ? html`<ha-button
                           .entry=${configEntry}
                           @click=${this._openOptionsFlow}
+                          appearance="filled"
                         >
                           ${this.hass.localize(
                             "ui.panel.config.hardware.configure"
                           )}
-                        </mwc-button>`
+                        </ha-button>`
                       : ""}
                   </div>`;
                 })}

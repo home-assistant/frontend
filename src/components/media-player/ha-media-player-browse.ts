@@ -1,6 +1,5 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
-import "@material/mwc-button/mwc-button";
 
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -42,6 +41,7 @@ import {
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
+import "../ha-button";
 import "../ha-button-menu";
 import "../ha-card";
 import "../ha-spinner";
@@ -402,8 +402,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             ${currentItem.can_play &&
                             (!currentItem.thumbnail || !this.narrow)
                               ? html`
-                                  <mwc-button
-                                    raised
+                                  <ha-button
                                     .item=${currentItem}
                                     @click=${this._actionClicked}
                                   >
@@ -414,11 +413,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                                       .path=${this.action === "play"
                                         ? mdiPlay
                                         : mdiPlus}
+                                      slot="prefix"
                                     ></ha-svg-icon>
                                     ${this.hass.localize(
                                       `ui.components.media-browser.${this.action}`
                                     )}
-                                  </mwc-button>
+                                  </ha-button>
                                 `
                               : ""}
                           </div>
@@ -952,9 +952,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           min-width: 0;
           flex: 1;
         }
-        .header-info mwc-button {
+        .header-info ha-button {
           display: block;
-          --mdc-theme-primary: var(--primary-color);
           padding-bottom: 16px;
         }
         .breadcrumb {
@@ -1246,7 +1245,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           bottom: -20px;
           right: 20px;
         }
-        :host([narrow]) .header-info mwc-button {
+        :host([narrow]) .header-info ha-button {
           margin-top: 16px;
           margin-bottom: 8px;
         }
@@ -1265,17 +1264,17 @@ export class HaMediaPlayerBrowse extends LitElement {
         :host(:not([narrow])[scrolled]) .header:not(.no-img) ha-icon-button {
           align-self: center;
         }
-        :host([scrolled]) .header-info mwc-button,
-        .no-img .header-info mwc-button {
+        :host([scrolled]) .header-info ha-button,
+        .no-img .header-info ha-button {
           padding-right: 4px;
         }
-        :host([scrolled][narrow]) .no-img .header-info mwc-button {
+        :host([scrolled][narrow]) .no-img .header-info ha-button {
           padding-right: 16px;
         }
         :host([scrolled]) .header-info {
           flex-direction: row;
         }
-        :host([scrolled]) .header-info mwc-button {
+        :host([scrolled]) .header-info ha-button {
           align-self: center;
           margin-top: 0;
           margin-bottom: 0;

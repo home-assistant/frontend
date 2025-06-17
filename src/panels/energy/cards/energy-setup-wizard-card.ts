@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -15,6 +14,7 @@ import "../../config/energy/components/ha-energy-gas-settings";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
 import "../../config/energy/components/ha-energy-water-settings";
+import "../../../components/ha-button";
 import type { Lovelace, LovelaceCard } from "../../lovelace/types";
 
 @customElement("energy-setup-wizard-card")
@@ -93,17 +93,17 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
                   ></ha-energy-device-settings>`}
       <div class="buttons">
         ${this._step > 0
-          ? html`<mwc-button outlined @click=${this._back}
-              >${this.hass.localize("ui.panel.energy.setup.back")}</mwc-button
+          ? html`<ha-button appearance="plain" @click=${this._back}
+              >${this.hass.localize("ui.panel.energy.setup.back")}</ha-button
             >`
           : html`<div></div>`}
         ${this._step < 4
-          ? html`<mwc-button unelevated @click=${this._next}
-              >${this.hass.localize("ui.panel.energy.setup.next")}</mwc-button
+          ? html`<ha-button @click=${this._next}
+              >${this.hass.localize("ui.panel.energy.setup.next")}</ha-button
             >`
-          : html`<mwc-button unelevated @click=${this._setupDone}>
+          : html`<ha-button @click=${this._setupDone}>
               ${this.hass.localize("ui.panel.energy.setup.done")}
-            </mwc-button>`}
+            </ha-button>`}
       </div>
     `;
   }
@@ -170,7 +170,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
           max-width: 700px;
           margin: 0 auto;
         }
-        mwc-button {
+        ha-button {
           margin-top: 8px;
         }
         .buttons {

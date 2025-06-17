@@ -62,7 +62,7 @@ class EventSubscribeCard extends LitElement {
         </div>
         <div class="card-actions">
           <ha-button
-            raised
+            appearance="filled"
             .disabled=${this._eventType === ""}
             @click=${this._startOrStopListening}
           >
@@ -75,7 +75,7 @@ class EventSubscribeCard extends LitElement {
                 )}
           </ha-button>
           <ha-button
-            raised
+            appearance="plain"
             .disabled=${this._eventType === ""}
             @click=${this._clearEvents}
           >

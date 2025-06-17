@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import {
   mdiCrosshairsGps,
   mdiMagnify,
@@ -14,6 +12,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-list";
+import "../components/ha-button";
 import "../components/ha-list-item";
 import "../components/ha-radio";
 import "../components/ha-spinner";
@@ -194,11 +193,11 @@ class OnboardingLocation extends LitElement {
       <p class="attribution">${addressAttribution}</p>
 
       <div class="footer">
-        <mwc-button @click=${this._save} unelevated .disabled=${this._working}>
+        <ha-button @click=${this._save} .disabled=${this._working}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.core-config.finish"
           )}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }

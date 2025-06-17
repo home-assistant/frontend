@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
+import "../../../components/ha-button";
 import type { HomeZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -76,13 +76,20 @@ class DialogHomeZoneDetail extends LitElement {
             @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
-        <mwc-button
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          @click=${this.closeDialog}
+        >
+          ${this.hass!.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
           slot="primaryAction"
           @click=${this._updateEntry}
           .disabled=${!valid || this._submitting}
         >
-          ${this.hass!.localize("ui.panel.config.zone.detail.update")}
-        </mwc-button>
+          ${this.hass!.localize("ui.common.save")}
+        </ha-button>
       </ha-dialog>
     `;
   }

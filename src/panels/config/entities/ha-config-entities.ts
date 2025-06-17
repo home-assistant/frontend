@@ -1586,7 +1586,6 @@ ${rejected
         .header-btns {
           display: flex;
         }
-        .header-btns > mwc-button,
         .header-btns > ha-icon-button {
           margin: 8px;
         }

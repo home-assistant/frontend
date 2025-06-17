@@ -1,16 +1,16 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-spinner";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button";
 import "../../../components/ha-dialog";
+import "../../../components/ha-spinner";
 import { clearStatistics, getStatisticLabel } from "../../../data/recorder";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 import { showAlertDialog } from "../../lovelace/custom-card-helpers";
+import type { DialogStatisticsFixParams } from "./show-dialog-statistics-fix";
 
 @customElement("dialog-statistics-fix")
 export class DialogStatisticsFix extends LitElement {
@@ -148,26 +148,25 @@ export class DialogStatisticsFix extends LitElement {
         </p>
 
         ${issue.type !== "entity_not_recorded"
-          ? html`<mwc-button
+          ? html`<ha-button
+                appearance="plain"
+                slot="primaryAction"
+                @click=${this._cancel}
+              >
+                ${this.hass.localize("ui.common.close")}
+              </ha-button>
+              <ha-button
                 slot="primaryAction"
                 @click=${this._clearStatistics}
-                class="warning"
+                variants="danger"
                 .disabled=${this._clearing}
+                .loading=${this._clearing}
               >
-                ${this._clearing
-                  ? html`<ha-spinner
-                      size="small"
-                      aria-label="Saving"
-                    ></ha-spinner>`
-                  : nothing}
                 ${this.hass.localize("ui.common.delete")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._cancel}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>`
-          : html`<mwc-button slot="primaryAction" @click=${this._cancel}>
+              </ha-button>`
+          : html`<ha-button slot="primaryAction" @click=${this._cancel}>
               ${this.hass.localize("ui.common.ok")}
-            </mwc-button>`}
+            </ha-button>`}
       </ha-dialog>
     `;
   }

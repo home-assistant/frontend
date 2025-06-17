@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiAlphaABoxOutline,

@@ -6,6 +6,7 @@ import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/sl-tab-group";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -139,14 +140,14 @@ export class HuiCreateDialogBadge
         )}
 
         <div slot="primaryAction">
-          <mwc-button @click=${this._cancel}>
+          <ha-button appearance="plain" @click=${this._cancel}>
             ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
+          </ha-button>
           ${this._selectedEntities.length
             ? html`
-                <mwc-button @click=${this._suggestBadges}>
+                <ha-button @click=${this._suggestBadges}>
                   ${this.hass!.localize("ui.common.continue")}
-                </mwc-button>
+                </ha-button>
               `
             : ""}
         </div>

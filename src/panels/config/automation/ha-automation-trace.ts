@@ -18,6 +18,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-button";
 import "../../../components/ha-list-item";
 import "../../../components/trace/ha-trace-blueprint-config";
 import "../../../components/trace/ha-trace-config";
@@ -106,11 +107,11 @@ export class HaAutomationTrace extends LitElement {
                 )}"
                 slot="toolbar-icon"
               >
-                <mwc-button>
+                <ha-button appearance="plain">
                   ${this.hass.localize(
                     "ui.panel.config.automation.trace.edit_automation"
                   )}
-                </mwc-button>
+                </ha-button>
               </a>
             `
           : ""}

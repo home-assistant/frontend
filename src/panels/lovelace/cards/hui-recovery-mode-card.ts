@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";

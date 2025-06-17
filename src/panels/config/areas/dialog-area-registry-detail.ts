@@ -258,19 +258,20 @@ class DialogAreaDetail extends LitElement {
         ${!isNew
           ? html`<ha-button
               slot="secondaryAction"
-              destructive
+              variant="danger"
+              appearance="plain"
               @click=${this._deleteArea}
             >
               ${this.hass.localize("ui.common.delete")}
             </ha-button>`
           : nothing}
         <div slot="primaryAction">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             @click=${this._updateEntry}
-            .disabled=${nameInvalid || this._submitting}
+            .disabled=${nameInvalid || !!this._submitting}
           >
             ${entry
               ? this.hass.localize("ui.common.save")

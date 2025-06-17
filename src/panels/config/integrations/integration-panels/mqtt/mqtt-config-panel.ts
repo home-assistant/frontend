@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import "../../../../../components/ha-code-editor";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-switch";
+import "../../../../../components/ha-button";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 import "../../../../../layouts/hass-subpage";
@@ -71,10 +71,10 @@ export class MQTTConfigPanel extends LitElement {
             .header=${this.hass.localize("ui.panel.config.mqtt.settings_title")}
           >
             <div class="card-actions">
-              <mwc-button @click=${this._openOptionFlow}
+              <ha-button appearance="plain" @click=${this._openOptionFlow}
                 >${this.hass.localize(
                   "ui.panel.config.mqtt.option_flow"
-                )}</mwc-button
+                )}</ha-button
               >
             </div>
           </ha-card>
@@ -138,10 +138,10 @@ export class MQTTConfigPanel extends LitElement {
               ></ha-code-editor>
             </div>
             <div class="card-actions">
-              <mwc-button @click=${this._publish}
+              <ha-button appearance="plain" @click=${this._publish}
                 >${this.hass.localize(
                   "ui.panel.config.mqtt.publish"
-                )}</mwc-button
+                )}</ha-button
               >
             </div>
           </ha-card>

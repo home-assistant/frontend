@@ -1,10 +1,11 @@
-import "@material/mwc-button/mwc-button";
+import { mdiContentCopy } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiContentCopy } from "@mdi/js";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import { copyToClipboard } from "../../common/util/copy-clipboard";
+import { fetchCloudStatus } from "../../data/cloud";
 import type {
   MediaPlayerBrowseAction,
   MediaPlayerItem,
@@ -13,13 +14,12 @@ import type { TTSEngine } from "../../data/tts";
 import { getProviderFromTTSMediaSource, getTTSEngine } from "../../data/tts";
 import { buttonLinkStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../ha-textarea";
-import "../ha-language-picker";
-import "../ha-tts-voice-picker";
-import "../ha-card";
-import { fetchCloudStatus } from "../../data/cloud";
-import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { showToast } from "../../util/toast";
+import "../ha-button";
+import "../ha-card";
+import "../ha-language-picker";
+import "../ha-textarea";
+import "../ha-tts-voice-picker";
 
 export interface TtsMediaPickedEvent {
   item: MediaPlayerItem;
@@ -92,11 +92,11 @@ class BrowseMediaTTS extends LitElement {
             : nothing}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._ttsClicked}>
+          <ha-button appearance="plain" @click=${this._ttsClicked}>
             ${this.hass.localize(
               `ui.components.media-browser.tts.action_${this.action}`
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
       ${this._voice
