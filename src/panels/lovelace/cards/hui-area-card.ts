@@ -21,6 +21,7 @@ import {
 } from "../../../common/number/format_number";
 import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import "../../../components/ha-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
@@ -417,7 +418,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         ? this._getCameraEntity(this.hass.entities, area.area_id)
         : undefined;
 
-    const ignoreAspectRatio = this.layout === "grid";
+    const ignoreAspectRatio = this.layout === "grid" || this.layout === "panel";
 
     return html`
       <ha-card>
@@ -452,9 +453,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                       `
                     : area.icon
                       ? html`
-                          <div class="icon-container">
-                            <ha-icon .icon=${area.icon}></ha-icon>
-                          </div>
+                          <ha-aspect-ratio
+                            .aspectRatio=${ignoreAspectRatio
+                              ? undefined
+                              : this._config.aspect_ratio ||
+                                DEFAULT_ASPECT_RATIO}
+                          >
+                            <div class="icon-container">
+                              <ha-icon .icon=${area.icon}></ha-icon>
+                            </div>
+                          </ha-aspect-ratio>
                         `
                       : nothing}
                 </div>
