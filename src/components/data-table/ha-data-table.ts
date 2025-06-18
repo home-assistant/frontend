@@ -72,7 +72,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   label?: TemplateResult | string;
   type?:
     | "numeric"
-    | "ip"
+    | "ipv4"
     | "icon"
     | "icon-button"
     | "overflow"

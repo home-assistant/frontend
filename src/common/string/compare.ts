@@ -33,7 +33,7 @@ export const stringCompare = (
   return fallbackStringCompare(a, b);
 };
 
-export const ipCompare = (a: string, b: string) => {
+export const ipv4Compare = (a: string, b: string) => {
   const num1 = Number(
     a
       .split(".")
