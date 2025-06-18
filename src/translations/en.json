@@ -5792,7 +5792,8 @@
         "zwave_js": {
           "navigation": {
             "network": "Network",
-            "logs": "Logs"
+            "logs": "Logs",
+            "visualization": "Visualization"
           },
           "common": {
             "network": "Network",
@@ -6245,6 +6246,10 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log Level changed to: {level}",
             "download_logs": "Download logs"
+          },
+          "visualization": {
+            "controller": "Controller",
+            "node": "Node"
           },
           "node_installer": {
             "header": "Installer Settings",
