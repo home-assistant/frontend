@@ -23,7 +23,7 @@ import type { Themes } from "./data/ws-themes";
 import type { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
-  /* eslint-disable no-var, @typescript-eslint/naming-convention */
+  /* eslint-disable @typescript-eslint/naming-convention */
   var __DEV__: boolean;
   var __DEMO__: boolean;
   var __BUILD__: "modern" | "legacy";
@@ -32,7 +32,7 @@ declare global {
   var __BACKWARDS_COMPAT__: boolean;
   var __SUPERVISOR__: boolean;
   var __HASS_URL__: string;
-  /* eslint-enable no-var, @typescript-eslint/naming-convention */
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   interface Window {
     // Custom panel entry point url

@@ -243,6 +243,7 @@ export abstract class HuiElementEditor<
                   @blur=${this._onBlurYaml}
                   @keydown=${this._ignoreKeydown}
                   dir="ltr"
+                  .showErrors=${false}
                 ></ha-yaml-editor>
               </div>
             `}

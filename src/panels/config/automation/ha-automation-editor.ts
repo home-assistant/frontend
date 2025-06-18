@@ -501,6 +501,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     .defaultValue=${this._preprocessYaml()}
                     .readOnly=${this._readOnly}
                     @value-changed=${this._yamlChanged}
+                    .showErrors=${false}
                   ></ha-yaml-editor>`
               : nothing}
         </div>
