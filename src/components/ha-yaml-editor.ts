@@ -11,6 +11,7 @@ import { showToast } from "../util/toast";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import type { HaCodeEditor } from "./ha-code-editor";
 import "./ha-button";
+import "./ha-alert";
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object" || obj === null) {
@@ -51,7 +52,14 @@ export class HaYamlEditor extends LitElement {
   @property({ attribute: "has-extra-actions", type: Boolean })
   public hasExtraActions = false;
 
+  @property({ attribute: "show-errors", type: Boolean })
+  public showErrors = true;
+
   @state() private _yaml = "";
+
+  @state() private _error = "";
+
+  @state() private _showingError = false;
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
 
@@ -107,8 +115,12 @@ export class HaYamlEditor extends LitElement {
         autocomplete-icons
         .error=${this.isValid === false}
         @value-changed=${this._onChange}
+        @blur=${this._onBlur}
         dir="ltr"
       ></ha-code-editor>
+      ${this._showingError
+        ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+        : nothing}
       ${this.copyClipboard || this.hasExtraActions
         ? html`
             <div class="card-actions">
@@ -146,6 +158,10 @@ export class HaYamlEditor extends LitElement {
     } else {
       parsed = {};
     }
+    this._error = errorMsg ?? "";
+    if (isValid) {
+      this._showingError = false;
+    }
 
     this.value = parsed;
     this.isValid = isValid;
@@ -155,6 +171,12 @@ export class HaYamlEditor extends LitElement {
       isValid,
       errorMsg,
     } as any);
+  }
+
+  private _onBlur(): void {
+    if (this.showErrors && this._error) {
+      this._showingError = true;
+    }
   }
 
   get yaml() {
