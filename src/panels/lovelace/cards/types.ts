@@ -111,7 +111,6 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   sensor_classes?: string[];
   alert_classes?: string[];
-  vertical?: boolean;
   features?: LovelaceCardFeatureConfig[];
   features_position?: "bottom" | "inline";
 }
