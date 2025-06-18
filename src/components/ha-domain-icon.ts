@@ -16,8 +16,7 @@ export class HaDomainIcon extends LitElement {
 
   @property() public domain?: string;
 
-  @property({ type: String, attribute: "device-class" })
-  public deviceClass?: string;
+  @property({ attribute: false }) public deviceClass?: string;
 
   @property() public icon?: string;
 
