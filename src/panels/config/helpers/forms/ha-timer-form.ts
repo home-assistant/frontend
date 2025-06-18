@@ -12,6 +12,7 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { createDurationData } from "../../../../common/datetime/create_duration_data";
 import type { HaDurationData } from "../../../../components/ha-duration-input";
+import type { ForDict } from "../../../../data/automation";
 
 @customElement("ha-timer-form")
 class HaTimerForm extends LitElement {
@@ -45,7 +46,7 @@ class HaTimerForm extends LitElement {
       this._restore = false;
     }
 
-    this._duration_data = createDurationData(this._duration);
+    this._setDurationData();
   }
 
   public focus() {
@@ -135,6 +136,25 @@ class HaTimerForm extends LitElement {
     });
   }
 
+  private _setDurationData() {
+    let durationInput: string | number | ForDict;
+
+    if (typeof this._duration === "object" && this._duration !== null) {
+      const d = this._duration as DurationDict;
+      durationInput = {
+        hours: typeof d.hours === "string" ? parseFloat(d.hours) : d.hours,
+        minutes:
+          typeof d.minutes === "string" ? parseFloat(d.minutes) : d.minutes,
+        seconds:
+          typeof d.seconds === "string" ? parseFloat(d.seconds) : d.seconds,
+      };
+    } else {
+      durationInput = this._duration;
+    }
+
+    this._duration_data = createDurationData(durationInput);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -143,7 +163,7 @@ class HaTimerForm extends LitElement {
           color: var(--primary-text-color);
         }
         ha-textfield,
-        ha-time-input {
+        ha-duration-input {
           display: block;
           margin: 8px 0;
         }
