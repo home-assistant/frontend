@@ -9,6 +9,7 @@ import type {
   LegendComponentOption,
   XAXisOption,
   YAXisOption,
+  LineSeriesOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -642,43 +643,45 @@ export class HaChartBase extends LitElement {
     const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
       | YAXisOption
       | undefined;
-    const series = ensureArray(this.data)
-      .filter((d) => !this._hiddenDatasets.has(String(d.name ?? d.id)))
-      .map((s) => {
-        if (s.type === "line") {
-          if (yAxis?.type === "log") {
-            // set <=0 values to null so they render as gaps on a log graph
-            return {
-              ...s,
-              data: s.data?.map((v) =>
-                Array.isArray(v)
-                  ? [
-                      v[0],
-                      typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
-                      ...v.slice(2),
-                    ]
-                  : v
-              ),
-            };
-          }
-          if (s.sampling === "minmax") {
-            const minX =
-              xAxis?.min && typeof xAxis.min === "number"
-                ? xAxis.min
-                : undefined;
-            const maxX =
-              xAxis?.max && typeof xAxis.max === "number"
-                ? xAxis.max
-                : undefined;
-            return {
-              ...s,
-              sampling: undefined,
-              data: downSampleLineData(s.data, this.clientWidth, minX, maxX),
-            };
-          }
+    const series = ensureArray(this.data).map((s) => {
+      const data = this._hiddenDatasets.has(String(s.name ?? s.id))
+        ? undefined
+        : s.data;
+      if (data && s.type === "line") {
+        if (yAxis?.type === "log") {
+          // set <=0 values to null so they render as gaps on a log graph
+          return {
+            ...s,
+            data: (data as LineSeriesOption["data"])!.map((v) =>
+              Array.isArray(v)
+                ? [
+                    v[0],
+                    typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
+                    ...v.slice(2),
+                  ]
+                : v
+            ),
+          };
         }
-        return s;
-      });
+        if (s.sampling === "minmax") {
+          const minX =
+            xAxis?.min && typeof xAxis.min === "number" ? xAxis.min : undefined;
+          const maxX =
+            xAxis?.max && typeof xAxis.max === "number" ? xAxis.max : undefined;
+          return {
+            ...s,
+            sampling: undefined,
+            data: downSampleLineData(
+              data as LineSeriesOption["data"],
+              this.clientWidth,
+              minX,
+              maxX
+            ),
+          };
+        }
+      }
+      return { ...s, data };
+    });
     return series;
   }
 
