@@ -38,7 +38,9 @@ export class HaObjectSelector extends LitElement {
         @value-changed=${this._handleChange}
       ></ha-yaml-editor>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : ""} `;
   }
 

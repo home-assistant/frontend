@@ -19,6 +19,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import "./ha-combo-box-textfield";
 import "./ha-icon-button";
+import "./ha-input-helper-text";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -195,8 +196,6 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .helper=${this.helper}
-          helperPersistent
           .disableSetValue=${this._disableSetValue}
         >
           <slot name="icon" slot="leadingIcon"></slot>
@@ -222,7 +221,16 @@ export class HaComboBox extends LitElement {
           @click=${this._toggleOpen}
         ></ha-svg-icon>
       </vaadin-combo-box-light>
+      ${this._renderHelper()}
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
+      : "";
   }
 
   private _defaultRowRenderer: ComboBoxLitRenderer<
@@ -397,6 +405,9 @@ export class HaComboBox extends LitElement {
       inset-inline-start: initial;
       inset-inline-end: 36px;
       direction: var(--direction);
+    }
+    ha-input-helper-text {
+      margin-top: 4px;
     }
   `;
 }
