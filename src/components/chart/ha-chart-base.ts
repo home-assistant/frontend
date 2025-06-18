@@ -682,7 +682,7 @@ export class HaChartBase extends LitElement {
       }
       return { ...s, data };
     });
-    return series;
+    return series as ECOption["series"];
   }
 
   private _getDefaultHeight() {
