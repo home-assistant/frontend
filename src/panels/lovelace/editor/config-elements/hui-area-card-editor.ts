@@ -259,6 +259,7 @@ export class HuiAreaCardEditor
       ...config,
       display_type: displayType,
     };
+    delete this._config.show_camera;
   }
 
   protected async updated() {
