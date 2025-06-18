@@ -53,6 +53,7 @@ const cardConfigStruct = assign(
     sensor_classes: optional(array(string())),
     features: optional(array(any())),
     features_position: optional(enums(["bottom", "inline"])),
+    aspect_ratio: optional(string()),
   })
 );
 
@@ -460,9 +461,12 @@ export class HuiAreaCardEditor
   ): string | undefined => {
     switch (schema.name) {
       case "alert_classes":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.area.alert_classes_helper`
-        );
+        if (this._config?.display_type === "compact") {
+          return this.hass!.localize(
+            `ui.panel.lovelace.editor.card.area.alert_classes_helper`
+          );
+        }
+        return undefined;
       default:
         return undefined;
     }
