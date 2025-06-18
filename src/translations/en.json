@@ -7848,7 +7848,7 @@
                 "controls_options": {
                   "light": "Light",
                   "fan": "Fan",
-                  "cover": "Cover"
+                  "switch": "Switch"
                 }
               }
             }

@@ -1,4 +1,4 @@
-import { mdiBlindsHorizontal, mdiFan, mdiLightbulb } from "@mdi/js";
+import { mdiFan, mdiLightbulb, mdiToggleSwitch } from "@mdi/js";
 import { callService, type HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -50,14 +50,14 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     onService: "fan.turn_on",
     offService: "fan.turn_off",
   },
-  cover: {
-    iconPath: mdiBlindsHorizontal,
+  switch: {
+    iconPath: mdiToggleSwitch,
     filter: {
-      domain: "cover",
+      domain: "switch",
     },
-    domain: "cover",
-    onService: "cover.open_cover",
-    offService: "cover.close_cover",
+    domain: "switch",
+    onService: "switch.turn_on",
+    offService: "switch.turn_off",
   },
 };
 

@@ -158,7 +158,7 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
-export const AREA_CONTROLS = ["light", "fan", "cover"] as const;
+export const AREA_CONTROLS = ["light", "fan", "switch"] as const;
 
 export type AreaControl = (typeof AREA_CONTROLS)[number];
 
