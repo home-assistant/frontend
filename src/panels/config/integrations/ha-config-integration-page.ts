@@ -1,78 +1,37 @@
 import {
-  mdiAlertCircle,
   mdiBug,
   mdiBugPlay,
   mdiBugStop,
-  mdiChevronDown,
-  mdiChevronUp,
-  mdiCogOutline,
-  mdiDelete,
-  mdiDevices,
   mdiDotsVertical,
-  mdiDownload,
   mdiFileCodeOutline,
-  mdiHandExtendedOutline,
   mdiHelpCircleOutline,
   mdiOpenInNew,
   mdiPackageVariant,
-  mdiPlayCircleOutline,
   mdiPlus,
-  mdiProgressHelper,
-  mdiReload,
-  mdiReloadAlert,
-  mdiRenameBox,
-  mdiShapeOutline,
-  mdiStopCircleOutline,
   mdiWeb,
-  mdiWrench,
 } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { isDevVersion } from "../../../common/config/version";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
-import "../../../components/ha-card";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-list";
 import "../../../components/ha-md-list-item";
 import "../../../components/ha-md-menu-item";
-import {
-  deleteApplicationCredential,
-  fetchApplicationCredentialsConfigEntry,
-} from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
-import type {
-  ConfigEntry,
-  DisableConfigEntryResult,
-  SubEntry,
-} from "../../../data/config_entries";
-import {
-  ERROR_STATES,
-  RECOVERABLE_STATES,
-  deleteConfigEntry,
-  deleteSubEntry,
-  disableConfigEntry,
-  enableConfigEntry,
-  getConfigEntries,
-  getSubEntries,
-  reloadConfigEntry,
-  updateConfigEntry,
-} from "../../../data/config_entries";
+import type { ConfigEntry } from "../../../data/config_entries";
+import { ERROR_STATES, getConfigEntries } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
-import {
-  fetchDiagnosticHandler,
-  getConfigEntryDiagnosticsDownloadUrl,
-} from "../../../data/diagnostics";
+import { fetchDiagnosticHandler } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
@@ -86,20 +45,13 @@ import {
   domainToName,
   fetchIntegrationManifest,
   integrationIssuesUrl,
-  integrationsWithPanel,
   setIntegrationLogLevel,
   subscribeLogInfo,
 } from "../../../data/integration";
 import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
-import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-  showPromptDialog,
-} from "../../../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -108,6 +60,7 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
+import "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
@@ -177,17 +130,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _domainEntities: Record<string, string[]> = {};
 
-  @state() private _subEntries: Record<string, SubEntry[]> = {};
-
-  @state() private _showSubEntries = true;
-
-  private _configPanel = memoizeOne(
-    (domain: string, panels: HomeAssistant["panels"]): string | undefined =>
-      Object.values(panels).find(
-        (panel) => panel.config_panel_domain === domain
-      )?.url_path || integrationsWithPanel[domain]
-  );
-
   private _domainConfigEntries = memoizeOne(
     (domain: string, configEntries?: ConfigEntry[]): ConfigEntry[] =>
       configEntries
@@ -228,12 +170,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._fetchManifest();
       this._fetchDiagnostics();
       this._fetchEntitySources();
-    }
-    if (
-      changedProperties.has("configEntries") ||
-      changedProperties.has("_extraConfigEntries")
-    ) {
-      this._fetchSubEntries();
     }
   }
 
@@ -378,59 +314,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 .label=${this.hass.localize("ui.common.menu")}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
-              ${devices.length
-                ? html`
-                    <ha-md-menu-item
-                      href=${devices.length === 1
-                        ? `/config/devices/device/${devices[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
-                    >
-                      <ha-svg-icon
-                        .path=${mdiDevices}
-                        slot="start"
-                      ></ha-svg-icon>
-                      ${this.hass.localize(
-                        `ui.panel.config.integrations.config_entry.devices`,
-                        { count: devices.length }
-                      )}
-                      <ha-icon-next slot="end"></ha-icon-next>
-                    </ha-md-menu-item>
-                  `
-                : nothing}
-              ${services.length
-                ? html`<ha-md-menu-item
-                    href=${services.length === 1
-                      ? `/config/devices/device/${services[0].id}`
-                      : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiHandExtendedOutline}
-                      slot="start"
-                    ></ha-svg-icon>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.services`,
-                      { count: services.length }
-                    )}
-                    <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-menu-item> `
-                : nothing}
-              ${numberOfEntities
-                ? html`
-                    <ha-md-menu-item
-                      href=${`/config/entities?historyBack=1&domain=${this.domain}`}
-                    >
-                      <ha-svg-icon
-                        .path=${mdiShapeOutline}
-                        slot="start"
-                      ></ha-svg-icon>
-                      ${this.hass.localize(
-                        `ui.panel.config.integrations.config_entry.entities`,
-                        { count: numberOfEntities }
-                      )}
-                      <ha-icon-next slot="end"></ha-icon-next>
-                    </ha-md-menu-item>
-                  `
-                : nothing}
               ${this._manifest &&
               (this._manifest.is_built_in || this._manifest.issue_tracker)
                 ? html`
@@ -582,6 +465,50 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       `
                     : nothing}
                 </div>
+                <div>
+                  ${devices.length
+                    ? html`
+                        <a
+                          href=${devices.length === 1
+                            ? `/config/devices/device/${devices[0].id}`
+                            : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
+                        >
+                          ${this.hass.localize(
+                            `ui.panel.config.integrations.config_entry.devices`,
+                            { count: devices.length }
+                          )}
+                        </a>
+                      `
+                    : nothing}
+                  ${devices.length && services.length ? " • " : ""}
+                  ${services.length
+                    ? html`<a
+                        href=${services.length === 1
+                          ? `/config/devices/device/${services[0].id}`
+                          : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
+                      >
+                        ${this.hass.localize(
+                          `ui.panel.config.integrations.config_entry.services`,
+                          { count: services.length }
+                        )}
+                      </a>`
+                    : nothing}
+                  ${(devices.length || services.length) && numberOfEntities
+                    ? " • "
+                    : ""}
+                  ${numberOfEntities
+                    ? html`
+                        <a
+                          href=${`/config/entities?historyBack=1&domain=${this.domain}`}
+                        >
+                          ${this.hass.localize(
+                            `ui.panel.config.integrations.config_entry.entities`,
+                            { count: numberOfEntities }
+                          )}
+                        </a>
+                      `
+                    : nothing}
+                </div>
               </div>
             </div>
             <div class="actions">
@@ -675,17 +602,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         >
                       </ha-md-list-item>`;
                     })}
-                    ${attentionEntries.map(
-                      (item, index) =>
-                        html`${this._renderConfigEntry(item)}
-                        ${index < attentionEntries.length - 1
-                          ? html` <ha-md-divider
-                              role="separator"
-                              tabindex="-1"
-                            ></ha-md-divider>`
-                          : nothing} `
-                    )}
                   </ha-md-list>
+                  ${attentionEntries.map(
+                    (item) =>
+                      html`<ha-config-entry-row
+                        class="attention"
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .manifest=${this._manifest}
+                        .diagnosticHandler=${this._diagnosticHandler}
+                        .entities=${this._entities}
+                        .entry=${item}
+                        data-entry-id=${item.entry_id}
+                      ></ha-config-entry-row>`
+                  )}
                 </div>
               `
             : nothing}
@@ -714,18 +644,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         "ui.panel.config.integrations.integration_page.no_entries"
                       )}
                 </div>`
-              : html`<ha-md-list>
+              : html`
                   ${normalEntries.map(
-                    (item, index) =>
-                      html`${this._renderConfigEntry(item)}
-                      ${index < normalEntries.length - 1
-                        ? html`<ha-md-divider
-                            role="separator"
-                            tabindex="-1"
-                          ></ha-md-divider>`
-                        : nothing}`
+                    (item) =>
+                      html`<ha-config-entry-row
+                        .hass=${this.hass}
+                        .narrow=${this.narrow}
+                        .manifest=${this._manifest}
+                        .diagnosticHandler=${this._diagnosticHandler}
+                        .entities=${this._entities}
+                        .entry=${item}
+                        data-entry-id=${item.entry_id}
+                      ></ha-config-entry-row>`
                   )}
-                </ha-md-list>`}
+                `}
           </div>
         </div>
       </hass-subpage>
@@ -738,423 +670,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   private _onImageError(ev) {
     ev.target.style.display = "none";
-  }
-
-  private _renderConfigEntry(item: ConfigEntry) {
-    let stateText: Parameters<typeof this.hass.localize> | undefined;
-    let stateTextExtra: TemplateResult | string | undefined;
-    let icon: string = mdiAlertCircle;
-
-    if (!item.disabled_by && item.state === "not_loaded") {
-      stateText = ["ui.panel.config.integrations.config_entry.not_loaded"];
-    } else if (item.state === "setup_in_progress") {
-      icon = mdiProgressHelper;
-      stateText = [
-        "ui.panel.config.integrations.config_entry.setup_in_progress",
-      ];
-    } else if (ERROR_STATES.includes(item.state)) {
-      if (item.state === "setup_retry") {
-        icon = mdiReloadAlert;
-      }
-      stateText = [
-        `ui.panel.config.integrations.config_entry.state.${item.state}`,
-      ];
-      stateTextExtra = renderConfigEntryError(this.hass, item);
-    }
-
-    const devices = this._getConfigEntryDevices(item);
-    const services = this._getConfigEntryServices(item);
-    const entities = this._getConfigEntryEntities(item);
-
-    const statusLine: (TemplateResult | string)[] = [];
-
-    if (item.disabled_by) {
-      statusLine.push(
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.disable.disabled_cause",
-          {
-            cause:
-              this.hass.localize(
-                `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
-              ) || item.disabled_by,
-          }
-        )
-      );
-      if (item.state === "failed_unload") {
-        statusLine.push(`.
-        ${this.hass.localize(
-          "ui.panel.config.integrations.config_entry.disable_restart_confirm"
-        )}.`);
-      }
-    } else {
-      statusLine.push("");
-    }
-
-    const configPanel = this._configPanel(item.domain, this.hass.panels);
-
-    const subEntries = this._subEntries[item.entry_id] || [];
-
-    return html`<ha-md-list-item
-        class=${classMap({
-          config_entry: true,
-          "state-not-loaded": item!.state === "not_loaded",
-          "state-failed-unload": item!.state === "failed_unload",
-          "state-setup": item!.state === "setup_in_progress",
-          "state-error": ERROR_STATES.includes(item!.state),
-          "state-disabled": item.disabled_by !== null,
-          "has-subentries": this._showSubEntries && subEntries.length > 0,
-        })}
-        data-entry-id=${item.entry_id}
-        .configEntry=${item}
-      >
-        ${subEntries.length
-          ? html`<ha-icon-button
-              style="margin: 0 -12px;"
-              .path=${this._showSubEntries ? mdiChevronDown : mdiChevronUp}
-              slot="start"
-              @click=${this._toggleSubEntries}
-            ></ha-icon-button>`
-          : nothing}
-        <div slot="headline">
-          ${item.title || domainToName(this.hass.localize, item.domain)}
-        </div>
-        <div slot="supporting-text">
-          <div>${statusLine}</div>
-          ${stateText
-            ? html`
-                <div class="message">
-                  <ha-svg-icon .path=${icon}></ha-svg-icon>
-                  <div>
-                    ${this.hass.localize(...stateText)}${stateTextExtra
-                      ? html`: ${stateTextExtra}`
-                      : nothing}
-                  </div>
-                </div>
-              `
-            : nothing}
-        </div>
-        ${item.disabled_by === "user"
-          ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
-              ${this.hass.localize("ui.common.enable")}
-            </ha-button>`
-          : configPanel &&
-              (item.domain !== "matter" ||
-                isDevVersion(this.hass.config.version)) &&
-              !stateText
-            ? html`<a
-                slot="end"
-                href=${`/${configPanel}?config_entry=${item.entry_id}`}
-                ><ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.configure"
-                  )}
-                </ha-button></a
-              >`
-            : item.supports_options
-              ? html`
-                  <ha-icon-button
-                    slot="end"
-                    @click=${this._showOptions}
-                    .path=${mdiCogOutline}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.configure"
-                    )}
-                  >
-                  </ha-icon-button>
-                `
-              : nothing}
-        <ha-md-button-menu positioning="popover" slot="end">
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          ${devices.length
-            ? html`
-                <ha-md-menu-item
-                  href=${devices.length === 1
-                    ? `/config/devices/device/${devices[0].id}`
-                    : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
-                >
-                  <ha-svg-icon .path=${mdiDevices} slot="start"></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.devices`,
-                    { count: devices.length }
-                  )}
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-menu-item>
-              `
-            : nothing}
-          ${services.length
-            ? html`<ha-md-menu-item
-                href=${services.length === 1
-                  ? `/config/devices/device/${services[0].id}`
-                  : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
-              >
-                <ha-svg-icon
-                  .path=${mdiHandExtendedOutline}
-                  slot="start"
-                ></ha-svg-icon>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.services`,
-                  { count: services.length }
-                )}
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-menu-item> `
-            : nothing}
-          ${entities.length
-            ? html`
-                <ha-md-menu-item
-                  href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
-                >
-                  <ha-svg-icon
-                    .path=${mdiShapeOutline}
-                    slot="start"
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entities`,
-                    { count: entities.length }
-                  )}
-                  <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-menu-item>
-              `
-            : nothing}
-          ${!item.disabled_by &&
-          RECOVERABLE_STATES.includes(item.state) &&
-          item.supports_unload &&
-          item.source !== "system"
-            ? html`
-                <ha-md-menu-item @click=${this._handleReload}>
-                  <ha-svg-icon slot="start" .path=${mdiReload}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.reload"
-                  )}
-                </ha-md-menu-item>
-              `
-            : nothing}
-
-          <ha-md-menu-item @click=${this._handleRename} graphic="icon">
-            <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.rename"
-            )}
-          </ha-md-menu-item>
-
-          ${Object.keys(item.supported_subentry_types).map(
-            (flowType) =>
-              html`<ha-md-menu-item
-                @click=${this._addSubEntryToEntry}
-                .entry=${item}
-                .flowType=${flowType}
-                graphic="icon"
-              >
-                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                ${this.hass.localize(
-                  `component.${item.domain}.config_subentries.${flowType}.initiate_flow.user`
-                )}</ha-md-menu-item
-              >`
-          )}
-
-          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-
-          ${this._diagnosticHandler && item.state === "loaded"
-            ? html`
-                <ha-md-menu-item
-                  href=${getConfigEntryDiagnosticsDownloadUrl(item.entry_id)}
-                  target="_blank"
-                  @click=${this._signUrl}
-                >
-                  <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.download_diagnostics"
-                  )}
-                </ha-md-menu-item>
-              `
-            : nothing}
-          ${!item.disabled_by &&
-          item.supports_reconfigure &&
-          item.source !== "system"
-            ? html`
-                <ha-md-menu-item @click=${this._handleReconfigure}>
-                  <ha-svg-icon slot="start" .path=${mdiWrench}></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.reconfigure"
-                  )}
-                </ha-md-menu-item>
-              `
-            : nothing}
-
-          <ha-md-menu-item @click=${this._handleSystemOptions} graphic="icon">
-            <ha-svg-icon slot="start" .path=${mdiCogOutline}></ha-svg-icon>
-            ${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.system_options"
-            )}
-          </ha-md-menu-item>
-          ${item.disabled_by === "user"
-            ? html`
-                <ha-md-menu-item @click=${this._handleEnable}>
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiPlayCircleOutline}
-                  ></ha-svg-icon>
-                  ${this.hass.localize("ui.common.enable")}
-                </ha-md-menu-item>
-              `
-            : item.source !== "system"
-              ? html`
-                  <ha-md-menu-item
-                    class="warning"
-                    @click=${this._handleDisable}
-                    graphic="icon"
-                  >
-                    <ha-svg-icon
-                      slot="start"
-                      class="warning"
-                      .path=${mdiStopCircleOutline}
-                    ></ha-svg-icon>
-                    ${this.hass.localize("ui.common.disable")}
-                  </ha-md-menu-item>
-                `
-              : nothing}
-          ${item.source !== "system"
-            ? html`
-                <ha-md-menu-item class="warning" @click=${this._handleDelete}>
-                  <ha-svg-icon
-                    slot="start"
-                    class="warning"
-                    .path=${mdiDelete}
-                  ></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.delete"
-                  )}
-                </ha-md-menu-item>
-              `
-            : nothing}
-        </ha-md-button-menu>
-      </ha-md-list-item>
-      ${this._showSubEntries
-        ? subEntries.map((subEntry) => this._renderSubEntry(item, subEntry))
-        : nothing}`;
-  }
-
-  private _renderSubEntry(configEntry: ConfigEntry, subEntry: SubEntry) {
-    const devices = this._getConfigEntryDevices(configEntry).filter((device) =>
-      device.config_entries_subentries[configEntry.entry_id]?.includes(
-        subEntry.subentry_id
-      )
-    );
-    const services = this._getConfigEntryServices(configEntry).filter(
-      (device) =>
-        device.config_entries_subentries[configEntry.entry_id]?.includes(
-          subEntry.subentry_id
-        )
-    );
-    const entities = this._getConfigEntryEntities(configEntry).filter(
-      (entity) => entity.config_subentry_id === subEntry.subentry_id
-    );
-
-    return html`<ha-md-list-item
-      class="sub-entry"
-      style=${this._showSubEntries ? "" : "display: none;"}
-      data-entry-id=${configEntry.entry_id}
-      .configEntry=${configEntry}
-      .subEntry=${subEntry}
-    >
-      <span slot="headline">${subEntry.title}</span>
-      <span slot="supporting-text"
-        >${this.hass.localize(
-          `component.${configEntry.domain}.config_subentries.${subEntry.subentry_type}.entry_type`
-        )}</span
-      >
-      ${configEntry.supported_subentry_types[subEntry.subentry_type]
-        ?.supports_reconfigure
-        ? html`
-            <ha-icon-button
-              slot="end"
-              @click=${this._handleReconfigureSub}
-              .path=${mdiCogOutline}
-              .label=${this.hass.localize(
-                `component.${configEntry.domain}.config_subentries.${subEntry.subentry_type}.initiate_flow.reconfigure`
-              ) ||
-              this.hass.localize(
-                "ui.panel.config.integrations.config_entry.configure"
-              )}
-            >
-            </ha-icon-button>
-          `
-        : nothing}
-      <ha-md-button-menu positioning="popover" slot="end">
-        <ha-icon-button
-          slot="trigger"
-          .label=${this.hass.localize("ui.common.menu")}
-          .path=${mdiDotsVertical}
-        ></ha-icon-button>
-        ${devices.length
-          ? html`
-              <ha-md-menu-item
-                href=${devices.length === 1
-                  ? `/config/devices/device/${devices[0].id}`
-                  : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
-              >
-                <ha-svg-icon .path=${mdiDevices} slot="start"></ha-svg-icon>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.devices`,
-                  { count: devices.length }
-                )}
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-menu-item>
-            `
-          : nothing}
-        ${services.length
-          ? html`<ha-md-menu-item
-              href=${services.length === 1
-                ? `/config/devices/device/${services[0].id}`
-                : `/config/devices/dashboard?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
-            >
-              <ha-svg-icon
-                .path=${mdiHandExtendedOutline}
-                slot="start"
-              ></ha-svg-icon>
-              ${this.hass.localize(
-                `ui.panel.config.integrations.config_entry.services`,
-                { count: services.length }
-              )}
-              <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-menu-item> `
-          : nothing}
-        ${entities.length
-          ? html`
-              <ha-md-menu-item
-                href=${`/config/entities?historyBack=1&config_entry=${configEntry.entry_id}&sub_entry=${subEntry.subentry_id}`}
-              >
-                <ha-svg-icon
-                  .path=${mdiShapeOutline}
-                  slot="start"
-                ></ha-svg-icon>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.entities`,
-                  { count: entities.length }
-                )}
-                <ha-icon-next slot="end"></ha-icon-next>
-              </ha-md-menu-item>
-            `
-          : nothing}
-        <ha-md-menu-item class="warning" @click=${this._handleDeleteSub}>
-          <ha-svg-icon
-            slot="start"
-            class="warning"
-            .path=${mdiDelete}
-          ></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.delete"
-          )}
-        </ha-md-menu-item>
-      </ha-md-button-menu>
-    </ha-md-list-item>`;
-  }
-
-  private _toggleSubEntries() {
-    this._showSubEntries = !this._showSubEntries;
   }
 
   private async _highlightEntry() {
@@ -1192,27 +707,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     ) {
       this._extraConfigEntries = await getConfigEntries(this.hass, {
         domain: this.domain,
-      });
-    }
-  }
-
-  private async _fetchSubEntries() {
-    const subEntriesPromises = (
-      this._extraConfigEntries || this.configEntries
-    )?.map((entry) =>
-      entry.num_subentries
-        ? getSubEntries(this.hass, entry.entry_id).then((subEntries) => ({
-            entry_id: entry.entry_id,
-            subEntries,
-          }))
-        : undefined
-    );
-    if (subEntriesPromises) {
-      const subEntries = await Promise.all(subEntriesPromises);
-      this._subEntries = {};
-      subEntries.forEach((entry) => {
-        if (!entry) return;
-        this._subEntries[entry.entry_id] = entry.subEntries;
       });
     }
   }
@@ -1289,361 +783,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _getConfigEntryEntities = (
-    configEntry: ConfigEntry
-  ): EntityRegistryEntry[] => {
-    const entries = this._domainConfigEntries(
-      this.domain,
-      this._extraConfigEntries || this.configEntries
-    );
-    const entityRegistryEntries = this._getEntities(entries, this._entities);
-    return entityRegistryEntries.filter(
-      (entity) => entity.config_entry_id === configEntry.entry_id
-    );
-  };
-
-  private _getConfigEntryDevices = (
-    configEntry: ConfigEntry
-  ): DeviceRegistryEntry[] => {
-    const entries = this._domainConfigEntries(
-      this.domain,
-      this._extraConfigEntries || this.configEntries
-    );
-    const deviceRegistryEntries = this._getDevices(entries, this.hass.devices);
-    return Object.values(deviceRegistryEntries).filter(
-      (device) =>
-        device.config_entries.includes(configEntry.entry_id) &&
-        device.entry_type !== "service"
-    );
-  };
-
-  private _getConfigEntryServices = (
-    configEntry: ConfigEntry
-  ): DeviceRegistryEntry[] => {
-    const entries = this._domainConfigEntries(
-      this.domain,
-      this._extraConfigEntries || this.configEntries
-    );
-    const deviceRegistryEntries = this._getDevices(entries, this.hass.devices);
-    return Object.values(deviceRegistryEntries).filter(
-      (device) =>
-        device.config_entries.includes(configEntry.entry_id) &&
-        device.entry_type === "service"
-    );
-  };
-
-  private _showOptions(ev) {
-    showOptionsFlowDialog(
-      this,
-      ev.target.closest(".config_entry").configEntry,
-      { manifest: this._manifest }
-    );
-  }
-
-  private _handleRename(ev: Event): void {
-    this._editEntryName(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private _handleReload(ev: Event): void {
-    this._reloadIntegration(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private _handleReconfigure(ev: Event): void {
-    this._reconfigureIntegration(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private _handleDelete(ev: Event): void {
-    this._removeIntegration(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private async _handleReconfigureSub(ev: Event): Promise<void> {
-    const configEntry = (
-      (ev.target as HTMLElement).closest(".sub-entry") as any
-    ).configEntry;
-    const subEntry = ((ev.target as HTMLElement).closest(".sub-entry") as any)
-      .subEntry;
-
-    showSubConfigFlowDialog(
-      this,
-      configEntry,
-      subEntry.flowType || subEntry.subentry_type,
-      {
-        startFlowHandler: configEntry.entry_id,
-        subEntryId: subEntry.subentry_id,
-      }
-    );
-  }
-
-  private async _handleDeleteSub(ev: Event): Promise<void> {
-    const configEntry = (
-      (ev.target as HTMLElement).closest(".sub-entry") as any
-    ).configEntry;
-    const subEntry = ((ev.target as HTMLElement).closest(".sub-entry") as any)
-      .subEntry;
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm_title",
-        { title: subEntry.title }
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm_text"
-      ),
-      confirmText: this.hass!.localize("ui.common.delete"),
-      dismissText: this.hass!.localize("ui.common.cancel"),
-      destructive: true,
-    });
-
-    if (!confirmed) {
-      return;
-    }
-    await deleteSubEntry(this.hass, configEntry.entry_id, subEntry.subentry_id);
-  }
-
-  private _handleDisable(ev: Event): void {
-    this._disableIntegration(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private _handleEnable(ev: Event): void {
-    this._enableIntegration(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private _handleSystemOptions(ev: Event): void {
-    this._showSystemOptions(
-      ((ev.target as HTMLElement).closest(".config_entry") as any).configEntry
-    );
-  }
-
-  private _showSystemOptions(configEntry: ConfigEntry) {
-    showConfigEntrySystemOptionsDialog(this, {
-      entry: configEntry,
-      manifest: this._manifest,
-    });
-  }
-
-  private async _disableIntegration(configEntry: ConfigEntry) {
-    const entryId = configEntry.entry_id;
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.disable_confirm_title",
-        { title: configEntry.title }
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.disable_confirm_text"
-      ),
-      confirmText: this.hass!.localize("ui.common.disable"),
-      dismissText: this.hass!.localize("ui.common.cancel"),
-      destructive: true,
-    });
-
-    if (!confirmed) {
-      return;
-    }
-    let result: DisableConfigEntryResult;
-    try {
-      result = await disableConfigEntry(this.hass, entryId);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.disable_error"
-        ),
-        text: err.message,
-      });
-      return;
-    }
-    if (result.require_restart) {
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.disable_restart_confirm"
-        ),
-      });
-    }
-  }
-
-  private async _enableIntegration(configEntry: ConfigEntry) {
-    const entryId = configEntry.entry_id;
-
-    let result: DisableConfigEntryResult;
-    try {
-      result = await enableConfigEntry(this.hass, entryId);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.disable_error"
-        ),
-        text: err.message,
-      });
-      return;
-    }
-
-    if (result.require_restart) {
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.enable_restart_confirm"
-        ),
-      });
-    }
-  }
-
-  private async _removeIntegration(configEntry: ConfigEntry) {
-    const entryId = configEntry.entry_id;
-
-    const applicationCredentialsId =
-      await this._applicationCredentialForRemove(entryId);
-
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm_title",
-        { title: configEntry.title }
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm_text"
-      ),
-      confirmText: this.hass!.localize("ui.common.delete"),
-      dismissText: this.hass!.localize("ui.common.cancel"),
-      destructive: true,
-    });
-
-    if (!confirmed) {
-      return;
-    }
-    const result = await deleteConfigEntry(this.hass, entryId);
-
-    if (result.require_restart) {
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.restart_confirm"
-        ),
-      });
-    }
-    if (applicationCredentialsId) {
-      this._removeApplicationCredential(applicationCredentialsId);
-    }
-  }
-
-  // Return an application credentials id for this config entry to prompt the
-  // user for removal. This is best effort so we don't stop overall removal
-  // if the integration isn't loaded or there is some other error.
-  private async _applicationCredentialForRemove(entryId: string) {
-    try {
-      return (await fetchApplicationCredentialsConfigEntry(this.hass, entryId))
-        .application_credentials_id;
-    } catch (_err: any) {
-      // We won't prompt the user to remove credentials
-      return null;
-    }
-  }
-
-  private async _removeApplicationCredential(applicationCredentialsId: string) {
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.application_credentials.delete_title"
-      ),
-      text: html`${this.hass.localize(
-          "ui.panel.config.integrations.config_entry.application_credentials.delete_prompt"
-        )},
-        <br />
-        <br />
-        ${this.hass.localize(
-          "ui.panel.config.integrations.config_entry.application_credentials.delete_detail"
-        )}
-        <br />
-        <br />
-        <a
-          href=${documentationUrl(
-            this.hass,
-            "/integrations/application_credentials/"
-          )}
-          target="_blank"
-          rel="noreferrer"
-        >
-          ${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.application_credentials.learn_more"
-          )}
-        </a>`,
-      destructive: true,
-      confirmText: this.hass.localize("ui.common.remove"),
-      dismissText: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.application_credentials.dismiss"
-      ),
-    });
-    if (!confirmed) {
-      return;
-    }
-    try {
-      await deleteApplicationCredential(this.hass, applicationCredentialsId);
-    } catch (err: any) {
-      showAlertDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.application_credentials.delete_error_title"
-        ),
-        text: err.message,
-      });
-    }
-  }
-
-  private async _reloadIntegration(configEntry: ConfigEntry) {
-    const entryId = configEntry.entry_id;
-
-    const result = await reloadConfigEntry(this.hass, entryId);
-    const locale_key = result.require_restart
-      ? "reload_restart_confirm"
-      : "reload_confirm";
-    showAlertDialog(this, {
-      text: this.hass.localize(
-        `ui.panel.config.integrations.config_entry.${locale_key}`
-      ),
-    });
-  }
-
-  private async _reconfigureIntegration(configEntry: ConfigEntry) {
-    showConfigFlowDialog(this, {
-      startFlowHandler: configEntry.domain,
-      showAdvanced: this.hass.userData?.showAdvanced,
-      manifest: await fetchIntegrationManifest(this.hass, configEntry.domain),
-      entryId: configEntry.entry_id,
-      navigateToResult: true,
-    });
-  }
-
-  private async _editEntryName(configEntry: ConfigEntry) {
-    const newName = await showPromptDialog(this, {
-      title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
-      defaultValue: configEntry.title,
-      inputLabel: this.hass.localize(
-        "ui.panel.config.integrations.rename_input_label"
-      ),
-    });
-    if (newName === null) {
-      return;
-    }
-    await updateConfigEntry(this.hass, configEntry.entry_id, {
-      title: newName,
-    });
-  }
-
-  private async _signUrl(ev) {
-    const anchor = ev.currentTarget;
-    ev.preventDefault();
-    const signedUrl = await getSignedPath(
-      this.hass,
-      anchor.getAttribute("href")
-    );
-    fileDownload(signedUrl.path);
-  }
-
   private async _addIntegration() {
     if (!this._manifest?.config_flow) {
       showAlertDialog(this, {
@@ -1713,12 +852,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           startFlowHandler: entry.entry_id,
         });
       },
-    });
-  }
-
-  private _addSubEntryToEntry(ev) {
-    showSubConfigFlowDialog(this, ev.target.entry, ev.target.flowType, {
-      startFlowHandler: ev.target.entry.entry_id,
     });
   }
 
@@ -1907,15 +1040,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           pointer-events: none;
           content: "";
         }
-        ha-md-list-item.has-subentries {
-          border-bottom: 1px solid var(--divider-color);
-        }
-        ha-md-list-item.sub-entry {
-          --md-list-item-leading-space: 56px;
-          border-bottom: 1px solid var(--divider-color);
-        }
-        ha-md-list-item.sub-entry:last-of-type {
-          border-bottom: none;
+        ha-config-entry-row {
+          display: block;
+          margin-bottom: 16px;
         }
         a {
           text-decoration: none;
