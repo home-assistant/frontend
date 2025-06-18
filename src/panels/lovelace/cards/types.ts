@@ -104,7 +104,7 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
   name?: string;
   navigation_path?: string;
-  image_type?: "none" | "icon" | "picture" | "camera";
+  display_type?: "compact" | "icon" | "picture" | "camera";
   /** @deprecated Use `image_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];

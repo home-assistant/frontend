@@ -75,7 +75,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an area");
     }
 
-    this._config = config;
+    const displayType =
+      config.display_type || (config.show_camera ? "camera" : "picture");
+    this._config = {
+      ...config,
+      display_type: displayType,
+    };
+
     this._featureContext = {
       area_id: config.area,
     };
@@ -96,7 +102,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const columns = 6;
     let min_columns = 6;
     let rows = 1;
-    const featurePosition = this._config && this._featurePosition(this._config);
+    const featurePosition = this._config
+      ? this._featurePosition(this._config)
+      : "bottom";
     const featuresCount = this._config?.features?.length || 0;
     if (featuresCount) {
       if (featurePosition === "inline") {
@@ -106,7 +114,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       }
     }
 
-    if (this._config?.image_type && this._config?.image_type !== "none") {
+    const displayType = this._config?.display_type || "picture";
+
+    if (displayType !== "compact") {
       rows += 2;
     }
 
@@ -206,11 +216,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return (
       alertClasses
         .map((alertClass) => {
-          const entityIds = groupedEntities.get(alertClass);
+          const entityIds = groupedEntities.get(alertClass) || [];
           if (!entityIds) {
             return [];
           }
-
           return entityIds
             .map(
               (entityId) => this.hass.states[entityId] as HassEntity | undefined
@@ -401,12 +410,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const containerOrientationClass =
       featurePosition === "inline" ? "horizontal" : "";
 
+    const displayType = this._config.display_type || "picture";
+
     const cameraEntityId =
-      this._config.image_type === "camera"
+      displayType === "camera"
         ? this._getCameraEntity(this.hass.entities, area.area_id)
         : undefined;
-
-    const imageType = this._config.image_type || "none";
 
     const ignoreAspectRatio = this.layout === "grid";
 
@@ -422,11 +431,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         >
           <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
-        ${imageType !== "none"
-          ? html`
+        ${displayType === "compact"
+          ? nothing
+          : html`
               <div class="header">
                 <div class="picture">
-                  ${(imageType === "picture" || imageType === "camera") &&
+                  ${(displayType === "picture" || displayType === "camera") &&
                   (cameraEntityId || area.picture)
                     ? html`
                         <hui-image
@@ -450,12 +460,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                 </div>
                 ${this._renderAlertSensors()}
               </div>
-            `
-          : nothing}
+            `}
         <div class="container ${containerOrientationClass}">
           <div class="content">
             <ha-tile-icon>
-              ${imageType === "none" ? this._renderAlertSensorBadge() : nothing}
+              ${displayType === "compact"
+                ? this._renderAlertSensorBadge()
+                : nothing}
               ${icon
                 ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
                 : html`

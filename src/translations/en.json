@@ -7176,10 +7176,9 @@
               "alert_classes_helper": "It will display a badge on the icon if the alert is active. Only the first one will be shown. Order them by priority.",
               "sensor_classes": "Sensor Classes",
               "description": "The Area card automatically displays entities of a specific area.",
-              "show_camera": "Show camera feed instead of area picture",
-              "image_type": "Image type",
-              "image_type_options": {
-                "none": "No image",
+              "display_type": "Display type",
+              "display_type_options": {
+                "compact": "Compact",
                 "icon": "Area icon",
                 "picture": "Area picture",
                 "camera": "Camera feed"

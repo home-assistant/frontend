@@ -47,7 +47,7 @@ const cardConfigStruct = assign(
     name: optional(string()),
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
-    image_type: optional(enums(["none", "icon", "picture", "camera"])),
+    display_type: optional(enums(["compact", "icon", "picture", "camera"])),
     camera_view: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
@@ -94,14 +94,15 @@ export class HuiAreaCardEditor
               schema: [
                 { name: "name", selector: { text: {} } },
                 {
-                  name: "image_type",
+                  name: "display_type",
+                  required: true,
                   selector: {
                     select: {
-                      options: ["none", "icon", "picture", "camera"].map(
+                      options: ["compact", "icon", "picture", "camera"].map(
                         (value) => ({
                           value,
                           label: localize(
-                            `ui.panel.lovelace.editor.card.area.image_type_options.${value}`
+                            `ui.panel.lovelace.editor.card.area.display_type_options.${value}`
                           ),
                         })
                       ),
@@ -251,7 +252,13 @@ export class HuiAreaCardEditor
 
   public setConfig(config: AreaCardConfig): void {
     assert(config, cardConfigStruct);
-    this._config = config;
+
+    const displayType =
+      config.display_type || (config.show_camera ? "camera" : "picture");
+    this._config = {
+      ...config,
+      display_type: displayType,
+    };
   }
 
   protected async updated() {
@@ -317,7 +324,12 @@ export class HuiAreaCardEditor
       this._config.sensor_classes || DEVICE_CLASSES.sensor
     );
 
-    const showCamera = this._config.image_type === "camera";
+    const showCamera = this._config.display_type === "camera";
+
+    const displayType =
+      this._config.display_type || this._config.show_camera
+        ? "camera"
+        : "picture";
 
     const schema = this._schema(
       this.hass.localize,
@@ -332,8 +344,8 @@ export class HuiAreaCardEditor
       camera_view: "auto",
       alert_classes: DEVICE_CLASSES.binary_sensor,
       sensor_classes: DEVICE_CLASSES.sensor,
-      image_type: "none",
       features_position: "bottom",
+      display_type: displayType,
       ...this._config,
     };
 
@@ -389,9 +401,10 @@ export class HuiAreaCardEditor
       ...newConfig,
     };
 
-    if (config.image_type !== "camera") {
+    if (config.display_type !== "camera") {
       delete config.camera_view;
     }
+
     fireEvent(this, "config-changed", { config });
   }
 
