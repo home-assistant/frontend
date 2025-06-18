@@ -9,8 +9,10 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
+import { getAreaControlEntities } from "../../card-features/hui-area-controls-card-feature";
 import {
   AREA_CONTROLS,
+  type AreaControl,
   type AreaControlsCardFeatureConfig,
   type LovelaceCardFeatureContext,
 } from "../../card-features/types";
@@ -36,7 +38,11 @@ export class HuiAreaControlsCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, customizeControls: boolean) =>
+    (
+      localize: LocalizeFunc,
+      customizeControls: boolean,
+      compatibleControls: AreaControl[]
+    ) =>
       [
         {
           name: "customize_controls",
@@ -52,7 +58,7 @@ export class HuiAreaControlsCardFeatureEditor
                   select: {
                     reorder: true,
                     multiple: true,
-                    options: AREA_CONTROLS.concat().map((control) => ({
+                    options: compatibleControls.map((control) => ({
                       value: control,
                       label: localize(
                         `ui.panel.lovelace.editor.features.types.area-controls.controls_options.${control}`
@@ -66,9 +72,48 @@ export class HuiAreaControlsCardFeatureEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _compatibleControls = memoizeOne(
+    (
+      areaId: string,
+      // needed to update memoized function when entities, devices or areas change
+      _entities: HomeAssistant["entities"],
+      _devices: HomeAssistant["devices"],
+      _areas: HomeAssistant["areas"]
+    ) => {
+      if (!this.hass) {
+        return [];
+      }
+      const controlEntities = getAreaControlEntities(
+        AREA_CONTROLS as unknown as AreaControl[],
+        areaId,
+        this.hass!
+      );
+      return (
+        Object.keys(controlEntities) as (keyof typeof controlEntities)[]
+      ).filter((control) => controlEntities[control].length > 0);
+    }
+  );
+
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || !this.context?.area_id) {
       return nothing;
+    }
+
+    const compatibleControls = this._compatibleControls(
+      this.context.area_id,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas
+    );
+
+    if (compatibleControls.length === 0) {
+      return html`
+        <ha-alert alert-type="warning">
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.features.types.area-controls.no_compatible_controls"
+          )}
+        </ha-alert>
+      `;
     }
 
     const data: AreaControlsCardFeatureData = {
@@ -76,7 +121,11 @@ export class HuiAreaControlsCardFeatureEditor
       customize_controls: this._config.controls !== undefined,
     };
 
-    const schema = this._schema(this.hass.localize, data.customize_controls);
+    const schema = this._schema(
+      this.hass.localize,
+      data.customize_controls,
+      compatibleControls
+    );
 
     return html`
       <ha-form
@@ -94,7 +143,12 @@ export class HuiAreaControlsCardFeatureEditor
       .value as AreaControlsCardFeatureData;
 
     if (customize_controls && !config.controls) {
-      config.controls = AREA_CONTROLS.concat();
+      config.controls = this._compatibleControls(
+        this.context!.area_id!,
+        this.hass!.entities,
+        this.hass!.devices,
+        this.hass!.areas
+      ).concat();
     }
 
     if (!customize_controls && config.controls) {

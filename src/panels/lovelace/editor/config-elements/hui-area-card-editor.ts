@@ -417,7 +417,7 @@ export class HuiAreaCardEditor
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {
     const index = ev.detail.subElementConfig.index;
     const config = this._config!.features![index!];
-    const featureContext = this._featureContext(this._config!.entity);
+    const featureContext = this._featureContext(this._config!.area);
 
     fireEvent(this, "edit-sub-element", {
       config: config,

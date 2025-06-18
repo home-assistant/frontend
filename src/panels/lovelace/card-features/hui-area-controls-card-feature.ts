@@ -69,6 +69,28 @@ export const supportsAreaControlsCardFeature = (
   return !!area;
 };
 
+export const getAreaControlEntities = (
+  controls: AreaControl[],
+  areaId: string,
+  hass: HomeAssistant
+): Record<AreaControl, string[]> =>
+  controls.reduce(
+    (acc, control) => {
+      const controlButton = AREA_CONTROLS_BUTTONS[control];
+      const filter = generateEntityFilter(hass, {
+        area: areaId,
+        domain: "light",
+        ...controlButton.filter,
+      });
+
+      acc[control] = Object.keys(hass.entities).filter((entityId) =>
+        filter(entityId)
+      );
+      return acc;
+    },
+    {} as Record<AreaControl, string[]>
+  );
+
 @customElement("hui-area-controls-card-feature")
 class HuiAreaControlsCardFeature
   extends LitElement
@@ -87,6 +109,12 @@ class HuiAreaControlsCardFeature
     return this.hass.areas[this.context.area_id!] as
       | AreaRegistryEntry
       | undefined;
+  }
+
+  private get _controls() {
+    return (
+      this._config?.controls || (AREA_CONTROLS as unknown as AreaControl[])
+    );
   }
 
   static getStubConfig(): AreaControlsCardFeatureConfig {
@@ -111,13 +139,18 @@ class HuiAreaControlsCardFeature
 
   private _handleButtonTap(ev: MouseEvent) {
     ev.stopPropagation();
+
+    if (!this.context?.area_id || !this.hass) {
+      return;
+    }
     const control = (ev.currentTarget as any).control as AreaControl;
 
     const controlEntities = this._controlEntities(
-      AREA_CONTROLS as unknown as AreaControl[],
-      this.hass!.areas,
+      this._controls,
+      this.context.area_id,
+      this.hass!.entities,
       this.hass!.devices,
-      this.hass!.entities
+      this.hass!.areas
     );
     const entitiesIds = controlEntities[control];
 
@@ -137,26 +170,12 @@ class HuiAreaControlsCardFeature
   private _controlEntities = memoizeOne(
     (
       controls: AreaControl[],
-      _areas: HomeAssistant["areas"],
-      _device: HomeAssistant["devices"],
-      entities: HomeAssistant["entities"]
-    ) =>
-      controls.reduce(
-        (acc, control) => {
-          const controlButton = AREA_CONTROLS_BUTTONS[control];
-          const filter = generateEntityFilter(this.hass!, {
-            area: this._area!.area_id,
-            domain: "light",
-            ...controlButton.filter,
-          });
-
-          acc[control] = Object.keys(entities).filter((entityId) =>
-            filter(entityId)
-          );
-          return acc;
-        },
-        {} as Record<AreaControl, string[]>
-      )
+      areaId: string,
+      // needed to update memoized function when entities, devices or areas change
+      _entities: HomeAssistant["entities"],
+      _devices: HomeAssistant["devices"],
+      _areas: HomeAssistant["areas"]
+    ) => getAreaControlEntities(controls, areaId, this.hass!)
   );
 
   protected render() {
@@ -173,10 +192,11 @@ class HuiAreaControlsCardFeature
     const controls = this._config.controls || AREA_CONTROLS;
 
     const controlEntities = this._controlEntities(
-      AREA_CONTROLS as unknown as AreaControl[],
-      this.hass!.areas,
+      this._controls,
+      this.context.area_id!,
+      this.hass!.entities,
       this.hass!.devices,
-      this.hass!.entities
+      this.hass!.areas
     );
 
     const supportedControls = controls.filter(
