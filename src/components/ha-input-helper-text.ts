@@ -19,6 +19,11 @@ class InputHelperText extends LitElement {
       padding-right: 16px;
       padding-inline-start: 16px;
       padding-inline-end: 16px;
+      letter-spacing: var(
+        --mdc-typography-caption-letter-spacing,
+        0.0333333333em
+      );
+      line-height: normal;
     }
     :host([disabled]) {
       color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
