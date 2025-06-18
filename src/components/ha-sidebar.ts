@@ -718,19 +718,21 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           color: var(--sidebar-icon-color);
         }
         .title {
-          max-height: 32px;
-          width: auto;
-          height: auto;
-          object-fit: contain;
-          text-align: center;
+          margin-left: 3px;
+          margin-inline-start: 3px;
+          margin-inline-end: initial;
+          width: 100%;
+          display: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .title img {
-          max-width: calc(100% - 40px);
+          max-width: calc(100% - 16px);
           max-height: 32px;
           width: auto;
           height: auto;
           object-fit: contain;
-          display: inline-block;
         }
         :host([narrow]) .title {
           margin: 0;
