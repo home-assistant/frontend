@@ -438,10 +438,8 @@ export class HaStatisticPicker extends LitElement {
               `
             : nothing}
         <span slot="headline">${item.primary} </span>
-        ${item.secondary || item.type
-          ? html`<span slot="supporting-text"
-              >${item.secondary} - ${item.type}</span
-            >`
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
           : nothing}
         ${item.statistic_id && showEntityId
           ? html`<span slot="supporting-text" class="code">
