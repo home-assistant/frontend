@@ -128,6 +128,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   }
 
+  private _groupEntitiesByDeviceClass = (
+    entityIds: string[]
+  ): Map<string, string[]> =>
+    entityIds.reduce((acc, entityId) => {
+      const stateObj = this.hass.states[entityId];
+      const deviceClass = stateObj.attributes.device_class!;
+      if (!acc.has(deviceClass)) {
+        acc.set(deviceClass, []);
+      }
+      acc.get(deviceClass)!.push(stateObj.entity_id);
+      return acc;
+    }, new Map<string, string[]>());
+
   private _groupedSensorEntityIds = memoizeOne(
     (
       entities: HomeAssistant["entities"],
@@ -141,17 +154,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         device_class: sensorClasses,
       });
       const entityIds = Object.keys(entities).filter(sensorFilter);
-
-      // Group entities by device class
-      return entityIds.reduce((acc, entityId) => {
-        const stateObj = this.hass.states[entityId];
-        const deviceClass = stateObj.attributes.device_class!;
-        if (!acc.has(deviceClass)) {
-          acc.set(deviceClass, []);
-        }
-        acc.get(deviceClass)!.push(stateObj.entity_id);
-        return acc;
-      }, new Map<string, string[]>());
+      return this._groupEntitiesByDeviceClass(entityIds);
     }
   );
 
@@ -168,16 +171,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         device_class: binarySensorClasses,
       });
       const entityIds = Object.keys(entities).filter(binarySensorFilter);
-      // Group entities by device class
-      return entityIds.reduce((acc, entityId) => {
-        const stateObj = this.hass.states[entityId];
-        const deviceClass = stateObj.attributes.device_class!;
-        if (!acc.has(deviceClass)) {
-          acc.set(deviceClass, []);
-        }
-        acc.get(deviceClass)!.push(stateObj.entity_id);
-        return acc;
-      }, new Map<string, string[]>());
+      return this._groupEntitiesByDeviceClass(entityIds);
     }
   );
 
@@ -196,7 +190,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
-  private _computeActiveAlertClasses(): string[] {
+  private _computeActiveAlertStates(): HassEntity[] {
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
     const alertClasses = this._config?.alert_classes;
@@ -209,56 +203,58 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       alertClasses
     );
 
-    return alertClasses.filter((alertClass) => {
-      const entityIds = groupedEntities.get(alertClass);
-      if (!entityIds) {
-        return false;
-      }
+    return (
+      alertClasses
+        .map((alertClass) => {
+          const entityIds = groupedEntities.get(alertClass);
+          if (!entityIds) {
+            return [];
+          }
 
-      return entityIds
-        .map((entityId) => this.hass.states[entityId] as HassEntity | undefined)
-        .some((stateObj) => stateObj?.state === BINARY_STATE_ON);
-    });
+          return entityIds
+            .map(
+              (entityId) => this.hass.states[entityId] as HassEntity | undefined
+            )
+            .filter((stateObj) => stateObj?.state === BINARY_STATE_ON);
+        })
+        .filter((activeAlerts) => activeAlerts.length > 0)
+        // Only return the first active entity for each alert class
+        .map((activeAlerts) => activeAlerts[0]!)
+    );
   }
 
   private _renderAlertSensorBadge(): TemplateResult<1> | typeof nothing {
-    const activeAlertClasses = this._computeActiveAlertClasses();
+    const states = this._computeActiveAlertStates();
 
-    const firstActiveAlertClass = activeAlertClasses[0] as string | undefined;
-
-    if (!firstActiveAlertClass) {
+    if (states.length === 0) {
       return nothing;
     }
 
+    // Only render the first one when using a badge
+    const stateObj = states[0] as HassEntity | undefined;
+
     return html`
       <ha-tile-badge class="alert-badge">
-        <ha-domain-icon
-          .hass=${this.hass}
-          domain="binary_sensor"
-          .deviceClass=${firstActiveAlertClass}
-          state="on"
-        ></ha-domain-icon>
+        <ha-state-icon .hass=${this.hass} .stateObj=${stateObj}></ha-state-icon>
       </ha-tile-badge>
     `;
   }
 
-  private _renderAlertSensorPills(): TemplateResult<1> | typeof nothing {
-    const activeAlertClasses = this._computeActiveAlertClasses();
+  private _renderAlertSensors(): TemplateResult<1> | typeof nothing {
+    const states = this._computeActiveAlertStates();
 
-    if (activeAlertClasses.length === 0) {
+    if (states.length === 0) {
       return nothing;
     }
     return html`
-      <div class="alert-pills">
-        ${activeAlertClasses.map(
-          (alertClass) => html`
-            <div class="alert-pill">
-              <ha-domain-icon
+      <div class="alerts">
+        ${states.map(
+          (stateObj) => html`
+            <div class="alert">
+              <ha-state-icon
                 .hass=${this.hass}
-                domain="binary_sensor"
-                .deviceClass=${alertClass}
-                state="on"
-              ></ha-domain-icon>
+                .stateObj=${stateObj}
+              ></ha-state-icon>
             </div>
           `
         )}
@@ -452,7 +448,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                         `
                       : nothing}
                 </div>
-                ${this._renderAlertSensorPills()}
+                ${this._renderAlertSensors()}
               </div>
             `
           : nothing}
@@ -625,7 +621,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     .alert-badge {
       --tile-badge-background-color: var(--orange-color);
     }
-    .alert-pills {
+    .alerts {
       position: absolute;
       top: 0;
       left: 0;
@@ -636,7 +632,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       pointer-events: none;
       z-index: 1;
     }
-    .alert-pill {
+    .alert {
       background-color: var(--orange-color);
       border-radius: 12px;
       width: 24px;
