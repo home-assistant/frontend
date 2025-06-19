@@ -393,7 +393,7 @@ export class HuiEnergyDevicesDetailGraphCard
           this.hass.themes.darkMode,
           false,
           compare,
-          "--state-unavailable-color"
+          "--history-unknown-color"
         ),
       },
       barMaxWidth: 50,
@@ -402,7 +402,7 @@ export class HuiEnergyDevicesDetailGraphCard
         this.hass.themes.darkMode,
         true,
         compare,
-        "--state-unavailable-color"
+        "--history-unknown-color"
       ),
       data: untrackedConsumption,
       stack: compare ? "devicesCompare" : "devices",
