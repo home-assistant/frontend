@@ -9,6 +9,7 @@ import {
   handleLegacyEntitySelector,
 } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
+import type { HaFormDataContainer } from "../ha-form/types";
 
 const LOAD_ELEMENTS = {
   action: () => import("./ha-selector-action"),
@@ -92,6 +93,15 @@ export class HaSelector extends LitElement {
 
   @property({ attribute: false }) public context?: Record<string, any>;
 
+  @property({ attribute: false }) public computeLabel?: (
+    schema: any,
+    data: HaFormDataContainer
+  ) => string;
+
+  @property({ attribute: false }) public computeHelper?: (
+    schema: any
+  ) => string | undefined;
+
   public async focus() {
     await this.updateComplete;
     (this.renderRoot.querySelector("#selector") as HTMLElement)?.focus();
@@ -141,6 +151,8 @@ export class HaSelector extends LitElement {
         context: this.context,
         localizeValue: this.localizeValue,
         id: "selector",
+        computeLabel: this.computeLabel,
+        computeHelper: this.computeHelper,
       })}
     `;
   }

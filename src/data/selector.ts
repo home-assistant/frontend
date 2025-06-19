@@ -18,6 +18,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
+import type { HaFormSchema } from "../components/ha-form/types";
 
 export type Selector =
   | ActionSelector
@@ -335,7 +336,12 @@ export interface NumberSelector {
 }
 
 export interface ObjectSelector {
-  object: {} | null;
+  object?: {
+    label_key?: string;
+    description_key?: string;
+    schema?: HaFormSchema[];
+    multiple?: boolean;
+  } | null;
 }
 
 export interface AssistPipelineSelector {

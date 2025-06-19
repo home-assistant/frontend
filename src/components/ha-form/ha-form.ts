@@ -148,6 +148,8 @@ export class HaForm extends LitElement implements HaFormElement {
                   .localizeValue=${this.localizeValue}
                   .required=${item.required || false}
                   .context=${this._generateContext(item)}
+                  .computeLabel=${this.computeLabel}
+                  .computeHelper=${this.computeHelper}
                 ></ha-selector>`
               : dynamicElement(this.fieldElementName(item.type), {
                   schema: item,
