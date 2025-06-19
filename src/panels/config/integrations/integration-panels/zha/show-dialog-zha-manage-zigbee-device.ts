@@ -1,7 +1,7 @@
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { ZHADevice } from "../../../../../data/zha";
 
-export type Tab = "clusters" | "bindings" | "signature" | "neighbors";
+export type Tab = "clusters" | "bindings" | "neighbors";
 
 export interface ZHAManageZigbeeDeviceDialogParams {
   device: ZHADevice;

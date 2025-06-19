@@ -21,7 +21,6 @@ import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-device-binding";
 import "./zha-device-neighbors";
-import "./zha-device-signature";
 import "./zha-group-binding";
 import "./zha-manage-clusters";
 
@@ -149,20 +148,13 @@ class DialogZHAManageZigbeeDevice extends LitElement {
                         `
                       : ""}
                   `
-                : this._currTab === "signature"
-                  ? html`
-                      <zha-device-zigbee-info
-                        .hass=${this.hass}
-                        .device=${this._device}
-                      ></zha-device-zigbee-info>
-                    `
-                  : html`
-                      <zha-device-neighbors
-                        .hass=${this.hass}
-                        .device=${this._device}
-                        .narrow=${!this.large}
-                      ></zha-device-neighbors>
-                    `
+                : html`
+                    <zha-device-neighbors
+                      .hass=${this.hass}
+                      .device=${this._device}
+                      .narrow=${!this.large}
+                    ></zha-device-neighbors>
+                  `
           )}
         </div>
       </ha-dialog>
