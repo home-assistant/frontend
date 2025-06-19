@@ -1753,7 +1753,7 @@
         "heading": "Reconfiguring device",
         "configuring_alt": "Configuring",
         "introduction": "Reconfigure a device on your Zigbee network. Use this feature if your device is not functioning correctly.",
-        "battery_device_warning": "You will need to wake battery powered devices before starting the reconfiguration process. Refer to your device's manual for instructions on how to wake the device.",
+        "battery_device_warning": "You will need to wake battery-powered devices before starting the reconfiguration process. Refer to your device's manual for instructions on how to wake the device.",
         "run_in_background": "You can close this dialog and the reconfiguration will continue in the background.",
         "start_reconfiguration": "Start reconfiguration",
         "in_progress": "The device is being reconfigured. This may take some time.",
@@ -1789,7 +1789,7 @@
           "view_network": "View network"
         },
         "services": {
-          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this action.",
+          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery-powered device please ensure it is awake and accepting commands when you use this action.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the Zigbee network.",
           "zigbee_information": "View the Zigbee information for the device."
@@ -3429,7 +3429,7 @@
                 },
                 "speech": {
                   "title": "Amazing speech options for Assist",
-                  "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                  "text": "Bring personality to your home by having it speak to you using our neural-network-powered speech-to-text and text-to-speech services."
                 },
                 "remote_access": {
                   "title": "Remote access",
@@ -6165,7 +6165,7 @@
           "reinterview_node": {
             "title": "Re-interview a Z-Wave device",
             "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
-            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "You will need to wake battery-powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
             "run_in_background": "You can close this dialog and the interview will continue in the background.",
             "start_reinterview": "Start re-interview",
             "in_progress": "The device is being interviewed. This may take some time.",
@@ -6367,7 +6367,7 @@
           "reinterview_node": {
             "title": "Re-interview a Matter device",
             "introduction": "Perform a full re-interview of a Matter device. Use this feature only if your device has missing or incorrect functionality.",
-            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "You will need to wake battery-powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
             "run_in_background": "You can close this dialog and the interview will continue in the background.",
             "start_reinterview": "Start re-interview",
             "in_progress": "The device is being interviewed. This may take some time.",
@@ -6377,7 +6377,7 @@
           "ping_node": {
             "title": "Ping a Matter device",
             "introduction": "This performs a (server-side) ping of your Matter device on all its (known) IP addresses.",
-            "battery_device_warning": "Note that especially for battery powered devices this can take a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "Note that especially for battery-powered devices this can take a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
