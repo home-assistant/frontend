@@ -416,6 +416,30 @@ const SCHEMAS: {
           },
         },
       },
+      items: {
+        name: "Items",
+        selector: {
+          object: {
+            label_key: "Name",
+            description_key: "Value",
+            multiple: true,
+            schema: [
+              { name: "Name", selector: { text: {} } },
+              {
+                name: "Value",
+                selector: {
+                  number: {
+                    mode: "slider",
+                    min: 0,
+                    max: 100,
+                    unit_of_measurement: "%",
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
     },
   },
 ];
