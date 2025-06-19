@@ -189,8 +189,6 @@ class HuiAreaControlsCardFeature
       return nothing;
     }
 
-    const controls = this._config.controls || AREA_CONTROLS;
-
     const controlEntities = this._controlEntities(
       this._controls,
       this.context.area_id!,
@@ -199,9 +197,13 @@ class HuiAreaControlsCardFeature
       this.hass!.areas
     );
 
-    const supportedControls = controls.filter(
+    const supportedControls = this._controls.filter(
       (control) => controlEntities[control].length > 0
     );
+
+    if (!supportedControls.length) {
+      return nothing;
+    }
 
     return html`
       <ha-control-button-group>
