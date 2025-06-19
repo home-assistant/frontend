@@ -7845,9 +7845,9 @@
                 "customize_controls": "Customize controls",
                 "controls": "Controls",
                 "controls_options": {
-                  "light": "Light",
-                  "fan": "Fan",
-                  "switch": "Switch"
+                  "light": "Lights",
+                  "fan": "Fans",
+                  "switch": "Switches"
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               }
