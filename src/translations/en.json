@@ -6376,7 +6376,7 @@
           },
           "ping_node": {
             "title": "Ping a Matter device",
-            "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
+            "introduction": "This performs a (server-side) ping of your Matter device on all its (known) IP addresses.",
             "battery_device_warning": "Note that especially for battery-powered devices this can take a while. You may need to wake up battery-powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
