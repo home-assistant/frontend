@@ -96,7 +96,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 1;
+    const featuresPosition =
+      this._config && this._featurePosition(this._config);
+    const displayType = this._config?.display_type || "picture";
+    const featuresCount = this._config?.features?.length || 0;
+    return (
+      1 +
+      (displayType === "compact" ? 0 : 2) +
+      (featuresPosition === "inline" ? 0 : featuresCount)
+    );
   }
 
   public getGridOptions(): LovelaceGridOptions {
