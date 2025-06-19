@@ -89,7 +89,9 @@ export class HaObjectSelector extends LitElement {
             `
           : nothing}
         <div slot="headline">${label}</div>
-        ${description ? html`<div slot="supporting-text"></div>` : nothing}
+        ${description
+          ? html`<div slot="supporting-text">${description}</div>`
+          : nothing}
         <ha-icon-button
           slot="end"
           .item=${item}
