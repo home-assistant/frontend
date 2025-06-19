@@ -6240,21 +6240,21 @@
             }
           },
           "logs": {
-            "title": "Z-Wave JS Logs",
+            "title": "Z-Wave JS logs",
             "log_level": "Log level",
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
-            "log_level_changed": "Log Level changed to: {level}",
+            "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
           },
           "node_installer": {
-            "header": "Installer Settings",
+            "header": "Installer settings",
             "introduction": "Configure your device installer settings.",
             "endpoint": "Endpoint",
             "no_settings": "This device does not have any installer settings.",
-            "command_class": "Command Class",
+            "command_class": "Command class",
             "capability_controls": {
               "thermostat_setback": {
-                "title": "Thermostat Setback",
+                "title": "Thermostat setback",
                 "setback_state_label": "Setback in Kelvin",
                 "setback_state_helper": "Min: -12.8, max: 12.0",
                 "setback_special_state": {
@@ -6264,7 +6264,7 @@
                   "unused": "Unused"
                 },
                 "setback_type": {
-                  "label": "Setback Type",
+                  "label": "Setback type",
                   "none": "None",
                   "temporary": "Temporary",
                   "permanent": "Permanent"
@@ -6284,7 +6284,7 @@
                 "control_failed": "Failed to control transition. {error}"
               },
               "door_lock": {
-                "title": "Door Lock",
+                "title": "Door lock",
                 "twist_assist": "Twist assist",
                 "block_to_block": "Block to block",
                 "auto_relock_time": "Auto relock time",
@@ -6311,8 +6311,8 @@
               "color_switch": {
                 "color_component": "Color component",
                 "colors": {
-                  "0": "Warm White",
-                  "1": "Cold White",
+                  "0": "Warm white",
+                  "1": "Cold white",
                   "2": "Red",
                   "3": "Green",
                   "4": "Blue",
