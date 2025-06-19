@@ -25,9 +25,9 @@ import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
   iconPath: string;
+  activeColor: string;
   onService: string;
   offService: string;
-  domain: string;
   filter: EntityFilter;
 }
 
@@ -37,7 +37,7 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "light",
     },
-    domain: "light",
+    activeColor: "var(--state-light-active-color)",
     onService: "light.turn_on",
     offService: "light.turn_off",
   },
@@ -46,7 +46,7 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "fan",
     },
-    domain: "fan",
+    activeColor: "var(--state-fan-active-color)",
     onService: "fan.turn_on",
     offService: "fan.turn_off",
   },
@@ -55,7 +55,7 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "switch",
     },
-    domain: "switch",
+    activeColor: "var(--state-switch-active-color)",
     onService: "switch.turn_on",
     offService: "switch.turn_off",
   },
@@ -79,7 +79,6 @@ export const getAreaControlEntities = (
       const controlButton = AREA_CONTROLS_BUTTONS[control];
       const filter = generateEntityFilter(hass, {
         area: areaId,
-        domain: "light",
         ...controlButton.filter,
       });
 
@@ -221,12 +220,10 @@ class HuiAreaControlsCardFeature
             return stateActive(stateObj);
           });
 
-          const color = `var(--state-${button.domain}-active-color)`;
-
           return html`
             <ha-control-button
               class=${active ? "active" : ""}
-              style=${styleMap({ "--active-color": color })}
+              style=${styleMap({ "--active-color": button.activeColor })}
               .control=${control}
               @click=${this._handleButtonTap}
             >
