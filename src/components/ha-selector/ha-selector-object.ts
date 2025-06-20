@@ -5,7 +5,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ObjectSelector } from "../../data/selector";
-import { computeSelectorLabel } from "../../data/selector-label";
+import { formatSelectorValue } from "../../data/selector/format_selector_value";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
 import type { HomeAssistant } from "../../types";
 import type { HaFormSchema } from "../ha-form/types";
@@ -57,28 +57,27 @@ export class HaObjectSelector extends LitElement {
   };
 
   private _renderItem(item: any, index: number) {
-    const labelKey =
-      this.selector.object!.label_key ||
+    const labelField =
+      this.selector.object!.label_field ||
       Object.keys(this.selector.object!.fields!)[0];
 
-    const labelSelector = this.selector.object!.fields![labelKey].selector;
+    const labelSelector = this.selector.object!.fields![labelField].selector;
 
     const label = labelSelector
-      ? computeSelectorLabel(this.hass, item[labelKey], labelSelector)
+      ? formatSelectorValue(this.hass, item[labelField], labelSelector)
       : "";
-
-    const descriptionKey = this.selector.object!.description_key;
 
     let description = "";
 
-    if (descriptionKey) {
+    const descriptionField = this.selector.object!.description_field;
+    if (descriptionField) {
       const descriptionSelector =
-        this.selector.object!.fields![descriptionKey].selector;
+        this.selector.object!.fields![descriptionField].selector;
 
       description = descriptionSelector
-        ? computeSelectorLabel(
+        ? formatSelectorValue(
             this.hass,
-            item[descriptionKey],
+            item[descriptionField],
             descriptionSelector
           )
         : "";

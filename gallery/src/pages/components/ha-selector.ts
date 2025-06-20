@@ -420,8 +420,8 @@ const SCHEMAS: {
         name: "Items",
         selector: {
           object: {
-            label_key: "name",
-            description_key: "value",
+            label_field: "name",
+            description_field: "value",
             multiple: true,
             fields: {
               name: {

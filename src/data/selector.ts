@@ -342,8 +342,8 @@ interface ObjectSelectorField {
 
 export interface ObjectSelector {
   object?: {
-    label_key?: string;
-    description_key?: string;
+    label_field?: string;
+    description_field?: string;
     translation_key?: string;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;

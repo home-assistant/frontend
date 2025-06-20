@@ -1,13 +1,13 @@
-import { ensureArray } from "../common/array/ensure-array";
-import { computeAreaName } from "../common/entity/compute_area_name";
-import { computeDeviceName } from "../common/entity/compute_device_name";
-import { computeEntityName } from "../common/entity/compute_entity_name";
-import { getEntityContext } from "../common/entity/context/get_entity_context";
-import { blankBeforeUnit } from "../common/translations/blank_before_unit";
-import type { HomeAssistant } from "../types";
-import type { Selector } from "./selector";
+import { ensureArray } from "../../common/array/ensure-array";
+import { computeAreaName } from "../../common/entity/compute_area_name";
+import { computeDeviceName } from "../../common/entity/compute_device_name";
+import { computeEntityName } from "../../common/entity/compute_entity_name";
+import { getEntityContext } from "../../common/entity/context/get_entity_context";
+import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
+import type { HomeAssistant } from "../../types";
+import type { Selector } from "../selector";
 
-export const computeSelectorLabel = (
+export const formatSelectorValue = (
   hass: HomeAssistant,
   value: any,
   selector?: Selector
