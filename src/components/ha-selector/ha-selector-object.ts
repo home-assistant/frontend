@@ -46,26 +46,6 @@ export class HaObjectSelector extends LitElement {
 
   private _valueChangedFromChild = false;
 
-  private _computeString(value: any) {
-    if (value == null) {
-      return "";
-    }
-    if (typeof value === "string") {
-      return value;
-    }
-    if (value === null || value === undefined) {
-      return "";
-    }
-    if (Array.isArray(value)) {
-      // If the value is an array, we return the first element as a string
-      return this._computeString(value[0]);
-    }
-    if (typeof value === "object") {
-      return JSON.toString();
-    }
-    return String(value);
-  }
-
   private _renderItem(item: any, index: number) {
     const labelKey =
       this.selector.object!.label_key || this.selector.object!.schema![0].name;
@@ -108,9 +88,11 @@ export class HaObjectSelector extends LitElement {
               ></ha-svg-icon>
             `
           : nothing}
-        <div slot="headline">${label}</div>
+        <div slot="headline" class="label">${label}</div>
         ${description
-          ? html`<div slot="supporting-text">${description}</div>`
+          ? html`<div slot="supporting-text" class="description">
+              ${description}
+            </div>`
           : nothing}
         <ha-icon-button
           slot="end"
@@ -320,6 +302,12 @@ export class HaObjectSelector extends LitElement {
         label {
           margin-bottom: 8px;
           display: block;
+        }
+        ha-md-list-item .label,
+        ha-md-list-item .description {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
       `,
     ];
