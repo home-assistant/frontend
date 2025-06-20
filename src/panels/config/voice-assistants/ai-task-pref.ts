@@ -93,7 +93,7 @@ export class AITaskPref extends LitElement {
               .hass=${this.hass}
               .value=${this._prefs.gen_text_entity_id}
               .includeDomains=${["ai_task"]}
-              @change=${this._handlePrefChange}
+              @value-changed=${this._handlePrefChange}
             ></ha-entity-picker>
           </ha-settings-row>
         </div>
@@ -101,10 +101,12 @@ export class AITaskPref extends LitElement {
     `;
   }
 
-  private async _handlePrefChange(ev: CustomEvent) {
+  private async _handlePrefChange(
+    ev: CustomEvent<{ value: string | undefined }>
+  ) {
     const input = ev.target as HaEntityPicker;
     const key = input.getAttribute("data-name") as keyof AITaskPreferences;
-    const entityId = input.value || null;
+    const entityId = ev.detail.value || null;
     const oldPrefs = this._prefs;
     this._prefs = { ...this._prefs!, [key]: entityId };
     try {
