@@ -1,5 +1,5 @@
 import { expose } from "comlink";
-import { stringCompare, ipv4Compare } from "../../common/string/compare";
+import { stringCompare, ipCompare } from "../../common/string/compare";
 import { stripDiacritics } from "../../common/string/strip-diacritics";
 import type {
   ClonedDataTableColumnData,
@@ -57,8 +57,8 @@ const sortData = (
     if (column.type === "numeric") {
       valA = isNaN(valA) ? undefined : Number(valA);
       valB = isNaN(valB) ? undefined : Number(valB);
-    } else if (column.type === "ipv4") {
-      return sort * ipv4Compare(valA, valB);
+    } else if (column.type === "ip") {
+      return sort * ipCompare(valA, valB);
     } else if (typeof valA === "string" && typeof valB === "string") {
       return sort * stringCompare(valA, valB, language);
     }
