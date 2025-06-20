@@ -29,6 +29,7 @@ class StateCardSelect extends LitElement {
         fixedMenuPosition
         @selected=${this._selectedOptionChanged}
         @closed=${stopPropagation}
+        @click=${stopPropagation}
       >
         ${this.stateObj.attributes.options.map(
           (option) => html`
