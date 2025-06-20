@@ -5170,8 +5170,7 @@
         },
         "person": {
           "caption": "People",
-          "description": "Manage the people that Home Assistant tracks",
-          "introduction": "Here you can add each person of interest in Home Assistant.",
+          "introduction": "Manage the people Home Assistant recognizes and control their access.",
           "note_about_persons_configured_in_yaml": "People configured via configuration.yaml cannot be edited via the UI.",
           "learn_more": "Learn more about people",
           "no_persons_created_yet": "Looks like you have not added any people yet.",
