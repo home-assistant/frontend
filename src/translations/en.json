@@ -5680,7 +5680,7 @@
             "network_settings_title": "Network settings",
             "change_channel": "Change channel",
             "channel_dialog": {
-              "title": "Multiprotocol addon in use",
+              "title": "Multiprotocol add-on in use",
               "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
           },
@@ -9203,10 +9203,10 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "add_addon_repository_title": "Missing add-on repository",
-      "add_addon_repository_description": "The addon ''{addon}'' is a part of the add-on repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
+      "add_addon_repository_description": "The add-on ''{addon}'' is a part of the add-on repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
-      "error_repository_not_found": "The required repository for this Add-on was not found",
+      "error_repository_not_found": "The required repository for this add-on was not found",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
@@ -9408,7 +9408,7 @@
       },
       "uninstall_addon": {
         "title": "Uninstall {name}?",
-        "remove_data": "Also permanently delete this addon's data",
+        "remove_data": "Also permanently delete this add-on's data",
         "uninstall": "Uninstall"
       },
       "hardware": {
