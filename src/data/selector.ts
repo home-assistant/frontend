@@ -334,8 +334,20 @@ export interface NumberSelector {
   } | null;
 }
 
+interface ObjectSelectorField {
+  selector: Selector;
+  label?: string;
+  required?: boolean;
+}
+
 export interface ObjectSelector {
-  object: {} | null;
+  object?: {
+    label_field?: string;
+    description_field?: string;
+    translation_key?: string;
+    fields?: Record<string, ObjectSelectorField>;
+    multiple?: boolean;
+  } | null;
 }
 
 export interface AssistPipelineSelector {
