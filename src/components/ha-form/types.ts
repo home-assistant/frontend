@@ -103,15 +103,6 @@ export interface HaFormTimeSchema extends HaFormBaseSchema {
   type: "positive_time_period_dict";
 }
 
-// Helper type to extract the schema from ObjectSelector
-type ObjectSelectorSchema<S> = S extends {
-  selector: { object?: { schema?: infer OS } };
-}
-  ? OS extends readonly HaFormSchema[]
-    ? SchemaUnion<OS>
-    : never
-  : never;
-
 // Type utility to unionize a schema array by flattening any grid schemas
 export type SchemaUnion<
   SchemaArray extends readonly HaFormSchema[],
@@ -121,9 +112,7 @@ export type SchemaUnion<
   | HaFormExpandableSchema
   | HaFormOptionalActionsSchema
   ? SchemaUnion<Schema["schema"]> | Schema
-  : Schema extends HaFormSelector
-    ? ObjectSelectorSchema<Schema> | Schema
-    : Schema;
+  : Schema;
 
 export type HaFormDataContainer = Record<string, HaFormData>;
 

@@ -18,7 +18,6 @@ import type {
   EntityRegistryEntry,
 } from "./entity_registry";
 import type { EntitySources } from "./entity_sources";
-import type { HaFormSchema } from "../components/ha-form/types";
 
 export type Selector =
   | ActionSelector
@@ -335,11 +334,18 @@ export interface NumberSelector {
   } | null;
 }
 
+interface ObjectSelectorField {
+  selector: Selector;
+  label?: string;
+  required?: boolean;
+}
+
 export interface ObjectSelector {
   object?: {
     label_key?: string;
     description_key?: string;
-    schema?: HaFormSchema[];
+    translation_key?: string;
+    fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
   } | null;
 }

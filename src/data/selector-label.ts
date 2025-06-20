@@ -4,28 +4,8 @@ import { computeDeviceName } from "../common/entity/compute_device_name";
 import { computeEntityName } from "../common/entity/compute_entity_name";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
-import type { HaFormSchema } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
 import type { Selector } from "./selector";
-
-export const getSelector = (
-  name: string,
-  schema: HaFormSchema[]
-): Selector | undefined => {
-  for (const item of schema) {
-    if ("selector" in item && item.name === name) {
-      return item.selector;
-    }
-
-    if ("schema" in item) {
-      const selector = getSelector(name, item.schema as HaFormSchema[]);
-      if (selector) {
-        return selector;
-      }
-    }
-  }
-  return undefined;
-};
 
 export const computeSelectorLabel = (
   hass: HomeAssistant,
