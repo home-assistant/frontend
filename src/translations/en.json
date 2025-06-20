@@ -7241,7 +7241,8 @@
                 "buttons": "Buttons",
                 "conditional": "Conditional",
                 "cast": "Cast",
-                "button": "Button"
+                "button": "Button",
+                "filter": "Filter"
               }
             },
             "entity": {
