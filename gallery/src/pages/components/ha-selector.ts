@@ -420,13 +420,17 @@ const SCHEMAS: {
         name: "Items",
         selector: {
           object: {
-            label_key: "Name",
-            description_key: "Value",
+            label_key: "name",
+            description_key: "value",
             multiple: true,
-            schema: [
-              { name: "Name", selector: { text: {} } },
-              {
-                name: "Value",
+            fields: {
+              name: {
+                label: "Name",
+                selector: { text: {} },
+                required: true,
+              },
+              value: {
+                label: "Value",
                 selector: {
                   number: {
                     mode: "slider",
@@ -436,7 +440,7 @@ const SCHEMAS: {
                   },
                 },
               },
-            ],
+            },
           },
         },
       },
