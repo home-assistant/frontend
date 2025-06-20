@@ -47,7 +47,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
   private _params!: SaveDialogParams;
 
-  private _newName?: string;
+  @state() private _newName?: string;
 
   private _newIcon?: string;
 
@@ -269,12 +269,17 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           <span slot="title">${this._params.title || title}</span>
           ${this._canSuggest
             ? html`
-                <ha-icon-button
+                <ha-assist-chip
+                  id="suggest"
                   slot="actionItems"
-                  .label=${this.hass.localize("ui.common.suggest_ai")}
-                  .path=${mdiStarFourPoints}
                   @click=${this._suggest}
-                ></ha-icon-button>
+                  label=${this.hass.localize("ui.common.suggest_ai")}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiStarFourPoints}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
               `
             : nothing}
         </ha-dialog-header>
@@ -346,13 +351,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       instructions: `Suggest one name for the following Home Assistant automation.
 Your answer should only contain the name, without any additional text or formatting.
 The name should be relevant to the automation's purpose and should not exceed 50 characters.
-The name should be short, descriptive, and written in the language ${this.hass.language}.
+The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.
 
 ${dump(this._params.config)}
 `,
     });
     this._newName = result.text.trim();
-    this.requestUpdate();
   }
 
   private async _save(): Promise<void> {
@@ -422,6 +426,10 @@ ${dump(this._params.config)}
         }
         .destructive {
           --mdc-theme-primary: var(--error-color);
+        }
+
+        #suggest {
+          margin: 8px 16px;
         }
       `,
     ];
