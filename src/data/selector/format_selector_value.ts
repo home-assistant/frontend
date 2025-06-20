@@ -21,7 +21,7 @@ export const formatSelectorValue = (
   }
 
   if ("text" in selector) {
-    const { prefix, suffix } = selector.text!;
+    const { prefix, suffix } = selector.text || {};
 
     const texts = ensureArray(value);
     return texts
@@ -30,7 +30,7 @@ export const formatSelectorValue = (
   }
 
   if ("number" in selector) {
-    const { unit_of_measurement } = selector.number!;
+    const { unit_of_measurement } = selector.number || {};
     const numbers = ensureArray(value);
     return numbers
       .map((number) => {
