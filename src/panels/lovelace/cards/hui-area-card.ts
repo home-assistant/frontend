@@ -423,6 +423,8 @@ export class HuiAreaCard
 
     const ignoreAspectRatio = this.layout === "grid";
 
+    const showName = this._config.show_name !== false;
+
     return html`
       <ha-card
         class=${imageClass ? "image" : ""}
@@ -482,7 +484,7 @@ export class HuiAreaCard
           </div>
           <div class="bottom">
             <div>
-              <div class="name">${area.name}</div>
+              ${showName ? html`<div class="name">${area.name}</div>` : ""}
               ${sensors.length
                 ? html`<div class="sensors">${sensors}</div>`
                 : ""}

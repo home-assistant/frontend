@@ -38,6 +38,7 @@ const cardConfigStruct = assign(
     aspect_ratio: optional(string()),
     alert_classes: optional(array(string())),
     sensor_classes: optional(array(string())),
+    show_name: optional(boolean()),
   })
 );
 
@@ -61,7 +62,14 @@ export class HuiAreaCardEditor
     ) =>
       [
         { name: "area", selector: { area: {} } },
-        { name: "show_camera", required: false, selector: { boolean: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            { name: "show_name", selector: { boolean: {} }, default: true },
+            { name: "show_camera", required: false, selector: { boolean: {} } },
+          ],
+        },
         ...(showCamera
           ? ([
               {
@@ -260,6 +268,10 @@ export class HuiAreaCardEditor
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "show_name":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.show_name"
+        );
       case "theme":
         return `${this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.theme"
