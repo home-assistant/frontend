@@ -7,6 +7,7 @@ import "../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../types";
 import type { HassDialog } from "../make-dialog-manager";
 import type { FormDialogData, FormDialogParams } from "./show-form-dialog";
+import { haStyleDialog } from "../../resources/styles";
 
 @customElement("dialog-form")
 export class DialogForm
@@ -78,7 +79,7 @@ export class DialogForm
     `;
   }
 
-  static styles = css``;
+  static styles = [haStyleDialog, css``];
 }
 
 declare global {
