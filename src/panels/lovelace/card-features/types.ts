@@ -158,6 +158,15 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
+export const AREA_CONTROLS = ["light", "fan", "switch"] as const;
+
+export type AreaControl = (typeof AREA_CONTROLS)[number];
+
+export interface AreaControlsCardFeatureConfig {
+  type: "area-controls";
+  controls?: AreaControl[];
+}
+
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
@@ -187,8 +196,10 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
-  | WaterHeaterOperationModesCardFeatureConfig;
+  | WaterHeaterOperationModesCardFeatureConfig
+  | AreaControlsCardFeatureConfig;
 
 export interface LovelaceCardFeatureContext {
   entity_id?: string;
+  area_id?: string;
 }

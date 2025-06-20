@@ -450,6 +450,7 @@ export class HaScriptEditor extends SubscribeMixin(
                   .readOnly=${this._readOnly}
                   .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
                   @value-changed=${this._yamlChanged}
+                  .showErrors=${false}
                 ></ha-yaml-editor>`
               : nothing}
         </div>

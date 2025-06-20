@@ -349,7 +349,10 @@ class HaPanelMy extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    const path = this.route.path.substring(1);
+    const path = this.route.path.substring(
+      1,
+      this.route.path.endsWith("/") ? this.route.path.length - 1 : undefined
+    );
     const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
     this._redirect = getRedirect(path);

@@ -1,8 +1,9 @@
 import "@material/mwc-button";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiClose, mdiPlus } from "@mdi/js";
+import { mdiClose, mdiPlus, mdiStarFourPoints } from "@mdi/js";
+import { dump } from "js-yaml";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-domain-icon";
@@ -24,6 +25,11 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
+import {
+  fetchAITaskPreferences,
+  generateTextAITask,
+} from "../../../../data/ai_task";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -37,9 +43,11 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
   @state() private _entryUpdates!: EntityRegistryUpdate;
 
+  @state() private _canSuggest = false;
+
   private _params!: SaveDialogParams;
 
-  private _newName?: string;
+  @state() private _newName?: string;
 
   private _newIcon?: string;
 
@@ -79,6 +87,15 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     this._opened = false;
     this._visibleOptionals = [];
     return true;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    if (isComponentLoaded(this.hass, "ai_task")) {
+      fetchAITaskPreferences(this.hass).then((prefs) => {
+        this._canSuggest = prefs.gen_text_entity_id !== null;
+      });
+    }
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -250,6 +267,21 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${this._params.title || title}</span>
+          ${this._canSuggest
+            ? html`
+                <ha-assist-chip
+                  id="suggest"
+                  slot="actionItems"
+                  @click=${this._suggest}
+                  label=${this.hass.localize("ui.common.suggest_ai")}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiStarFourPoints}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+              `
+            : nothing}
         </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error"
@@ -311,6 +343,20 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   private _handleDiscard() {
     this._params.onDiscard?.();
     this.closeDialog();
+  }
+
+  private async _suggest() {
+    const result = await generateTextAITask(this.hass, {
+      task_name: "frontend:automation:save",
+      instructions: `Suggest one name for the following Home Assistant automation.
+Your answer should only contain the name, without any additional text or formatting.
+The name should be relevant to the automation's purpose and should not exceed 50 characters.
+The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.
+
+${dump(this._params.config)}
+`,
+    });
+    this._newName = result.text.trim();
   }
 
   private async _save(): Promise<void> {
@@ -380,6 +426,10 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         }
         .destructive {
           --mdc-theme-primary: var(--error-color);
+        }
+
+        #suggest {
+          margin: 8px 16px;
         }
       `,
     ];
