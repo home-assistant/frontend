@@ -19,7 +19,9 @@ class DialogNewInput extends LitElement implements HassDialog {
 
   @state() private _data = { id: "", type: "input" };
 
-  @state() private _onSubmit = (_: string, __: "input" | "section") => {};
+  @state() private _onSubmit = (_: string, __: "input" | "section") => {
+    // Empty on purpose - this is supposed to be overridden by parameters
+  };
 
   private _schema = memoizeOne(
     () =>
@@ -58,11 +60,12 @@ class DialogNewInput extends LitElement implements HassDialog {
     this._data.type = "input";
   }
 
-  closeDialog(): void {
+  closeDialog(): boolean {
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
+    return true;
   }
 
   private _submit() {

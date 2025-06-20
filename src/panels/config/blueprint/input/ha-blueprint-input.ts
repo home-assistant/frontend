@@ -42,7 +42,7 @@ export class HaBlueprintInput extends LitElement {
   })
   public _clipboard?: BlueprintClipboard;
 
-  @state() private _showReorder: boolean = false;
+  @state() private _showReorder = false;
 
   private _focusLastInputOnChange = false;
 
