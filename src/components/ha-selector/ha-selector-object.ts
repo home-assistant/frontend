@@ -4,6 +4,7 @@ import { customElement, property, query } from "lit/decorators";
 import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ObjectSelector } from "../../data/selector";
+import { computeSelectorLabel, getSelector } from "../../data/selector-label";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
 import type { HomeAssistant } from "../../types";
 import type { HaFormDataContainer } from "../ha-form/types";
@@ -68,12 +69,31 @@ export class HaObjectSelector extends LitElement {
   private _renderItem(item: any, index: number) {
     const labelKey =
       this.selector.object!.label_key || this.selector.object!.schema![0].name;
-    const label = this._computeString(item[labelKey]);
+
+    const labelSelector = getSelector(labelKey, this.selector.object!.schema!);
+
+    const label = computeSelectorLabel(
+      this.hass,
+      item[labelKey],
+      labelSelector
+    );
 
     const descriptionKey = this.selector.object!.description_key;
-    const description = descriptionKey
-      ? this._computeString(item[descriptionKey])
-      : "";
+
+    let description: string | undefined;
+
+    if (descriptionKey) {
+      const descriptionSelector = getSelector(
+        descriptionKey,
+        this.selector.object!.schema!
+      );
+
+      description = computeSelectorLabel(
+        this.hass,
+        item[descriptionKey],
+        descriptionSelector
+      );
+    }
 
     const reorderable = this.selector.object!.multiple;
     const multiple = this.selector.object!.multiple || false;
