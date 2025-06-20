@@ -9208,7 +9208,7 @@
       "error_addon_not_found": "Add-on not found",
       "error_repository_not_found": "The required repository for this add-on was not found",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
-      "error_addon_no_ingress": "The requested add-on does not support ingress"
+      "error_addon_no_ingress": "The requested add-on does not support Ingress"
     },
     "ingress": {
       "error_addon_info": "Unable to fetch add-on info to start Ingress",
