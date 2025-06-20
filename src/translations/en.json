@@ -4555,7 +4555,7 @@
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
-            "file_name": "Blueprint Path"
+            "file_name": "Blueprint path"
           },
           "editor": {
             "default_name": "New blueprint",
