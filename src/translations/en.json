@@ -1000,6 +1000,7 @@
       "todo": {
         "item": {
           "summary": "Task name",
+          "icon": "Icon",
           "description": "Description",
           "add": "Add item",
           "delete": "Delete item",
