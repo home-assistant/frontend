@@ -731,7 +731,7 @@ export class StateHistoryChartLine extends LitElement {
   private _formatYAxisLabel = (value: number) => {
     // show the first significant digit for tiny values
     const maximumFractionDigits = Math.max(
-      2,
+      1,
       // use the difference to the previous value to determine the number of significant digits #25526
       -Math.floor(
         Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
