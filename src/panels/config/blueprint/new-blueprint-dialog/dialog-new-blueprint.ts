@@ -30,11 +30,12 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
     this._opened = true;
   }
 
-  closeDialog(): void {
+  closeDialog(): boolean {
     if (this._opened) {
       fireEvent(this, "dialog-closed", { dialog: this.localName });
     }
     this._opened = false;
+    return true;
   }
 
   private _createEmpty(type: BlueprintDomain) {
