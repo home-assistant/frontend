@@ -8,6 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiExpandAllOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -60,6 +61,7 @@ import {
 import "./controls/more-info-default";
 import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
+import "./ha-more-info-group";
 import "./ha-more-info-settings";
 import "./more-info-content";
 
@@ -70,7 +72,7 @@ export interface MoreInfoDialogParams {
   tab?: View;
 }
 
-type View = "info" | "history" | "settings" | "related";
+type View = "info" | "history" | "settings" | "related" | "group";
 
 interface ChildView {
   viewTag: string;
@@ -94,7 +96,16 @@ const DEFAULT_VIEW: View = "info";
 export class MoreInfoDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public large = false;
+  @property({ type: Boolean, reflect: true })
+  set large(value: boolean) {
+    this._large = value;
+  }
+
+  get large() {
+    return this._large || this._currView === "group";
+  }
+
+  @state() private _large = false;
 
   @state() private _entityId?: string | null;
 
@@ -183,6 +194,16 @@ export class MoreInfoDialog extends LitElement {
     );
   }
 
+  private _shouldShowGroup(): boolean {
+    const stateObj = this.hass.states[this._entityId!];
+    return (
+      stateObj &&
+      stateObj.attributes &&
+      stateObj.attributes.entity_id &&
+      stateObj.attributes.entity_id.length > 0
+    );
+  }
+
   private _getDeviceId(): string | null {
     const entity = this.hass.entities[this._entityId!] as
       | EntityRegistryEntry
@@ -201,7 +222,11 @@ export class MoreInfoDialog extends LitElement {
       },
       ""
     );
+    const oldView = this._currView;
     this._currView = view;
+    if (oldView === "group" || view === "group") {
+      this.requestUpdate("large");
+    }
   }
 
   private _goBack() {
@@ -223,6 +248,10 @@ export class MoreInfoDialog extends LitElement {
 
   private _goToSettings(): void {
     this._setView("settings");
+  }
+
+  private _goToGroup(): void {
+    this._setView("group");
   }
 
   private _showChildView(ev: CustomEvent): void {
@@ -377,6 +406,18 @@ export class MoreInfoDialog extends LitElement {
           </span>
           ${isDefaultView
             ? html`
+                ${this._shouldShowGroup()
+                  ? html`
+                      <ha-icon-button
+                        slot="actionItems"
+                        .label=${this.hass.localize(
+                          "ui.dialogs.more_info_control.group"
+                        )}
+                        .path=${mdiExpandAllOutline}
+                        @click=${this._goToGroup}
+                      ></ha-icon-button>
+                    `
+                  : nothing}
                 ${this._shouldShowHistory(domain)
                   ? html`
                       <ha-icon-button
@@ -568,7 +609,16 @@ export class MoreInfoDialog extends LitElement {
                               : "entity"}
                           ></ha-related-items>
                         `
-                      : nothing
+                      : this._currView === "group"
+                        ? html`
+                            <ha-more-info-group
+                              .hass=${this.hass}
+                              .entityId=${this._entityId}
+                              .entry=${this._entry}
+                              .editMode=${this._infoEditMode}
+                            ></ha-more-info-group>
+                          `
+                        : nothing
           )}
         </div>
       </ha-dialog>
