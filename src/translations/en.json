@@ -7200,6 +7200,9 @@
                 "above": "Above",
                 "below": "Below"
               },
+              "last_updated_state": {
+                "label": "Entity updated"
+              },
               "screen": {
                 "label": "Screen",
                 "breakpoints": "Screen sizes",
