@@ -46,6 +46,7 @@ import {
   removeSearchParam,
 } from "../../../common/url/search-params";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import type { AutomationBlueprint } from "../../../data/blueprint";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { showToast } from "../../../util/toast";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
@@ -77,7 +78,9 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ attribute: false }) public config!: ManualAutomationConfig;
+  @property({ attribute: false }) public config!:
+    | ManualAutomationConfig
+    | AutomationBlueprint;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 

@@ -4,6 +4,9 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "@lit/context";
+import type { Schema } from "js-yaml";
+import { DEFAULT_SCHEMA } from "js-yaml";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { slugify } from "../../../common/string/slugify";
@@ -20,6 +23,7 @@ import type { Field } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { yamlSchemaContext } from "../../../data/blueprint";
 
 const preventDefault = (ev) => ev.preventDefault();
 
@@ -41,6 +45,9 @@ export default class HaScriptFieldRow extends LitElement {
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
 
   @state() private _yamlMode = false;
+
+  @consume({ context: yamlSchemaContext })
+  private _yamlSchema?: Schema;
 
   private _errorKey?: string;
 
@@ -139,6 +146,7 @@ export default class HaScriptFieldRow extends LitElement {
                   <ha-yaml-editor
                     .hass=${this.hass}
                     .defaultValue=${yamlValue}
+                    .yamlSchema=${this._yamlSchema ?? DEFAULT_SCHEMA}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>`
               : html`<ha-form
