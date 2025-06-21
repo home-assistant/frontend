@@ -80,7 +80,16 @@ const SELECTOR_SCHEMAS = {
   ] as const,
   icon: [] as const,
   location: [] as const,
-  media: [] as const,
+  media: [
+    {
+      name: "accept",
+      selector: {
+        text: {
+          multiple: true,
+        },
+      },
+    },
+  ] as const,
   number: [
     {
       name: "min",

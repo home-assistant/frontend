@@ -7,10 +7,11 @@ import type { MediaPlayerItemId } from "./ha-media-player-browse";
 
 export interface MediaPlayerBrowseDialogParams {
   action: MediaPlayerBrowseAction;
-  entityId: string;
+  entityId?: string;
   mediaPickedCallback: (pickedMedia: MediaPickedEvent) => void;
   navigateIds?: MediaPlayerItemId[];
   minimumNavigateLevel?: number;
+  accept?: string[];
 }
 
 export const showMediaBrowserDialog = (

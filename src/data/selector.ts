@@ -303,7 +303,9 @@ export interface LocationSelectorValue {
 }
 
 export interface MediaSelector {
-  media: {} | null;
+  media: {
+    accept?: string[];
+  } | null;
 }
 
 export interface MediaSelectorValue {

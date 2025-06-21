@@ -1,6 +1,6 @@
 import { mdiPlayBox, mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -84,20 +84,30 @@ export class HaMediaSelector extends LitElement {
       (stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
-    return html`<ha-entity-picker
-        .hass=${this.hass}
-        .value=${this.value?.entity_id}
-        .label=${this.label ||
-        this.hass.localize("ui.components.selectors.media.pick_media_player")}
-        .disabled=${this.disabled}
-        .helper=${this.helper}
-        .required=${this.required}
-        include-domains='["media_player"]'
-        allow-custom-entity
-        @value-changed=${this._entityChanged}
-      ></ha-entity-picker>
+    const hasAccept = this.selector.media?.accept?.length;
+
+    return html`
+      ${hasAccept
+        ? nothing
+        : html`
+            <ha-entity-picker
+              .hass=${this.hass}
+              .value=${this.value?.entity_id}
+              .label=${this.label ||
+              this.hass.localize(
+                "ui.components.selectors.media.pick_media_player"
+              )}
+              .disabled=${this.disabled}
+              .helper=${this.helper}
+              .required=${this.required}
+              include-domains='["media_player"]'
+              allow-custom-entity
+              @value-changed=${this._entityChanged}
+            ></ha-entity-picker>
+          `}
       ${!supportsBrowse
-        ? html`<ha-alert>
+        ? html`
+            <ha-alert>
               ${this.hass.localize(
                 "ui.components.selectors.media.browse_not_supported"
               )}
@@ -107,62 +117,72 @@ export class HaMediaSelector extends LitElement {
               .data=${this.value}
               .schema=${MANUAL_SCHEMA}
               .computeLabel=${this._computeLabelCallback}
-            ></ha-form>`
-        : html`<ha-card
-            outlined
-            @click=${this._pickMedia}
-            class=${this.disabled || !this.value?.entity_id ? "disabled" : ""}
-          >
-            <div
-              class="thumbnail ${classMap({
-                portrait:
-                  !!this.value?.metadata?.media_class &&
-                  MediaClassBrowserSettings[
-                    this.value.metadata.children_media_class ||
-                      this.value.metadata.media_class
-                  ].thumbnail_ratio === "portrait",
-              })}"
+            ></ha-form>
+          `
+        : html`
+            <ha-card
+              outlined
+              @click=${this._pickMedia}
+              class=${this.disabled || (!this.value?.entity_id && !hasAccept)
+                ? "disabled"
+                : ""}
             >
-              ${this.value?.metadata?.thumbnail
-                ? html`
-                    <div
-                      class="${classMap({
-                        "centered-image":
-                          !!this.value.metadata.media_class &&
-                          ["app", "directory"].includes(
-                            this.value.metadata.media_class
-                          ),
-                      })}
+              <div
+                class="thumbnail ${classMap({
+                  portrait:
+                    !!this.value?.metadata?.media_class &&
+                    MediaClassBrowserSettings[
+                      this.value.metadata.children_media_class ||
+                        this.value.metadata.media_class
+                    ].thumbnail_ratio === "portrait",
+                })}"
+              >
+                ${this.value?.metadata?.thumbnail
+                  ? html`
+                      <div
+                        class="${classMap({
+                          "centered-image":
+                            !!this.value.metadata.media_class &&
+                            ["app", "directory"].includes(
+                              this.value.metadata.media_class
+                            ),
+                        })}
                         image"
-                      style=${this._thumbnailUrl
-                        ? `background-image: url(${this._thumbnailUrl});`
-                        : ""}
-                    ></div>
-                  `
-                : html`
-                    <div class="icon-holder image">
-                      <ha-svg-icon
-                        class="folder"
-                        .path=${!this.value?.media_content_id
-                          ? mdiPlus
-                          : this.value?.metadata?.media_class
-                            ? MediaClassBrowserSettings[
-                                this.value.metadata.media_class === "directory"
-                                  ? this.value.metadata.children_media_class ||
-                                    this.value.metadata.media_class
-                                  : this.value.metadata.media_class
-                              ].icon
-                            : mdiPlayBox}
-                      ></ha-svg-icon>
-                    </div>
-                  `}
-            </div>
-            <div class="title">
-              ${!this.value?.media_content_id
-                ? this.hass.localize("ui.components.selectors.media.pick_media")
-                : this.value.metadata?.title || this.value.media_content_id}
-            </div>
-          </ha-card>`}`;
+                        style=${this._thumbnailUrl
+                          ? `background-image: url(${this._thumbnailUrl});`
+                          : ""}
+                      ></div>
+                    `
+                  : html`
+                      <div class="icon-holder image">
+                        <ha-svg-icon
+                          class="folder"
+                          .path=${!this.value?.media_content_id
+                            ? mdiPlus
+                            : this.value?.metadata?.media_class
+                              ? MediaClassBrowserSettings[
+                                  this.value.metadata.media_class ===
+                                  "directory"
+                                    ? this.value.metadata
+                                        .children_media_class ||
+                                      this.value.metadata.media_class
+                                    : this.value.metadata.media_class
+                                ].icon
+                              : mdiPlayBox}
+                        ></ha-svg-icon>
+                      </div>
+                    `}
+              </div>
+              <div class="title">
+                ${!this.value?.media_content_id
+                  ? this.hass.localize(
+                      "ui.components.selectors.media.pick_media"
+                    )
+                  : this.value.metadata?.title || this.value.media_content_id}
+              </div>
+            </ha-card>
+          `}
+    `;
   }
 
   private _computeLabelCallback = (
@@ -184,8 +204,9 @@ export class HaMediaSelector extends LitElement {
   private _pickMedia() {
     showMediaBrowserDialog(this, {
       action: "pick",
-      entityId: this.value!.entity_id!,
-      navigateIds: this.value!.metadata?.navigateIds,
+      entityId: this.value?.entity_id,
+      navigateIds: this.value?.metadata?.navigateIds,
+      accept: this.selector.media?.accept,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {
         fireEvent(this, "value-changed", {
           value: {
