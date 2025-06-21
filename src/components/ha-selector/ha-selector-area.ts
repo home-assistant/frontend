@@ -54,7 +54,7 @@ export class HaAreaSelector extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("selector") && this.value !== undefined) {
+    if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.area?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
         fireEvent(this, "value-changed", { value: this.value });
