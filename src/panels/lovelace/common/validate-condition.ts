@@ -4,8 +4,11 @@ import { listenMediaQuery } from "../../../common/dom/media_query";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
+import { createDurationData } from "../../../common/datetime/create_duration_data";
+import type { HaDurationData } from "../../../components/ha-duration-input";
 
 export type Condition =
+  | LastUpdatedStateCondition
   | NumericStateCondition
   | StateCondition
   | ScreenCondition
@@ -22,6 +25,13 @@ export interface LegacyCondition {
 
 interface BaseCondition {
   condition: string;
+}
+
+export interface LastUpdatedStateCondition extends BaseCondition {
+  condition: "last_updated_state";
+  entity?: string;
+  within?: HaDurationData;
+  after?: HaDurationData;
 }
 
 export interface NumericStateCondition extends BaseCondition {
@@ -132,6 +142,62 @@ function checkStateNumericCondition(
   );
 }
 
+function checkLastUpdatedStateCondition(
+  condition: LastUpdatedStateCondition,
+  hass: HomeAssistant
+) {
+  const state_last_changed = (
+    condition.entity ? hass.states[condition.entity] : undefined
+  )?.last_changed;
+  const within = condition.within;
+  const after = condition.after;
+
+  function HaDurationData_to_milliseconds(
+    duration: HaDurationData | undefined
+  ) {
+    // This function should not be here, and surely something like this already exists?
+    // If so, I can't find it :'(
+    if (duration) {
+      const days = duration.days || 0;
+      let hours = duration.hours || 0;
+      let minutes = duration.minutes || 0;
+      let seconds = duration.seconds || 0;
+      let milliseconds = duration.milliseconds || 0;
+
+      hours += days * 24;
+      minutes += hours * 60;
+      seconds += minutes * 60;
+      milliseconds += seconds * 1000;
+
+      return milliseconds;
+    }
+    return 0; // this also is probably not good
+  }
+
+  const withinDuration = HaDurationData_to_milliseconds(
+    createDurationData(within)
+  );
+  const afterDuration = HaDurationData_to_milliseconds(
+    createDurationData(after)
+  );
+
+  const numericLastUpdatedState = new Date(state_last_changed).getTime();
+  const numericWithin = numericLastUpdatedState + withinDuration;
+  const numericAfter = numericLastUpdatedState + afterDuration;
+
+  if (isNaN(numericLastUpdatedState)) {
+    return false;
+  }
+
+  const now = new Date().getTime();
+  return (
+    (condition.within == null ||
+      isNaN(numericWithin) ||
+      now <= numericWithin) &&
+    (condition.after == null || isNaN(numericAfter) || now > numericAfter)
+  );
+}
+
 function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
   return condition.media_query
     ? matchMedia(condition.media_query).matches
@@ -173,6 +239,8 @@ export function checkConditionsMet(
           return checkUserCondition(c, hass);
         case "numeric_state":
           return checkStateNumericCondition(c, hass);
+        case "last_updated_state":
+          return checkLastUpdatedStateCondition(c, hass);
         case "and":
           return checkAndCondition(c, hass);
         case "or":
@@ -205,6 +273,22 @@ export function extractConditionEntityIds(
         isValidEntityId(condition.below)
       ) {
         entityIds.add(condition.below);
+      }
+    } else if (condition.condition === "last_updated_state") {
+      if (condition.entity) {
+        entityIds.add(condition.entity);
+      }
+      if (
+        typeof condition.within === "string" &&
+        isValidEntityId(condition.within)
+      ) {
+        entityIds.add(condition.within);
+      }
+      if (
+        typeof condition.after === "string" &&
+        isValidEntityId(condition.after)
+      ) {
+        entityIds.add(condition.after);
       }
     } else if (condition.condition === "state") {
       if (condition.entity) {
@@ -257,6 +341,14 @@ function validateNumericStateCondition(condition: NumericStateCondition) {
     (condition.above != null || condition.below != null)
   );
 }
+function validateLastUpdatedStateCondition(
+  condition: LastUpdatedStateCondition
+) {
+  return (
+    condition.entity != null &&
+    (condition.within != null || condition.after != null)
+  );
+}
 /**
  * Validate the conditions config for the UI
  * @param conditions conditions to apply
@@ -274,6 +366,8 @@ export function validateConditionalConfig(
           return validateUserCondition(c);
         case "numeric_state":
           return validateNumericStateCondition(c);
+        case "last_updated_state":
+          return validateLastUpdatedStateCondition(c);
         case "and":
           return validateAndCondition(c);
         case "or":
@@ -307,7 +401,8 @@ export function addEntityToCondition(
 
   if (
     condition.condition === "state" ||
-    condition.condition === "numeric_state"
+    condition.condition === "numeric_state" ||
+    condition.condition === "last_updated_state"
   ) {
     return {
       entity: entityId,
