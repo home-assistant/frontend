@@ -68,15 +68,18 @@ describe("Energy Short Format Test", () => {
   };
 
   const hass = { locale: defaultLocale } as HomeAssistant;
-  it("Formats", () => {
+  it("No Unit conversion", () => {
+    assert.strictEqual(formatConsumptionShort(hass, 0, "Wh"), "0 Wh");
     assert.strictEqual(formatConsumptionShort(hass, 0, "kWh"), "0 kWh");
     assert.strictEqual(formatConsumptionShort(hass, 0, "GWh"), "0 GWh");
     assert.strictEqual(formatConsumptionShort(hass, 0, "gal"), "0 gal");
 
     assert.strictEqual(
-      formatConsumptionShort(hass, 0.12345, "kWh"),
-      "0.12 kWh"
+      formatConsumptionShort(hass, 10000.12345, "gal"),
+      "10,000 gal"
     );
+
+    assert.strictEqual(formatConsumptionShort(hass, 1.2345, "kWh"), "1.23 kWh");
     assert.strictEqual(
       formatConsumptionShort(hass, 10.12345, "kWh"),
       "10.1 kWh"
@@ -85,6 +88,10 @@ describe("Energy Short Format Test", () => {
       formatConsumptionShort(hass, 500.12345, "kWh"),
       "500 kWh"
     );
+
+    assert.strictEqual(formatConsumptionShort(hass, 10.01, "kWh"), "10 kWh");
+  });
+  it("Upward Unit conversion", () => {
     assert.strictEqual(
       formatConsumptionShort(hass, 1512.34567, "kWh"),
       "1.51 MWh"
@@ -105,23 +112,31 @@ describe("Energy Short Format Test", () => {
       formatConsumptionShort(hass, 15123456789.9, "kWh"),
       "15.1 TWh"
     );
-
     assert.strictEqual(
       formatConsumptionShort(hass, 15123456789000.9, "kWh"),
       "15,123 TWh"
     );
-
-    assert.strictEqual(formatConsumptionShort(hass, 1000.1, "GWh"), "1 TWh");
-
+  });
+  it("Downward Unit conversion", () => {
+    assert.strictEqual(formatConsumptionShort(hass, 0.00012, "kWh"), "0.12 Wh");
+    assert.strictEqual(formatConsumptionShort(hass, 0.12345, "kWh"), "123 Wh");
     assert.strictEqual(
-      formatConsumptionShort(hass, 10000.12345, "gal"),
-      "10,000 gal"
+      formatConsumptionShort(hass, 0.00001234, "TWh"),
+      "12.3 MWh"
     );
-
-    // Don't really modify negative numbers, but make sure it's something sane.
+  });
+  it("Negativ Consumption", () => {
+    assert.strictEqual(
+      formatConsumptionShort(hass, -500.123, "kWh"),
+      "-500 kWh"
+    );
     assert.strictEqual(
       formatConsumptionShort(hass, -1234.56, "kWh"),
-      "-1,234.56 kWh"
+      "-1.23 MWh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(hass, -0.001234, "kWh"),
+      "-1.23 Wh"
     );
   });
 });
