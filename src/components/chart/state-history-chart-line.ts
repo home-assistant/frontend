@@ -731,20 +731,17 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) => {
-    const formatOptions =
-      value >= 1 || value <= -1
-        ? undefined
-        : {
-            // show the first significant digit for tiny values
-            maximumFractionDigits: Math.max(
-              2,
-              // use the difference to the previous value to determine the number of significant digits #25526
-              -Math.floor(
-                Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-              )
-            ),
-          };
-    const label = formatNumber(value, this.hass.locale, formatOptions);
+    // show the first significant digit for tiny values
+    const maximumFractionDigits = Math.max(
+      1,
+      // use the difference to the previous value to determine the number of significant digits #25526
+      -Math.floor(
+        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
+      )
+    );
+    const label = formatNumber(value, this.hass.locale, {
+      maximumFractionDigits,
+    });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
       this._yWidth = width;
