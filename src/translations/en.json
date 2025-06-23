@@ -6399,9 +6399,10 @@
         },
         "tips": {
           "tip": "Tip!",
-          "join": "Join the community on our {forums}, {mastodon}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
+          "join": "Join the community on our {forums}, {fediverse}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
           "join_x": "X (formerly Twitter)",
           "join_mastodon": "Mastodon",
+          "join_fediverse": "Fediverse",
           "join_bluesky": "Bluesky",
           "join_forums": "Forums",
           "join_chat": "Chat",
@@ -8638,6 +8639,7 @@
           "discord": "Discord chat",
           "x": "[%key:ui::panel::config::tips::join_x%]",
           "mastodon": "Mastodon",
+          "fediverse": "Fediverse",
           "playstore": "Get it on Google Play",
           "appstore": "Download on the App Store"
         },
@@ -8927,6 +8929,7 @@
             "open_home_newsletter": "[%key:ui::panel::page-onboarding::welcome::open_home_newsletter%]",
             "discord": "[%key:ui::panel::page-onboarding::welcome::discord%]",
             "mastodon": "[%key:ui::panel::page-onboarding::welcome::mastodon%]",
+            "fediverse": "[%key:ui::panel::page-onboarding::welcome::fediverse%]",
             "playstore": "[%key:ui::panel::page-onboarding::welcome::playstore%]",
             "appstore": "[%key:ui::panel::page-onboarding::welcome::appstore%]"
           },

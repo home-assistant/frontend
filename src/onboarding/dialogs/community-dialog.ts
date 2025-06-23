@@ -88,11 +88,11 @@ class DialogCommunity extends LitElement {
         >
           <ha-list-item hasMeta graphic="icon">
             <img
-              src="/static/images/logo_mastodon.svg"
+              src="/static/images/logo_fediverse.svg"
               slot="graphic"
-              alt="Mastodon Logo"
+              alt="Fediverse Logo"
             />
-            ${this.localize("ui.panel.page-onboarding.welcome.mastodon")}
+            ${this.localize("ui.panel.page-onboarding.welcome.fediverse")}
             <ha-svg-icon slot="meta" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-list-item>
         </a>
