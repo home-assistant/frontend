@@ -226,22 +226,24 @@ export class StateHistoryChartLine extends LitElement {
         this.maxYAxis;
       if (typeof minYAxis === "number") {
         if (this.fitYData) {
-          minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
+          minYAxis = ({ min }) =>
+            Math.min(this._roundYAxis(min, Math.floor), this.minYAxis!);
         }
       } else if (this.logarithmicScale) {
         minYAxis = ({ min }) => {
           const value = min > 0 ? min * 0.95 : min * 1.05;
-          return Math.abs(value) < 1 ? value : Math.floor(value);
+          return this._roundYAxis(value, Math.floor);
         };
       }
       if (typeof maxYAxis === "number") {
         if (this.fitYData) {
-          maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
+          maxYAxis = ({ max }) =>
+            Math.max(this._roundYAxis(max, Math.ceil), this.maxYAxis!);
         }
       } else if (this.logarithmicScale) {
         maxYAxis = ({ max }) => {
           const value = max > 0 ? max * 1.05 : max * 0.95;
-          return Math.abs(value) < 1 ? value : Math.ceil(value);
+          return this._roundYAxis(value, Math.ceil);
         };
       }
       this._chartOptions = {
@@ -763,6 +765,10 @@ export class StateHistoryChartLine extends LitElement {
       }
     }
     return value;
+  }
+
+  private _roundYAxis(value: number, roundingFn: (value: number) => number) {
+    return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);
