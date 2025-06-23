@@ -438,6 +438,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       "--tile-color": color,
     };
 
+    const featureStyle = {
+      "--feature-color": color,
+    };
+
     return html`
       <ha-card style=${styleMap(style)}>
         <div
@@ -510,6 +514,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           ${features.length > 0
             ? html`
                 <hui-card-features
+                  style=${styleMap(featureStyle)}
                   .hass=${this.hass}
                   .context=${this._featureContext}
                   .color=${this._config.color}
@@ -644,8 +649,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       box-sizing: border-box;
     }
     hui-card-features {
-      --feature-color: var(--tile-color);
       padding: 0 12px 12px 12px;
+      --feature-color: var(--state-active-color);
     }
     .container.horizontal hui-card-features {
       width: calc(50% - var(--column-gap, 0px) / 2 - 12px);
