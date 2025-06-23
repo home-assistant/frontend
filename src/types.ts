@@ -23,7 +23,7 @@ import type { Themes } from "./data/ws-themes";
 import type { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
-  /* eslint-disable no-var, @typescript-eslint/naming-convention */
+  /* eslint-disable @typescript-eslint/naming-convention */
   var __DEV__: boolean;
   var __DEMO__: boolean;
   var __BUILD__: "modern" | "legacy";
@@ -32,7 +32,7 @@ declare global {
   var __BACKWARDS_COMPAT__: boolean;
   var __SUPERVISOR__: boolean;
   var __HASS_URL__: string;
-  /* eslint-enable no-var, @typescript-eslint/naming-convention */
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   interface Window {
     // Custom panel entry point url
@@ -198,9 +198,9 @@ export interface Context {
   user_id?: string | null;
 }
 
-export interface ServiceCallResponse {
+export interface ServiceCallResponse<T = any> {
   context: Context;
-  response?: any;
+  response?: T;
 }
 
 export interface ServiceCallRequest {
@@ -248,14 +248,14 @@ export interface HomeAssistant {
   user?: CurrentUser;
   userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
-  callService(
+  callService<T = any>(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
     serviceData?: ServiceCallRequest["serviceData"],
     target?: ServiceCallRequest["target"],
     notifyOnError?: boolean,
     returnResponse?: boolean
-  ): Promise<ServiceCallResponse>;
+  ): Promise<ServiceCallResponse<T>>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,

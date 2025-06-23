@@ -8,6 +8,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../types";
 import "./assist-pref";
+import "./ai-task-pref";
 import "./cloud-alexa-pref";
 import "./cloud-discover";
 import "./cloud-google-pref";
@@ -52,6 +53,12 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
                   .exposedEntities=${this.exposedEntities}
                 ></assist-pref>
               `
+            : nothing}
+          ${isComponentLoaded(this.hass, "ai_task")
+            ? html`<ai-task-pref
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ai-task-pref>`
             : nothing}
           ${this.cloudStatus?.logged_in
             ? html`

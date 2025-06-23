@@ -81,7 +81,6 @@ export class HuiEnergyDevicesDetailGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
-        this._processStatistics();
       }),
     ];
   }
@@ -103,10 +102,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (
-      (changedProps.has("_hiddenStats") || changedProps.has("_config")) &&
-      this._data
-    ) {
+    if (changedProps.has("_config") || changedProps.has("_data")) {
       this._processStatistics();
     }
   }
@@ -206,7 +202,10 @@ export class HuiEnergyDevicesDetailGraphCard
   );
 
   private _processStatistics() {
-    const energyData = this._data!;
+    if (!this._data) {
+      return;
+    }
+    const energyData = this._data;
 
     this._start = energyData.start;
     this._end = energyData.end || endOfToday();
@@ -393,7 +392,7 @@ export class HuiEnergyDevicesDetailGraphCard
           this.hass.themes.darkMode,
           false,
           compare,
-          "--state-unavailable-color"
+          "--history-unknown-color"
         ),
       },
       barMaxWidth: 50,
@@ -402,7 +401,7 @@ export class HuiEnergyDevicesDetailGraphCard
         this.hass.themes.darkMode,
         true,
         compare,
-        "--state-unavailable-color"
+        "--history-unknown-color"
       ),
       data: untrackedConsumption,
       stack: compare ? "devicesCompare" : "devices",

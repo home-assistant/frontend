@@ -106,7 +106,9 @@ export class HaNumberSelector extends LitElement {
         </ha-textfield>
       </div>
       ${!isBox && this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : nothing}
     `;
   }

@@ -63,7 +63,9 @@ export class HaTemplateSelector extends LitElement {
         linewrap
       ></ha-code-editor>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : nothing}
     `;
   }
