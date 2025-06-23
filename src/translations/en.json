@@ -325,6 +325,22 @@
         "low": "Low"
       }
     },
+    "card_features": {
+      "area_controls": {
+        "light": {
+          "on": "Turn on area lights",
+          "off": "Turn off area lights"
+        },
+        "fan": {
+          "on": "Turn on area fans",
+          "off": "Turn off area fans"
+        },
+        "switch": {
+          "on": "Turn on area switches",
+          "off": "Turn off area switches"
+        }
+      }
+    },
     "common": {
       "and": "and",
       "continue": "Continue",
@@ -383,6 +399,7 @@
       "markdown": "Markdown",
       "suggest_ai": "Suggest with AI"
     },
+
     "components": {
       "selectors": {
         "media": {
