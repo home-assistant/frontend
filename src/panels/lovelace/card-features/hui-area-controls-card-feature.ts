@@ -226,8 +226,13 @@ class HuiAreaControlsCardFeature
             return stateActive(stateObj);
           });
 
+          const label = this.hass!.localize(
+            `ui.card_features.area_controls.${control}.${active ? "off" : "on"}`
+          );
           return html`
             <ha-control-button
+              .title=${label}
+              aria-label=${label}
               class=${active ? "active" : ""}
               .control=${control}
               @click=${this._handleButtonTap}
