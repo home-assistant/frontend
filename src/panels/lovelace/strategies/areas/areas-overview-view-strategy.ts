@@ -82,8 +82,10 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
               "water_leak",
               "smoke",
               "gas",
+              "co",
               "motion",
               "occupancy",
+              "presence",
             ],
             features: filteredControls.length
               ? [
