@@ -358,6 +358,8 @@ export enum ProtocolDataRate {
 export interface ZWaveJSNodeStatisticsUpdatedMessage {
   event: "statistics updated";
   source: "node";
+  nodeId?: number;
+  node_id?: number;
   commands_tx: number;
   commands_rx: number;
   commands_dropped_tx: number;
@@ -1065,5 +1067,14 @@ export const cancelSecureBootstrapS2 = (
 ): Promise<void> =>
   hass.callWS({
     type: "zwave_js/cancel_secure_bootstrap_s2",
+    entry_id,
+  });
+
+export const fetchZwaveNeighbors = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<Record<number, number[]>> =>
+  hass.callWS({
+    type: "zwave_js/get_neighbors",
     entry_id,
   });

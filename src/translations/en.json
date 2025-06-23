@@ -6249,7 +6249,9 @@
           },
           "visualization": {
             "controller": "Controller",
-            "node": "Node"
+            "node": "Node",
+            "asleep_node": "Asleep Node",
+            "dead_node": "Dead Node"
           },
           "node_installer": {
             "header": "Installer Settings",
