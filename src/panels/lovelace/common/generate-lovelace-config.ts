@@ -35,6 +35,7 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { EntityBadgeConfig } from "../badges/types";
 
 const HIDE_DOMAIN = new Set([
+  "ai_task",
   "automation",
   "configurator",
   "device_tracker",
