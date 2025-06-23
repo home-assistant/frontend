@@ -1,4 +1,11 @@
-import { mdiFan, mdiLightbulb, mdiToggleSwitch } from "@mdi/js";
+import {
+  mdiFan,
+  mdiFanOff,
+  mdiLightbulb,
+  mdiLightbulbOff,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
+} from "@mdi/js";
 import { callService, type HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -23,7 +30,8 @@ import type {
 import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
-  iconPath: string;
+  onIconPath: string;
+  offIconPath: string;
   onService: string;
   offService: string;
   filter: EntityFilter;
@@ -31,7 +39,8 @@ interface AreaControlsButton {
 
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
   light: {
-    iconPath: mdiLightbulb,
+    onIconPath: mdiLightbulb,
+    offIconPath: mdiLightbulbOff,
     filter: {
       domain: "light",
     },
@@ -39,7 +48,8 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     offService: "light.turn_off",
   },
   fan: {
-    iconPath: mdiFan,
+    onIconPath: mdiFan,
+    offIconPath: mdiFanOff,
     filter: {
       domain: "fan",
     },
@@ -47,7 +57,8 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     offService: "fan.turn_off",
   },
   switch: {
-    iconPath: mdiToggleSwitch,
+    onIconPath: mdiToggleSwitch,
+    offIconPath: mdiToggleSwitchOff,
     filter: {
       domain: "switch",
     },
@@ -221,7 +232,9 @@ class HuiAreaControlsCardFeature
               .control=${control}
               @click=${this._handleButtonTap}
             >
-              <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
+              <ha-svg-icon
+                .path=${active ? button.onIconPath : button.offIconPath}
+              ></ha-svg-icon>
             </ha-control-button>
           `;
         })}
