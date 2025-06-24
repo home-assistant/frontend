@@ -44,32 +44,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
   public showNavigationButton = false;
 
   protected render(): TemplateResult {
-    const compare = areaCompare(this.hass.areas);
-
-    const areas = Object.values(this.hass.areas).sort((areaA, areaB) =>
-      compare(areaA.area_id, areaB.area_id)
-    );
-
-    const groupedItems: Record<string, DisplayItem[]> = areas.reduce(
-      (acc, area) => {
-        const { floor } = getAreaContext(area, this.hass!);
-        const floorId = floor?.floor_id ?? UNASSIGNED_FLOOR;
-
-        if (!acc[floorId]) {
-          acc[floorId] = [];
-        }
-        acc[floorId].push({
-          value: area.area_id,
-          label: area.name,
-          icon: area.icon ?? undefined,
-          iconPath: mdiTextureBox,
-          description: floor?.name,
-        });
-
-        return acc;
-      },
-      {} as Record<string, DisplayItem[]>
-    );
+    const groupedItems = this._groupedItems(this.hass.areas, this.hass.floors);
 
     const filteredFloors = this._sortedFloors(this.hass.floors).filter(
       (floor) =>
@@ -112,6 +87,41 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       </ha-expansion-panel>
     `;
   }
+
+  private _groupedItems = memoizeOne(
+    (
+      hassAreas: HomeAssistant["areas"],
+      // update items if floors change
+      _hassFloors: HomeAssistant["floors"]
+    ): Record<string, DisplayItem[]> => {
+      const compare = areaCompare(hassAreas);
+
+      const areas = Object.values(hassAreas).sort((areaA, areaB) =>
+        compare(areaA.area_id, areaB.area_id)
+      );
+      const groupedItems: Record<string, DisplayItem[]> = areas.reduce(
+        (acc, area) => {
+          const { floor } = getAreaContext(area, this.hass!);
+          const floorId = floor?.floor_id ?? UNASSIGNED_FLOOR;
+
+          if (!acc[floorId]) {
+            acc[floorId] = [];
+          }
+          acc[floorId].push({
+            value: area.area_id,
+            label: area.name,
+            icon: area.icon ?? undefined,
+            iconPath: mdiTextureBox,
+            description: floor?.name,
+          });
+
+          return acc;
+        },
+        {} as Record<string, DisplayItem[]>
+      );
+      return groupedItems;
+    }
+  );
 
   private _sortedFloors = memoizeOne(
     (hassFloors: HomeAssistant["floors"]): FloorRegistryEntry[] => {
@@ -182,28 +192,24 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  static get styles() {
-    return [
-      css`
-        .floor .header p {
-          margin: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          flex: 1:
-        }
-        .floor .header {
-          margin: 16px 0 8px 0;
-          padding: 0 8px;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          gap: 8px;
-        }
-      `,
-    ];
-  }
+  static styles = css`
+    .floor .header p {
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      flex: 1:
+    }
+    .floor .header {
+      margin: 16px 0 8px 0;
+      padding: 0 8px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+    }
+  `;
 }
 
 declare global {
