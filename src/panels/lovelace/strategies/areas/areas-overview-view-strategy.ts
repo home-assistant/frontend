@@ -1,15 +1,15 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { stringCompare } from "../../../../common/string/compare";
+import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { getAreaControlEntities } from "../../card-features/hui-area-controls-card-feature";
+import type { AreaControl } from "../../card-features/types";
+import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
 import type { EntitiesDisplay } from "./area-view-strategy";
-import {
-  computeAreaPath,
-  computeAreaTileCardConfig,
-  getAreaGroupedEntities,
-  getAreas,
-} from "./helpers/areas-strategy-helper";
+import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
@@ -36,71 +36,88 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
       config.areas_display?.order
     );
 
-    const areaSections = areas
-      .map<LovelaceSectionConfig | undefined>((area) => {
-        const path = computeAreaPath(area.area_id);
+    const floors = Object.values(hass.floors);
+    floors.sort((floorA, floorB) => {
+      if (floorA.level !== floorB.level) {
+        return (floorA.level ?? 0) - (floorB.level ?? 0);
+      }
+      return stringCompare(floorA.name, floorB.name);
+    });
 
-        const areaConfig = config.areas_options?.[area.area_id];
-
-        const groups = getAreaGroupedEntities(
-          area.area_id,
-          hass,
-          areaConfig?.groups_options
+    const floorSections = [
+      ...floors,
+      { floor_id: "default", name: "Default", level: null, icon: null },
+    ]
+      .map<LovelaceSectionConfig | undefined>((floor) => {
+        const areasInFloors = areas.filter(
+          (area) =>
+            area.floor_id === floor.floor_id ||
+            (!area.floor_id && floor.floor_id === "default")
         );
 
-        const entities = [
-          ...groups.lights,
-          ...groups.covers,
-          ...groups.climate,
-          ...groups.media_players,
-          ...groups.security,
-          ...groups.actions,
-          ...groups.others,
-        ];
+        if (areasInFloors.length === 0) {
+          return undefined;
+        }
 
-        const computeTileCard = computeAreaTileCardConfig(hass, area.name);
+        const areasCards = areasInFloors.map<AreaCardConfig>((area) => {
+          const path = computeAreaPath(area.area_id);
+
+          const controls: AreaControl[] = ["light", "fan"];
+          const controlEntities = getAreaControlEntities(
+            controls,
+            area.area_id,
+            hass
+          );
+
+          const filteredControls = controls.filter(
+            (control) => controlEntities[control].length > 0
+          );
+
+          return {
+            type: "area",
+            area: area.area_id,
+            display_type: "compact",
+            sensor_classes: ["temperature", "humidity"],
+            alert_classes: [
+              "water_leak",
+              "smoke",
+              "gas",
+              "co",
+              "motion",
+              "occupancy",
+              "presence",
+            ],
+            features: filteredControls.length
+              ? [
+                  {
+                    type: "area-controls",
+                    controls: filteredControls,
+                  },
+                ]
+              : [],
+            navigation_path: path,
+          };
+        });
+
+        const headingCard: HeadingCardConfig = {
+          type: "heading",
+          heading_style: "title",
+          heading: floor.name,
+          icon: floor.icon || floorDefaultIcon(floor),
+        };
 
         return {
+          max_columns: 3,
           type: "grid",
-          cards: [
-            {
-              type: "heading",
-              heading: area.name,
-              icon: area.icon || undefined,
-              badges: [
-                ...(area.temperature_entity_id
-                  ? [{ entity: area.temperature_entity_id }]
-                  : []),
-                ...(area.humidity_entity_id
-                  ? [{ entity: area.humidity_entity_id }]
-                  : []),
-              ],
-              tap_action: {
-                action: "navigate",
-                navigation_path: path,
-              },
-            },
-            ...(entities.length
-              ? entities.map(computeTileCard)
-              : [
-                  {
-                    type: "markdown",
-                    content: hass.localize(
-                      "ui.panel.lovelace.strategy.areas.no_entities"
-                    ),
-                  },
-                ]),
-          ],
+          cards: [headingCard, ...areasCards],
         };
       })
-      .filter(
-        (section): section is LovelaceSectionConfig => section !== undefined
-      );
+      ?.filter((section) => section !== undefined);
 
     return {
       type: "sections",
       max_columns: 3,
-      sections: areaSections,
+      sections: floorSections || [],
     };
   }
 }
