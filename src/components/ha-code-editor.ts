@@ -257,6 +257,126 @@ export class HaCodeEditor extends ReactiveElement {
   private _entityCompletions(
     context: CompletionContext
   ): CompletionResult | null | Promise<CompletionResult | null> {
+    // Check for YAML mode and entity-related fields
+    if (this.mode === "yaml") {
+      const currentLine = context.state.doc.lineAt(context.pos);
+      const lineText = currentLine.text;
+
+      // Properties that commonly contain entity IDs
+      const entityProperties = [
+        "entity_id",
+        "entity",
+        "entities",
+        "badges",
+        "devices",
+        "lights",
+        "light",
+        "group_members",
+        "scene",
+        "zone",
+        "zones",
+      ];
+
+      // Create regex pattern for all entity properties
+      const propertyPattern = entityProperties.join("|");
+      const entityFieldRegex = new RegExp(
+        `^\\s*(-\\s+)?(${propertyPattern}):\\s*`
+      );
+
+      // Check if we're in an entity field (single entity or list item)
+      const entityFieldMatch = lineText.match(entityFieldRegex);
+      const listItemMatch = lineText.match(/^\s*-\s+/);
+
+      if (entityFieldMatch) {
+        // Calculate the position after the entity field
+        const afterField = currentLine.from + entityFieldMatch[0].length;
+
+        // If cursor is after the entity field, show all entities
+        if (context.pos >= afterField) {
+          const states = this._getStates(this.hass!.states);
+
+          if (!states || !states.length) {
+            return null;
+          }
+
+          // Find what's already typed after the field
+          const typedText = context.state.sliceDoc(afterField, context.pos);
+
+          // Filter states based on what's typed
+          const filteredStates = typedText
+            ? states.filter((entityState) =>
+                entityState.label
+                  .toLowerCase()
+                  .startsWith(typedText.toLowerCase())
+              )
+            : states;
+
+          return {
+            from: afterField,
+            options: filteredStates,
+            validFor: /^[a-z_]*\.?\w*$/,
+          };
+        }
+      } else if (listItemMatch) {
+        // Check if this is a list item under an entity_id field
+        const lineNumber = currentLine.number;
+
+        // Look at previous lines to check if we're under an entity_id field
+        for (let i = lineNumber - 1; i > 0 && i >= lineNumber - 10; i--) {
+          const prevLine = context.state.doc.line(i);
+          const prevText = prevLine.text;
+
+          // Stop if we hit a non-indented line (new field)
+          if (
+            prevText.trim() &&
+            !prevText.startsWith(" ") &&
+            !prevText.startsWith("\t")
+          ) {
+            break;
+          }
+
+          // Check if we found an entity property field
+          const entityListFieldRegex = new RegExp(
+            `^\\s*(${propertyPattern}):\\s*$`
+          );
+          if (prevText.match(entityListFieldRegex)) {
+            // We're in a list under an entity field
+            const afterListMarker = currentLine.from + listItemMatch[0].length;
+
+            if (context.pos >= afterListMarker) {
+              const states = this._getStates(this.hass!.states);
+
+              if (!states || !states.length) {
+                return null;
+              }
+
+              // Find what's already typed after the list marker
+              const typedText = context.state.sliceDoc(
+                afterListMarker,
+                context.pos
+              );
+
+              // Filter states based on what's typed
+              const filteredStates = typedText
+                ? states.filter((entityState) =>
+                    entityState.label
+                      .toLowerCase()
+                      .startsWith(typedText.toLowerCase())
+                  )
+                : states;
+
+              return {
+                from: afterListMarker,
+                options: filteredStates,
+                validFor: /^[a-z_]*\.?\w*$/,
+              };
+            }
+          }
+        }
+      }
+    }
+
+    // Original entity completion logic for non-YAML or when not in entity_id field
     const entityWord = context.matchBefore(/[a-z_]{3,}\.\w*/);
 
     if (
