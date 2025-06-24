@@ -663,8 +663,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       left: 0;
       display: flex;
       flex-direction: row;
-      gap: 4px;
-      padding: 4px;
+      gap: 8px;
+      padding: 8px;
       pointer-events: none;
       z-index: 1;
     }
