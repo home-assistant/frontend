@@ -22,6 +22,7 @@ import {
   type AreaRegistryEntry,
 } from "../../../../../data/area_registry";
 import { buttonLinkStyle } from "../../../../../resources/styles";
+import "../../../../../components/ha-areas-floors-display-editor";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -122,7 +123,7 @@ export class HuiAreasDashboardStrategyEditor
     const value = this._config.areas_display;
 
     return html`
-      <ha-areas-display-editor
+      <ha-areas-floors-display-editor
         .hass=${this.hass}
         .value=${value}
         .label=${this.hass.localize(
@@ -132,7 +133,7 @@ export class HuiAreasDashboardStrategyEditor
         expanded
         show-navigation-button
         @item-display-navigate-clicked=${this._handleAreaNavigate}
-      ></ha-areas-display-editor>
+      ></ha-areas-floors-display-editor>
     `;
   }
 
