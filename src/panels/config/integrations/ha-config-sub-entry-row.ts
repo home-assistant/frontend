@@ -165,6 +165,16 @@ class HaConfigSubEntryRow extends LitElement {
                   .entities=${this.entities}
                 ></ha-config-entry-device-row>`
             )}
+            ${services.map(
+              (service) =>
+                html`<ha-config-entry-device-row
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .entry=${this.entry}
+                  .device=${service}
+                  .entities=${this.entities}
+                ></ha-config-entry-device-row>`
+            )}
           `
         : nothing}
     </ha-md-list>`;
