@@ -45,6 +45,7 @@ const cardConfigStruct = assign(
   object({
     area: optional(string()),
     name: optional(string()),
+    color: optional(string()),
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
     display_type: optional(enums(["compact", "icon", "picture", "camera"])),
@@ -94,6 +95,7 @@ export class HuiAreaCardEditor
               type: "grid",
               schema: [
                 { name: "name", selector: { text: {} } },
+                { name: "color", selector: { ui_color: {} } },
                 {
                   name: "display_type",
                   required: true,
@@ -111,12 +113,6 @@ export class HuiAreaCardEditor
                     },
                   },
                 },
-              ],
-            },
-            {
-              name: "",
-              type: "grid",
-              schema: [
                 ...(showCamera
                   ? ([
                       {
@@ -480,7 +476,6 @@ export class HuiAreaCardEditor
     switch (schema.name) {
       case "area":
         return this.hass!.localize("ui.panel.lovelace.editor.card.area.name");
-
       case "name":
       case "camera_view":
       case "content":

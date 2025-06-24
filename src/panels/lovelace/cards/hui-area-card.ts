@@ -10,7 +10,9 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
@@ -428,8 +430,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const ignoreAspectRatio = this.layout === "grid" || this.layout === "panel";
 
+    const color = this._config.color
+      ? computeCssColor(this._config.color)
+      : undefined;
+
+    const style = {
+      "--tile-color": color,
+    };
+
     return html`
-      <ha-card>
+      <ha-card style=${styleMap(style)}>
         <div
           class="background"
           @action=${this._handleAction}

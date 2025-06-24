@@ -2,7 +2,6 @@ import { mdiFan, mdiLightbulb, mdiToggleSwitch } from "@mdi/js";
 import { callService, type HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import {
   generateEntityFilter,
@@ -25,7 +24,6 @@ import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
   iconPath: string;
-  activeColor: string;
   onService: string;
   offService: string;
   filter: EntityFilter;
@@ -37,7 +35,6 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "light",
     },
-    activeColor: "var(--state-light-active-color)",
     onService: "light.turn_on",
     offService: "light.turn_off",
   },
@@ -46,7 +43,6 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "fan",
     },
-    activeColor: "var(--state-fan-active-color)",
     onService: "fan.turn_on",
     offService: "fan.turn_off",
   },
@@ -55,7 +51,6 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "switch",
     },
-    activeColor: "var(--state-switch-active-color)",
     onService: "switch.turn_on",
     offService: "switch.turn_off",
   },
@@ -223,7 +218,6 @@ class HuiAreaControlsCardFeature
           return html`
             <ha-control-button
               class=${active ? "active" : ""}
-              style=${styleMap({ "--active-color": button.activeColor })}
               .control=${control}
               @click=${this._handleButtonTap}
             >
@@ -240,7 +234,8 @@ class HuiAreaControlsCardFeature
       cardFeatureStyles,
       css`
         ha-control-button {
-          --active-color: var(--primary-color);
+          --active-color: var(--state-active-color);
+          --control-button-focus-color: var(--state-active-color);
         }
         ha-control-button.active {
           --control-button-background-color: var(--active-color);
