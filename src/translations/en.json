@@ -338,6 +338,46 @@
         "switch": {
           "on": "Turn on area switches",
           "off": "Turn off area switches"
+        },
+        "cover-awning": {
+          "on": "Open area awnings",
+          "off": "Close area awnings"
+        },
+        "cover-blind": {
+          "on": "Open area blinds",
+          "off": "Close area blinds"
+        },
+        "cover-curtain": {
+          "on": "Open area curtains",
+          "off": "Close area curtains"
+        },
+        "cover-damper": {
+          "on": "Open area dampers",
+          "off": "Close area dampers"
+        },
+        "cover-door": {
+          "on": "Open area doors",
+          "off": "Close area doors"
+        },
+        "cover-garage": {
+          "on": "Open garage door",
+          "off": "Close garage door"
+        },
+        "cover-gate": {
+          "on": "Open area gates",
+          "off": "Close area gates"
+        },
+        "cover-shade": {
+          "on": "Open area shades",
+          "off": "Close area shades"
+        },
+        "cover-shutter": {
+          "on": "Open area shutters",
+          "off": "Close area shutters"
+        },
+        "cover-window": {
+          "on": "Open area windows",
+          "off": "Close area windows"
         }
       }
     },
@@ -7866,7 +7906,17 @@
                 "controls_options": {
                   "light": "Lights",
                   "fan": "Fans",
-                  "switch": "Switches"
+                  "switch": "Switches",
+                  "cover-awning": "Awnings",
+                  "cover-blind": "Blinds",
+                  "cover-curtain": "Curtains",
+                  "cover-damper": "Dampers",
+                  "cover-door": "Doors",
+                  "cover-garage": "Garage doors",
+                  "cover-gate": "Gates",
+                  "cover-shade": "Shades",
+                  "cover-shutter": "Shutters",
+                  "cover-window": "Windows"
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               }

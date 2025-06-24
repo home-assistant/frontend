@@ -148,7 +148,7 @@ export class HuiAreaControlsCardFeatureEditor
         this.hass!.entities,
         this.hass!.devices,
         this.hass!.areas
-      ).concat();
+      ).slice(0, 4); // Default to first 4 compatible controls
     }
 
     if (!customize_controls && config.controls) {

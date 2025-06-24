@@ -1,15 +1,8 @@
-import {
-  mdiFan,
-  mdiFanOff,
-  mdiLightbulb,
-  mdiLightbulbOff,
-  mdiToggleSwitch,
-  mdiToggleSwitchOff,
-} from "@mdi/js";
 import { callService, type HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 import {
   generateEntityFilter,
   type EntityFilter,
@@ -30,17 +23,27 @@ import type {
 import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
-  onIconPath: string;
-  offIconPath: string;
+  offIcon?: string;
+  onIcon?: string;
   onService: string;
   offService: string;
   filter: EntityFilter;
 }
 
+const coverButton = (deviceClass) => ({
+  filter: {
+    domain: "cover",
+    device_class: deviceClass,
+  },
+  onService: "cover.open_cover",
+  offService: "cover.close_cover",
+});
+
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
   light: {
-    onIconPath: mdiLightbulb,
-    offIconPath: mdiLightbulbOff,
+    // Overrides the icons for lights
+    offIcon: "mdi:lightbulb-off",
+    onIcon: "mdi:lightbulb",
     filter: {
       domain: "light",
     },
@@ -48,8 +51,6 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     offService: "light.turn_off",
   },
   fan: {
-    onIconPath: mdiFan,
-    offIconPath: mdiFanOff,
     filter: {
       domain: "fan",
     },
@@ -57,14 +58,22 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     offService: "fan.turn_off",
   },
   switch: {
-    onIconPath: mdiToggleSwitch,
-    offIconPath: mdiToggleSwitchOff,
     filter: {
       domain: "switch",
     },
     onService: "switch.turn_on",
     offService: "switch.turn_off",
   },
+  "cover-awning": coverButton("awning"),
+  "cover-blind": coverButton("blind"),
+  "cover-curtain": coverButton("curtain"),
+  "cover-damper": coverButton("damper"),
+  "cover-door": coverButton("door"),
+  "cover-garage": coverButton("garage"),
+  "cover-gate": coverButton("gate"),
+  "cover-shade": coverButton("shade"),
+  "cover-shutter": coverButton("shutter"),
+  "cover-window": coverButton("window"),
 };
 
 export const supportsAreaControlsCardFeature = (
@@ -95,6 +104,20 @@ export const getAreaControlEntities = (
     },
     {} as Record<AreaControl, string[]>
   );
+
+const getFilterDomain = (filter: EntityFilter): string | undefined => {
+  if (filter.domain) {
+    return ensureArray(filter.domain)[0];
+  }
+  return undefined;
+};
+
+const getFilterDeviceClass = (filter: EntityFilter): string | undefined => {
+  if (filter.device_class) {
+    return ensureArray(filter.device_class)[0];
+  }
+  return undefined;
+};
 
 @customElement("hui-area-controls-card-feature")
 class HuiAreaControlsCardFeature
@@ -206,13 +229,17 @@ class HuiAreaControlsCardFeature
       (control) => controlEntities[control].length > 0
     );
 
-    if (!supportedControls.length) {
+    const displayControls = this._config.controls
+      ? supportedControls
+      : supportedControls.slice(0, 4);
+
+    if (!displayControls.length) {
       return nothing;
     }
 
     return html`
       <ha-control-button-group>
-        ${supportedControls.map((control) => {
+        ${displayControls.map((control) => {
           const button = AREA_CONTROLS_BUTTONS[control];
 
           const entities = controlEntities[control];
@@ -229,6 +256,12 @@ class HuiAreaControlsCardFeature
           const label = this.hass!.localize(
             `ui.card_features.area_controls.${control}.${active ? "off" : "on"}`
           );
+
+          const icon = active ? button.onIcon : button.offIcon;
+
+          const domain = getFilterDomain(button.filter);
+          const deviceClass = getFilterDeviceClass(button.filter);
+
           return html`
             <ha-control-button
               .title=${label}
@@ -237,9 +270,19 @@ class HuiAreaControlsCardFeature
               .control=${control}
               @click=${this._handleButtonTap}
             >
-              <ha-svg-icon
-                .path=${active ? button.onIconPath : button.offIconPath}
-              ></ha-svg-icon>
+              <ha-domain-icon
+                .hass=${this.hass}
+                .icon=${icon}
+                .domain=${domain}
+                .deviceClass=${deviceClass}
+                .state=${active
+                  ? domain === "cover"
+                    ? "open"
+                    : "on"
+                  : domain === "cover"
+                    ? "closed"
+                    : "off"}
+              ></ha-domain-icon>
             </ha-control-button>
           `;
         })}
