@@ -5808,6 +5808,7 @@
             "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
+            "remove_a_node": "Remove a device",
             "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
@@ -6084,7 +6085,6 @@
               "device_name": "Name",
               "device_area": "Area",
               "choose_network_type": "Choose network type",
-              "long_range_label": "Direct long range",
               "long_range_description": "Direct connection to Home Assistant for extended coverage, without a mesh network.",
               "mesh_label": "Mesh network",
               "mesh_description": "Devices relay signals to each other, enhancing coverage and reliability.",
