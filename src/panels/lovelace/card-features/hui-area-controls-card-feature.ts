@@ -1,17 +1,19 @@
-import { callService, type HassEntity } from "home-assistant-js-websocket";
-import { LitElement, css, html, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
-  generateEntityFilter,
-  type EntityFilter,
-} from "../../../common/entity/entity_filter";
+  computeGroupEntitiesState,
+  toggleGroupEntities,
+} from "../../../common/entity/group_entities";
+import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import { stateActive } from "../../../common/entity/state_active";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
+import { forwardHaptic } from "../../../data/haptics";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -25,18 +27,17 @@ import { AREA_CONTROLS } from "./types";
 interface AreaControlsButton {
   offIcon?: string;
   onIcon?: string;
-  onService: string;
-  offService: string;
-  filter: EntityFilter;
+  filter: {
+    domain: string;
+    device_class?: string;
+  };
 }
 
-const coverButton = (deviceClass) => ({
+const coverButton = (deviceClass: string) => ({
   filter: {
     domain: "cover",
     device_class: deviceClass,
   },
-  onService: "cover.open_cover",
-  offService: "cover.close_cover",
 });
 
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
@@ -47,27 +48,21 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
     filter: {
       domain: "light",
     },
-    onService: "light.turn_on",
-    offService: "light.turn_off",
   },
   fan: {
     filter: {
       domain: "fan",
     },
-    onService: "fan.turn_on",
-    offService: "fan.turn_off",
   },
   switch: {
     filter: {
       domain: "switch",
     },
-    onService: "switch.turn_on",
-    offService: "switch.turn_off",
   },
-  "cover-awning": coverButton("awning"),
   "cover-blind": coverButton("blind"),
   "cover-curtain": coverButton("curtain"),
   "cover-damper": coverButton("damper"),
+  "cover-awning": coverButton("awning"),
   "cover-door": coverButton("door"),
   "cover-garage": coverButton("garage"),
   "cover-gate": coverButton("gate"),
@@ -107,19 +102,7 @@ export const getAreaControlEntities = (
     {} as Record<AreaControl, string[]>
   );
 
-const getFilterDomain = (filter: EntityFilter): string | undefined => {
-  if (filter.domain) {
-    return ensureArray(filter.domain)[0];
-  }
-  return undefined;
-};
-
-const getFilterDeviceClass = (filter: EntityFilter): string | undefined => {
-  if (filter.device_class) {
-    return ensureArray(filter.device_class)[0];
-  }
-  return undefined;
-};
+export const MAX_DEFAULT_AREA_CONTROLS = 4;
 
 @customElement("hui-area-controls-card-feature")
 class HuiAreaControlsCardFeature
@@ -185,17 +168,12 @@ class HuiAreaControlsCardFeature
     );
     const entitiesIds = controlEntities[control];
 
-    const { onService, offService } = AREA_CONTROLS_BUTTONS[control];
+    const entities = entitiesIds
+      .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
+      .filter((v): v is HassEntity => Boolean(v));
 
-    const isOn = entitiesIds.some((entityId) =>
-      stateActive(this.hass!.states[entityId] as HassEntity)
-    );
-
-    const [domain, service] = (isOn ? offService : onService).split(".");
-
-    callService(this.hass!.connection, domain, service, {
-      entity_id: entitiesIds,
-    });
+    forwardHaptic("light");
+    toggleGroupEntities(this.hass, entities);
   }
 
   private _controlEntities = memoizeOne(
@@ -236,7 +214,7 @@ class HuiAreaControlsCardFeature
 
     const displayControls = this._config.controls
       ? supportedControls
-      : supportedControls.slice(0, 4);
+      : supportedControls.slice(0, MAX_DEFAULT_AREA_CONTROLS); // Limit to max if using default controls
 
     if (!displayControls.length) {
       return nothing;
@@ -247,16 +225,20 @@ class HuiAreaControlsCardFeature
         ${displayControls.map((control) => {
           const button = AREA_CONTROLS_BUTTONS[control];
 
-          const entities = controlEntities[control];
-          const active = entities.some((entityId) => {
-            const stateObj = this.hass!.states[entityId] as
-              | HassEntity
-              | undefined;
-            if (!stateObj) {
-              return false;
-            }
-            return stateActive(stateObj);
-          });
+          const entityIds = controlEntities[control];
+
+          const entities = entityIds
+            .map(
+              (entityId) =>
+                this.hass!.states[entityId] as HassEntity | undefined
+            )
+            .filter((v): v is HassEntity => Boolean(v));
+
+          const groupState = computeGroupEntitiesState(entities);
+
+          const active = entities[0]
+            ? stateActive(entities[0], groupState)
+            : false;
 
           const label = this.hass!.localize(
             `ui.card_features.area_controls.${control}.${active ? "off" : "on"}`
@@ -264,8 +246,10 @@ class HuiAreaControlsCardFeature
 
           const icon = active ? button.onIcon : button.offIcon;
 
-          const domain = getFilterDomain(button.filter);
-          const deviceClass = getFilterDeviceClass(button.filter);
+          const domain = button.filter.domain;
+          const deviceClass = button.filter.device_class
+            ? ensureArray(button.filter.device_class)[0]
+            : undefined;
 
           return html`
             <ha-control-button
@@ -280,13 +264,7 @@ class HuiAreaControlsCardFeature
                 .icon=${icon}
                 .domain=${domain}
                 .deviceClass=${deviceClass}
-                .state=${active
-                  ? domain === "cover"
-                    ? "open"
-                    : "on"
-                  : domain === "cover"
-                    ? "closed"
-                    : "off"}
+                .state=${groupState}
               ></ha-domain-icon>
             </ha-control-button>
           `;
