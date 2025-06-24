@@ -414,7 +414,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         InclusionState.SmartStart)}
                   >
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.remove_node"
+                      "ui.panel.config.zwave_js.common.remove_a_node"
                     )}
                   </ha-button>
                   <ha-button
