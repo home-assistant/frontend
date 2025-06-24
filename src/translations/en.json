@@ -5317,7 +5317,7 @@
               "enable": "Enable device",
               "disable": "Disable device",
               "configure": "Configure device",
-              "delete": "Delete device"
+              "delete": "Remove device"
             },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
