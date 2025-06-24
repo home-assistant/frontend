@@ -6,6 +6,7 @@ import type {
 } from "@codemirror/autocomplete";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
@@ -15,10 +16,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
+import "./ha-icon-button";
 
 declare global {
   interface HASSDomEvents {
     "editor-save": undefined;
+    "fullscreen-changed": { fullscreen: boolean };
   }
 }
 
@@ -59,7 +62,12 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean }) public error = false;
 
+  @property({ type: Boolean, attribute: "enable-fullscreen" })
+  public enableFullscreen = true;
+
   @state() private _value = "";
+
+  @state() private _isFullscreen = false;
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
@@ -92,6 +100,7 @@ export class HaCodeEditor extends ReactiveElement {
       this.requestUpdate();
     }
     this.addEventListener("keydown", stopPropagation);
+    this.addEventListener("keydown", this._handleKeyDown);
     // This is unreachable as editor will not exist yet,
     // but focus should not behave like this for good a11y.
     // (@steverep to fix in autofocus PR)
@@ -106,6 +115,10 @@ export class HaCodeEditor extends ReactiveElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
+    this.removeEventListener("keydown", this._handleKeyDown);
+    if (this._isFullscreen) {
+      this._toggleFullscreen();
+    }
     this.updateComplete.then(() => {
       this.codemirror!.destroy();
       delete this.codemirror;
@@ -163,6 +176,9 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
+    }
+    if (changedProps.has("_isFullscreen")) {
+      this.classList.toggle("fullscreen", this._isFullscreen);
     }
   }
 
@@ -238,7 +254,50 @@ export class HaCodeEditor extends ReactiveElement {
       }),
       parent: this.renderRoot,
     });
+
+    if (this.enableFullscreen) {
+      this._createFullscreenButton();
+    }
   }
+
+  private _createFullscreenButton() {
+    const button = document.createElement("ha-icon-button");
+    (button as any).path = this._isFullscreen
+      ? mdiArrowCollapse
+      : mdiArrowExpand;
+    button.setAttribute(
+      "label",
+      this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+    );
+    button.classList.add("fullscreen-button");
+    button.addEventListener("click", () => this._toggleFullscreen());
+    this.renderRoot.appendChild(button);
+  }
+
+  private _toggleFullscreen() {
+    this._isFullscreen = !this._isFullscreen;
+    const button = this.renderRoot.querySelector(".fullscreen-button") as any;
+    if (button) {
+      button.path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
+      button.setAttribute(
+        "label",
+        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+      );
+    }
+    fireEvent(this, "fullscreen-changed", { fullscreen: this._isFullscreen });
+  }
+
+  private _handleKeyDown = (e: KeyboardEvent) => {
+    if (this._isFullscreen && e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      this._toggleFullscreen();
+    } else if (e.key === "F11" && this.enableFullscreen) {
+      e.preventDefault();
+      e.stopPropagation();
+      this._toggleFullscreen();
+    }
+  };
 
   private _getStates = memoizeOne((states: HassEntities): Completion[] => {
     if (!states) {
@@ -460,8 +519,58 @@ export class HaCodeEditor extends ReactiveElement {
   };
 
   static styles = css`
+    :host {
+      position: relative;
+      display: block;
+    }
+
     :host(.error-state) .cm-gutters {
       border-color: var(--error-state-color, red);
+    }
+
+    .fullscreen-button {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      z-index: 10;
+      color: var(--secondary-text-color);
+      background-color: var(--card-background-color);
+      border-radius: 50%;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+      --mdc-icon-button-size: 32px;
+      --mdc-icon-size: 18px;
+    }
+
+    .fullscreen-button:hover {
+      opacity: 1;
+    }
+
+    :host(.fullscreen) {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      z-index: 9999 !important;
+      background-color: var(--primary-background-color) !important;
+      margin: 0 !important;
+      padding: 16px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    :host(.fullscreen) .cm-editor {
+      height: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+    }
+
+    :host(.fullscreen) .fullscreen-button {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
     }
   `;
 }
