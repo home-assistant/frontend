@@ -101,11 +101,18 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 }
 
 export interface AreaCardConfig extends LovelaceCardConfig {
-  area: string;
+  area?: string;
+  name?: string;
   navigation_path?: string;
+  display_type?: "compact" | "icon" | "picture" | "camera";
+  /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
   aspect_ratio?: string;
+  sensor_classes?: string[];
+  alert_classes?: string[];
+  features?: LovelaceCardFeatureConfig[];
+  features_position?: "bottom" | "inline";
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -323,6 +330,7 @@ interface GeoLocationSourceConfig {
   source: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
+  unit?: string;
   focus?: boolean;
 }
 

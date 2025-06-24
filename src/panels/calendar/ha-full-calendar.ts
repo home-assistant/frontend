@@ -497,9 +497,9 @@ export class HAFullCalendar extends LitElement {
 
         ha-fab {
           position: absolute;
-          bottom: 32px;
-          right: 32px;
-          inset-inline-end: 32px;
+          bottom: 16px;
+          right: 16px;
+          inset-inline-end: 16px;
           inset-inline-start: initial;
           z-index: 1;
         }

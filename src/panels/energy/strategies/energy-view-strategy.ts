@@ -64,7 +64,9 @@ export class EnergyViewStrategy extends ReactiveElement {
       (source) => source.type === "solar"
     );
     const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
-
+    const hasBattery = prefs.energy_sources.some(
+      (source) => source.type === "battery"
+    );
     const hasWater = prefs.energy_sources.some(
       (source) => source.type === "water"
     );
@@ -74,8 +76,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       collection_key: "energy_dashboard",
     });
 
-    // Only include if we have a grid source.
-    if (hasGrid) {
+    // Only include if we have a grid or battery.
+    if (hasGrid || hasBattery) {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
         type: "energy-usage-graph",
@@ -110,8 +112,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    // Only include if we have a grid.
-    if (hasGrid) {
+    // Only include if we have a grid or battery.
+    if (hasGrid || hasBattery) {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.cards.energy_distribution_title"),
         type: "energy-distribution",
@@ -120,7 +122,7 @@ export class EnergyViewStrategy extends ReactiveElement {
       });
     }
 
-    if (hasGrid || hasSolar || hasGas || hasWater) {
+    if (hasGrid || hasSolar || hasGas || hasWater || hasBattery) {
       view.cards!.push({
         title: hass.localize(
           "ui.panel.energy.cards.energy_sources_table_title"

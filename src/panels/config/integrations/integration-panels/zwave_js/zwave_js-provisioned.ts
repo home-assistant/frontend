@@ -123,18 +123,21 @@ class ZWaveJSProvisioned extends LitElement {
   }
 
   private _unprovision = async (ev) => {
-    const dsk = ev.currentTarget.provisioningEntry.dsk;
+    const { dsk, nodeId } = ev.currentTarget.provisioningEntry;
 
     const confirm = await showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.zwave_js.provisioned.confirm_unprovision_title"
       ),
       text: this.hass.localize(
-        "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text"
+        nodeId
+          ? "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text_included"
+          : "ui.panel.config.zwave_js.provisioned.confirm_unprovision_text"
       ),
       confirmText: this.hass.localize(
-        "ui.panel.config.zwave_js.provisioned.unprovison"
+        "ui.panel.config.zwave_js.provisioned.unprovision"
       ),
+      destructive: true,
     });
 
     if (!confirm) {

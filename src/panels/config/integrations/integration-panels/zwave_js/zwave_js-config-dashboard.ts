@@ -429,7 +429,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               </ha-card>
               <ha-card>
                 <div class="card-header">
-                  <h1>Third-Party Data Reporting</h1>
+                  <h1>Third-party data reporting</h1>
                   ${this._dataCollectionOptIn !== undefined
                     ? html`
                         <ha-switch
@@ -604,7 +604,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     history.back();
   }
 
-  private async _fetchData() {
+  private _fetchData = async () => {
     if (!this.configEntryId) {
       return;
     }
@@ -638,7 +638,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
-  }
+  };
 
   private async _addNodeClicked() {
     this._openInclusionDialog();
@@ -646,10 +646,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
-      entry_id: this.configEntryId!,
+      entryId: this.configEntryId!,
       skipConfirmation:
         this._network?.controller.inclusion_state === InclusionState.Excluding,
-      removedCallback: () => this._fetchData(),
+      onClose: this._fetchData,
     });
   }
 
