@@ -7,7 +7,6 @@ export const configElementStyle = css`
   }
   ha-switch {
     padding: 16px 6px;
-    margin: 1px 0;
   }
   .side-by-side {
     display: flex;
