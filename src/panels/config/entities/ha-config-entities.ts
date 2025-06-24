@@ -1115,9 +1115,10 @@ ${
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
+    const device = this._searchParms.get("device");
     const label = this._searchParms.has("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!domain && !configEntry && !label && !device) {
       return;
     }
 
@@ -1126,6 +1127,7 @@ ${
     this._filters = {
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
+      "ha-filter-devices": device ? [device] : [],
       config_entry: configEntry ? [configEntry] : [],
       sub_entry: subEntry ? [subEntry] : [],
     };
