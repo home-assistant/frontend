@@ -22,7 +22,8 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
   @property({ attribute: "severity" }) public severity: "warning" | "error" =
     "error";
 
-  @property({ attribute: "not-full-height", type: Boolean }) public notFullHeight = false;
+  @property({ attribute: "not-full-height", type: Boolean })
+  public notFullHeight = false;
 
   @state() private _config?: ErrorCardConfig;
 
