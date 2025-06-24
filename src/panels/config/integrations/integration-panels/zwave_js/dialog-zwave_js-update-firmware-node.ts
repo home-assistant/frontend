@@ -154,7 +154,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
       ? nothing
       : html`
           <ha-button
-            class="warning"
+            destructive
             slot="secondaryAction"
             @click=${this._abortFirmwareUpdate}
           >
