@@ -415,7 +415,7 @@ export const migrateAutomationAction = (
     return action.map(migrateAutomationAction) as Action[];
   }
 
-  if ("service" in action) {
+  if (typeof action === "object" && action !== null && "service" in action) {
     if (!("action" in action)) {
       action.action = action.service;
     }
@@ -423,7 +423,7 @@ export const migrateAutomationAction = (
   }
 
   // legacy scene (scene: scene_name)
-  if ("scene" in action) {
+  if (typeof action === "object" && action !== null && "scene" in action) {
     action.action = "scene.turn_on";
     action.target = {
       entity_id: action.scene,
@@ -431,7 +431,7 @@ export const migrateAutomationAction = (
     delete action.scene;
   }
 
-  if ("sequence" in action) {
+  if (typeof action === "object" && action !== null && "sequence" in action) {
     for (const sequenceAction of (action as SequenceAction).sequence) {
       migrateAutomationAction(sequenceAction);
     }
