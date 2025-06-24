@@ -6618,7 +6618,8 @@
               "security": "Security",
               "actions": "Actions",
               "others": "Others"
-            }
+            },
+            "unassigned_areas": "[%key:ui::panel::config::areas::picker::unassigned_areas%]"
           }
         },
         "cards": {

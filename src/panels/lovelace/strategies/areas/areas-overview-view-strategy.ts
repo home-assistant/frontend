@@ -11,6 +11,8 @@ import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
 import type { EntitiesDisplay } from "./area-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
+const UNASSIGNED_FLOOR = "__unassigned__";
+
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
 }
@@ -46,13 +48,20 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
 
     const floorSections = [
       ...floors,
-      { floor_id: "default", name: "Default", level: null, icon: null },
+      {
+        floor_id: UNASSIGNED_FLOOR,
+        name: hass.localize(
+          "ui.panel.lovelace.strategy.areas.unassigned_areas"
+        ),
+        level: null,
+        icon: null,
+      },
     ]
       .map<LovelaceSectionConfig | undefined>((floor) => {
         const areasInFloors = areas.filter(
           (area) =>
             area.floor_id === floor.floor_id ||
-            (!area.floor_id && floor.floor_id === "default")
+            (!area.floor_id && floor.floor_id === UNASSIGNED_FLOOR)
         );
 
         if (areasInFloors.length === 0) {

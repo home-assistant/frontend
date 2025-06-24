@@ -202,7 +202,7 @@ export class HaNumericStateTrigger extends LitElement {
                   entity: { domain: ["input_number", "number", "sensor"] },
                 },
               },
-            ] as const)
+            ] as const satisfies HaFormSchema[])
           : ([
               {
                 name: "below",
