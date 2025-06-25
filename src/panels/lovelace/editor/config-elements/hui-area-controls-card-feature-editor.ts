@@ -17,8 +17,8 @@ import {
   AREA_CONTROLS,
   type AreaControl,
   type AreaControlsCardFeatureConfig,
-  type LovelaceCardFeatureContext,
 } from "../../card-features/types";
+import type { AreaCardFeatureContext } from "../../cards/hui-area-card";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
 type AreaControlsCardFeatureData = AreaControlsCardFeatureConfig & {
@@ -32,7 +32,7 @@ export class HuiAreaControlsCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: AreaCardFeatureContext;
 
   @state() private _config?: AreaControlsCardFeatureConfig;
 
@@ -78,6 +78,7 @@ export class HuiAreaControlsCardFeatureEditor
   private _supportedControls = memoizeOne(
     (
       areaId: string,
+      excludeEntities: string[] | undefined,
       // needed to update memoized function when entities, devices or areas change
       _entities: HomeAssistant["entities"],
       _devices: HomeAssistant["devices"],
@@ -89,6 +90,7 @@ export class HuiAreaControlsCardFeatureEditor
       const controlEntities = getAreaControlEntities(
         AREA_CONTROLS as unknown as AreaControl[],
         areaId,
+        excludeEntities,
         this.hass!
       );
       return (
@@ -104,6 +106,7 @@ export class HuiAreaControlsCardFeatureEditor
 
     const supportedControls = this._supportedControls(
       this.context.area_id,
+      this.context.exclude_entities,
       this.hass.entities,
       this.hass.devices,
       this.hass.areas
@@ -148,6 +151,7 @@ export class HuiAreaControlsCardFeatureEditor
     if (customize_controls && !config.controls) {
       config.controls = this._supportedControls(
         this.context!.area_id!,
+        this.context!.exclude_entities,
         this.hass!.entities,
         this.hass!.devices,
         this.hass!.areas

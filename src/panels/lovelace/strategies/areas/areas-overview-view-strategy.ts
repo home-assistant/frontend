@@ -83,8 +83,8 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
           const controlEntities = getAreaControlEntities(
             controls,
             area.area_id,
-            hass,
-            hiddenEntities
+            hiddenEntities,
+            hass
           );
 
           const filteredControls = controls.filter(
@@ -105,12 +105,12 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
               "occupancy",
               "presence",
             ],
+            exclude_entities: hiddenEntities,
             features: filteredControls.length
               ? [
                   {
                     type: "area-controls",
                     controls: filteredControls,
-                    exclude_entities: hiddenEntities,
                   },
                 ]
               : [],
