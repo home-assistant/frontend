@@ -541,8 +541,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   <ha-button
                     slot="action"
                     @click=${this._handleDisableDebugLogging}
-                    >${this.hass.localize("ui.common.disable")}</ha-button
                   >
+                    ${this.hass.localize("ui.common.disable")}
+                  </ha-button>
                 </ha-alert>
               </div>`
             : nothing}
