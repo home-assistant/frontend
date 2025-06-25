@@ -405,47 +405,54 @@ class HaConfigEntryRow extends LitElement {
       </ha-md-list-item>
       ${this._expanded
         ? subEntries.length
-          ? html`<ha-md-list class="devices">
-                <ha-md-list-item @click=${this._toggleOwnDevices} type="button">
-                  <ha-icon-button
-                    class="expand-button"
-                    .path=${this._devicesExpanded
-                      ? mdiChevronDown
-                      : mdiChevronUp}
-                    slot="start"
-                  >
-                  </ha-icon-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.devices_without_subentry"
-                  )}
-                </ha-md-list-item>
-                ${this._devicesExpanded
-                  ? ownDevices.map(
-                      (device) =>
-                        html`<ha-config-entry-device-row
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .entry=${item}
-                          .device=${device}
-                          .entities=${entities}
-                        ></ha-config-entry-device-row>`
-                    )
-                  : nothing}
-              </ha-md-list>
-              ${subEntries.map(
-                (subEntry) => html`
-                  <ha-config-sub-entry-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .manifest=${this.manifest}
-                    .diagnosticHandler=${this.diagnosticHandler}
-                    .entities=${this.entities}
-                    .entry=${item}
-                    .subEntry=${subEntry}
-                    data-entry-id=${item.entry_id}
-                  ></ha-config-sub-entry-row>
+          ? html` ${ownDevices.length
+              ? html`
+                  <ha-md-list class="devices">
+                    <ha-md-list-item
+                      @click=${this._toggleOwnDevices}
+                      type="button"
+                    >
+                      <ha-icon-button
+                        class="expand-button"
+                        .path=${this._devicesExpanded
+                          ? mdiChevronDown
+                          : mdiChevronUp}
+                        slot="start"
+                      >
+                      </ha-icon-button>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.devices_without_subentry"
+                      )}
+                    </ha-md-list-item>
+                    ${this._devicesExpanded
+                      ? ownDevices.map(
+                          (device) =>
+                            html`<ha-config-entry-device-row
+                              .hass=${this.hass}
+                              .narrow=${this.narrow}
+                              .entry=${item}
+                              .device=${device}
+                              .entities=${entities}
+                            ></ha-config-entry-device-row>`
+                        )
+                      : nothing}
+                  </ha-md-list>
                 `
-              )}`
+              : nothing}
+            ${subEntries.map(
+              (subEntry) => html`
+                <ha-config-sub-entry-row
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .manifest=${this.manifest}
+                  .diagnosticHandler=${this.diagnosticHandler}
+                  .entities=${this.entities}
+                  .entry=${item}
+                  .subEntry=${subEntry}
+                  data-entry-id=${item.entry_id}
+                ></ha-config-sub-entry-row>
+              `
+            )}`
           : html`
               ${ownDevices.map(
                 (device) =>
