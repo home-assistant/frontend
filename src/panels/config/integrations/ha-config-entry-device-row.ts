@@ -196,9 +196,13 @@ class HaConfigEntryDeviceRow extends LitElement {
           !config_entry.disabled_by &&
           (await showConfirmationDialog(this, {
             title: this.hass.localize(
-              "ui.panel.config.devices.confirm_disable_config_entry",
-              { entry_name: config_entry.title }
+              "ui.panel.config.devices.confirm_disable_config_entry_title"
             ),
+            text: this.hass.localize(
+              "ui.panel.config.devices.confirm_disable_config_entry_message",
+              { name: config_entry.title }
+            ),
+            destructive: true,
             confirmText: this.hass.localize("ui.common.yes"),
             dismissText: this.hass.localize("ui.common.no"),
           }))
@@ -230,9 +234,13 @@ class HaConfigEntryDeviceRow extends LitElement {
     if (disable) {
       const confirm = await showConfirmationDialog(this, {
         title: this.hass.localize(
-          "ui.panel.config.integrations.config_entry.device.confirm_disable",
+          "ui.panel.config.integrations.config_entry.device.confirm_disable_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.device.confirm_disable_message",
           { name: computeDeviceNameDisplay(this.device, this.hass) }
         ),
+        destructive: true,
         confirmText: this.hass.localize("ui.common.yes"),
         dismissText: this.hass.localize("ui.common.no"),
       });
