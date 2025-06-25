@@ -43,6 +43,9 @@ export class HaGenericPicker extends LitElement {
   @property({ type: String, attribute: "search-label" })
   public searchLabel?: string;
 
+  @property({ attribute: "hide-copy-icon", type: Boolean })
+  public hideCopyIcon = true; 
+
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
@@ -79,6 +82,7 @@ export class HaGenericPicker extends LitElement {
         ${!this._opened
           ? html`
               <ha-picker-field
+                .hass=${this.hass}
                 type="button"
                 compact
                 aria-label=${ifDefined(this.label)}
@@ -88,6 +92,7 @@ export class HaGenericPicker extends LitElement {
                 .value=${this.value}
                 .required=${this.required}
                 .disabled=${this.disabled}
+                .hideCopyIcon=${this.hideCopyIcon}
                 .hideClearIcon=${this.hideClearIcon}
                 .valueRenderer=${this.valueRenderer}
               >
