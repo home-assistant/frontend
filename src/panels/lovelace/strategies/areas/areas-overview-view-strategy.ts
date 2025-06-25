@@ -71,11 +71,18 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
         const areasCards = areasInFloors.map<AreaCardConfig>((area) => {
           const path = computeAreaPath(area.area_id);
 
+          const areaOptions = config.areas_options?.[area.area_id] || {};
+
+          const hiddenEntities = Object.values(areaOptions.groups_options || {})
+            .map((display) => display.hidden || [])
+            .flat();
+
           const controls: AreaControl[] = ["light", "fan"];
           const controlEntities = getAreaControlEntities(
             controls,
             area.area_id,
-            hass
+            hass,
+            hiddenEntities
           );
 
           const filteredControls = controls.filter(
@@ -101,6 +108,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
                   {
                     type: "area-controls",
                     controls: filteredControls,
+                    exclude_entities: hiddenEntities,
                   },
                 ]
               : [],
