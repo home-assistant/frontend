@@ -71,8 +71,8 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
   static styles = css`
     ha-card {
-      border-width: 0;
       height: 100%;
+      border-width: 0;
     }
     ha-card::after {
       position: absolute;
