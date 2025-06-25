@@ -21,7 +21,6 @@ import "./ha-icon-button";
 declare global {
   interface HASSDomEvents {
     "editor-save": undefined;
-    "fullscreen-changed": { fullscreen: boolean };
   }
 }
 
@@ -272,7 +271,6 @@ export class HaCodeEditor extends ReactiveElement {
       // Exit fullscreen if currently in fullscreen mode
       if (this._isFullscreen) {
         this._isFullscreen = false;
-        fireEvent(this, "fullscreen-changed", { fullscreen: false });
       }
       return;
     }
@@ -312,7 +310,6 @@ export class HaCodeEditor extends ReactiveElement {
   private _toggleFullscreen() {
     this._isFullscreen = !this._isFullscreen;
     this._updateFullscreenButton();
-    fireEvent(this, "fullscreen-changed", { fullscreen: this._isFullscreen });
   }
 
   private _handleKeyDown = (e: KeyboardEvent) => {
