@@ -227,6 +227,7 @@ class HuiEnergySankeyCard
 
     let untrackedConsumption = homeNode.value;
     const deviceNodes: Node[] = [];
+    const parentLinks: Record<string, string> = {};
     prefs.device_consumption.forEach((device, idx) => {
       const value =
         device.stat_consumption in this._data!.stats
@@ -237,8 +238,7 @@ class HuiEnergySankeyCard
       if (value < 0.01) {
         return;
       }
-      untrackedConsumption -= value;
-      deviceNodes.push({
+      const node = {
         id: device.stat_consumption,
         label:
           device.name ||
@@ -251,12 +251,26 @@ class HuiEnergySankeyCard
         tooltip: `${formatNumber(value, this.hass.locale)} kWh`,
         color: getGraphColorByIndex(idx, computedStyle),
         index: 4,
-      });
+        parent: device.included_in_stat,
+      };
+      if (node.parent) {
+        parentLinks[node.id] = node.parent;
+        links.push({
+          source: node.parent,
+          target: node.id,
+        });
+      } else {
+        untrackedConsumption -= value;
+      }
+      deviceNodes.push(node);
     });
+    const devicesWithoutParent = deviceNodes.filter(
+      (node) => !parentLinks[node.id]
+    );
 
     const { group_by_area, group_by_floor } = this._config;
     if (group_by_area || group_by_floor) {
-      const { areas, floors } = this._groupByFloorAndArea(deviceNodes);
+      const { areas, floors } = this._groupByFloorAndArea(devicesWithoutParent);
 
       Object.keys(floors)
         .sort(
@@ -310,7 +324,6 @@ class HuiEnergySankeyCard
 
             // Link devices to the appropriate target (area, floor, or home)
             areas[areaId].devices.forEach((device) => {
-              nodes.push(device);
               links.push({
                 source: targetNodeId,
                 target: device.id,
@@ -320,8 +333,7 @@ class HuiEnergySankeyCard
           });
         });
     } else {
-      deviceNodes.forEach((deviceNode) => {
-        nodes.push(deviceNode);
+      devicesWithoutParent.forEach((deviceNode) => {
         links.push({
           source: "home",
           target: deviceNode.id,
@@ -329,6 +341,12 @@ class HuiEnergySankeyCard
         });
       });
     }
+    const deviceSections = this._getDeviceSections(parentLinks, deviceNodes);
+    deviceSections.forEach((section, index) => {
+      section.forEach((node: Node) => {
+        nodes.push({ ...node, index: 4 + index });
+      });
+    });
 
     // untracked consumption
     if (untrackedConsumption > 0) {
@@ -340,7 +358,7 @@ class HuiEnergySankeyCard
         value: untrackedConsumption,
         tooltip: `${formatNumber(untrackedConsumption, this.hass.locale)} kWh`,
         color: computedStyle.getPropertyValue("--state-unavailable-color"),
-        index: 4,
+        index: 3 + deviceSections.length,
       });
       links.push({
         source: "home",
@@ -426,6 +444,31 @@ class HuiEnergySankeyCard
       }
     });
     return { areas, floors };
+  }
+
+  protected _getDeviceSections(
+    parentLinks: Record<string, string>,
+    deviceNodes: Node[]
+  ): Node[][] {
+    const parentSection: Node[] = [];
+    const childSection: Node[] = [];
+    const parentIds = Object.values(parentLinks);
+    const remainingLinks: typeof parentLinks = {};
+    deviceNodes.forEach((deviceNode) => {
+      if (parentIds.includes(deviceNode.id)) {
+        parentSection.push(deviceNode);
+        remainingLinks[deviceNode.id] = parentLinks[deviceNode.id];
+      } else {
+        childSection.push(deviceNode);
+      }
+    });
+    if (parentSection.length > 0) {
+      return [
+        ...this._getDeviceSections(remainingLinks, parentSection),
+        childSection,
+      ];
+    }
+    return [deviceNodes];
   }
 
   static styles = css`

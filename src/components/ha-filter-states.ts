@@ -177,10 +177,10 @@ export class HaFilterStates extends LitElement {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

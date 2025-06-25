@@ -41,6 +41,8 @@ class ZHAAddDevicesPage extends LitElement {
 
   private _subscribed?: Promise<() => Promise<void>>;
 
+  private _wakeLock?: Promise<WakeLockSentinel>;
+
   public connectedCallback(): void {
     super.connectedCallback();
     if (this.route && this.route.path && this.route.path !== "") {
@@ -185,6 +187,7 @@ class ZHAAddDevicesPage extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _deactivate(): void {
@@ -192,6 +195,7 @@ class ZHAAddDevicesPage extends LitElement {
     if (this._addDevicesTimeoutHandle) {
       clearTimeout(this._addDevicesTimeoutHandle);
     }
+    this._wakeLock?.then((wakeLock) => wakeLock.release());
   }
 
   private _subscribe(): void {
@@ -211,6 +215,9 @@ class ZHAAddDevicesPage extends LitElement {
       () => this._deactivate(),
       254000
     );
+    if ("wakeLock" in navigator) {
+      this._wakeLock = navigator.wakeLock.request();
+    }
   }
 
   static get styles(): CSSResultGroup {

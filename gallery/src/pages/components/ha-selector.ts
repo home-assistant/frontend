@@ -416,6 +416,34 @@ const SCHEMAS: {
           },
         },
       },
+      items: {
+        name: "Items",
+        selector: {
+          object: {
+            label_field: "name",
+            description_field: "value",
+            multiple: true,
+            fields: {
+              name: {
+                label: "Name",
+                selector: { text: {} },
+                required: true,
+              },
+              value: {
+                label: "Value",
+                selector: {
+                  number: {
+                    mode: "slider",
+                    min: 0,
+                    max: 100,
+                    unit_of_measurement: "%",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
 ];

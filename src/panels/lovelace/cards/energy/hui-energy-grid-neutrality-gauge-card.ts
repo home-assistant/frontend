@@ -166,7 +166,7 @@ class HuiEnergyGridGaugeCard
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
 

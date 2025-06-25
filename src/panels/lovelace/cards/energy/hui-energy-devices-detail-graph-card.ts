@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
+import type { LegendComponentOption } from "echarts/components";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
@@ -54,6 +55,8 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
+  @state() private _legendData?: LegendComponentOption["data"];
+
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -78,7 +81,6 @@ export class HuiEnergyDevicesDetailGraphCard
         key: this._config?.collection_key,
       }).subscribe((data) => {
         this._data = data;
-        this._processStatistics();
       }),
     ];
   }
@@ -100,10 +102,7 @@ export class HuiEnergyDevicesDetailGraphCard
   }
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (
-      (changedProps.has("_hiddenStats") || changedProps.has("_config")) &&
-      this._data
-    ) {
+    if (changedProps.has("_config") || changedProps.has("_data")) {
       this._processStatistics();
     }
   }
@@ -184,13 +183,12 @@ export class HuiEnergyDevicesDetailGraphCard
         ...commonOptions,
         legend: {
           show: true,
-          type: "scroll",
-          animationDurationUpdate: 400,
+          type: "custom",
+          data: this._legendData,
           selected: this._hiddenStats.reduce((acc, stat) => {
             acc[stat] = false;
             return acc;
           }, {}),
-          icon: "circle",
         },
         grid: {
           top: 15,
@@ -204,7 +202,10 @@ export class HuiEnergyDevicesDetailGraphCard
   );
 
   private _processStatistics() {
-    const energyData = this._data!;
+    if (!this._data) {
+      return;
+    }
+    const energyData = this._data;
 
     this._start = energyData.start;
     this._end = energyData.end || endOfToday();
@@ -312,6 +313,13 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
     datasets.push(...processedData);
+    this._legendData = processedData.map((d) => ({
+      name: d.name as string,
+      itemStyle: {
+        color: d.color as string,
+        borderColor: d.itemStyle?.borderColor as string,
+      },
+    }));
 
     if (showUntracked) {
       const untrackedData = this._processUntracked(
@@ -321,6 +329,13 @@ export class HuiEnergyDevicesDetailGraphCard
         false
       );
       datasets.push(untrackedData);
+      this._legendData.push({
+        name: untrackedData.name as string,
+        itemStyle: {
+          color: untrackedData.color as string,
+          borderColor: untrackedData.itemStyle?.borderColor as string,
+        },
+      });
     }
 
     fillDataGapsAndRoundCaps(datasets);
@@ -377,7 +392,7 @@ export class HuiEnergyDevicesDetailGraphCard
           this.hass.themes.darkMode,
           false,
           compare,
-          "--state-unavailable-color"
+          "--history-unknown-color"
         ),
       },
       barMaxWidth: 50,
@@ -386,7 +401,7 @@ export class HuiEnergyDevicesDetailGraphCard
         this.hass.themes.darkMode,
         true,
         compare,
-        "--state-unavailable-color"
+        "--history-unknown-color"
       ),
       data: untrackedConsumption,
       stack: compare ? "devicesCompare" : "devices",

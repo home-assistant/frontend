@@ -762,7 +762,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           justify-content: space-between;
           padding: 8px 12px;
           box-sizing: border-box;
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           --ha-assist-chip-container-color: var(--card-background-color);
         }
 
@@ -800,10 +800,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
         ha-dialog {
           --mdc-dialog-min-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
           );
           --mdc-dialog-max-width: calc(
-            100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+            100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
           );
           --mdc-dialog-min-height: 100%;
           --mdc-dialog-max-height: 100%;

@@ -273,14 +273,14 @@ export class HaVoiceCommandDialog extends LitElement {
           --mdc-theme-primary: var(--secondary-text-color);
           --mdc-typography-button-text-transform: none;
           --mdc-typography-button-font-size: unset;
-          --mdc-typography-button-font-weight: 400;
+          --mdc-typography-button-font-weight: var(--ha-font-weight-normal);
           --mdc-typography-button-letter-spacing: var(
             --mdc-typography-headline6-letter-spacing,
             0.0125em
           );
           --mdc-typography-button-line-height: var(
             --mdc-typography-headline6-line-height,
-            2rem
+            var(--ha-line-height-expanded)
           );
           --button-height: auto;
         }

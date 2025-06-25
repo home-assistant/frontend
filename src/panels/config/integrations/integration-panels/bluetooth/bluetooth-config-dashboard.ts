@@ -106,6 +106,13 @@ export class BluetoothConfigDashboard extends LitElement {
                   )}
                 </ha-button></a
               >
+              <a href="/config/bluetooth/visualization"
+                ><ha-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.bluetooth.visualization"
+                  )}
+                </ha-button></a
+              >
             </div>
           </ha-card>
           <ha-card
@@ -207,6 +214,10 @@ export class BluetoothConfigDashboard extends LitElement {
         }
         ha-card {
           margin-bottom: 16px;
+        }
+        .card-actions {
+          display: flex;
+          justify-content: space-between;
         }
       `,
     ];

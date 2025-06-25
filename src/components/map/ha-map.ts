@@ -56,6 +56,7 @@ export interface HaMapEntity {
   color: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
+  unit?: string;
   name?: string;
   focus?: boolean;
 }
@@ -549,6 +550,12 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && entity.label_mode === "icon";
       entityMarker.entityId = getEntityId(entity);
       entityMarker.entityName = entityName;
+      entityMarker.entityUnit =
+        typeof entity !== "string" &&
+        entity.unit &&
+        entity.label_mode === "attribute"
+          ? entity.unit
+          : "";
       entityMarker.entityPicture =
         entityPicture && (typeof entity === "string" || !entity.label_mode)
           ? this.hass.hassUrl(entityPicture)
@@ -671,7 +678,7 @@ export class HaMap extends ReactiveElement {
     }
     .leaflet-tooltip {
       padding: 8px;
-      font-size: 90%;
+      font-size: var(--ha-font-size-s);
       background: rgba(80, 80, 80, 0.9) !important;
       color: white !important;
       border-radius: 4px;
@@ -688,11 +695,11 @@ export class HaMap extends ReactiveElement {
       border-radius: 20px;
       text-align: center;
       color: var(--text-primary-color);
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
     }
 
     .marker-cluster span {
-      line-height: 30px;
+      line-height: var(--ha-line-height-expanded);
     }
   `;
 }

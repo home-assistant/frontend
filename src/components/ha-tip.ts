@@ -38,7 +38,7 @@ class HaTip extends LitElement {
     }
 
     .prefix {
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
   `;
 }

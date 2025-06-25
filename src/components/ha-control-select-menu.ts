@@ -179,7 +179,7 @@ export class HaControlSelectMenu extends SelectBase {
         --control-select-menu-padding: 6px 10px;
         --mdc-icon-size: 20px;
         --ha-ripple-color: var(--secondary-text-color);
-        font-size: 14px;
+        font-size: var(--ha-font-size-m);
         line-height: 1.4;
         width: auto;
         color: var(--primary-text-color);
@@ -208,7 +208,7 @@ export class HaControlSelectMenu extends SelectBase {
         width: 100%;
         user-select: none;
         font-style: normal;
-        font-weight: 400;
+        font-weight: var(--ha-font-weight-normal);
         letter-spacing: 0.25px;
       }
       .content {

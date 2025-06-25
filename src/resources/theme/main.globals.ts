@@ -27,11 +27,23 @@ export const mainStyles = css`
     --margin-title-ltr: 0 0 0 24px;
     --margin-title-rtl: 0 24px 0 0;
 
-    /* Vaadin typography */
-    --material-h6-font-size: var(--ha-font-size-m);
-    --material-small-font-size: var(--ha-font-size-xs);
-    --material-caption-font-size: var(--ha-font-size-2xs);
-    --material-button-font-size: var(--ha-font-size-xs);
+    /* safe-area-insets */
+    --safe-area-inset-top: var(
+      --app-safe-area-inset-top,
+      env(safe-area-inset-top, 0)
+    );
+    --safe-area-inset-bottom: var(
+      --app-safe-area-inset-bottom,
+      env(safe-area-inset-bottom, 0)
+    );
+    --safe-area-inset-left: var(
+      --app-safe-area-inset-left,
+      env(safe-area-inset-left, 0)
+    );
+    --safe-area-inset-right: var(
+      --app-safe-area-inset-right,
+      env(safe-area-inset-right, 0)
+    );
   }
 `;
 

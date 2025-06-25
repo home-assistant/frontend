@@ -512,18 +512,18 @@ class MoreInfoWeather extends LitElement {
 
         .temp-attribute .temp span {
           position: absolute;
-          font-size: 24px;
+          font-size: var(--ha-font-size-2xl);
           top: 1px;
         }
 
         .state,
         .temp-attribute .temp {
-          font-size: 28px;
-          line-height: 1.2;
+          font-size: var(--ha-font-size-3xl);
+          line-height: var(--ha-line-height-condensed);
         }
 
         .attribute {
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           line-height: 1;
         }
 
@@ -570,7 +570,7 @@ class MoreInfoWeather extends LitElement {
         }
 
         .forecast .temp {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
 
         .forecast-image-icon {

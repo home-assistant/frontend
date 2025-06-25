@@ -91,7 +91,7 @@ class HaLabelBadge extends LitElement {
           color: var(--ha-label-badge-label-color, white);
           border-radius: 1em;
           padding: 9% 16% 8% 16%; /* mostly apitalized text, not much descenders => bit more top margin */
-          font-weight: 500;
+          font-weight: var(--ha-font-weight-medium);
           overflow: hidden;
           text-transform: uppercase;
           text-overflow: ellipsis;
@@ -102,7 +102,10 @@ class HaLabelBadge extends LitElement {
           margin-top: 1em;
           font-size: var(--ha-label-badge-title-font-size, 0.9em);
           width: var(--ha-label-badge-title-width, 5em);
-          font-weight: var(--ha-label-badge-title-font-weight, 400);
+          font-weight: var(
+            --ha-label-badge-title-font-weight,
+            var(--ha-font-weight-normal)
+          );
           overflow: hidden;
           text-overflow: ellipsis;
           line-height: normal;

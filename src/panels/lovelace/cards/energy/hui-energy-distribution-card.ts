@@ -102,14 +102,13 @@ class HuiEnergyDistrubutionCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    // The strategy only includes this card if we have a grid.
-    const hasConsumption = true;
-
+    const hasGrid =
+      !!types.grid?.[0].flow_from.length || !!types.grid?.[0].flow_to.length;
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
     const hasWater = types.water !== undefined;
-    const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
+    const hasReturnToGrid = !!types.grid?.[0].flow_to.length;
 
     const { summedData, compareSummedData: _ } = getSummedData(this._data);
     const { consumption, compareConsumption: __ } = computeConsumptionData(
@@ -163,14 +162,14 @@ class HuiEnergyDistrubutionCard
     }
     let batteryFromGrid: null | number = null;
     let batteryToGrid: null | number = null;
-    if (hasBattery) {
+    if (hasBattery && hasGrid) {
       batteryToGrid = consumption.total.battery_to_grid;
       batteryFromGrid = consumption.total.grid_to_battery;
     }
 
     let solarToBattery: null | number = null;
     let solarToGrid: null | number = null;
-    if (hasSolarProduction) {
+    if (hasSolarProduction && hasGrid) {
       solarToGrid = consumption.total.solar_to_grid;
     }
     if (hasSolarProduction && hasBattery) {
@@ -182,7 +181,9 @@ class HuiEnergyDistrubutionCard
       batteryConsumption = Math.max(consumption.total.used_battery, 0);
     }
 
-    const gridConsumption = Math.max(consumption.total.used_grid, 0);
+    const gridConsumption = hasGrid
+      ? Math.max(consumption.total.used_grid, 0)
+      : 0;
 
     const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
@@ -204,9 +205,13 @@ class HuiEnergyDistrubutionCard
     let homeHighCarbonCircumference: number | undefined;
 
     // This fallback is used in the demo
-    let electricityMapUrl = "https://app.electricitymap.org";
+    let electricityMapUrl = "https://app.electricitymaps.com";
 
-    if (this._data.co2SignalEntity && this._data.fossilEnergyConsumption) {
+    if (
+      hasGrid &&
+      this._data.co2SignalEntity &&
+      this._data.fossilEnergyConsumption
+    ) {
       // Calculate high carbon consumption
       const highCarbonEnergy = Object.values(
         this._data.fossilEnergyConsumption
@@ -225,7 +230,7 @@ class HuiEnergyDistrubutionCard
         if (gridConsumption !== totalFromGrid) {
           // Only get the part that was used for consumption and not the battery
           highCarbonConsumption =
-            highCarbonEnergy * (gridConsumption / totalFromGrid);
+            highCarbonEnergy * (gridConsumption! / totalFromGrid);
         } else {
           highCarbonConsumption = highCarbonEnergy;
         }
@@ -378,41 +383,43 @@ class HuiEnergyDistrubutionCard
               </div>`
             : ""}
           <div class="row">
-            <div class="circle-container grid">
-              <div class="circle">
-                <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
-                ${returnedToGrid !== null
-                  ? html`<span class="return">
-                      <ha-svg-icon
-                        class="small"
-                        .path=${mdiArrowLeft}
-                      ></ha-svg-icon
-                      >${formatConsumptionShort(
+            ${hasGrid
+              ? html`<div class="circle-container grid">
+                  <div class="circle">
+                    <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
+                    ${returnedToGrid !== null
+                      ? html`<span class="return">
+                          <ha-svg-icon
+                            class="small"
+                            .path=${mdiArrowLeft}
+                          ></ha-svg-icon
+                          >${formatConsumptionShort(
+                            this.hass,
+                            returnedToGrid,
+                            "kWh"
+                          )}
+                        </span>`
+                      : ""}
+                    <span class="consumption">
+                      ${hasReturnToGrid
+                        ? html`<ha-svg-icon
+                            class="small"
+                            .path=${mdiArrowRight}
+                          ></ha-svg-icon>`
+                        : ""}${formatConsumptionShort(
                         this.hass,
-                        returnedToGrid,
+                        totalFromGrid,
                         "kWh"
                       )}
-                    </span>`
-                  : ""}
-                <span class="consumption">
-                  ${hasReturnToGrid
-                    ? html`<ha-svg-icon
-                        class="small"
-                        .path=${mdiArrowRight}
-                      ></ha-svg-icon>`
-                    : ""}${formatConsumptionShort(
-                    this.hass,
-                    totalFromGrid,
-                    "kWh"
-                  )}
-                </span>
-              </div>
-              <span class="label"
-                >${this.hass.localize(
-                  "ui.panel.lovelace.cards.energy.energy_distribution.grid"
-                )}</span
-              >
-            </div>
+                    </span>
+                  </div>
+                  <span class="label"
+                    >${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+                    )}</span
+                  >
+                </div> `
+              : html`<div class="grid-spacer"></div>`}
             <div class="circle-container home">
               <div
                 class="circle ${classMap({
@@ -480,22 +487,27 @@ class HuiEnergyDistrubutionCard
                             shape-rendering="geometricPrecision"
                           />`
                         : ""}
-                      <circle
+                      ${hasGrid
+                        ? svg`<circle
                         class="grid"
                         cx="40"
                         cy="40"
                         r="38"
-                        stroke-dasharray="${homeHighCarbonCircumference ??
-                        CIRCLE_CIRCUMFERENCE -
-                          homeSolarCircumference! -
-                          (homeBatteryCircumference ||
-                            0)} ${homeHighCarbonCircumference !== undefined
-                          ? CIRCLE_CIRCUMFERENCE - homeHighCarbonCircumference
-                          : homeSolarCircumference! +
-                            (homeBatteryCircumference || 0)}"
+                        stroke-dasharray="${
+                          homeHighCarbonCircumference ??
+                          CIRCLE_CIRCUMFERENCE -
+                            homeSolarCircumference! -
+                            (homeBatteryCircumference || 0)
+                        } ${
+                          homeHighCarbonCircumference !== undefined
+                            ? CIRCLE_CIRCUMFERENCE - homeHighCarbonCircumference
+                            : homeSolarCircumference! +
+                              (homeBatteryCircumference || 0)
+                        }"
                         stroke-dashoffset="0"
                         shape-rendering="geometricPrecision"
-                      />
+                      />`
+                        : nothing}
                     </svg>`
                   : ""}
               </div>
@@ -619,15 +631,19 @@ class HuiEnergyDistrubutionCard
                     d="M55,100 v-15 c0,-35 10,-30 30,-30 h20"
                     vector-effect="non-scaling-stroke"
                   ></path>
-                  <path
-                    id="battery-grid"
-                    class=${classMap({
-                      "battery-from-grid": Boolean(batteryFromGrid),
-                      "battery-to-grid": Boolean(batteryToGrid),
-                    })}
-                    d="M45,100 v-15 c0,-35 -10,-30 -30,-30 h-20"
-                    vector-effect="non-scaling-stroke"
-                  ></path>
+                  ${
+                    hasGrid
+                      ? svg`<path
+                          id="battery-grid"
+                          class=${classMap({
+                            "battery-from-grid": Boolean(batteryFromGrid),
+                            "battery-to-grid": Boolean(batteryToGrid),
+                          })}
+                          d="M45,100 v-15 c0,-35 -10,-30 -30,-30 h-20"
+                          vector-effect="non-scaling-stroke"
+                        ></path>`
+                      : nothing
+                  }
                   `
                 : ""}
               ${hasBattery && hasSolarProduction
@@ -638,12 +654,14 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   ></path>`
                 : ""}
-              <path
-                class="grid"
-                id="grid"
-                d="M0,${hasBattery ? 50 : hasSolarProduction ? 56 : 53} H100"
-                vector-effect="non-scaling-stroke"
-              ></path>
+              ${hasGrid
+                ? svg`<path
+                    class="grid"
+                    id="grid"
+                    d="M0,${hasBattery ? 50 : hasSolarProduction ? 56 : 53} H100"
+                    vector-effect="non-scaling-stroke"
+              ></path>`
+                : nothing}
               ${solarToGrid && this._animate
                 ? svg`<circle
                     r="1"
@@ -839,6 +857,10 @@ class HuiEnergyDistrubutionCard
     .spacer {
       width: 84px;
     }
+    .grid-spacer {
+      width: 84px;
+      height: 100px;
+    }
     .circle {
       width: 80px;
       height: 80px;
@@ -850,7 +872,7 @@ class HuiEnergyDistrubutionCard
       align-items: center;
       justify-content: center;
       text-align: center;
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       line-height: 12px;
       position: relative;
       text-decoration: none;
@@ -864,7 +886,7 @@ class HuiEnergyDistrubutionCard
     }
     .label {
       color: var(--secondary-text-color);
-      font-size: 12px;
+      font-size: var(--ha-font-size-s);
       opacity: 1;
       height: 20px;
       overflow: hidden;

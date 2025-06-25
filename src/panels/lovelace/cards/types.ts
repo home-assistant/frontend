@@ -101,11 +101,18 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 }
 
 export interface AreaCardConfig extends LovelaceCardConfig {
-  area: string;
+  area?: string;
+  name?: string;
   navigation_path?: string;
+  display_type?: "compact" | "icon" | "picture" | "camera";
+  /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
   aspect_ratio?: string;
+  sensor_classes?: string[];
+  alert_classes?: string[];
+  features?: LovelaceCardFeatureConfig[];
+  features_position?: "bottom" | "inline";
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -215,8 +222,9 @@ export interface EntityFilterCardConfig extends LovelaceCardConfig {
 }
 
 export interface ErrorCardConfig extends LovelaceCardConfig {
-  error: string;
-  origConfig: LovelaceCardConfig;
+  error?: string;
+  origConfig?: LovelaceCardConfig;
+  severity?: "warning" | "error";
 }
 
 export interface SeverityConfig {
@@ -233,6 +241,7 @@ export interface GaugeSegment {
 
 export interface GaugeCardConfig extends LovelaceCardConfig {
   entity: string;
+  attribute?: string;
   name?: string;
   unit?: string;
   min?: number;
@@ -321,6 +330,7 @@ interface GeoLocationSourceConfig {
   source: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
+  unit?: string;
   focus?: boolean;
 }
 
@@ -336,6 +346,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
+  cluster?: boolean;
 }
 
 export interface MarkdownCardConfig extends LovelaceCardConfig {

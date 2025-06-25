@@ -315,9 +315,9 @@ class HaConfigInfo extends LitElement {
         }
 
         .header p {
-          font-size: 22px;
-          font-weight: 400;
-          line-height: 28px;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           text-align: center;
           margin: 24px;
         }
@@ -346,8 +346,8 @@ class HaConfigInfo extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          font-size: 14px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
           padding: 4px 0;
         }
 
@@ -361,12 +361,12 @@ class HaConfigInfo extends LitElement {
 
         .ha-version {
           color: var(--primary-text-color);
-          font-weight: 500;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
         }
 
         .pages {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
           padding: 4px 0;
         }
 
