@@ -13,10 +13,10 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
-import type {
-  DisableConfigEntryResult,
+import {
   disableConfigEntry,
   type ConfigEntry,
+  type DisableConfigEntryResult,
 } from "../../../data/config_entries";
 import {
   removeConfigEntryFromDevice,
