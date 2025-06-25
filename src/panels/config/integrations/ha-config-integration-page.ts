@@ -403,14 +403,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         </a>
                       </div>`
                     : nothing}
-                  ${this._logInfo?.level === LogSeverity.DEBUG
-                    ? html`<div class="integration-info">
-                        <ha-svg-icon .path=${mdiBugPlay}></ha-svg-icon>
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-                        )}
-                      </div>`
-                    : nothing}
                   ${this._manifest?.iot_class?.startsWith("cloud_")
                     ? html`<div class="integration-info">
                         <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
@@ -539,6 +531,21 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </div>
           </div>
 
+          ${this._logInfo?.level === LogSeverity.DEBUG
+            ? html`<div class="section">
+                <ha-alert alert-type="warning">
+                  <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                  )}
+                  <ha-button
+                    slot="action"
+                    @click=${this._handleDisableDebugLogging}
+                    >${this.hass.localize("ui.common.disable")}</ha-button
+                  >
+                </ha-alert>
+              </div>`
+            : nothing}
           ${discoveryFlows.length
             ? html`
                 <div class="section">

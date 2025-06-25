@@ -5379,6 +5379,7 @@
             "device": {
               "enable": "Enable device",
               "disable": "Disable device",
+              "confirm_disable": "Are you sure you want to disable {name}?",
               "configure": "Configure device",
               "delete": "Remove device"
             },

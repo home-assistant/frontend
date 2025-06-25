@@ -8,10 +8,16 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { getDeviceContext } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
-import type { ConfigEntry } from "../../../data/config_entries";
+import {
+  disableConfigEntry,
+  type ConfigEntry,
+  type DisableConfigEntryResult,
+} from "../../../data/config_entries";
 import {
   removeConfigEntryFromDevice,
   updateDeviceRegistryEntry,
@@ -26,7 +32,6 @@ import {
 } from "../../lovelace/custom-card-helpers";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import "./ha-config-sub-entry-row";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("ha-config-entry-device-row")
 class HaConfigEntryDeviceRow extends LitElement {
@@ -52,7 +57,7 @@ class HaConfigEntryDeviceRow extends LitElement {
       area ? area.name : undefined,
     ].filter(Boolean);
 
-    return html`<ha-md-list-item @click=${this.narrow ? this._handleNavigateToDevice : undefined}>
+    return html`<ha-md-list-item @click=${this.narrow ? this._handleNavigateToDevice : undefined} class=${classMap({ disabled: Boolean(device.disabled_by) })}>
       <ha-svg-icon .path=${mdiDevices} slot="start"></ha-svg-icon>
       <div slot="headline"></div>${computeDeviceNameDisplay(device, this.hass)}</div>
       <span slot="supporting-text"
@@ -175,8 +180,70 @@ class HaConfigEntryDeviceRow extends LitElement {
   }
 
   private async _handleDisableDevice() {
+    const disable = this.device.disabled_by === null;
+
+    if (disable) {
+      if (
+        !Object.values(this.hass.devices).some(
+          (dvc) =>
+            dvc.id !== this.device.id &&
+            dvc.config_entries.includes(this.entry.entry_id)
+        )
+      ) {
+        const config_entry = this.entry;
+        if (
+          config_entry &&
+          !config_entry.disabled_by &&
+          (await showConfirmationDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.devices.confirm_disable_config_entry",
+              { entry_name: config_entry.title }
+            ),
+            confirmText: this.hass.localize("ui.common.yes"),
+            dismissText: this.hass.localize("ui.common.no"),
+          }))
+        ) {
+          let result: DisableConfigEntryResult;
+          try {
+            result = await disableConfigEntry(this.hass, this.entry.entry_id);
+          } catch (err: any) {
+            showAlertDialog(this, {
+              title: this.hass.localize(
+                "ui.panel.config.integrations.config_entry.disable_error"
+              ),
+              text: err.message,
+            });
+            return;
+          }
+          if (result.require_restart) {
+            showAlertDialog(this, {
+              text: this.hass.localize(
+                "ui.panel.config.integrations.config_entry.disable_restart_confirm"
+              ),
+            });
+          }
+          return;
+        }
+      }
+    }
+
+    if (disable) {
+      const confirm = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.device.confirm_disable",
+          { name: computeDeviceNameDisplay(this.device, this.hass) }
+        ),
+        confirmText: this.hass.localize("ui.common.yes"),
+        dismissText: this.hass.localize("ui.common.no"),
+      });
+
+      if (!confirm) {
+        return;
+      }
+    }
+
     await updateDeviceRegistryEntry(this.hass, this.device.id, {
-      disabled_by: this.device.disabled_by === "user" ? null : "user",
+      disabled_by: disable ? "user" : null,
     });
   }
 
@@ -219,6 +286,9 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
       ha-md-list-item {
         --md-list-item-leading-space: 56px;
+      }
+      .disabled {
+        opacity: 0.5;
       }
       :host([narrow]) ha-md-list-item {
         --md-list-item-leading-space: 16px;
