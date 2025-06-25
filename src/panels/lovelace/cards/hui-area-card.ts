@@ -514,6 +514,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                   .context=${this._featureContext}
                   .color=${this._config.color}
                   .features=${features}
+                  .position=${featurePosition}
                 ></hui-card-features>
               `
             : nothing}
