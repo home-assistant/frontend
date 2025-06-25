@@ -7,6 +7,9 @@ export class HaControlButtonGroup extends LitElement {
   @property({ type: Boolean, reflect: true })
   public vertical = false;
 
+  @property({ attribute: "no-fill", type: Boolean, reflect: true })
+  public noFill = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="container">
@@ -26,6 +29,7 @@ export class HaControlButtonGroup extends LitElement {
     .container {
       display: flex;
       flex-direction: row;
+      justify-content: var(--control-button-group-alignment, start);
       width: 100%;
       height: 100%;
     }

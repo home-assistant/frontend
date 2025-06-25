@@ -182,6 +182,8 @@ export interface AreaControlsCardFeatureConfig {
   exclude_entities?: string[];
 }
 
+export type LovelaceCardFeaturePosition = "bottom" | "inline";
+
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig

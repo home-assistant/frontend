@@ -1,19 +1,22 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import {
   computeGroupEntitiesState,
   toggleGroupEntities,
 } from "../../../common/entity/group_entities";
-import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import { stateActive } from "../../../common/entity/state_active";
+import { domainColorProperties } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { forwardHaptic } from "../../../data/haptics";
+import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -21,6 +24,7 @@ import type {
   AreaControl,
   AreaControlsCardFeatureConfig,
   LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
 } from "./types";
 import { AREA_CONTROLS } from "./types";
 
@@ -112,6 +116,9 @@ class HuiAreaControlsCardFeature
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @property({ attribute: false })
+  public position?: LovelaceCardFeaturePosition;
 
   @state() private _config?: AreaControlsCardFeatureConfig;
 
@@ -221,7 +228,7 @@ class HuiAreaControlsCardFeature
     }
 
     return html`
-      <ha-control-button-group>
+      <ha-control-button-group .noFill=${this.position === "inline"}>
         ${displayControls.map((control) => {
           const button = AREA_CONTROLS_BUTTONS[control];
 
@@ -251,8 +258,15 @@ class HuiAreaControlsCardFeature
             ? ensureArray(button.filter.device_class)[0]
             : undefined;
 
+          const activeColor = computeCssVariable(
+            domainColorProperties(domain, deviceClass, groupState, true)
+          );
+
           return html`
             <ha-control-button
+              style=${styleMap({
+                "--active-color": activeColor,
+              })}
               .title=${label}
               aria-label=${label}
               class=${active ? "active" : ""}
@@ -277,6 +291,9 @@ class HuiAreaControlsCardFeature
     return [
       cardFeatureStyles,
       css`
+        ha-control-button-group {
+          --control-button-group-alignment: flex-end;
+        }
         ha-control-button {
           --active-color: var(--state-active-color);
           --control-button-focus-color: var(--state-active-color);
