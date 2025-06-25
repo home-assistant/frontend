@@ -1114,12 +1114,16 @@ export const formatConsumptionShort = (
   if (!consumption) {
     return `0 ${unit}`;
   }
-  const units = ["kWh", "MWh", "GWh", "TWh"];
+  const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
   let pickedUnit = unit;
   let val = consumption;
   let unitIndex = units.findIndex((u) => u === unit);
   if (unitIndex >= 0) {
-    while (val >= 1000 && unitIndex < units.length - 1) {
+    while (Math.abs(val) < 1 && unitIndex > 0) {
+      val *= 1000;
+      unitIndex--;
+    }
+    while (Math.abs(val) >= 1000 && unitIndex < units.length - 1) {
       val /= 1000;
       unitIndex++;
     }
@@ -1127,7 +1131,8 @@ export const formatConsumptionShort = (
   }
   return (
     formatNumber(val, hass.locale, {
-      maximumFractionDigits: val < 10 ? 2 : val < 100 ? 1 : 0,
+      maximumFractionDigits:
+        Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
     }) +
     " " +
     pickedUnit

@@ -1,12 +1,12 @@
 import type { HomeAssistant } from "../types";
 
 export interface AITaskPreferences {
-  gen_text_entity_id: string | null;
+  gen_data_entity_id: string | null;
 }
 
-export interface GenTextTaskResult {
+export interface GenDataTaskResult {
   conversation_id: string;
-  text: string;
+  data: string;
 }
 
 export const fetchAITaskPreferences = (hass: HomeAssistant) =>
@@ -23,17 +23,17 @@ export const saveAITaskPreferences = (
     ...preferences,
   });
 
-export const generateTextAITask = async (
+export const generateDataAITask = async (
   hass: HomeAssistant,
   task: {
     task_name: string;
     entity_id?: string;
     instructions: string;
   }
-): Promise<GenTextTaskResult> => {
-  const result = await hass.callService<GenTextTaskResult>(
+): Promise<GenDataTaskResult> => {
+  const result = await hass.callService<GenDataTaskResult>(
     "ai_task",
-    "generate_text",
+    "generate_data",
     task,
     undefined,
     true,

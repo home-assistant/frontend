@@ -47,9 +47,7 @@ export class AITaskPref extends LitElement {
             })}
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
-          />${this.hass.localize(
-            "ui.panel.config.voice_assistants.ai_task.header"
-          )}
+          />${this.hass.localize("ui.panel.config.ai_task.header")}
         </h1>
         <div class="header-actions">
           <a
@@ -68,30 +66,25 @@ export class AITaskPref extends LitElement {
         </div>
         <div class="card-content">
           <p>
-            ${this.hass!.localize(
-              "ui.panel.config.voice_assistants.ai_task.description",
-              {
-                button: html`<ha-svg-icon
-                  .path=${mdiStarFourPoints}
-                ></ha-svg-icon>`,
-              }
-            )}
+            ${this.hass!.localize("ui.panel.config.ai_task.description", {
+              button: html`<ha-svg-icon
+                .path=${mdiStarFourPoints}
+              ></ha-svg-icon>`,
+            })}
           </p>
           <ha-settings-row .narrow=${this.narrow}>
             <span slot="heading">
-              ${this.hass!.localize(
-                "ui.panel.config.voice_assistants.ai_task.gen_text_header"
-              )}
+              ${this.hass!.localize("ui.panel.config.ai_task.gen_data_header")}
             </span>
             <span slot="description">
               ${this.hass!.localize(
-                "ui.panel.config.voice_assistants.ai_task.gen_text_description"
+                "ui.panel.config.ai_task.gen_data_description"
               )}
             </span>
             <ha-entity-picker
-              data-name="gen_text_entity_id"
+              data-name="gen_data_entity_id"
               .hass=${this.hass}
-              .value=${this._prefs.gen_text_entity_id}
+              .value=${this._prefs.gen_data_entity_id}
               .includeDomains=${["ai_task"]}
               @value-changed=${this._handlePrefChange}
             ></ha-entity-picker>
@@ -119,6 +112,14 @@ export class AITaskPref extends LitElement {
   }
 
   static styles = css`
+    .card-header {
+      display: flex;
+      align-items: center;
+    }
+    .card-header img {
+      max-width: 28px;
+      margin-right: 16px;
+    }
     a {
       color: var(--primary-color);
     }

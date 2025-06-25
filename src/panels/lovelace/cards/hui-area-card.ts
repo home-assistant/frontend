@@ -10,7 +10,9 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { BINARY_STATE_ON } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
@@ -51,6 +53,10 @@ export const DEVICE_CLASSES = {
   binary_sensor: ["motion", "moisture"],
 };
 
+export interface AreaCardFeatureContext extends LovelaceCardFeatureContext {
+  exclude_entities?: string[];
+}
+
 @customElement("hui-area-card")
 export class HuiAreaCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -59,7 +65,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: AreaCardConfig;
 
-  @state() private _featureContext: LovelaceCardFeatureContext = {};
+  @state() private _featureContext: AreaCardFeatureContext = {};
 
   private _ratio: {
     w: number;
@@ -85,6 +91,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     this._featureContext = {
       area_id: config.area,
+      exclude_entities: config.exclude_entities,
     };
   }
 
@@ -164,7 +171,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     (
       entities: HomeAssistant["entities"],
       areaId: string,
-      sensorClasses: string[]
+      sensorClasses: string[],
+      excludeEntities?: string[]
     ): Map<string, string[]> => {
       const sensorFilter = generateEntityFilter(this.hass, {
         area: areaId,
@@ -172,7 +180,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         domain: "sensor",
         device_class: sensorClasses,
       });
-      const entityIds = Object.keys(entities).filter(sensorFilter);
+      const entityIds = Object.keys(entities).filter(
+        (id) => sensorFilter(id) && !excludeEntities?.includes(id)
+      );
+
       return this._groupEntitiesByDeviceClass(entityIds);
     }
   );
@@ -181,7 +192,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     (
       entities: HomeAssistant["entities"],
       areaId: string,
-      binarySensorClasses: string[]
+      binarySensorClasses: string[],
+      excludeEntities?: string[]
     ): Map<string, string[]> => {
       const binarySensorFilter = generateEntityFilter(this.hass, {
         area: areaId,
@@ -189,7 +201,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         domain: "binary_sensor",
         device_class: binarySensorClasses,
       });
-      const entityIds = Object.keys(entities).filter(binarySensorFilter);
+
+      const entityIds = Object.keys(entities).filter(
+        (id) => binarySensorFilter(id) && !excludeEntities?.includes(id)
+      );
+
       return this._groupEntitiesByDeviceClass(entityIds);
     }
   );
@@ -213,13 +229,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
     const alertClasses = this._config?.alert_classes;
+    const excludeEntities = this._config?.exclude_entities;
     if (!area || !alertClasses) {
       return [];
     }
     const groupedEntities = this._groupedBinarySensorEntityIds(
       this.hass.entities,
       area.area_id,
-      alertClasses
+      alertClasses,
+      excludeEntities
     );
 
     return (
@@ -284,6 +302,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const areaId = this._config?.area;
     const area = areaId ? this.hass.areas[areaId] : undefined;
     const sensorClasses = this._config?.sensor_classes;
+    const excludeEntities = this._config?.exclude_entities;
     if (!area || !sensorClasses) {
       return undefined;
     }
@@ -291,7 +310,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const groupedEntities = this._groupedSensorEntityIds(
       this.hass.entities,
       area.area_id,
-      sensorClasses
+      sensorClasses,
+      excludeEntities
     );
 
     const sensorStates = sensorClasses
@@ -428,8 +448,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const ignoreAspectRatio = this.layout === "grid" || this.layout === "panel";
 
+    const color = this._config.color
+      ? computeCssColor(this._config.color)
+      : undefined;
+
+    const style = {
+      "--tile-color": color,
+    };
+
     return html`
-      <ha-card>
+      <ha-card style=${styleMap(style)}>
         <div
           class="background"
           @action=${this._handleAction}
@@ -504,6 +532,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
                   .context=${this._featureContext}
                   .color=${this._config.color}
                   .features=${features}
+                  .position=${featurePosition}
                 ></hui-card-features>
               `
             : nothing}
@@ -653,8 +682,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       left: 0;
       display: flex;
       flex-direction: row;
-      gap: 4px;
-      padding: 4px;
+      gap: 8px;
+      padding: 8px;
       pointer-events: none;
       z-index: 1;
     }

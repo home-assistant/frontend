@@ -13,6 +13,7 @@ import type { Constructor, HomeAssistant } from "../../types";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
 } from "./card-features/types";
 import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
@@ -179,6 +180,7 @@ export interface LovelaceCardFeature extends HTMLElement {
   context?: LovelaceCardFeatureContext;
   setConfig(config: LovelaceCardFeatureConfig);
   color?: string;
+  position?: LovelaceCardFeaturePosition;
 }
 
 export interface LovelaceCardFeatureConstructor

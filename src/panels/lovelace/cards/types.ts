@@ -9,7 +9,10 @@ import type {
   ThemeMode,
   TranslationDict,
 } from "../../../types";
-import type { LovelaceCardFeatureConfig } from "../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeaturePosition,
+} from "../card-features/types";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
@@ -103,6 +106,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
   name?: string;
+  color?: string;
   navigation_path?: string;
   display_type?: "compact" | "icon" | "picture" | "camera";
   /** @deprecated Use `display_type` instead */
@@ -112,7 +116,8 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   sensor_classes?: string[];
   alert_classes?: string[];
   features?: LovelaceCardFeatureConfig[];
-  features_position?: "bottom" | "inline";
+  features_position?: LovelaceCardFeaturePosition;
+  exclude_entities?: string[];
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -563,7 +568,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
-  features_position?: "bottom" | "inline";
+  features_position?: LovelaceCardFeaturePosition;
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

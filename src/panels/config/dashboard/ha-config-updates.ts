@@ -64,7 +64,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <div class="title">
+      <div class="title" role="heading" aria-level="2">
         ${this.hass.localize("ui.panel.config.updates.title", {
           count: this.total || this.updateEntities.length,
         })}
