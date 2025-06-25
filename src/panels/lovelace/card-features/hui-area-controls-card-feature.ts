@@ -228,7 +228,7 @@ class HuiAreaControlsCardFeature
     }
 
     return html`
-      <ha-control-button-group .noFill=${this.position === "inline"}>
+      <ha-control-button-group ?no-stretch=${this.position === "inline"}>
         ${displayControls.map((control) => {
           const button = AREA_CONTROLS_BUTTONS[control];
 
