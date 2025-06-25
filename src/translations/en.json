@@ -5433,7 +5433,6 @@
               }
             },
             "custom_integration": "Custom integration",
-            "internal_integration": "Internal integration",
             "legacy_integration": "Legacy integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
             "depends_on_cloud": "Requires Internet",
