@@ -26,6 +26,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
+  @state() private _card?: HuiCard | HuiCardOptions;
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
 
