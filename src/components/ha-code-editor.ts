@@ -180,6 +180,9 @@ export class HaCodeEditor extends ReactiveElement {
     if (changedProps.has("_isFullscreen")) {
       this.classList.toggle("fullscreen", this._isFullscreen);
     }
+    if (changedProps.has("enableFullscreen")) {
+      this._updateFullscreenButton();
+    }
   }
 
   private get _mode() {
@@ -255,35 +258,53 @@ export class HaCodeEditor extends ReactiveElement {
       parent: this.renderRoot,
     });
 
-    if (this.enableFullscreen) {
-      this._createFullscreenButton();
+    this._updateFullscreenButton();
+  }
+
+  private _updateFullscreenButton() {
+    const existingButton = this.renderRoot.querySelector(".fullscreen-button");
+
+    if (!this.enableFullscreen) {
+      // Remove button if it exists and fullscreen is disabled
+      if (existingButton) {
+        existingButton.remove();
+      }
+      // Exit fullscreen if currently in fullscreen mode
+      if (this._isFullscreen) {
+        this._isFullscreen = false;
+        fireEvent(this, "fullscreen-changed", { fullscreen: false });
+      }
+      return;
     }
-  }
 
-  private _createFullscreenButton() {
-    const button = document.createElement("ha-icon-button");
-    (button as any).path = this._isFullscreen
-      ? mdiArrowCollapse
-      : mdiArrowExpand;
-    button.setAttribute(
-      "label",
-      this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
-    );
-    button.classList.add("fullscreen-button");
-    button.addEventListener("click", () => this._toggleFullscreen());
-    this.renderRoot.appendChild(button);
-  }
-
-  private _toggleFullscreen() {
-    this._isFullscreen = !this._isFullscreen;
-    const button = this.renderRoot.querySelector(".fullscreen-button") as any;
-    if (button) {
-      button.path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
+    // Create button if it doesn't exist
+    if (!existingButton) {
+      const button = document.createElement("ha-icon-button");
+      (button as any).path = this._isFullscreen
+        ? mdiArrowCollapse
+        : mdiArrowExpand;
       button.setAttribute(
         "label",
         this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
       );
+      button.classList.add("fullscreen-button");
+      button.addEventListener("click", () => this._toggleFullscreen());
+      this.renderRoot.appendChild(button);
+    } else {
+      // Update existing button
+      (existingButton as any).path = this._isFullscreen
+        ? mdiArrowCollapse
+        : mdiArrowExpand;
+      existingButton.setAttribute(
+        "label",
+        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+      );
     }
+  }
+
+  private _toggleFullscreen() {
+    this._isFullscreen = !this._isFullscreen;
+    this._updateFullscreenButton();
     fireEvent(this, "fullscreen-changed", { fullscreen: this._isFullscreen });
   }
 
