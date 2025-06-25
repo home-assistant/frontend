@@ -1,7 +1,6 @@
 import { mdiAlertCircleOutline, mdiAlertOutline } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
@@ -21,9 +20,6 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: "severity" }) public severity: "warning" | "error" =
     "error";
-
-  @property({ attribute: "not-full-height", type: Boolean })
-  public notFullHeight = false;
 
   @state() private _config?: ErrorCardConfig;
 
@@ -56,12 +52,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
     const clsSeverity = `${this.severity} ${showTitle ? "" : "no-title"}`;
     return html`
-      <ha-card
-        class=${classMap({
-          [clsSeverity]: true,
-          "not-full-height": this.notFullHeight,
-        })}
-      >
+      <ha-card class="${this.severity} ${showTitle ? "" : "no-title"}">
         <div class="header">
           <div class="icon">
             <slot name="icon">
@@ -82,8 +73,6 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
   static styles = css`
     ha-card {
       border-width: 0;
-    }
-    ha-card:not(.not-full-height) {
       height: 100%;
     }
     ha-card::after {
