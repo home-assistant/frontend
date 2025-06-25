@@ -10,8 +10,8 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import type { HuiCardOptions } from "../components/hui-card-options";
-import type { HuiWarning } from "../components/hui-warning";
 import type { Lovelace } from "../types";
+import "../../../components/ha-alert";
 
 let editCodeLoaded = false;
 
@@ -25,8 +25,6 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public isStrategy = false;
 
   @property({ attribute: false }) public cards: HuiCard[] = [];
-
-  @state() private _card?: HuiCard | HuiWarning | HuiCardOptions;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public setConfig(_config: LovelaceViewConfig): void {}
@@ -63,11 +61,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   protected render(): TemplateResult {
     return html`
       ${this.cards!.length > 1
-        ? html`<hui-warning .hass=${this.hass} not-full-height>
-            ${this.hass!.localize(
+        ? html`<ha-alert alert-type="warning"
+            >${this.hass!.localize(
               "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
-            )}
-          </hui-warning>`
+            )}</ha-alert
+          >`
         : ""}
       ${this._card}
       ${this.lovelace?.editMode && this.cards.length === 0
