@@ -18,6 +18,7 @@ import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { forwardHaptic } from "../../../data/haptics";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
+import type { AreaCardFeatureContext } from "../cards/hui-area-card";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -86,8 +87,8 @@ export const supportsAreaControlsCardFeature = (
 export const getAreaControlEntities = (
   controls: AreaControl[],
   areaId: string,
-  hass: HomeAssistant,
-  excludeEntities: string[] = []
+  excludeEntities: string[] | undefined,
+  hass: HomeAssistant
 ): Record<AreaControl, string[]> =>
   controls.reduce(
     (acc, control) => {
@@ -99,7 +100,7 @@ export const getAreaControlEntities = (
       });
 
       acc[control] = Object.keys(hass.entities).filter(
-        (entityId) => filter(entityId) && !excludeEntities.includes(entityId)
+        (entityId) => filter(entityId) && !excludeEntities?.includes(entityId)
       );
       return acc;
     },
@@ -115,7 +116,7 @@ class HuiAreaControlsCardFeature
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: AreaCardFeatureContext;
 
   @property({ attribute: false })
   public position?: LovelaceCardFeaturePosition;
@@ -168,7 +169,7 @@ class HuiAreaControlsCardFeature
     const controlEntities = this._controlEntities(
       this._controls,
       this.context.area_id,
-      this._config.exclude_entities,
+      this.context.exclude_entities,
       this.hass!.entities,
       this.hass!.devices,
       this.hass!.areas
@@ -192,7 +193,7 @@ class HuiAreaControlsCardFeature
       _entities: HomeAssistant["entities"],
       _devices: HomeAssistant["devices"],
       _areas: HomeAssistant["areas"]
-    ) => getAreaControlEntities(controls, areaId, this.hass!, excludeEntities)
+    ) => getAreaControlEntities(controls, areaId, excludeEntities, this.hass!)
   );
 
   protected render() {
@@ -209,7 +210,7 @@ class HuiAreaControlsCardFeature
     const controlEntities = this._controlEntities(
       this._controls,
       this.context.area_id!,
-      this._config.exclude_entities,
+      this.context.exclude_entities,
       this.hass!.entities,
       this.hass!.devices,
       this.hass!.areas

@@ -117,6 +117,7 @@ export interface AreaCardConfig extends LovelaceCardConfig {
   alert_classes?: string[];
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
+  exclude_entities?: string[];
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
