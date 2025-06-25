@@ -1,4 +1,4 @@
-import { mdiClose, mdiMenuDown } from "@mdi/js";
+import { mdiClose, mdiMenuDown, mdiContentCopy } from "@mdi/js";
 import {
   css,
   html,
@@ -12,6 +12,9 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-combo-box-item";
 import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon-button";
+import type { HomeAssistant } from "../types";
+import { copyToClipboard } from "../common/util/copy-clipboard";
+import { showToast } from "../util/toast";
 
 declare global {
   interface HASSDomEvents {
@@ -23,6 +26,8 @@ export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 
 @customElement("ha-picker-field")
 export class HaPickerField extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -32,6 +37,9 @@ export class HaPickerField extends LitElement {
   @property() public helper?: string;
 
   @property() public placeholder?: string;
+
+  @property({ attribute: "hide-copy-icon", type: Boolean })
+  public hideCopyIcon = true;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
@@ -47,6 +55,7 @@ export class HaPickerField extends LitElement {
   }
 
   protected render() {
+    const showCopyIcon = !!this.value && !this.hideCopyIcon;
     const showClearIcon =
       !!this.value && !this.required && !this.disabled && !this.hideClearIcon;
 
@@ -61,6 +70,16 @@ export class HaPickerField extends LitElement {
                 ${this.placeholder}
               </span>
             `}
+        ${showCopyIcon
+          ? html`
+              <ha-icon-button
+                class="copy"
+                slot="end"
+                @click=${this._copy}
+                .path=${mdiContentCopy}
+              ></ha-icon-button>
+            `
+          : nothing}
         ${showClearIcon
           ? html`
               <ha-icon-button
@@ -78,6 +97,14 @@ export class HaPickerField extends LitElement {
         ></ha-svg-icon>
       </ha-combo-box-item>
     `;
+  }
+
+  private async _copy(e) {
+    e.stopPropagation();
+    await copyToClipboard(this.value);
+    showToast(this, {
+      message: this.hass.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private _clear(e) {
@@ -142,7 +169,7 @@ export class HaPickerField extends LitElement {
           background-color: var(--mdc-theme-primary);
         }
 
-        .clear {
+        .copy, .clear {
           margin: 0 -8px;
           --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;
