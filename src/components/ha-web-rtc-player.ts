@@ -75,6 +75,8 @@ class HaWebRtcPlayer extends LitElement {
   private _paused: boolean = false;
 
   private _twoWayAudio: boolean = false;
+  
+  private _timer_running: boolean = false;
 
   private async _addLocalReturnAudio() {
     const tracks = await this._getMediaTracks("user", {
@@ -568,18 +570,25 @@ class HaWebRtcPlayer extends LitElement {
     }
     // eslint-disable-next-line no-console
     console.time("WebRTC");
+    this._timer_running = true;
   }
 
   private _stopTimer() {
     if (!__DEV__) {
       return;
     }
+    this._timer_running = false;
     // eslint-disable-next-line no-console
     console.timeEnd("WebRTC");
   }
 
   private _logEvent(msg: string, ...args: unknown[]) {
     if (!__DEV__) {
+      return;
+    }
+    if (!this._timer_running) {
+      // eslint-disable-next-line no-console
+      console.log("WebRTC:", msg, ...args)
       return;
     }
     // eslint-disable-next-line no-console
