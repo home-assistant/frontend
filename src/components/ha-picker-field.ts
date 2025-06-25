@@ -169,7 +169,8 @@ export class HaPickerField extends LitElement {
           background-color: var(--mdc-theme-primary);
         }
 
-        .copy, .clear {
+        .copy,
+        .clear {
           margin: 0 -8px;
           --mdc-icon-button-size: 32px;
           --mdc-icon-size: 20px;
