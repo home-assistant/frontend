@@ -3951,6 +3951,16 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
+                  "weekday": "Weekdays",
+                  "weekdays": {
+                    "mon": "Monday",
+                    "tue": "Tuesday",
+                    "wed": "Wednesday",
+                    "thu": "Thursday",
+                    "fri": "Friday",
+                    "sat": "Saturday",
+                    "sun": "Sunday"
+                  },
                   "description": {
                     "picker": "At a specific time, or on a specific date.",
                     "full": "When the time is equal to {time}"
