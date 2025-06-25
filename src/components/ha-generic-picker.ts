@@ -44,7 +44,7 @@ export class HaGenericPicker extends LitElement {
   public searchLabel?: string;
 
   @property({ attribute: "hide-copy-icon", type: Boolean })
-  public hideCopyIcon = true; 
+  public hideCopyIcon = true;
 
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
