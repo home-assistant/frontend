@@ -84,19 +84,29 @@ class HaWebRtcPlayer extends LitElement {
       audio: true,
     });
     if (tracks && tracks.length > 0) {
+      this._logEvent("found", tracks.length, "microphone(s) to use for audio return track");
       this._localReturnAudioTrack = tracks[0];
 
-      // Transceivers are in the order they were added
-      const audio_transceiver = this._peerConnection?.getTransceivers()[0];
-      audio_transceiver!.direction = "sendrecv";
-      audio_transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
+      // The ice-ufrag and ice-pwd will change when changing from recvonly > sendrecv
+      // Therefore a ICE restart is required (firefox enforces, chrome accepts)
+      this._peerConnection.restartIce();
 
-      this._localReturnTrackAdded = true;
-    } else {
-      this._logEvent("unable to add audio send track");
-      this._twoWayAudio = false;
-      this.requestUpdate();
+      // Find the audio transceiver
+      // Transceiver are in the order they were added, audio should be first
+      for (const transceiver of this._peerConnection?.getTransceivers()){
+        if (transceiver.receiver.track.kind == "audio") {
+          await transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
+          transceiver!.direction = "sendrecv";
+          
+          this._localReturnTrackAdded = true;
+          return;
+        }
+      }
     }
+    
+    this._logEvent("unable to add audio send track");
+    this._twoWayAudio = false;
+    this.requestUpdate();
   }
 
   public async toggleMic() {
