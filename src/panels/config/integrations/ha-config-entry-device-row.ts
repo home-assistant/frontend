@@ -221,7 +221,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         --md-list-item-leading-space: 56px;
       }
       :host([narrow]) ha-md-list-item {
-        --md-list-item-leading-space: 36px;
+        --md-list-item-leading-space: 16px;
       }
       .vertical-divider {
         height: 100%;
