@@ -19,14 +19,8 @@ export const createEntityNotFoundWarning = (
 export class HuiWarning extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: "not-full-height", type: Boolean })
-  public notFullHeight = false;
-
   protected render(): TemplateResult {
-    return html`<hui-error-card
-      .hass=${this.hass}
-      severity="warning"
-      .notFullHeight=${this.notFullHeight}
+    return html`<hui-error-card .hass=${this.hass} severity="warning"
       ><slot></slot
     ></hui-error-card>`;
   }
