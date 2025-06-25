@@ -67,18 +67,20 @@ export const supportsAreaControlsCardFeature = (
 export const getAreaControlEntities = (
   controls: AreaControl[],
   areaId: string,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  excludeEntities: string[] = []
 ): Record<AreaControl, string[]> =>
   controls.reduce(
     (acc, control) => {
       const controlButton = AREA_CONTROLS_BUTTONS[control];
       const filter = generateEntityFilter(hass, {
         area: areaId,
+        entity_category: "none",
         ...controlButton.filter,
       });
 
-      acc[control] = Object.keys(hass.entities).filter((entityId) =>
-        filter(entityId)
+      acc[control] = Object.keys(hass.entities).filter(
+        (entityId) => filter(entityId) && !excludeEntities.includes(entityId)
       );
       return acc;
     },
@@ -134,7 +136,7 @@ class HuiAreaControlsCardFeature
   private _handleButtonTap(ev: MouseEvent) {
     ev.stopPropagation();
 
-    if (!this.context?.area_id || !this.hass) {
+    if (!this.context?.area_id || !this.hass || !this._config) {
       return;
     }
     const control = (ev.currentTarget as any).control as AreaControl;
@@ -142,6 +144,7 @@ class HuiAreaControlsCardFeature
     const controlEntities = this._controlEntities(
       this._controls,
       this.context.area_id,
+      this._config.exclude_entities,
       this.hass!.entities,
       this.hass!.devices,
       this.hass!.areas
@@ -165,11 +168,12 @@ class HuiAreaControlsCardFeature
     (
       controls: AreaControl[],
       areaId: string,
+      excludeEntities: string[] | undefined,
       // needed to update memoized function when entities, devices or areas change
       _entities: HomeAssistant["entities"],
       _devices: HomeAssistant["devices"],
       _areas: HomeAssistant["areas"]
-    ) => getAreaControlEntities(controls, areaId, this.hass!)
+    ) => getAreaControlEntities(controls, areaId, this.hass!, excludeEntities)
   );
 
   protected render() {
@@ -186,6 +190,7 @@ class HuiAreaControlsCardFeature
     const controlEntities = this._controlEntities(
       this._controls,
       this.context.area_id!,
+      this._config.exclude_entities,
       this.hass!.entities,
       this.hass!.devices,
       this.hass!.areas

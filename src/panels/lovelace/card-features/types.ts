@@ -165,6 +165,7 @@ export type AreaControl = (typeof AREA_CONTROLS)[number];
 export interface AreaControlsCardFeatureConfig {
   type: "area-controls";
   controls?: AreaControl[];
+  exclude_entities?: string[];
 }
 
 export type LovelaceCardFeatureConfig =
