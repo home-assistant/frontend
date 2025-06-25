@@ -18,6 +18,9 @@ export class HaTextField extends TextFieldBase {
   // eslint-disable-next-line lit/attribute-names
   @property({ type: Boolean }) public iconTrailing = false;
 
+  @property({ attribute: "hide-label-when-filled", type: Boolean })
+  public hideLabelWhenFilled = false;
+
   @property() public autocomplete?: string;
 
   @property() public autocorrect?: string;
@@ -221,7 +224,23 @@ export class HaTextField extends TextFieldBase {
       #helper-text ha-markdown {
         display: inline-block;
       }
+
+      :host([hide-label-when-filled]):has(.mdc-floating-label--float-above)
+        label:not(.mdc-text-field--invalid) {
+        align-items: center;
+      }
+      :host([hide-label-when-filled]):has(.mdc-floating-label--float-above)
+        label:not(.mdc-text-field--invalid)
+        span#label {
+        display: none;
+      }
+      :host([hide-label-when-filled]):has(.mdc-floating-label--float-above)
+        label:not(.mdc-text-field--invalid)
+        .mdc-text-field__affix--suffix {
+        align-content: center;
+      }
     `,
+
     // safari workaround - must be explicit
     mainWindow.document.dir === "rtl"
       ? css`
