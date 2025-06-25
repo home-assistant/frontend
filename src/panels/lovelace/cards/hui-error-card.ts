@@ -50,7 +50,6 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       this.hass === undefined || this.hass?.user?.is_admin || this.preview;
     const showMessage = this.preview;
 
-    const clsSeverity = `${this.severity} ${showTitle ? "" : "no-title"}`;
     return html`
       <ha-card class="${this.severity} ${showTitle ? "" : "no-title"}">
         <div class="header">
