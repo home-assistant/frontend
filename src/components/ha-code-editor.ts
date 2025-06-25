@@ -288,7 +288,8 @@ export class HaCodeEditor extends ReactiveElement {
         this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
       );
       button.classList.add("fullscreen-button");
-      button.addEventListener("click", () => this._toggleFullscreen());
+      // Use bound method to ensure proper this context
+      button.addEventListener("click", this._handleFullscreenClick);
       this.renderRoot.appendChild(button);
     } else {
       // Update existing button
@@ -301,6 +302,12 @@ export class HaCodeEditor extends ReactiveElement {
       );
     }
   }
+
+  private _handleFullscreenClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this._toggleFullscreen();
+  };
 
   private _toggleFullscreen() {
     this._isFullscreen = !this._isFullscreen;
@@ -551,7 +558,7 @@ export class HaCodeEditor extends ReactiveElement {
 
     .fullscreen-button {
       position: absolute;
-      bottom: 8px;
+      top: 8px;
       right: 8px;
       z-index: 10;
       color: var(--secondary-text-color);
@@ -561,15 +568,26 @@ export class HaCodeEditor extends ReactiveElement {
       transition: opacity 0.2s;
       --mdc-icon-button-size: 32px;
       --mdc-icon-size: 18px;
+      /* Ensure button is clickable on iOS */
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
-    .fullscreen-button:hover {
+    .fullscreen-button:hover,
+    .fullscreen-button:active {
       opacity: 1;
+    }
+
+    @media (hover: none) {
+      .fullscreen-button {
+        opacity: 0.8;
+      }
     }
 
     :host(.fullscreen) {
       position: fixed !important;
-      top: 0 !important;
+      top: var(--header-height, 56px) !important;
       left: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
@@ -577,6 +595,11 @@ export class HaCodeEditor extends ReactiveElement {
       background-color: var(--primary-background-color) !important;
       margin: 0 !important;
       padding: 16px !important;
+      /* Respect iOS safe areas while accounting for header */
+      padding-top: max(16px, env(safe-area-inset-top)) !important;
+      padding-left: max(16px, env(safe-area-inset-left)) !important;
+      padding-right: max(16px, env(safe-area-inset-right)) !important;
+      padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
       box-sizing: border-box !important;
       display: flex !important;
       flex-direction: column !important;
@@ -590,8 +613,11 @@ export class HaCodeEditor extends ReactiveElement {
 
     :host(.fullscreen) .fullscreen-button {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      top: calc(
+        var(--header-height, 56px) + max(8px, env(safe-area-inset-top))
+      );
+      right: max(24px, calc(env(safe-area-inset-right) + 8px));
+      z-index: 10000;
     }
   `;
 }
