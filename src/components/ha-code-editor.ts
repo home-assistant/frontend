@@ -6,6 +6,7 @@ import type {
 } from "@codemirror/autocomplete";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
+import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement } from "lit";
@@ -15,6 +16,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
+import "./ha-icon-button";
 
 declare global {
   interface HASSDomEvents {
@@ -59,7 +61,12 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean }) public error = false;
 
+  @property({ type: Boolean, attribute: "enable-fullscreen" })
+  public enableFullscreen = true;
+
   @state() private _value = "";
+
+  @state() private _isFullscreen = false;
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
@@ -92,6 +99,7 @@ export class HaCodeEditor extends ReactiveElement {
       this.requestUpdate();
     }
     this.addEventListener("keydown", stopPropagation);
+    this.addEventListener("keydown", this._handleKeyDown);
     // This is unreachable as editor will not exist yet,
     // but focus should not behave like this for good a11y.
     // (@steverep to fix in autofocus PR)
@@ -106,6 +114,10 @@ export class HaCodeEditor extends ReactiveElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener("keydown", stopPropagation);
+    this.removeEventListener("keydown", this._handleKeyDown);
+    if (this._isFullscreen) {
+      this._toggleFullscreen();
+    }
     this.updateComplete.then(() => {
       this.codemirror!.destroy();
       delete this.codemirror;
@@ -163,6 +175,12 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
+    }
+    if (changedProps.has("_isFullscreen")) {
+      this.classList.toggle("fullscreen", this._isFullscreen);
+    }
+    if (changedProps.has("enableFullscreen")) {
+      this._updateFullscreenButton();
     }
   }
 
@@ -238,7 +256,73 @@ export class HaCodeEditor extends ReactiveElement {
       }),
       parent: this.renderRoot,
     });
+
+    this._updateFullscreenButton();
   }
+
+  private _updateFullscreenButton() {
+    const existingButton = this.renderRoot.querySelector(".fullscreen-button");
+
+    if (!this.enableFullscreen) {
+      // Remove button if it exists and fullscreen is disabled
+      if (existingButton) {
+        existingButton.remove();
+      }
+      // Exit fullscreen if currently in fullscreen mode
+      if (this._isFullscreen) {
+        this._isFullscreen = false;
+      }
+      return;
+    }
+
+    // Create button if it doesn't exist
+    if (!existingButton) {
+      const button = document.createElement("ha-icon-button");
+      (button as any).path = this._isFullscreen
+        ? mdiArrowCollapse
+        : mdiArrowExpand;
+      button.setAttribute(
+        "label",
+        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+      );
+      button.classList.add("fullscreen-button");
+      // Use bound method to ensure proper this context
+      button.addEventListener("click", this._handleFullscreenClick);
+      this.renderRoot.appendChild(button);
+    } else {
+      // Update existing button
+      (existingButton as any).path = this._isFullscreen
+        ? mdiArrowCollapse
+        : mdiArrowExpand;
+      existingButton.setAttribute(
+        "label",
+        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+      );
+    }
+  }
+
+  private _handleFullscreenClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this._toggleFullscreen();
+  };
+
+  private _toggleFullscreen() {
+    this._isFullscreen = !this._isFullscreen;
+    this._updateFullscreenButton();
+  }
+
+  private _handleKeyDown = (e: KeyboardEvent) => {
+    if (this._isFullscreen && e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      this._toggleFullscreen();
+    } else if (e.key === "F11" && this.enableFullscreen) {
+      e.preventDefault();
+      e.stopPropagation();
+      this._toggleFullscreen();
+    }
+  };
 
   private _getStates = memoizeOne((states: HassEntities): Completion[] => {
     if (!states) {
@@ -257,6 +341,126 @@ export class HaCodeEditor extends ReactiveElement {
   private _entityCompletions(
     context: CompletionContext
   ): CompletionResult | null | Promise<CompletionResult | null> {
+    // Check for YAML mode and entity-related fields
+    if (this.mode === "yaml") {
+      const currentLine = context.state.doc.lineAt(context.pos);
+      const lineText = currentLine.text;
+
+      // Properties that commonly contain entity IDs
+      const entityProperties = [
+        "entity_id",
+        "entity",
+        "entities",
+        "badges",
+        "devices",
+        "lights",
+        "light",
+        "group_members",
+        "scene",
+        "zone",
+        "zones",
+      ];
+
+      // Create regex pattern for all entity properties
+      const propertyPattern = entityProperties.join("|");
+      const entityFieldRegex = new RegExp(
+        `^\\s*(-\\s+)?(${propertyPattern}):\\s*`
+      );
+
+      // Check if we're in an entity field (single entity or list item)
+      const entityFieldMatch = lineText.match(entityFieldRegex);
+      const listItemMatch = lineText.match(/^\s*-\s+/);
+
+      if (entityFieldMatch) {
+        // Calculate the position after the entity field
+        const afterField = currentLine.from + entityFieldMatch[0].length;
+
+        // If cursor is after the entity field, show all entities
+        if (context.pos >= afterField) {
+          const states = this._getStates(this.hass!.states);
+
+          if (!states || !states.length) {
+            return null;
+          }
+
+          // Find what's already typed after the field
+          const typedText = context.state.sliceDoc(afterField, context.pos);
+
+          // Filter states based on what's typed
+          const filteredStates = typedText
+            ? states.filter((entityState) =>
+                entityState.label
+                  .toLowerCase()
+                  .startsWith(typedText.toLowerCase())
+              )
+            : states;
+
+          return {
+            from: afterField,
+            options: filteredStates,
+            validFor: /^[a-z_]*\.?\w*$/,
+          };
+        }
+      } else if (listItemMatch) {
+        // Check if this is a list item under an entity_id field
+        const lineNumber = currentLine.number;
+
+        // Look at previous lines to check if we're under an entity_id field
+        for (let i = lineNumber - 1; i > 0 && i >= lineNumber - 10; i--) {
+          const prevLine = context.state.doc.line(i);
+          const prevText = prevLine.text;
+
+          // Stop if we hit a non-indented line (new field)
+          if (
+            prevText.trim() &&
+            !prevText.startsWith(" ") &&
+            !prevText.startsWith("\t")
+          ) {
+            break;
+          }
+
+          // Check if we found an entity property field
+          const entityListFieldRegex = new RegExp(
+            `^\\s*(${propertyPattern}):\\s*$`
+          );
+          if (prevText.match(entityListFieldRegex)) {
+            // We're in a list under an entity field
+            const afterListMarker = currentLine.from + listItemMatch[0].length;
+
+            if (context.pos >= afterListMarker) {
+              const states = this._getStates(this.hass!.states);
+
+              if (!states || !states.length) {
+                return null;
+              }
+
+              // Find what's already typed after the list marker
+              const typedText = context.state.sliceDoc(
+                afterListMarker,
+                context.pos
+              );
+
+              // Filter states based on what's typed
+              const filteredStates = typedText
+                ? states.filter((entityState) =>
+                    entityState.label
+                      .toLowerCase()
+                      .startsWith(typedText.toLowerCase())
+                  )
+                : states;
+
+              return {
+                from: afterListMarker,
+                options: filteredStates,
+                validFor: /^[a-z_]*\.?\w*$/,
+              };
+            }
+          }
+        }
+      }
+    }
+
+    // Original entity completion logic for non-YAML or when not in entity_id field
     const entityWord = context.matchBefore(/[a-z_]{3,}\.\w*/);
 
     if (
@@ -340,8 +544,77 @@ export class HaCodeEditor extends ReactiveElement {
   };
 
   static styles = css`
+    :host {
+      position: relative;
+      display: block;
+    }
+
     :host(.error-state) .cm-gutters {
       border-color: var(--error-state-color, red);
+    }
+
+    .fullscreen-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 10;
+      color: var(--secondary-text-color);
+      background-color: var(--card-background-color);
+      border-radius: 50%;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+      --mdc-icon-button-size: 32px;
+      --mdc-icon-size: 18px;
+      /* Ensure button is clickable on iOS */
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .fullscreen-button:hover,
+    .fullscreen-button:active {
+      opacity: 1;
+    }
+
+    @media (hover: none) {
+      .fullscreen-button {
+        opacity: 0.8;
+      }
+    }
+
+    :host(.fullscreen) {
+      position: fixed !important;
+      top: var(--header-height, 56px) !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      z-index: 9999 !important;
+      background-color: var(--primary-background-color) !important;
+      margin: 0 !important;
+      padding: 16px !important;
+      /* Respect iOS safe areas while accounting for header */
+      padding-top: max(16px, env(safe-area-inset-top)) !important;
+      padding-left: max(16px, env(safe-area-inset-left)) !important;
+      padding-right: max(16px, env(safe-area-inset-right)) !important;
+      padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    :host(.fullscreen) .cm-editor {
+      height: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+    }
+
+    :host(.fullscreen) .fullscreen-button {
+      position: fixed;
+      top: calc(
+        var(--header-height, 56px) + max(8px, env(safe-area-inset-top))
+      );
+      right: max(24px, calc(env(safe-area-inset-right) + 8px));
+      z-index: 10000;
     }
   `;
 }

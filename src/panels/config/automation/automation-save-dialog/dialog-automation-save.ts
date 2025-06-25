@@ -27,7 +27,7 @@ import type {
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
 import {
   fetchAITaskPreferences,
-  generateTextAITask,
+  generateDataAITask,
 } from "../../../../data/ai_task";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 
@@ -93,7 +93,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     super.firstUpdated(changedProperties);
     if (isComponentLoaded(this.hass, "ai_task")) {
       fetchAITaskPreferences(this.hass).then((prefs) => {
-        this._canSuggest = prefs.gen_text_entity_id !== null;
+        this._canSuggest = prefs.gen_data_entity_id !== null;
       });
     }
   }
@@ -346,7 +346,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private async _suggest() {
-    const result = await generateTextAITask(this.hass, {
+    const result = await generateDataAITask(this.hass, {
       task_name: "frontend:automation:save",
       instructions: `Suggest one name for the following Home Assistant automation.
 Your answer should only contain the name, without any additional text or formatting.
@@ -356,7 +356,7 @@ The name should be short, descriptive, sentence case, and written in the languag
 ${dump(this._params.config)}
 `,
     });
-    this._newName = result.text.trim();
+    this._newName = result.data.trim();
   }
 
   private async _save(): Promise<void> {

@@ -6,7 +6,7 @@ import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/sec
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import { getAreaControlEntities } from "../../card-features/hui-area-controls-card-feature";
-import type { AreaControl } from "../../card-features/types";
+import { AREA_CONTROLS, type AreaControl } from "../../card-features/types";
 import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
 import type { EntitiesDisplay } from "./area-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
@@ -71,10 +71,19 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
         const areasCards = areasInFloors.map<AreaCardConfig>((area) => {
           const path = computeAreaPath(area.area_id);
 
-          const controls: AreaControl[] = ["light", "fan"];
+          const areaOptions = config.areas_options?.[area.area_id] || {};
+
+          const hiddenEntities = Object.values(areaOptions.groups_options || {})
+            .map((display) => display.hidden || [])
+            .flat();
+
+          const controls: AreaControl[] = AREA_CONTROLS.filter(
+            (a) => a !== "switch" // Exclude switches control for areas as we don't know what the switches control
+          );
           const controlEntities = getAreaControlEntities(
             controls,
             area.area_id,
+            hiddenEntities,
             hass
           );
 
@@ -96,6 +105,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
               "occupancy",
               "presence",
             ],
+            exclude_entities: hiddenEntities,
             features: filteredControls.length
               ? [
                   {
@@ -104,6 +114,11 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
                   },
                 ]
               : [],
+            grid_options: {
+              rows: 1,
+              columns: 12,
+            },
+            features_position: "inline",
             navigation_path: path,
           };
         });

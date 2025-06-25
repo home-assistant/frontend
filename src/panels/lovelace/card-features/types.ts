@@ -158,7 +158,21 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
-export const AREA_CONTROLS = ["light", "fan", "switch"] as const;
+export const AREA_CONTROLS = [
+  "light",
+  "fan",
+  "cover-shutter",
+  "cover-blind",
+  "cover-curtain",
+  "cover-shade",
+  "cover-awning",
+  "cover-garage",
+  "cover-gate",
+  "cover-door",
+  "cover-window",
+  "cover-damper",
+  "switch",
+] as const;
 
 export type AreaControl = (typeof AREA_CONTROLS)[number];
 
@@ -166,6 +180,8 @@ export interface AreaControlsCardFeatureConfig {
   type: "area-controls";
   controls?: AreaControl[];
 }
+
+export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig

@@ -18,6 +18,8 @@ export class HaDomainIcon extends LitElement {
 
   @property({ attribute: false }) public deviceClass?: string;
 
+  @property({ attribute: false }) public state?: string;
+
   @property() public icon?: string;
 
   @property({ attribute: "brand-fallback", type: Boolean })
@@ -36,14 +38,17 @@ export class HaDomainIcon extends LitElement {
       return this._renderFallback();
     }
 
-    const icon = domainIcon(this.hass, this.domain, this.deviceClass).then(
-      (icn) => {
-        if (icn) {
-          return html`<ha-icon .icon=${icn}></ha-icon>`;
-        }
-        return this._renderFallback();
+    const icon = domainIcon(
+      this.hass,
+      this.domain,
+      this.deviceClass,
+      this.state
+    ).then((icn) => {
+      if (icn) {
+        return html`<ha-icon .icon=${icn}></ha-icon>`;
       }
-    );
+      return this._renderFallback();
+    });
 
     return html`${until(icon)}`;
   }

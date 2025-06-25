@@ -325,6 +325,62 @@
         "low": "Low"
       }
     },
+    "card_features": {
+      "area_controls": {
+        "light": {
+          "on": "Turn on area lights",
+          "off": "Turn off area lights"
+        },
+        "fan": {
+          "on": "Turn on area fans",
+          "off": "Turn off area fans"
+        },
+        "switch": {
+          "on": "Turn on area switches",
+          "off": "Turn off area switches"
+        },
+        "cover-awning": {
+          "on": "Open area awnings",
+          "off": "Close area awnings"
+        },
+        "cover-blind": {
+          "on": "Open area blinds",
+          "off": "Close area blinds"
+        },
+        "cover-curtain": {
+          "on": "Open area curtains",
+          "off": "Close area curtains"
+        },
+        "cover-damper": {
+          "on": "Open area dampers",
+          "off": "Close area dampers"
+        },
+        "cover-door": {
+          "on": "Open area doors",
+          "off": "Close area doors"
+        },
+        "cover-garage": {
+          "on": "Open garage door",
+          "off": "Close garage door"
+        },
+        "cover-gate": {
+          "on": "Open area gates",
+          "off": "Close area gates"
+        },
+        "cover-shade": {
+          "on": "Open area shades",
+          "off": "Close area shades"
+        },
+        "cover-shutter": {
+          "on": "Open area shutters",
+          "off": "Close area shutters"
+        },
+        "cover-window": {
+          "on": "Open area windows",
+          "off": "Close area windows"
+        }
+      }
+    },
     "common": {
       "and": "and",
       "continue": "Continue",
@@ -383,6 +439,7 @@
       "markdown": "Markdown",
       "suggest_ai": "Suggest with AI"
     },
+
     "components": {
       "selectors": {
         "media": {
@@ -2207,6 +2264,12 @@
             "add_area": "Add area"
           }
         },
+        "ai_task": {
+          "header": "AI suggestions",
+          "description": "Home Assistant can use generative AI to help you with tasks like writing automations, creating scripts, and more. Look for the button with the {button} icon throughout Home Assistant to get suggestions.",
+          "gen_data_header": "Data generation tasks",
+          "gen_data_description": "Suggest automation names or dashboards."
+        },
         "category": {
           "caption": "Categories",
           "assign": {
@@ -3441,12 +3504,6 @@
               "try_one_month": "Try 1 month for free",
               "sign_in": "Sign in"
             }
-          },
-          "ai_task": {
-            "header": "AI suggestions",
-            "description": "Home Assistant can use generative AI to help you with tasks like writing automations, creating scripts, and more. Look for the button with the {button} icon throughout Home Assistant to get suggestions.",
-            "gen_text_header": "Text generation tasks",
-            "gen_text_description": "Used to create summaries and names."
           },
           "debug": {
             "header": "Debug assistant",
@@ -7857,7 +7914,17 @@
                 "controls_options": {
                   "light": "Lights",
                   "fan": "Fans",
-                  "switch": "Switches"
+                  "switch": "Switches",
+                  "cover-awning": "Awnings",
+                  "cover-blind": "Blinds",
+                  "cover-curtain": "Curtains",
+                  "cover-damper": "Dampers",
+                  "cover-door": "Doors",
+                  "cover-garage": "Garage doors",
+                  "cover-gate": "Gates",
+                  "cover-shade": "Shades",
+                  "cover-shutter": "Shutters",
+                  "cover-window": "Windows"
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               }

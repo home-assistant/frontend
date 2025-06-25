@@ -1,7 +1,9 @@
 import {
   mdiCogOutline,
   mdiDelete,
+  mdiDevices,
   mdiDotsVertical,
+  mdiPencil,
   mdiStopCircleOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
@@ -24,6 +26,7 @@ import {
 } from "../../lovelace/custom-card-helpers";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import "./ha-config-sub-entry-row";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 @customElement("ha-config-entry-device-row")
 class HaConfigEntryDeviceRow extends LitElement {
@@ -49,34 +52,46 @@ class HaConfigEntryDeviceRow extends LitElement {
       area ? area.name : undefined,
     ].filter(Boolean);
 
-    return html`<ha-md-list-item>
-      <div slot="headline">${computeDeviceNameDisplay(device, this.hass)}</div>
+    return html`<ha-md-list-item @click=${this.narrow ? this._handleNavigateToDevice : undefined}>
+      <ha-svg-icon .path=${mdiDevices} slot="start"></ha-svg-icon>
+      <div slot="headline"></div>${computeDeviceNameDisplay(device, this.hass)}</div>
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
         ${supportingText.length && entities.length ? " • " : nothing}
         ${
           entities.length
-            ? html`<a
-                href=${`/config/entities/?historyBack=1&device=${device.id}`}
-                >${this.hass.localize(
+            ? this.narrow
+              ? this.hass.localize(
                   "ui.panel.config.integrations.config_entry.entities",
                   { count: entities.length }
-                )}</a
-              >`
+                )
+              : html`<a
+                  href=${`/config/entities/?historyBack=1&device=${device.id}`}
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.entities",
+                    { count: entities.length }
+                  )}</a
+                >`
             : nothing
         }</span
       >
-      <ha-icon-button-next slot="end" @click=${this._handleNavigateToDevice}
-      >
-    </ha-icon-button-next>
+      ${
+        !this.narrow
+          ? html`<ha-icon-button-next
+              slot="end"
+              @click=${this._handleNavigateToDevice}
+            >
+            </ha-icon-button-next>`
+          : nothing
+      }
       </ha-icon-button>
-      <div class="vertical-divider" slot="end"></div>
+      <div class="vertical-divider" slot="end" @click=${stopPropagation}></div>
       ${
         !this.narrow
           ? html`<ha-icon-button
               slot="end"
               @click=${this._handleConfigureDevice}
-              .path=${mdiCogOutline}
+              .path=${mdiPencil}
               .label=${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.device.configure"
               )}
@@ -84,7 +99,7 @@ class HaConfigEntryDeviceRow extends LitElement {
           : nothing
       }
       </ha-icon-button>
-      <ha-md-button-menu positioning="popover" slot="end">
+      <ha-md-button-menu positioning="popover" slot="end" @click=${stopPropagation}>
         <ha-icon-button
           slot="trigger"
           .label=${this.hass.localize("ui.common.menu")}
@@ -149,7 +164,8 @@ class HaConfigEntryDeviceRow extends LitElement {
   private _getEntities = (): EntityRegistryEntry[] =>
     this.entities?.filter((entity) => entity.device_id === this.device.id);
 
-  private _handleConfigureDevice() {
+  private _handleConfigureDevice(ev: MouseEvent) {
+    ev.stopPropagation(); // Prevent triggering the click handler on the list item
     showDeviceRegistryDetailDialog(this, {
       device: this.device,
       updateEntry: async (updates) => {
@@ -203,6 +219,9 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
       ha-md-list-item {
         --md-list-item-leading-space: 56px;
+      }
+      :host([narrow]) ha-md-list-item {
+        --md-list-item-leading-space: 16px;
       }
       .vertical-divider {
         height: 100%;
