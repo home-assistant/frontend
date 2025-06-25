@@ -174,6 +174,7 @@ export class HaBaseTimeInput extends LitElement {
             @change=${this._valueChanged}
             @focusin=${this._onFocus}
             no-spinner
+            hide-label-when-filled
             .required=${this.required}
             .autoValidate=${this.autoValidate}
             maxlength="2"
@@ -194,6 +195,7 @@ export class HaBaseTimeInput extends LitElement {
             @focusin=${this._onFocus}
             name="minutes"
             no-spinner
+            hide-label-when-filled
             .required=${this.required}
             .autoValidate=${this.autoValidate}
             maxlength="2"
@@ -215,6 +217,7 @@ export class HaBaseTimeInput extends LitElement {
                 @focusin=${this._onFocus}
                 name="seconds"
                 no-spinner
+                hide-label-when-filled
                 .required=${this.required}
                 .autoValidate=${this.autoValidate}
                 maxlength="2"
@@ -236,6 +239,7 @@ export class HaBaseTimeInput extends LitElement {
                 @focusin=${this._onFocus}
                 name="milliseconds"
                 no-spinner
+                hide-label-when-filled
                 .required=${this.required}
                 .autoValidate=${this.autoValidate}
                 maxlength="3"
