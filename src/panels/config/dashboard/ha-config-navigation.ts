@@ -54,9 +54,6 @@ class HaConfigNavigation extends LitElement {
               `,
       }));
     return html`
-      <div class="title" role="heading" aria-level="2">
-        ${this.hass.localize("panel.config")}
-      </div>
       <ha-navigation-list
         has-secondary
         .hass=${this.hass}
@@ -68,11 +65,6 @@ class HaConfigNavigation extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
-    .title {
-      font-size: var(--ha-font-size-l);
-      padding: 16px;
-      padding-bottom: 0;
-    }
     ha-navigation-list {
       --navigation-list-item-title-font-size: var(--ha-font-size-l);
     }
