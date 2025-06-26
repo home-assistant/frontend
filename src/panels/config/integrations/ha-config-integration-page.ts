@@ -954,6 +954,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .actions {
           display: flex;
+          flex-wrap: wrap;
           gap: 8px;
         }
         .section {
