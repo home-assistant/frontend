@@ -5129,7 +5129,7 @@
             "hidden": "Hidden"
           },
           "confirm_disable_config_entry_title": "Disable config entry?",
-          "confirm_disable_config_entry_message": "There are no more devices for the config entry {name}, do you want to instead disable the config entry?",
+          "confirm_disable_config_entry_message": "There are no more devices for the config entry {name}, do you want to disable the config entry instead?",
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
@@ -5381,7 +5381,7 @@
               "enable": "Enable device",
               "disable": "Disable device",
               "confirm_disable_title": "Disable device?",
-              "confirm_disable_message": "Are you sure you want to disable {name} and all of it’s entities?",
+              "confirm_disable_message": "Are you sure you want to disable {name} and all of its entities?",
               "configure": "Configure device",
               "delete": "Remove device"
             },
