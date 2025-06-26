@@ -541,8 +541,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   <ha-button
                     slot="action"
                     @click=${this._handleDisableDebugLogging}
-                    >${this.hass.localize("ui.common.disable")}</ha-button
                   >
+                    ${this.hass.localize("ui.common.disable")}
+                  </ha-button>
                 </ha-alert>
               </div>`
             : nothing}
@@ -1006,9 +1007,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-svg-icon.platinum-quality {
           color: #727272;
-        }
-        ha-svg-icon.internal-quality {
-          color: var(--primary-color);
         }
         ha-svg-icon.legacy-quality {
           color: var(--mdc-theme-text-icon-on-background, rgba(0, 0, 0, 0.38));
