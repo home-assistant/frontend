@@ -5416,7 +5416,7 @@
             "via": "Connected via",
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
-            "version": "Version: {version}",
+            "version": "Version {version}",
             "serial_number": "Serial number: {serial_number}",
             "unnamed_entry": "Unnamed entry",
             "unknown_via_device": "Unknown device",
