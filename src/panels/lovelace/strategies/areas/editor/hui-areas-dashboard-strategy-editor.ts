@@ -1,28 +1,30 @@
+import { mdiThermometerWater } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-areas-display-editor";
 import type { AreasDisplayValue } from "../../../../../components/ha-areas-display-editor";
+import "../../../../../components/ha-areas-floors-display-editor";
 import "../../../../../components/ha-entities-display-editor";
+import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
-import "../../../../../components/ha-icon";
+import "../../../../../components/ha-svg-icon";
+import {
+  updateAreaRegistryEntry,
+  type AreaRegistryEntry,
+} from "../../../../../data/area_registry";
+import { buttonLinkStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { showAreaRegistryDetailDialog } from "../../../../config/areas/show-dialog-area-registry-detail";
+import type { LovelaceStrategyEditor } from "../../types";
+import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
 import type { AreaStrategyGroup } from "../helpers/areas-strategy-helper";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUPS,
   getAreaGroupedEntities,
 } from "../helpers/areas-strategy-helper";
-import type { LovelaceStrategyEditor } from "../../types";
-import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
-import { showAreaRegistryDetailDialog } from "../../../../config/areas/show-dialog-area-registry-detail";
-import {
-  updateAreaRegistryEntry,
-  type AreaRegistryEntry,
-} from "../../../../../data/area_registry";
-import { buttonLinkStyle } from "../../../../../resources/styles";
-import "../../../../../components/ha-areas-floors-display-editor";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -63,6 +65,10 @@ export class HuiAreasDashboardStrategyEditor
           expanded
           outlined
         >
+          <ha-svg-icon
+            slot="leading-icon"
+            .path=${mdiThermometerWater}
+          ></ha-svg-icon>
           <p>
             ${this.hass!.localize(
               `ui.panel.lovelace.strategy.areas.header_description`,
@@ -213,9 +219,13 @@ export class HuiAreasDashboardStrategyEditor
         ha-expansion-panel {
           margin-bottom: 8px;
           max-width: 600px;
+          --expansion-panel-summary-padding: 0 16px;
+        }
+        ha-expansion-panel [slot="leading-icon"] {
+          margin-inline-end: 16px;
         }
         ha-expansion-panel p {
-          margin: 8px 2px;
+          margin: 8px 8px 16px 8px;
         }
         button.link {
           color: var(--primary-color);
