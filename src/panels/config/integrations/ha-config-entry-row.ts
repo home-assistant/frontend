@@ -410,6 +410,9 @@ class HaConfigEntryRow extends LitElement {
                   <ha-md-list-item
                     @click=${this._toggleOwnDevices}
                     type="button"
+                    class="toggle-devices-row ${this._devicesExpanded
+                      ? "expanded"
+                      : ""}"
                   >
                     <ha-icon-button
                       class="expand-button"
@@ -754,6 +757,14 @@ class HaConfigEntryRow extends LitElement {
           --md-list-item-trailing-icon-color,
           var(--md-sys-color-on-surface-variant, #49454f)
         );
+      }
+      .toggle-devices-row {
+        overflow: hidden;
+        border-radius: var(--ha-card-border-radius, 12px);
+      }
+      .toggle-devices-row.expanded {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
       }
     `,
   ];
