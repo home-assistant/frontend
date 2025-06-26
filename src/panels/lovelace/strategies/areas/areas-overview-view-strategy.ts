@@ -32,7 +32,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
     config: AreasViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
-    const areas = getAreas(
+    const displayedAreas = getAreas(
       hass.areas,
       config.areas_display?.hidden,
       config.areas_display?.order
@@ -50,25 +50,23 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
       ...floors,
       {
         floor_id: UNASSIGNED_FLOOR,
-        name: hass.localize(
-          "ui.panel.lovelace.strategy.areas.unassigned_areas"
-        ),
+        name: hass.localize("ui.panel.lovelace.strategy.areas.others_areas"),
         level: null,
         icon: null,
       },
     ]
-      .map<LovelaceSectionConfig | undefined>((floor) => {
-        const areasInFloors = areas.filter(
+      .map((floor) => {
+        const areasInFloors = displayedAreas.filter(
           (area) =>
             area.floor_id === floor.floor_id ||
             (!area.floor_id && floor.floor_id === UNASSIGNED_FLOOR)
         );
 
-        if (areasInFloors.length === 0) {
-          return undefined;
-        }
-
-        const areasCards = areasInFloors.map<AreaCardConfig>((area) => {
+        return [floor, areasInFloors] as const;
+      })
+      .filter(([_, areas]) => areas.length)
+      .map<LovelaceSectionConfig | undefined>(([floor, areas], _, array) => {
+        const areasCards = areas.map<AreaCardConfig>((area) => {
           const path = computeAreaPath(area.area_id);
 
           const areaOptions = config.areas_options?.[area.area_id] || {};
@@ -123,10 +121,17 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
           };
         });
 
+        const noFloors =
+          array.length === 1 && floor.floor_id === UNASSIGNED_FLOOR;
+
+        const headingTitle = noFloors
+          ? hass.localize("ui.panel.lovelace.strategy.areas.areas")
+          : floor.name;
+
         const headingCard: HeadingCardConfig = {
           type: "heading",
           heading_style: "title",
-          heading: floor.name,
+          heading: headingTitle,
           icon: floor.icon || floorDefaultIcon(floor),
         };
 
