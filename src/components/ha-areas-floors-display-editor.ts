@@ -1,6 +1,6 @@
 import { mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -64,26 +64,30 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
         .expanded=${this.expanded}
       >
         <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
-        ${filteredFloors.map(
-          (floor) => html`
+        ${filteredFloors.map((floor, _, array) => {
+          const noFloors =
+            array.length === 1 && floor.floor_id === UNASSIGNED_FLOOR;
+          return html`
             <div class="floor">
-              <div class="header">
-                <ha-floor-icon .floor=${floor}></ha-floor-icon>
-                <p>${computeFloorName(floor)}</p>
-              </div>
+              ${noFloors
+                ? nothing
+                : html`<div class="header">
+                    <ha-floor-icon .floor=${floor}></ha-floor-icon>
+                    <p>${computeFloorName(floor)}</p>
+                  </div>`}
               <div class="areas">
                 <ha-items-display-editor
                   .hass=${this.hass}
                   .items=${groupedItems[floor.floor_id] || []}
                   .value=${value}
-                  .floorId=${floor.floor_id}
+                  .floorId=${floor.floor_id ?? UNASSIGNED_FLOOR}
                   @value-changed=${this._areaDisplayChanged}
                   .showNavigationButton=${this.showNavigationButton}
                 ></ha-items-display-editor>
               </div>
             </div>
-          `
-        )}
+          `;
+        })}
       </ha-expansion-panel>
     `;
   }
@@ -134,10 +138,10 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       floors.push({
         floor_id: UNASSIGNED_FLOOR,
         name: this.hass.localize(
-          "ui.panel.lovelace.strategy.areas.unassigned_areas"
+          "ui.panel.lovelace.strategy.areas.others_areas"
         ),
         icon: null,
-        level: 999999,
+        level: null,
         aliases: [],
         created_at: 0,
         modified_at: 0,
@@ -155,25 +159,30 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       (floor) => floor.floor_id
     );
 
+    const oldHidden = this.value?.hidden ?? [];
+    const oldOrder = this.value?.order ?? [];
+
     const newHidden: string[] = [];
     const newOrder: string[] = [];
 
     for (const floorId of floorIds) {
-      if (currentFloorId === floorId) {
+      if ((currentFloorId ?? UNASSIGNED_FLOOR) === floorId) {
         newHidden.push(...(value.hidden ?? []));
         newOrder.push(...(value.order ?? []));
         continue;
       }
-      const hidden = this.value?.hidden?.filter(
-        (areaId) => this.hass.areas[areaId]?.floor_id === floorId
-      );
-      if (hidden) {
+      const hidden = oldHidden.filter((areaId) => {
+        const id = this.hass.areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
+        return id === floorId;
+      });
+      if (hidden?.length) {
         newHidden.push(...hidden);
       }
-      const order = this.value?.order?.filter(
-        (areaId) => this.hass.areas[areaId]?.floor_id === floorId
-      );
-      if (order) {
+      const order = oldOrder.filter((areaId) => {
+        const id = this.hass.areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
+        return id === floorId;
+      });
+      if (order?.length) {
         newOrder.push(...order);
       }
     }
@@ -188,7 +197,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     if (newValue.order?.length === 0) {
       delete newValue.order;
     }
-
+    this.value = newValue;
     fireEvent(this, "value-changed", { value: newValue });
   }
 
@@ -199,7 +208,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      flex: 1:
+      flex: 1;
     }
     .floor .header {
       margin: 16px 0 8px 0;
