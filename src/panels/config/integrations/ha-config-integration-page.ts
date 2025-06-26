@@ -380,6 +380,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <div class="title">
                 <h1>${domainToName(this.hass.localize, this.domain)}</h1>
                 <div class="sub">
+                  ${this._manifest?.version != null
+                    ? html`<span class="version"
+                        >${this._manifest.version}</span
+                      >`
+                    : nothing}
                   ${this._manifest?.is_built_in === false
                     ? html`<div
                         class=${`integration-info ${
@@ -911,6 +916,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           flex-wrap: wrap;
           gap: 8px 16px;
+          align-items: center;
         }
         .card-content {
           padding: 16px 0 8px;
@@ -934,9 +940,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           width: 80px;
         }
         .version {
-          padding-top: 8px;
-          display: flex;
-          justify-content: center;
           color: var(--secondary-text-color);
         }
         .overview .card-actions {
