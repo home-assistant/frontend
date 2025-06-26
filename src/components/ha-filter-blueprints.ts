@@ -14,6 +14,7 @@ import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
 import "./ha-list";
+import { deepEqual } from "../common/util/deep-equal";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
@@ -34,10 +35,11 @@ export class HaFilterBlueprints extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
-    if (!this.hasUpdated) {
-      if (this.value?.length) {
-        this._findRelated();
-      }
+    if (
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"))
+    ) {
+      this._findRelated();
     }
   }
 
@@ -130,17 +132,15 @@ export class HaFilterBlueprints extends LitElement {
     }
 
     this.value = value;
-
-    this._findRelated();
   }
 
   private async _findRelated() {
     if (!this.value?.length) {
+      this.value = [];
       fireEvent(this, "data-table-filter-changed", {
         value: [],
         items: undefined,
       });
-      this.value = [];
       return;
     }
 
