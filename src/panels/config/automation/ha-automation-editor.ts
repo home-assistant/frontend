@@ -502,6 +502,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     .readOnly=${this._readOnly}
                     @value-changed=${this._yamlChanged}
                     .showErrors=${false}
+                    disable-fullscreen
                   ></ha-yaml-editor>`
               : nothing}
         </div>

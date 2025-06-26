@@ -61,8 +61,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ type: Boolean }) public error = false;
 
-  @property({ type: Boolean, attribute: "enable-fullscreen" })
-  public enableFullscreen = true;
+  @property({ type: Boolean, attribute: "disable-fullscreen" })
+  public disableFullscreen = false;
 
   @state() private _value = "";
 
@@ -179,7 +179,7 @@ export class HaCodeEditor extends ReactiveElement {
     if (changedProps.has("_isFullscreen")) {
       this.classList.toggle("fullscreen", this._isFullscreen);
     }
-    if (changedProps.has("enableFullscreen")) {
+    if (changedProps.has("disableFullscreen")) {
       this._updateFullscreenButton();
     }
   }
@@ -263,7 +263,7 @@ export class HaCodeEditor extends ReactiveElement {
   private _updateFullscreenButton() {
     const existingButton = this.renderRoot.querySelector(".fullscreen-button");
 
-    if (!this.enableFullscreen) {
+    if (this.disableFullscreen) {
       // Remove button if it exists and fullscreen is disabled
       if (existingButton) {
         existingButton.remove();
@@ -317,7 +317,7 @@ export class HaCodeEditor extends ReactiveElement {
       e.preventDefault();
       e.stopPropagation();
       this._toggleFullscreen();
-    } else if (e.key === "F11" && this.enableFullscreen) {
+    } else if (e.key === "F11" && !this.disableFullscreen) {
       e.preventDefault();
       e.stopPropagation();
       this._toggleFullscreen();
@@ -557,7 +557,7 @@ export class HaCodeEditor extends ReactiveElement {
       position: absolute;
       top: 8px;
       right: 8px;
-      z-index: 10;
+      z-index: 1;
       color: var(--secondary-text-color);
       background-color: var(--card-background-color);
       border-radius: 50%;
@@ -589,17 +589,17 @@ export class HaCodeEditor extends ReactiveElement {
       right: 0 !important;
       bottom: 0 !important;
       z-index: 9999 !important;
-      background-color: var(--primary-background-color) !important;
+      background-color: var(
+        --code-editor-background-color,
+        var(--mdc-text-field-fill-color, whitesmoke)
+      ) !important;
       margin: 0 !important;
-      padding: 16px !important;
-      /* Respect iOS safe areas while accounting for header */
-      padding-top: max(16px, env(safe-area-inset-top)) !important;
-      padding-left: max(16px, env(safe-area-inset-left)) !important;
-      padding-right: max(16px, env(safe-area-inset-right)) !important;
-      padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
+      padding-top: var(--safe-area-inset-top) !important;
+      padding-left: var(--safe-area-inset-left) !important;
+      padding-right: var(--safe-area-inset-right) !important;
+      padding-bottom: var(--safe-area-inset-bottom) !important;
       box-sizing: border-box !important;
-      display: flex !important;
-      flex-direction: column !important;
+      display: block !important;
     }
 
     :host(.fullscreen) .cm-editor {
@@ -609,12 +609,8 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     :host(.fullscreen) .fullscreen-button {
-      position: fixed;
-      top: calc(
-        var(--header-height, 56px) + max(8px, env(safe-area-inset-top))
-      );
-      right: max(24px, calc(env(safe-area-inset-right) + 8px));
-      z-index: 10000;
+      top: calc(var(--safe-area-inset-top, 0px) + 8px);
+      right: calc(var(--safe-area-inset-right, 0px) + 8px);
     }
   `;
 }
