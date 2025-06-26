@@ -218,6 +218,13 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       align-items: center;
       gap: 8px;
     }
+    ha-expansion-panel {
+      margin-bottom: 8px;
+      --expansion-panel-summary-padding: 0 16px;
+    }
+    ha-expansion-panel [slot="leading-icon"] {
+      margin-inline-end: 16px;
+    }
   `;
 }
 

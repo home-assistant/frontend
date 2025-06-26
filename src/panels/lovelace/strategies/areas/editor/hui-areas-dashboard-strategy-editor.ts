@@ -60,7 +60,7 @@ export class HuiAreasDashboardStrategyEditor
         </div>
         <ha-expansion-panel
           .header=${this.hass!.localize(
-            `ui.panel.lovelace.strategy.areas.header`
+            `ui.panel.lovelace.strategy.areas.sensors`
           )}
           expanded
           outlined
@@ -71,7 +71,7 @@ export class HuiAreasDashboardStrategyEditor
           ></ha-svg-icon>
           <p>
             ${this.hass!.localize(
-              `ui.panel.lovelace.strategy.areas.header_description`,
+              `ui.panel.lovelace.strategy.areas.sensors_description`,
               {
                 edit_the_area: html`
                   <button class="link" @click=${this._editArea} .area=${area}>

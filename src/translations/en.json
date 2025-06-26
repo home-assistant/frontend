@@ -6673,8 +6673,8 @@
           },
           "areas": {
             "no_entities": "No entities in this area.",
-            "header": "Sensors",
-            "header_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
+            "sensors": "Sensors",
+            "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
             "groups": {
               "lights": "Lights",
