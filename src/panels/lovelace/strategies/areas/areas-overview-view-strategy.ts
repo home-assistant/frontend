@@ -89,20 +89,19 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
             (control) => controlEntities[control].length > 0
           );
 
+          const sensorClasses: string[] = [];
+          if (area.temperature_entity_id) {
+            sensorClasses.push("temperature");
+          }
+          if (area.humidity_entity_id) {
+            sensorClasses.push("humidity");
+          }
+
           return {
             type: "area",
             area: area.area_id,
             display_type: "compact",
-            sensor_classes: ["temperature", "humidity"],
-            alert_classes: [
-              "water_leak",
-              "smoke",
-              "gas",
-              "co",
-              "motion",
-              "occupancy",
-              "presence",
-            ],
+            sensor_classes: sensorClasses,
             exclude_entities: hiddenEntities,
             features: filteredControls.length
               ? [
