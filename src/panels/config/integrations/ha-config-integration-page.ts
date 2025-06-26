@@ -898,7 +898,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .title {
           display: flex;
-          gap: 8px;
+          gap: 4px;
           flex-direction: column;
           justify-content: space-between;
         }
