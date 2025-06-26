@@ -96,15 +96,6 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
             area: area.area_id,
             display_type: "compact",
             sensor_classes: ["temperature", "humidity"],
-            alert_classes: [
-              "water_leak",
-              "smoke",
-              "gas",
-              "co",
-              "motion",
-              "occupancy",
-              "presence",
-            ],
             exclude_entities: hiddenEntities,
             features: filteredControls.length
               ? [
