@@ -5,6 +5,7 @@ import {
   mdiDotsVertical,
   mdiPencil,
   mdiStopCircleOutline,
+  mdiTransitConnectionVariant,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -58,7 +59,7 @@ class HaConfigEntryDeviceRow extends LitElement {
     ].filter(Boolean);
 
     return html`<ha-md-list-item @click=${this.narrow ? this._handleNavigateToDevice : undefined} class=${classMap({ disabled: Boolean(device.disabled_by) })}>
-      <ha-svg-icon .path=${mdiDevices} slot="start"></ha-svg-icon>
+      <ha-svg-icon .path=${device.entry_type === "service" ? mdiTransitConnectionVariant : mdiDevices} slot="start"></ha-svg-icon>
       <div slot="headline"></div>${computeDeviceNameDisplay(device, this.hass)}</div>
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
