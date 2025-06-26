@@ -1102,7 +1102,6 @@ ${
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
-    this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -1141,6 +1140,11 @@ ${
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
+
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {
