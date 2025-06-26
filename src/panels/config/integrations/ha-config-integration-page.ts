@@ -382,7 +382,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 <div class="sub">
                   ${this._manifest?.version != null
                     ? html`<span class="version"
-                        >${this._manifest.version}</span
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.version",
+                          { version: this._manifest.version }
+                        )}</span
                       >`
                     : nothing}
                   ${this._manifest?.is_built_in === false
