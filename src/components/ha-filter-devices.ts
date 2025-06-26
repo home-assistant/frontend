@@ -37,9 +37,10 @@ export class HaFilterDevices extends LitElement {
 
     if (!this.hasUpdated) {
       loadVirtualizer();
-      if (this.value?.length) {
-        this._findRelated();
-      }
+    }
+
+    if (properties.has("value") && this.value !== properties.get("value")) {
+      this._findRelated();
     }
   }
 
