@@ -4193,13 +4193,13 @@
                   "mode_after": "[%key:ui::panel::config::automation::editor::conditions::type::time::after%]",
                   "mode_before": "[%key:ui::panel::config::automation::editor::conditions::type::time::before%]",
                   "weekdays": {
-                    "mon": "Monday",
-                    "tue": "Tuesday",
-                    "wed": "Wednesday",
-                    "thu": "Thursday",
-                    "fri": "Friday",
-                    "sat": "Saturday",
-                    "sun": "Sunday"
+                    "mon": "[%key:ui::weekdays::monday%]",
+                    "tue": "[%key:ui::weekdays::tuesday%]",
+                    "wed": "[%key:ui::weekdays::wednesday%]",
+                    "thu": "[%key:ui::weekdays::thursday%]",
+                    "fri": "[%key:ui::weekdays::friday%]",
+                    "sat": "[%key:ui::weekdays::saturday%]",
+                    "sun": "[%key:ui::weekdays::sunday%]"
                   },
                   "description": {
                     "picker": "If the current time is before or after a specified time.",
@@ -5128,7 +5128,8 @@
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
             "hidden": "Hidden"
           },
-          "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
+          "confirm_disable_config_entry_title": "Disable config entry?",
+          "confirm_disable_config_entry_message": "There are no more devices for the config entry {name}, do you want to instead disable the config entry?",
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
@@ -5379,7 +5380,8 @@
             "device": {
               "enable": "Enable device",
               "disable": "Disable device",
-              "confirm_disable": "Are you sure you want to disable {name}?",
+              "confirm_disable_title": "Disable device?",
+              "confirm_disable_message": "Are you sure you want to disable {name} and all of it’s entities?",
               "configure": "Configure device",
               "delete": "Remove device"
             },
@@ -5433,7 +5435,6 @@
               }
             },
             "custom_integration": "Custom integration",
-            "internal_integration": "Internal integration",
             "legacy_integration": "Legacy integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
             "depends_on_cloud": "Requires Internet",
