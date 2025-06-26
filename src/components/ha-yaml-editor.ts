@@ -44,6 +44,9 @@ export class HaYamlEditor extends LitElement {
 
   @property({ attribute: "read-only", type: Boolean }) public readOnly = false;
 
+  @property({ type: Boolean, attribute: "disable-fullscreen" })
+  public disableFullscreen = false;
+
   @property({ type: Boolean }) public required = false;
 
   @property({ attribute: "copy-clipboard", type: Boolean })
@@ -110,6 +113,7 @@ export class HaYamlEditor extends LitElement {
         .hass=${this.hass}
         .value=${this._yaml}
         .readOnly=${this.readOnly}
+        .disableFullscreen=${this.disableFullscreen}
         mode="yaml"
         autocomplete-entities
         autocomplete-icons
