@@ -1,7 +1,6 @@
 import {
   mdiAlertCircle,
   mdiChevronDown,
-  mdiChevronUp,
   mdiCogOutline,
   mdiDelete,
   mdiDevices,
@@ -58,6 +57,7 @@ import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entr
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
+import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
@@ -69,7 +69,6 @@ import {
 import "./ha-config-entry-device-row";
 import { renderConfigEntryError } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
-import { haStyle } from "../../../resources/styles";
 
 @customElement("ha-config-entry-row")
 class HaConfigEntryRow extends LitElement {
@@ -178,8 +177,8 @@ class HaConfigEntryRow extends LitElement {
       >
         ${subEntries.length || ownDevices.length
           ? html`<ha-icon-button
-              class="expand-button"
-              .path=${this._expanded ? mdiChevronDown : mdiChevronUp}
+              class="expand-button ${classMap({ expanded: this._expanded })}"
+              .path=${mdiChevronDown}
               slot="start"
               @click=${this._toggleExpand}
             ></ha-icon-button>`
@@ -410,15 +409,15 @@ class HaConfigEntryRow extends LitElement {
                   <ha-md-list-item
                     @click=${this._toggleOwnDevices}
                     type="button"
-                    class="toggle-devices-row ${this._devicesExpanded
-                      ? "expanded"
-                      : ""}"
+                    class="toggle-devices-row ${classMap({
+                      expanded: this._devicesExpanded,
+                    })}"
                   >
                     <ha-icon-button
-                      class="expand-button"
-                      .path=${this._devicesExpanded
-                        ? mdiChevronDown
-                        : mdiChevronUp}
+                      class="expand-button ${classMap({
+                        expanded: this._devicesExpanded,
+                      })}"
+                      .path=${mdiChevronDown}
                       slot="start"
                     >
                     </ha-icon-button>
@@ -742,6 +741,10 @@ class HaConfigEntryRow extends LitElement {
     css`
       .expand-button {
         margin: 0 -12px;
+        transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .expand-button.expanded {
+        transform: rotate(180deg);
       }
       ha-md-list {
         border: 1px solid var(--divider-color);
