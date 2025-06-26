@@ -609,9 +609,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     :host(.fullscreen) .fullscreen-button {
-      top: calc(
-        var(--header-height, 56px) + var(--safe-area-inset-top, 0px) + 8px
-      );
+      top: calc(var(--safe-area-inset-top, 0px) + 8px);
       right: calc(var(--safe-area-inset-right, 0px) + 8px);
     }
   `;
