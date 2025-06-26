@@ -6,10 +6,10 @@ import "../../../components/ha-alert";
 import "../../../components/ha-markdown";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
-import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import { BlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
 
 @customElement("blueprint-automation-editor")
-export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
+export class BlueprintAutomationEditor extends BlueprintGenericEditor {
   @property({ attribute: false }) public config!: BlueprintAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -60,6 +60,6 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    "blueprint-automation-editor": HaBlueprintAutomationEditor;
+    "blueprint-automation-editor": BlueprintAutomationEditor;
   }
 }

@@ -51,7 +51,7 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
+import { showAddBlueprintDialog } from "./new-blueprint-dialog/show-dialog-add-blueprint";
 import { storage } from "../../../common/decorators/storage";
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
@@ -336,7 +336,7 @@ class HaBlueprintOverview extends LitElement {
           extended
           @click=${this._addBlueprintClicked}
         >
-          <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
         </ha-fab>
       </hass-tabs-subpage-data-table>
     `;
@@ -394,7 +394,7 @@ class HaBlueprintOverview extends LitElement {
       });
       return;
     }
-    this._createNew(blueprint);
+    navigate(`/config/blueprint/edit/${blueprint.fullpath}`);
   }
 
   private _showUsed = (blueprint: BlueprintMetaDataPath) => {
