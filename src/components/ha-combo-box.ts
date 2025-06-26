@@ -369,7 +369,6 @@ export class HaComboBox extends LitElement {
     }
     vaadin-combo-box-light {
       position: relative;
-      --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
     }
     ha-combo-box-textfield {
       width: 100%;
