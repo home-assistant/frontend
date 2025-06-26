@@ -1099,6 +1099,7 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
