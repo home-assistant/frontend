@@ -411,8 +411,8 @@ class HaConfigEntryRow extends LitElement {
                     @click=${this._toggleOwnDevices}
                     type="button"
                     class="toggle-devices-row ${this._devicesExpanded
-                    ? "expanded"
-                    : ""}"
+                      ? "expanded"
+                      : ""}"
                   >
                     <ha-icon-button
                       class="expand-button"
