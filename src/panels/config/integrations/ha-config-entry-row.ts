@@ -748,6 +748,10 @@ class HaConfigEntryRow extends LitElement {
         border-radius: var(--ha-card-border-radius, 12px);
         padding: 0;
       }
+      :host([narrow]) {
+        margin-left: -12px;
+        margin-right: -12px;
+      }
       ha-md-list.devices {
         margin: 16px;
         margin-top: 0;
