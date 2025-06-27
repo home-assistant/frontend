@@ -115,7 +115,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                     ></ha-spinner>`
                   : nothing}
               </div>
-              <span
+              <span slot="headline"
                 >${deviceEntry
                   ? computeDeviceNameDisplay(deviceEntry, this.hass)
                   : entity.attributes.friendly_name}</span
