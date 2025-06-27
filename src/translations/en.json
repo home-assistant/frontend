@@ -8665,7 +8665,7 @@
                 "input_button": "Input buttons",
                 "input_text": "Input texts",
                 "input_number": "Input numbers",
-                "input_datetime": "Input date times",
+                "input_datetime": "Input datetimes",
                 "input_select": "Input selects",
                 "template": "Template entities",
                 "universal": "Universal media player entities",
