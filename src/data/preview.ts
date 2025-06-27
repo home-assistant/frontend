@@ -13,7 +13,7 @@ export const subscribePreviewGeneric = (
   hass: HomeAssistant,
   domain: string,
   flow_id: string,
-  flow_type: "config_flow" | "options_flow",
+  flow_type: "config_flow" | "options_flow" | "config_subentries_flow",
   user_input: Record<string, any>,
   callback: (preview: GenericPreview) => void
 ): Promise<UnsubscribeFunc> =>

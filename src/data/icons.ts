@@ -37,6 +37,7 @@ import {
   mdiRoomService,
   mdiScriptText,
   mdiSpeakerMessage,
+  mdiStarFourPoints,
   mdiThermostat,
   mdiTimerOutline,
   mdiToggleSwitch,
@@ -66,6 +67,7 @@ export const DEFAULT_DOMAIN_ICON = mdiBookmark;
 
 /** Fallback icons for each domain */
 export const FALLBACK_DOMAIN_ICONS = {
+  ai_task: mdiStarFourPoints,
   air_quality: mdiAirFilter,
   alert: mdiAlert,
   automation: mdiRobot,
@@ -502,14 +504,25 @@ export const serviceSectionIcon = async (
 export const domainIcon = async (
   hass: HomeAssistant,
   domain: string,
-  deviceClass?: string
+  deviceClass?: string,
+  state?: string
 ): Promise<string | undefined> => {
   const entityComponentIcons = await getComponentIcons(hass, domain);
   if (entityComponentIcons) {
     const translations =
       (deviceClass && entityComponentIcons[deviceClass]) ||
       entityComponentIcons._;
-    return translations?.default;
+    // First check for exact state match
+    if (state && translations.state?.[state]) {
+      return translations.state[state];
+    }
+    // Then check for range-based icons if we have a numeric state
+    if (state !== undefined && translations.range && !isNaN(Number(state))) {
+      return getIconFromRange(Number(state), translations.range);
+    }
+    // Fallback to default icon
+    return translations.default;
   }
+
   return undefined;
 };

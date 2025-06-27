@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -37,6 +36,7 @@ import {
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-button";
 import type { ZWaveJSUpdateFirmwareNodeDialogParams } from "./show-dialog-zwave_js-update-firmware-node";
 
 const firmwareTargetSchema: HaFormSchema[] = [
@@ -130,7 +130,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               .schema=${firmwareTargetSchema}
               @value-changed=${this._firmwareTargetChanged}
             ></ha-form>`}
-      <mwc-button
+      <ha-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
         .disabled=${this._firmwareFile === undefined}
@@ -138,7 +138,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.begin_update"
         )}
-      </mwc-button>`;
+      </ha-button>`;
 
     const status = this._updateFinishedMessage
       ? this._updateFinishedMessage.success
@@ -153,12 +153,22 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
       ? nothing
       : html`
-          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+          <ha-button
+            destructive
+            slot="secondaryAction"
+            @click=${this._abortFirmwareUpdate}
+          >
             ${this.hass.localize(
               "ui.panel.config.zwave_js.update_firmware.abort"
             )}
-          </mwc-button>
+          </ha-button>
         `;
+
+    const closeButton = html`
+      <ha-button slot="primaryAction" @click=${this.closeDialog}>
+        ${this.hass.localize("ui.common.close")}
+      </ha-button>
+    `;
 
     return html`
       <ha-dialog
@@ -213,7 +223,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         }
                       )}
                 </p>
-                ${abortFirmwareUpdateButton}
+                ${abortFirmwareUpdateButton} ${closeButton}
               `
           : this._updateProgressMessage && !this._updateFinishedMessage
             ? html`
@@ -242,7 +252,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                     }
                   )}
                 </p>
-                ${abortFirmwareUpdateButton}
+                ${abortFirmwareUpdateButton} ${closeButton}
               `
             : html`
                 <div class="flex-container">

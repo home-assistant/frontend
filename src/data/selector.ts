@@ -303,7 +303,9 @@ export interface LocationSelectorValue {
 }
 
 export interface MediaSelector {
-  media: {} | null;
+  media: {
+    accept?: string[];
+  } | null;
 }
 
 export interface MediaSelectorValue {
@@ -334,8 +336,20 @@ export interface NumberSelector {
   } | null;
 }
 
+interface ObjectSelectorField {
+  selector: Selector;
+  label?: string;
+  required?: boolean;
+}
+
 export interface ObjectSelector {
-  object: {} | null;
+  object?: {
+    label_field?: string;
+    description_field?: string;
+    translation_key?: string;
+    fields?: Record<string, ObjectSelectorField>;
+    multiple?: boolean;
+  } | null;
 }
 
 export interface AssistPipelineSelector {

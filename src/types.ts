@@ -198,9 +198,9 @@ export interface Context {
   user_id?: string | null;
 }
 
-export interface ServiceCallResponse {
+export interface ServiceCallResponse<T = any> {
   context: Context;
-  response?: any;
+  response?: T;
 }
 
 export interface ServiceCallRequest {
@@ -248,14 +248,14 @@ export interface HomeAssistant {
   user?: CurrentUser;
   userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
-  callService(
+  callService<T = any>(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
     serviceData?: ServiceCallRequest["serviceData"],
     target?: ServiceCallRequest["target"],
     notifyOnError?: boolean,
     returnResponse?: boolean
-  ): Promise<ServiceCallResponse>;
+  ): Promise<ServiceCallResponse<T>>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,

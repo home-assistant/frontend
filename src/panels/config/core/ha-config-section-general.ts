@@ -25,8 +25,10 @@ import type { ConfigUpdateValues } from "../../../data/core";
 import { saveCoreConfig } from "../../../data/core";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
+import "./ai-task-pref";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -265,6 +267,12 @@ class HaConfigSectionGeneral extends LitElement {
               </ha-progress-button>
             </div>
           </ha-card>
+          ${isComponentLoaded(this.hass, "ai_task")
+            ? html`<ai-task-pref
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ai-task-pref>`
+            : nothing}
         </div>
       </hass-subpage>
     `;
@@ -377,13 +385,17 @@ class HaConfigSectionGeneral extends LitElement {
         max-width: 1040px;
         margin: 0 auto;
       }
-      ha-card {
+      ha-card,
+      ai-task-pref {
         max-width: 600px;
         margin: 0 auto;
         height: 100%;
         justify-content: space-between;
         flex-direction: column;
         display: flex;
+      }
+      ha-card {
+        margin-bottom: 24px;
       }
       .card-content {
         display: flex;

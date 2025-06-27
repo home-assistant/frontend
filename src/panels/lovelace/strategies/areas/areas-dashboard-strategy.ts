@@ -66,6 +66,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
       return {
         title: area.name,
         path: path,
+        subview: true,
         strategy: {
           type: "area",
           area: area.area_id,

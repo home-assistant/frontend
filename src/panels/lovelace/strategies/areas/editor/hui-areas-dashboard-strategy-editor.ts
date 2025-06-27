@@ -1,27 +1,30 @@
+import { mdiThermometerWater } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-areas-display-editor";
 import type { AreasDisplayValue } from "../../../../../components/ha-areas-display-editor";
+import "../../../../../components/ha-areas-floors-display-editor";
 import "../../../../../components/ha-entities-display-editor";
+import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-prev";
-import "../../../../../components/ha-icon";
+import "../../../../../components/ha-svg-icon";
+import {
+  updateAreaRegistryEntry,
+  type AreaRegistryEntry,
+} from "../../../../../data/area_registry";
+import { buttonLinkStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import { showAreaRegistryDetailDialog } from "../../../../config/areas/show-dialog-area-registry-detail";
+import type { LovelaceStrategyEditor } from "../../types";
+import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
 import type { AreaStrategyGroup } from "../helpers/areas-strategy-helper";
 import {
   AREA_STRATEGY_GROUP_ICONS,
   AREA_STRATEGY_GROUPS,
   getAreaGroupedEntities,
 } from "../helpers/areas-strategy-helper";
-import type { LovelaceStrategyEditor } from "../../types";
-import type { AreasDashboardStrategyConfig } from "../areas-dashboard-strategy";
-import { showAreaRegistryDetailDialog } from "../../../../config/areas/show-dialog-area-registry-detail";
-import {
-  updateAreaRegistryEntry,
-  type AreaRegistryEntry,
-} from "../../../../../data/area_registry";
-import { buttonLinkStyle } from "../../../../../resources/styles";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -57,14 +60,18 @@ export class HuiAreasDashboardStrategyEditor
         </div>
         <ha-expansion-panel
           .header=${this.hass!.localize(
-            `ui.panel.lovelace.strategy.areas.header`
+            `ui.panel.lovelace.strategy.areas.sensors`
           )}
           expanded
           outlined
         >
+          <ha-svg-icon
+            slot="leading-icon"
+            .path=${mdiThermometerWater}
+          ></ha-svg-icon>
           <p>
             ${this.hass!.localize(
-              `ui.panel.lovelace.strategy.areas.header_description`,
+              `ui.panel.lovelace.strategy.areas.sensors_description`,
               {
                 edit_the_area: html`
                   <button class="link" @click=${this._editArea} .area=${area}>
@@ -122,7 +129,7 @@ export class HuiAreasDashboardStrategyEditor
     const value = this._config.areas_display;
 
     return html`
-      <ha-areas-display-editor
+      <ha-areas-floors-display-editor
         .hass=${this.hass}
         .value=${value}
         .label=${this.hass.localize(
@@ -132,7 +139,7 @@ export class HuiAreasDashboardStrategyEditor
         expanded
         show-navigation-button
         @item-display-navigate-clicked=${this._handleAreaNavigate}
-      ></ha-areas-display-editor>
+      ></ha-areas-floors-display-editor>
     `;
   }
 
@@ -212,9 +219,13 @@ export class HuiAreasDashboardStrategyEditor
         ha-expansion-panel {
           margin-bottom: 8px;
           max-width: 600px;
+          --expansion-panel-summary-padding: 0 16px;
+        }
+        ha-expansion-panel [slot="leading-icon"] {
+          margin-inline-end: 16px;
         }
         ha-expansion-panel p {
-          margin: 8px 2px;
+          margin: 8px 8px 16px 8px;
         }
         button.link {
           color: var(--primary-color);
