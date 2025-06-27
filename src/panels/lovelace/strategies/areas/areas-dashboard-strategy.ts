@@ -78,7 +78,6 @@ export class AreasDashboardStrategy extends ReactiveElement {
     return {
       views: [
         {
-          title: "Home",
           icon: "mdi:home",
           path: "home",
           strategy: {
