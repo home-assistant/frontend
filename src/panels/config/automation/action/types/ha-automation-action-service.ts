@@ -42,7 +42,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     if (
       this.action &&
       Object.entries(this.action).some(
-        ([key, val]) => key !== "data" && hasTemplate(val)
+        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
       )
     ) {
       fireEvent(

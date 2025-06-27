@@ -286,7 +286,7 @@ class DataEntryFlowDialog extends LitElement {
         scrimClickAction
         escapeKeyAction
         hideActions
-        .heading=${dialogTitle}
+        .heading=${dialogTitle || true}
       >
         <ha-dialog-header slot="heading">
           <ha-icon-button

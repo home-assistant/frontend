@@ -325,6 +325,62 @@
         "low": "Low"
       }
     },
+    "card_features": {
+      "area_controls": {
+        "light": {
+          "on": "Turn on area lights",
+          "off": "Turn off area lights"
+        },
+        "fan": {
+          "on": "Turn on area fans",
+          "off": "Turn off area fans"
+        },
+        "switch": {
+          "on": "Turn on area switches",
+          "off": "Turn off area switches"
+        },
+        "cover-awning": {
+          "on": "Open area awnings",
+          "off": "Close area awnings"
+        },
+        "cover-blind": {
+          "on": "Open area blinds",
+          "off": "Close area blinds"
+        },
+        "cover-curtain": {
+          "on": "Open area curtains",
+          "off": "Close area curtains"
+        },
+        "cover-damper": {
+          "on": "Open area dampers",
+          "off": "Close area dampers"
+        },
+        "cover-door": {
+          "on": "Open area doors",
+          "off": "Close area doors"
+        },
+        "cover-garage": {
+          "on": "Open garage door",
+          "off": "Close garage door"
+        },
+        "cover-gate": {
+          "on": "Open area gates",
+          "off": "Close area gates"
+        },
+        "cover-shade": {
+          "on": "Open area shades",
+          "off": "Close area shades"
+        },
+        "cover-shutter": {
+          "on": "Open area shutters",
+          "off": "Close area shutters"
+        },
+        "cover-window": {
+          "on": "Open area windows",
+          "off": "Close area windows"
+        }
+      }
+    },
     "common": {
       "and": "and",
       "continue": "Continue",
@@ -380,8 +436,10 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "suggest_ai": "Suggest with AI"
     },
+
     "components": {
       "selectors": {
         "media": {
@@ -952,7 +1010,7 @@
         "documentation": "documentation",
         "no_local_media_found": "No local media found",
         "no_media_folder": "It looks like you have not yet created a media directory.",
-        "setup_local_help": "Check the {documentation} on how to setup local media.",
+        "setup_local_help": "Check the {documentation} on how to set up local media.",
         "file_management": {
           "title": "Media management",
           "manage": "Manage",
@@ -1753,7 +1811,7 @@
         "heading": "Reconfiguring device",
         "configuring_alt": "Configuring",
         "introduction": "Reconfigure a device on your Zigbee network. Use this feature if your device is not functioning correctly.",
-        "battery_device_warning": "You will need to wake battery powered devices before starting the reconfiguration process. Refer to your device's manual for instructions on how to wake the device.",
+        "battery_device_warning": "You will need to wake battery-powered devices before starting the reconfiguration process. Refer to your device's manual for instructions on how to wake the device.",
         "run_in_background": "You can close this dialog and the reconfiguration will continue in the background.",
         "start_reconfiguration": "Start reconfiguration",
         "in_progress": "The device is being reconfigured. This may take some time.",
@@ -1789,7 +1847,7 @@
           "view_network": "View network"
         },
         "services": {
-          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this action.",
+          "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery-powered device please ensure it is awake and accepting commands when you use this action.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the Zigbee network.",
           "zigbee_information": "View the Zigbee information for the device."
@@ -2206,6 +2264,12 @@
             "add_area": "Add area"
           }
         },
+        "ai_task": {
+          "header": "AI suggestions",
+          "description": "Home Assistant can use generative AI to help you with tasks like writing automations, creating scripts, and more. Look for the button with the {button} icon throughout Home Assistant to get suggestions.",
+          "gen_data_header": "Data generation tasks",
+          "gen_data_description": "Suggest automation names or dashboards."
+        },
         "category": {
           "caption": "Categories",
           "assign": {
@@ -2277,7 +2341,7 @@
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
             "unassigned_areas": "Unassigned areas",
-            "create_area": "Create Area",
+            "create_area": "Create area",
             "create_floor": "Create floor",
             "floor": {
               "edit_floor": "Edit floor",
@@ -3266,7 +3330,15 @@
                 "areas": {
                   "title": "Areas (experimental)",
                   "description": "Display your devices with a view for each area"
+                },
+                "default": {
+                  "title": "Default dashboard",
+                  "description": "Display your devices grouped by area"
                 }
+              },
+              "search_dashboards": "Search dashboards",
+              "heading": {
+                "default": "Dashboards"
               }
             },
             "picker": {
@@ -3421,7 +3493,7 @@
                 },
                 "speech": {
                   "title": "Amazing speech options for Assist",
-                  "text": "Bring personality to your home by having it speak to you using our neural-network powered speech-to-text and text-to-speech services."
+                  "text": "Bring personality to your home by having it speak to you using our neural-network-powered speech-to-text and text-to-speech services."
                 },
                 "remote_access": {
                   "title": "Remote access",
@@ -3873,7 +3945,7 @@
                 },
                 "persistent_notification": {
                   "label": "Persistent notification",
-                  "notification_id": "Notification Id",
+                  "notification_id": "Notification ID",
                   "update_type": "Update type",
                   "update_types": {
                     "added": "added",
@@ -4278,7 +4350,8 @@
                   "action": "Action",
                   "description": {
                     "picker": "Do something on a device. Great way to start.",
-                    "no_device": "Device action"
+                    "no_device": "Device action",
+                    "perform_device_action": "Perform action with {device}"
                   }
                 },
                 "repeat": {
@@ -4876,7 +4949,6 @@
               "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
               "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
-              "enable_ha_skill": "Activate the Home Assistant Cloud skill for Google Assistant",
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
@@ -5056,7 +5128,8 @@
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
             "hidden": "Hidden"
           },
-          "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
+          "confirm_disable_config_entry_title": "Disable config entry?",
+          "confirm_disable_config_entry_message": "There are no more devices for the config entry {name}, do you want to disable the config entry instead?",
           "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
@@ -5155,8 +5228,7 @@
         },
         "person": {
           "caption": "People",
-          "description": "Manage the people that Home Assistant tracks",
-          "introduction": "Here you can add each person of interest in Home Assistant.",
+          "introduction": "Manage the people Home Assistant recognizes and control their access.",
           "note_about_persons_configured_in_yaml": "People configured via configuration.yaml cannot be edited via the UI.",
           "learn_more": "Learn more about people",
           "no_persons_created_yet": "Looks like you have not added any people yet.",
@@ -5181,7 +5253,7 @@
             "create": "Create",
             "update": "Update",
             "confirm_delete_user_title": "Delete user account",
-            "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to login.",
+            "confirm_delete_user_text": "The user account for ''{name}'' will be permanently deleted. You can still track the user, but the person will no longer be able to log in.",
             "allow_login": "Allow login",
             "allow_login_description": "Allow access using username and password.",
             "username": "[%key:ui::panel::config::users::editor::username%]",
@@ -5230,7 +5302,7 @@
           "discovered": "Discovered",
           "disabled": "Disabled",
           "available_integrations": "Available integrations",
-          "new_flow": "Setup another instance of {integration}",
+          "new_flow": "Set up another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
           "new": "Select brand",
@@ -5285,7 +5357,7 @@
             "entries_system": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
-            "yaml_entry": "This integration was not setup via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
+            "yaml_entry": "This integration was not set up via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
             "add_device": "Add device",
@@ -5305,11 +5377,20 @@
               "dismiss": "Keep",
               "learn_more": "Learn more about application credentials"
             },
+            "device": {
+              "enable": "Enable device",
+              "disable": "Disable device",
+              "confirm_disable_title": "Disable device?",
+              "confirm_disable_message": "Are you sure you want to disable {name} and all of its entities?",
+              "configure": "Configure device",
+              "delete": "Remove device"
+            },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
             "no_devices_or_entities": "No devices or entities",
+            "devices_without_subentry": "Devices that don't belong to a sub-entry",
             "rename": "Rename",
             "configure": "Configure",
             "system_options": "System options",
@@ -5335,7 +5416,7 @@
             "via": "Connected via",
             "firmware": "Firmware: {version}",
             "hardware": "Hardware: {version}",
-            "version": "Version: {version}",
+            "version": "Version {version}",
             "serial_number": "Serial number: {serial_number}",
             "unnamed_entry": "Unnamed entry",
             "unknown_via_device": "Unknown device",
@@ -5354,11 +5435,10 @@
               }
             },
             "custom_integration": "Custom integration",
-            "internal_integration": "Internal integration",
             "legacy_integration": "Legacy integration",
             "custom_overwrites_core": "Custom integration that replaces a core component",
             "depends_on_cloud": "Requires Internet",
-            "yaml_only": "This integration cannot be setup from the UI",
+            "yaml_only": "This integration cannot be set up from the UI",
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
@@ -5409,7 +5489,7 @@
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
             "supported_brand_flow": "Support for {supported_brand} devices is provided by {flow_domain_name}. Do you want to continue?",
-            "missing_zwave_zigbee_title": "{integration} is not setup",
+            "missing_zwave_zigbee_title": "{integration} is not set up",
             "missing_zwave_zigbee": "To add a {brand} device, you first need {supported_hardware_link} and the {integration} integration set up. If you already have the hardware then you can proceed with the setup of {integration}.",
             "missing_matter": "To add a {brand} device, you first need the {integration} integration and {supported_hardware_link}. Do you want to proceed with the setup of {integration}?",
             "supported_hardware": "supported hardware",
@@ -5455,7 +5535,7 @@
             "admin_description": "Administrators can manage users, devices, automations and dashboards.",
             "group": "Group",
             "active": "Active",
-            "active_description": "Controls if user can login",
+            "active_description": "Controls if user can log in",
             "local_access_only": "Local access only",
             "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
@@ -5666,7 +5746,7 @@
             "network_settings_title": "Network settings",
             "change_channel": "Change channel",
             "channel_dialog": {
-              "title": "Multiprotocol addon in use",
+              "title": "Multiprotocol add-on in use",
               "text": "Zigbee and Thread share the same radio and must use the same channel. Change the channel of both networks by reconfiguring multiprotocol from the hardware menu."
             }
           },
@@ -5794,6 +5874,7 @@
             "back": "Back",
             "add_node": "Add device",
             "remove_node": "Remove device",
+            "remove_a_node": "Remove a device",
             "rebuild_network_routes": "Rebuild network routes",
             "in_progress_inclusion_exclusion": "Z-Wave JS is searching for devices",
             "cancel_inclusion_exclusion": "Stop searching"
@@ -5807,8 +5888,8 @@
             "provisioned_devices": "Provisioned devices",
             "not_ready": "{count} not ready",
             "nvm_backup": {
-              "title": "Backup and Restore",
-              "description": "Back up or restore your Z-Wave controller's Non-Volatile Memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "title": "Backup and restore",
+              "description": "Back up or restore your Z-Wave controller's non-volatile memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
               "download_backup": "Download backup",
               "restore_backup": "Restore from backup",
               "backup_failed": "Failed to download backup",
@@ -5866,7 +5947,6 @@
             "installer_settings": "Installer settings",
             "reinterview_device": "Re-interview",
             "rebuild_routes": "Rebuild routes",
-            "remove_failed": "Remove failed",
             "update_firmware": "Update",
             "highest_security": "Highest security",
             "hard_reset_controller": "Factory reset",
@@ -5975,7 +6055,7 @@
             "introduction": "Manage and adjust device specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
             "endpoint": "Endpoint {endpoint}",
-            "zwave_js_device_database": "Z-Wave JS Device Database",
+            "zwave_js_device_database": "Z-Wave JS device database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
             "between_min_max": "Between {min} and {max}",
@@ -6013,9 +6093,9 @@
             "default": "Default"
           },
           "network_status": {
-            "connected": "Connected",
-            "connecting": "Connecting",
-            "unknown": "Unknown"
+            "connected": "status: connected",
+            "connecting": "status: connecting",
+            "unknown": "status: unknown"
           },
           "add_node": {
             "title": "Add a Z-Wave device",
@@ -6071,7 +6151,6 @@
               "device_name": "Name",
               "device_area": "Area",
               "choose_network_type": "Choose network type",
-              "long_range_label": "Direct long range",
               "long_range_description": "Direct connection to Home Assistant for extended coverage, without a mesh network.",
               "mesh_label": "Mesh network",
               "mesh_description": "Devices relay signals to each other, enhancing coverage and reliability.",
@@ -6112,8 +6191,8 @@
             "unprovision": "Unprovision",
             "included": "Included",
             "not_included": "Not Included",
-            "confirm_unprovision_title": "Are you sure you want to unprovision the device?",
-            "confirm_unprovision_text": "If you unprovision the device it will not be added to Home Assistant when it is powered on. If it is already added to Home Assistant, removing the provisioned device will not remove it from Home Assistant."
+            "confirm_unprovision_title": "Remove device?",
+            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network."
           },
           "security_classes": {
             "None": {
@@ -6138,26 +6217,22 @@
           },
           "remove_node": {
             "title": "Remove a Z-Wave device",
-            "introduction": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "introduction": "There are two ways to remove a device from your Z-Wave network depending on the state of the device. If the device is working, you can remove it by following the instructions that came with your device to put it into exclusion mode. If the device is unavailable, you can force-remove it from the network.",
+            "exclusion_intro": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "failed_node_intro": "{name} is unable to connect to your Z-Wave network. Home Assistant can force-remove a device for you. After removing it you might need to factory reset your device.",
+            "menu_exclude_device": "Remove a working device",
+            "menu_remove_device": "Force-remove an unavailable device",
             "start_exclusion": "Start exclusion",
             "cancel_exclusion": "Cancel exclusion",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
             "removing_device": "Removing device",
-            "exclusion_failed": "An error occurred during exclusion. Please check the logs for more information.",
+            "exclusion_failed": "An error occurred. Please check the logs for more information.",
             "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
-          },
-          "remove_failed_node": {
-            "title": "Remove a failed Z-Wave device",
-            "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
-            "remove_device": "Remove device",
-            "in_progress": "The device removal is in progress.",
-            "removal_finished": "Device {id} has been removed from your Z-Wave network.",
-            "removal_failed": "The device could not be removed from your Z-Wave network."
           },
           "reinterview_node": {
             "title": "Re-interview a Z-Wave device",
             "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
-            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "You will need to wake battery-powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
             "run_in_background": "You can close this dialog and the interview will continue in the background.",
             "start_reinterview": "Start re-interview",
             "in_progress": "The device is being interviewed. This may take some time.",
@@ -6232,21 +6307,21 @@
             }
           },
           "logs": {
-            "title": "Z-Wave JS Logs",
+            "title": "Z-Wave JS logs",
             "log_level": "Log level",
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
-            "log_level_changed": "Log Level changed to: {level}",
+            "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
           },
           "node_installer": {
-            "header": "Installer Settings",
+            "header": "Installer settings",
             "introduction": "Configure your device installer settings.",
             "endpoint": "Endpoint",
             "no_settings": "This device does not have any installer settings.",
-            "command_class": "Command Class",
+            "command_class": "Command class",
             "capability_controls": {
               "thermostat_setback": {
-                "title": "Thermostat Setback",
+                "title": "Thermostat setback",
                 "setback_state_label": "Setback in Kelvin",
                 "setback_state_helper": "Min: -12.8, max: 12.0",
                 "setback_special_state": {
@@ -6256,7 +6331,7 @@
                   "unused": "Unused"
                 },
                 "setback_type": {
-                  "label": "Setback Type",
+                  "label": "Setback type",
                   "none": "None",
                   "temporary": "Temporary",
                   "permanent": "Permanent"
@@ -6276,7 +6351,7 @@
                 "control_failed": "Failed to control transition. {error}"
               },
               "door_lock": {
-                "title": "Door Lock",
+                "title": "Door lock",
                 "twist_assist": "Twist assist",
                 "block_to_block": "Block to block",
                 "auto_relock_time": "Auto relock time",
@@ -6303,8 +6378,8 @@
               "color_switch": {
                 "color_component": "Color component",
                 "colors": {
-                  "0": "Warm White",
-                  "1": "Cold White",
+                  "0": "Warm white",
+                  "1": "Cold white",
                   "2": "Red",
                   "3": "Green",
                   "4": "Blue",
@@ -6359,7 +6434,7 @@
           "reinterview_node": {
             "title": "Re-interview a Matter device",
             "introduction": "Perform a full re-interview of a Matter device. Use this feature only if your device has missing or incorrect functionality.",
-            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "battery_device_warning": "You will need to wake battery-powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
             "run_in_background": "You can close this dialog and the interview will continue in the background.",
             "start_reinterview": "Start re-interview",
             "in_progress": "The device is being interviewed. This may take some time.",
@@ -6368,8 +6443,8 @@
           },
           "ping_node": {
             "title": "Ping a Matter device",
-            "introduction": "Perform a (server-side) ping on your Matter device on all its (known) IP-addresses.",
-            "battery_device_warning": "Note that especially for battery powered devices this can take a while. You may need to wake up battery powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
+            "introduction": "This performs a (server-side) ping of your Matter device on all its (known) IP addresses.",
+            "battery_device_warning": "Note that especially for battery-powered devices this can take a while. You may need to wake up battery-powered devices before starting the pinging to speed up the process. Refer to your device's manual for instructions on how to wake the device.",
             "start_ping": "Start ping",
             "in_progress": "The device is being pinged. This may take some time.",
             "ping_failed": "The device ping failed. Additional information may be available in the logs.",
@@ -6598,8 +6673,8 @@
           },
           "areas": {
             "no_entities": "No entities in this area.",
-            "header": "Area badges",
-            "header_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
+            "sensors": "Sensors",
+            "sensors_description": "To display temperature and humidity sensors in the overview and in the area view, add a sensor to that area and {edit_the_area} to configure related sensors.",
             "edit_the_area": "edit the area",
             "groups": {
               "lights": "Lights",
@@ -6609,7 +6684,9 @@
               "security": "Security",
               "actions": "Actions",
               "others": "Others"
-            }
+            },
+            "others_areas": "Other areas",
+            "areas": "Areas"
           }
         },
         "cards": {
@@ -7164,10 +7241,18 @@
             },
             "area": {
               "name": "Area",
-              "alert_classes": "Alert Classes",
-              "sensor_classes": "Sensor Classes",
+              "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+              "alert_classes": "Alert classes",
+              "alert_classes_helper": "In compact style, only the first one will be shown. Order alerts by priority.",
+              "sensor_classes": "Sensor classes",
               "description": "The Area card automatically displays entities of a specific area.",
-              "show_camera": "Show camera feed instead of area picture"
+              "display_type": "Display type",
+              "display_type_options": {
+                "compact": "Compact",
+                "icon": "Area icon",
+                "picture": "Area picture",
+                "camera": "Camera feed"
+              }
             },
             "calendar": {
               "name": "Calendar",
@@ -7824,6 +7909,27 @@
                   "ask": "Ask"
                 },
                 "backup_not_supported": "Backup is not supported."
+              },
+              "area-controls": {
+                "label": "Area controls",
+                "customize_controls": "Customize controls",
+                "controls": "Controls",
+                "controls_options": {
+                  "light": "Lights",
+                  "fan": "Fans",
+                  "switch": "Switches",
+                  "cover-awning": "Awnings",
+                  "cover-blind": "Blinds",
+                  "cover-curtain": "Curtains",
+                  "cover-damper": "Dampers",
+                  "cover-door": "Doors",
+                  "cover-garage": "Garage doors",
+                  "cover-gate": "Gates",
+                  "cover-shade": "Shades",
+                  "cover-shutter": "Shutters",
+                  "cover-window": "Windows"
+                },
+                "no_compatible_controls": "No compatible controls available for this area"
               }
             }
           },
@@ -9171,12 +9277,12 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "add_addon_repository_title": "Missing add-on repository",
-      "add_addon_repository_description": "The addon ''{addon}'' is a part of the add-on repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
+      "add_addon_repository_description": "The add-on ''{addon}'' is a part of the add-on repository ''{repository}'', this repository is missing on your system, do you want to add that now?",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
-      "error_repository_not_found": "The required repository for this Add-on was not found",
+      "error_repository_not_found": "The required repository for this add-on was not found",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
-      "error_addon_no_ingress": "The requested add-on does not support ingress"
+      "error_addon_no_ingress": "The requested add-on does not support Ingress"
     },
     "ingress": {
       "error_addon_info": "Unable to fetch add-on info to start Ingress",
@@ -9376,7 +9482,7 @@
       },
       "uninstall_addon": {
         "title": "Uninstall {name}?",
-        "remove_data": "Also permanently delete this addon's data",
+        "remove_data": "Also permanently delete this add-on's data",
         "uninstall": "Uninstall"
       },
       "hardware": {

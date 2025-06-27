@@ -1,5 +1,4 @@
 import { mdiContentSave, mdiMedal, mdiTrophy } from "@mdi/js";
-import { mdiHomeAssistant } from "../resources/home-assistant-logo-svg";
 import type { LocalizeKeys } from "../common/translations/localize";
 
 /**
@@ -25,11 +24,6 @@ export const QUALITY_SCALE_MAP: Record<
     icon: mdiTrophy,
     translationKey:
       "ui.panel.config.integrations.config_entry.platinum_quality",
-  },
-  internal: {
-    icon: mdiHomeAssistant,
-    translationKey:
-      "ui.panel.config.integrations.config_entry.internal_integration",
   },
   legacy: {
     icon: mdiContentSave,

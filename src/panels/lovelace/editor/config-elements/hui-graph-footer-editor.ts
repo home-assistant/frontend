@@ -1,5 +1,5 @@
 import type { CSSResultGroup } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -139,7 +139,14 @@ export class HuiGraphFooterEditor
   }
 
   static get styles(): CSSResultGroup {
-    return configElementStyle;
+    return [
+      configElementStyle,
+      css`
+        .card-config ha-switch {
+          margin: 1px 0;
+        }
+      `,
+    ];
   }
 }
 

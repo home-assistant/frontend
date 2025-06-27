@@ -535,7 +535,7 @@ class HaPanelDevAction extends LitElement {
     if (
       this._serviceData &&
       Object.entries(this._serviceData).some(
-        ([key, val]) => key !== "data" && hasTemplate(val)
+        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
       )
     ) {
       this._yamlMode = true;
