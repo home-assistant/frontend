@@ -348,6 +348,14 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           return undefined;
         }
 
+        // If only one entity, return its formatted state
+        if (entities.length === 1) {
+          const stateObj = entities[0];
+          return isUnavailableState(stateObj.state)
+            ? ""
+            : this.hass.formatEntityState(stateObj);
+        }
+
         // Use the first entity's unit_of_measurement for formatting
         const uom = entities.find(
           (entity) => entity.attributes.unit_of_measurement
