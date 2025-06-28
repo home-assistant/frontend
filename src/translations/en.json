@@ -7200,8 +7200,8 @@
                 "above": "Above",
                 "below": "Below"
               },
-              "last_updated_state": {
-                "label": "Entity updated"
+              "last_changed_state": {
+                "label": "Last entity change"
               },
               "screen": {
                 "label": "Screen",
