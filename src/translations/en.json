@@ -6548,7 +6548,7 @@
           },
           "network_adapter": "Network adapter",
           "network_adapter_info": "Configure which network adapters integrations will use. A restart is required for these settings to apply.",
-          "ip_information": "IP Information",
+          "ip_information": "IP information",
           "adapter": {
             "auto_configure": "Autoconfigure",
             "detected": "Detected",
