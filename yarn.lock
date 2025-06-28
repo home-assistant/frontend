@@ -6067,12 +6067,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"barcode-detector@npm:3.0.4":
-  version: 3.0.4
-  resolution: "barcode-detector@npm:3.0.4"
+"barcode-detector@npm:3.0.5":
+  version: 3.0.5
+  resolution: "barcode-detector@npm:3.0.5"
   dependencies:
-    zxing-wasm: "npm:2.1.2"
-  checksum: 10/9570d854ad176d0fa6e82f800eace4a9d7ed9975ae7d10d3a1ea62c1094a35893f5c6bad7ace11442827d92c2233bb9f089a2ce11c5180dedf68099f8dfddc84
+    zxing-wasm: "npm:2.2.0"
+  checksum: 10/12a35c115d7e578a290a66b6a4b924b20b0f0477d67973899163d59af78d5f0ac7e8fc0f2e5dff311478f6b0cb3daefbad4ebd7dde54bdead24d8432dc4084d1
   languageName: node
   linkType: hard
 
@@ -9347,7 +9347,7 @@ __metadata:
     app-datepicker: "npm:5.1.1"
     babel-loader: "npm:10.0.0"
     babel-plugin-template-html-minifier: "npm:4.1.0"
-    barcode-detector: "npm:3.0.4"
+    barcode-detector: "npm:3.0.5"
     browserslist-useragent-regexp: "npm:4.1.3"
     color-name: "npm:2.0.0"
     comlink: "npm:4.4.2"
@@ -16012,14 +16012,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zxing-wasm@npm:2.1.2":
-  version: 2.1.2
-  resolution: "zxing-wasm@npm:2.1.2"
+"zxing-wasm@npm:2.2.0":
+  version: 2.2.0
+  resolution: "zxing-wasm@npm:2.2.0"
   dependencies:
     "@types/emscripten": "npm:^1.40.1"
     type-fest: "npm:^4.41.0"
   peerDependencies:
     "@types/emscripten": ">=1.39.6"
-  checksum: 10/3b0476b4779fdb22de599022f6a8c51c77834422863d7412af35b3a7c682a48ac414ee6a3aafa264707b9beeb95fc20d933331f1d33b19d70c762509d5d1d5e6
+  checksum: 10/95cd6ec75247116ce6a57b1c261b5bd900e1888e4e6945d73d03ae0ae1b31b12b5955b995da85e03c0fa366f45b8859cf1dd4d2d142d0d7985abd68e48a4f430
   languageName: node
   linkType: hard
