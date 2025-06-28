@@ -8,7 +8,7 @@ import { createDurationData } from "../../../common/datetime/create_duration_dat
 import type { HaDurationData } from "../../../components/ha-duration-input";
 
 export type Condition =
-  | LastUpdatedStateCondition
+  | LastChangedStateCondition
   | NumericStateCondition
   | StateCondition
   | ScreenCondition
@@ -27,8 +27,8 @@ interface BaseCondition {
   condition: string;
 }
 
-export interface LastUpdatedStateCondition extends BaseCondition {
-  condition: "last_updated_state";
+export interface LastChangedStateCondition extends BaseCondition {
+  condition: "last_changed_state";
   entity?: string;
   within?: HaDurationData;
   after?: HaDurationData;
@@ -142,8 +142,8 @@ function checkStateNumericCondition(
   );
 }
 
-function checkLastUpdatedStateCondition(
-  condition: LastUpdatedStateCondition,
+function checkLastChangedStateCondition(
+  condition: LastChangedStateCondition,
   hass: HomeAssistant
 ) {
   const state_last_changed = (
@@ -181,11 +181,11 @@ function checkLastUpdatedStateCondition(
     createDurationData(after)
   );
 
-  const numericLastUpdatedState = new Date(state_last_changed).getTime();
-  const numericWithin = numericLastUpdatedState + withinDuration;
-  const numericAfter = numericLastUpdatedState + afterDuration;
+  const numericLastChangedState = new Date(state_last_changed).getTime();
+  const numericWithin = numericLastChangedState + withinDuration;
+  const numericAfter = numericLastChangedState + afterDuration;
 
-  if (isNaN(numericLastUpdatedState)) {
+  if (isNaN(numericLastChangedState)) {
     return false;
   }
 
@@ -239,8 +239,8 @@ export function checkConditionsMet(
           return checkUserCondition(c, hass);
         case "numeric_state":
           return checkStateNumericCondition(c, hass);
-        case "last_updated_state":
-          return checkLastUpdatedStateCondition(c, hass);
+        case "last_changed_state":
+          return checkLastChangedStateCondition(c, hass);
         case "and":
           return checkAndCondition(c, hass);
         case "or":
@@ -274,7 +274,7 @@ export function extractConditionEntityIds(
       ) {
         entityIds.add(condition.below);
       }
-    } else if (condition.condition === "last_updated_state") {
+    } else if (condition.condition === "last_changed_state") {
       if (condition.entity) {
         entityIds.add(condition.entity);
       }
@@ -341,8 +341,8 @@ function validateNumericStateCondition(condition: NumericStateCondition) {
     (condition.above != null || condition.below != null)
   );
 }
-function validateLastUpdatedStateCondition(
-  condition: LastUpdatedStateCondition
+function validateLastChangedStateCondition(
+  condition: LastChangedStateCondition
 ) {
   return (
     condition.entity != null &&
@@ -366,8 +366,8 @@ export function validateConditionalConfig(
           return validateUserCondition(c);
         case "numeric_state":
           return validateNumericStateCondition(c);
-        case "last_updated_state":
-          return validateLastUpdatedStateCondition(c);
+        case "last_changed_state":
+          return validateLastChangedStateCondition(c);
         case "and":
           return validateAndCondition(c);
         case "or":
@@ -402,7 +402,7 @@ export function addEntityToCondition(
   if (
     condition.condition === "state" ||
     condition.condition === "numeric_state" ||
-    condition.condition === "last_updated_state"
+    condition.condition === "last_changed_state"
   ) {
     return {
       entity: entityId,

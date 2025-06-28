@@ -19,31 +19,31 @@ import type {
 import { forDictStruct } from "../../../../config/automation/structs";
 import type { HomeAssistant } from "../../../../../types";
 import type {
-  LastUpdatedStateCondition,
+  LastChangedStateCondition,
   StateCondition,
 } from "../../../common/validate-condition";
 
-const lastUpdatedStateConditionStruct = object({
-  condition: literal("last_updated_state"),
+const lastChangededStateConditionStruct = object({
+  condition: literal("last_changed_state"),
   entity: optional(string()),
   within: optional(union([number(), string(), forDictStruct])),
   after: optional(union([number(), string(), forDictStruct])),
 });
 
-@customElement("ha-card-condition-last_updated_state")
-export class HaCardConditionLastUpdatedState extends LitElement {
+@customElement("ha-card-condition-last_changed_state")
+export class HaCardConditionLastChangedState extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public condition!: LastUpdatedStateCondition;
+  @property({ attribute: false }) public condition!: LastChangedStateCondition;
 
   @property({ type: Boolean }) public disabled = false;
 
-  public static get defaultConfig(): LastUpdatedStateCondition {
-    return { condition: "last_updated_state", entity: "" };
+  public static get defaultConfig(): LastChangedStateCondition {
+    return { condition: "last_changed_state", entity: "" };
   }
 
   protected static validateUIConfig(condition: StateCondition) {
-    return assert(condition, lastUpdatedStateConditionStruct);
+    return assert(condition, lastChangededStateConditionStruct);
   }
 
   private _schema = memoizeOne(
@@ -90,7 +90,7 @@ export class HaCardConditionLastUpdatedState extends LitElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const condition = ev.detail.value as LastUpdatedStateCondition;
+    const condition = ev.detail.value as LastChangedStateCondition;
     fireEvent(this, "value-changed", { value: condition });
   }
 
@@ -113,6 +113,6 @@ export class HaCardConditionLastUpdatedState extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-card-condition-last_updated_state": HaCardConditionLastUpdatedState;
+    "ha-card-condition-last_changed_state": HaCardConditionLastChangedState;
   }
 }
