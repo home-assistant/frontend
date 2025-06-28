@@ -6,6 +6,7 @@ import { UNKNOWN } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import type { HaDurationData } from "../../../components/ha-duration-input";
+import { HaDurationData_to_milliseconds } from "../../../common/datetime/duration_to_seconds";
 
 export type Condition =
   | LastChangedStateCondition
@@ -152,34 +153,10 @@ function checkLastChangedStateCondition(
   const within = condition.within;
   const after = condition.after;
 
-  function HaDurationData_to_milliseconds(
-    duration: HaDurationData | undefined
-  ) {
-    // This function should not be here, and surely something like this already exists?
-    // If so, I can't find it :'(
-    if (duration) {
-      const days = duration.days || 0;
-      let hours = duration.hours || 0;
-      let minutes = duration.minutes || 0;
-      let seconds = duration.seconds || 0;
-      let milliseconds = duration.milliseconds || 0;
-
-      hours += days * 24;
-      minutes += hours * 60;
-      seconds += minutes * 60;
-      milliseconds += seconds * 1000;
-
-      return milliseconds;
-    }
-    return 0; // this also is probably not good
-  }
-
-  const withinDuration = HaDurationData_to_milliseconds(
-    createDurationData(within)
-  );
-  const afterDuration = HaDurationData_to_milliseconds(
-    createDurationData(after)
-  );
+  const withinDuration =
+    HaDurationData_to_milliseconds(createDurationData(within)) || 0;
+  const afterDuration =
+    HaDurationData_to_milliseconds(createDurationData(after)) || 0;
 
   const numericLastChangedState = new Date(state_last_changed).getTime();
   const numericWithin = numericLastChangedState + withinDuration;
