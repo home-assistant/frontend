@@ -9158,10 +9158,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gulp-rename@npm:2.0.0":
-  version: 2.0.0
-  resolution: "gulp-rename@npm:2.0.0"
-  checksum: 10/b9add0d130487dee6067206eebfc3867e4e254117edef154e8c270e3111b112335439ac1cac1519d6a32541343e04bd299484253a333b4e34c7d430039953e99
+"gulp-rename@npm:2.1.0":
+  version: 2.1.0
+  resolution: "gulp-rename@npm:2.1.0"
+  checksum: 10/83be4ad1e8f4f8525681011695f02a9edbd50a37a08b8bdf9c0f01c67f317f8a5e50d1d693d65e3e23fb95669e7e22b4a9bbcd94eed46c3be9ad7e1be532d48b
   languageName: node
   linkType: hard
 
@@ -9437,7 +9437,7 @@ __metadata:
     gulp: "npm:5.0.1"
     gulp-brotli: "npm:3.0.0"
     gulp-json-transform: "npm:0.5.0"
-    gulp-rename: "npm:2.0.0"
+    gulp-rename: "npm:2.1.0"
     gulp-zopfli-green: "npm:6.0.2"
     hls.js: "npm:1.6.5"
     home-assistant-js-websocket: "npm:9.5.0"
