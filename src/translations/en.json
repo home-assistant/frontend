@@ -7693,7 +7693,7 @@
           "badge": {
             "entity": {
               "name": "Entity",
-              "description": "The Entity badge gives you a quick overview of your entity.",
+              "description": "The Entity badge gives you a quick overview of an entity.",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
               "color_helper": "[%key:ui::panel::lovelace::editor::card::tile::color_helper%]",
               "show_entity_picture": "Show entity picture",
