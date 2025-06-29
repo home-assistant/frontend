@@ -7431,7 +7431,7 @@
             },
             "light": {
               "name": "Light",
-              "description": "The Light card allows you to change the brightness of the light."
+              "description": "The Light card allows you to change the brightness of a light."
             },
             "generic": {
               "alt_text": "Alternative text",
@@ -7612,7 +7612,7 @@
                 "none": "None",
                 "line": "Line"
               },
-              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
+              "description": "The Sensor card gives you a quick overview of a sensor's state with an optional graph to visualize change over time.",
               "limit_min": "Minimum value",
               "limit_max": "Maximum value"
             },
@@ -7639,7 +7639,7 @@
             },
             "tile": {
               "name": "Tile",
-              "description": "The tile card gives you a quick overview of your entity. The card allows you to toggle the entity, show the More info dialog or trigger custom actions.",
+              "description": "The tile card gives you a quick overview of an entity. The card allows you to toggle the entity, show the More info dialog or trigger custom actions.",
               "color": "Color",
               "color_helper": "Inactive state (e.g. off, closed) will not be colored.",
               "icon_tap_action": "Icon tap behavior",
