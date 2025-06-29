@@ -559,9 +559,9 @@ export class HaCodeEditor extends ReactiveElement {
       right: 8px;
       z-index: 1;
       color: var(--secondary-text-color);
-      background-color: var(--card-background-color);
+      background-color: var(--secondary-background-color);
       border-radius: 50%;
-      opacity: 0.6;
+      opacity: 0.9;
       transition: opacity 0.2s;
       --mdc-icon-button-size: 32px;
       --mdc-icon-size: 18px;
@@ -591,7 +591,7 @@ export class HaCodeEditor extends ReactiveElement {
       z-index: 9999 !important;
       background-color: var(
         --code-editor-background-color,
-        var(--mdc-text-field-fill-color, whitesmoke)
+        var(--card-background-color)
       ) !important;
       margin: 0 !important;
       padding-top: var(--safe-area-inset-top) !important;
