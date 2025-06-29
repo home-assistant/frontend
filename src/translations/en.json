@@ -4490,14 +4490,14 @@
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
             "tabs": {
-              "details": "Step Details",
-              "timeline": "Trace Timeline",
+              "details": "Step details",
+              "timeline": "Trace timeline",
               "logbook": "Related logbook entries",
-              "automation_config": "Automation Config",
-              "step_config": "Step Config",
-              "changed_variables": "Changed Variables",
-              "blueprint_config": "Blueprint Config",
-              "script_config": "Script Config"
+              "automation_config": "Automation config",
+              "step_config": "Step config",
+              "changed_variables": "Changed variables",
+              "blueprint_config": "Blueprint config",
+              "script_config": "Script config"
             },
             "path": {
               "choose": "Select a step on the left for more information.",
@@ -4544,7 +4544,7 @@
           "caption": "Blueprints",
           "description": "Manage blueprints",
           "overview": {
-            "header": "Blueprint Editor",
+            "header": "Blueprint editor",
             "introduction": "The blueprint configuration allows you to import and manage your blueprints.",
             "learn_more": "Learn more about using blueprints",
             "headers": {
@@ -4601,14 +4601,14 @@
             "override_description": "Importing it will override the existing blueprint. If the updated blueprint is not compatible, it can break your automations. Automations will have to be adjusted manually.",
             "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
-            "file_name": "Blueprint Path"
+            "file_name": "Blueprint path"
           }
         },
         "script": {
           "caption": "Scripts",
           "description": "Execute a sequence of actions",
           "picker": {
-            "header": "Script Editor",
+            "header": "Script editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn't find any scripts",
@@ -4684,7 +4684,7 @@
             "field_delete_confirm_title": "Delete field?",
             "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
             "header": "Script: {name}",
-            "default_name": "New Script",
+            "default_name": "New script",
             "modes": {
               "label": "[%key:ui::panel::config::automation::editor::modes::label%]",
               "learn_more": "[%key:ui::panel::config::automation::editor::modes::learn_more%]",
@@ -4729,7 +4729,7 @@
           "description": "Capture device states and easily recall them later",
           "activated": "Activated scene {name}.",
           "picker": {
-            "header": "Scene Editor",
+            "header": "Scene editor",
             "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scenes",
             "pick_scene": "Pick scene to edit",
