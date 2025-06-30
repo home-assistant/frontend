@@ -154,7 +154,10 @@ class HaConfigEntryRow extends LitElement {
       statusLine.push(
         html`<a
           href=${`/config/entities/?historyBack=1&config_entry=${item.entry_id}`}
-          >${entities.length} entities</a
+          >${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.entities",
+            { count: entities.length }
+          )}</a
         >`
       );
     }
