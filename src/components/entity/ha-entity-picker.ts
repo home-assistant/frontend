@@ -121,6 +121,9 @@ export class HaEntityPicker extends LitElement {
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
+  @property({ attribute: "hide-copy-icon", type: Boolean })
+  public hideCopyIcon = false;
+
   @property({ attribute: "hide-clear-icon", type: Boolean })
   public hideClearIcon = false;
 
@@ -408,6 +411,7 @@ export class HaEntityPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .hideCopyIcon=${this.hideCopyIcon}
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
