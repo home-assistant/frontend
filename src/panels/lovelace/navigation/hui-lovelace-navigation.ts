@@ -64,213 +64,227 @@ export class HuiLovelaceNavigation extends LitElement {
   protected render(): TemplateResult | typeof nothing {
     const views = this.lovelace?.config.views ?? [];
 
-    const _isTabHiddenForUser = (view: LovelaceViewConfig) =>
-      view.visible !== undefined &&
-      ((Array.isArray(view.visible) &&
-        !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
-        view.visible === false);
-
-    const visibleViews = views.filter(
-      (view) => !view.subview && !_isTabHiddenForUser(view)
-    );
-
-    if (this.navigationConfig.mode === "mobile" && visibleViews.length <= 1) {
+    if (!this._shouldShowNavigation(views)) {
       return nothing;
     }
 
     return this.navigationConfig.mode === "desktop"
-      ? this._renderDesktopTabs(views, _isTabHiddenForUser)
-      : this._renderMobileTabs(views, _isTabHiddenForUser);
+      ? this._renderDesktopTabs(views)
+      : this._renderMobileTabs(views);
   }
 
-  private _renderDesktopTabs(
-    views: LovelaceViewConfig[],
-    _isTabHiddenForUser: (view: LovelaceViewConfig) => boolean
-  ): TemplateResult {
+  private _shouldShowNavigation(views: LovelaceViewConfig[]): boolean {
+    const visibleViews = views.filter(
+      (view) => !view.subview && !this._isTabHiddenForUser(view)
+    );
+    return !(
+      this.navigationConfig.mode === "mobile" && visibleViews.length <= 1
+    );
+  }
+
+  private _isTabHiddenForUser(view: LovelaceViewConfig): boolean {
+    return (
+      view.visible !== undefined &&
+      ((Array.isArray(view.visible) &&
+        !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
+        view.visible === false)
+    );
+  }
+
+  private _isViewHidden(view: LovelaceViewConfig): boolean {
+    return (
+      !this.navigationConfig.editMode &&
+      (view.subview || this._isTabHiddenForUser(view))
+    );
+  }
+
+  private _renderDesktopTabs(views: LovelaceViewConfig[]): TemplateResult {
     return html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
-      ${views.map((view, index) => {
-        const hidden =
-          !this.navigationConfig.editMode &&
-          (view.subview || _isTabHiddenForUser(view));
-        return html`
-          <sl-tab
-            slot="nav"
-            panel=${index}
-            .active=${this._curView === index}
-            .disabled=${hidden}
-            aria-label=${ifDefined(view.title)}
-            class=${classMap({
-              icon: Boolean(view.icon),
-              "hide-tab": Boolean(hidden),
-            })}
-          >
-            ${this._curView === index && this.navigationConfig.editMode
-              ? html`
-                  <ha-icon-button-arrow-prev
-                    .hass=${this.hass}
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.move_left"
-                    )}
-                    class="edit-icon view"
-                    @click=${this._moveViewLeft}
-                    .disabled=${this._curView === 0}
-                  ></ha-icon-button-arrow-prev>
-                `
-              : nothing}
-            ${view.icon
-              ? html`
-                  <ha-icon
-                    class=${classMap({
-                      "child-view-icon": Boolean(view.subview),
-                    })}
-                    title=${ifDefined(view.title)}
-                    .icon=${view.icon}
-                  ></ha-icon>
-                `
-              : view.title ||
-                this.hass.localize("ui.panel.lovelace.views.unnamed_view")}
-            ${this._curView === index && this.navigationConfig.editMode
-              ? html`
-                  <ha-icon-button
-                    .title=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.edit"
-                    )}
-                    class="edit-icon view"
-                    .path=${mdiPencil}
-                    @click=${this._editView}
-                  ></ha-icon-button>
-                  <ha-icon-button-arrow-next
-                    .hass=${this.hass}
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.move_right"
-                    )}
-                    class="edit-icon view"
-                    @click=${this._moveViewRight}
-                    .disabled=${(this._curView! as number) + 1 === views.length}
-                  ></ha-icon-button-arrow-next>
-                `
-              : nothing}
-          </sl-tab>
-        `;
-      })}
+      ${views.map((view, index) => this._renderTab(view, index, views.length))}
     </sl-tab-group>`;
   }
 
-  private _renderMobileTabs(
-    views: LovelaceViewConfig[],
-    _isTabHiddenForUser: (view: LovelaceViewConfig) => boolean
+  private _renderTab(
+    view: LovelaceViewConfig,
+    index: number,
+    totalViews: number
   ): TemplateResult {
-    if (this.navigationConfig.editMode) {
-      return html`<sl-tab-group @sl-tab-show=${this._handleViewSelected}>
-        ${views.map((view, index) => {
-          const hidden =
-            !this.navigationConfig.editMode &&
-            (view.subview || _isTabHiddenForUser(view));
-          return html`
-            <sl-tab
-              slot="nav"
-              panel=${index}
-              .active=${this._curView === index}
-              .disabled=${hidden}
-              aria-label=${ifDefined(view.title)}
-              class=${classMap({
-                icon: Boolean(view.icon),
-                "hide-tab": Boolean(hidden),
-              })}
-            >
-              ${this._curView === index
-                ? html`
-                    <ha-icon-button-arrow-prev
-                      .hass=${this.hass}
-                      .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.move_left"
-                      )}
-                      class="edit-icon view"
-                      @click=${this._moveViewLeft}
-                      .disabled=${this._curView === 0}
-                    ></ha-icon-button-arrow-prev>
-                  `
-                : nothing}
-              ${view.icon
-                ? html`
-                    <ha-icon
-                      class=${classMap({
-                        "child-view-icon": Boolean(view.subview),
-                      })}
-                      title=${ifDefined(view.title)}
-                      .icon=${view.icon}
-                    ></ha-icon>
-                  `
-                : view.title ||
-                  this.hass.localize("ui.panel.lovelace.views.unnamed_view")}
-              ${this._curView === index
-                ? html`
-                    <ha-icon-button
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.edit"
-                      )}
-                      class="edit-icon view"
-                      .path=${mdiPencil}
-                      @click=${this._editView}
-                    ></ha-icon-button>
-                    <ha-icon-button-arrow-next
-                      .hass=${this.hass}
-                      .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.move_right"
-                      )}
-                      class="edit-icon view"
-                      @click=${this._moveViewRight}
-                      .disabled=${(this._curView! as number) + 1 ===
-                      views.length}
-                    ></ha-icon-button-arrow-next>
-                  `
-                : nothing}
-            </sl-tab>
-          `;
+    const isActive = this._curView === index;
+    const hidden = this._isViewHidden(view);
+
+    return html`
+      <sl-tab
+        slot="nav"
+        panel=${index}
+        .active=${this._curView === index}
+        .disabled=${hidden}
+        aria-label=${ifDefined(view.title)}
+        class=${classMap({
+          icon: Boolean(view.icon),
+          "hide-tab": Boolean(hidden),
         })}
-      </sl-tab-group>`;
+      >
+        ${isActive && this.navigationConfig.editMode
+          ? this._renderEditControls(index, totalViews, "before")
+          : nothing}
+        ${this._renderTabContent(view)}
+        ${isActive && this.navigationConfig.editMode
+          ? this._renderEditControls(index, totalViews, "after")
+          : nothing}
+      </sl-tab>
+    `;
+  }
+
+  private _renderTabContent(view: LovelaceViewConfig): TemplateResult {
+    if (view.icon) {
+      return this._renderTabIcon(view);
+    }
+    return html`${this._getTabLabel(view)}`;
+  }
+
+  private _renderTabIcon(view: LovelaceViewConfig): TemplateResult {
+    return html`
+      <ha-icon
+        class=${classMap({
+          "child-view-icon": Boolean(view.subview),
+        })}
+        title=${ifDefined(view.title)}
+        .icon=${view.icon}
+      ></ha-icon>
+    `;
+  }
+
+  private _getTabLabel(view: LovelaceViewConfig): string {
+    return (
+      view.title || this.hass.localize("ui.panel.lovelace.views.unnamed_view")
+    );
+  }
+
+  private _renderEditControls(
+    index: number,
+    totalViews: number,
+    position: "before" | "after"
+  ): TemplateResult {
+    if (position === "before") {
+      return html`
+        <ha-icon-button-arrow-prev
+          .hass=${this.hass}
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.editor.edit_view.move_left"
+          )}
+          class="edit-icon view"
+          @click=${this._moveViewLeft}
+          .disabled=${index === 0}
+        ></ha-icon-button-arrow-prev>
+      `;
+    }
+
+    return html`
+      <ha-icon-button
+        .title=${this.hass!.localize("ui.panel.lovelace.editor.edit_view.edit")}
+        class="edit-icon view"
+        .path=${mdiPencil}
+        @click=${this._editView}
+      ></ha-icon-button>
+      <ha-icon-button-arrow-next
+        .hass=${this.hass}
+        .label=${this.hass!.localize(
+          "ui.panel.lovelace.editor.edit_view.move_right"
+        )}
+        class="edit-icon view"
+        @click=${this._moveViewRight}
+        .disabled=${index + 1 === totalViews}
+      ></ha-icon-button-arrow-next>
+    `;
+  }
+
+  private _renderMobileTabs(views: LovelaceViewConfig[]): TemplateResult {
+    const tabGroup = html`<sl-tab-group
+      @sl-tab-show=${this._handleViewSelected}
+    >
+      ${views.map((view, index) =>
+        this.navigationConfig.editMode
+          ? this._renderMobileEditTab(view, index, views.length)
+          : this._renderMobileTab(view, index)
+      )}
+    </sl-tab-group>`;
+
+    if (this.navigationConfig.editMode) {
+      return tabGroup;
     }
 
     return html`
       <div class="bottom-navigation-overlay">
-        <div class="bottom-navigation-mobile">
-          <sl-tab-group @sl-tab-show=${this._handleViewSelected}>
-            ${views.map((view, index) => {
-              const hidden =
-                !this.navigationConfig.editMode &&
-                (view.subview || _isTabHiddenForUser(view));
-              return html`
-                <sl-tab
-                  slot="nav"
-                  panel=${index}
-                  .active=${this._curView === index}
-                  .disabled=${hidden}
-                  aria-label=${ifDefined(view.title)}
-                  class=${classMap({
-                    icon: Boolean(view.icon),
-                    "hide-tab": Boolean(hidden),
-                  })}
-                >
-                  <div class="tab-content">
-                    <ha-icon
-                      class=${classMap({
-                        "child-view-icon": Boolean(view.subview),
-                      })}
-                      title=${ifDefined(view.title)}
-                      .icon=${view.icon || "mdi:help-box"}
-                    ></ha-icon>
-                    <span class="tab-title">
-                      ${view.title ||
-                      this.hass.localize(
-                        "ui.panel.lovelace.views.unnamed_view"
-                      )}
-                    </span>
-                  </div>
-                </sl-tab>
-              `;
-            })}
-          </sl-tab-group>
-        </div>
+        <div class="bottom-navigation-mobile">${tabGroup}</div>
+      </div>
+    `;
+  }
+
+  private _renderMobileEditTab(
+    view: LovelaceViewConfig,
+    index: number,
+    totalViews: number
+  ): TemplateResult {
+    const isActive = this._curView === index;
+    const hidden = this._isViewHidden(view);
+
+    return html`
+      <sl-tab
+        slot="nav"
+        panel=${index}
+        .active=${this._curView === index}
+        .disabled=${hidden}
+        aria-label=${ifDefined(view.title)}
+        class=${classMap({
+          icon: Boolean(view.icon),
+          "hide-tab": Boolean(hidden),
+        })}
+      >
+        ${isActive
+          ? this._renderEditControls(index, totalViews, "before")
+          : nothing}
+        ${this._renderTabContent(view)}
+        ${isActive
+          ? this._renderEditControls(index, totalViews, "after")
+          : nothing}
+      </sl-tab>
+    `;
+  }
+
+  private _renderMobileTab(
+    view: LovelaceViewConfig,
+    index: number
+  ): TemplateResult {
+    const hidden = this._isViewHidden(view);
+
+    return html`
+      <sl-tab
+        slot="nav"
+        panel=${index}
+        .active=${this._curView === index}
+        .disabled=${hidden}
+        aria-label=${ifDefined(view.title)}
+        class=${classMap({
+          icon: Boolean(view.icon),
+          "hide-tab": Boolean(hidden),
+        })}
+      >
+        ${this._renderMobileTabContent(view)}
+      </sl-tab>
+    `;
+  }
+
+  private _renderMobileTabContent(view: LovelaceViewConfig): TemplateResult {
+    return html`
+      <div class="tab-content">
+        <ha-icon
+          class=${classMap({
+            "child-view-icon": Boolean(view.subview),
+          })}
+          title=${ifDefined(view.title)}
+          .icon=${view.icon || "mdi:help-box"}
+        ></ha-icon>
+        <span class="tab-title"> ${this._getTabLabel(view)} </span>
       </div>
     `;
   }
