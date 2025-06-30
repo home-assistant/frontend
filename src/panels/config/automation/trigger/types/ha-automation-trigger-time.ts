@@ -2,11 +2,13 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimeTrigger } from "../../../../../data/automation";
+import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
@@ -14,6 +16,7 @@ import { computeDomain } from "../../../../../common/entity/compute_domain";
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";
 const VALID_DOMAINS = ["sensor", "input_datetime"];
+const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -35,9 +38,14 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
   private _schema = memoizeOne(
     (
       localize: LocalizeFunc,
+      locale: FrontendLocaleData,
       inputMode: typeof MODE_TIME | typeof MODE_ENTITY
-    ) =>
-      [
+    ) => {
+      const dayIndex = firstWeekdayIndex(locale);
+      const sortedDays = DAYS.slice(dayIndex, DAYS.length).concat(
+        DAYS.slice(0, dayIndex)
+      );
+      return [
         {
           name: "mode",
           type: "select",
@@ -73,7 +81,21 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
               },
               { name: "offset", selector: { text: {} } },
             ] as const)),
-      ] as const
+        {
+          type: "multi_select",
+          name: "weekday",
+          options: sortedDays.map(
+            (day) =>
+              [
+                day,
+                localize(
+                  `ui.panel.config.automation.editor.triggers.type.time.weekdays.${day}`
+                ),
+              ] as const
+          ),
+        },
+      ] as const;
+    }
   );
 
   public willUpdate(changedProperties: PropertyValues) {
@@ -95,12 +117,14 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       inputMode: undefined | typeof MODE_ENTITY | typeof MODE_TIME,
       at:
         | string
-        | { entity_id: string | undefined; offset?: string | undefined }
+        | { entity_id: string | undefined; offset?: string | undefined },
+      weekday: string | string[] | undefined
     ): {
       mode: typeof MODE_TIME | typeof MODE_ENTITY;
       entity: string | undefined;
       time: string | undefined;
       offset: string | undefined;
+      weekday: string | string[] | undefined;
     } => {
       const entity =
         typeof at === "object"
@@ -116,6 +140,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
         entity,
         time,
         offset,
+        weekday,
       };
     }
   );
@@ -127,8 +152,12 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       return nothing;
     }
 
-    const data = this._data(this._inputMode, at);
-    const schema = this._schema(this.hass.localize, data.mode);
+    const data = this._data(this._inputMode, at, this.trigger.weekday);
+    const schema = this._schema(
+      this.hass.localize,
+      this.hass.locale,
+      data.mode
+    );
 
     return html`
       <ha-form
@@ -146,22 +175,36 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     ev.stopPropagation();
     const newValue = { ...ev.detail.value };
     this._inputMode = newValue.mode;
+
+    const weekday = newValue.weekday;
+    delete newValue.weekday;
+
     if (newValue.mode === MODE_TIME) {
       delete newValue.entity;
       delete newValue.offset;
     } else {
       delete newValue.time;
     }
+
+    const triggerUpdate: TimeTrigger = {
+      ...this.trigger,
+      at: newValue.offset
+        ? {
+            entity_id: newValue.entity,
+            offset: newValue.offset,
+          }
+        : newValue.entity || newValue.time,
+    };
+
+    // Only include weekday if it has a value
+    if (weekday && weekday.length > 0) {
+      triggerUpdate.weekday = weekday;
+    } else {
+      delete triggerUpdate.weekday;
+    }
+
     fireEvent(this, "value-changed", {
-      value: {
-        ...this.trigger,
-        at: newValue.offset
-          ? {
-              entity_id: newValue.entity,
-              offset: newValue.offset,
-            }
-          : newValue.entity || newValue.time,
-      },
+      value: triggerUpdate,
     });
   }
 
@@ -172,6 +215,10 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
       case "time":
         return this.hass.localize(
           `ui.panel.config.automation.editor.triggers.type.time.at`
+        );
+      case "weekday":
+        return this.hass.localize(
+          `ui.panel.config.automation.editor.triggers.type.time.weekday`
         );
     }
     return this.hass.localize(
