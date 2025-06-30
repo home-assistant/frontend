@@ -171,7 +171,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     }
   );
 
-  private _floorMoved(ev) {
+  private _floorMoved(ev: CustomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
     const newIndex = ev.detail.newIndex;
     const oldIndex = ev.detail.oldIndex;
@@ -194,10 +194,10 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     fireEvent(this, "value-changed", { value: newValue });
   }
 
-  private async _areaDisplayChanged(ev) {
+  private async _areaDisplayChanged(ev: CustomEvent<{ value: DisplayValue }>) {
     ev.stopPropagation();
-    const value = ev.detail.value as DisplayValue;
-    const currentFloorId = ev.currentTarget.floorId;
+    const value = ev.detail.value;
+    const currentFloorId = (ev.currentTarget as any).floorId;
 
     const floorIds = this._sortedFloors(
       this.hass.floors,
