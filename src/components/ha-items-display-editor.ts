@@ -122,22 +122,6 @@ export class HaItemDisplayEditor extends LitElement {
                   ${description
                     ? html`<span slot="supporting-text">${description}</span>`
                     : nothing}
-                  ${isVisible && !disableSorting
-                    ? html`
-                        <ha-svg-icon
-                          tabindex=${ifDefined(
-                            this.showNavigationButton ? "0" : undefined
-                          )}
-                          .idx=${idx}
-                          @keydown=${this.showNavigationButton
-                            ? this._dragHandleKeydown
-                            : undefined}
-                          class="handle"
-                          .path=${mdiDrag}
-                          slot="start"
-                        ></ha-svg-icon>
-                      `
-                    : html`<ha-svg-icon slot="start"></ha-svg-icon>`}
                   ${!showIcon
                     ? nothing
                     : icon
@@ -162,6 +146,9 @@ export class HaItemDisplayEditor extends LitElement {
                         <span slot="end"> ${this.actionsRenderer(item)} </span>
                       `
                     : nothing}
+                  ${this.showNavigationButton
+                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                    : nothing}
                   <ha-icon-button
                     .path=${isVisible ? mdiEye : mdiEyeOff}
                     slot="end"
@@ -174,9 +161,22 @@ export class HaItemDisplayEditor extends LitElement {
                     .value=${value}
                     @click=${this._toggle}
                   ></ha-icon-button>
-                  ${this.showNavigationButton
-                    ? html` <ha-icon-next slot="end"></ha-icon-next> `
-                    : nothing}
+                  ${isVisible && !disableSorting
+                    ? html`
+                        <ha-svg-icon
+                          tabindex=${ifDefined(
+                            this.showNavigationButton ? "0" : undefined
+                          )}
+                          .idx=${idx}
+                          @keydown=${this.showNavigationButton
+                            ? this._dragHandleKeydown
+                            : undefined}
+                          class="handle"
+                          .path=${mdiDrag}
+                          slot="end"
+                        ></ha-svg-icon>
+                      `
+                    : html`<ha-svg-icon slot="end"></ha-svg-icon>`}
                 </ha-md-list-item>
               `;
             }
