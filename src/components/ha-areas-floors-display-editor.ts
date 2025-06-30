@@ -67,13 +67,17 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       hidden: this.value?.areas_display?.hidden ?? [],
     };
 
+    const canReorderFloors =
+      filteredFloors.filter((floor) => floor.floor_id !== UNASSIGNED_FLOOR)
+        .length > 1;
+
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-sortable
         draggable-selector=".draggable"
         handle-selector=".handle"
         @item-moved=${this._floorMoved}
-        .disabled=${this.disabled || !filteredFloors.length}
+        .disabled=${this.disabled || !canReorderFloors}
       >
         <div>
           ${repeat(
@@ -90,7 +94,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                   slot="leading-icon"
                   .floor=${floor}
                 ></ha-floor-icon>
-                ${floor.floor_id === UNASSIGNED_FLOOR
+                ${floor.floor_id === UNASSIGNED_FLOOR || !canReorderFloors
                   ? nothing
                   : html`
                       <ha-svg-icon
