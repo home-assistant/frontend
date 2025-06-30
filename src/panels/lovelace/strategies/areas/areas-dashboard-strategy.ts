@@ -22,6 +22,9 @@ export interface AreasDashboardStrategyConfig {
     hidden?: string[];
     order?: string[];
   };
+  floors_display?: {
+    order?: string[];
+  };
   areas_options?: Record<string, AreaOptions>;
 }
 
@@ -84,6 +87,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
             type: "areas-overview",
             areas_display: config.areas_display,
             areas_options: config.areas_options,
+            floors_display: config.floors_display,
           } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,

@@ -2,13 +2,14 @@ import { mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeFloorName } from "../common/entity/compute_floor_name";
 import { getAreaContext } from "../common/entity/context/get_area_context";
-import { stringCompare } from "../common/string/compare";
 import { areaCompare } from "../data/area_registry";
 import type { FloorRegistryEntry } from "../data/floor_registry";
+import { getFloors } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
 import type { HomeAssistant } from "../types";
 import "./ha-expansion-panel";
 import "./ha-floor-icon";
@@ -17,9 +18,14 @@ import type { DisplayItem, DisplayValue } from "./ha-items-display-editor";
 import "./ha-svg-icon";
 import "./ha-textfield";
 
-export interface AreasDisplayValue {
-  hidden?: string[];
-  order?: string[];
+export interface AreasFloorsDisplayValue {
+  areas_display?: {
+    hidden?: string[];
+    order?: string[];
+  };
+  floors_display?: {
+    order?: string[];
+  };
 }
 
 const UNASSIGNED_FLOOR = "__unassigned__";
@@ -30,11 +36,9 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public value?: AreasDisplayValue;
+  @property({ attribute: false }) public value?: AreasFloorsDisplayValue;
 
   @property() public helper?: string;
-
-  @property({ type: Boolean }) public expanded = false;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -44,55 +48,63 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
   public showNavigationButton = false;
 
   protected render(): TemplateResult {
-    const groupedItems = this._groupedItems(this.hass.areas, this.hass.floors);
+    const groupedAreasItems = this._groupedAreasItems(
+      this.hass.areas,
+      this.hass.floors
+    );
 
-    const filteredFloors = this._sortedFloors(this.hass.floors).filter(
+    const filteredFloors = this._sortedFloors(
+      this.hass.floors,
+      this.value?.floors_display?.order
+    ).filter(
       (floor) =>
         // Only include floors that have areas assigned to them
-        groupedItems[floor.floor_id]?.length > 0
+        groupedAreasItems[floor.floor_id]?.length > 0
     );
 
     const value: DisplayValue = {
-      order: this.value?.order ?? [],
-      hidden: this.value?.hidden ?? [],
+      order: this.value?.areas_display?.order ?? [],
+      hidden: this.value?.areas_display?.hidden ?? [],
     };
 
     return html`
-      <ha-expansion-panel
-        outlined
-        .header=${this.label}
-        .expanded=${this.expanded}
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      <ha-sortable
+        draggable-selector=".draggable"
+        @item-moved=${this._floorMoved}
+        .disabled=${this.disabled || !filteredFloors.length}
       >
-        <ha-svg-icon slot="leading-icon" .path=${mdiTextureBox}></ha-svg-icon>
-        ${filteredFloors.map((floor, _, array) => {
-          const noFloors =
-            array.length === 1 && floor.floor_id === UNASSIGNED_FLOOR;
-          return html`
-            <div class="floor">
-              ${noFloors
-                ? nothing
-                : html`<div class="header">
-                    <ha-floor-icon .floor=${floor}></ha-floor-icon>
-                    <p>${computeFloorName(floor)}</p>
-                  </div>`}
-              <div class="areas">
+        <div>
+          ${repeat(
+            filteredFloors,
+            (floor) => floor.floor_id,
+            (floor) => html`
+              <ha-expansion-panel
+                outlined
+                .header=${computeFloorName(floor)}
+                class=${floor.floor_id === UNASSIGNED_FLOOR ? "" : "draggable"}
+              >
+                <ha-floor-icon
+                  slot="leading-icon"
+                  .floor=${floor}
+                ></ha-floor-icon>
                 <ha-items-display-editor
                   .hass=${this.hass}
-                  .items=${groupedItems[floor.floor_id] || []}
+                  .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}
                   .floorId=${floor.floor_id ?? UNASSIGNED_FLOOR}
                   @value-changed=${this._areaDisplayChanged}
                   .showNavigationButton=${this.showNavigationButton}
                 ></ha-items-display-editor>
-              </div>
-            </div>
-          `;
-        })}
-      </ha-expansion-panel>
+              </ha-expansion-panel>
+            `
+          )}
+        </div>
+      </ha-sortable>
     `;
   }
 
-  private _groupedItems = memoizeOne(
+  private _groupedAreasItems = memoizeOne(
     (
       hassAreas: HomeAssistant["areas"],
       // update items if floors change
@@ -116,7 +128,6 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
             label: area.name,
             icon: area.icon ?? undefined,
             iconPath: mdiTextureBox,
-            description: floor?.name,
           });
 
           return acc;
@@ -128,18 +139,17 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
   );
 
   private _sortedFloors = memoizeOne(
-    (hassFloors: HomeAssistant["floors"]): FloorRegistryEntry[] => {
-      const floors = Object.values(hassFloors).sort((floorA, floorB) => {
-        if (floorA.level !== floorB.level) {
-          return (floorA.level ?? 0) - (floorB.level ?? 0);
-        }
-        return stringCompare(floorA.name, floorB.name);
-      });
+    (
+      hassFloors: HomeAssistant["floors"],
+      order: string[] | undefined
+    ): FloorRegistryEntry[] => {
+      const floors = getFloors(hassFloors, order);
+      const noFloors = floors.length === 0;
       floors.push({
         floor_id: UNASSIGNED_FLOOR,
-        name: this.hass.localize(
-          "ui.panel.lovelace.strategy.areas.others_areas"
-        ),
+        name: noFloors
+          ? this.hass.localize("ui.panel.lovelace.strategy.areas.areas")
+          : this.hass.localize("ui.panel.lovelace.strategy.areas.other_areas"),
         icon: null,
         level: null,
         aliases: [],
@@ -150,17 +160,43 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     }
   );
 
+  private _floorMoved(ev) {
+    ev.stopPropagation();
+    const newIndex = ev.detail.newIndex;
+    const oldIndex = ev.detail.oldIndex;
+    const floorIds = this._sortedFloors(
+      this.hass.floors,
+      this.value?.floors_display?.order
+    ).map((floor) => floor.floor_id);
+    const newOrder = [...floorIds];
+    const movedFloorId = newOrder.splice(oldIndex, 1)[0];
+    newOrder.splice(newIndex, 0, movedFloorId);
+    const newValue: AreasFloorsDisplayValue = {
+      areas_display: this.value?.areas_display,
+      floors_display: {
+        order: newOrder,
+      },
+    };
+    if (newValue.floors_display?.order?.length === 0) {
+      delete newValue.floors_display.order;
+    }
+    fireEvent(this, "value-changed", { value: newValue });
+  }
+
   private async _areaDisplayChanged(ev) {
     ev.stopPropagation();
     const value = ev.detail.value as DisplayValue;
     const currentFloorId = ev.currentTarget.floorId;
 
-    const floorIds = this._sortedFloors(this.hass.floors).map(
-      (floor) => floor.floor_id
-    );
+    const floorIds = this._sortedFloors(
+      this.hass.floors,
+      this.value?.floors_display?.order
+    ).map((floor) => floor.floor_id);
 
-    const oldHidden = this.value?.hidden ?? [];
-    const oldOrder = this.value?.order ?? [];
+    const oldAreaDisplay = this.value?.areas_display ?? {};
+
+    const oldHidden = oldAreaDisplay?.hidden ?? [];
+    const oldOrder = oldAreaDisplay?.order ?? [];
 
     const newHidden: string[] = [];
     const newOrder: string[] = [];
@@ -187,43 +223,38 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       }
     }
 
-    const newValue: AreasDisplayValue = {
-      hidden: newHidden,
-      order: newOrder,
+    const newValue: AreasFloorsDisplayValue = {
+      areas_display: {
+        hidden: newHidden,
+        order: newOrder,
+      },
+      floors_display: this.value?.floors_display,
     };
-    if (newValue.hidden?.length === 0) {
-      delete newValue.hidden;
+    if (newValue.areas_display?.hidden?.length === 0) {
+      delete newValue.areas_display.hidden;
     }
-    if (newValue.order?.length === 0) {
-      delete newValue.order;
+    if (newValue.areas_display?.order?.length === 0) {
+      delete newValue.areas_display.order;
     }
-    this.value = newValue;
+    if (newValue.floors_display?.order?.length === 0) {
+      delete newValue.floors_display.order;
+    }
+
     fireEvent(this, "value-changed", { value: newValue });
   }
 
   static styles = css`
-    .floor .header p {
-      margin: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      flex: 1;
-    }
-    .floor .header {
-      margin: 16px 0 8px 0;
-      padding: 0 8px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 8px;
-    }
     ha-expansion-panel {
       margin-bottom: 8px;
       --expansion-panel-summary-padding: 0 16px;
     }
     ha-expansion-panel [slot="leading-icon"] {
       margin-inline-end: 16px;
+    }
+    label {
+      display: block;
+      font-weight: var(--ha-font-weight-bold);
+      margin-bottom: 8px;
     }
   `;
 }
