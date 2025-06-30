@@ -51,7 +51,7 @@ export const haTheme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
-      "var(--code-editor-background-color, var(--mdc-text-field-fill-color, whitesmoke))",
+      "var(--code-editor-background-color, var(--card-background-color))",
     borderRadius:
       "var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0px 0px",
     caretColor: "var(--secondary-text-color)",
