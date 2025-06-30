@@ -5383,6 +5383,7 @@
               "confirm_disable_title": "Disable device?",
               "confirm_disable_message": "Are you sure you want to disable {name} and all of its entities?",
               "configure": "Configure device",
+              "edit": "Edit device",
               "delete": "Remove device"
             },
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
