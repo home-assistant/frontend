@@ -7199,6 +7199,9 @@
                 "above": "Above",
                 "below": "Below"
               },
+              "last_changed_state": {
+                "label": "Last entity change"
+              },
               "screen": {
                 "label": "Screen",
                 "breakpoints": "Screen sizes",
