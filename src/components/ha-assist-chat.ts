@@ -603,8 +603,16 @@ export class HaAssistChat extends LitElement {
       }
     }
 
-    .message code {
-      background-color: none;
+    .message {
+      code {
+        background-color: none;
+      }
+      img {
+        border-radius: 8px;
+      }
+      th {
+        text-align: left;
+      }
     }
 
     .message.user {
