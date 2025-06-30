@@ -1,4 +1,4 @@
-import { mdiTextureBox } from "@mdi/js";
+import { mdiDrag, mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -71,6 +71,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-sortable
         draggable-selector=".draggable"
+        handle-selector=".handle"
         @item-moved=${this._floorMoved}
         .disabled=${this.disabled || !filteredFloors.length}
       >
@@ -78,21 +79,31 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
           ${repeat(
             filteredFloors,
             (floor) => floor.floor_id,
-            (floor) => html`
+            (floor: FloorRegistryEntry) => html`
               <ha-expansion-panel
                 outlined
                 .header=${computeFloorName(floor)}
+                left-chevron
                 class=${floor.floor_id === UNASSIGNED_FLOOR ? "" : "draggable"}
               >
                 <ha-floor-icon
                   slot="leading-icon"
                   .floor=${floor}
                 ></ha-floor-icon>
+                ${floor.floor_id === UNASSIGNED_FLOOR
+                  ? nothing
+                  : html`
+                      <ha-svg-icon
+                        class="handle"
+                        slot="icons"
+                        .path=${mdiDrag}
+                      ></ha-svg-icon>
+                    `}
                 <ha-items-display-editor
                   .hass=${this.hass}
                   .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}
-                  .floorId=${floor.floor_id ?? UNASSIGNED_FLOOR}
+                  .floorId=${floor.floor_id}
                   @value-changed=${this._areaDisplayChanged}
                   .showNavigationButton=${this.showNavigationButton}
                 ></ha-items-display-editor>
