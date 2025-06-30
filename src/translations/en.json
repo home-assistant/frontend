@@ -1351,6 +1351,7 @@
         "info": "Information",
         "related": "Related",
         "history": "History",
+        "group": "Group",
         "logbook": "Logbook",
         "device_info": "Device info",
         "last_changed": "Last changed",
