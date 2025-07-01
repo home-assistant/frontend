@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
@@ -14,6 +14,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import { domainColorProperties } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { forwardHaptic } from "../../../data/haptics";
