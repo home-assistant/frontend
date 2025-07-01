@@ -782,6 +782,7 @@ class HUIRoot extends LitElement {
 
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
+        title: this.panel ? getPanelTitle(this.hass, this.panel) : undefined,
         saveConfig: this.lovelace!.saveConfig,
         takeControl: () => {
           showSaveDialog(this, {
