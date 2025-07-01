@@ -432,7 +432,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         )}
                       </div>`
                     : nothing}
-                  ${this._manifest?.quality_scale &&
+                  ${this._manifest?.is_built_in &&
+                  this._manifest.quality_scale &&
                   Object.keys(QUALITY_SCALE_MAP).includes(
                     this._manifest.quality_scale
                   )

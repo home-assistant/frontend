@@ -122,11 +122,7 @@ export class HaObjectSelector extends LitElement {
   }
 
   protected render() {
-    if (!this.selector.object) {
-      return nothing;
-    }
-
-    if (this.selector.object.fields) {
+    if (this.selector.object?.fields) {
       if (this.selector.object.multiple) {
         const items = ensureArray(this.value ?? []);
         return html`

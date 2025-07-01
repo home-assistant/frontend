@@ -1,4 +1,4 @@
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
@@ -56,6 +56,12 @@ export class HuiCardFeature extends LitElement {
     }
     return html`${element}`;
   }
+
+  static styles = css`
+    :host > * {
+      pointer-events: auto;
+    }
+  `;
 }
 
 declare global {

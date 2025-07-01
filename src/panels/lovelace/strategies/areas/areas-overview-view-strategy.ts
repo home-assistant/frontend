@@ -1,6 +1,5 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { stringCompare } from "../../../../common/string/compare";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
@@ -9,7 +8,11 @@ import { getAreaControlEntities } from "../../card-features/hui-area-controls-ca
 import { AREA_CONTROLS, type AreaControl } from "../../card-features/types";
 import type { AreaCardConfig, HeadingCardConfig } from "../../cards/types";
 import type { EntitiesDisplay } from "./area-view-strategy";
-import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
+import {
+  computeAreaPath,
+  getAreas,
+  getFloors,
+} from "./helpers/areas-strategy-helper";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -21,6 +24,9 @@ export interface AreasViewStrategyConfig {
   type: "areas-overview";
   areas_display?: {
     hidden?: string[];
+    order?: string[];
+  };
+  floors_display?: {
     order?: string[];
   };
   areas_options?: Record<string, AreaOptions>;
@@ -38,19 +44,13 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
       config.areas_display?.order
     );
 
-    const floors = Object.values(hass.floors);
-    floors.sort((floorA, floorB) => {
-      if (floorA.level !== floorB.level) {
-        return (floorA.level ?? 0) - (floorB.level ?? 0);
-      }
-      return stringCompare(floorA.name, floorB.name);
-    });
+    const floors = getFloors(hass.floors, config.floors_display?.order);
 
     const floorSections = [
       ...floors,
       {
         floor_id: UNASSIGNED_FLOOR,
-        name: hass.localize("ui.panel.lovelace.strategy.areas.others_areas"),
+        name: hass.localize("ui.panel.lovelace.strategy.areas.other_areas"),
         level: null,
         icon: null,
       },

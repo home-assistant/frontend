@@ -1,4 +1,4 @@
-import { callService, type HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "./compute_state_domain";
 import { isUnavailableState, UNAVAILABLE } from "../../data/entity";
 import type { HomeAssistant } from "../../types";
@@ -62,7 +62,7 @@ export const toggleGroupEntities = (
 
   const entitiesIds = states.map((stateObj) => stateObj.entity_id);
 
-  callService(hass.connection, domain, service, {
+  hass.callService(domain, service, {
     entity_id: entitiesIds,
   });
 };
