@@ -1,5 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
+import { classMap } from "lit/directives/class-map";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -229,7 +230,11 @@ class HuiAreaControlsCardFeature
     }
 
     return html`
-      <ha-control-button-group ?no-stretch=${this.position === "inline"}>
+      <ha-control-button-group
+        class=${classMap({
+          "no-stretch": this.position === "inline",
+        })}
+      >
         ${displayControls.map((control) => {
           const button = AREA_CONTROLS_BUTTONS[control];
 
@@ -292,8 +297,22 @@ class HuiAreaControlsCardFeature
     return [
       cardFeatureStyles,
       css`
+        :host {
+          pointer-events: none !important;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+        }
         ha-control-button-group {
-          --control-button-group-alignment: flex-end;
+          pointer-events: auto;
+          width: 100%;
+        }
+        ha-control-button-group.no-stretch {
+          width: auto;
+          max-width: 100%;
+        }
+        ha-control-button-group.no-stretch > ha-control-button {
+          width: 48px;
         }
         ha-control-button {
           --active-color: var(--state-active-color);

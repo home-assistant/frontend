@@ -26,7 +26,6 @@ export class HaControlButtonGroup extends LitElement {
     .container {
       display: flex;
       flex-direction: row;
-      justify-content: var(--control-button-group-alignment, start);
       width: 100%;
       height: 100%;
     }
