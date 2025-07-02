@@ -10,7 +10,7 @@ import {
   mdiPlusCircle,
   mdiRestore,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -273,7 +273,7 @@ export class HaConfigDevicePage extends LitElement {
       findBatteryChargingEntity(this.hass, entities)
   );
 
-  public willUpdate(changedProps) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -285,10 +285,9 @@ export class HaConfigDevicePage extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
-    this._fetchData();
   }
 
   protected updated(changedProps) {
