@@ -252,7 +252,7 @@ export class HaMediaSelector extends LitElement {
       width: 100%;
       box-sizing: border-box;
       cursor: pointer;
-      transition: all 180ms ease-in-out;
+      transition: background-color 180ms ease-in-out;
       min-height: 56px;
     }
     ha-card:hover:not(.disabled),
