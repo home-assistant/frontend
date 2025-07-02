@@ -587,13 +587,13 @@ export class HaAssistChat extends LitElement {
       flex: 1;
     }
     .message {
+      white-space: pre-line;
+      white-space-collapse: collapse;
       font-size: var(--ha-font-size-l);
       clear: both;
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;
-      white-space: pre-line;
-      white-space-collapse: collapse;
       code {
         background-color: none;
       }
