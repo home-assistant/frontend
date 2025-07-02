@@ -1166,6 +1166,10 @@ export class HaConfigDevicePage extends LitElement {
 
       // load matter device actions async to avoid an UI with 0 actions when the matter integration needs very long to get node diagnostics
       matter.getMatterDeviceActions(this, this.hass, device).then((actions) => {
+        if (this.deviceId !== deviceId) {
+          // abort if the device has changed
+          return;
+        }
         this._deviceActions = [...actions, ...(this._deviceActions || [])];
       });
     }
