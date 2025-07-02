@@ -276,11 +276,14 @@ export class HaConfigDevicePage extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (changedProps.has("deviceId") || changedProps.has("entries")) {
+    if (changedProps.has("deviceId")) {
       this._deviceActions = [];
       this._deviceAlerts = [];
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
+    }
+
+    if (changedProps.has("deviceId") || changedProps.has("entries")) {
       this._fetchData();
     }
   }
