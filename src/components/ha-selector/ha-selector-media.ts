@@ -24,6 +24,10 @@ const MANUAL_SCHEMA = [
   { name: "media_content_type", required: false, selector: { text: {} } },
 ] as const;
 
+const INCLUDE_DOMAINS = ["media_player"];
+
+const EMPTY_FORM = {};
+
 @customElement("ha-selector-media")
 export class HaMediaSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -84,7 +88,7 @@ export class HaMediaSelector extends LitElement {
       (stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
-    const hasAccept = this.selector.media?.accept?.length;
+    const hasAccept = this.selector?.media?.accept?.length;
 
     return html`
       ${hasAccept
@@ -100,7 +104,7 @@ export class HaMediaSelector extends LitElement {
               .disabled=${this.disabled}
               .helper=${this.helper}
               .required=${this.required}
-              .includeDomains=${["media_player"]}
+              .includeDomains=${INCLUDE_DOMAINS}
               allow-custom-entity
               @value-changed=${this._entityChanged}
             ></ha-entity-picker>
@@ -114,7 +118,7 @@ export class HaMediaSelector extends LitElement {
             </ha-alert>
             <ha-form
               .hass=${this.hass}
-              .data=${this.value || {}}
+              .data=${this.value || EMPTY_FORM}
               .schema=${MANUAL_SCHEMA}
               .computeLabel=${this._computeLabelCallback}
             ></ha-form>
