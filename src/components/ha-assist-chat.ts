@@ -592,6 +592,8 @@ export class HaAssistChat extends LitElement {
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;
+      white-space: pre-line;
+      white-space-collapse: collapse;
       code {
         background-color: none;
       }
