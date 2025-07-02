@@ -25,9 +25,6 @@ export const cardFeatureStyles = css`
     flex-basis: 20px;
     --control-button-padding: 0px;
   }
-  ha-control-button-group[no-stretch] > ha-control-button {
-    max-width: 48px;
-  }
   ha-control-button {
     --control-button-focus-color: var(--feature-color);
   }
