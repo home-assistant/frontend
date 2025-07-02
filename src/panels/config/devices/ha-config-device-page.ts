@@ -988,6 +988,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _getDeleteActions() {
+    const deviceId = this.deviceId;
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1057,12 +1058,18 @@ export class HaConfigDevicePage extends LitElement {
       }
     );
 
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
+      return;
+    }
+
     if (buttons.length > 0) {
       this._deleteButtons = buttons;
     }
   }
 
   private async _getDeviceActions() {
+    const deviceId = this.deviceId;
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1160,10 +1167,17 @@ export class HaConfigDevicePage extends LitElement {
       });
     }
 
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
+      return;
+    }
+
     this._deviceActions = deviceActions;
   }
 
   private async _getDeviceAlerts() {
+    const deviceId = this.deviceId;
+
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1185,6 +1199,11 @@ export class HaConfigDevicePage extends LitElement {
 
       const alerts = await zwave.getZwaveDeviceAlerts(this.hass, device);
       deviceAlerts.push(...alerts);
+    }
+
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
+      return;
     }
 
     this._deviceAlerts = deviceAlerts;
