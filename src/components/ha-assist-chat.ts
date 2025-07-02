@@ -592,18 +592,6 @@ export class HaAssistChat extends LitElement {
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;
-    }
-    .message:last-child {
-      margin-bottom: 0;
-    }
-
-    @media all and (max-width: 450px), all and (max-height: 500px) {
-      .message {
-        font-size: var(--ha-font-size-l);
-      }
-    }
-
-    .message {
       code {
         background-color: none;
       }
@@ -612,6 +600,15 @@ export class HaAssistChat extends LitElement {
       }
       th {
         text-align: left;
+      }
+    }
+    .message:last-child {
+      margin-bottom: 0;
+    }
+
+    @media all and (max-width: 450px), all and (max-height: 500px) {
+      .message {
+        font-size: var(--ha-font-size-l);
       }
     }
 
