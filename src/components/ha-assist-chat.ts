@@ -587,22 +587,23 @@ export class HaAssistChat extends LitElement {
       flex: 1;
     }
     .message {
-      white-space: pre-line;
-      white-space-collapse: collapse;
       font-size: var(--ha-font-size-l);
       clear: both;
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;
-      code {
-        background-color: none;
-      }
-      img {
-        border-radius: 8px;
-      }
-      th {
-        text-align: left;
-      }
+    }
+    .message code {
+      background-color: none;
+    }
+    .message img {
+      border-radius: 8px;
+    }
+    .message th {
+      text-align: left;
+    }
+    .message p {
+      margin: 0;
     }
     .message:last-child {
       margin-bottom: 0;
