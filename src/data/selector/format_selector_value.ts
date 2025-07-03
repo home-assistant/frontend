@@ -81,7 +81,11 @@ export const formatSelectorValue = (
         }
         const { device } = getEntityContext(stateObj, hass);
         const deviceName = device ? computeDeviceName(device) : undefined;
-        const entityName = computeEntityName(stateObj, hass);
+        const entityName = computeEntityName(
+          stateObj,
+          hass.entities,
+          hass.devices
+        );
         return [deviceName, entityName].filter(Boolean).join(" ") || entityId;
       })
       .join(", ");

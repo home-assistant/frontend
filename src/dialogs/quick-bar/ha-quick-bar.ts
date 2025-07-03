@@ -638,7 +638,11 @@ export class QuickBar extends LitElement {
         const { area, device } = getEntityContext(stateObj, this.hass);
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = computeEntityName(stateObj, this.hass);
+        const entityName = computeEntityName(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices
+        );
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
 

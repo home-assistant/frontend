@@ -329,9 +329,9 @@ export class MoreInfoDialog extends LitElement {
         : undefined;
 
     const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass)
+      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
       : this._entry
-        ? computeEntityEntryName(this._entry, this.hass)
+        ? computeEntityEntryName(this._entry, this.hass.devices)
         : entityId;
 
     const deviceName = context?.device
