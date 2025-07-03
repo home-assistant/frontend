@@ -2,6 +2,11 @@ import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../data/translation";
 import type { HomeAssistant } from "../../types";
 import type { LocalizeFunc } from "./localize";
+import { computeEntityName } from "../entity/compute_entity_name";
+import { computeDeviceName } from "../entity/compute_device_name";
+import { getEntityContext } from "../entity/context/get_entity_context";
+import { computeAreaName } from "../entity/compute_area_name";
+import { computeFloorName } from "../entity/compute_floor_name";
 
 export type FormatEntityStateFunc = (
   stateObj: HassEntity,
@@ -17,16 +22,28 @@ export type FormatEntityAttributeNameFunc = (
   attribute: string
 ) => string;
 
+export type EntityNameToken = "entity" | "device" | "area" | "floor";
+
+export type FormatEntityNameFunc = (
+  stateObj: HassEntity,
+  tokens: EntityNameToken[],
+  separator?: string
+) => string;
+
 export const computeFormatFunctions = async (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig,
   entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"],
   sensorNumericDeviceClasses: string[]
 ): Promise<{
   formatEntityState: FormatEntityStateFunc;
   formatEntityAttributeValue: FormatEntityAttributeValueFunc;
   formatEntityAttributeName: FormatEntityAttributeNameFunc;
+  formatEntityName: FormatEntityNameFunc;
 }> => {
   const { computeStateDisplay } = await import(
     "../entity/compute_state_display"
@@ -57,5 +74,44 @@ export const computeFormatFunctions = async (
       ),
     formatEntityAttributeName: (stateObj, attribute) =>
       computeAttributeNameDisplay(localize, stateObj, entities, attribute),
+    formatEntityName: (stateObj, tokens, separator = " ") => {
+      const namesList: (string | undefined)[] = [];
+
+      const { device, area, floor } = getEntityContext(
+        stateObj,
+        entities,
+        devices,
+        areas,
+        floors
+      );
+
+      for (const token of tokens) {
+        switch (token) {
+          case "entity": {
+            namesList.push(computeEntityName(stateObj, entities, devices));
+            break;
+          }
+          case "device": {
+            if (device) {
+              namesList.push(computeDeviceName(device));
+            }
+            break;
+          }
+          case "area": {
+            if (area) {
+              namesList.push(computeAreaName(area));
+            }
+            break;
+          }
+          case "floor": {
+            if (floor) {
+              namesList.push(computeFloorName(floor));
+            }
+            break;
+          }
+        }
+      }
+      return namesList.filter(Boolean).join(separator);
+    },
   };
 };
