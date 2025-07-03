@@ -339,6 +339,10 @@
           "on": "Turn on area switches",
           "off": "Turn off area switches"
         },
+        "media-player": {
+          "on": "Turn on area media players",
+          "off": "Turn off area media players"
+        },
         "cover-awning": {
           "on": "Open area awnings",
           "off": "Close area awnings"

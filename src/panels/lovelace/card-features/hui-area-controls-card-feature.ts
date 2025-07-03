@@ -66,6 +66,14 @@ export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
       domain: "switch",
     },
   },
+  "media-player": {
+    // Overrides the icons for media players
+    offIcon: "mdi:speaker-off",
+    onIcon: "mdi:speaker",
+    filter: {
+      domain: "media_player",
+    },
+  },
   "cover-blind": coverButton("blind"),
   "cover-curtain": coverButton("curtain"),
   "cover-damper": coverButton("damper"),
