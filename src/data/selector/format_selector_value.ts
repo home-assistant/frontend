@@ -1,8 +1,5 @@
 import { ensureArray } from "../../common/array/ensure-array";
 import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../common/entity/compute_device_name";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import type { HomeAssistant } from "../../types";
 import type { Selector } from "../selector";
@@ -79,20 +76,8 @@ export const formatSelectorValue = (
         if (!stateObj) {
           return entityId;
         }
-        const { device } = getEntityContext(
-          stateObj,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        );
-        const deviceName = device ? computeDeviceName(device) : undefined;
-        const entityName = computeEntityName(
-          stateObj,
-          hass.entities,
-          hass.devices
-        );
-        return [deviceName, entityName].filter(Boolean).join(" ") || entityId;
+        const name = hass.formatEntityName(stateObj, ["device", "entity"], " ");
+        return name || entityId;
       })
       .join(", ");
   }

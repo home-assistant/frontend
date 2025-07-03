@@ -7,6 +7,7 @@ import { computeDeviceName } from "../entity/compute_device_name";
 import { getEntityContext } from "../entity/context/get_entity_context";
 import { computeAreaName } from "../entity/compute_area_name";
 import { computeFloorName } from "../entity/compute_floor_name";
+import { ensureArray } from "../array/ensure-array";
 
 export type FormatEntityStateFunc = (
   stateObj: HassEntity,
@@ -22,11 +23,11 @@ export type FormatEntityAttributeNameFunc = (
   attribute: string
 ) => string;
 
-export type EntityNameToken = "entity" | "device" | "area" | "floor";
+export type EntityNameType = "entity" | "device" | "area" | "floor";
 
 export type FormatEntityNameFunc = (
   stateObj: HassEntity,
-  tokens: EntityNameToken[],
+  type: EntityNameType | EntityNameType[],
   separator?: string
 ) => string;
 
@@ -74,7 +75,8 @@ export const computeFormatFunctions = async (
       ),
     formatEntityAttributeName: (stateObj, attribute) =>
       computeAttributeNameDisplay(localize, stateObj, entities, attribute),
-    formatEntityName: (stateObj, tokens, separator = " ") => {
+    formatEntityName: (stateObj, type, separator = " ") => {
+      const types = ensureArray(type);
       const namesList: (string | undefined)[] = [];
 
       const { device, area, floor } = getEntityContext(
@@ -85,8 +87,8 @@ export const computeFormatFunctions = async (
         floors
       );
 
-      for (const token of tokens) {
-        switch (token) {
+      for (const t of types) {
+        switch (t) {
           case "entity": {
             namesList.push(computeEntityName(stateObj, entities, devices));
             break;
@@ -111,7 +113,7 @@ export const computeFormatFunctions = async (
           }
         }
       }
-      return namesList.filter(Boolean).join(separator);
+      return namesList.filter((name) => name !== undefined).join(separator);
     },
   };
 };
