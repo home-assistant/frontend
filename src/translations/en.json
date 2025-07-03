@@ -6174,10 +6174,10 @@
                 "1": "The required security keys were not configured in the driver.",
                 "2": "No Security S2 user callbacks (or provisioning info) were provided to grant security classes and/or validate the DSK.",
                 "3": "An expected message was not received within the corresponding timeout.",
-                "4": "There was no possible match in encryption parameters between the adapter and the node.",
+                "4": "There was no possible match in encryption parameters between the controller and the node.",
                 "5": "Security bootstrapping was canceled by the included node.",
                 "6": "The PIN was incorrect, so the included node could not decode the key exchange commands.",
-                "7": "There was a mismatch in security keys between the adapter and the node.",
+                "7": "There was a mismatch in security keys between the controller and the node.",
                 "8": "Unknown error occurred."
               }
             },
