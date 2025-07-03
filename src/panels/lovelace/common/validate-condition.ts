@@ -150,6 +150,10 @@ function checkLastChangedStateCondition(
   const state_last_changed = (
     condition.entity ? hass.states[condition.entity] : undefined
   )?.last_changed;
+  if (state_last_changed === undefined) {
+    return false;
+  }
+
   const within = condition.within;
   const after = condition.after;
 
