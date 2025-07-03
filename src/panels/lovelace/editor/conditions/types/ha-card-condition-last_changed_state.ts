@@ -72,15 +72,11 @@ export class HaCardConditionLastChangedState extends LitElement {
   );
 
   protected render() {
-    const stateObj = this.condition.entity
-      ? this.hass.states[this.condition.entity]
-      : undefined;
-
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this.condition}
-        .schema=${this._schema(stateObj)}
+        .schema=${this._schema()}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
         .computeLabel=${this._computeLabelCallback}
