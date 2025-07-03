@@ -266,8 +266,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         class=${classMap({
-          [this._sizeController.value?.height]: true,
-          [this._sizeController.value?.width]: true,
+          [this._sizeController.value?.height]: Boolean(this._sizeController.value),
+          [this._sizeController.value?.width]: Boolean(this._sizeController.value),
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
