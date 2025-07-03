@@ -5890,7 +5890,7 @@
             "not_ready": "{count} not ready",
             "nvm_backup": {
               "title": "Backup and restore",
-              "description": "Back up or restore your Z-Wave controller's non-volatile memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
+              "description": "Back up or restore your Z-Wave adapter's non-volatile memory (NVM). The NVM contains your network information including paired devices. It's recommended to create a backup before making any major changes to your Z-Wave network.",
               "download_backup": "Download backup",
               "restore_backup": "Restore from backup",
               "backup_failed": "Failed to download backup",
@@ -5898,21 +5898,21 @@
               "restore_failed": "Failed to restore backup",
               "creating": "Creating backup",
               "restoring": "Restoring backup",
-              "migrate": "Migrate controller"
+              "migrate": "Migrate adapter"
             },
             "statistics": {
-              "title": "Controller statistics",
+              "title": "Adapter statistics",
               "messages_tx": {
                 "label": "Messages TX",
-                "tooltip": "Number of messages successfully sent to the controller"
+                "tooltip": "Number of messages successfully sent to the adapter"
               },
               "messages_rx": {
                 "label": "Messages RX",
-                "tooltip": "Number of messages successfully received by the controller"
+                "tooltip": "Number of messages successfully received by the adapter"
               },
               "messages_dropped_tx": {
                 "label": "Dropped messages TX",
-                "tooltip": "Number of messages from the controller that were dropped by the host"
+                "tooltip": "Number of messages from the adapter that were dropped by the host"
               },
               "messages_dropped_rx": {
                 "label": "Dropped messages RX",
@@ -5920,23 +5920,23 @@
               },
               "nak": {
                 "label": "NAK",
-                "tooltip": "Number of messages that the controller did not accept"
+                "tooltip": "Number of messages that the adapter did not accept"
               },
               "can": {
                 "label": "CAN",
-                "tooltip": "Number of collisions while sending a message to the controller"
+                "tooltip": "Number of collisions while sending a message to the adapter"
               },
               "timeout_ack": {
                 "label": "Timeout ACK",
-                "tooltip": "Number of transmission attempts where an ACK was missing from the controller"
+                "tooltip": "Number of transmission attempts where an ACK was missing from the adapter"
               },
               "timeout_response": {
                 "label": "Timeout response",
-                "tooltip": "Number of transmission attempts where the controller response did not come in time"
+                "tooltip": "Number of transmission attempts where the adapter response did not come in time"
               },
               "timeout_callback": {
                 "label": "Timeout callback",
-                "tooltip": "Number of transmission attempts where the controller callback did not come in time"
+                "tooltip": "Number of transmission attempts where the adapter callback did not come in time"
               }
             }
           },
@@ -5959,18 +5959,18 @@
           },
           "hard_reset_controller": {
             "NotStarted": {
-              "title": "Reset controller to factory settings",
-              "body": "If you decide to move forward, you will reset your controller to factory settings. As a result, the controller will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the controller when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
+              "title": "Reset adapter to factory settings",
+              "body": "If you decide to move forward, you will reset your adapter to factory settings. As a result, the adapter will forget all devices it is paired with and all Z-Wave devices for this network will be removed from Home Assistant. If there are any devices still paired with the adapter when it is reset, they will have to go through the exclusion process before they can be re-paired. Would you like to continue?"
             },
             "InProgress": {
-              "title": "Resetting controller",
-              "body": "Your controller is being reset and restarted. Wait until the process is complete before closing this dialog"
+              "title": "Resetting adapter",
+              "body": "Your adapter is being reset and restarted. Wait until the process is complete before closing this dialog"
             },
             "Done": {
-              "title": "Controller reset complete",
-              "body": "Your controller has been reset to factory settings and has been restarted! You can now close this dialog."
+              "title": "Adapter reset complete",
+              "body": "Your adapter has been reset to factory settings and has been restarted! You can now close this dialog."
             },
-            "confirmation": "This action cannot be undone unless you have an NVM backup from your controller."
+            "confirmation": "This action cannot be undone unless you have a backup from your adapter."
           },
           "node_statistics": {
             "title": "Device statistics",
@@ -6035,7 +6035,7 @@
             },
             "rssi": {
               "label": "RSSI",
-              "tooltip": "The RSSI of the ACK frame received by the controller"
+              "tooltip": "The RSSI of the ACK frame received by the adapter"
             },
             "route_failed_between": {
               "label": "Route failed between",
@@ -6254,7 +6254,7 @@
           },
           "rebuild_node_routes": {
             "title": "Rebuild routes for a Z-Wave device",
-            "introduction": "Tell {device} to update its routes back to the controller. This can help with communication issues if you have recently moved the device or your controller.",
+            "introduction": "Assign new routes between {device} and the adapter. This can help with communication issues if you have recently moved the device or your adapter.",
             "traffic_warning": "The route rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuilding is in progress.",
             "start_rebuilding_routes": "Rebuild Routes for Device",
             "rebuilding_routes_failed": "{device} routes could not be rebuild.",
@@ -6266,7 +6266,7 @@
           "update_firmware": {
             "title": "Update device firmware",
             "warning": "WARNING: Firmware updates can brick your device if you do not correctly follow the manufacturer's guidance. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your device as a result of the firmware update and will not be able to help you if you brick your device. Would you still like to continue?",
-            "warning_controller": "WARNING: Firmware updates can brick your controller if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your controller as a result of the firmware update and will not be able to help you if you brick your controller. Would you still like to continue?",
+            "warning_controller": "WARNING: Firmware updates can brick your adapter if you do not use the right firmware files, or if you attempt to stop the firmware update before it completes. The Home Assistant and Z-Wave JS teams do not take any responsibility for any damages to your adapter as a result of the firmware update and will not be able to help you if you brick your adapter. Would you still like to continue?",
             "introduction": "Select the firmware file you would like to use to update {device}.",
             "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
             "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update.",
@@ -6287,7 +6287,7 @@
               "error": "Unable to update firmware on {device}: {message}.",
               "try_again": "To attempt the firmware update again, select the new firmware file you would like to use.",
               "done": "The firmware update is complete! If you want to attempt another firmware update on this device, please wait until it gets re-interviewed.",
-              "done_controller": "The firmware update is complete! Your controller is being restarted and your network will temporarily be unavailable.",
+              "done_controller": "The firmware update is complete! Your adapter is being restarted and your network will temporarily be unavailable.",
               "Error_Timeout": "Timed out",
               "Error_Checksum": "Checksum error",
               "Error_TransmissionFailed": "Transmission failed",
