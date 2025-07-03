@@ -23,14 +23,8 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/context/get_entity_context";
+import { computeEntityEntryName } from "../../common/entity/compute_entity_name";
+import { getEntityEntryContext } from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -322,34 +316,30 @@ export class MoreInfoDialog extends LitElement {
       (isDefaultView && this._parentEntityIds.length === 0) ||
       isSpecificInitialView;
 
-    const context = stateObj
-      ? getEntityContext(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        )
-      : this._entry
-        ? getEntityEntryContext(
-            this._entry,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          )
+    let entityName: string | undefined;
+    let deviceName: string | undefined;
+    let areaName: string | undefined;
+
+    if (stateObj) {
+      entityName = this.hass.formatEntityName(stateObj, "entity");
+      deviceName = this.hass.formatEntityName(stateObj, "device");
+      areaName = this.hass.formatEntityName(stateObj, "area");
+    } else if (this._entry) {
+      const context = getEntityEntryContext(
+        this._entry,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
+      entityName = computeEntityEntryName(this._entry, this.hass.devices);
+      deviceName = context?.device
+        ? computeDeviceName(context.device)
         : undefined;
-
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass.devices)
-        : entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
+      areaName = context?.area ? computeAreaName(context.area) : undefined;
+    } else {
+      entityName = entityId;
+    }
 
     const breadcrumb = [areaName, deviceName, entityName].filter(
       (v): v is string => Boolean(v)
