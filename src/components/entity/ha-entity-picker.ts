@@ -148,7 +148,13 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const { area, device } = getEntityContext(stateObj, this.hass);
+    const { area, device } = getEntityContext(
+      stateObj,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      this.hass.floors
+    );
 
     const entityName = computeEntityName(
       stateObj,
@@ -315,7 +321,13 @@ export class HaEntityPicker extends LitElement {
       items = entityIds.map<EntityComboBoxItem>((entityId) => {
         const stateObj = hass!.states[entityId];
 
-        const { area, device } = getEntityContext(stateObj, hass);
+        const { area, device } = getEntityContext(
+          stateObj,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        );
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
         const entityName = computeEntityName(

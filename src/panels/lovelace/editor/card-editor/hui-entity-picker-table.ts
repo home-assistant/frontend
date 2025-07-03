@@ -66,7 +66,13 @@ export class HuiEntityPickerTable extends LitElement {
         (entity) => {
           const stateObj = this.hass.states[entity];
 
-          const { area, device } = getEntityContext(stateObj, this.hass);
+          const { area, device } = getEntityContext(
+            stateObj,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          );
 
           const entityName = computeEntityName(
             stateObj,

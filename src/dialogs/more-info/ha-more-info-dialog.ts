@@ -323,9 +323,21 @@ export class MoreInfoDialog extends LitElement {
       isSpecificInitialView;
 
     const context = stateObj
-      ? getEntityContext(stateObj, this.hass)
+      ? getEntityContext(
+          stateObj,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas,
+          this.hass.floors
+        )
       : this._entry
-        ? getEntityEntryContext(this._entry, this.hass)
+        ? getEntityEntryContext(
+            this._entry,
+            this.hass.entities,
+            this.hass.devices,
+            this.hass.areas,
+            this.hass.floors
+          )
         : undefined;
 
     const entityName = stateObj

@@ -259,7 +259,13 @@ export class HaStatisticPicker extends LitElement {
         }
         const id = meta.statistic_id;
 
-        const { area, device } = getEntityContext(stateObj, hass);
+        const { area, device } = getEntityContext(
+          stateObj,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        );
 
         const friendlyName = computeStateName(stateObj); // Keep this for search
         const entityName = computeEntityName(
@@ -341,7 +347,13 @@ export class HaStatisticPicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const { area, device } = getEntityContext(stateObj, this.hass);
+      const { area, device } = getEntityContext(
+        stateObj,
+        this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors
+      );
 
       const entityName = computeEntityName(
         stateObj,

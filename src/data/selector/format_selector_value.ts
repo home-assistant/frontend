@@ -79,7 +79,13 @@ export const formatSelectorValue = (
         if (!stateObj) {
           return entityId;
         }
-        const { device } = getEntityContext(stateObj, hass);
+        const { device } = getEntityContext(
+          stateObj,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors
+        );
         const deviceName = device ? computeDeviceName(device) : undefined;
         const entityName = computeEntityName(
           stateObj,
