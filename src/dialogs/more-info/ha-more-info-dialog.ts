@@ -325,7 +325,7 @@ export class MoreInfoDialog extends LitElement {
       deviceName = this.hass.formatEntityName(stateObj, "device");
       areaName = this.hass.formatEntityName(stateObj, "area");
     } else if (this._entry) {
-      const context = getEntityEntryContext(
+      const { device, area } = getEntityEntryContext(
         this._entry,
         this.hass.entities,
         this.hass.devices,
@@ -333,10 +333,8 @@ export class MoreInfoDialog extends LitElement {
         this.hass.floors
       );
       entityName = computeEntityEntryName(this._entry, this.hass.devices);
-      deviceName = context?.device
-        ? computeDeviceName(context.device)
-        : undefined;
-      areaName = context?.area ? computeAreaName(context.area) : undefined;
+      deviceName = device ? computeDeviceName(device) : undefined;
+      areaName = area ? computeAreaName(area) : undefined;
     } else {
       entityName = entityId;
     }
