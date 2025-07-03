@@ -78,6 +78,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
         handle-selector=".handle"
         @item-moved=${this._floorMoved}
         .disabled=${this.disabled || !canReorderFloors}
+        invert-swap
       >
         <div>
           ${repeat(

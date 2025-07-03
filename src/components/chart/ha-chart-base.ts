@@ -390,6 +390,7 @@ export class HaChartBase extends LitElement {
       type: "inside",
       orient: "horizontal",
       filterMode: "none",
+      xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,

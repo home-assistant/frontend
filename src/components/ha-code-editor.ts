@@ -584,11 +584,14 @@ export class HaCodeEditor extends ReactiveElement {
 
     :host(.fullscreen) {
       position: fixed !important;
-      top: var(--header-height, 56px) !important;
-      left: 0 !important;
-      right: 0 !important;
-      bottom: 0 !important;
+      top: calc(var(--header-height, 56px) + 8px) !important;
+      left: 8px !important;
+      right: 8px !important;
+      bottom: 8px !important;
       z-index: 9999 !important;
+      border-radius: 12px !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+      overflow: hidden !important;
       background-color: var(
         --code-editor-background-color,
         var(--card-background-color)
