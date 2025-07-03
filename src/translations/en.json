@@ -6254,7 +6254,7 @@
           },
           "rebuild_node_routes": {
             "title": "Rebuild routes for a Z-Wave device",
-            "introduction": "Tell {device} to update its routes back to the adapter. This can help with communication issues if you have recently moved the device or your adapter.",
+            "introduction": "Assign new routes between {device} and the adapter. This can help with communication issues if you have recently moved the device or your adapter.",
             "traffic_warning": "The route rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuilding is in progress.",
             "start_rebuilding_routes": "Rebuild Routes for Device",
             "rebuilding_routes_failed": "{device} routes could not be rebuild.",
