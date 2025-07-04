@@ -64,7 +64,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <div class="title">
+      <div class="title" role="heading" aria-level="2">
         ${this.hass.localize("ui.panel.config.updates.title", {
           count: this.total || this.updateEntities.length,
         })}
@@ -115,7 +115,7 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                     ></ha-spinner>`
                   : nothing}
               </div>
-              <span
+              <span slot="headline"
                 >${deviceEntry
                   ? computeDeviceNameDisplay(deviceEntry, this.hass)
                   : entity.attributes.friendly_name}</span

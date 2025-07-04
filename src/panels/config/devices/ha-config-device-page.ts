@@ -10,7 +10,7 @@ import {
   mdiPlusCircle,
   mdiRestore,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -273,22 +273,24 @@ export class HaConfigDevicePage extends LitElement {
       findBatteryChargingEntity(this.hass, entities)
   );
 
-  public willUpdate(changedProps) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (changedProps.has("deviceId") || changedProps.has("entries")) {
+    if (changedProps.has("deviceId")) {
       this._deviceActions = [];
       this._deviceAlerts = [];
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
+    }
+
+    if (changedProps.has("deviceId") || changedProps.has("entries")) {
       this._fetchData();
     }
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
-    this._fetchData();
   }
 
   protected updated(changedProps) {
@@ -989,6 +991,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _getDeleteActions() {
+    const deviceId = this.deviceId;
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1058,12 +1061,18 @@ export class HaConfigDevicePage extends LitElement {
       }
     );
 
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
+      return;
+    }
+
     if (buttons.length > 0) {
       this._deleteButtons = buttons;
     }
   }
 
   private async _getDeviceActions() {
+    const deviceId = this.deviceId;
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1157,14 +1166,25 @@ export class HaConfigDevicePage extends LitElement {
 
       // load matter device actions async to avoid an UI with 0 actions when the matter integration needs very long to get node diagnostics
       matter.getMatterDeviceActions(this, this.hass, device).then((actions) => {
+        if (this.deviceId !== deviceId) {
+          // abort if the device has changed
+          return;
+        }
         this._deviceActions = [...actions, ...(this._deviceActions || [])];
       });
+    }
+
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
+      return;
     }
 
     this._deviceActions = deviceActions;
   }
 
   private async _getDeviceAlerts() {
+    const deviceId = this.deviceId;
+
     const device = this.hass.devices[this.deviceId];
 
     if (!device) {
@@ -1186,6 +1206,11 @@ export class HaConfigDevicePage extends LitElement {
 
       const alerts = await zwave.getZwaveDeviceAlerts(this.hass, device);
       deviceAlerts.push(...alerts);
+    }
+
+    if (this.deviceId !== deviceId) {
+      // abort if the device has changed
+      return;
     }
 
     this._deviceAlerts = deviceAlerts;
@@ -1317,9 +1342,13 @@ export class HaConfigDevicePage extends LitElement {
                 // eslint-disable-next-line no-await-in-loop
                 (await showConfirmationDialog(this, {
                   title: this.hass.localize(
-                    "ui.panel.config.devices.confirm_disable_config_entry",
-                    { entry_name: config_entry.title }
+                    "ui.panel.config.devices.confirm_disable_config_entry_title"
                   ),
+                  text: this.hass.localize(
+                    "ui.panel.config.devices.confirm_disable_config_entry_message",
+                    { name: config_entry.title }
+                  ),
+                  destructive: true,
                   confirmText: this.hass.localize("ui.common.yes"),
                   dismissText: this.hass.localize("ui.common.no"),
                 }))

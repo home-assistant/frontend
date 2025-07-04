@@ -380,6 +380,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               <div class="title">
                 <h1>${domainToName(this.hass.localize, this.domain)}</h1>
                 <div class="sub">
+                  ${this._manifest?.version != null
+                    ? html`<span class="version"
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.version",
+                          { version: this._manifest.version }
+                        )}</span
+                      >`
+                    : nothing}
                   ${this._manifest?.is_built_in === false
                     ? html`<div
                         class=${`integration-info ${
@@ -403,14 +411,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         </a>
                       </div>`
                     : nothing}
-                  ${this._logInfo?.level === LogSeverity.DEBUG
-                    ? html`<div class="integration-info">
-                        <ha-svg-icon .path=${mdiBugPlay}></ha-svg-icon>
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-                        )}
-                      </div>`
-                    : nothing}
                   ${this._manifest?.iot_class?.startsWith("cloud_")
                     ? html`<div class="integration-info">
                         <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
@@ -432,7 +432,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         )}
                       </div>`
                     : nothing}
-                  ${this._manifest?.quality_scale &&
+                  ${this._manifest?.is_built_in &&
+                  this._manifest.quality_scale &&
                   Object.keys(QUALITY_SCALE_MAP).includes(
                     this._manifest.quality_scale
                   )
@@ -539,6 +540,22 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </div>
           </div>
 
+          ${this._logInfo?.level === LogSeverity.DEBUG
+            ? html`<div class="section">
+                <ha-alert alert-type="warning">
+                  <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+                  )}
+                  <ha-button
+                    slot="action"
+                    @click=${this._handleDisableDebugLogging}
+                  >
+                    ${this.hass.localize("ui.common.disable")}
+                  </ha-button>
+                </ha-alert>
+              </div>`
+            : nothing}
           ${discoveryFlows.length
             ? html`
                 <div class="section">
@@ -885,7 +902,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .title {
           display: flex;
-          gap: 8px;
+          gap: 4px;
           flex-direction: column;
           justify-content: space-between;
         }
@@ -903,6 +920,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           flex-wrap: wrap;
           gap: 8px 16px;
+          align-items: center;
         }
         .card-content {
           padding: 16px 0 8px;
@@ -926,9 +944,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           width: 80px;
         }
         .version {
-          padding-top: 8px;
-          display: flex;
-          justify-content: center;
           color: var(--secondary-text-color);
         }
         .overview .card-actions {
@@ -946,6 +961,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .actions {
           display: flex;
+          flex-wrap: wrap;
           gap: 8px;
         }
         .section {
@@ -999,9 +1015,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-svg-icon.platinum-quality {
           color: #727272;
-        }
-        ha-svg-icon.internal-quality {
-          color: var(--primary-color);
         }
         ha-svg-icon.legacy-quality {
           color: var(--mdc-theme-text-icon-on-background, rgba(0, 0, 0, 0.38));

@@ -2,12 +2,13 @@ import memoizeOne from "memoize-one";
 import { isIPAddress } from "./is_ip_address";
 
 const collator = memoizeOne(
-  (language: string | undefined) => new Intl.Collator(language)
+  (language: string | undefined) =>
+    new Intl.Collator(language, { numeric: true })
 );
 
 const caseInsensitiveCollator = memoizeOne(
   (language: string | undefined) =>
-    new Intl.Collator(language, { sensitivity: "accent" })
+    new Intl.Collator(language, { sensitivity: "accent", numeric: true })
 );
 
 const fallbackStringCompare = (a: string, b: string) => {

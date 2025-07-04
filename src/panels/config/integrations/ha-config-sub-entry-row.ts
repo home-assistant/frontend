@@ -1,6 +1,5 @@
 import {
   mdiChevronDown,
-  mdiChevronUp,
   mdiCogOutline,
   mdiDelete,
   mdiDevices,
@@ -10,6 +9,7 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { deleteSubEntry } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -56,8 +56,8 @@ class HaConfigSubEntryRow extends LitElement {
       >
         ${devices.length || services.length
           ? html`<ha-icon-button
-              class="expand-button"
-              .path=${this._expanded ? mdiChevronDown : mdiChevronUp}
+              class="expand-button ${classMap({ expanded: this._expanded })}"
+              .path=${mdiChevronDown}
               slot="start"
               @click=${this._toggleExpand}
             ></ha-icon-button>`
@@ -239,6 +239,10 @@ class HaConfigSubEntryRow extends LitElement {
   static styles = css`
     .expand-button {
       margin: 0 -12px;
+      transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .expand-button.expanded {
+      transform: rotate(180deg);
     }
     ha-md-list {
       border: 1px solid var(--divider-color);

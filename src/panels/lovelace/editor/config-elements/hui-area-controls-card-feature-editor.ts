@@ -9,13 +9,16 @@ import type {
   SchemaUnion,
 } from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
-import { getAreaControlEntities } from "../../card-features/hui-area-controls-card-feature";
+import {
+  getAreaControlEntities,
+  MAX_DEFAULT_AREA_CONTROLS,
+} from "../../card-features/hui-area-controls-card-feature";
 import {
   AREA_CONTROLS,
   type AreaControl,
   type AreaControlsCardFeatureConfig,
-  type LovelaceCardFeatureContext,
 } from "../../card-features/types";
+import type { AreaCardFeatureContext } from "../../cards/hui-area-card";
 import type { LovelaceCardFeatureEditor } from "../../types";
 
 type AreaControlsCardFeatureData = AreaControlsCardFeatureConfig & {
@@ -29,7 +32,7 @@ export class HuiAreaControlsCardFeatureEditor
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+  @property({ attribute: false }) public context?: AreaCardFeatureContext;
 
   @state() private _config?: AreaControlsCardFeatureConfig;
 
@@ -72,9 +75,10 @@ export class HuiAreaControlsCardFeatureEditor
       ] as const satisfies readonly HaFormSchema[]
   );
 
-  private _compatibleControls = memoizeOne(
+  private _supportedControls = memoizeOne(
     (
       areaId: string,
+      excludeEntities: string[] | undefined,
       // needed to update memoized function when entities, devices or areas change
       _entities: HomeAssistant["entities"],
       _devices: HomeAssistant["devices"],
@@ -86,6 +90,7 @@ export class HuiAreaControlsCardFeatureEditor
       const controlEntities = getAreaControlEntities(
         AREA_CONTROLS as unknown as AreaControl[],
         areaId,
+        excludeEntities,
         this.hass!
       );
       return (
@@ -99,14 +104,15 @@ export class HuiAreaControlsCardFeatureEditor
       return nothing;
     }
 
-    const compatibleControls = this._compatibleControls(
+    const supportedControls = this._supportedControls(
       this.context.area_id,
+      this.context.exclude_entities,
       this.hass.entities,
       this.hass.devices,
       this.hass.areas
     );
 
-    if (compatibleControls.length === 0) {
+    if (supportedControls.length === 0) {
       return html`
         <ha-alert alert-type="warning">
           ${this.hass.localize(
@@ -124,7 +130,7 @@ export class HuiAreaControlsCardFeatureEditor
     const schema = this._schema(
       this.hass.localize,
       data.customize_controls,
-      compatibleControls
+      supportedControls
     );
 
     return html`
@@ -143,12 +149,13 @@ export class HuiAreaControlsCardFeatureEditor
       .value as AreaControlsCardFeatureData;
 
     if (customize_controls && !config.controls) {
-      config.controls = this._compatibleControls(
+      config.controls = this._supportedControls(
         this.context!.area_id!,
+        this.context!.exclude_entities,
         this.hass!.entities,
         this.hass!.devices,
         this.hass!.areas
-      ).concat();
+      ).slice(0, MAX_DEFAULT_AREA_CONTROLS); // Limit to max default controls
     }
 
     if (!customize_controls && config.controls) {
