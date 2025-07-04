@@ -30,6 +30,9 @@ import {
   generateDataAITask,
 } from "../../../../data/ai_task";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { subscribeOne } from "../../../../common/util/subscribe-one";
+import { subscribeLabelRegistry } from "../../../../data/label_registry";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -75,7 +78,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       this._entryUpdates.category ? "category" : "",
       this._entryUpdates.labels.length > 0 ? "labels" : "",
       this._entryUpdates.area ? "area" : "",
-    ];
+    ].filter(Boolean);
   }
 
   public closeDialog() {
@@ -346,13 +349,58 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private async _suggest() {
-    const result = await generateDataAITask<{ name: string }>(this.hass, {
-      task_name: "frontend:automation:save",
-      instructions: `Suggest one name for the following Home Assistant automation.
-Your answer should only contain the name, without any additional text or formatting.
-The name should be relevant to the automation's purpose and should not exceed 50 characters.
-The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.
+    const labels = await subscribeOne(
+      this.hass.connection,
+      subscribeLabelRegistry
+    ).then((labs) =>
+      Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+    );
+    const automationInspiration: string[] = [];
 
+    for (const automation of Object.values(this.hass.states)) {
+      const entityEntry = this.hass.entities[automation.entity_id];
+      if (
+        computeStateDomain(automation) !== "automation" ||
+        automation.attributes.restored ||
+        !automation.attributes.friendly_name ||
+        !entityEntry
+      ) {
+        continue;
+      }
+
+      let inspiration = `- ${automation.attributes.friendly_name}`;
+
+      if (entityEntry.labels.length) {
+        inspiration += ` (labels: ${entityEntry.labels
+          .map((label) => labels[label])
+          .join(", ")})`;
+      }
+
+      automationInspiration.push(inspiration);
+    }
+
+    const result = await generateDataAITask<{
+      name: string;
+      description: string | undefined;
+      labels: string[] | undefined;
+    }>(this.hass, {
+      task_name: "frontend:automation:save",
+      instructions: `Suggest in language "${this.hass.language}" a name, description, and labels for the following Home Assistant automation.
+
+The name should be relevant to the automation's purpose.
+${
+  automationInspiration.length
+    ? `The name should be in same style as existing automations.
+Suggest labels if relevant to the automation's purpose.
+Only suggest labels that are already used by existing automations.`
+    : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
+}
+If the automation contains 5+ steps, include a short description.
+
+For inspiration, here are existing automations:
+${automationInspiration.join("\n")}
+
+The automation configuration is as follows:
 ${dump(this._params.config)}
 `,
       structure: {
@@ -363,9 +411,59 @@ ${dump(this._params.config)}
             text: {},
           },
         },
+        description: {
+          description: "A short description of the automation",
+          required: false,
+          selector: {
+            text: {},
+          },
+        },
+        labels: {
+          description: "Labels for the automation",
+          required: false,
+          selector: {
+            text: {
+              multiple: true,
+            },
+          },
+        },
       },
     });
     this._newName = result.data.name;
+    if (result.data.description) {
+      this._newDescription = result.data.description;
+      if (!this._visibleOptionals.includes("description")) {
+        this._visibleOptionals = [...this._visibleOptionals, "description"];
+      }
+    }
+    if (result.data.labels?.length) {
+      // We get back label names, convert them to IDs
+      const newLabels: Record<string, undefined | string> = Object.fromEntries(
+        result.data.labels.map((name) => [name, undefined])
+      );
+      let toFind = result.data.labels.length;
+      for (const [labelId, labelName] of Object.entries(labels)) {
+        if (labelName in newLabels && newLabels[labelName] === undefined) {
+          newLabels[labelName] = labelId;
+          toFind--;
+          if (toFind === 0) {
+            break;
+          }
+        }
+      }
+      const foundLabels = Object.values(newLabels).filter(
+        (labelId) => labelId !== undefined
+      );
+      if (foundLabels.length) {
+        this._entryUpdates = {
+          ...this._entryUpdates,
+          labels: foundLabels,
+        };
+        if (!this._visibleOptionals.includes("labels")) {
+          this._visibleOptionals = [...this._visibleOptionals, "labels"];
+        }
+      }
+    }
   }
 
   private async _save(): Promise<void> {
