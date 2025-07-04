@@ -1,13 +1,22 @@
 import type { HomeAssistant } from "../types";
+import type { Selector } from "./selector";
 
 export interface AITaskPreferences {
   gen_data_entity_id: string | null;
 }
 
-export interface GenDataTaskResult {
+export interface GenDataTaskResult<T = string> {
   conversation_id: string;
-  data: string;
+  data: T;
 }
+
+export interface AITaskStructureField {
+  description?: string;
+  required?: boolean;
+  selector: Selector;
+}
+
+export type AITaskStructure = Record<string, AITaskStructureField>;
 
 export const fetchAITaskPreferences = (hass: HomeAssistant) =>
   hass.callWS<AITaskPreferences>({
@@ -23,15 +32,16 @@ export const saveAITaskPreferences = (
     ...preferences,
   });
 
-export const generateDataAITask = async (
+export const generateDataAITask = async <T = string>(
   hass: HomeAssistant,
   task: {
     task_name: string;
     entity_id?: string;
     instructions: string;
+    structure?: AITaskStructure;
   }
-): Promise<GenDataTaskResult> => {
-  const result = await hass.callService<GenDataTaskResult>(
+): Promise<GenDataTaskResult<T>> => {
+  const result = await hass.callService<GenDataTaskResult<T>>(
     "ai_task",
     "generate_data",
     task,

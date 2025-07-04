@@ -346,7 +346,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private async _suggest() {
-    const result = await generateDataAITask(this.hass, {
+    const result = await generateDataAITask<{ name: string }>(this.hass, {
       task_name: "frontend:automation:save",
       instructions: `Suggest one name for the following Home Assistant automation.
 Your answer should only contain the name, without any additional text or formatting.
@@ -355,8 +355,17 @@ The name should be short, descriptive, sentence case, and written in the languag
 
 ${dump(this._params.config)}
 `,
+      structure: {
+        name: {
+          description: "The name of the automation",
+          required: true,
+          selector: {
+            text: {},
+          },
+        },
+      },
     });
-    this._newName = result.data.trim();
+    this._newName = result.data.name;
   }
 
   private async _save(): Promise<void> {
