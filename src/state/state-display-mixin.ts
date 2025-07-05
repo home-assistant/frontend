@@ -52,17 +52,22 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) => {
         formatEntityState,
         formatEntityAttributeName,
         formatEntityAttributeValue,
+        formatEntityName,
       } = await computeFormatFunctions(
         this.hass.localize,
         this.hass.locale,
         this.hass.config,
         this.hass.entities,
+        this.hass.devices,
+        this.hass.areas,
+        this.hass.floors,
         sensorNumericDeviceClasses
       );
       this._updateHass({
         formatEntityState,
         formatEntityAttributeName,
         formatEntityAttributeValue,
+        formatEntityName,
       });
     };
   }
