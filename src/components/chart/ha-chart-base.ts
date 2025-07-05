@@ -13,7 +13,7 @@ import type {
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { getAllGraphColors } from "../../common/color/colors";
@@ -67,6 +67,8 @@ export class HaChartBase extends LitElement {
   @state() private _minutesDifference = 24 * 60;
 
   @state() private _hiddenDatasets = new Set<string>();
+
+  @query(".chart") private _chartContainer?: HTMLDivElement;
 
   private _modifierPressed = false;
 
@@ -148,17 +150,40 @@ export class HaChartBase extends LitElement {
           });
         }
       };
+
+      // Mobile devices don't trigger mouse leave events to hide the tooltip,
+      // instead, hide it whenever the user touches outside of the chart
+      const handleTouchStart = (_ev: TouchEvent) => {
+        // NOTE: if the touch event took place on the chart, echarts will show
+        // the tooltip. Hence, there's no need to check that the event is
+        // within the bounds of the chart
+        this.chart?.dispatchAction({
+          type: "hideTip",
+        });
+      };
+
       window.addEventListener("keydown", handleKeyDown);
       window.addEventListener("keyup", handleKeyUp);
+      window.addEventListener("touchstart", handleTouchStart);
       this._listeners.push(
         () => window.removeEventListener("keydown", handleKeyDown),
-        () => window.removeEventListener("keyup", handleKeyUp)
+        () => window.removeEventListener("keyup", handleKeyUp),
+        () => window.removeEventListener("touchstart", handleTouchStart)
       );
     }
   }
 
   protected firstUpdated() {
     this._setupChart();
+
+    // Prevent scrolling the page on mobile devices when "dragging" the chart
+    // to move the tooltip
+    const handleTouchStart = (_ev: TouchEvent) => {
+      _ev.preventDefault();
+      _ev.stopPropagation();
+    };
+
+    this._chartContainer?.addEventListener("touchstart", handleTouchStart);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -470,7 +495,6 @@ export class HaChartBase extends LitElement {
       tooltips.forEach((tooltip) => {
         tooltip.confine = true;
         tooltip.appendTo = undefined;
-        tooltip.triggerOn = "click";
       });
       options.tooltip = tooltips;
     }
