@@ -907,7 +907,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           justify-content: space-between;
         }
         .title h1 {
-          font-family: Roboto;
+          font-family: var(--ha-font-family-body);
           font-size: 32px;
           font-weight: 700;
           line-height: 40px;
@@ -938,6 +938,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           display: flex;
           justify-content: center;
           margin-right: 16px;
+          margin-inline-end: 16px;
+          margin-inline-start: initial;
           padding: 0 8px;
         }
         .logo-container img {
@@ -971,7 +973,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           margin-inline-start: 16px;
           margin-top: 6px;
           margin-bottom: 6px;
-          font-family: Roboto;
+          font-family: var(--ha-font-family-body);
           font-size: 14px;
           font-weight: 500;
           line-height: 20px;
