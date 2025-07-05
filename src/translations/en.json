@@ -7137,7 +7137,9 @@
                 "below": "Below"
               },
               "last_changed_state": {
-                "label": "Last entity change"
+                "label": "Last entity change",
+                "within": "Within",
+                "after": "After"
               },
               "screen": {
                 "label": "Screen",
