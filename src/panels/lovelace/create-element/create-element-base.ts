@@ -167,7 +167,7 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
       createErrorHeadingBadgeConfig(error, config)
     );
   }
-  return createErrorCardElement({ type: "error" });
+  return createErrorCardElement({ type: "error", message: error });
 };
 
 const _customCreate = <T extends keyof CreateElementConfigTypes>(
