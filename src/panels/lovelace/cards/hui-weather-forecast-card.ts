@@ -82,7 +82,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       const width = entries[0]?.contentRect.width;
       if (width < 245) {
-        result.height = "very-very-narrow";
+        result.width = "very-very-narrow";
       } else if (width < 300) {
         result.width = "very-narrow";
       } else if (width < 375) {
@@ -93,7 +93,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       if (height < 235) {
         result.height = "short";
       }
-
       return result;
     },
   });
