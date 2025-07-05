@@ -360,7 +360,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
             ></ha-icon-button>
           `
         : ""}
-      <div class="title">Home Assistant</div>
+      <div class="title">
+        <img
+          alt="Home Assistant logo"
+          src=${this.hass.themes?.darkMode
+            ? "https://www.home-assistant.io/images/home-assistant-logo-white.svg"
+            : "https://www.home-assistant.io/images/home-assistant-logo.svg"}
+        />
+      </div>
     </div>`;
   }
 
@@ -715,7 +722,16 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           margin-inline-start: 3px;
           margin-inline-end: initial;
           width: 100%;
-          display: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .title img {
+          max-width: calc(100% - 16px);
+          max-height: 32px;
+          width: auto;
+          height: auto;
+          object-fit: contain;
         }
         :host([narrow]) .title {
           margin: 0;
