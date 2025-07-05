@@ -333,6 +333,7 @@ export interface NumberSelector {
     mode?: "box" | "slider";
     unit_of_measurement?: string;
     slider_ticks?: boolean;
+    translation_key?: string;
   } | null;
 }
 
