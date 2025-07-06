@@ -89,11 +89,11 @@ class HaWebRtcPlayer extends LitElement {
 
       // The ice-ufrag and ice-pwd will change when changing from recvonly > sendrecv
       // Therefore a ICE restart is required (firefox enforces, chrome accepts)
-      this._peerConnection.restartIce();
+      this._peerConnection!.restartIce();
 
       // Find the audio transceiver
       // Transceiver are in the order they were added, audio should be first
-      for (const transceiver of this._peerConnection.getTransceivers()){
+      for (const transceiver of this._peerConnection!.getTransceivers()){
         if (transceiver.receiver.track.kind === "audio") {
           transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
           transceiver!.direction = "sendrecv";
