@@ -68,11 +68,11 @@ const randomTip = (openFn: any, hass: HomeAssistant, narrow: boolean) => {
           rel="noreferrer"
           >${hass.localize("ui.panel.config.tips.join_x")}</a
         >`,
-        mastodon: html`<a
+        fediverse: html`<a
           href=${documentationUrl(hass, `/mastodon`)}
           target="_blank"
           rel="noreferrer"
-          >${hass.localize("ui.panel.config.tips.join_mastodon")}</a
+          >${hass.localize("ui.panel.config.tips.join_fediverse")}</a
         >`,
         bluesky: html`<a
           href=${documentationUrl(hass, `/bluesky`)}
