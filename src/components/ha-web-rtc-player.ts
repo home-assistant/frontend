@@ -68,15 +68,15 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
-  private _localReturnTrackAdded: boolean = false;
+  private _localReturnTrackAdded = false;
 
   private _localReturnAudioTrack?: MediaStreamTrack;
 
-  private _paused: boolean = false;
+  private _paused = false;
 
-  private _twoWayAudio: boolean = false;
+  private _twoWayAudio = false;
   
-  private _timer_running: boolean = false;
+  private _timer_running = false;
 
   private async _addLocalReturnAudio() {
     const tracks = await this._getMediaTracks("user", {
@@ -94,8 +94,8 @@ class HaWebRtcPlayer extends LitElement {
       // Find the audio transceiver
       // Transceiver are in the order they were added, audio should be first
       for (const transceiver of this._peerConnection?.getTransceivers()){
-        if (transceiver.receiver.track.kind == "audio") {
-          await transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
+        if (transceiver.receiver.track.kind === "audio") {
+          transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
           transceiver!.direction = "sendrecv";
           
           this._localReturnTrackAdded = true;
