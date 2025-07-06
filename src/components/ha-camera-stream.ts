@@ -7,6 +7,7 @@ import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CAMERA_SUPPORT_STREAM,
+  CAMERA_SUPPORT_TWO_WAY_AUDIO,
   type CameraCapabilities,
   type CameraEntity,
   computeMJPEGStreamUrl,
@@ -136,7 +137,7 @@ export class HaCameraStream extends LitElement {
         autoplay
         playsinline
         .muted=${this.muted}
-        .twowayaudio=${this._capabilities?.two_way_audio}
+        .twowayaudio=${supportsFeature(this.stateObj!, CAMERA_SUPPORT_TWO_WAY_AUDIO)}
         .controls=${this.controls}
         .hass=${this.hass}
         .entityid=${this.stateObj.entity_id}
@@ -156,7 +157,7 @@ export class HaCameraStream extends LitElement {
     this._hlsStreams = undefined;
     this._webRtcStreams = undefined;
     if (!supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)) {
-      this._capabilities = { frontend_stream_types: [], two_way_audio: false };
+      this._capabilities = { frontend_stream_types: [] };
       return;
     }
     this._capabilities = await fetchCameraCapabilities(
