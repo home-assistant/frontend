@@ -75,7 +75,7 @@ class HaWebRtcPlayer extends LitElement {
   private _paused = false;
 
   private _twoWayAudio = false;
-  
+
   private _timer_running = false;
 
   private async _addLocalReturnAudio() {
@@ -84,7 +84,11 @@ class HaWebRtcPlayer extends LitElement {
       audio: true,
     });
     if (tracks && tracks.length > 0) {
-      this._logEvent("found", tracks.length, "microphone(s) to use for audio return track");
+      this._logEvent(
+        "found",
+        tracks.length,
+        "microphone(s) to use for audio return track"
+      );
       this._localReturnAudioTrack = tracks[0];
 
       // The ice-ufrag and ice-pwd will change when changing from recvonly > sendrecv
@@ -93,17 +97,17 @@ class HaWebRtcPlayer extends LitElement {
 
       // Find the audio transceiver
       // Transceiver are in the order they were added, audio should be first
-      for (const transceiver of this._peerConnection!.getTransceivers()){
+      for (const transceiver of this._peerConnection!.getTransceivers()) {
         if (transceiver.receiver.track.kind === "audio") {
           transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
           transceiver!.direction = "sendrecv";
-          
+
           this._localReturnTrackAdded = true;
           return;
         }
       }
     }
-    
+
     this._logEvent("unable to add audio send track");
     this._twoWayAudio = false;
     this.requestUpdate();
@@ -191,10 +195,7 @@ class HaWebRtcPlayer extends LitElement {
         ? nothing
         : html`
             <div class="video-progress">
-              <ha-spinner
-                class="render-spinner"
-                size="medium"
-              ></ha-spinner>
+              <ha-spinner class="render-spinner" size="medium"></ha-spinner>
             </div>
           `;
     // Custom controls are required for two way audio to allow muting/unmuting
@@ -598,7 +599,7 @@ class HaWebRtcPlayer extends LitElement {
     }
     if (!this._timer_running) {
       // eslint-disable-next-line no-console
-      console.log("WebRTC:", msg, ...args)
+      console.log("WebRTC:", msg, ...args);
       return;
     }
     // eslint-disable-next-line no-console
