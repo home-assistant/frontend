@@ -93,7 +93,7 @@ class HaWebRtcPlayer extends LitElement {
 
       // Find the audio transceiver
       // Transceiver are in the order they were added, audio should be first
-      for (const transceiver of this._peerConnection?.getTransceivers()){
+      for (const transceiver of this._peerConnection.getTransceivers()){
         if (transceiver.receiver.track.kind === "audio") {
           transceiver!.sender.replaceTrack(this._localReturnAudioTrack);
           transceiver!.direction = "sendrecv";
