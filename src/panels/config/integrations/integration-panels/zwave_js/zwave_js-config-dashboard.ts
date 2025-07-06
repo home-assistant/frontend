@@ -43,6 +43,7 @@ import {
   subscribeZwaveControllerStatistics,
   subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
@@ -53,7 +54,6 @@ import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-no
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
-import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -133,8 +133,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
+    const provisioningDevices =
+      this._provisioningEntries?.filter((entry) => !entry.nodeId).length ?? 0;
     const notReadyDevices =
-      this._network?.controller.nodes.filter((node) => !node.ready).length ?? 0;
+      (this._network?.controller.nodes.filter((node) => !node.ready).length ??
+        0) + provisioningDevices;
 
     return html`
       <hass-tabs-subpage
@@ -142,6 +145,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
+        has-fab
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -181,7 +185,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               ${this.hass.localize(
                                 `ui.panel.config.zwave_js.dashboard.devices`,
                                 {
-                                  count: this._network.controller.nodes.length,
+                                  count:
+                                    this._network.controller.nodes.length +
+                                    provisioningDevices,
                                 }
                               )}
                               ${notReadyDevices > 0
@@ -408,7 +414,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         InclusionState.SmartStart)}
                   >
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.remove_node"
+                      "ui.panel.config.zwave_js.common.remove_a_node"
                     )}
                   </ha-button>
                   <ha-button
@@ -423,7 +429,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               </ha-card>
               <ha-card>
                 <div class="card-header">
-                  <h1>Third-Party Data Reporting</h1>
+                  <h1>Third-party data reporting</h1>
                   ${this._dataCollectionOptIn !== undefined
                     ? html`
                         <ha-switch
@@ -598,7 +604,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     history.back();
   }
 
-  private async _fetchData() {
+  private _fetchData = async () => {
     if (!this.configEntryId) {
       return;
     }
@@ -632,7 +638,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
-  }
+  };
 
   private async _addNodeClicked() {
     this._openInclusionDialog();
@@ -640,10 +646,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
-      entry_id: this.configEntryId!,
+      entryId: this.configEntryId!,
       skipConfirmation:
         this._network?.controller.inclusion_state === InclusionState.Excluding,
-      removedCallback: () => this._fetchData(),
+      onClose: this._fetchData,
     });
   }
 

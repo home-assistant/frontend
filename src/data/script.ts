@@ -14,6 +14,7 @@ import {
   literal,
   is,
   boolean,
+  refine,
 } from "superstruct";
 import { arrayLiteralIncludes } from "../common/array/literal-includes";
 import { navigate } from "../common/navigate";
@@ -29,6 +30,7 @@ import { migrateAutomationTrigger } from "./automation";
 import type { BlueprintInput } from "./blueprint";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { createSearchParam } from "../common/url/search-params";
+import { hasTemplate } from "../common/string/has-template";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -48,13 +50,18 @@ export const targetStruct = object({
   label_id: optional(union([string(), array(string())])),
 });
 
-export const serviceActionStruct: Describe<ServiceAction> = assign(
+export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(
   baseActionStruct,
   object({
     action: optional(string()),
     service_template: optional(string()),
     entity_id: optional(string()),
-    target: optional(targetStruct),
+    target: optional(
+      union([
+        targetStruct,
+        refine(string(), "has_template", (val) => hasTemplate(val)),
+      ])
+    ),
     data: optional(object()),
     response_variable: optional(string()),
     metadata: optional(object()),
@@ -130,6 +137,12 @@ export interface ServiceAction extends BaseAction {
   response_variable?: string;
   metadata?: Record<string, unknown>;
 }
+
+type ServiceActionWithTemplate = ServiceAction & {
+  target?: HassServiceTarget | string;
+};
+
+export type { ServiceActionWithTemplate };
 
 export interface DeviceAction extends BaseAction {
   type: string;
@@ -339,6 +352,9 @@ export const getScriptEditorInitData = () => {
 
 export const getActionType = (action: Action): ActionType => {
   // Check based on config_validation.py#determine_script_action
+  if (typeof action === "string" && hasTemplate(action)) {
+    return "check_condition";
+  }
   if ("delay" in action) {
     return "delay";
   }
@@ -411,7 +427,7 @@ export const migrateAutomationAction = (
     return action.map(migrateAutomationAction) as Action[];
   }
 
-  if ("service" in action) {
+  if (typeof action === "object" && action !== null && "service" in action) {
     if (!("action" in action)) {
       action.action = action.service;
     }
@@ -419,7 +435,7 @@ export const migrateAutomationAction = (
   }
 
   // legacy scene (scene: scene_name)
-  if ("scene" in action) {
+  if (typeof action === "object" && action !== null && "scene" in action) {
     action.action = "scene.turn_on";
     action.target = {
       entity_id: action.scene,
@@ -427,7 +443,7 @@ export const migrateAutomationAction = (
     delete action.scene;
   }
 
-  if ("sequence" in action) {
+  if (typeof action === "object" && action !== null && "sequence" in action) {
     for (const sequenceAction of (action as SequenceAction).sequence) {
       migrateAutomationAction(sequenceAction);
     }

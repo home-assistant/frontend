@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiContentCopy } from "@mdi/js";
+import { mdiContentCopy, mdiRestore } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -60,6 +60,7 @@ import type {
   SensorEntityOptions,
 } from "../../../data/entity_registry";
 import {
+  getAutomaticEntityIds,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -758,11 +759,16 @@ export class EntityRegistrySettingsEditor extends LitElement {
         autocorrect="off"
         input-spellcheck="false"
       >
-        <ha-icon-button
-          @click=${this._copyEntityId}
-          slot="trailingIcon"
-          .path=${mdiContentCopy}
-        ></ha-icon-button>
+        <div class="layout horizontal" slot="trailingIcon">
+          <ha-icon-button
+            @click=${this._restoreEntityId}
+            .path=${mdiRestore}
+          ></ha-icon-button>
+          <ha-icon-button
+            @click=${this._copyEntityId}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
+        </div>
       </ha-textfield>
       ${!this.entry.device_id
         ? html`<ha-area-picker
@@ -1286,6 +1292,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     this._icon = ev.detail.value;
   }
 
+  private async _restoreEntityId(): Promise<void> {
+    const entityIds = await getAutomaticEntityIds(this.hass, [
+      this._origEntityId,
+    ]);
+    this._entityId = entityIds[this._origEntityId] || this._origEntityId;
+  }
+
   private async _copyEntityId(): Promise<void> {
     await copyToClipboard(this._entityId);
     showToast(this, {
@@ -1508,7 +1521,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           --text-field-prefix-padding-right: 0;
           --textfield-icon-trailing-padding: 0;
         }
-        ha-textfield.entityId > ha-icon-button {
+        ha-textfield.entityId ha-icon-button {
           position: relative;
           right: -8px;
           --mdc-icon-button-size: 36px;

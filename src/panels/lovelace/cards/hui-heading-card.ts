@@ -179,7 +179,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         --ha-heading-card-title-font-weight,
         var(--ha-font-weight-normal)
       );
-      line-height: var(--ha-heading-card-title-line-height, 24px);
+      line-height: var(
+        --ha-heading-card-title-line-height,
+        var(--ha-line-height-normal)
+      );
       letter-spacing: 0.1px;
       --mdc-icon-size: 18px;
     }
@@ -207,7 +210,10 @@ export class HuiHeadingCard extends LitElement implements LovelaceCard {
         --ha-heading-card-subtitle-font-weight,
         var(--ha-font-weight-medium)
       );
-      line-height: var(--ha-heading-card-subtitle-line-height, 20px);
+      line-height: var(
+        --ha-heading-card-subtitle-line-height,
+        var(--ha-line-height-condensed)
+      );
     }
     .badges {
       display: flex;

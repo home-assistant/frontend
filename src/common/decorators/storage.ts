@@ -202,7 +202,6 @@ export function storage(options: {
           // Don't set the initial value if we have a value in localStorage
           if (this.__initialized || getValue() === undefined) {
             setValue(this, value);
-            this.requestUpdate(propertyKey, undefined);
           }
         },
         configurable: true,
@@ -212,11 +211,13 @@ export function storage(options: {
       const oldSetter = descriptor.set;
       newDescriptor = {
         ...descriptor,
+        get(this: ReactiveStorageElement) {
+          return getValue();
+        },
         set(this: ReactiveStorageElement, value) {
           // Don't set the initial value if we have a value in localStorage
           if (this.__initialized || getValue() === undefined) {
             setValue(this, value);
-            this.requestUpdate(propertyKey, undefined);
           }
           oldSetter?.call(this, value);
         },

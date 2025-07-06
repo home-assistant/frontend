@@ -679,7 +679,9 @@ export const getEnergyDataCollection = (
   const period =
     preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
 
-  [collection.start, collection.end] = calcDateRange(hass, period);
+  const [start, end] = calcDateRange(hass, period);
+  collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
+  collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
@@ -1036,33 +1038,46 @@ export const computeConsumptionSingle = (data: {
 
   let used_total_remaining = Math.max(used_total, 0);
   // Consumption Priority
-  // Battery_Out -> Grid_Out
-  // Solar -> Grid_Out
   // Solar -> Battery_In
+  // Solar -> Grid_Out
+  // Battery_Out -> Grid_Out
   // Grid_In -> Battery_In
   // Solar -> Consumption
   // Battery_Out -> Consumption
   // Grid_In -> Consumption
 
-  // Battery_Out -> Grid_Out
-  battery_to_grid = Math.min(from_battery, to_grid);
-  from_battery -= battery_to_grid;
-  to_grid -= battery_to_grid;
+  // If we have more grid_in than consumption, the excess must be charging the battery
+  // This must be accounted for before filling the battery from solar, or else the grid
+  // input could be stranded with nowhere to go.
+  const excess_grid_in_after_consumption = Math.max(
+    0,
+    Math.min(to_battery, from_grid - used_total_remaining)
+  );
+  grid_to_battery += excess_grid_in_after_consumption;
+  to_battery -= excess_grid_in_after_consumption;
+  from_grid -= excess_grid_in_after_consumption;
+
+  // Fill the remainder of the battery input from solar
+  // Solar -> Battery_In
+  solar_to_battery = Math.min(solar, to_battery);
+  to_battery -= solar_to_battery;
+  solar -= solar_to_battery;
 
   // Solar -> Grid_Out
   solar_to_grid = Math.min(solar, to_grid);
   to_grid -= solar_to_grid;
   solar -= solar_to_grid;
 
-  // Solar -> Battery_In
-  solar_to_battery = Math.min(solar, to_battery);
-  to_battery -= solar_to_battery;
-  solar -= solar_to_battery;
+  // Battery_Out -> Grid_Out
+  battery_to_grid = Math.min(from_battery, to_grid);
+  from_battery -= battery_to_grid;
+  to_grid -= battery_to_grid;
 
-  // Grid_In -> Battery_In
-  grid_to_battery = Math.min(from_grid, to_battery);
-  from_grid -= grid_to_battery;
-  to_battery -= grid_to_battery;
+  // Grid_In -> Battery_In (second pass)
+  const grid_to_battery_2 = Math.min(from_grid, to_battery);
+  grid_to_battery += grid_to_battery_2;
+  from_grid -= grid_to_battery_2;
+  to_battery -= grid_to_battery_2;
 
   // Solar -> Consumption
   used_solar = Math.min(used_total_remaining, solar);
@@ -1099,12 +1114,16 @@ export const formatConsumptionShort = (
   if (!consumption) {
     return `0 ${unit}`;
   }
-  const units = ["kWh", "MWh", "GWh", "TWh"];
+  const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
   let pickedUnit = unit;
   let val = consumption;
   let unitIndex = units.findIndex((u) => u === unit);
   if (unitIndex >= 0) {
-    while (val >= 1000 && unitIndex < units.length - 1) {
+    while (Math.abs(val) < 1 && unitIndex > 0) {
+      val *= 1000;
+      unitIndex--;
+    }
+    while (Math.abs(val) >= 1000 && unitIndex < units.length - 1) {
       val /= 1000;
       unitIndex++;
     }
@@ -1112,7 +1131,8 @@ export const formatConsumptionShort = (
   }
   return (
     formatNumber(val, hass.locale, {
-      maximumFractionDigits: val < 10 ? 2 : val < 100 ? 1 : 0,
+      maximumFractionDigits:
+        Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
     }) +
     " " +
     pickedUnit

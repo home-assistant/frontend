@@ -23,6 +23,9 @@ export class HaNumberSelector extends LitElement {
 
   @property() public helper?: string;
 
+  @property({ attribute: false })
+  public localizeValue?: (key: string) => string;
+
   @property({ type: Boolean }) public required = true;
 
   @property({ type: Boolean }) public disabled = false;
@@ -58,6 +61,14 @@ export class HaNumberSelector extends LitElement {
           sliderStep /= 10;
         }
       }
+    }
+
+    const translationKey = this.selector.number?.translation_key;
+    let unit = this.selector.number?.unit_of_measurement;
+    if (isBox && unit && this.localizeValue && translationKey) {
+      unit =
+        this.localizeValue(`${translationKey}.unit_of_measurement.${unit}`) ||
+        unit;
     }
 
     return html`
@@ -97,7 +108,7 @@ export class HaNumberSelector extends LitElement {
           .helper=${isBox ? this.helper : undefined}
           .disabled=${this.disabled}
           .required=${this.required}
-          .suffix=${this.selector.number?.unit_of_measurement}
+          .suffix=${unit}
           type="number"
           autoValidate
           ?no-spinner=${!isBox}
@@ -106,7 +117,9 @@ export class HaNumberSelector extends LitElement {
         </ha-textfield>
       </div>
       ${!isBox && this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : nothing}
     `;
   }

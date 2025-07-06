@@ -317,7 +317,7 @@ class HaConfigInfo extends LitElement {
         .header p {
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-normal);
-          line-height: 28px;
+          line-height: var(--ha-line-height-condensed);
           text-align: center;
           margin: 24px;
         }
@@ -366,7 +366,7 @@ class HaConfigInfo extends LitElement {
         }
 
         .pages {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
           padding: 4px 0;
         }
 

@@ -132,6 +132,7 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("device_automation");
     if (!this._capabilities) {
       this._getCapabilities();
     }

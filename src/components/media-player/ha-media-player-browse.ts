@@ -78,7 +78,7 @@ export interface MediaPlayerItemId {
 export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property({ attribute: false }) public entityId?: string;
 
   @property() public action: MediaPlayerBrowseAction = "play";
 
@@ -88,6 +88,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ type: Boolean }) public dialog = false;
 
   @property({ attribute: false }) public navigateIds: MediaPlayerItemId[] = [];
+
+  @property({ attribute: false }) public accept?: string[];
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -250,6 +252,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           });
         } else if (
           err.code === "entity_not_found" &&
+          this.entityId &&
           isUnavailableState(this.hass.states[this.entityId]?.state)
         ) {
           this._setError({
@@ -334,7 +337,37 @@ export class HaMediaPlayerBrowse extends LitElement {
     const subtitle = this.hass.localize(
       `ui.components.media-browser.class.${currentItem.media_class}`
     );
-    const children = currentItem.children || [];
+    let children = currentItem.children || [];
+    const canPlayChildren = new Set<string>();
+
+    // Filter children based on accept property if provided
+    if (this.accept && children.length > 0) {
+      let checks: ((t: string) => boolean)[] = [];
+
+      for (const type of this.accept) {
+        if (type.endsWith("/*")) {
+          const baseType = type.slice(0, -1);
+          checks.push((t) => t.startsWith(baseType));
+        } else if (type === "*") {
+          checks = [() => true];
+          break;
+        } else {
+          checks.push((t) => t === type);
+        }
+      }
+
+      children = children.filter((child) => {
+        const contentType = child.media_content_type.toLowerCase();
+        const canPlay =
+          child.media_content_type &&
+          checks.some((check) => check(contentType));
+        if (canPlay) {
+          canPlayChildren.add(child.media_content_id);
+        }
+        return !child.media_content_type || child.can_expand || canPlay;
+      });
+    }
+
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -367,7 +400,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     ""
                                   )}"
                                 >
-                                  ${this.narrow && currentItem?.can_play
+                                  ${this.narrow &&
+                                  currentItem?.can_play &&
+                                  (!this.accept ||
+                                    canPlayChildren.has(
+                                      currentItem.media_content_id
+                                    ))
                                     ? html`
                                         <ha-fab
                                           mini
@@ -748,11 +786,11 @@ export class HaMediaPlayerBrowse extends LitElement {
   };
 
   private async _fetchData(
-    entityId: string,
+    entityId: string | undefined,
     mediaContentId?: string,
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
-    return entityId !== BROWSER_PLAYER
+    return entityId && entityId !== BROWSER_PLAYER
       ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
       : browseLocalMediaPlayer(this.hass, mediaContentId);
   }
@@ -966,7 +1004,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
         .breadcrumb .title {
           font-size: var(--ha-font-size-4xl);
-          line-height: 1.2;
+          line-height: var(--ha-line-height-condensed);
           font-weight: var(--ha-font-weight-bold);
           margin: 0;
           overflow: hidden;

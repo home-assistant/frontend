@@ -101,7 +101,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
       margin-block-start: 0px;
       margin-block-end: 0px;
       letter-spacing: -0.012em;
-      line-height: 32px;
+      line-height: var(--ha-line-height-condensed);
       display: block;
       padding: 24px 16px 16px;
     }

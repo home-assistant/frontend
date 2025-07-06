@@ -144,6 +144,9 @@ class DialogDashboardStrategyEditor extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
+          ${this._params.title
+            ? html`<span slot="subtitle">${this._params.title}</span>`
+            : nothing}
           <ha-button-menu
             corner="BOTTOM_END"
             menu-corner="END"

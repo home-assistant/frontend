@@ -103,12 +103,20 @@ export interface BackupContentAgent {
   protected: boolean;
 }
 
+export interface AddonInfo {
+  name: string | null;
+  slug: string;
+  version: string | null;
+}
+
 export interface BackupContent {
   backup_id: string;
   date: string;
   name: string;
   agents: Record<string, BackupContentAgent>;
   failed_agent_ids?: string[];
+  failed_addons?: AddonInfo[];
+  failed_folders?: string[];
   extra_metadata?: {
     "supervisor.addon_update"?: string;
   };
@@ -331,7 +339,7 @@ export const computeBackupSize = (backup: BackupContent) =>
 
 export type BackupType = "automatic" | "manual" | "addon_update";
 
-const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "manual", "addon_update"];
+const BACKUP_TYPE_ORDER: BackupType[] = ["automatic", "addon_update", "manual"];
 
 export const getBackupTypes = memoize((isHassio: boolean) =>
   isHassio

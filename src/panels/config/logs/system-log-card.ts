@@ -268,7 +268,7 @@ export class SystemLogCard extends LitElement {
       font-family: var(--ha-card-header-font-family, inherit);
       font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
       letter-spacing: -0.012em;
-      line-height: 48px;
+      line-height: var(--ha-line-height-expanded);
       display: block;
       margin-block-start: 0px;
       font-weight: var(--ha-font-weight-normal);

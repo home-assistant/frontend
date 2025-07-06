@@ -1259,7 +1259,6 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
   };

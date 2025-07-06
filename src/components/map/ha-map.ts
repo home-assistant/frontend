@@ -56,6 +56,7 @@ export interface HaMapEntity {
   color: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
+  unit?: string;
   name?: string;
   focus?: boolean;
 }
@@ -549,6 +550,12 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && entity.label_mode === "icon";
       entityMarker.entityId = getEntityId(entity);
       entityMarker.entityName = entityName;
+      entityMarker.entityUnit =
+        typeof entity !== "string" &&
+        entity.unit &&
+        entity.label_mode === "attribute"
+          ? entity.unit
+          : "";
       entityMarker.entityPicture =
         entityPicture && (typeof entity === "string" || !entity.label_mode)
           ? this.hass.hassUrl(entityPicture)
@@ -692,7 +699,7 @@ export class HaMap extends ReactiveElement {
     }
 
     .marker-cluster span {
-      line-height: 30px;
+      line-height: var(--ha-line-height-expanded);
     }
   `;
 }

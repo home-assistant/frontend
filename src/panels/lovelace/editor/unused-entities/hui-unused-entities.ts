@@ -164,15 +164,15 @@ export class HuiUnusedEntities extends LitElement {
     .fab {
       position: sticky;
       float: var(--float-end);
-      right: calc(16px + env(safe-area-inset-right));
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      inset-inline-end: calc(16px + env(safe-area-inset-right));
+      right: calc(16px + var(--safe-area-inset-right));
+      bottom: calc(16px + var(--safe-area-inset-bottom));
+      inset-inline-end: calc(16px + var(--safe-area-inset-right));
       inset-inline-start: initial;
       z-index: 1;
     }
     ha-fab {
       position: relative;
-      bottom: calc(-80px - env(safe-area-inset-bottom));
+      bottom: calc(-80px - var(--safe-area-inset-bottom));
       transition: bottom 0.3s;
     }
     .fab.selected ha-fab {

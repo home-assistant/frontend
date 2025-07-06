@@ -3,9 +3,13 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
 import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
-import { orderCompare } from "../../../../../common/string/compare";
+import {
+  orderCompare,
+  stringCompare,
+} from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import { areaCompare } from "../../../../../data/area_registry";
+import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
 import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
@@ -13,7 +17,10 @@ import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-co
 import { supportsLightBrightnessCardFeature } from "../../../card-features/hui-light-brightness-card-feature";
 import { supportsLockCommandsCardFeature } from "../../../card-features/hui-lock-commands-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../../card-features/hui-target-temperature-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../../card-features/types";
 import type { TileCardConfig } from "../../../cards/types";
 
 export const AREA_STRATEGY_GROUPS = [
@@ -22,6 +29,7 @@ export const AREA_STRATEGY_GROUPS = [
   "covers",
   "media_players",
   "security",
+  "actions",
   "others",
 ] as const;
 
@@ -31,6 +39,7 @@ export const AREA_STRATEGY_GROUP_ICONS = {
   covers: "mdi:blinds-horizontal",
   media_players: "mdi:multimedia",
   security: "mdi:security",
+  actions: "mdi:robot",
   others: "mdi:shape",
 };
 
@@ -121,6 +130,18 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
     ],
+    actions: [
+      generateEntityFilter(hass, {
+        domain: ["script", "scene"],
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: ["automation"],
+        area: area,
+        entity_category: "none",
+      }),
+    ],
     others: [
       generateEntityFilter(hass, {
         domain: "vacuum",
@@ -138,7 +159,19 @@ export const getAreaGroupedEntities = (
         entity_category: "none",
       }),
       generateEntityFilter(hass, {
-        domain: ["switch", "select", "input_boolean", "input_select"],
+        domain: ["switch", "button", "input_boolean", "input_button"],
+        area: area,
+        entity_category: "none",
+      }),
+      generateEntityFilter(hass, {
+        domain: [
+          "select",
+          "number",
+          "input_select",
+          "input_number",
+          "counter",
+          "timer",
+        ],
         area: area,
         entity_category: "none",
       }),
@@ -180,6 +213,10 @@ export const computeAreaTileCardConfig =
   (entity: string): LovelaceCardConfig => {
     const stateObj = hass.states[entity];
 
+    const context: LovelaceCardFeatureContext = {
+      entity_id: entity,
+    };
+
     const additionalCardConfig: Partial<TileCardConfig> = {};
 
     const domain = computeDomain(entity);
@@ -199,23 +236,23 @@ export const computeAreaTileCardConfig =
 
     let feature: LovelaceCardFeatureConfig | undefined;
     if (includeFeature) {
-      if (supportsLightBrightnessCardFeature(stateObj)) {
+      if (supportsLightBrightnessCardFeature(hass, context)) {
         feature = {
           type: "light-brightness",
         };
-      } else if (supportsCoverOpenCloseCardFeature(stateObj)) {
+      } else if (supportsCoverOpenCloseCardFeature(hass, context)) {
         feature = {
           type: "cover-open-close",
         };
-      } else if (supportsTargetTemperatureCardFeature(stateObj)) {
+      } else if (supportsTargetTemperatureCardFeature(hass, context)) {
         feature = {
           type: "target-temperature",
         };
-      } else if (supportsAlarmModesCardFeature(stateObj)) {
+      } else if (supportsAlarmModesCardFeature(hass, context)) {
         feature = {
           type: "alarm-modes",
         };
-      } else if (supportsLockCommandsCardFeature(stateObj)) {
+      } else if (supportsLockCommandsCardFeature(hass, context)) {
         feature = {
           type: "lock-commands",
         };
@@ -255,6 +292,25 @@ export const getAreas = (
   );
 
   return sortedAreas;
+};
+
+export const getFloors = (
+  entries: HomeAssistant["floors"],
+  floorsOrder?: string[]
+): FloorRegistryEntry[] => {
+  const floors = Object.values(entries);
+  const compare = orderCompare(floorsOrder || []);
+
+  return floors.sort((floorA, floorB) => {
+    const order = compare(floorA.floor_id, floorB.floor_id);
+    if (order !== 0) {
+      return order;
+    }
+    if (floorA.level !== floorB.level) {
+      return (floorA.level ?? 0) - (floorB.level ?? 0);
+    }
+    return stringCompare(floorA.name, floorB.name);
+  });
 };
 
 export const computeAreaPath = (areaId: string): string => `areas-${areaId}`;

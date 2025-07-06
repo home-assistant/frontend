@@ -532,7 +532,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 24px;
+      line-height: var(--ha-line-height-normal);
       text-align: center;
     }
 
@@ -619,7 +619,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 24px;
+      line-height: var(--ha-line-height-normal);
       --mdc-icon-size: 18px;
       display: flex;
       align-items: center;
@@ -631,7 +631,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       color: var(--secondary-text-color);
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
     }
   `;
 }

@@ -286,7 +286,7 @@ class DataEntryFlowDialog extends LitElement {
         scrimClickAction
         escapeKeyAction
         hideActions
-        .heading=${dialogTitle}
+        .heading=${dialogTitle || true}
       >
         <ha-dialog-header slot="heading">
           <ha-icon-button
@@ -349,6 +349,7 @@ class DataEntryFlowDialog extends LitElement {
                   ${this._step.type === "form"
                     ? html`
                         <step-flow-form
+                          narrow
                           .flowConfig=${this._params.flowConfig}
                           .step=${this._step}
                           .hass=${this.hass}

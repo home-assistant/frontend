@@ -31,6 +31,11 @@ export const colorStyles = css`
     --rgb-text-primary-color: 255, 255, 255;
     --rgb-card-background-color: 255, 255, 255;
 
+    --rgb-warning-color: 255, 166, 0;
+    --rgb-error-color: 219, 68, 55;
+    --rgb-success-color: 67, 160, 71;
+    --rgb-info-color: 3, 155, 229;
+
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
     --error-color: #db4437;
@@ -355,6 +360,7 @@ const darkColorStyles = css`
   }
 `;
 export const colorDerivedVariables = extractDerivedVars(colorStyles);
+export const colorVariables = extractVars(colorStyles);
 export const darkColorVariables = extractVars(darkColorStyles);
 
 export const DefaultPrimaryColor = extractVar(colorStyles, "primary-color");

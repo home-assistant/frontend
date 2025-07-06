@@ -35,10 +35,16 @@ export const showConfigFlowDialog = (
       return step;
     },
     fetchFlow: async (hass, flowId) => {
-      const step = await fetchConfigFlow(hass, flowId);
-      await hass.loadFragmentTranslation("config");
-      await hass.loadBackendTranslation("config", step.handler);
-      await hass.loadBackendTranslation("selector", step.handler);
+      const [step] = await Promise.all([
+        fetchConfigFlow(hass, flowId),
+        hass.loadFragmentTranslation("config"),
+      ]);
+      await Promise.all([
+        hass.loadBackendTranslation("config", step.handler),
+        hass.loadBackendTranslation("selector", step.handler),
+        // Used as fallback if no header defined for step
+        hass.loadBackendTranslation("title", step.handler),
+      ]);
       return step;
     },
     handleFlowStep: handleConfigFlowStep,
@@ -73,7 +79,12 @@ export const showConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
+            <ha-markdown
+              .allowDataUrl=${step.handler === "zwave_js"}
+              allow-svg
+              breaks
+              .content=${description}
+            ></ha-markdown>
           `
         : "";
     },

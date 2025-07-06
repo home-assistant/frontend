@@ -235,7 +235,7 @@ export default class HaAutomationAction extends LitElement {
   private async _actionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const actions = [
+    let actions = [
       ...this.actions.slice(0, index),
       data,
       ...this.actions.slice(index),
@@ -243,7 +243,15 @@ export default class HaAutomationAction extends LitElement {
     // Add action locally to avoid UI jump
     this.actions = actions;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.actions });
+    if (this.actions !== actions) {
+      // Ensure action is added even after update
+      actions = [
+        ...this.actions.slice(0, index),
+        data,
+        ...this.actions.slice(index),
+      ];
+    }
+    fireEvent(this, "value-changed", { value: actions });
   }
 
   private async _actionRemoved(ev: CustomEvent): Promise<void> {

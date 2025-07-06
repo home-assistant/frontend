@@ -88,7 +88,7 @@ class HcLayout extends LitElement {
       font-family: var(--ha-card-header-font-family, inherit);
       font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
       letter-spacing: -0.012em;
-      line-height: 32px;
+      line-height: var(--ha-line-height-condensed);
       padding: 24px 16px 16px;
       display: block;
       margin: 0;

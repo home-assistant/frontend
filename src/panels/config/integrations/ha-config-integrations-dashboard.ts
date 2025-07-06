@@ -406,11 +406,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           ${!this._showDisabled && this.narrow && disabledConfigEntries.length
             ? html`<span class="badge">${disabledConfigEntries.length}</span>`
             : ""}
-          <ha-button-menu
-            multi
-            @action=${this._handleMenuAction}
-            @click=${this._preventDefault}
-          >
+          <ha-button-menu multi @action=${this._handleMenuAction}>
             <ha-icon-button
               slot="trigger"
               .label=${this.hass.localize("ui.common.menu")}
@@ -447,6 +443,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.devices}
+        has-fab
       >
         ${this.narrow
           ? html`
@@ -984,9 +981,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           grid-gap: 8px 8px;
           padding: 8px 16px 16px;
         }
-        .container:last-of-type {
-          margin-bottom: 64px;
-        }
         .empty-message {
           margin: auto;
           text-align: center;
@@ -1063,20 +1057,18 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         .badge {
           min-width: 20px;
-          box-sizing: border-box;
+          min-height: 20px;
           border-radius: 50%;
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 20px;
-          text-align: center;
-          padding: 0px 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           color: var(--text-primary-color);
           position: absolute;
           right: 0px;
-          inset-inline-end: 0px;
-          inset-inline-start: initial;
           top: 4px;
-          font-size: 0.65em;
+          font-size: var(--ha-font-size-s);
         }
         .menu-badge-container {
           position: relative;

@@ -6,6 +6,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { stringCompare } from "../common/string/compare";
+import { deepEqual } from "../common/util/deep-equal";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
@@ -37,9 +38,13 @@ export class HaFilterDevices extends LitElement {
 
     if (!this.hasUpdated) {
       loadVirtualizer();
-      if (this.value?.length) {
-        this._findRelated();
-      }
+    }
+
+    if (
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"))
+    ) {
+      this._findRelated();
     }
   }
 
@@ -110,7 +115,6 @@ export class HaFilterDevices extends LitElement {
       this.value = [...(this.value || []), value];
     }
     listItem.selected = this.value?.includes(value);
-    this._findRelated();
   }
 
   protected updated(changed) {
@@ -160,11 +164,11 @@ export class HaFilterDevices extends LitElement {
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
+      this.value = [];
       fireEvent(this, "data-table-filter-changed", {
         value: [],
         items: undefined,
       });
-      this.value = [];
       return;
     }
 
@@ -176,7 +180,6 @@ export class HaFilterDevices extends LitElement {
         relatedPromises.push(findRelated(this.hass, "device", deviceId));
       }
     }
-    this.value = value;
     const results = await Promise.all(relatedPromises);
     const items = new Set<string>();
     for (const result of results) {
@@ -235,7 +238,7 @@ export class HaFilterDevices extends LitElement {
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

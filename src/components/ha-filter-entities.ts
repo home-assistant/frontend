@@ -17,6 +17,7 @@ import "./ha-expansion-panel";
 import "./ha-list";
 import "./ha-state-icon";
 import "./search-input-outlined";
+import { deepEqual } from "../common/util/deep-equal";
 
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
@@ -39,9 +40,13 @@ export class HaFilterEntities extends LitElement {
 
     if (!this.hasUpdated) {
       loadVirtualizer();
-      if (this.value?.length) {
-        this._findRelated();
-      }
+    }
+
+    if (
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"))
+    ) {
+      this._findRelated();
     }
   }
 
@@ -131,7 +136,6 @@ export class HaFilterEntities extends LitElement {
       this.value = [...(this.value || []), value];
     }
     listItem.selected = this.value?.includes(value);
-    this._findRelated();
   }
 
   private _expandedWillChange(ev) {
@@ -178,11 +182,11 @@ export class HaFilterEntities extends LitElement {
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
+      this.value = [];
       fireEvent(this, "data-table-filter-changed", {
         value: [],
         items: undefined,
       });
-      this.value = [];
       return;
     }
 
@@ -249,7 +253,7 @@ export class HaFilterEntities extends LitElement {
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);

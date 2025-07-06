@@ -1,5 +1,4 @@
 import { mdiDelete, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
@@ -19,11 +18,12 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
+import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
-import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsClimateSwingHorizontalModesCardFeature } from "../../card-features/hui-climate-swing-horizontal-modes-card-feature";
+import { supportsClimateSwingModesCardFeature } from "../../card-features/hui-climate-swing-modes-card-feature";
 import { supportsCounterActionsCardFeature } from "../../card-features/hui-counter-actions-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover-open-close-card-feature";
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
@@ -47,14 +47,22 @@ import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-f
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
-import type { LovelaceCardFeatureConfig } from "../../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
 import { getCardFeatureElementClass } from "../../create-element/create-card-feature-element";
 
 export type FeatureType = LovelaceCardFeatureConfig["type"];
-type SupportsFeature = (stateObj: HassEntity) => boolean;
+
+type SupportsFeature = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext
+) => boolean;
 
 const UI_FEATURE_TYPES = [
   "alarm-modes",
+  "area-controls",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -89,6 +97,7 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
+  "area-controls",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -110,6 +119,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   SupportsFeature | undefined
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
+  "area-controls": supportsAreaControlsCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
   "climate-swing-horizontal-modes":
@@ -152,7 +162,8 @@ customCardFeatures.forEach((feature) => {
 });
 
 export const getSupportedFeaturesType = (
-  stateObj: HassEntity,
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext,
   featuresTypes?: string[]
 ) => {
   const filteredFeaturesTypes = UI_FEATURE_TYPES.filter(
@@ -164,23 +175,41 @@ export const getSupportedFeaturesType = (
   );
   return filteredFeaturesTypes
     .concat(customFeaturesTypes)
-    .filter((type) => supportsFeaturesType(stateObj, type));
+    .filter((type) => supportsFeaturesType(hass, context, type));
 };
 
-export const supportsFeaturesType = (stateObj: HassEntity, type: string) => {
+export const supportsFeaturesType = (
+  hass: HomeAssistant,
+  context: LovelaceCardFeatureContext,
+  type: string
+) => {
   if (isCustomType(type)) {
     const customType = stripCustomPrefix(type);
     const customFeatureEntry = CUSTOM_FEATURE_ENTRIES[customType];
-    if (!customFeatureEntry?.supported) return true;
+
+    if (!customFeatureEntry) {
+      return false;
+    }
     try {
-      return customFeatureEntry.supported(stateObj);
+      if (customFeatureEntry.isSupported) {
+        return customFeatureEntry.isSupported(hass, context);
+      }
+      // Fallback to the old supported method
+      if (customFeatureEntry.supported) {
+        const stateObj = context.entity_id
+          ? hass.states[context.entity_id]
+          : undefined;
+        if (!stateObj) return false;
+        return customFeatureEntry.supported(stateObj);
+      }
+      return true;
     } catch {
       return false;
     }
   }
 
   const supportsFeature = SUPPORTS_FEATURE_TYPES[type];
-  return !supportsFeature || supportsFeature(stateObj);
+  return !supportsFeature || supportsFeature(hass, context);
 };
 
 declare global {
@@ -195,7 +224,7 @@ declare global {
 export class HuiCardFeaturesEditor extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj?: HassEntity;
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false })
   public features?: LovelaceCardFeatureConfig[];
@@ -209,13 +238,17 @@ export class HuiCardFeaturesEditor extends LitElement {
   private _featuresKeys = new WeakMap<LovelaceCardFeatureConfig, string>();
 
   private _supportsFeatureType(type: string): boolean {
-    if (!this.stateObj) return false;
-    return supportsFeaturesType(this.stateObj, type);
+    if (!this.hass || !this.context) return false;
+    return supportsFeaturesType(this.hass, this.context, type);
   }
 
   private _getSupportedFeaturesType() {
-    if (!this.stateObj) return [];
-    return getSupportedFeaturesType(this.stateObj, this.featuresTypes);
+    if (!this.hass || !this.context) return [];
+    return getSupportedFeaturesType(
+      this.hass,
+      this.context,
+      this.featuresTypes
+    );
   }
 
   private _isFeatureTypeEditable(type: string) {
@@ -288,7 +321,7 @@ export class HuiCardFeaturesEditor extends LitElement {
                   <div class="feature-content">
                     <div>
                       <span> ${this._getFeatureTypeLabel(type)} </span>
-                      ${this.stateObj && !supported
+                      ${this.context && !supported
                         ? html`
                             <span class="secondary">
                               ${this.hass!.localize(
@@ -379,7 +412,14 @@ export class HuiCardFeaturesEditor extends LitElement {
 
     let newFeature: LovelaceCardFeatureConfig;
     if (elClass && elClass.getStubConfig) {
-      newFeature = await elClass.getStubConfig(this.hass!, this.stateObj);
+      try {
+        newFeature = await elClass.getStubConfig(this.hass!, this.context!);
+      } catch (_err) {
+        const stateObj = this.context!.entity_id
+          ? this.hass!.states[this.context!.entity_id]
+          : undefined;
+        newFeature = await elClass.getStubConfig(this.hass!, stateObj);
+      }
     } else {
       newFeature = { type: value } as LovelaceCardFeatureConfig;
     }

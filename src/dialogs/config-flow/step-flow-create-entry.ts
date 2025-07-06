@@ -10,13 +10,13 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
-import { slugify } from "../../common/string/slugify";
 import "../../components/ha-area-picker";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device_registry";
 import {
+  getAutomaticEntityIds,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
 } from "../../data/entity_registry";
@@ -182,19 +182,11 @@ class StepFlowCreateEntry extends LitElement {
 
   private async _flowDone(): Promise<void> {
     if (Object.keys(this._deviceUpdate).length) {
-      const renamedDevices: {
-        deviceId: string;
-        oldDeviceName: string | null | undefined;
-        newDeviceName: string;
-      }[] = [];
+      const renamedDevices: string[] = [];
       const deviceUpdates = Object.entries(this._deviceUpdate).map(
         ([deviceId, update]) => {
           if (update.name) {
-            renamedDevices.push({
-              deviceId,
-              oldDeviceName: computeDeviceName(this.hass.devices[deviceId]),
-              newDeviceName: update.name,
-            });
+            renamedDevices.push(deviceId);
           }
           return updateDeviceRegistryEntry(this.hass, deviceId, {
             name_by_user: update.name,
@@ -209,45 +201,47 @@ class StepFlowCreateEntry extends LitElement {
           });
         }
       );
+      await Promise.allSettled(deviceUpdates);
       const entityUpdates: Promise<any>[] = [];
-      renamedDevices.forEach(({ deviceId, oldDeviceName, newDeviceName }) => {
-        if (!oldDeviceName) {
-          return;
-        }
+      const entityIds: string[] = [];
+      renamedDevices.forEach((deviceId) => {
         const entities = this._deviceEntities(
           deviceId,
           Object.values(this.hass.entities)
         );
-        const oldDeviceSlug = slugify(oldDeviceName);
-        const newDeviceSlug = slugify(newDeviceName);
-        entities.forEach((entity) => {
-          const oldId = entity.entity_id;
-
-          if (oldId.includes(oldDeviceSlug)) {
-            const newEntityId = oldId.replace(oldDeviceSlug, newDeviceSlug);
-            entityUpdates.push(
-              updateEntityRegistryEntry(this.hass, entity.entity_id, {
-                new_entity_id: newEntityId,
-              }).catch((err) =>
-                showAlertDialog(this, {
-                  text: this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.error_saving_entity",
-                    { error: err.message }
-                  ),
-                })
-              )
-            );
-          }
-        });
+        entityIds.push(...entities.map((entity) => entity.entity_id));
       });
-      await Promise.allSettled([...deviceUpdates, ...entityUpdates]);
+
+      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+
+      Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
+        if (newEntityId) {
+          entityUpdates.push(
+            updateEntityRegistryEntry(this.hass, oldEntityId, {
+              new_entity_id: newEntityId,
+            }).catch((err) =>
+              showAlertDialog(this, {
+                text: this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.error_saving_entity",
+                  { error: err.message }
+                ),
+              })
+            )
+          );
+        }
+      });
+      await Promise.allSettled(entityUpdates);
     }
 
     fireEvent(this, "flow-update", { step: undefined });
     if (this.step.result && this.navigateToResult) {
-      navigate(
-        `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-      );
+      if (this.devices.length === 1) {
+        navigate(`/config/devices/device/${this.devices[0].id}`);
+      } else {
+        navigate(
+          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+        );
+      }
     }
   }
 

@@ -10,6 +10,7 @@ import {
   mdiMenuDown,
   mdiPencilOff,
   mdiPlus,
+  mdiRestore,
   mdiRestoreAlert,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -95,6 +96,7 @@ import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
+import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -952,6 +954,21 @@ ${
       )}
     </div>
   </ha-md-menu-item>
+
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
+    <ha-svg-icon
+      slot="start"
+      .path=${mdiRestore}
+    ></ha-svg-icon>
+    <div slot="headline">
+      ${this.hass.localize(
+        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+      )}
+    </div>
+  </ha-md-menu-item>
+
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
@@ -1082,10 +1099,10 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
-    this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -1098,9 +1115,10 @@ ${
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
-    const label = this._searchParms.has("label");
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!domain && !configEntry && !label && !device) {
       return;
     }
 
@@ -1109,20 +1127,10 @@ ${
     this._filters = {
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
       config_entry: configEntry ? [configEntry] : [],
       sub_entry: subEntry ? [subEntry] : [],
-    };
-    this._filterLabel();
-  }
-
-  private _filterLabel() {
-    const label = this._searchParms.get("label");
-    if (!label) {
-      return;
-    }
-    this._filters = {
-      ...this._filters,
-      "ha-filter-labels": [label],
     };
   }
 
@@ -1133,6 +1141,11 @@ ${
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
+
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {
@@ -1367,9 +1380,14 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
+  };
+
+  private _restoreEntityIdSelected = () => {
+    regenerateEntityIds(this, this.hass, this._selected);
+
+    this._clearSelection();
   };
 
   private _removeSelected = async () => {

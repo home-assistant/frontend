@@ -487,7 +487,7 @@ class PanelEnergy extends LitElement {
           position: fixed;
           top: 0;
           width: var(--mdc-top-app-bar-width, 100%);
-          padding-top: env(safe-area-inset-top);
+          padding-top: var(--safe-area-inset-top);
           z-index: 4;
           transition: box-shadow 200ms linear;
           display: flex;
@@ -520,7 +520,7 @@ class PanelEnergy extends LitElement {
         }
         .main-title {
           margin: var(--margin-title);
-          line-height: 20px;
+          line-height: var(--ha-line-height-normal);
           flex-grow: 1;
         }
         hui-view-container {
@@ -528,12 +528,12 @@ class PanelEnergy extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
-          padding-top: calc(var(--header-height) + env(safe-area-inset-top));
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-          padding-inline-start: env(safe-area-inset-left);
-          padding-inline-end: env(safe-area-inset-right);
-          padding-bottom: env(safe-area-inset-bottom);
+          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
+          padding-left: var(--safe-area-inset-left);
+          padding-right: var(--safe-area-inset-right);
+          padding-inline-start: var(--safe-area-inset-left);
+          padding-inline-end: var(--safe-area-inset-right);
+          padding-bottom: var(--safe-area-inset-bottom);
         }
         hui-view {
           flex: 1 1 100%;

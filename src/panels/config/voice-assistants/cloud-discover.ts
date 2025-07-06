@@ -128,7 +128,7 @@ export class CloudDiscover extends LitElement {
     .header {
       font-size: var(--ha-font-size-3xl);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 36px;
+      line-height: var(--ha-line-height-condensed);
       text-align: center;
       max-width: 600px;
       margin: 0 auto 8px auto;
@@ -136,7 +136,7 @@ export class CloudDiscover extends LitElement {
     @media (min-width: 800px) {
       .header {
         font-size: var(--ha-font-size-4xl);
-        line-height: 40px;
+        line-height: var(--ha-line-height-condensed);
         margin-bottom: 16px;
       }
     }
@@ -178,14 +178,14 @@ export class CloudDiscover extends LitElement {
     .feature h2 {
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-medium);
-      line-height: 24px;
+      line-height: var(--ha-line-height-normal);
       margin-top: 0;
       margin-bottom: 8px;
     }
     .feature p {
       font-size: var(--ha-font-size-m);
       font-weight: var(--ha-font-weight-normal);
-      line-height: 20px;
+      line-height: var(--ha-line-height-condensed);
       margin: 0;
     }
     .more {

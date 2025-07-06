@@ -162,14 +162,14 @@ export class CloudStepIntro extends LitElement {
       .feature h2 {
         font-size: var(--ha-font-size-l);
         font-weight: var(--ha-font-weight-medium);
-        line-height: 24px;
+        line-height: var(--ha-line-height-normal);
         margin-top: 0;
         margin-bottom: 8px;
       }
       .feature p {
         font-size: var(--ha-font-size-m);
         font-weight: var(--ha-font-weight-normal);
-        line-height: 20px;
+        line-height: var(--ha-line-height-condensed);
         margin: 0;
       }
     `,
