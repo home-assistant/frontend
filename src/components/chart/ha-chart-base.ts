@@ -29,6 +29,7 @@ import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../chips/ha-assist-chip";
 import { downSampleLineData } from "./down-sample";
+import { colorVariables } from "../../resources/theme/color.globals";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -333,6 +334,13 @@ export class HaChartBase extends LitElement {
         const { start, end } = e.batch?.[0] ?? e;
         this._isZoomed = start !== 0 || end !== 100;
         this._zoomRatio = (end - start) / 100;
+        if (this._isTouchDevice) {
+          // zooming changes the axis pointer so we need to hide it
+          this.chart?.dispatchAction({
+            type: "hideTip",
+            from: "datazoom",
+          });
+        }
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
@@ -352,6 +360,65 @@ export class HaChartBase extends LitElement {
             this._handleClickZoom(e);
           } else {
             this._lastTapTime = Date.now();
+          }
+        });
+        // show axis pointer handle on touch devices
+        let dragJustEnded = false;
+        let lastTipX: number | undefined;
+        let lastTipY: number | undefined;
+        this.chart.on("showTip", (e: any) => {
+          lastTipX = e.x;
+          lastTipY = e.y;
+          this.chart?.setOption({
+            xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
+              (axis: XAXisOption) => ({
+                ...axis,
+                axisPointer: {
+                  ...axis.axisPointer,
+                  status: "show",
+                  handle: {
+                    ...axis.axisPointer?.handle,
+                    show: true,
+                  },
+                },
+              })
+            ),
+          });
+        });
+        this.chart.on("hideTip", (e: any) => {
+          // the drag end event doesn't have a `from` property
+          if (e.from) {
+            if (dragJustEnded) {
+              // hideTip is fired twice when the drag ends, so we need to ignore the second one
+              dragJustEnded = false;
+              return;
+            }
+            this.chart?.setOption({
+              xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
+                (axis: XAXisOption) => ({
+                  ...axis,
+                  axisPointer: {
+                    ...axis.axisPointer,
+                    handle: {
+                      ...axis.axisPointer?.handle,
+                      show: false,
+                    },
+                    status: "hide",
+                  },
+                })
+              ),
+            });
+            this.chart?.dispatchAction({
+              type: "downplay",
+            });
+          } else if (lastTipX != null && lastTipY != null) {
+            // echarts hides the tip as soon as the drag ends, so we need to show it again
+            dragJustEnded = true;
+            this.chart?.dispatchAction({
+              type: "showTip",
+              x: lastTipX,
+              y: lastTipY,
+            });
           }
         });
       }
@@ -402,6 +469,17 @@ export class HaChartBase extends LitElement {
     if (xAxis) {
       xAxis = Array.isArray(xAxis) ? xAxis : [xAxis];
       xAxis = xAxis.map((axis: XAXisOption) => {
+        if (this._isTouchDevice) {
+          axis.axisPointer = {
+            handle: {
+              color: colorVariables["primary-color"],
+              margin: 0,
+              size: 20,
+              ...axis.axisPointer?.handle,
+            },
+            ...axis.axisPointer,
+          };
+        }
         if (axis.type !== "time" || axis.show === false) {
           return axis;
         }
