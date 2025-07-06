@@ -371,17 +371,20 @@ export class HaChartBase extends LitElement {
           lastTipY = e.y;
           this.chart?.setOption({
             xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-              (axis: XAXisOption) => ({
-                ...axis,
-                axisPointer: {
-                  ...axis.axisPointer,
-                  status: "show",
-                  handle: {
-                    ...axis.axisPointer?.handle,
-                    show: true,
-                  },
-                },
-              })
+              (axis: XAXisOption) =>
+                axis.show
+                  ? {
+                      ...axis,
+                      axisPointer: {
+                        ...axis.axisPointer,
+                        status: "show",
+                        handle: {
+                          ...axis.axisPointer?.handle,
+                          show: true,
+                        },
+                      },
+                    }
+                  : axis
             ),
           });
         });
@@ -395,17 +398,20 @@ export class HaChartBase extends LitElement {
             }
             this.chart?.setOption({
               xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-                (axis: XAXisOption) => ({
-                  ...axis,
-                  axisPointer: {
-                    ...axis.axisPointer,
-                    handle: {
-                      ...axis.axisPointer?.handle,
-                      show: false,
-                    },
-                    status: "hide",
-                  },
-                })
+                (axis: XAXisOption) =>
+                  axis.show
+                    ? {
+                        ...axis,
+                        axisPointer: {
+                          ...axis.axisPointer,
+                          handle: {
+                            ...axis.axisPointer?.handle,
+                            show: false,
+                          },
+                          status: "hide",
+                        },
+                      }
+                    : axis
               ),
             });
             this.chart?.dispatchAction({
