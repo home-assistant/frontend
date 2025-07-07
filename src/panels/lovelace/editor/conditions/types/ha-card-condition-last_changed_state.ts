@@ -99,7 +99,7 @@ export class HaCardConditionLastChangedState extends LitElement {
       case "within":
       case "after":
         return this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.state.for"
+          `ui.panel.lovelace.editor.condition-editor.condition.last_changed_state.${schema.name}`
         );
       default:
         return "";
