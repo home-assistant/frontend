@@ -5138,6 +5138,7 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "area": "Area",
+            "floor": "Floor",
             "integration": "Integration",
             "battery": "Battery",
             "disabled_by": "Disabled",

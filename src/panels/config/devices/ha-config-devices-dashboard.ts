@@ -19,6 +19,7 @@ import { formatShortDateTime } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import {
   PROTOCOL_INTEGRATIONS,
@@ -424,6 +425,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
+        let floorName = "—";
+        if (device.area_id && areas[device.area_id]?.floor_id) {
+          const floorId = areas[device.area_id].floor_id;
+          if (floorId && this.hass.floors && this.hass.floors[floorId]) {
+            floorName = computeFloorName(this.hass.floors[floorId]);
+          }
+        }
+
         return {
           ...device,
           name: computeDeviceNameDisplay(
@@ -441,6 +450,7 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
             device.area_id && areas[device.area_id]
               ? areas[device.area_id].name
               : "—",
+          floor: floorName,
           integration: deviceEntries.length
             ? deviceEntries
                 .map(
@@ -523,6 +533,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         filterable: true,
         groupable: true,
         minWidth: "120px",
+      },
+      floor: {
+        title: localize("ui.panel.config.devices.data_table.floor"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        minWidth: "120px",
+        defaultHidden: true,
       },
       integration: {
         title: localize("ui.panel.config.devices.data_table.integration"),
