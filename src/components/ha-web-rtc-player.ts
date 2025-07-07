@@ -47,8 +47,8 @@ class HaWebRtcPlayer extends LitElement {
   @property({ type: Boolean, attribute: "muted" })
   public muted = false;
 
-  @property({ type: Boolean, attribute: "twowayaudio" })
-  public twowayaudio = false;
+  @property({ type: Boolean, attribute: "two-way-audio" })
+  public twoWayAudio = false;
 
   @property({ type: Boolean, attribute: "autoplay" })
   public autoPlay = false;
@@ -290,7 +290,7 @@ class HaWebRtcPlayer extends LitElement {
 
     // On most platforms mediaDevices will be undefined if not running in a secure context
     this._twoWayAudio =
-      this.twowayaudio && navigator.mediaDevices !== undefined;
+      this.twoWayAudio && navigator.mediaDevices !== undefined;
 
     this._peerConnection = new RTCPeerConnection(
       this._clientConfig.configuration

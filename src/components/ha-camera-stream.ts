@@ -137,7 +137,7 @@ export class HaCameraStream extends LitElement {
         autoplay
         playsinline
         .muted=${this.muted}
-        .twowayaudio=${supportsFeature(
+        .twoWayAudio=${supportsFeature(
           this.stateObj!,
           CAMERA_SUPPORT_TWO_WAY_AUDIO
         )}
