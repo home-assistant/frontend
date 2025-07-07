@@ -7416,7 +7416,8 @@
               "state": {
                 "label": "Entity state",
                 "state_equal": "State is equal to",
-                "state_not_equal": "State is not equal to"
+                "state_not_equal": "State is not equal to",
+                "for": "For"
               },
               "location": {
                 "label": "Location",
