@@ -9,24 +9,28 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
 
 @customElement("ha-control-switch")
 export class HaControlSwitch extends LitElement {
-  @property({ type: Boolean, reflect: true }) public disabled = false;
+  @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public vertical = false;
 
   @property({ type: Boolean }) public reversed = false;
 
-  @property({ type: Boolean, reflect: true }) public checked = false;
+  @property({ type: Boolean }) public checked = false;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided on icon slot to pass an <ha-icon slot="icon-on"> in)
   @property({ attribute: false, type: String }) pathOn?: string;
 
   // SVG icon path (if you need a non SVG icon instead, use the provided off icon slot to pass an <ha-icon slot="icon-off"> in)
   @property({ attribute: false, type: String }) pathOff?: string;
+
+  @property({ type: String })
+  public label?: string;
 
   @property({ attribute: "touch-action" })
   public touchAction?: string;
@@ -36,17 +40,6 @@ export class HaControlSwitch extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
-    this.setAttribute("role", "switch");
-    if (!this.hasAttribute("tabindex")) {
-      this.setAttribute("tabindex", "0");
-    }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (changedProps.has("checked")) {
-      this.setAttribute("aria-checked", this.checked ? "true" : "false");
-    }
   }
 
   private _toggle() {
@@ -112,8 +105,6 @@ export class HaControlSwitch extends LitElement {
         if (this.disabled) return;
         this._toggle();
       });
-
-      this.addEventListener("keydown", this._keydown);
     }
   }
 
@@ -122,7 +113,6 @@ export class HaControlSwitch extends LitElement {
       this._mc.destroy();
       this._mc = undefined;
     }
-    this.removeEventListener("keydown", this._keydown);
   }
 
   private _keydown(ev: any) {
@@ -135,7 +125,18 @@ export class HaControlSwitch extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div id="switch" class="switch">
+      <div
+        id="switch"
+        class="switch"
+        @keydown=${this._keydown}
+        aria-checked=${this.checked ? "true" : "false"}
+        aria-label=${ifDefined(this.label)}
+        @click=${this._toggle}
+        role="switch"
+        tabindex="0"
+        ?checked=${this.checked}
+        ?disabled=${this.disabled}
+      >
         <div class="background"></div>
         <div class="button" aria-hidden="true">
           ${this.checked
@@ -164,16 +165,13 @@ export class HaControlSwitch extends LitElement {
       width: 100%;
       box-sizing: border-box;
       user-select: none;
-      cursor: pointer;
-      border-radius: var(--control-switch-border-radius);
-      outline: none;
       transition: box-shadow 180ms ease-in-out;
       -webkit-tap-highlight-color: transparent;
     }
-    :host(:focus-visible) {
+    .switch:focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-off-color);
     }
-    :host([checked]:focus-visible) {
+    .switch[checked]:focus-visible {
       box-shadow: 0 0 0 2px var(--control-switch-on-color);
     }
     .switch {
@@ -182,9 +180,15 @@ export class HaControlSwitch extends LitElement {
       height: 100%;
       width: 100%;
       border-radius: var(--control-switch-border-radius);
+      outline: none;
       overflow: hidden;
       padding: var(--control-switch-padding);
       display: flex;
+      cursor: pointer;
+    }
+    .switch[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .switch .background {
       position: absolute;
@@ -212,24 +216,24 @@ export class HaControlSwitch extends LitElement {
       align-items: center;
       justify-content: center;
     }
-    :host([checked]) .switch .background {
+    .switch[checked] .background {
       background-color: var(--control-switch-on-color);
     }
-    :host([checked]) .switch .button {
+    .switch[checked] .button {
       transform: translateX(100%);
       background-color: var(--control-switch-on-color);
     }
     :host([reversed]) .switch {
       flex-direction: row-reverse;
     }
-    :host([reversed][checked]) .switch .button {
+    :host([reversed]) .switch[checked] .button {
       transform: translateX(-100%);
     }
     :host([vertical]) {
       width: var(--control-switch-thickness);
       height: 100%;
     }
-    :host([vertical][checked]) .switch .button {
+    :host([vertical]) .switch[checked] .button {
       transform: translateY(100%);
     }
     :host([vertical]) .switch .button {
@@ -239,12 +243,8 @@ export class HaControlSwitch extends LitElement {
     :host([vertical][reversed]) .switch {
       flex-direction: column-reverse;
     }
-    :host([vertical][reversed][checked]) .switch .button {
+    :host([vertical][reversed]) .switch[checked] .button {
       transform: translateY(-100%);
-    }
-    :host([disabled]) {
-      opacity: 0.5;
-      cursor: not-allowed;
     }
   `;
 }
