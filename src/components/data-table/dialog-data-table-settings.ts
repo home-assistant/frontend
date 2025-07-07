@@ -8,7 +8,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "./ha-button";
+import "../ha-button";
 import { createCloseHeading } from "../ha-dialog";
 import "../ha-list";
 import "../ha-list-item";

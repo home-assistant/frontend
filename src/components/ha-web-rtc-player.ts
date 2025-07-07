@@ -24,7 +24,7 @@ import {
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
-import "../ha-button";
+import "./ha-button";
 
 /**
  * A WebRTC stream is established by first sending an offer through a signal
