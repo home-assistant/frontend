@@ -7223,6 +7223,9 @@
               "or": {
                 "label": "Or"
               },
+              "not": {
+                "label": "Not"
+              },
               "and": {
                 "label": "And"
               }

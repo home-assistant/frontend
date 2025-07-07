@@ -14,7 +14,8 @@ export type Condition =
   | ScreenCondition
   | UserCondition
   | OrCondition
-  | AndCondition;
+  | AndCondition
+  | NotCondition;
 
 // Legacy conditional card condition
 export interface LegacyCondition {
@@ -60,6 +61,11 @@ export interface OrCondition extends BaseCondition {
 
 export interface AndCondition extends BaseCondition {
   condition: "and";
+  conditions?: Condition[];
+}
+
+export interface NotCondition extends BaseCondition {
+  condition: "not";
   conditions?: Condition[];
 }
 
@@ -171,6 +177,11 @@ function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
   return checkConditionsMet(condition.conditions, hass);
 }
 
+function checkNotCondition(condition: NotCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return !checkConditionsMet(condition.conditions, hass);
+}
+
 function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
   if (!condition.conditions) return true;
   return condition.conditions.some((c) => checkConditionsMet([c], hass));
@@ -197,6 +208,8 @@ export function checkConditionsMet(
           return checkStateNumericCondition(c, hass);
         case "and":
           return checkAndCondition(c, hass);
+        case "not":
+          return checkNotCondition(c, hass);
         case "or":
           return checkOrCondition(c, hass);
         default:
@@ -269,6 +282,10 @@ function validateAndCondition(condition: AndCondition) {
   return condition.conditions != null;
 }
 
+function validateNotCondition(condition: NotCondition) {
+  return condition.conditions != null;
+}
+
 function validateOrCondition(condition: OrCondition) {
   return condition.conditions != null;
 }
@@ -298,6 +315,8 @@ export function validateConditionalConfig(
           return validateNumericStateCondition(c);
         case "and":
           return validateAndCondition(c);
+        case "not":
+          return validateNotCondition(c);
         case "or":
           return validateOrCondition(c);
         default:
