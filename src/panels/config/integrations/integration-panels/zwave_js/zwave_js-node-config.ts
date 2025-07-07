@@ -230,10 +230,26 @@ class ZWaveJSNodeConfig extends LitElement {
     item: ZWaveJSNodeConfigParam
   ): TemplateResult {
     const result = this._results[id];
+    let type = item.configuration_value_type;
 
-    const isTypeBoolean =
-      item.configuration_value_type === "boolean" ||
-      this._isEnumeratedBool(item);
+    if (
+      type === "manual_entry" &&
+      item.metadata.states &&
+      item.metadata.min != null &&
+      item.metadata.max != null &&
+      item.metadata.max - item.metadata.min <= 100
+    ) {
+      // https://github.com/zwave-js/backlog/issues/59
+      type = "enumerated";
+      for (let i = item.metadata.min; i <= item.metadata.max; i++) {
+        if (i in item.metadata.states) {
+          continue;
+        }
+        item.metadata.states[i] = i.toString();
+      }
+    }
+
+    const isTypeBoolean = type === "boolean" || this._isEnumeratedBool(item);
 
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
@@ -294,7 +310,7 @@ class ZWaveJSNodeConfig extends LitElement {
               ? this.hass.localize(
                   item.metadata.default === 1 ? "ui.common.yes" : "ui.common.no"
                 )
-              : item.configuration_value_type === "enumerated"
+              : type === "enumerated"
                 ? item.metadata.states[item.metadata.default] ||
                   item.metadata.default
                 : item.metadata.default
@@ -319,8 +335,7 @@ class ZWaveJSNodeConfig extends LitElement {
         </div>
       `;
     }
-
-    if (item.configuration_value_type === "manual_entry") {
+    if (type === "manual_entry") {
       return html`${labelAndDescription}
         <ha-textfield
           type="number"
@@ -340,7 +355,7 @@ class ZWaveJSNodeConfig extends LitElement {
         </ha-textfield>`;
     }
 
-    if (item.configuration_value_type === "enumerated") {
+    if (type === "enumerated") {
       return html`
         ${labelAndDescription}
         <ha-select
