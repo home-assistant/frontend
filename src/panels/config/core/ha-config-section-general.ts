@@ -394,7 +394,8 @@ class HaConfigSectionGeneral extends LitElement {
         flex-direction: column;
         display: flex;
       }
-      ha-card {
+      ha-card,
+      ai-task-pref {
         margin-bottom: 24px;
       }
       .card-content {
