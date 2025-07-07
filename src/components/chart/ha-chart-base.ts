@@ -379,6 +379,9 @@ export class HaChartBase extends LitElement {
                         ...axis.axisPointer,
                         status: "show",
                         handle: {
+                          color: colorVariables["primary-color"],
+                          margin: 0,
+                          size: 20,
                           ...axis.axisPointer?.handle,
                           show: true,
                         },
@@ -475,17 +478,6 @@ export class HaChartBase extends LitElement {
     if (xAxis) {
       xAxis = Array.isArray(xAxis) ? xAxis : [xAxis];
       xAxis = xAxis.map((axis: XAXisOption) => {
-        if (this._isTouchDevice) {
-          axis.axisPointer = {
-            handle: {
-              color: colorVariables["primary-color"],
-              margin: 0,
-              size: 20,
-              ...axis.axisPointer?.handle,
-            },
-            ...axis.axisPointer,
-          };
-        }
         if (axis.type !== "time" || axis.show === false) {
           return axis;
         }
