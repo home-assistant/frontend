@@ -1,5 +1,4 @@
 import "./ha-spinner";
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, nothing, LitElement } from "lit";
@@ -25,6 +24,7 @@ import {
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
+import "../ha-button";
 
 /**
  * A WebRTC stream is established by first sending an offer through a signal
@@ -204,12 +204,12 @@ class HaWebRtcPlayer extends LitElement {
       ? nothing
       : html`
           <div class="video-controls">
-            <mwc-button @click=${this.togglePause} halign id="toggle_pause">
+            <ha-button @click=${this.togglePause} halign id="toggle_pause">
               <ha-svg-icon
                 .path=${this._paused ? mdiPlay : mdiPause}
               ></ha-svg-icon>
-            </mwc-button>
-            <mwc-button
+            </ha-button>
+            <ha-button
               @click=${this.toggleMute}
               halign
               id="toggle_mute"
@@ -218,8 +218,8 @@ class HaWebRtcPlayer extends LitElement {
               <ha-svg-icon
                 .path=${this._videoEl.muted ? mdiVolumeOff : mdiVolumeHigh}
               ></ha-svg-icon>
-            </mwc-button>
-            <mwc-button
+            </ha-button>
+            <ha-button
               @click=${this.toggleMic}
               halign
               id="toggle_mic"
@@ -231,7 +231,7 @@ class HaWebRtcPlayer extends LitElement {
                   ? mdiMicrophone
                   : mdiMicrophoneOff}
               ></ha-svg-icon>
-            </mwc-button>
+            </ha-button>
           </div>
         `;
     return html`
@@ -641,7 +641,7 @@ class HaWebRtcPlayer extends LitElement {
       float: right;
     }
 
-    mwc-button {
+    ha-button {
       --mdc-theme-primary: white;
     }
   `;
