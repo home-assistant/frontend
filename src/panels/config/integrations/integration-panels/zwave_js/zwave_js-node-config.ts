@@ -232,7 +232,9 @@ class ZWaveJSNodeConfig extends LitElement {
   ): TemplateResult {
     const result = this._results[id];
 
-    const isTypeBoolean = item.configuration_value_type === "boolean" || this._isEnumeratedBool(item);
+    const isTypeBoolean =
+      item.configuration_value_type === "boolean" ||
+      this._isEnumeratedBool(item);
 
     const labelAndDescription = html`
       <span slot="prefix" class="prefix">
