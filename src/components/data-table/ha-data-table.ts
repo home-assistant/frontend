@@ -507,7 +507,9 @@ export class HaDataTable extends LitElement {
                     this.hasFab,
                     this.groupColumn,
                     this.groupOrder,
-                    this._collapsedGroups
+                    this._collapsedGroups,
+                    this.sortColumn,
+                    this.sortDirection
                   )}
                   .keyFunction=${this._keyFunction}
                   .renderItem=${renderRow}
@@ -702,13 +704,15 @@ export class HaDataTable extends LitElement {
       hasFab: boolean,
       groupColumn: string | undefined,
       groupOrder: string[] | undefined,
-      collapsedGroups: string[]
+      collapsedGroups: string[],
+      sortColumn: string | undefined,
+      sortDirection: SortingDirection
     ) => {
       if (appendRow || hasFab || groupColumn) {
         let items = [...data];
 
         if (groupColumn) {
-          const isGroupSortColumn = this.sortColumn === this.groupColumn;
+          const isGroupSortColumn = sortColumn === groupColumn;
           const grouped = groupBy(items, (item) => item[groupColumn]);
           if (grouped.undefined) {
             // make sure ungrouped items are at the bottom
@@ -725,7 +729,7 @@ export class HaDataTable extends LitElement {
                   b,
                   this.hass.locale.language
                 );
-                if (this.sortDirection === "asc") {
+                if (sortDirection === "asc") {
                   return comparison;
                 }
                 return comparison * -1;
@@ -855,7 +859,9 @@ export class HaDataTable extends LitElement {
       this.hasFab,
       this.groupColumn,
       this.groupOrder,
-      this._collapsedGroups
+      this._collapsedGroups,
+      this.sortColumn,
+      this.sortDirection
     );
 
     if (
