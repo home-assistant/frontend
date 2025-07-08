@@ -29,6 +29,13 @@ import {
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
+import { fireEvent } from "../../../common/dom/fire_event";
+
+declare global {
+  interface HASSDomEvents {
+    "more-info-update-clicked": undefined;
+  }
+}
 
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
@@ -406,6 +413,8 @@ class MoreInfoUpdate extends LitElement {
     }
 
     this.hass.callService("update", "install", installData);
+
+    fireEvent(this, "more-info-update-clicked");
   }
 
   private _createBackupChanged(ev) {
