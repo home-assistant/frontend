@@ -82,7 +82,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       const width = entries[0]?.contentRect.width;
       if (width < 245) {
-        result.height = "very-very-narrow";
+        result.width = "very-very-narrow";
       } else if (width < 300) {
         result.width = "very-narrow";
       } else if (width < 375) {
@@ -93,7 +93,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       if (height < 235) {
         result.height = "short";
       }
-
       return result;
     },
   });
@@ -243,11 +242,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
 
     let itemsToShow = this._config?.forecast_slots ?? 5;
-    if (this._sizeController.value.width === "very-very-narrow") {
+    if (this._sizeController.value?.width === "very-very-narrow") {
       itemsToShow = Math.min(3, itemsToShow);
-    } else if (this._sizeController.value.width === "very-narrow") {
+    } else if (this._sizeController.value?.width === "very-narrow") {
       itemsToShow = Math.min(5, itemsToShow);
-    } else if (this._sizeController.value.width === "narrow") {
+    } else if (this._sizeController.value?.width === "narrow") {
       itemsToShow = Math.min(7, itemsToShow);
     }
 
@@ -266,8 +265,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         class=${classMap({
-          [this._sizeController.value.height]: true,
-          [this._sizeController.value.width]: true,
+          [this._sizeController.value?.height]: Boolean(
+            this._sizeController.value
+          ),
+          [this._sizeController.value?.width]: Boolean(
+            this._sizeController.value
+          ),
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

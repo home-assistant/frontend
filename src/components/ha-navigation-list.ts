@@ -44,7 +44,7 @@ class HaNavigationList extends LitElement {
               >
                 <ha-svg-icon .path=${page.iconPath}></ha-svg-icon>
               </div>
-              <span>${page.name}</span>
+              <span slot="headline">${page.name}</span>
               ${this.hasSecondary
                 ? html`<span slot="supporting-text">${page.description}</span>`
                 : ""}

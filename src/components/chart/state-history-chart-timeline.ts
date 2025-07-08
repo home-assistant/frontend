@@ -66,6 +66,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
         .data=${this._chartData as ECOption["series"]}
+        small-controls
         @chart-click=${this._handleChartClick}
       ></ha-chart-base>
     `;

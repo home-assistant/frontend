@@ -205,7 +205,7 @@ class HuiEnergyDistrubutionCard
     let homeHighCarbonCircumference: number | undefined;
 
     // This fallback is used in the demo
-    let electricityMapUrl = "https://app.electricitymap.org";
+    let electricityMapUrl = "https://app.electricitymaps.com";
 
     if (
       hasGrid &&

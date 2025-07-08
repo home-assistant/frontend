@@ -54,6 +54,9 @@ class HaConfigNavigation extends LitElement {
               `,
       }));
     return html`
+      <div class="visually-hidden" role="heading" aria-level="2">
+        ${this.hass.localize("panel.config")}
+      </div>
       <ha-navigation-list
         has-secondary
         .hass=${this.hass}
@@ -67,6 +70,17 @@ class HaConfigNavigation extends LitElement {
   static styles: CSSResultGroup = css`
     ha-navigation-list {
       --navigation-list-item-title-font-size: var(--ha-font-size-l);
+    }
+    /* Accessibility */
+    .visually-hidden {
+      position: absolute;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      width: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
     }
   `;
 }

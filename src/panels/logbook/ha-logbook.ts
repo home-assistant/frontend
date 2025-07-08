@@ -88,6 +88,8 @@ export class HaLogbook extends LitElement {
     1000
   );
 
+  private _logbookSubscriptionId = 0;
+
   protected render() {
     if (!isComponentLoaded(this.hass, "logbook")) {
       return nothing;
@@ -278,13 +280,20 @@ export class HaLogbook extends LitElement {
     }
 
     try {
+      this._logbookSubscriptionId++;
+
       this._unsubLogbook = subscribeLogbook(
         this.hass,
-        (streamMessage) => {
+        (streamMessage, subscriptionId) => {
+          if (subscriptionId !== this._logbookSubscriptionId) {
+            // Ignore messages from previous subscriptions
+            return;
+          }
           this._processOrQueueStreamMessage(streamMessage);
         },
         logbookPeriod.startTime.toISOString(),
         logbookPeriod.endTime.toISOString(),
+        this._logbookSubscriptionId,
         this.entityIds,
         this.deviceIds
       );

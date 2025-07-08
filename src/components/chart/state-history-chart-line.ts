@@ -226,22 +226,24 @@ export class StateHistoryChartLine extends LitElement {
         this.maxYAxis;
       if (typeof minYAxis === "number") {
         if (this.fitYData) {
-          minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
+          minYAxis = ({ min }) =>
+            Math.min(this._roundYAxis(min, Math.floor), this.minYAxis!);
         }
       } else if (this.logarithmicScale) {
         minYAxis = ({ min }) => {
           const value = min > 0 ? min * 0.95 : min * 1.05;
-          return Math.abs(value) < 1 ? value : Math.floor(value);
+          return this._roundYAxis(value, Math.floor);
         };
       }
       if (typeof maxYAxis === "number") {
         if (this.fitYData) {
-          maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
+          maxYAxis = ({ max }) =>
+            Math.max(this._roundYAxis(max, Math.ceil), this.maxYAxis!);
         }
       } else if (this.logarithmicScale) {
         maxYAxis = ({ max }) => {
           const value = max > 0 ? max * 1.05 : max * 0.95;
-          return Math.abs(value) < 1 ? value : Math.ceil(value);
+          return this._roundYAxis(value, Math.ceil);
         };
       }
       this._chartOptions = {
@@ -729,20 +731,17 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) => {
-    const formatOptions =
-      value >= 1 || value <= -1
-        ? undefined
-        : {
-            // show the first significant digit for tiny values
-            maximumFractionDigits: Math.max(
-              2,
-              // use the difference to the previous value to determine the number of significant digits #25526
-              -Math.floor(
-                Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
-              )
-            ),
-          };
-    const label = formatNumber(value, this.hass.locale, formatOptions);
+    // show the first significant digit for tiny values
+    const maximumFractionDigits = Math.max(
+      1,
+      // use the difference to the previous value to determine the number of significant digits #25526
+      -Math.floor(
+        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
+      )
+    );
+    const label = formatNumber(value, this.hass.locale, {
+      maximumFractionDigits,
+    });
     const width = measureTextWidth(label, 12) + 5;
     if (width > this._yWidth) {
       this._yWidth = width;
@@ -766,6 +765,10 @@ export class StateHistoryChartLine extends LitElement {
       }
     }
     return value;
+  }
+
+  private _roundYAxis(value: number, roundingFn: (value: number) => number) {
+    return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 }
 customElements.define("state-history-chart-line", StateHistoryChartLine);

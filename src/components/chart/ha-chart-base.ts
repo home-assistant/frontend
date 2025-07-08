@@ -9,6 +9,7 @@ import type {
   LegendComponentOption,
   XAXisOption,
   YAXisOption,
+  LineSeriesOption,
 } from "echarts/types/dist/shared";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -48,6 +49,9 @@ export class HaChartBase extends LitElement {
 
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
+
+  @property({ attribute: "small-controls", type: Boolean })
+  public smallControls?: boolean;
 
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
@@ -194,7 +198,7 @@ export class HaChartBase extends LitElement {
           <div class="chart"></div>
         </div>
         ${this._renderLegend()}
-        <div class="chart-controls">
+        <div class="chart-controls ${classMap({ small: this.smallControls })}">
           ${this._isZoomed
             ? html`<ha-icon-button
                 class="zoom-reset"
@@ -386,6 +390,7 @@ export class HaChartBase extends LitElement {
       type: "inside",
       orient: "horizontal",
       filterMode: "none",
+      xAxisIndex: 0,
       moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
       preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
       zoomLock: !this._isTouchDevice && !this._modifierPressed,
@@ -639,44 +644,46 @@ export class HaChartBase extends LitElement {
     const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
       | YAXisOption
       | undefined;
-    const series = ensureArray(this.data)
-      .filter((d) => !this._hiddenDatasets.has(String(d.name ?? d.id)))
-      .map((s) => {
-        if (s.type === "line") {
-          if (yAxis?.type === "log") {
-            // set <=0 values to null so they render as gaps on a log graph
-            return {
-              ...s,
-              data: s.data?.map((v) =>
-                Array.isArray(v)
-                  ? [
-                      v[0],
-                      typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
-                      ...v.slice(2),
-                    ]
-                  : v
-              ),
-            };
-          }
-          if (s.sampling === "minmax") {
-            const minX =
-              xAxis?.min && typeof xAxis.min === "number"
-                ? xAxis.min
-                : undefined;
-            const maxX =
-              xAxis?.max && typeof xAxis.max === "number"
-                ? xAxis.max
-                : undefined;
-            return {
-              ...s,
-              sampling: undefined,
-              data: downSampleLineData(s.data, this.clientWidth, minX, maxX),
-            };
-          }
+    const series = ensureArray(this.data).map((s) => {
+      const data = this._hiddenDatasets.has(String(s.name ?? s.id))
+        ? undefined
+        : s.data;
+      if (data && s.type === "line") {
+        if (yAxis?.type === "log") {
+          // set <=0 values to null so they render as gaps on a log graph
+          return {
+            ...s,
+            data: (data as LineSeriesOption["data"])!.map((v) =>
+              Array.isArray(v)
+                ? [
+                    v[0],
+                    typeof v[1] !== "number" || v[1] > 0 ? v[1] : null,
+                    ...v.slice(2),
+                  ]
+                : v
+            ),
+          };
         }
-        return s;
-      });
-    return series;
+        if (s.sampling === "minmax") {
+          const minX =
+            xAxis?.min && typeof xAxis.min === "number" ? xAxis.min : undefined;
+          const maxX =
+            xAxis?.max && typeof xAxis.max === "number" ? xAxis.max : undefined;
+          return {
+            ...s,
+            sampling: undefined,
+            data: downSampleLineData(
+              data as LineSeriesOption["data"],
+              this.clientWidth,
+              minX,
+              maxX
+            ),
+          };
+        }
+      }
+      return { ...s, data };
+    });
+    return series as ECOption["series"];
   }
 
   private _getDefaultHeight() {
@@ -784,6 +791,10 @@ export class HaChartBase extends LitElement {
       flex-direction: column;
       gap: 4px;
     }
+    .chart-controls.small {
+      top: 0;
+      flex-direction: row;
+    }
     .chart-controls ha-icon-button,
     .chart-controls ::slotted(ha-icon-button) {
       background: var(--card-background-color);
@@ -791,6 +802,11 @@ export class HaChartBase extends LitElement {
       --mdc-icon-button-size: 32px;
       color: var(--primary-color);
       border: 1px solid var(--divider-color);
+    }
+    .chart-controls.small ha-icon-button,
+    .chart-controls.small ::slotted(ha-icon-button) {
+      --mdc-icon-button-size: 22px;
+      --mdc-icon-size: 16px;
     }
     .chart-controls ha-icon-button.inactive,
     .chart-controls ::slotted(ha-icon-button.inactive) {
