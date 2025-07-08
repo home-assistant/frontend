@@ -131,7 +131,6 @@ export class HaControlSwitch extends LitElement {
         @keydown=${this._keydown}
         aria-checked=${this.checked ? "true" : "false"}
         aria-label=${ifDefined(this.label)}
-        @click=${this._toggle}
         role="switch"
         tabindex="0"
         ?checked=${this.checked}
