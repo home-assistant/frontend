@@ -307,6 +307,7 @@ class HaWebRtcPlayer extends LitElement {
     this._peerConnection.onicecandidate = this._handleIceCandidate;
     this._peerConnection.oniceconnectionstatechange =
       this._iceConnectionStateChanged;
+    this._peerConnection.onicegatheringstatechange = this._iceGatheringStateChanged;
 
     // just for debugging
     this._peerConnection.onsignalingstatechange = (ev) => {
@@ -399,6 +400,13 @@ class HaWebRtcPlayer extends LitElement {
     if (this._peerConnection?.iceConnectionState === "failed") {
       this._peerConnection.restartIce();
     }
+  };
+
+  private _iceGatheringStateChanged = (event) => {
+    this._logEvent(
+      "ice gathering state change",
+      this._peerConnection?.iceGatheringState
+    );
   };
 
   private async _handleOfferEvent(event: WebRtcOfferEvent) {
