@@ -93,6 +93,8 @@ export class HaMap extends ReactiveElement {
 
   @state() private _loaded = false;
 
+  @state() private _pauseAutoFit = false;
+
   public leafletMap?: Map;
 
   private Leaflet?: LeafletModuleType;
@@ -112,6 +114,8 @@ export class HaMap extends ReactiveElement {
   private _mapPaths: (Polyline | CircleMarker)[] = [];
 
   private _clickCount = 0;
+
+  private _isProgrammaticFit = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -145,7 +149,7 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_loaded") || changedProps.has("entities")) {
       this._drawEntities();
-      autoFitRequired = true;
+      autoFitRequired = !this._pauseAutoFit;
     } else if (this._loaded && oldHass && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
@@ -154,7 +158,7 @@ export class HaMap extends ReactiveElement {
           this.hass!.states[getEntityId(entity)]
         ) {
           this._drawEntities();
-          autoFitRequired = true;
+          autoFitRequired = !this._pauseAutoFit;
           break;
         }
       }
@@ -178,6 +182,7 @@ export class HaMap extends ReactiveElement {
     }
 
     if (changedProps.has("zoom")) {
+      this._isProgrammaticFit = true;
       this.leafletMap!.setZoom(this.zoom);
     }
 
@@ -234,13 +239,36 @@ export class HaMap extends ReactiveElement {
         }
         this._clickCount++;
       });
+      this.leafletMap.on("movestart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
+      });
+      this.leafletMap.on("moveend", () => {
+        this._isProgrammaticFit = false;
+      });
+      this.leafletMap.on("zoomstart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
+      });
+      this.leafletMap.on("zoomend", () => {
+        this._isProgrammaticFit = false;
+      });
       this._loaded = true;
     } finally {
       this._loading = false;
     }
   }
 
-  public fitMap(options?: { zoom?: number; pad?: number }): void {
+  public fitMap(options?: {
+    zoom?: number;
+    pad?: number;
+    unpause_autofit?: boolean;
+  }): void {
+    if (options?.unpause_autofit) {
+      this._pauseAutoFit = false;
+    }
     if (!this.leafletMap || !this.Leaflet || !this.hass) {
       return;
     }
@@ -250,6 +278,7 @@ export class HaMap extends ReactiveElement {
       !this._mapFocusZones.length &&
       !this.layers?.length
     ) {
+      this._isProgrammaticFit = true;
       this.leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -277,7 +306,7 @@ export class HaMap extends ReactiveElement {
     });
 
     bounds = bounds.pad(options?.pad ?? 0.5);
-
+    this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
   }
 
@@ -291,6 +320,7 @@ export class HaMap extends ReactiveElement {
     const bounds = this.Leaflet.latLngBounds(boundingbox).pad(
       options?.pad ?? 0.5
     );
+    this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
   }
 
