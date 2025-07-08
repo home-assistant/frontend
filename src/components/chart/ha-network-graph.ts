@@ -210,10 +210,8 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
             // set the position of the node at polarDistance from the center in a random direction
             const angle = Math.random() * 2 * Math.PI;
             echartsNode.x =
-              containerWidth / 2 +
               ((Math.cos(angle) * containerWidth) / 2) * node.polarDistance;
             echartsNode.y =
-              containerHeight / 2 +
               ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance;
             this._nodePositions[node.id] = {
               x: echartsNode.x,

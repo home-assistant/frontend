@@ -1,6 +1,11 @@
 import { customElement, property, state } from "lit/decorators";
 import { css, html, LitElement } from "lit";
 import memoizeOne from "memoize-one";
+import { mdiUpdate } from "@mdi/js";
+import type {
+  CallbackDataParams,
+  TopLevelFormatterParams,
+} from "echarts/types/dist/shared";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { configTabs } from "./zwave_js-config-router";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
@@ -23,6 +28,7 @@ import type {
 import { colorVariables } from "../../../../../resources/theme/color.globals";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import { debounce } from "../../../../../common/util/debounce";
+import { navigate } from "../../../../../common/navigate";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
@@ -45,6 +51,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
+  @state() private _live = false;
+
   public hassSubscribe() {
     const devices = Object.values(this.hass.devices).filter((device) =>
       device.config_entries.some((entry) => entry === this.configEntryId)
@@ -54,8 +62,11 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       subscribeZwaveNodeStatistics(this.hass!, device.id, (message) => {
         const nodeId = message.nodeId ?? message.node_id;
         this._devices[nodeId!] = device;
+        const isNew = !this._nodeStatistics[nodeId!];
         this._nodeStatistics[nodeId!] = message;
-        this._handleUpdatedNodeStatistics();
+        if (this._live || isNew) {
+          this._handleUpdatedNodeStatistics();
+        }
       })
     );
   }
@@ -79,8 +90,18 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
             this._nodeStatuses,
             this._nodeStatistics
           )}
+          .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        ></ha-network-graph
+        >
+          <ha-icon-button
+            slot="button"
+            class=${this._live ? "active" : "inactive"}
+            .path=${mdiUpdate}
+            @click=${this._toggleLive}
+            label=${this.hass.localize(
+              "ui.panel.config.zwave_js.visualization.toggle_live"
+            )}
+          ></ha-icon-button> </ha-network-graph
       ></hass-tabs-subpage>
     `;
   }
@@ -99,6 +120,45 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     // const neighbors = await fetchZwaveNeighbors(this.hass!, this.configEntryId);
     // console.log("neighbors", neighbors);
   }
+
+  private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
+    const { dataType, data } = params as CallbackDataParams;
+    if (dataType === "edge") {
+      const { source, target } = data as any;
+      const sourceDevice = this._devices[source];
+      const targetDevice = this._devices[target];
+      const sourceName =
+        sourceDevice?.name_by_user ?? sourceDevice?.name ?? source;
+      const targetName =
+        targetDevice?.name_by_user ?? targetDevice?.name ?? target;
+      let tip = `${sourceName} → ${targetName}`;
+      const route =
+        this._nodeStatistics[source]?.lwr || this._nodeStatistics[source]?.nlwr;
+      if (route?.protocol_data_rate) {
+        tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.data_rate")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}`)}`;
+      }
+      if (route?.rssi) {
+        tip += `<br><b>RSSI:</b> ${route.rssi}`;
+      }
+      return tip;
+    }
+    const { id, name } = data as any;
+    const device = this._devices[id];
+    const nodeStatus = this._nodeStatuses[id];
+    let tip = `${(params as any).marker} ${name}`;
+    tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.node_id")}:</b> ${id}`;
+    if (device) {
+      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.manufacturer")}:</b> ${device.manufacturer || "-"}`;
+      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.model")}:</b> ${device.model || "-"}`;
+    }
+    if (nodeStatus) {
+      tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.status")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.node_status.${nodeStatus.status}`)}`;
+      if (nodeStatus.zwave_plus_version) {
+        tip += `<br><b>Z-Wave Plus:</b> ${this.hass.localize("ui.panel.config.zwave_js.visualization.version")} ${nodeStatus.zwave_plus_version}`;
+      }
+    }
+    return tip;
+  };
 
   private _getNetworkData = memoizeOne(
     (
@@ -158,12 +218,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         nodes.push({
           id: String(node.node_id),
           name: device?.name_by_user ?? device?.name ?? String(node.node_id),
-          fixed: node.is_controller_node,
-          polarDistance: node.is_controller_node
-            ? 0
-            : node.status === NodeStatus.Dead
-              ? 1
-              : 0.5,
+          value: node.is_controller_node ? 3 : node.is_routing ? 2 : 1,
           category:
             node.status === NodeStatus.Dead
               ? 3
@@ -172,6 +227,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
                 : node.is_controller_node
                   ? 0
                   : 1,
+          symbolSize: node.is_controller_node ? 40 : node.is_routing ? 30 : 20,
           symbol: node.is_controller_node ? "roundRect" : "circle",
           itemStyle: {
             color:
@@ -183,6 +239,12 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
                     ? colorVariables["primary-color"]
                     : colorVariables["cyan-color"],
           },
+          polarDistance: node.is_controller_node
+            ? 0
+            : node.status === NodeStatus.Dead
+              ? 0.9
+              : 0.5,
+          fixed: node.is_controller_node,
         });
       });
 
@@ -190,22 +252,52 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
         const route = stats.lwr || stats.nlwr;
         if (route) {
           const hops = [
-            ...route.repeaters
-              .map(
-                (id) =>
-                  Object.entries(this._devices).find(
-                    ([_nodeId, d]) => d.id === id
-                  )?.[0]
-              )
-              .filter(Boolean),
-            controllerNode!,
+            ...route.repeaters.map((id, i) => [
+              Object.keys(this._devices).find(
+                (_nodeId) => this._devices[_nodeId]?.id === id
+              )?.[0],
+              route.repeater_rssi[i],
+            ]),
+            [controllerNode!, route.rssi],
           ];
-          let sourceNode = nodeId;
-          hops.forEach((repeater) => {
-            links.push({
-              source: String(sourceNode),
-              target: String(repeater),
-            });
+          let sourceNode: string = nodeId;
+          hops.forEach(([repeater, rssi]) => {
+            const RSSI = typeof rssi === "number" && rssi <= 0 ? rssi : -100;
+            const existingLink = links.find(
+              (link) =>
+                link.source === sourceNode && link.target === String(repeater)
+            );
+            const width = this._getLineWidth(RSSI);
+            if (existingLink) {
+              existingLink.value = Math.max(existingLink.value!, RSSI);
+              existingLink.lineStyle = {
+                ...existingLink.lineStyle,
+                width: Math.max(existingLink.lineStyle!.width!, width),
+                color:
+                  route.protocol_data_rate && RSSI > -100
+                    ? colorVariables["primary-color"]
+                    : existingLink.lineStyle!.color,
+                type:
+                  route.protocol_data_rate > 1
+                    ? "solid"
+                    : existingLink.lineStyle!.type,
+              };
+            } else {
+              links.push({
+                source: sourceNode,
+                target: String(repeater),
+                value: RSSI,
+                lineStyle: {
+                  width,
+                  color:
+                    route.protocol_data_rate && RSSI > -100
+                      ? colorVariables["primary-color"]
+                      : colorVariables["disabled-color"],
+                  type: route.protocol_data_rate > 1 ? "solid" : "dotted",
+                },
+                symbolSize: width * 3,
+              });
+            }
             sourceNode = String(repeater);
           });
         }
@@ -221,8 +313,31 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     this._nodeStatistics = { ...this._nodeStatistics };
   }, 500);
 
-  private _handleChartClick(_e: CustomEvent) {
-    // @TODO
+  private _handleChartClick(e: CustomEvent) {
+    if (
+      e.detail.dataType === "node" &&
+      e.detail.event.target.cursor === "pointer"
+    ) {
+      const { id } = e.detail.data;
+      const device = this._devices[id];
+      if (device) {
+        navigate(`/config/devices/device/${device.id}`);
+      }
+    }
+  }
+
+  private _toggleLive() {
+    this._live = !this._live;
+    if (this._live) {
+      this._fetchNetworkStatus();
+      this._handleUpdatedNodeStatistics();
+    } else {
+      this._handleUpdatedNodeStatistics.cancel();
+    }
+  }
+
+  private _getLineWidth(rssi: number): number {
+    return rssi > -33 ? 3 : rssi > -66 ? 2 : 1;
   }
 
   static get styles() {
