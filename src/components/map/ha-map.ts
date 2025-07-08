@@ -36,6 +36,8 @@ declare global {
   }
 }
 
+const PROGRAMMITIC_FIT_DELAY = 250;
+
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
@@ -118,13 +120,28 @@ export class HaMap extends ReactiveElement {
   private _pauseAutoFit = false;
 
   public connectedCallback(): void {
+    this._pauseAutoFit = false;
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
+    this._handleVisibilityChange();
     super.connectedCallback();
     this._loadMap();
     this._attachObserver();
   }
 
+  private _handleVisibilityChange = async () => {
+    if (!document.hidden) {
+      setTimeout(() => {
+        this._pauseAutoFit = false;
+      }, 500);
+    }
+  };
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     if (this.leafletMap) {
       this.leafletMap.remove();
       this.leafletMap = undefined;
@@ -184,6 +201,9 @@ export class HaMap extends ReactiveElement {
     if (changedProps.has("zoom")) {
       this._isProgrammaticFit = true;
       this.leafletMap!.setZoom(this.zoom);
+      setTimeout(() => {
+        this._isProgrammaticFit = false;
+      }, PROGRAMMITIC_FIT_DELAY);
     }
 
     if (
@@ -239,21 +259,15 @@ export class HaMap extends ReactiveElement {
         }
         this._clickCount++;
       });
-      this.leafletMap.on("movestart", () => {
-        if (!this._isProgrammaticFit) {
-          this._pauseAutoFit = true;
-        }
-      });
-      this.leafletMap.on("moveend", () => {
-        this._isProgrammaticFit = false;
-      });
       this.leafletMap.on("zoomstart", () => {
         if (!this._isProgrammaticFit) {
           this._pauseAutoFit = true;
         }
       });
-      this.leafletMap.on("zoomend", () => {
-        this._isProgrammaticFit = false;
+      this.leafletMap.on("movestart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
       });
       this._loaded = true;
     } finally {
@@ -286,6 +300,9 @@ export class HaMap extends ReactiveElement {
         ),
         options?.zoom || this.zoom
       );
+      setTimeout(() => {
+        this._isProgrammaticFit = false;
+      }, PROGRAMMITIC_FIT_DELAY);
       return;
     }
 
@@ -308,6 +325,9 @@ export class HaMap extends ReactiveElement {
     bounds = bounds.pad(options?.pad ?? 0.5);
     this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+    setTimeout(() => {
+      this._isProgrammaticFit = false;
+    }, PROGRAMMITIC_FIT_DELAY);
   }
 
   public fitBounds(
@@ -322,6 +342,9 @@ export class HaMap extends ReactiveElement {
     );
     this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+    setTimeout(() => {
+      this._isProgrammaticFit = false;
+    }, PROGRAMMITIC_FIT_DELAY);
   }
 
   private _drawLayers(prevLayers: Layer[] | undefined): void {
