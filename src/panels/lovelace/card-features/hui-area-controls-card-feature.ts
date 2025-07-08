@@ -204,21 +204,6 @@ class HuiAreaControlsCardFeature
       cards: [
         {
           type: "heading",
-          heading: "Controls",
-          heading_style: "subtitle",
-        },
-        ...entities.map<TileCardConfig>((entity) => ({
-          type: "tile",
-          entity: entity.entity_id,
-          features_position: "inline",
-          features: [
-            {
-              type: "light-brightness",
-            },
-          ],
-        })),
-        {
-          type: "heading",
           heading: "Actions",
           heading_style: "subtitle",
         },
@@ -258,6 +243,21 @@ class HuiAreaControlsCardFeature
             columns: 6,
           },
         } as ButtonCardConfig,
+        {
+          type: "heading",
+          heading: "Controls",
+          heading_style: "subtitle",
+        },
+        ...entities.map<TileCardConfig>((entity) => ({
+          type: "tile",
+          entity: entity.entity_id,
+          features_position: "inline",
+          features: [
+            {
+              type: "light-brightness",
+            },
+          ],
+        })),
       ],
     };
 
