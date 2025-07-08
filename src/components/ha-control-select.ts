@@ -34,43 +34,62 @@ export class HaControlSelect extends LitElement {
 
   @state() private _activeIndex?: number;
 
-  private _handleFocus() {
-    if (this.disabled) return;
-    this._activeIndex =
-      (this.value != null
-        ? this.options?.findIndex((option) => option.value === this.value)
-        : undefined) ?? 0;
+  private _handleFocus(ev: FocusEvent) {
+    if (this.disabled || !this.options) return;
+
+    // Only handle focus if coming to the container
+    if (ev.target === ev.currentTarget) {
+      // Focus the selected radio or the first one
+      const selectedIndex =
+        this.value != null
+          ? this.options.findIndex((option) => option.value === this.value)
+          : -1;
+      const focusIndex = selectedIndex !== -1 ? selectedIndex : 0;
+      this._focusOption(focusIndex);
+    }
   }
 
-  private _handleBlur() {
-    this._activeIndex = undefined;
+  private _focusOption(index: number) {
+    this._activeIndex = index;
+    this.requestUpdate();
+    this.updateComplete.then(() => {
+      const option = this.shadowRoot?.querySelector(
+        `#option-${this.options![index].value}`
+      ) as HTMLElement;
+      option?.focus();
+    });
+  }
+
+  private _handleBlur(ev: FocusEvent) {
+    // Only reset if focus is leaving the entire component
+    if (!this.contains(ev.relatedTarget as Node)) {
+      this._activeIndex = undefined;
+    }
   }
 
   private _handleKeydown(ev: KeyboardEvent) {
-    if (!this.options || this._activeIndex == null || this.disabled) return;
-    const value = this.options[this._activeIndex].value;
+    if (!this.options || this.disabled) return;
+
+    let newIndex = this._activeIndex ?? 0;
+
     switch (ev.key) {
       case " ":
       case "Enter":
-        this.value = value;
-        fireEvent(this, "value-changed", { value });
+        if (this._activeIndex != null) {
+          const value = this.options[this._activeIndex].value;
+          this.value = value;
+          fireEvent(this, "value-changed", { value });
+        }
         break;
       case "ArrowUp":
       case "ArrowLeft":
-        this._activeIndex =
-          this._activeIndex <= 0
-            ? this.options.length - 1
-            : this._activeIndex - 1;
+        newIndex = newIndex <= 0 ? this.options.length - 1 : newIndex - 1;
+        this._focusOption(newIndex);
         break;
       case "ArrowDown":
       case "ArrowRight":
-        this._activeIndex = (this._activeIndex + 1) % this.options.length;
-        break;
-      case "Home":
-        this._activeIndex = 0;
-        break;
-      case "End":
-        this._activeIndex = this.options.length - 1;
+        newIndex = (newIndex + 1) % this.options.length;
+        this._focusOption(newIndex);
         break;
       default:
         return;
@@ -96,25 +115,22 @@ export class HaControlSelect extends LitElement {
 
   private _handleOptionMouseUp(ev: MouseEvent) {
     ev.preventDefault();
-    this._activeIndex = undefined;
+  }
+
+  private _handleOptionFocus(ev: FocusEvent) {
+    if (this.disabled) return;
+    const value = (ev.target as any).value;
+    this._activeIndex = this.options?.findIndex(
+      (option) => option.value === value
+    );
   }
 
   protected render() {
-    const activeValue =
-      this._activeIndex != null
-        ? this.options?.[this._activeIndex]?.value
-        : undefined;
-    const activedescendant =
-      activeValue != null ? `option-${activeValue}` : undefined;
-
     return html`
       <div
         class="container"
-        role="listbox"
-        tabindex="0"
+        role="radiogroup"
         aria-label=${ifDefined(this.label)}
-        aria-orientation=${this.vertical ? "vertical" : "horizontal"}
-        aria-activedescendant=${ifDefined(activedescendant)}
         @focus=${this._handleFocus}
         @blur=${this._handleBlur}
         @keydown=${this._handleKeydown}
@@ -124,28 +140,31 @@ export class HaControlSelect extends LitElement {
           ? repeat(
               this.options,
               (option) => option.value,
-              (option, idx) => this._renderOption(option, idx)
+              (option) => this._renderOption(option)
             )
           : nothing}
       </div>
     `;
   }
 
-  private _renderOption(option: ControlSelectOption, index: number) {
+  private _renderOption(option: ControlSelectOption) {
+    const isSelected = this.value === option.value;
+
     return html`
       <div
         id=${`option-${option.value}`}
         class=${classMap({
           option: true,
-          selected: this.value === option.value,
-          focused: this._activeIndex === index,
+          selected: isSelected,
         })}
-        role="option"
+        role="radio"
+        tabindex=${isSelected ? "0" : "-1"}
         .value=${option.value}
-        aria-selected=${this.value === option.value ? "true" : "false"}
+        aria-checked=${isSelected ? "true" : "false"}
         aria-label=${ifDefined(option.label)}
         title=${ifDefined(option.label)}
         @click=${this._handleOptionClick}
+        @focus=${this._handleOptionFocus}
         @mousedown=${this._handleOptionMouseDown}
         @mouseup=${this._handleOptionMouseUp}
       >
@@ -194,7 +213,6 @@ export class HaControlSelect extends LitElement {
       width: 100%;
       border-radius: var(--control-select-border-radius);
       transform: translateZ(0);
-      overflow: hidden;
       display: flex;
       flex-direction: row;
       padding: var(--control-select-padding);
@@ -211,6 +229,7 @@ export class HaControlSelect extends LitElement {
       width: 100%;
       background: var(--control-select-background);
       opacity: var(--control-select-background-opacity);
+      border-radius: var(--control-select-border-radius);
     }
 
     .container > *:not(:last-child) {
@@ -229,10 +248,6 @@ export class HaControlSelect extends LitElement {
       cursor: not-allowed;
     }
 
-    .container:focus-visible {
-      box-shadow: 0 0 0 2px var(--control-select-color);
-    }
-
     .option {
       cursor: pointer;
       position: relative;
@@ -243,9 +258,13 @@ export class HaControlSelect extends LitElement {
       align-items: center;
       justify-content: center;
       border-radius: var(--control-select-button-border-radius);
-      overflow: hidden;
       /* For safari border-radius overflow */
       z-index: 0;
+      outline: none;
+      transition: box-shadow 180ms ease-in-out;
+    }
+    .option:focus-visible {
+      box-shadow: 0 0 0 2px var(--control-select-color);
     }
     .content > *:not(:last-child) {
       margin-bottom: 4px;
@@ -259,11 +278,11 @@ export class HaControlSelect extends LitElement {
       width: 100%;
       background-color: var(--control-select-color);
       opacity: 0;
+      border-radius: var(--control-select-button-border-radius);
       transition:
         background-color ease-in-out 180ms,
         opacity ease-in-out 80ms;
     }
-    .option.focused::before,
     .option:hover::before {
       opacity: var(--control-select-focused-opacity);
     }
