@@ -13,6 +13,7 @@ import { createSearchParam } from "../common/url/search-params";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
+export const AUTOMATION_DEFAULT_MAX_EXCEEDED: AutomationConfigMaxExceeded = "warning";
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -40,18 +41,20 @@ export interface ManualAutomationConfig {
   action?: Action | Action[];
   mode?: (typeof MODES)[number];
   max?: number;
-  max_exceeded?:
-    | "silent"
-    | "critical"
-    | "fatal"
-    | "error"
-    | "warning"
-    | "warn"
-    | "info"
-    | "debug"
-    | "notset";
+  max_exceeded?: AutomationConfigMaxExceeded;
   variables?: Record<string, unknown>;
 }
+
+export type AutomationConfigMaxExceeded = "silent"
+  | "critical"
+  | "fatal"
+  | "error"
+  | "warning"
+  | "warn"
+  | "info"
+  | "debug"
+  | "notset";
+export const automationConfigMaxExceededOptions = ["silent", "critical", "fatal", "error", "warning", "info", "debug"];
 
 export interface BlueprintAutomationConfig extends ManualAutomationConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
