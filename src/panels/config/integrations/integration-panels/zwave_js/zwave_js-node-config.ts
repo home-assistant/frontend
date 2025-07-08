@@ -338,6 +338,7 @@ class ZWaveJSNodeConfig extends LitElement {
               ([value, label]) => ({ value, label })
             )}
             .disabled=${!item.metadata.writeable}
+            .invalid=${result?.status === "error"}
             .placeholder=${item.metadata.unit}
             .helper=${`${this.hass.localize("ui.panel.config.zwave_js.node_config.between_min_max", { min: item.metadata.min, max: item.metadata.max })}${defaultLabel ? `, ${defaultLabel}` : ""}`}
             @value-changed=${this._getComboBoxValueChangedCallback(id, item)}
