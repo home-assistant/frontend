@@ -93,8 +93,6 @@ export class HaMap extends ReactiveElement {
 
   @state() private _loaded = false;
 
-  @state() private _pauseAutoFit = false;
-
   public leafletMap?: Map;
 
   private Leaflet?: LeafletModuleType;
@@ -116,6 +114,8 @@ export class HaMap extends ReactiveElement {
   private _clickCount = 0;
 
   private _isProgrammaticFit = false;
+
+  private _pauseAutoFit = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
