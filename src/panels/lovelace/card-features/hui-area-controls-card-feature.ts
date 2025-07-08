@@ -15,13 +15,10 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
-import { domainIcon } from "../../../data/icons";
-import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import type { AreaCardFeatureContext } from "../cards/hui-area-card";
-import type { ButtonCardConfig, TileCardConfig } from "../cards/types";
-import { showDashboardDialog } from "../dialogs/show-dashboard-dialog";
+import { showGroupControlDialog } from "../dialogs/show-group-toggle-dialog";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -177,98 +174,13 @@ class HuiAreaControlsCardFeature
     );
     const entitiesIds = controlEntities[control];
 
-    const entities = entitiesIds
-      .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
-      .filter((v): v is HassEntity => Boolean(v));
+    const domain = AREA_CONTROLS_BUTTONS[control].filter.domain;
 
-    const controlButton = AREA_CONTROLS_BUTTONS[control];
-    const onIcon =
-      controlButton.onIcon ||
-      (await domainIcon(
-        this.hass!,
-        controlButton.filter.domain,
-        controlButton.filter.device_class,
-        "off"
-      ));
-    const offIcon =
-      controlButton.offIcon ||
-      (await domainIcon(
-        this.hass!,
-        controlButton.filter.domain,
-        controlButton.filter.device_class,
-        "on"
-      ));
-
-    const sectionConfig: LovelaceSectionConfig = {
-      type: "grid",
-      cards: [
-        {
-          type: "heading",
-          heading: "Actions",
-          heading_style: "subtitle",
-        },
-        {
-          type: "button",
-          icon: offIcon,
-          icon_height: "24px",
-          name: "Turn all off",
-          tap_action: {
-            action: "perform-action",
-            target: {
-              entity_id: entitiesIds,
-            },
-            perform_action: "light.turn_off",
-          },
-          grid_options: {
-            min_rows: 1,
-            rows: 1,
-            columns: 6,
-          },
-        } as ButtonCardConfig,
-        {
-          type: "button",
-          icon: onIcon,
-          icon_height: "24px",
-          name: "Turn all on",
-          tap_action: {
-            action: "perform-action",
-            target: {
-              entity_id: entitiesIds,
-            },
-            perform_action: "light.turn_on",
-          },
-          grid_options: {
-            min_rows: 1,
-            rows: 1,
-            columns: 6,
-          },
-        } as ButtonCardConfig,
-        {
-          type: "heading",
-          heading: "Controls",
-          heading_style: "subtitle",
-        },
-        ...entities.map<TileCardConfig>((entity) => ({
-          type: "tile",
-          entity: entity.entity_id,
-          features_position: "inline",
-          features: [
-            {
-              type: "light-brightness",
-            },
-          ],
-        })),
-      ],
-    };
-
-    showDashboardDialog(this, {
-      sections: [sectionConfig],
+    showGroupControlDialog(this, {
       title: computeAreaName(this._area!) || "",
-      subtitle: control,
+      subtitle: domain,
+      entityIds: entitiesIds,
     });
-
-    // forwardHaptic("light");
-    // toggleGroupEntities(this.hass, entities);
   }
 
   private _controlEntities = memoizeOne(

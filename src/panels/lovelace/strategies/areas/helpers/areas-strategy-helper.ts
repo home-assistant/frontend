@@ -1,4 +1,3 @@
-import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
@@ -10,7 +9,6 @@ import {
 import type { AreaRegistryEntry } from "../../../../../data/area_registry";
 import { areaCompare } from "../../../../../data/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
-import type { LovelaceCardConfig } from "../../../../../data/lovelace/config/card";
 import type { HomeAssistant } from "../../../../../types";
 import { supportsAlarmModesCardFeature } from "../../../card-features/hui-alarm-modes-card-feature";
 import { supportsCoverOpenCloseCardFeature } from "../../../card-features/hui-cover-open-close-card-feature";
@@ -210,7 +208,7 @@ export const getAreaGroupedEntities = (
 
 export const computeAreaTileCardConfig =
   (hass: HomeAssistant, prefix: string, includeFeature?: boolean) =>
-  (entity: string): LovelaceCardConfig => {
+  (entity: string): TileCardConfig => {
     const stateObj = hass.states[entity];
 
     const context: LovelaceCardFeatureContext = {
@@ -218,21 +216,6 @@ export const computeAreaTileCardConfig =
     };
 
     const additionalCardConfig: Partial<TileCardConfig> = {};
-
-    const domain = computeDomain(entity);
-
-    if (domain === "camera") {
-      return {
-        type: "picture-entity",
-        entity: entity,
-        show_state: false,
-        show_name: false,
-        grid_options: {
-          columns: 6,
-          rows: 2,
-        },
-      };
-    }
 
     let feature: LovelaceCardFeatureConfig | undefined;
     if (includeFeature) {
