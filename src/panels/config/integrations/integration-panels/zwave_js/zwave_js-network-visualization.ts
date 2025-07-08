@@ -116,9 +116,6 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     });
 
     this._nodeStatuses = nodeStatuses;
-
-    // const neighbors = await fetchZwaveNeighbors(this.hass!, this.configEntryId);
-    // console.log("neighbors", neighbors);
   }
 
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {

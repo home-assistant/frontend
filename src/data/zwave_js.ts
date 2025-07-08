@@ -1069,12 +1069,3 @@ export const cancelSecureBootstrapS2 = (
     type: "zwave_js/cancel_secure_bootstrap_s2",
     entry_id,
   });
-
-export const fetchZwaveNeighbors = (
-  hass: HomeAssistant,
-  entry_id: string
-): Promise<Record<number, number[]>> =>
-  hass.callWS({
-    type: "zwave_js/get_neighbors",
-    entry_id,
-  });
