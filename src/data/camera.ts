@@ -129,10 +129,22 @@ export const webRtcOffer = (
   entity_id: string,
   offer: string,
   callback: (event: WebRtcOfferEvent) => void,
-  session_id?: string
 ) =>
   hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
     type: "camera/webrtc/offer",
+    entity_id,
+    offer,
+  });
+
+export const webRtcReOffer = (
+  hass: HomeAssistant,
+  entity_id: string,
+  offer: string,
+  callback: (event: WebRtcOfferEvent) => void,
+  session_id: string
+) =>
+  hass.connection.subscribeMessage<WebRtcOfferEvent>(callback, {
+    type: "camera/webrtc/re_offer",
     entity_id,
     offer,
     session_id,

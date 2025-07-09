@@ -20,6 +20,7 @@ import {
   type WebRtcAnswer,
   type WebRTCClientConfiguration,
   webRtcOffer,
+  webRtcReOffer,
   type WebRtcOfferEvent,
 } from "../data/camera";
 import type { HomeAssistant } from "../types";
@@ -94,6 +95,7 @@ class HaWebRtcPlayer extends LitElement {
       // The ice-ufrag and ice-pwd will change when changing from recvonly > sendrecv
       // Therefore a ICE restart is required (firefox enforces, chrome accepts)
       this._peerConnection!.restartIce();
+      this._candidatesList = [];
 
       // Find the audio transceiver
       // Transceiver are in the order they were added, audio should be first
@@ -376,13 +378,22 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start webRtcOffer", offer_sdp);
 
     try {
-      this._unsub = webRtcOffer(
-        this.hass,
-        this.entityid,
-        offer_sdp,
-        (event) => this._handleOfferEvent(event),
-        this._sessionId
-      );
+      if (!this._sessionId) {
+        this._unsub = webRtcOffer(
+          this.hass,
+          this.entityid,
+          offer_sdp,
+          (event) => this._handleOfferEvent(event),
+        );
+      } else {
+        this._unsub = webRtcReOffer(
+          this.hass,
+          this.entityid,
+          offer_sdp,
+          (event) => this._handleOfferEvent(event),
+          this._sessionId
+        );
+      }
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
       this._cleanUp();
@@ -414,6 +425,7 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
     if (event.type === "session") {
+      this._logEvent("session", event.session_id);
       this._sessionId = event.session_id;
       this._candidatesList.forEach((candidate) =>
         addWebRtcCandidate(
