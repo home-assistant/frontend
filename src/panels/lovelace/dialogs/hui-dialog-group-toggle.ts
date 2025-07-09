@@ -178,7 +178,16 @@ class HuiGroupToggleDialog extends LitElement {
     haStyleDialog,
     css`
       ha-dialog {
+        /* Set the top top of the dialog to a fixed position, so it doesnt jump when the content changes size */
+        --vertical-align-dialog: flex-start;
+        --dialog-surface-margin-top: 40px;
         --dialog-content-padding: 0;
+      }
+      @media all and (max-width: 450px), all and (max-height: 500px) {
+        /* When in fullscreen dialog should be attached to top */
+        ha-dialog {
+          --dialog-surface-margin-top: 0px;
+        }
       }
       .content {
         padding: 0 16px 16px 16px;
