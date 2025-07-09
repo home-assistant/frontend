@@ -6318,8 +6318,8 @@
           "visualization": {
             "controller": "Controller",
             "node": "Node",
-            "asleep_node": "Asleep Node",
-            "dead_node": "Dead Node",
+            "asleep_node": "Asleep node",
+            "dead_node": "Dead node",
             "toggle_live": "Toggle live updates",
             "node_id": "Node ID",
             "manufacturer": "Manufacturer",
