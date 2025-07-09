@@ -9479,7 +9479,7 @@ __metadata:
     typescript: "npm:5.8.3"
     typescript-eslint: "npm:8.35.1"
     ua-parser-js: "npm:2.0.4"
-    vis-data: "npm:7.1.9"
+    vis-data: "npm:7.1.10"
     vite-tsconfig-paths: "npm:5.1.4"
     vitest: "npm:3.2.4"
     vue: "npm:2.7.16"
@@ -14895,13 +14895,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vis-data@npm:7.1.9":
-  version: 7.1.9
-  resolution: "vis-data@npm:7.1.9"
+"vis-data@npm:7.1.10":
+  version: 7.1.10
+  resolution: "vis-data@npm:7.1.10"
   peerDependencies:
-    uuid: ^3.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0
+    uuid: ^3.4.0 || ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
     vis-util: ^5.0.1
-  checksum: 10/13cc6774cc225aa8a84d12c29d90188627fe8d937a93080113bd7b30d729fe8d6b2703322b41614ed48ad3f28f66e4090dfb1dce2ae7885a8938c2cffd7eebf3
+  checksum: 10/23fb2ef26864153013372e1d95107765be86dd9ce96f987bf99fdd93759fbe5ec1bd2603d354ca18a03f0fb607b829396ec02fe005aead63ef24599512f21402
   languageName: node
   linkType: hard
 
