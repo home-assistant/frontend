@@ -426,10 +426,14 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
         );
 
         let floorName = "—";
-        if (device.area_id && areas[device.area_id]?.floor_id) {
+        if (
+          device.area_id &&
+          areas[device.area_id]?.floor_id &&
+          this.hass.floors
+        ) {
           const floorId = areas[device.area_id].floor_id;
-          if (floorId && this.hass.floors && this.hass.floors[floorId]) {
-            floorName = computeFloorName(this.hass.floors[floorId]);
+          if (this.hass.floors[floorId!]) {
+            floorName = computeFloorName(this.hass.floors[floorId!]);
           }
         }
 
