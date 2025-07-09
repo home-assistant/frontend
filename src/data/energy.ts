@@ -1109,21 +1109,31 @@ export const computeConsumptionSingle = (data: {
 export const formatConsumptionShort = (
   hass: HomeAssistant,
   consumption: number | null,
-  unit: string
+  unit: string,
+  targetUnit?: string
 ): string => {
-  if (!consumption) {
-    return `0 ${unit}`;
-  }
   const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
   let pickedUnit = unit;
-  let val = consumption;
+  let val = consumption || 0;
+  let targetUnitIndex = -1;
+  if (targetUnit) {
+    targetUnitIndex = units.findIndex((u) => u === targetUnit);
+  }
   let unitIndex = units.findIndex((u) => u === unit);
   if (unitIndex >= 0) {
-    while (Math.abs(val) < 1 && unitIndex > 0) {
+    while (
+      targetUnitIndex > -1
+        ? targetUnitIndex < unitIndex
+        : Math.abs(val) < 1 && unitIndex > 0
+    ) {
       val *= 1000;
       unitIndex--;
     }
-    while (Math.abs(val) >= 1000 && unitIndex < units.length - 1) {
+    while (
+      targetUnitIndex > -1
+        ? targetUnitIndex > unitIndex
+        : Math.abs(val) >= 1000 && unitIndex < units.length - 1
+    ) {
       val /= 1000;
       unitIndex++;
     }

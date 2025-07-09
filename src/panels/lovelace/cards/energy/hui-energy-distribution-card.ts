@@ -255,6 +255,20 @@ class HuiEnergyDistrubutionCard
       (batteryFromGrid || 0) +
       (batteryToGrid || 0);
 
+    // Coerce all energy numbers to the same unit (the biggest)
+    const maxEnergy = Math.max(
+      lowCarbonEnergy || 0,
+      totalSolarProduction || 0,
+      returnedToGrid || 0,
+      totalFromGrid || 0,
+      totalHomeConsumption,
+      totalBatteryIn || 0,
+      totalBatteryOut || 0
+    );
+    const targetEnergyUnit = formatConsumptionShort(this.hass, maxEnergy, "kWh")
+      .split(" ")
+      .pop();
+
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
@@ -281,7 +295,8 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           lowCarbonEnergy,
-                          "kWh"
+                          "kWh",
+                          targetEnergyUnit
                         )}
                       </a>
                       <svg width="80" height="30">
@@ -300,7 +315,8 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           totalSolarProduction,
-                          "kWh"
+                          "kWh",
+                          targetEnergyUnit
                         )}
                       </div>
                     </div>`
@@ -396,7 +412,8 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             returnedToGrid,
-                            "kWh"
+                            "kWh",
+                            targetEnergyUnit
                           )}
                         </span>`
                       : ""}
@@ -409,7 +426,8 @@ class HuiEnergyDistrubutionCard
                         : ""}${formatConsumptionShort(
                         this.hass,
                         totalFromGrid,
-                        "kWh"
+                        "kWh",
+                        targetEnergyUnit
                       )}
                     </span>
                   </div>
@@ -432,7 +450,8 @@ class HuiEnergyDistrubutionCard
                 ${formatConsumptionShort(
                   this.hass,
                   totalHomeConsumption,
-                  "kWh"
+                  "kWh",
+                  targetEnergyUnit
                 )}
                 ${homeSolarCircumference !== undefined ||
                 homeLowCarbonCircumference !== undefined
@@ -535,7 +554,8 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             totalBatteryIn,
-                            "kWh"
+                            "kWh",
+                            targetEnergyUnit
                           )}
                         </span>
                         <span class="battery-out">
@@ -546,7 +566,8 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             totalBatteryOut,
-                            "kWh"
+                            "kWh",
+                            targetEnergyUnit
                           )}
                         </span>
                       </div>
