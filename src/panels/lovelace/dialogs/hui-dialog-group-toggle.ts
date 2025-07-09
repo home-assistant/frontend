@@ -21,6 +21,7 @@ import type { HomeAssistant } from "../../../types";
 import type { TileCardConfig } from "../cards/types";
 import "../sections/hui-section";
 import type { GroupToggleDialogParams } from "./show-group-toggle-dialog";
+import { isFullyClosed, isFullyOpen } from "../../../data/cover";
 
 @customElement("hui-dialog-group-toggle")
 class HuiGroupToggleDialog extends LitElement {
@@ -79,6 +80,19 @@ class HuiGroupToggleDialog extends LitElement {
 
     const deviceClass = mainStateObj.attributes.device_class;
 
+    const isGroup = this._params.entityIds.length > 1;
+
+    const isAllOn = entities.every((entity) =>
+      computeDomain(entity.entity_id) === "cover"
+        ? isFullyOpen(entity)
+        : entity.state === "on"
+    );
+    const isAllOff = entities.every((entity) =>
+      computeDomain(entity.entity_id) === "cover"
+        ? isFullyClosed(entity)
+        : entity.state === "off"
+    );
+
     return html`
       <ha-dialog
         open
@@ -106,7 +120,11 @@ class HuiGroupToggleDialog extends LitElement {
             .stateOverride=${formattedGroupState}
           ></ha-more-info-state-header>
           <ha-control-button-group vertical>
-            <ha-control-button vertical @click=${this._turnAllOn}>
+            <ha-control-button
+              vertical
+              @click=${this._turnAllOn}
+              .disabled=${isAllOn}
+            >
               ${domain !== "light"
                 ? html`<ha-domain-icon
                     .hass=${this.hass}
@@ -115,18 +133,40 @@ class HuiGroupToggleDialog extends LitElement {
                     .deviceClass=${deviceClass}
                   ></ha-domain-icon>`
                 : html` <ha-svg-icon .path=${mdiLightbulb}></ha-svg-icon> `}
-              <p>${domain === "cover" ? "Open all" : "Turn all on"}</p>
+              <p>
+                ${domain === "cover"
+                  ? isGroup
+                    ? "Open all"
+                    : "Open"
+                  : isGroup
+                    ? "Turn all on"
+                    : "Turn on"}
+              </p>
             </ha-control-button>
-            <ha-control-button vertical @click=${this._turnAllOff}>
+            <ha-control-button
+              vertical
+              @click=${this._turnAllOff}
+              .disabled=${isAllOff}
+            >
               ${domain !== "light"
-                ? html`<ha-domain-icon
-                    .hass=${this.hass}
-                    .domain=${domain}
-                    .state=${domain === "cover" ? "closed" : "off"}
-                    .deviceClass=${deviceClass}
-                  ></ha-domain-icon>`
+                ? html`
+                    <ha-domain-icon
+                      .hass=${this.hass}
+                      .domain=${domain}
+                      .state=${domain === "cover" ? "closed" : "off"}
+                      .deviceClass=${deviceClass}
+                    ></ha-domain-icon>
+                  `
                 : html` <ha-svg-icon .path=${mdiLightbulbOff}></ha-svg-icon>`}
-              <p>${domain === "cover" ? "Close all" : "Turn all off"}</p>
+              <p>
+                ${domain === "cover"
+                  ? isGroup
+                    ? "Close all"
+                    : "Close"
+                  : isGroup
+                    ? "Turn all off"
+                    : "Turn off"}
+              </p>
             </ha-control-button>
           </ha-control-button-group>
           <hui-section
