@@ -183,7 +183,9 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const floorIds = this._sortedFloors(
       this.hass.floors,
       this.value?.floors_display?.order
-    ).map((floor) => floor.floor_id);
+    )
+      .map((floor) => floor.floor_id)
+      .filter((floorId) => floorId !== UNASSIGNED_FLOOR);
     const newOrder = [...floorIds];
     const movedFloorId = newOrder.splice(oldIndex, 1)[0];
     newOrder.splice(newIndex, 0, movedFloorId);
