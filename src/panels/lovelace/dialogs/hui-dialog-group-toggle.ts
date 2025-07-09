@@ -22,6 +22,7 @@ import type { TileCardConfig } from "../cards/types";
 import "../sections/hui-section";
 import type { GroupToggleDialogParams } from "./show-group-toggle-dialog";
 import { isFullyClosed, isFullyOpen } from "../../../data/cover";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-dialog-group-toggle")
 class HuiGroupToggleDialog extends LitElement {
@@ -83,11 +84,13 @@ class HuiGroupToggleDialog extends LitElement {
     const isGroup = this._params.entityIds.length > 1;
 
     const isAllOn = entities.every((entity) =>
+      entity.state === UNAVAILABLE ||
       computeDomain(entity.entity_id) === "cover"
         ? isFullyOpen(entity)
         : entity.state === "on"
     );
     const isAllOff = entities.every((entity) =>
+      entity.state === UNAVAILABLE ||
       computeDomain(entity.entity_id) === "cover"
         ? isFullyClosed(entity)
         : entity.state === "off"
@@ -108,10 +111,12 @@ class HuiGroupToggleDialog extends LitElement {
             .label=${this.hass.localize("ui.common.close")}
             .path=${mdiClose}
           ></ha-icon-button>
-          <span slot="title">${this._params.title}</span>
-          ${this._params.subtitle
-            ? html`<span slot="subtitle">${this._params.subtitle}</span>`
-            : nothing}
+          <span slot="title" class="title">
+            ${this._params.subtitle
+              ? html`<span class="subtitle">${this._params.subtitle}</span>`
+              : nothing}
+            <p class="main">${this._params.title}</p>
+          </span>
         </ha-dialog-header>
         <div class="content">
           <ha-more-info-state-header
@@ -229,6 +234,64 @@ class HuiGroupToggleDialog extends LitElement {
           --dialog-surface-margin-top: 0px;
         }
       }
+      @media all and (min-width: 600px) and (min-height: 501px) {
+        ha-dialog {
+          --mdc-dialog-min-width: 580px;
+          --mdc-dialog-max-width: 580px;
+          --mdc-dialog-max-height: calc(100% - 72px);
+        }
+
+        .main-title {
+          cursor: default;
+        }
+
+        :host([large]) ha-dialog {
+          --mdc-dialog-min-width: 90vw;
+          --mdc-dialog-max-width: 90vw;
+        }
+      }
+
+      .title {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .title p {
+        margin: 0;
+        min-width: 0;
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .title .main {
+        color: var(--primary-text-color);
+        font-size: var(--ha-font-size-xl);
+        line-height: var(--ha-line-height-condensed);
+      }
+
+      .title .subtitle {
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-m);
+        line-height: 16px;
+        --mdc-icon-size: 16px;
+        padding: 4px;
+        margin: -4px;
+        margin-top: -10px;
+        background: none;
+        border: none;
+        outline: none;
+        display: inline;
+        border-radius: 6px;
+        transition: background-color 180ms ease-in-out;
+        min-width: 0;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: left;
+      }
+
       .content {
         padding: 0 16px 16px 16px;
         display: flex;
