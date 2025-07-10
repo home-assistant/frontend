@@ -11,6 +11,7 @@ import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
 import type { HomeAssistant } from "../../types";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { deepEqual } from "../../common/util/deep-equal";
 
 export interface NetworkNode {
   id: string;
@@ -158,7 +159,8 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         type: "inside",
         filterMode: "none",
       },
-    })
+    }),
+    deepEqual
   );
 
   private _getSeries = memoizeOne(
@@ -230,7 +232,8 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         })),
         categories: data.categories || [],
       };
-    }
+    },
+    deepEqual
   );
 
   private _togglePhysics() {

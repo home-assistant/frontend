@@ -1,7 +1,6 @@
 import { customElement, property, state } from "lit/decorators";
 import { css, html, LitElement } from "lit";
 import memoizeOne from "memoize-one";
-import { mdiUpdate } from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
@@ -51,8 +50,6 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
 
   @state() private _devices: Record<string, DeviceRegistryEntry> = {};
 
-  @state() private _live = false;
-
   public hassSubscribe() {
     const devices = Object.values(this.hass.devices).filter((device) =>
       device.config_entries.some((entry) => entry === this.configEntryId)
@@ -62,11 +59,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       subscribeZwaveNodeStatistics(this.hass!, device.id, (message) => {
         const nodeId = message.nodeId ?? message.node_id;
         this._devices[nodeId!] = device;
-        const isNew = !this._nodeStatistics[nodeId!];
         this._nodeStatistics[nodeId!] = message;
-        if (this._live || isNew) {
-          this._handleUpdatedNodeStatistics();
-        }
+        this._handleUpdatedNodeStatistics();
       })
     );
   }
@@ -92,16 +86,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           )}
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
-        >
-          <ha-icon-button
-            slot="button"
-            class=${this._live ? "active" : "inactive"}
-            .path=${mdiUpdate}
-            @click=${this._toggleLive}
-            label=${this.hass.localize(
-              "ui.panel.config.zwave_js.visualization.toggle_live"
-            )}
-          ></ha-icon-button> </ha-network-graph
+        ></ha-network-graph
       ></hass-tabs-subpage>
     `;
   }
@@ -323,18 +308,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _toggleLive() {
-    this._live = !this._live;
-    if (this._live) {
-      this._fetchNetworkStatus();
-      this._handleUpdatedNodeStatistics();
-    } else {
-      this._handleUpdatedNodeStatistics.cancel();
-    }
-  }
-
   private _getLineWidth(rssi: number): number {
-    return rssi > -33 ? 3 : rssi > -66 ? 2 : 1;
+    return rssi > -50 ? 3 : rssi > -75 ? 2 : 1;
   }
 
   static get styles() {
