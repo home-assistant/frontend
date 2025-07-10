@@ -6194,7 +6194,8 @@
             "included": "Included",
             "not_included": "Not Included",
             "confirm_unprovision_title": "Remove device?",
-            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network."
+            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network.",
+            "active": "Active"
           },
           "security_classes": {
             "None": {
