@@ -354,7 +354,10 @@ const getIconFromTranslations = (
   }
   // Then check for range-based icons if we have a numeric state
   if (state !== undefined && translations.range && !isNaN(Number(state))) {
-    return getIconFromRange(Number(state), translations.range);
+    return (
+      getIconFromRange(Number(state), translations.range) ??
+      translations.default
+    );
   }
   // Fallback to default icon
   return translations.default;
@@ -518,7 +521,10 @@ export const domainIcon = async (
     }
     // Then check for range-based icons if we have a numeric state
     if (state !== undefined && translations.range && !isNaN(Number(state))) {
-      return getIconFromRange(Number(state), translations.range);
+      return (
+        getIconFromRange(Number(state), translations.range) ??
+        translations.default
+      );
     }
     // Fallback to default icon
     return translations.default;
