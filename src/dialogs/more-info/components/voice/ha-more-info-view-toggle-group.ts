@@ -46,6 +46,31 @@ class HaMoreInfoViewToggleGroup extends LitElement {
     })
   );
 
+  private _combineEntities(entities: HassEntity[]): HassEntity {
+    const firstEntity = entities[0];
+    const domain = computeStateDomain(firstEntity);
+
+    const combined: HassEntity = {
+      entity_id: `${domain}.all_entities`,
+      state: computeGroupEntitiesState(entities),
+      attributes: {
+        device_class: firstEntity.attributes.device_class,
+      },
+      last_changed: new Date(
+        Math.max(...entities.map((e) => new Date(e.last_changed).getTime()))
+      ).toISOString(),
+      last_updated: new Date(
+        Math.max(...entities.map((e) => new Date(e.last_updated).getTime()))
+      ).toISOString(),
+      context: {
+        id: "",
+        parent_id: "",
+        user_id: "",
+      },
+    };
+    return combined;
+  }
+
   protected render() {
     if (!this.params) {
       return nothing;
@@ -57,17 +82,13 @@ class HaMoreInfoViewToggleGroup extends LitElement {
       .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
       .filter((v): v is HassEntity => Boolean(v));
 
-    const mainStateObj = entities[0];
+    const groupStateObj = this._combineEntities(entities);
 
-    const groupState = computeGroupEntitiesState(entities);
-    const formattedGroupState = this.hass.formatEntityState(
-      mainStateObj,
-      groupState
-    );
+    const formattedGroupState = this.hass.formatEntityState(groupStateObj);
 
-    const domain = computeStateDomain(mainStateObj);
+    const domain = computeStateDomain(groupStateObj);
 
-    const deviceClass = mainStateObj.attributes.device_class;
+    const deviceClass = groupStateObj.attributes.device_class;
 
     const availableEntities = entities.filter(
       (entity) => entity.state !== UNAVAILABLE
@@ -93,7 +114,7 @@ class HaMoreInfoViewToggleGroup extends LitElement {
       <div class="content">
         <ha-more-info-state-header
           .hass=${this.hass}
-          .stateObj=${mainStateObj}
+          .stateObj=${groupStateObj}
           .stateOverride=${formattedGroupState}
         ></ha-more-info-state-header>
         <ha-control-button-group vertical>
