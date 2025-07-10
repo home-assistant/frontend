@@ -200,13 +200,8 @@ class HaMoreInfoViewToggleGroup extends LitElement {
       ha-control-button {
         --control-button-border-radius: 16px;
         --mdc-icon-size: 24px;
-        color: #006787;
         --control-button-padding: 16px 8px;
-        --control-button-icon-color: #006787;
-        --control-button-background-color: #eff9fe;
-        --control-button-background-opacity: 1;
-        --control-button-focus-color: #006787;
-        --ha-ripple-color: #006787;
+        --control-button-background-opacity: 0.1;
       }
       ha-control-button p {
         margin: 0;
