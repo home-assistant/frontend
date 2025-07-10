@@ -106,7 +106,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
   private _tooltipFormatter = (params: TopLevelFormatterParams): string => {
     const { dataType, data } = params as CallbackDataParams;
     if (dataType === "edge") {
-      const { source, target } = data as any;
+      const { source, target, value } = data as any;
       const sourceDevice = this._devices[source];
       const targetDevice = this._devices[target];
       const sourceName =
@@ -119,8 +119,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       if (route?.protocol_data_rate) {
         tip += `<br><b>${this.hass.localize("ui.panel.config.zwave_js.visualization.data_rate")}:</b> ${this.hass.localize(`ui.panel.config.zwave_js.protocol_data_rate.${route.protocol_data_rate}`)}`;
       }
-      if (route?.rssi) {
-        tip += `<br><b>RSSI:</b> ${route.rssi}`;
+      if (value) {
+        tip += `<br><b>RSSI:</b> ${value}`;
       }
       return tip;
     }
@@ -255,10 +255,6 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
               existingLink.lineStyle = {
                 ...existingLink.lineStyle,
                 width: Math.max(existingLink.lineStyle!.width!, width),
-                color:
-                  route.protocol_data_rate && RSSI > -100
-                    ? colorVariables["primary-color"]
-                    : existingLink.lineStyle!.color,
                 type:
                   route.protocol_data_rate > 1
                     ? "solid"
@@ -272,7 +268,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
                 lineStyle: {
                   width,
                   color:
-                    route.protocol_data_rate && RSSI > -100
+                    repeater === controllerNode
                       ? colorVariables["primary-color"]
                       : colorVariables["disabled-color"],
                   type: route.protocol_data_rate > 1 ? "solid" : "dotted",
