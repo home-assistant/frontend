@@ -10,7 +10,7 @@ import "../../../../components/ha-control-button";
 import "../../../../components/ha-control-button-group";
 import "../../../../components/ha-domain-icon";
 import { isFullyClosed, isFullyOpen } from "../../../../data/cover";
-import { UNAVAILABLE } from "../../../../data/entity";
+import { OFF, ON, UNAVAILABLE } from "../../../../data/entity";
 import { forwardHaptic } from "../../../../data/haptics";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { TileCardConfig } from "../../../../panels/lovelace/cards/types";
@@ -79,12 +79,12 @@ class HaMoreInfoViewToggleGroup extends LitElement {
     const isAllOn = availableEntities.every((entity) =>
       computeDomain(entity.entity_id) === "cover"
         ? isFullyOpen(entity)
-        : entity.state === "on"
+        : entity.state === ON
     );
     const isAllOff = availableEntities.every((entity) =>
       computeDomain(entity.entity_id) === "cover"
         ? isFullyClosed(entity)
-        : entity.state === "off"
+        : entity.state === OFF
     );
 
     return html`
