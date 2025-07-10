@@ -117,53 +117,61 @@ class HaMoreInfoViewToggleGroup extends LitElement {
           .stateObj=${groupStateObj}
           .stateOverride=${formattedGroupState}
         ></ha-more-info-state-header>
-        <ha-control-button-group vertical>
-          <ha-control-button
-            vertical
-            @click=${this._turnAllOn}
-            .disabled=${isAllOn}
-          >
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              .state=${ON_STATE}
-              .deviceClass=${deviceClass}
-            ></ha-domain-icon>
-            <p>
-              ${domain === "cover"
-                ? isMultiple
-                  ? this.hass.localize("ui.card.cover.open_all")
-                  : this.hass.localize("ui.card.cover.open")
-                : isMultiple
-                  ? this.hass.localize("ui.card.common.turn_on_all")
-                  : this.hass.localize("ui.card.common.turn_on")}
-            </p>
-          </ha-control-button>
-          <ha-control-button
-            vertical
-            @click=${this._turnAllOff}
-            .disabled=${isAllOff}
-          >
-            <ha-domain-icon
-              .hass=${this.hass}
-              .domain=${domain}
-              .state=${OFF_STATE}
-              .deviceClass=${deviceClass}
-              .icon=${domain === "light" ? "mdi:lightbulb-off" : undefined}
-            ></ha-domain-icon>
+        <div class="main">
+          <ha-control-button-group vertical>
+            <ha-control-button
+              vertical
+              @click=${this._turnAllOn}
+              .disabled=${isAllOn}
+            >
+              <ha-domain-icon
+                .hass=${this.hass}
+                .domain=${domain}
+                .state=${ON_STATE}
+                .deviceClass=${deviceClass}
+              ></ha-domain-icon>
+              <p>
+                ${domain === "cover"
+                  ? isMultiple
+                    ? this.hass.localize("ui.card.cover.open_all")
+                    : this.hass.localize("ui.card.cover.open")
+                  : isMultiple
+                    ? this.hass.localize("ui.card.common.turn_on_all")
+                    : this.hass.localize("ui.card.common.turn_on")}
+              </p>
+            </ha-control-button>
+            <ha-control-button
+              vertical
+              @click=${this._turnAllOff}
+              .disabled=${isAllOff}
+            >
+              <ha-domain-icon
+                .hass=${this.hass}
+                .domain=${domain}
+                .state=${OFF_STATE}
+                .deviceClass=${deviceClass}
+                .icon=${domain === "light" ? "mdi:lightbulb-off" : undefined}
+              ></ha-domain-icon>
 
-            <p>
-              ${domain === "cover"
-                ? isMultiple
-                  ? this.hass.localize("ui.card.cover.close_all")
-                  : this.hass.localize("ui.card.cover.close")
-                : isMultiple
-                  ? this.hass.localize("ui.card.common.turn_off_all")
-                  : this.hass.localize("ui.card.common.turn_off")}
-            </p>
-          </ha-control-button>
-        </ha-control-button-group>
-        <hui-section .config=${sectionConfig} .hass=${this.hass}></hui-section>
+              <p>
+                ${domain === "cover"
+                  ? isMultiple
+                    ? this.hass.localize("ui.card.cover.close_all")
+                    : this.hass.localize("ui.card.cover.close")
+                  : isMultiple
+                    ? this.hass.localize("ui.card.common.turn_off_all")
+                    : this.hass.localize("ui.card.common.turn_off")}
+              </p>
+            </ha-control-button>
+          </ha-control-button-group>
+        </div>
+
+        <div class="entities">
+          <hui-section
+            .config=${sectionConfig}
+            .hass=${this.hass}
+          ></hui-section>
+        </div>
       </div>
     `;
   }
@@ -206,18 +214,33 @@ class HaMoreInfoViewToggleGroup extends LitElement {
 
   static styles = [
     css`
-      .content {
-        padding: 24px;
-        padding-bottom: max(var(--safe-area-inset-bottom), 24px);
+      :host {
         display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+      .content {
+        display: flex;
+        flex: 1;
         flex-direction: column;
         align-items: center;
         gap: 24px;
       }
+      ha-more-info-state-header {
+        margin-top: 24px;
+      }
+      .main {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+
       ha-control-button-group {
         --control-button-group-spacing: 12px;
         --control-button-group-thickness: 130px;
-        margin-bottom: 32px;
       }
       ha-control-button {
         --control-button-border-radius: 16px;
@@ -227,6 +250,13 @@ class HaMoreInfoViewToggleGroup extends LitElement {
       }
       ha-control-button p {
         margin: 0;
+      }
+      .entities {
+        box-sizing: border-box;
+        width: 100%;
+        background-color: var(--primary-background-color);
+        padding: 12px;
+        padding-bottom: max(var(--safe-area-inset-bottom), 12px);
       }
       hui-section {
         width: 100%;
