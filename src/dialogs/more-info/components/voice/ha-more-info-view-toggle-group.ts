@@ -1,4 +1,3 @@
-import { mdiLightbulb, mdiLightbulbOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -70,22 +69,25 @@ class HaMoreInfoViewToggleGroup extends LitElement {
 
     const deviceClass = mainStateObj.attributes.device_class;
 
-    const isGroup = this.params.entityIds.length > 1;
-
     const availableEntities = entities.filter(
       (entity) => entity.state !== UNAVAILABLE
     );
 
+    const ON_STATE = domain === "cover" ? "open" : ON;
+    const OFF_STATE = domain === "cover" ? "closed" : OFF;
+
     const isAllOn = availableEntities.every((entity) =>
       computeDomain(entity.entity_id) === "cover"
         ? isFullyOpen(entity)
-        : entity.state === ON
+        : entity.state === ON_STATE
     );
     const isAllOff = availableEntities.every((entity) =>
       computeDomain(entity.entity_id) === "cover"
         ? isFullyClosed(entity)
-        : entity.state === OFF
+        : entity.state === OFF_STATE
     );
+
+    const isMultiple = this.params.entityIds.length > 1;
 
     return html`
       <div class="content">
@@ -100,22 +102,20 @@ class HaMoreInfoViewToggleGroup extends LitElement {
             @click=${this._turnAllOn}
             .disabled=${isAllOn}
           >
-            ${domain !== "light"
-              ? html`<ha-domain-icon
-                  .hass=${this.hass}
-                  .domain=${domain}
-                  .state=${domain === "cover" ? "open" : "on"}
-                  .deviceClass=${deviceClass}
-                ></ha-domain-icon>`
-              : html` <ha-svg-icon .path=${mdiLightbulb}></ha-svg-icon> `}
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              .state=${ON_STATE}
+              .deviceClass=${deviceClass}
+            ></ha-domain-icon>
             <p>
               ${domain === "cover"
-                ? isGroup
-                  ? "Open all"
-                  : "Open"
-                : isGroup
-                  ? "Turn all on"
-                  : "Turn on"}
+                ? isMultiple
+                  ? this.hass.localize("ui.card.cover.open_all")
+                  : this.hass.localize("ui.card.cover.open")
+                : isMultiple
+                  ? this.hass.localize("ui.card.common.turn_on_all")
+                  : this.hass.localize("ui.card.common.turn_on")}
             </p>
           </ha-control-button>
           <ha-control-button
@@ -123,24 +123,21 @@ class HaMoreInfoViewToggleGroup extends LitElement {
             @click=${this._turnAllOff}
             .disabled=${isAllOff}
           >
-            ${domain !== "light"
-              ? html`
-                  <ha-domain-icon
-                    .hass=${this.hass}
-                    .domain=${domain}
-                    .state=${domain === "cover" ? "closed" : "off"}
-                    .deviceClass=${deviceClass}
-                  ></ha-domain-icon>
-                `
-              : html` <ha-svg-icon .path=${mdiLightbulbOff}></ha-svg-icon>`}
+            <ha-domain-icon
+              .hass=${this.hass}
+              .domain=${domain}
+              .state=${OFF_STATE}
+              .icon=${domain === "light" ? "mdi:lightbulb-off" : undefined}
+            ></ha-domain-icon>
+
             <p>
               ${domain === "cover"
-                ? isGroup
-                  ? "Close all"
-                  : "Close"
-                : isGroup
-                  ? "Turn all off"
-                  : "Turn off"}
+                ? isMultiple
+                  ? this.hass.localize("ui.card.cover.close_all")
+                  : this.hass.localize("ui.card.cover.close")
+                : isMultiple
+                  ? this.hass.localize("ui.card.common.turn_off_all")
+                  : this.hass.localize("ui.card.common.turn_off")}
             </p>
           </ha-control-button>
         </ha-control-button-group>

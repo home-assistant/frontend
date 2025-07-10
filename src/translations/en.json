@@ -79,6 +79,8 @@
       "common": {
         "turn_on": "Turn on",
         "turn_off": "Turn off",
+        "turn_on_all": "Turn on all",
+        "turn_off_all": "Turn off all",
         "toggle": "Toggle",
         "entity_not_found": "Entity not found"
       },
@@ -145,7 +147,11 @@
         "close_cover": "Close cover",
         "open_tilt_cover": "Open cover tilt",
         "close_tilt_cover": "Close cover tilt",
-        "stop_cover": "Stop cover"
+        "stop_cover": "Stop cover",
+        "open": "Open",
+        "open_all": "Open all",
+        "close": "Close",
+        "close_all": "Close all"
       },
       "fan": {
         "preset_mode": "Preset mode",
@@ -327,58 +333,7 @@
     },
     "card_features": {
       "area_controls": {
-        "light": {
-          "on": "Turn on area lights",
-          "off": "Turn off area lights"
-        },
-        "fan": {
-          "on": "Turn on area fans",
-          "off": "Turn off area fans"
-        },
-        "switch": {
-          "on": "Turn on area switches",
-          "off": "Turn off area switches"
-        },
-        "cover-awning": {
-          "on": "Open area awnings",
-          "off": "Close area awnings"
-        },
-        "cover-blind": {
-          "on": "Open area blinds",
-          "off": "Close area blinds"
-        },
-        "cover-curtain": {
-          "on": "Open area curtains",
-          "off": "Close area curtains"
-        },
-        "cover-damper": {
-          "on": "Open area dampers",
-          "off": "Close area dampers"
-        },
-        "cover-door": {
-          "on": "Open area doors",
-          "off": "Close area doors"
-        },
-        "cover-garage": {
-          "on": "Open garage door",
-          "off": "Close garage door"
-        },
-        "cover-gate": {
-          "on": "Open area gates",
-          "off": "Close area gates"
-        },
-        "cover-shade": {
-          "on": "Open area shades",
-          "off": "Close area shades"
-        },
-        "cover-shutter": {
-          "on": "Open area shutters",
-          "off": "Close area shutters"
-        },
-        "cover-window": {
-          "on": "Open area windows",
-          "off": "Close area windows"
-        }
+        "open_more_info": "Open more info"
       }
     },
     "common": {
