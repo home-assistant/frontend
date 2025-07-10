@@ -15,10 +15,11 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { GroupToggleDialogParams } from "../../../dialogs/more-info/components/voice/ha-more-info-view-toggle-group";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import type { AreaCardFeatureContext } from "../cards/hui-area-card";
-import { showGroupControlDialog } from "../dialogs/show-group-toggle-dialog";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
@@ -176,10 +177,20 @@ class HuiAreaControlsCardFeature
 
     const domain = AREA_CONTROLS_BUTTONS[control].filter.domain;
 
-    showGroupControlDialog(this, {
-      title: computeAreaName(this._area!) || "",
-      subtitle: domain,
-      entityIds: entitiesIds,
+    showMoreInfoDialog(this, {
+      entityId: null,
+      parentView: {
+        title: computeAreaName(this._area!) || "",
+        subtitle: domain,
+        tag: "ha-more-info-view-toggle-group",
+        import: () =>
+          import(
+            "../../../dialogs/more-info/components/voice/ha-more-info-view-toggle-group"
+          ),
+        params: {
+          entityIds: entitiesIds,
+        } as GroupToggleDialogParams,
+      },
     });
   }
 

@@ -10,7 +10,7 @@ import {
   mdiPencilOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -68,15 +68,24 @@ export interface MoreInfoDialogParams {
   view?: View;
   /** @deprecated Use `view` instead */
   tab?: View;
+  parentView?: ParentView;
 }
 
-type View = "info" | "history" | "settings" | "related";
+type View = "info" | "history" | "settings" | "related" | "parent";
+
+interface ParentView {
+  tag: string;
+  title?: string;
+  subtitle?: string;
+  import?: () => Promise<unknown>;
+  params?: any;
+}
 
 interface ChildView {
-  viewTag: string;
-  viewTitle?: string;
-  viewImport?: () => Promise<unknown>;
-  viewParams?: any;
+  tag: string;
+  title?: string;
+  import?: () => Promise<unknown>;
+  params?: any;
 }
 
 declare global {
@@ -88,7 +97,8 @@ declare global {
   }
 }
 
-const DEFAULT_VIEW: View = "info";
+const INFO_VIEW: View = "info";
+const PARENT_VIEW: View = "parent";
 
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends LitElement {
@@ -98,9 +108,11 @@ export class MoreInfoDialog extends LitElement {
 
   @state() private _entityId?: string | null;
 
-  @state() private _currView: View = DEFAULT_VIEW;
+  @state() private _currView: View = INFO_VIEW;
 
-  @state() private _initialView: View = DEFAULT_VIEW;
+  @state() private _initialView: View = INFO_VIEW;
+
+  @state() private _parentView?: ParentView;
 
   @state() private _childView?: ChildView;
 
@@ -114,15 +126,27 @@ export class MoreInfoDialog extends LitElement {
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
-    if (!this._entityId) {
+    if (!this._entityId && !params.parentView) {
       this.closeDialog();
       return;
     }
-    this._currView = params.view || DEFAULT_VIEW;
-    this._initialView = params.view || DEFAULT_VIEW;
+    this._parentView = params.parentView;
+    if (this._parentView?.import) {
+      this._parentView.import();
+      this._currView = PARENT_VIEW;
+    } else {
+      this._currView = params.view || INFO_VIEW;
+    }
+    this._initialView = params.view || INFO_VIEW;
     this._childView = undefined;
     this.large = false;
     this._loadEntityRegistryEntry();
+  }
+
+  public willUpdate(changedProps: PropertyValues): void {
+    if (changedProps.has("_entityId")) {
+      this._loadEntityRegistryEntry();
+    }
   }
 
   private async _loadEntityRegistryEntry() {
@@ -143,19 +167,18 @@ export class MoreInfoDialog extends LitElement {
     this._entityId = undefined;
     this._entry = undefined;
     this._childView = undefined;
+    this._parentView = undefined;
+    this._currView = INFO_VIEW;
     this._infoEditMode = false;
-    this._initialView = DEFAULT_VIEW;
+    this._initialView = INFO_VIEW;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  private _shouldShowEditIcon(
-    domain: string,
-    stateObj: HassEntity | undefined
-  ): boolean {
-    if (__DEMO__ || !stateObj) {
+  private _shouldShowEditIcon(domain?: string, stateObj?: HassEntity): boolean {
+    if (__DEMO__ || !stateObj || !domain) {
       return false;
     }
     if (EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) {
@@ -171,8 +194,9 @@ export class MoreInfoDialog extends LitElement {
     return false;
   }
 
-  private _shouldShowHistory(domain: string): boolean {
+  private _shouldShowHistory(domain?: string): boolean {
     return (
+      domain !== undefined &&
       DOMAINS_WITH_MORE_INFO.includes(domain) &&
       (computeShowHistoryComponent(this.hass, this._entityId!) ||
         computeShowLogBookComponent(
@@ -207,14 +231,30 @@ export class MoreInfoDialog extends LitElement {
   private _goBack() {
     if (this._childView) {
       this._childView = undefined;
-    } else {
-      this._setView(this._initialView);
+      return;
+    }
+    const previousView = this._previousView();
+    if (previousView) {
+      this._setView(previousView);
     }
   }
 
+  private _previousView(): View | undefined {
+    if (this._currView === PARENT_VIEW) {
+      return undefined;
+    }
+    if (this._currView !== this._initialView) {
+      return this._initialView;
+    }
+    if (this._parentView) {
+      return PARENT_VIEW;
+    }
+    return undefined;
+  }
+
   private _resetInitialView() {
-    this._initialView = DEFAULT_VIEW;
-    this._setView(DEFAULT_VIEW);
+    this._initialView = INFO_VIEW;
+    this._setView(INFO_VIEW);
   }
 
   private _goToHistory() {
@@ -227,8 +267,8 @@ export class MoreInfoDialog extends LitElement {
 
   private _showChildView(ev: CustomEvent): void {
     const view = ev.detail as ChildView;
-    if (view.viewImport) {
-      view.viewImport();
+    if (view.import) {
+      view.import();
     }
     this._childView = view;
   }
@@ -286,45 +326,99 @@ export class MoreInfoDialog extends LitElement {
     this._sensorNumericDeviceClasses = deviceClasses.numeric_device_classes;
   }
 
+  private _handleMoreInfoEvent(ev: CustomEvent) {
+    // If the parent view has a `show-dialog` event to open more info, we handle it here to set the entity ID and view.
+    const detail = ev.detail as MoreInfoDialogParams;
+    if (detail.entityId) {
+      this._entityId = detail.entityId;
+      this._setView(detail.view || INFO_VIEW);
+      ev.stopPropagation();
+      ev.preventDefault();
+    }
+  }
+
+  private _renderHeader = (): TemplateResult | typeof nothing => {
+    if (this._parentView && this._currView === PARENT_VIEW) {
+      return html`
+        ${this._parentView
+          ? html`<p class="breadcrumb">${this._parentView.subtitle}</p>`
+          : nothing}
+        <p class="main">${this._parentView.title}</p>
+      `;
+    }
+
+    const entityId = this._entityId;
+
+    if (entityId) {
+      const stateObj = this.hass.states[entityId] as HassEntity | undefined;
+      const context = stateObj
+        ? getEntityContext(stateObj, this.hass)
+        : this._entry
+          ? getEntityEntryContext(this._entry, this.hass)
+          : undefined;
+
+      const entityName = stateObj
+        ? computeEntityName(stateObj, this.hass)
+        : this._entry
+          ? computeEntityEntryName(this._entry, this.hass)
+          : entityId;
+
+      const deviceName = context?.device
+        ? computeDeviceName(context.device)
+        : undefined;
+      const areaName = context?.area
+        ? computeAreaName(context.area)
+        : undefined;
+
+      const breadcrumb = [areaName, deviceName, entityName].filter(
+        (v): v is string => Boolean(v)
+      );
+      const title = this._childView?.title || breadcrumb.pop() || entityId;
+      const isAdmin = this.hass.user!.is_admin;
+
+      return html`
+        ${breadcrumb.length > 0
+          ? !__DEMO__ && isAdmin
+            ? html`
+                <button
+                  class="breadcrumb"
+                  @click=${this._breadcrumbClick}
+                  aria-label=${breadcrumb.join(" > ")}
+                >
+                  ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                </button>
+              `
+            : html`
+                <p class="breadcrumb">
+                  ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
+                </p>
+              `
+          : nothing}
+        <p class="main">${title}</p>
+      `;
+    }
+
+    return nothing;
+  };
+
   protected render() {
-    if (!this._entityId) {
+    if (!this._entityId && !this._parentView) {
       return nothing;
     }
     const entityId = this._entityId;
-    const stateObj = this.hass.states[entityId] as HassEntity | undefined;
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
-    const domain = computeDomain(entityId);
+    const domain = entityId ? computeDomain(entityId) : undefined;
 
     const isAdmin = this.hass.user!.is_admin;
 
     const deviceId = this._getDeviceId();
 
-    const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
+    const previousView = this._previousView();
+    const isDefaultView = this._currView === INFO_VIEW && !this._childView;
     const isSpecificInitialView =
-      this._initialView !== DEFAULT_VIEW && !this._childView;
-    const showCloseIcon = isDefaultView || isSpecificInitialView;
-
-    const context = stateObj
-      ? getEntityContext(stateObj, this.hass)
-      : this._entry
-        ? getEntityEntryContext(this._entry, this.hass)
-        : undefined;
-
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass)
-        : entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
-
-    const breadcrumb = [areaName, deviceName, entityName].filter(
-      (v): v is string => Boolean(v)
-    );
-    const title = this._childView?.viewTitle || breadcrumb.pop() || entityId;
+      this._initialView !== INFO_VIEW && !this._childView;
+    const showCloseIcon = !previousView && !this._childView;
 
     return html`
       <ha-dialog
@@ -332,7 +426,7 @@ export class MoreInfoDialog extends LitElement {
         @closed=${this.closeDialog}
         @opened=${this._handleOpened}
         .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
-        .heading=${title}
+        .heading=${" "}
         hideActions
         flexContent
       >
@@ -356,24 +450,7 @@ export class MoreInfoDialog extends LitElement {
                 ></ha-icon-button-prev>
               `}
           <span slot="title" @click=${this._enlarge} class="title">
-            ${breadcrumb.length > 0
-              ? !__DEMO__ && isAdmin
-                ? html`
-                    <button
-                      class="breadcrumb"
-                      @click=${this._breadcrumbClick}
-                      aria-label=${breadcrumb.join(" > ")}
-                    >
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
-                    </button>
-                  `
-                : html`
-                    <p class="breadcrumb">
-                      ${join(breadcrumb, html`<ha-icon-next></ha-icon-next>`)}
-                    </p>
-                  `
-              : nothing}
-            <p class="main">${title}</p>
+            ${this._renderHeader()}
           </span>
           ${isDefaultView
             ? html`
@@ -521,54 +598,62 @@ export class MoreInfoDialog extends LitElement {
           @show-child-view=${this._showChildView}
           @entity-entry-updated=${this._entryUpdated}
           @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
+          @hass-more-info=${this._handleMoreInfoEvent}
         >
           ${cache(
             this._childView
               ? html`
                   <div class="child-view">
-                    ${dynamicElement(this._childView.viewTag, {
+                    ${dynamicElement(this._childView.tag, {
                       hass: this.hass,
                       entry: this._entry,
-                      params: this._childView.viewParams,
+                      params: this._childView.params,
                     })}
                   </div>
                 `
-              : this._currView === "info"
-                ? html`
-                    <ha-more-info-info
-                      dialogInitialFocus
-                      .hass=${this.hass}
-                      .entityId=${this._entityId}
-                      .entry=${this._entry}
-                      .editMode=${this._infoEditMode}
-                    ></ha-more-info-info>
-                  `
-                : this._currView === "history"
+              : this._currView === "parent"
+                ? dynamicElement(this._parentView!.tag, {
+                    hass: this.hass,
+                    entry: this._entry,
+                    params: this._parentView!.params,
+                  })
+                : this._currView === "info"
                   ? html`
-                      <ha-more-info-history-and-logbook
+                      <ha-more-info-info
+                        dialogInitialFocus
                         .hass=${this.hass}
                         .entityId=${this._entityId}
-                      ></ha-more-info-history-and-logbook>
+                        .entry=${this._entry}
+                        .editMode=${this._infoEditMode}
+                      ></ha-more-info-info>
                     `
-                  : this._currView === "settings"
+                  : this._currView === "history"
                     ? html`
-                        <ha-more-info-settings
+                        <ha-more-info-history-and-logbook
                           .hass=${this.hass}
                           .entityId=${this._entityId}
-                          .entry=${this._entry}
-                        ></ha-more-info-settings>
+                        ></ha-more-info-history-and-logbook>
                       `
-                    : this._currView === "related"
+                    : this._currView === "settings"
                       ? html`
-                          <ha-related-items
+                          <ha-more-info-settings
                             .hass=${this.hass}
-                            .itemId=${entityId}
-                            .itemType=${SearchableDomains.has(domain)
-                              ? (domain as ItemType)
-                              : "entity"}
-                          ></ha-related-items>
+                            .entityId=${this._entityId}
+                            .entry=${this._entry}
+                          ></ha-more-info-settings>
                         `
-                      : nothing
+                      : this._currView === "related"
+                        ? html`
+                            <ha-related-items
+                              .hass=${this.hass}
+                              .itemId=${entityId}
+                              .itemType=${domain &&
+                              SearchableDomains.has(domain)
+                                ? (domain as ItemType)
+                                : "entity"}
+                            ></ha-related-items>
+                          `
+                        : nothing
           )}
         </div>
       </ha-dialog>
