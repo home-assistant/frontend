@@ -16,6 +16,7 @@ import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/sec
 import type { TileCardConfig } from "../../../../panels/lovelace/cards/types";
 import "../../../../panels/lovelace/sections/hui-section";
 import type { HomeAssistant } from "../../../../types";
+import "../ha-more-info-state-header";
 
 export interface GroupToggleDialogParams {
   entityIds: string[];
@@ -71,14 +72,16 @@ class HaMoreInfoViewToggleGroup extends LitElement {
 
     const isGroup = this.params.entityIds.length > 1;
 
-    const isAllOn = entities.every((entity) =>
-      entity.state === UNAVAILABLE ||
+    const availableEntities = entities.filter(
+      (entity) => entity.state !== UNAVAILABLE
+    );
+
+    const isAllOn = availableEntities.every((entity) =>
       computeDomain(entity.entity_id) === "cover"
         ? isFullyOpen(entity)
         : entity.state === "on"
     );
-    const isAllOff = entities.every((entity) =>
-      entity.state === UNAVAILABLE ||
+    const isAllOff = availableEntities.every((entity) =>
       computeDomain(entity.entity_id) === "cover"
         ? isFullyClosed(entity)
         : entity.state === "off"
