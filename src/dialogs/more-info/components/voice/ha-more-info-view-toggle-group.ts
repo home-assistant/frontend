@@ -148,6 +148,7 @@ class HaMoreInfoViewToggleGroup extends LitElement {
               .hass=${this.hass}
               .domain=${domain}
               .state=${OFF_STATE}
+              .deviceClass=${deviceClass}
               .icon=${domain === "light" ? "mdi:lightbulb-off" : undefined}
             ></ha-domain-icon>
 
