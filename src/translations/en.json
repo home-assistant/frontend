@@ -5093,6 +5093,7 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "area": "Area",
+            "floor": "Floor",
             "integration": "Integration",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -5626,7 +5627,7 @@
           "other_networks": "Other networks",
           "my_network": "Preferred network",
           "no_preferred_network": "You don't have a preferred network yet.",
-          "more_info": "More Info",
+          "more_info": "More information",
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
           "add_to_my_network": "Add to preferred network",
@@ -8465,7 +8466,7 @@
             "filter_states": "Filter states",
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
-            "more_info": "More Info",
+            "more_info": "More info",
             "alert_entity_field": "Entity is a mandatory field",
             "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
             "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
@@ -8625,7 +8626,7 @@
                 "input_select": "Input selects",
                 "template": "Template entities",
                 "universal": "Universal media player entities",
-                "rest": "Rest entities and notify services",
+                "rest": "REST entities and notify services",
                 "command_line": "Command line entities",
                 "filter": "Filter entities",
                 "statistics": "Statistics entities",
@@ -9061,7 +9062,7 @@
           },
           "host_pid": {
             "title": "Host processes namespace",
-            "description": "Usually, the processes the add-on runs, are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
+            "description": "Usually, the processes run by the add-on are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on."
           },
           "apparmor": {
             "title": "AppArmor",
