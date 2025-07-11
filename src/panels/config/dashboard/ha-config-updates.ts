@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -7,16 +5,16 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { getDeviceContext } from "../../../common/entity/context/get_device_context";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list-item";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
+import "../../../components/ha-spinner";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
-import {
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
@@ -66,12 +64,12 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
     const updates = this.updateEntities;
 
     return html`
-      <div class="title">
+      <div class="title" role="heading" aria-level="2">
         ${this.hass.localize("ui.panel.config.updates.title", {
           count: this.total || this.updateEntities.length,
         })}
       </div>
-      <mwc-list>
+      <ha-md-list>
         ${updates.map((entity) => {
           const entityEntry = this.getEntityEntry(entity.entity_id);
           const deviceEntry =
@@ -79,53 +77,59 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
               ? this.getDeviceEntry(entityEntry.device_id)
               : undefined;
 
+          const areaName =
+            deviceEntry && deviceEntry.entry_type !== "service"
+              ? getDeviceContext(deviceEntry, this.hass).area?.name ||
+                this.hass.localize("ui.panel.config.updates.no_area")
+              : undefined;
+
           return html`
-            <ha-list-item
-              twoline
-              graphic="medium"
+            <ha-md-list-item
               class=${ifDefined(
                 entity.attributes.skipped_version ? "skipped" : undefined
               )}
               .entity_id=${entity.entity_id}
               .hasMeta=${!this.narrow}
+              type="button"
               @click=${this._openMoreInfo}
             >
-              <state-badge
-                slot="graphic"
-                .title=${entity.attributes.title ||
-                entity.attributes.friendly_name}
-                .hass=${this.hass}
-                .stateObj=${entity}
-                class=${ifDefined(
-                  this.narrow && entity.attributes.in_progress
-                    ? "updating"
-                    : undefined
-                )}
-              ></state-badge>
-              ${this.narrow && entity.attributes.in_progress
-                ? html`<ha-spinner
-                    slot="graphic"
-                    class="absolute"
-                    size="small"
-                    .ariaLabel=${this.hass.localize(
-                      "ui.panel.config.updates.update_in_progress"
-                    )}
-                  ></ha-spinner>`
-                : ""}
-              <span
+              <div slot="start">
+                <state-badge
+                  .title=${entity.attributes.title ||
+                  entity.attributes.friendly_name}
+                  .hass=${this.hass}
+                  .stateObj=${entity}
+                  class=${ifDefined(
+                    this.narrow && entity.attributes.in_progress
+                      ? "updating"
+                      : undefined
+                  )}
+                ></state-badge>
+                ${this.narrow && entity.attributes.in_progress
+                  ? html`<ha-spinner
+                      class="absolute"
+                      size="small"
+                      .ariaLabel=${this.hass.localize(
+                        "ui.panel.config.updates.update_in_progress"
+                      )}
+                    ></ha-spinner>`
+                  : nothing}
+              </div>
+              <span slot="headline"
                 >${deviceEntry
-                  ? computeDeviceName(deviceEntry, this.hass)
+                  ? computeDeviceNameDisplay(deviceEntry, this.hass)
                   : entity.attributes.friendly_name}</span
               >
-              <span slot="secondary">
+              <span slot="supporting-text">
+                ${areaName ? html`${areaName} ⸱ ` : nothing}
                 ${entity.attributes.title} ${entity.attributes.latest_version}
                 ${entity.attributes.skipped_version
                   ? `(${this.hass.localize("ui.panel.config.updates.skipped")})`
-                  : ""}
+                  : nothing}
               </span>
               ${!this.narrow
                 ? entity.attributes.in_progress
-                  ? html`<div slot="meta">
+                  ? html`<div slot="end">
                       <ha-spinner
                         size="small"
                         .ariaLabel=${this.hass.localize(
@@ -133,12 +137,12 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
                         )}
                       ></ha-spinner>
                     </div>`
-                  : html`<ha-icon-next slot="meta"></ha-icon-next>`
-                : ""}
-            </ha-list-item>
+                  : html`<ha-icon-next slot="end"></ha-icon-next>`
+                : nothing}
+            </ha-md-list-item>
           `;
         })}
-      </mwc-list>
+      </ha-md-list>
     `;
   }
 
@@ -151,19 +155,16 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        :host {
-          --mdc-list-vertical-padding: 0;
-        }
         .title {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
           padding: 16px;
           padding-bottom: 0;
         }
         .skipped {
           background: var(--secondary-background-color);
         }
-        ha-list-item {
-          --mdc-list-item-graphic-size: 40px;
+        ha-md-list-item {
+          --md-list-item-leading-icon-size: 40px;
         }
         ha-icon-next {
           color: var(--secondary-text-color);
@@ -186,14 +187,16 @@ class HaConfigUpdates extends SubscribeMixin(LitElement) {
           outline: none;
           text-decoration: underline;
         }
-        ha-list-item {
-          cursor: pointer;
-          font-size: 16px;
+        ha-md-list-item {
+          font-size: var(--ha-font-size-l);
+        }
+        div[slot="start"] {
+          position: relative;
         }
         ha-spinner.absolute {
           position: absolute;
-          width: 28px;
-          height: 28px;
+          left: 6px;
+          top: 6px;
         }
         state-badge.updating {
           opacity: 0.5;

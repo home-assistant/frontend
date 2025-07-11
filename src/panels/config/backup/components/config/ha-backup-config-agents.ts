@@ -1,5 +1,6 @@
 import { mdiCog, mdiDelete, mdiHarddisk, mdiNas } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import { join } from "lit/directives/join";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -30,7 +31,7 @@ const DEFAULT_AGENTS = [];
 class HaBackupConfigAgents extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public cloudStatus!: CloudStatus;
+  @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
   @property({ attribute: false }) public agents: BackupAgent[] = [];
 
@@ -47,7 +48,10 @@ class HaBackupConfigAgents extends LitElement {
 
   private _description(agentId: string) {
     if (agentId === CLOUD_AGENT) {
-      if (this.cloudStatus.logged_in && !this.cloudStatus.active_subscription) {
+      if (
+        this.cloudStatus?.logged_in &&
+        !this.cloudStatus.active_subscription
+      ) {
         return this.hass.localize(
           "ui.panel.config.backup.agents.cloud_agent_no_subcription"
         );
@@ -57,40 +61,65 @@ class HaBackupConfigAgents extends LitElement {
       );
     }
 
+    const texts: (TemplateResult | string)[] = [];
+
+    if (isNetworkMountAgent(agentId)) {
+      texts.push(
+        this.hass.localize(
+          "ui.panel.config.backup.agents.network_mount_agent_description"
+        )
+      );
+    }
+
     const encryptionTurnedOff =
       this.agentsConfig?.[agentId]?.protected === false;
 
     if (encryptionTurnedOff) {
-      return html`
-        <span class="dot warning"></span>
-        <span>
-          ${this.hass.localize(
-            "ui.panel.config.backup.agents.encryption_turned_off"
-          )}
-        </span>
-      `;
-    }
-
-    if (isNetworkMountAgent(agentId)) {
-      return this.hass.localize(
-        "ui.panel.config.backup.agents.network_mount_agent_description"
+      texts.push(
+        html`<div class="unencrypted-warning">
+          <span class="dot warning"></span>
+          <span>
+            ${this.hass.localize(
+              "ui.panel.config.backup.agents.encryption_turned_off"
+            )}
+          </span>
+        </div>`
       );
     }
-    return "";
+
+    const retention = this.agentsConfig?.[agentId]?.retention;
+
+    if (retention) {
+      if (retention.copies === null && retention.days === null) {
+        texts.push(
+          this.hass.localize("ui.panel.config.backup.agents.retention_all")
+        );
+      } else {
+        texts.push(
+          this.hass.localize(
+            `ui.panel.config.backup.agents.retention_${retention.copies ? "backups" : "days"}`,
+            {
+              count: retention.copies || retention.days,
+            }
+          )
+        );
+      }
+    }
+    return join(texts, html`<span class="separator"> · </span>`);
   }
 
   private _availableAgents = memoizeOne(
-    (agents: BackupAgent[], cloudStatus: CloudStatus) =>
+    (agents: BackupAgent[], cloudStatus?: CloudStatus) =>
       agents.filter(
-        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus.logged_in
+        (agent) => agent.agent_id !== CLOUD_AGENT || cloudStatus?.logged_in
       )
   );
 
   private _unavailableAgents = memoizeOne(
     (
       agents: BackupAgent[],
-      cloudStatus: CloudStatus,
-      selectedAgentIds: string[]
+      selectedAgentIds: string[],
+      cloudStatus?: CloudStatus
     ) => {
       const availableAgentIds = this._availableAgents(agents, cloudStatus).map(
         (agent) => agent.agent_id
@@ -141,8 +170,8 @@ class HaBackupConfigAgents extends LitElement {
     );
     const unavailableAgents = this._unavailableAgents(
       this.agents,
-      this.cloudStatus,
-      this._value
+      this._value,
+      this.cloudStatus
     );
 
     const allAgents = [...availableAgents, ...unavailableAgents];
@@ -161,7 +190,7 @@ class HaBackupConfigAgents extends LitElement {
                 const description = this._description(agentId);
                 const noCloudSubscription =
                   agentId === CLOUD_AGENT &&
-                  this.cloudStatus.logged_in &&
+                  this.cloudStatus?.logged_in &&
                   !this.cloudStatus.active_subscription;
 
                 return html`
@@ -285,7 +314,12 @@ class HaBackupConfigAgents extends LitElement {
       align-items: center;
       flex-direction: row;
       gap: 8px;
-      line-height: normal;
+      line-height: var(--ha-line-height-condensed);
+    }
+    .unencrypted-warning {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
     .dot {
       display: block;
@@ -294,10 +328,21 @@ class HaBackupConfigAgents extends LitElement {
       height: 8px;
       background-color: var(--disabled-color);
       border-radius: 50%;
-      flex: none;
     }
     .dot.warning {
       background-color: var(--warning-color);
+    }
+    @media all and (max-width: 500px) {
+      .separator {
+        display: none;
+      }
+      ha-md-list-item [slot="supporting-text"] {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 4px;
+      }
     }
   `;
 }

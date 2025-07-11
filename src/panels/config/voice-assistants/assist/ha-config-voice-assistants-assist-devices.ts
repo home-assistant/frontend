@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { navigate } from "../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/data-table/ha-data-table";
@@ -14,7 +15,6 @@ import {
   listAssistDevices,
   listAssistPipelines,
 } from "../../../../data/assist_pipeline";
-import { computeDeviceName } from "../../../../data/device_registry";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 
@@ -87,7 +87,7 @@ class AssistDevicesPage extends LitElement {
 
         return {
           ...assistDevice,
-          name: device ? computeDeviceName(device, this.hass) : "",
+          name: device ? computeDeviceNameDisplay(device, this.hass) : "",
           pipeline: isPreferred
             ? localize("ui.components.pipeline-picker.preferred", {
                 preferred: pipelineName,

@@ -1,13 +1,14 @@
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import type { LovelaceStrategyEditor } from "../types";
 import type {
   AreaViewStrategyConfig,
   EntitiesDisplay,
 } from "./area-view-strategy";
-import type { LovelaceStrategyEditor } from "../types";
 import type { AreasViewStrategyConfig } from "./areas-overview-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
@@ -21,6 +22,9 @@ export interface AreasDashboardStrategyConfig {
     hidden?: string[];
     order?: string[];
   };
+  floors_display?: {
+    order?: string[];
+  };
   areas_options?: Record<string, AreaOptions>;
 }
 
@@ -30,6 +34,28 @@ export class AreasDashboardStrategy extends ReactiveElement {
     config: AreasDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
+    if (hass.config.state === STATE_NOT_RUNNING) {
+      return {
+        views: [
+          {
+            type: "sections",
+            sections: [{ cards: [{ type: "starting" }] }],
+          },
+        ],
+      };
+    }
+
+    if (hass.config.recovery_mode) {
+      return {
+        views: [
+          {
+            type: "sections",
+            sections: [{ cards: [{ type: "recovery-mode" }] }],
+          },
+        ],
+      };
+    }
+
     const areas = getAreas(
       hass.areas,
       config.areas_display?.hidden,
@@ -43,6 +69,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
       return {
         title: area.name,
         path: path,
+        subview: true,
         strategy: {
           type: "area",
           area: area.area_id,
@@ -54,13 +81,13 @@ export class AreasDashboardStrategy extends ReactiveElement {
     return {
       views: [
         {
-          title: "Home",
           icon: "mdi:home",
           path: "home",
           strategy: {
             type: "areas-overview",
             areas_display: config.areas_display,
             areas_options: config.areas_options,
+            floors_display: config.floors_display,
           } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,

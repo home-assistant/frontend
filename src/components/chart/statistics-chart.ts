@@ -238,17 +238,25 @@ export class StatisticsChart extends LitElement {
       this.maxYAxis;
     if (typeof minYAxis === "number") {
       if (this.fitYData) {
-        minYAxis = ({ min }) => Math.min(min, this.minYAxis!);
+        minYAxis = ({ min }) =>
+          Math.min(this._roundYAxis(min, Math.floor), this.minYAxis!);
       }
     } else if (this.logarithmicScale) {
-      minYAxis = ({ min }) => Math.floor(min > 0 ? min * 0.95 : min * 1.05);
+      minYAxis = ({ min }) => {
+        const value = min > 0 ? min * 0.95 : min * 1.05;
+        return this._roundYAxis(value, Math.floor);
+      };
     }
     if (typeof maxYAxis === "number") {
       if (this.fitYData) {
-        maxYAxis = ({ max }) => Math.max(max, this.maxYAxis!);
+        maxYAxis = ({ max }) =>
+          Math.max(this._roundYAxis(max, Math.ceil), this.maxYAxis!);
       }
     } else if (this.logarithmicScale) {
-      maxYAxis = ({ max }) => Math.ceil(max > 0 ? max * 1.05 : max * 0.95);
+      maxYAxis = ({ max }) => {
+        const value = max > 0 ? max * 1.05 : max * 0.95;
+        return this._roundYAxis(value, Math.ceil);
+      };
     }
     const endTime = this.endTime ?? new Date();
     let startTime = this.startTime;
@@ -296,7 +304,11 @@ export class StatisticsChart extends LitElement {
           align: "left",
         },
         position: computeRTL(this.hass) ? "right" : "left",
-        scale: true,
+        scale:
+          this.chartType !== "bar" ||
+          this.logarithmicScale ||
+          minYAxis !== undefined ||
+          maxYAxis !== undefined,
         min: this._clampYAxis(minYAxis),
         max: this._clampYAxis(maxYAxis),
         splitLine: {
@@ -304,6 +316,7 @@ export class StatisticsChart extends LitElement {
         },
       },
       legend: {
+        type: "custom",
         show: !this.hideLegend,
         data: this._legendData,
       },
@@ -446,12 +459,14 @@ export class StatisticsChart extends LitElement {
 
       const hasMean =
         this.statTypes.includes("mean") && statisticsHaveType(stats, "mean");
-      const drawBands =
-        hasMean ||
-        (this.statTypes.includes("min") &&
-          statisticsHaveType(stats, "min") &&
-          this.statTypes.includes("max") &&
-          statisticsHaveType(stats, "max"));
+      const hasMax =
+        this.statTypes.includes("max") && statisticsHaveType(stats, "max");
+      const hasMin =
+        this.statTypes.includes("min") && statisticsHaveType(stats, "min");
+      const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
+
+      const bandTop = hasMax ? "max" : "mean";
+      const bandBottom = hasMin ? "min" : "mean";
 
       const sortedTypes = drawBands
         ? [...this.statTypes].sort((a, b) => {
@@ -468,10 +483,12 @@ export class StatisticsChart extends LitElement {
       let displayedLegend = false;
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
-          const band = drawBands && (type === "min" || type === "max");
+          const band = drawBands && (type === bandTop || type === bandBottom);
           statTypes.push(type);
           const borderColor =
-            band && hasMean ? color + (this.hideLegend ? "00" : "7F") : color;
+            band && hasMin && hasMax && hasMean
+              ? color + (this.hideLegend ? "00" : "7F")
+              : color;
           const backgroundColor = band ? color + "3F" : color + "7F";
           const series: LineSeriesOption | BarSeriesOption = {
             id: `${statistic_id}-${type}`,
@@ -506,7 +523,7 @@ export class StatisticsChart extends LitElement {
           if (band && this.chartType === "line") {
             series.stack = `band-${statistic_id}`;
             series.stackStrategy = "all";
-            if (drawBands && type === "max") {
+            if (drawBands && type === bandTop) {
               (series as LineSeriesOption).areaStyle = {
                 color: color + "3F",
               };
@@ -549,10 +566,14 @@ export class StatisticsChart extends LitElement {
             } else {
               val.push((stat.sum || 0) - firstSum);
             }
-          } else if (type === "max" && this.chartType === "line") {
-            const max = stat.max || 0;
-            val.push(Math.abs(max - (stat.min || 0)));
-            val.push(max);
+          } else if (
+            type === bandTop &&
+            this.chartType === "line" &&
+            drawBands
+          ) {
+            const top = stat[bandTop] || 0;
+            val.push(Math.abs(top - (stat[bandBottom] || 0)));
+            val.push(top);
           } else {
             val.push(stat[type] ?? null);
           }
@@ -606,13 +627,17 @@ export class StatisticsChart extends LitElement {
     if (this.logarithmicScale) {
       // log(0) is -Infinity, so we need to set a minimum value
       if (typeof value === "number") {
-        return Math.max(value, 0.1);
+        return Math.max(value, Number.EPSILON);
       }
       if (typeof value === "function") {
-        return (values: any) => Math.max(value(values), 0.1);
+        return (values: any) => Math.max(value(values), Number.EPSILON);
       }
     }
     return value;
+  }
+
+  private _roundYAxis(value: number, roundingFn: (value: number) => number) {
+    return Math.abs(value) < 1 ? value : roundingFn(value);
   }
 
   static styles = css`

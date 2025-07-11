@@ -5,11 +5,12 @@ import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
-import "./ha-button-menu";
+import "./ha-md-button-menu";
 import "./ha-icon-button";
-import "./ha-list-item";
 import "./ha-svg-icon";
 import "./ha-tooltip";
+import "./ha-md-menu-item";
+import "./ha-md-divider";
 
 export interface IconOverflowMenuItem {
   [key: string]: any;
@@ -35,11 +36,9 @@ export class HaIconOverflowMenu extends LitElement {
     return html`
       ${this.narrow
         ? html` <!-- Collapsed representation for small screens -->
-            <ha-button-menu
+            <ha-md-button-menu
               @click=${this._handleIconOverflowMenuOpened}
-              @closed=${this._handleIconOverflowMenuClosed}
-              class="ha-icon-overflow-menu-overflow"
-              absolute
+              positioning="popover"
             >
               <ha-icon-button
                 .label=${this.hass.localize("ui.common.overflow_menu")}
@@ -49,23 +48,24 @@ export class HaIconOverflowMenu extends LitElement {
 
               ${this.items.map((item) =>
                 item.divider
-                  ? html`<li divider role="separator"></li>`
-                  : html`<ha-list-item
-                      graphic="icon"
+                  ? html`<ha-md-divider
+                      role="separator"
+                      tabindex="-1"
+                    ></ha-md-divider>`
+                  : html`<ha-md-menu-item
                       ?disabled=${item.disabled}
-                      @click=${item.action}
+                      .clickAction=${item.action}
                       class=${classMap({ warning: Boolean(item.warning) })}
                     >
-                      <div slot="graphic">
-                        <ha-svg-icon
-                          class=${classMap({ warning: Boolean(item.warning) })}
-                          .path=${item.path}
-                        ></ha-svg-icon>
-                      </div>
+                      <ha-svg-icon
+                        slot="start"
+                        class=${classMap({ warning: Boolean(item.warning) })}
+                        .path=${item.path}
+                      ></ha-svg-icon>
                       ${item.label}
-                    </ha-list-item> `
+                    </ha-md-menu-item> `
               )}
-            </ha-button-menu>`
+            </ha-md-button-menu>`
         : html`
             <!-- Icon representation for big screens -->
             ${this.items.map((item) =>
@@ -91,20 +91,6 @@ export class HaIconOverflowMenu extends LitElement {
 
   protected _handleIconOverflowMenuOpened(e) {
     e.stopPropagation();
-    // If this component is used inside a data table, the z-index of the row
-    // needs to be increased. Otherwise the ha-button-menu would be displayed
-    // underneath the next row in the table.
-    const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
-    if (row) {
-      row.style.zIndex = "1";
-    }
-  }
-
-  protected _handleIconOverflowMenuClosed() {
-    const row = this.closest(".mdc-data-table__row") as HTMLDivElement | null;
-    if (row) {
-      row.style.zIndex = "";
-    }
   }
 
   static get styles() {
@@ -115,15 +101,9 @@ export class HaIconOverflowMenu extends LitElement {
           display: flex;
           justify-content: flex-end;
         }
-        li[role="separator"] {
-          border-bottom-color: var(--divider-color);
-        }
         div[role="separator"] {
           border-right: 1px solid var(--divider-color);
           width: 1px;
-        }
-        ha-list-item[disabled] ha-svg-icon {
-          color: var(--disabled-text-color);
         }
       `,
     ];

@@ -14,6 +14,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "clock",
+    showElement: true,
+  },
+  {
     type: "entities",
     showElement: true,
   },

@@ -6,8 +6,8 @@ import path from "path";
 import paths from "../paths.cjs";
 
 const npmPath = (...parts) =>
-  path.resolve(paths.polymer_dir, "node_modules", ...parts);
-const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
+  path.resolve(paths.root_dir, "node_modules", ...parts);
+const polyPath = (...parts) => path.resolve(paths.root_dir, ...parts);
 
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
@@ -58,6 +58,11 @@ function copyPolyfills(staticDir) {
   copyFileDir(
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
+  );
+  // Lit polyfill support
+  fs.copySync(
+    npmPath("lit/polyfill-support.js"),
+    path.join(staticPath("polyfills/"), "lit-polyfill-support.js")
   );
 
   // dialog-polyfill css

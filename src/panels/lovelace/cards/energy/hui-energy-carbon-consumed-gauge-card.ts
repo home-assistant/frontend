@@ -11,10 +11,9 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  energySourcesByType,
   getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import { createEntityNotFoundWarning } from "../../components/hui-warning";
@@ -87,22 +86,18 @@ class HuiEnergyCarbonGaugeCard
     const co2State = this.hass.states[this._data.co2SignalEntity];
 
     if (!co2State) {
-      return html`<hui-warning>
+      return html`<hui-warning .hass=${this.hass}>
         ${createEntityNotFoundWarning(this.hass, this._data.co2SignalEntity)}
       </hui-warning>`;
     }
 
-    const prefs = this._data.prefs;
-    const types = energySourcesByType(prefs);
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
 
-    const totalGridConsumption = calculateStatisticsSumGrowth(
-      this._data.stats,
-      types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-    );
+    const totalGridConsumption = summedData.total.from_grid ?? 0;
 
     let value: number | undefined;
 
-    if (this._data.fossilEnergyConsumption && totalGridConsumption) {
+    if (this._data.fossilEnergyConsumption) {
       const highCarbonEnergy = this._data.fossilEnergyConsumption
         ? Object.values(this._data.fossilEnergyConsumption).reduce(
             (sum, a) => sum + a,
@@ -110,24 +105,17 @@ class HuiEnergyCarbonGaugeCard
           )
         : 0;
 
-      const totalSolarProduction = types.solar
-        ? calculateStatisticsSumGrowth(
-            this._data.stats,
-            types.solar.map((source) => source.stat_energy_from)
-          ) || 0
-        : 0;
+      const totalSolarProduction = summedData.total.solar ?? 0;
 
-      const totalGridReturned =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-        ) || 0;
+      const totalGridReturned = summedData.total.to_grid ?? 0;
 
       const totalEnergyConsumed =
         totalGridConsumption +
         Math.max(0, totalSolarProduction - totalGridReturned);
 
-      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+      if (totalEnergyConsumed) {
+        value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+      }
     }
 
     return html`
@@ -202,7 +190,7 @@ class HuiEnergyCarbonGaugeCard
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
 

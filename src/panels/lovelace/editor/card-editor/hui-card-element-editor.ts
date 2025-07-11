@@ -1,15 +1,14 @@
-import "@material/mwc-tab-bar/mwc-tab-bar";
-import "@material/mwc-tab/mwc-tab";
 import type { TemplateResult } from "lit";
 import { css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../components/sl-tab-group";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import type { LovelaceCardEditor, LovelaceConfigForm } from "../../types";
 import { HuiTypedElementEditor } from "../hui-typed-element-editor";
 import "./hui-card-layout-editor";
 import "./hui-card-visibility-editor";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 
 const tabs = ["config", "visibility", "layout"] as const;
 
@@ -91,27 +90,23 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
         `;
     }
     return html`
-      <mwc-tab-bar
-        .activeIndex=${tabs.indexOf(this._currTab)}
-        @MDCTabBar:activated=${this._handleTabChanged}
-      >
+      <sl-tab-group @sl-tab-show=${this._handleTabChanged}>
         ${displayedTabs.map(
           (tab) => html`
-            <mwc-tab
-              .label=${this.hass.localize(
+            <sl-tab slot="nav" .active=${this._currTab === tab} panel=${tab}>
+              ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_card.tab_${tab}`
               )}
-            >
-            </mwc-tab>
+            </sl-tab>
           `
         )}
-      </mwc-tab-bar>
+      </sl-tab-group>
       ${content}
     `;
   }
 
   private _handleTabChanged(ev: CustomEvent): void {
-    const newTab = tabs[ev.detail.index];
+    const newTab = ev.detail.name;
     if (newTab === this._currTab) {
       return;
     }
@@ -120,10 +115,17 @@ export class HuiCardElementEditor extends HuiTypedElementEditor<LovelaceCardConf
 
   static override styles = [
     css`
-      mwc-tab-bar {
-        text-transform: uppercase;
+      sl-tab-group {
         margin-bottom: 16px;
-        border-bottom: 1px solid var(--divider-color);
+      }
+
+      sl-tab {
+        flex: 1;
+      }
+
+      sl-tab::part(base) {
+        width: 100%;
+        justify-content: center;
       }
     `,
   ];

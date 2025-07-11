@@ -1,13 +1,13 @@
-import "@material/mwc-list/mwc-list-item";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-icon-next";
+import "../../components/ha-list-item";
 import type { DataEntryFlowStepMenu } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
-import "../../components/ha-icon-next";
 import { configFlowContentStyles } from "./styles";
-import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("step-flow-menu")
 class StepFlowMenu extends LitElement {
@@ -42,15 +42,14 @@ class StepFlowMenu extends LitElement {
     );
 
     return html`
-      <h2>${this.flowConfig.renderMenuHeader(this.hass, this.step)}</h2>
       ${description ? html`<div class="content">${description}</div>` : ""}
       <div class="options">
         ${options.map(
           (option) => html`
-            <mwc-list-item hasMeta .step=${option} @click=${this._handleStep}>
+            <ha-list-item hasMeta .step=${option} @click=${this._handleStep}>
               <span>${translations[option]}</span>
               <ha-icon-next slot="meta"></ha-icon-next>
-            </mwc-list-item>
+            </ha-list-item>
           `
         )}
       </div>
@@ -83,7 +82,7 @@ class StepFlowMenu extends LitElement {
       .content + .options {
         margin-top: 8px;
       }
-      mwc-list-item {
+      ha-list-item {
         --mdc-list-side-padding: 24px;
       }
     `,

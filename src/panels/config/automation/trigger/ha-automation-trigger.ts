@@ -32,10 +32,13 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ attribute: false }) public triggers!: Trigger[];
 
+  @property({ attribute: false }) public highlightedTriggers?: Trigger[];
+
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _showReorder = false;
 
+  @state()
   @storage({
     key: "automationClipboard",
     state: true,
@@ -92,6 +95,7 @@ export default class HaAutomationTrigger extends LitElement {
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
+                ?highlight=${this.highlightedTriggers?.includes(trg)}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -216,7 +220,7 @@ export default class HaAutomationTrigger extends LitElement {
   private async _triggerAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const triggers = [
+    let triggers = [
       ...this.triggers.slice(0, index),
       data,
       ...this.triggers.slice(index),
@@ -224,7 +228,15 @@ export default class HaAutomationTrigger extends LitElement {
     // Add trigger locally to avoid UI jump
     this.triggers = triggers;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.triggers });
+    if (this.triggers !== triggers) {
+      // Ensure trigger is added even after update
+      triggers = [
+        ...this.triggers.slice(0, index),
+        data,
+        ...this.triggers.slice(index),
+      ];
+    }
+    fireEvent(this, "value-changed", { value: triggers });
   }
 
   private async _triggerRemoved(ev: CustomEvent): Promise<void> {

@@ -16,7 +16,7 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
         padding-top: var(--header-height);
       }
       .mdc-top-app-bar {
-        --mdc-typography-headline6-font-weight: 400;
+        --mdc-typography-headline6-font-weight: var(--ha-font-weight-normal);
         color: var(--app-header-text-color, var(--mdc-theme-on-primary, #fff));
         background-color: var(
           --app-header-background-color,
@@ -24,7 +24,7 @@ export class HaTopAppBarFixed extends TopAppBarFixedBase {
         );
       }
       .mdc-top-app-bar__title {
-        font-size: 20px;
+        font-size: var(--ha-font-size-xl);
         padding-inline-start: 24px;
         padding-inline-end: initial;
       }

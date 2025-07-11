@@ -30,8 +30,9 @@ class HaLabeledSlider extends LitElement {
   @property({ type: Number }) public value?: number;
 
   protected render() {
+    const title = this._getTitle();
     return html`
-      <div class="title">${this._getTitle()}</div>
+      ${title ? html`<div class="title">${title}</div>` : nothing}
       <div class="extra-container"><slot name="extra"></slot></div>
       <div class="slider-container">
         ${this.icon ? html`<ha-icon icon=${this.icon}></ha-icon>` : nothing}
@@ -46,7 +47,9 @@ class HaLabeledSlider extends LitElement {
         ></ha-slider>
       </div>
       ${this.helper
-        ? html`<ha-input-helper-text> ${this.helper} </ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}>
+            ${this.helper}
+          </ha-input-helper-text>`
         : nothing}
     `;
   }
@@ -73,17 +76,20 @@ class HaLabeledSlider extends LitElement {
 
     .slider-container {
       display: flex;
+      align-items: center;
     }
 
     ha-icon {
-      margin-top: 8px;
       color: var(--secondary-text-color);
     }
 
     ha-slider {
+      display: flex;
       flex-grow: 1;
+      align-items: center;
       background-image: var(--ha-slider-background);
       border-radius: 4px;
+      height: 32px;
     }
   `;
 }

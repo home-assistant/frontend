@@ -198,12 +198,12 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         navigator.serviceWorker.getRegistration().then((registration) => {
           if (registration) {
             registration.update();
-          } else {
+          } else if (oldVersion) {
             // @ts-ignore Firefox supports forceGet
             location.reload(true);
           }
         });
-      } else {
+      } else if (oldVersion) {
         // @ts-ignore Firefox supports forceGet
         location.reload(true);
       }

@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list-item";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";

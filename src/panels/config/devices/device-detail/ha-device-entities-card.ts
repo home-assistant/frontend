@@ -1,31 +1,31 @@
-import "@material/mwc-list/mwc-list";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list-item";
+import "../../../../components/ha-list";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
-import { createRowElement } from "../../../lovelace/create-element/create-row-element";
-import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
-import type {
-  LovelaceRowConfig,
-  LovelaceRow,
-} from "../../../lovelace/entity-rows/types";
-import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 import {
   computeCards,
   computeSection,
 } from "../../../lovelace/common/generate-lovelace-config";
+import { createRowElement } from "../../../lovelace/create-element/create-row-element";
+import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
+import type {
+  LovelaceRow,
+  LovelaceRowConfig,
+} from "../../../lovelace/entity-rows/types";
+import type { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -91,13 +91,13 @@ export class HaDeviceEntitiesCard extends LitElement {
         ${shownEntities.length
           ? html`
               <div id="entities" class="move-up">
-                <mwc-list>
+                <ha-list>
                   ${shownEntities.map((entry) =>
                     this.hass.states[entry.entity_id]
                       ? this._renderEntity(entry)
                       : this._renderEntry(entry)
                   )}
-                </mwc-list>
+                </ha-list>
               </div>
             `
           : nothing}
@@ -113,9 +113,9 @@ export class HaDeviceEntitiesCard extends LitElement {
                     </button>
                   `
                 : html`
-                    <mwc-list>
+                    <ha-list>
                       ${hiddenEntities.map((entry) => this._renderEntry(entry))}
-                    </mwc-list>
+                    </ha-list>
                     <button class="show-more" @click=${this._toggleShowHidden}>
                       ${this.hass.localize(
                         "ui.panel.config.devices.entities.show_less"
@@ -171,18 +171,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       element.hass = this.hass;
       const stateObj = this.hass.states[entry.entity_id];
 
-      let name = entry.name
-        ? stripPrefixFromEntityName(entry.name, this.deviceName.toLowerCase())
-        : entry.has_entity_name
-          ? entry.original_name || this.deviceName
-          : stripPrefixFromEntityName(
-              computeStateName(stateObj),
-              this.deviceName.toLowerCase()
-            );
-
-      if (!name) {
-        name = computeStateName(stateObj);
-      }
+      let name = computeEntityName(stateObj, this.hass) || this.deviceName;
 
       if (entry.hidden_by) {
         name += ` (${this.hass.localize(
@@ -216,8 +205,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         <ha-icon slot="graphic" .icon=${icon}></ha-icon>
         <div class="name">
           ${name
-            ? stripPrefixFromEntityName(name, this.deviceName.toLowerCase()) ||
-              name
+            ? stripPrefixFromEntityName(name, this.deviceName) || name
             : entry.entity_id}
         </div>
       </ha-list-item>
@@ -267,30 +255,21 @@ export class HaDeviceEntitiesCard extends LitElement {
     .move-up {
       margin-top: -13px;
     }
-    .move-up:has(> mwc-list) {
+    .move-up:has(> ha-list) {
       margin-top: -24px;
     }
-    :not(.move-up) > mwc-list {
+    :not(.move-up) > ha-list {
       margin-top: -24px;
     }
-    mwc-list + button.show-more,
-    .move-up + :not(:has(mwc-list)) > button.show-more {
+    ha-list + button.show-more,
+    .move-up + :not(:has(ha-list)) > button.show-more {
       margin-top: -12px;
     }
-    #entities > mwc-list {
+    #entities > ha-list {
       margin: 0 16px 0 8px;
     }
-    #entities > paper-icon-item {
-      margin: 0;
-    }
-    paper-icon-item {
-      min-height: 40px;
-      padding: 0 16px;
-      cursor: pointer;
-      --paper-item-icon-width: 48px;
-    }
     .name {
-      font-size: 14px;
+      font-size: var(--ha-font-size-m);
     }
     .name:dir(rtl) {
       margin-inline-start: 8px;
@@ -314,7 +293,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       outline: none;
       text-decoration: underline;
     }
-    mwc-list > * {
+    ha-list > * {
       margin: 8px 0px;
     }
     ha-list-item {

@@ -196,11 +196,11 @@ class DialogHardwareAvailable extends LitElement implements HassDialog {
         pre {
           padding: 16px;
           overflow: auto;
-          line-height: 1.45;
-          font-family: var(--code-font-family, monospace);
+          line-height: var(--ha-line-height-normal);
+          font-family: var(--ha-font-family-code);
         }
         code {
-          font-size: 85%;
+          font-size: var(--ha-font-size-s);
           padding: 0.2em 0.4em;
         }
         search-input {

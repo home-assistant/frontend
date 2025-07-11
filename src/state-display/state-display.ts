@@ -1,7 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { join } from "lit/directives/join";
 import { ensureArray } from "../common/array/ensure-array";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -182,12 +183,7 @@ class StateDisplay extends LitElement {
       return html`${this.hass!.formatEntityState(stateObj)}`;
     }
 
-    return html`
-      ${values.map(
-        (value, index, array) =>
-          html`${value}${index < array.length - 1 ? " ⸱ " : nothing}`
-      )}
-    `;
+    return join(values, " · ");
   }
 }
 

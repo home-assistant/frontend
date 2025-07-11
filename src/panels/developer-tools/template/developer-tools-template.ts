@@ -276,18 +276,17 @@ ${type === "object"
         .content {
           gap: 16px;
           padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
+          padding: max(16px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(16px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
         }
 
         .content.horizontal {
           --code-mirror-max-height: calc(
-            100vh - var(--header-height) -
-              (var(--paper-font-body1_-_line-height) * 3) - (1em * 2) -
-              (max(16px, env(safe-area-inset-top)) * 2) -
-              (max(16px, env(safe-area-inset-bottom)) * 2) -
+            100vh - var(--header-height) - (var(--ha-line-height-normal) * 3) -
+              (1em * 2) - (max(16px, var(--safe-area-inset-top)) * 2) -
+              (max(16px, var(--safe-area-inset-bottom)) * 2) -
               (var(--ha-card-border-width, 1px) * 2) - 179px
           );
         }
@@ -320,11 +319,12 @@ ${type === "object"
         ha-alert {
           margin-bottom: 8px;
           display: block;
-          user-select: text;
         }
 
         .rendered {
-          @apply --paper-font-code1;
+          font-family: var(--ha-font-family-code);
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
@@ -332,12 +332,15 @@ ${type === "object"
           margin-top: 0;
           margin-bottom: 0;
           direction: ltr;
-          user-select: text;
         }
 
         p,
         ul {
           margin-block-end: 0;
+        }
+
+        .render-pane .card-content {
+          user-select: text;
         }
 
         .content.horizontal .render-pane .card-content {

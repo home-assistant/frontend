@@ -185,7 +185,7 @@ export class HuiSection extends ReactiveElement {
     if (isStrategySection(sectionConfig)) {
       isStrategy = true;
       sectionConfig = await generateLovelaceSectionStrategy(
-        sectionConfig.strategy,
+        sectionConfig,
         this.hass!
       );
     }

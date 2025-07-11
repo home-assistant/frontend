@@ -20,6 +20,7 @@ const LOAD_ELEMENTS = {
     import("./ha-form-positive_time_period_dict"),
   select: () => import("./ha-form-select"),
   string: () => import("./ha-form-string"),
+  optional_actions: () => import("./ha-form-optional_actions"),
 };
 
 const getValue = (obj, item) =>
@@ -32,6 +33,8 @@ const getWarning = (obj, item) => (obj && item.name ? obj[item.name] : null);
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public data!: HaFormDataContainer;
 
@@ -134,6 +137,7 @@ export class HaForm extends LitElement implements HaFormElement {
               ? html`<ha-selector
                   .schema=${item}
                   .hass=${this.hass}
+                  .narrow=${this.narrow}
                   .name=${item.name}
                   .selector=${item.selector}
                   .value=${getValue(this.data, item)}
@@ -183,8 +187,8 @@ export class HaForm extends LitElement implements HaFormElement {
     return context;
   }
 
-  protected createRenderRoot() {
-    const root = super.createRenderRoot();
+  protected createRenderRoot(): HTMLElement | DocumentFragment {
+    const root = super.createRenderRoot() as ShadowRoot;
     // attach it as soon as possible to make sure we fetch all events.
     this.addValueChangedListener(root);
     return root;

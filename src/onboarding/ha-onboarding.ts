@@ -220,7 +220,10 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.addEventListener("onboarding-progress", (ev) =>
       this._handleProgress(ev)
     );
-    if (window.innerWidth > 450) {
+    if (
+      window.innerWidth > 450 &&
+      !matchMedia("(prefers-reduced-motion)").matches
+    ) {
       import("../resources/particles");
     }
     makeDialogManager(this, this.shadowRoot!);
@@ -436,7 +439,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       let redirectUrl = authParams.redirect_uri!;
       redirectUrl +=
         (redirectUrl.includes("?") ? "&" : "?") +
-        `code=${encodeURIComponent(result.auth_code)}`;
+        `code=${encodeURIComponent(result.auth_code)}&storeToken=true`;
 
       if (authParams.state) {
         redirectUrl += `&state=${encodeURIComponent(authParams.state)}`;

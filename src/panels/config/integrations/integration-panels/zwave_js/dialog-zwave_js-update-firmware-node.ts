@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiCheckCircle, mdiCloseCircle, mdiFileUpload } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -6,13 +5,13 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-file-upload";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import "../../../../../components/ha-svg-icon";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { computeDeviceName } from "../../../../../data/device_registry";
 import type {
   ZWaveJSControllerFirmwareUpdateFinishedMessage,
   ZWaveJSFirmwareUpdateProgressMessage,
@@ -37,6 +36,7 @@ import {
 } from "../../../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-button";
 import type { ZWaveJSUpdateFirmwareNodeDialogParams } from "./show-dialog-zwave_js-update-firmware-node";
 
 const firmwareTargetSchema: HaFormSchema[] = [
@@ -78,7 +78,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
   private _deviceName?: string;
 
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
-    this._deviceName = computeDeviceName(params.device, this.hass!);
+    this._deviceName = computeDeviceNameDisplay(params.device, this.hass!);
     this.device = params.device;
     this._fetchData();
     this._subscribeNodeStatus();
@@ -130,7 +130,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               .schema=${firmwareTargetSchema}
               @value-changed=${this._firmwareTargetChanged}
             ></ha-form>`}
-      <mwc-button
+      <ha-button
         slot="primaryAction"
         @click=${this._beginFirmwareUpdate}
         .disabled=${this._firmwareFile === undefined}
@@ -138,7 +138,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
         ${this.hass.localize(
           "ui.panel.config.zwave_js.update_firmware.begin_update"
         )}
-      </mwc-button>`;
+      </ha-button>`;
 
     const status = this._updateFinishedMessage
       ? this._updateFinishedMessage.success
@@ -153,12 +153,22 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
       ? nothing
       : html`
-          <mwc-button slot="primaryAction" @click=${this._abortFirmwareUpdate}>
+          <ha-button
+            destructive
+            slot="secondaryAction"
+            @click=${this._abortFirmwareUpdate}
+          >
             ${this.hass.localize(
               "ui.panel.config.zwave_js.update_firmware.abort"
             )}
-          </mwc-button>
+          </ha-button>
         `;
+
+    const closeButton = html`
+      <ha-button slot="primaryAction" @click=${this.closeDialog}>
+        ${this.hass.localize("ui.common.close")}
+      </ha-button>
+    `;
 
     return html`
       <ha-dialog
@@ -213,7 +223,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                         }
                       )}
                 </p>
-                ${abortFirmwareUpdateButton}
+                ${abortFirmwareUpdateButton} ${closeButton}
               `
           : this._updateProgressMessage && !this._updateFinishedMessage
             ? html`
@@ -242,7 +252,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                     }
                   )}
                 </p>
-                ${abortFirmwareUpdateButton}
+                ${abortFirmwareUpdateButton} ${closeButton}
               `
             : html`
                 <div class="flex-container">

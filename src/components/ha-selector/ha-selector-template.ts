@@ -63,17 +63,22 @@ export class HaTemplateSelector extends LitElement {
         linewrap
       ></ha-code-editor>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : nothing}
     `;
   }
 
   private _handleChange(ev) {
-    const value = ev.target.value;
+    let value = ev.target.value;
     if (this.value === value) {
       return;
     }
     this.warn = WARNING_STRINGS.find((str) => value.includes(str));
+    if (value === "" && !this.required) {
+      value = undefined;
+    }
     fireEvent(this, "value-changed", { value });
   }
 

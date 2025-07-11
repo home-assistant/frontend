@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -10,6 +10,7 @@ import {
   mdiMenuDown,
   mdiPencilOff,
   mdiPlus,
+  mdiRestore,
   mdiRestoreAlert,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
@@ -25,15 +26,18 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { formatShortDateTimeWithConditionalYear } from "../../../common/datetime/format_date_time";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
 import {
-  isDeletableEntity,
-  deleteEntity,
-} from "../../../common/entity/delete_entity";
-import type { Helper } from "../helpers/const";
-import { isHelperDomain } from "../helpers/const";
-import { HELPERS_CRUD } from "../../../data/helpers_crud";
+  computeDeviceName,
+  getDuplicatedDeviceNames,
+} from "../../../common/entity/compute_device_name";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import {
+  deleteEntity,
+  isDeletableEntity,
+} from "../../../common/entity/delete_entity";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -53,7 +57,6 @@ import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
-import "../../../components/ha-md-divider";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -62,6 +65,7 @@ import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import "../../../components/ha-sub-menu";
 import "../../../components/ha-svg-icon";
@@ -78,22 +82,21 @@ import type {
   EntityRegistryEntry,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity_registry";
-import {
-  computeEntityRegistryName,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
-import type { IntegrationManifest } from "../../../data/integration";
-import {
-  fetchIntegrationManifests,
-  domainToName,
-} from "../../../data/integration";
+import { updateEntityRegistryEntry } from "../../../data/entity_registry";
 import type { EntitySources } from "../../../data/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity_sources";
+import { HELPERS_CRUD } from "../../../data/helpers_crud";
+import type { IntegrationManifest } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifests,
+} from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label_registry";
 import {
   createLabelRegistryEntry,
   subscribeLabelRegistry,
 } from "../../../data/label_registry";
+import { regenerateEntityIds } from "../../../data/regenerate_entity_ids";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -106,6 +109,8 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import type { Helper } from "../helpers/const";
+import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
@@ -124,6 +129,8 @@ export interface EntityRow extends StateEntity {
   restored: boolean;
   status: string | undefined;
   area?: string;
+  device?: string;
+  device_full?: string;
   localized_platform: string;
   domain: string;
   label_entries: LabelRegistryEntry[];
@@ -154,6 +161,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entities!: EntityRegistryEntry[];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-search",
@@ -164,6 +172,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "entities-table-filters",
@@ -304,11 +313,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       },
       name: {
         main: true,
-        title: localize("ui.panel.config.entities.picker.headers.name"),
+        title: localize("ui.panel.config.entities.picker.headers.entity"),
         sortable: true,
         filterable: true,
         direction: "asc",
-        flex: 2,
         extraTemplate: (entry) =>
           entry.label_entries.length
             ? html`
@@ -318,10 +326,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               `
             : nothing,
       },
+      device: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        sortable: true,
+        template: (entry) => entry.device || "—",
+      },
+      device_full: {
+        title: localize("ui.panel.config.entities.picker.headers.device"),
+        filterable: true,
+        groupable: true,
+        hidden: true,
+      },
+      area: {
+        title: localize("ui.panel.config.entities.picker.headers.area"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        template: (entry) => entry.area || "—",
+      },
       entity_id: {
         title: localize("ui.panel.config.entities.picker.headers.entity_id"),
         sortable: true,
         filterable: true,
+        defaultHidden: true,
       },
       localized_platform: {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
@@ -333,12 +360,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.domain"),
         sortable: false,
         hidden: true,
-        filterable: true,
-        groupable: true,
-      },
-      area: {
-        title: localize("ui.panel.config.entities.picker.headers.area"),
-        sortable: true,
         filterable: true,
         groupable: true,
       },
@@ -416,7 +437,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.created_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.created_at
@@ -431,7 +451,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.generic.headers.modified_at"),
         defaultHidden: true,
         sortable: true,
-        filterable: true,
         minWidth: "128px",
         template: (entry) =>
           entry.modified_at
@@ -622,12 +641,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
       });
 
+      const duplicatedDevicesNames = getDuplicatedDeviceNames(devices);
+
       for (const entry of filteredEntities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === UNAVAILABLE;
         const restored = entity?.attributes.restored === true;
-        const areaId = entry.area_id ?? devices[entry.device_id!]?.area_id;
+        const deviceId = entry.device_id;
+        const areaId = entry.area_id || devices[deviceId!]?.area_id;
         const area = areaId ? areas[areaId] : undefined;
+        const device = deviceId ? devices[deviceId] : undefined;
         const hidden = !!entry.hidden_by;
         const disabled = !!entry.disabled_by;
         const readonly = entry.readonly;
@@ -653,17 +676,30 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           (lbl) => labelReg!.find((label) => label.label_id === lbl)!
         );
 
+        const entityName = computeEntityEntryName(
+          entry as EntityRegistryEntry,
+          this.hass
+        );
+
+        const deviceName = device ? computeDeviceName(device) : undefined;
+        const areaName = area ? computeAreaName(area) : undefined;
+
+        const deviceFullName = deviceName
+          ? duplicatedDevicesNames.has(deviceName) && areaName
+            ? `${deviceName} (${areaName})`
+            : deviceName
+          : undefined;
+
         result.push({
           ...entry,
           entity,
-          name: computeEntityRegistryName(
-            this.hass!,
-            entry as EntityRegistryEntry
-          ),
+          name: entityName || deviceName || entry.entity_id,
+          device: deviceName,
+          area: areaName,
+          device_full: deviceFullName,
           unavailable,
           restored,
           localized_platform: domainToName(localize, entry.platform),
-          area: area ? area.name : "—",
           domain: domainToName(localize, computeDomain(entry.entity_id)),
           status: restored
             ? localize("ui.panel.config.entities.picker.status.not_provided")
@@ -794,7 +830,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         }
         selectable
         .selected=${this._selected.length}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._activeGrouping ?? "device_full"}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._activeSorting}
         .columnOrder=${this._activeColumnOrder}
@@ -869,7 +905,7 @@ ${
               </div>
               <ha-svg-icon slot="end" .path=${mdiChevronRight}></ha-svg-icon>
             </ha-md-menu-item>
-            <ha-menu slot="menu">${labelItems}</ha-menu>
+            <ha-md-menu slot="menu">${labelItems}</ha-md-menu>
           </ha-sub-menu>
           <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
       : nothing
@@ -918,6 +954,21 @@ ${
       )}
     </div>
   </ha-md-menu-item>
+
+  <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+  <ha-md-menu-item .clickAction=${this._restoreEntityIdSelected}>
+    <ha-svg-icon
+      slot="start"
+      .path=${mdiRestore}
+    ></ha-svg-icon>
+    <div slot="headline">
+      ${this.hass.localize(
+        "ui.panel.config.entities.picker.restore_entity_id_selected.button"
+      )}
+    </div>
+  </ha-md-menu-item>
+
   <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
   <ha-md-menu-item .clickAction=${this._removeSelected} class="warning">
@@ -1048,10 +1099,10 @@ ${
   }
 
   protected firstUpdated() {
+    this._setFiltersFromUrl();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
-    this._setFiltersFromUrl();
     if (Object.keys(this._filters).length) {
       return;
     }
@@ -1064,9 +1115,10 @@ ${
     const domain = this._searchParms.get("domain");
     const configEntry = this._searchParms.get("config_entry");
     const subEntry = this._searchParms.get("sub_entry");
-    const label = this._searchParms.has("label");
+    const device = this._searchParms.get("device");
+    const label = this._searchParms.get("label");
 
-    if (!domain && !configEntry && !label) {
+    if (!domain && !configEntry && !label && !device) {
       return;
     }
 
@@ -1075,20 +1127,10 @@ ${
     this._filters = {
       "ha-filter-states": [],
       "ha-filter-integrations": domain ? [domain] : [],
+      "ha-filter-devices": device ? [device] : [],
+      "ha-filter-labels": label ? [label] : [],
       config_entry: configEntry ? [configEntry] : [],
       sub_entry: subEntry ? [subEntry] : [],
-    };
-    this._filterLabel();
-  }
-
-  private _filterLabel() {
-    const label = this._searchParms.get("label");
-    if (!label) {
-      return;
-    }
-    this._filters = {
-      ...this._filters,
-      "ha-filter-labels": [label],
     };
   }
 
@@ -1099,6 +1141,11 @@ ${
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._setFiltersFromUrl();
+    }
+
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {
@@ -1333,9 +1380,14 @@ ${rejected
       createEntry: async (values) => {
         const label = await createLabelRegistryEntry(this.hass, values);
         this._bulkLabel(label.label_id, "add");
-        return label;
       },
     });
+  };
+
+  private _restoreEntityIdSelected = () => {
+    regenerateEntityIds(this, this.hass, this._selected);
+
+    this._clearSelection();
   };
 
   private _removeSelected = async () => {
@@ -1509,7 +1561,7 @@ ${rejected
           top: -4px;
         }
         .selected-txt {
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           padding-left: 16px;
           padding-inline-start: 16px;
           padding-inline-end: initial;
@@ -1519,7 +1571,7 @@ ${rejected
           margin-top: 20px;
         }
         .header-toolbar .selected-txt {
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
         }
         .header-toolbar .header-btns {
           margin-right: -12px;

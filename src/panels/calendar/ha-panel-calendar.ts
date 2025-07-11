@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-list";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiChevronDown, mdiPlus, mdiRefresh } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -14,6 +13,8 @@ import "../../components/ha-button-menu";
 import "../../components/ha-card";
 import "../../components/ha-check-list-item";
 import "../../components/ha-icon-button";
+import "../../components/ha-list";
+import "../../components/ha-list-item";
 import type { HaListItem } from "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-state-icon";
@@ -41,6 +42,7 @@ class PanelCalendar extends LitElement {
 
   @state() private _error?: string = undefined;
 
+  @state()
   @storage({
     key: "deSelectedCalendars",
     state: true,
@@ -162,7 +164,7 @@ class PanelCalendar extends LitElement {
           @click=${this._handleRefresh}
         ></ha-icon-button>
         ${showPane && this.hass.user?.is_admin
-          ? html`<mwc-list slot="pane" multi}>${calendarItems}</mwc-list>
+          ? html`<ha-list slot="pane" multi}>${calendarItems}</ha-list>
               <ha-list-item
                 graphic="icon"
                 slot="pane-footer"
@@ -305,11 +307,11 @@ class PanelCalendar extends LitElement {
           --mdc-typography-button-text-transform: none;
           --mdc-typography-button-font-size: var(
             --mdc-typography-headline6-font-size,
-            1.25rem
+            var(--ha-font-size-l)
           );
           --mdc-typography-button-font-weight: var(
             --mdc-typography-headline6-font-weight,
-            500
+            var(--ha-font-weight-medium)
           );
           --mdc-typography-button-letter-spacing: var(
             --mdc-typography-headline6-letter-spacing,
@@ -317,7 +319,7 @@ class PanelCalendar extends LitElement {
           );
           --mdc-typography-button-line-height: var(
             --mdc-typography-headline6-line-height,
-            2rem
+            var(--ha-line-height-expanded)
           );
           --button-height: 40px;
         }

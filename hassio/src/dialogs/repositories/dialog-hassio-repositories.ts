@@ -183,9 +183,6 @@ class HassioRepositoriesDialog extends LitElement {
         ha-dialog.button-left {
           --justify-action-buttons: flex-start;
         }
-        paper-icon-item {
-          cursor: pointer;
-        }
         .form {
           color: var(--primary-text-color);
         }

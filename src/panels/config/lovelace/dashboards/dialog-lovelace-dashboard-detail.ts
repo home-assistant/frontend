@@ -8,7 +8,6 @@ import { slugify } from "../../../../common/string/slugify";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { CoreFrontendUserData } from "../../../../data/frontend";
 import type {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
@@ -92,7 +91,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 )
               : html`
                   <ha-form
-                    .schema=${this._schema(this._params, this.hass.userData)}
+                    .schema=${this._schema(this._params)}
                     .data=${this._data}
                     .hass=${this.hass}
                     .error=${this._error}
@@ -156,10 +155,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (
-      params: LovelaceDashboardDetailsDialogParams,
-      userData: CoreFrontendUserData | null | undefined
-    ) =>
+    (params: LovelaceDashboardDetailsDialogParams) =>
       [
         {
           name: "title",
@@ -175,7 +171,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
             icon: {},
           },
         },
-        ...(!params.dashboard && userData?.showAdvanced
+        ...(!params.dashboard
           ? ([
               {
                 name: "url_path",

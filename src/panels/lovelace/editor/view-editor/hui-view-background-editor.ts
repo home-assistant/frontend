@@ -1,11 +1,9 @@
-import "@material/mwc-list/mwc-list-item";
 import memoizeOne from "memoize-one";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import "../../../../components/ha-selector/ha-selector-background";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 
@@ -38,7 +36,7 @@ export class HuiViewBackgroundEditor extends LitElement {
               {
                 name: "opacity",
                 selector: {
-                  number: { min: 0, max: 100, mode: "slider" },
+                  number: { min: 0, max: 100, mode: "slider", step: 10 },
                 },
               },
               {

@@ -1,12 +1,14 @@
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { titleCase } from "../../../../common/string/title-case";
 import "../../../../components/ha-card";
 import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { computeDeviceName } from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { createSearchParam } from "../../../../common/url/search-params";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
@@ -56,7 +58,9 @@ export class HaDeviceCard extends LitElement {
                   <span class="hub"
                     ><a
                       href="/config/devices/device/${this.device.via_device_id}"
-                      >${this._computeDeviceName(this.device.via_device_id)}</a
+                      >${this._computeDeviceNameDislay(
+                        this.device.via_device_id
+                      )}</a
                     ></span
                   >
                 </div>
@@ -100,8 +104,25 @@ export class HaDeviceCard extends LitElement {
           ${this._getAddresses().map(
             ([type, value]) => html`
               <div class="extra-info">
-                ${type === "mac" ? "MAC" : titleCase(type)}:
-                ${value.toUpperCase()}
+                ${type === "bluetooth" &&
+                isComponentLoaded(this.hass, "bluetooth")
+                  ? html`${titleCase(type)}:
+                      <a
+                        href="/config/bluetooth/advertisement-monitor?${createSearchParam(
+                          { address: value }
+                        )}"
+                        >${value.toUpperCase()}</a
+                      >`
+                  : type === "mac" && isComponentLoaded(this.hass, "dhcp")
+                    ? html`MAC:
+                        <a
+                          href="/config/dhcp?${createSearchParam({
+                            mac_address: value,
+                          })}"
+                          >${value.toUpperCase()}</a
+                        >`
+                    : html`${type === "mac" ? "MAC" : titleCase(type)}:
+                      ${value.toUpperCase()}`}
               </div>
             `
           )}
@@ -118,10 +139,10 @@ export class HaDeviceCard extends LitElement {
     );
   }
 
-  private _computeDeviceName(deviceId) {
+  private _computeDeviceNameDislay(deviceId) {
     const device = this.hass.devices[deviceId];
     return device
-      ? computeDeviceName(device, this.hass)
+      ? computeDeviceNameDisplay(device, this.hass)
       : `<${this.hass.localize(
           "ui.panel.config.integrations.config_entry.unknown_via_device"
         )}>`;

@@ -1,12 +1,12 @@
-import "@material/mwc-list/mwc-list-item";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
+import "../../../../components/ha-list-item";
 import type { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { computeDeviceName } from "../../../../data/device_registry";
 import type { HomeAssistant } from "../../../../types";
 
 const MAX_VISIBLE_VIA_DEVICES = 10;
@@ -28,8 +28,8 @@ export class HaDeviceViaDevicesCard extends LitElement {
         .filter((device) => device.via_device_id === deviceId)
         .sort((d1, d2) =>
           caseInsensitiveStringCompare(
-            computeDeviceName(d1, this.hass),
-            computeDeviceName(d2, this.hass),
+            computeDeviceNameDisplay(d1, this.hass),
+            computeDeviceNameDisplay(d2, this.hass),
             this.hass.locale.language
           )
         )
@@ -55,10 +55,10 @@ export class HaDeviceViaDevicesCard extends LitElement {
         ).map(
           (viaDevice) => html`
             <a href=${`/config/devices/device/${viaDevice.id}`}>
-              <mwc-list-item hasMeta>
-                ${computeDeviceName(viaDevice, this.hass)}
+              <ha-list-item hasMeta>
+                ${computeDeviceNameDisplay(viaDevice, this.hass)}
                 <ha-icon-next slot="meta"></ha-icon-next>
-              </mwc-list-item>
+              </ha-list-item>
             </a>
           `
         )}

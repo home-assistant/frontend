@@ -29,9 +29,8 @@ class DialogBluetoothDeviceInfo extends LitElement implements HassDialog {
   }
 
   public showDataAsHex(bytestring: string): string {
-    return Array.from(new TextEncoder().encode(bytestring))
-      .map((byte) => byte.toString(16).toUpperCase().padStart(2, "0"))
-      .join(" ");
+    const bytes = bytestring.match(/.{2}/g) ?? [];
+    return bytes.map((byte) => `0x${byte.toUpperCase()}`).join(" ");
   }
 
   private async _copyToClipboard(): Promise<void> {

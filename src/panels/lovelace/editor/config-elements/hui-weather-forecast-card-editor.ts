@@ -1,3 +1,4 @@
+import { mdiGestureTap } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -5,12 +6,13 @@ import {
   assert,
   assign,
   boolean,
+  number,
   object,
   optional,
   string,
-  number,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
@@ -22,7 +24,6 @@ import type { WeatherForecastCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -56,7 +57,7 @@ export class HuiWeatherForecastCardEditor
 
     if (
       /* cannot show forecast in case it is unavailable on the entity */
-      (config.show_forecast === true && this._hasForecast === false) ||
+      (config.show_forecast !== false && this._hasForecast === false) ||
       /* cannot hide both weather and forecast, need one of them */
       (config.show_current === false && config.show_forecast === false)
     ) {
@@ -64,6 +65,7 @@ export class HuiWeatherForecastCardEditor
       fireEvent(this, "config-changed", {
         config: { ...config, show_current: true, show_forecast: false },
       });
+      return;
     }
     if (
       !config.forecast_type ||
@@ -238,6 +240,37 @@ export class HuiWeatherForecastCardEditor
                 name: "forecast_slots",
                 selector: { number: { min: 1, max: 12 } },
                 default: 5,
+              },
+              {
+                name: "interactions",
+                type: "expandable",
+                flatten: true,
+                iconPath: mdiGestureTap,
+                schema: [
+                  {
+                    name: "tap_action",
+                    selector: {
+                      ui_action: {
+                        default_action: "more-info",
+                      },
+                    },
+                  },
+                  {
+                    name: "",
+                    type: "optional_actions",
+                    flatten: true,
+                    schema: (["hold_action", "double_tap_action"] as const).map(
+                      (action) => ({
+                        name: action,
+                        selector: {
+                          ui_action: {
+                            default_action: "none" as const,
+                          },
+                        },
+                      })
+                    ),
+                  },
+                ],
               },
             ] as const)
           : []),

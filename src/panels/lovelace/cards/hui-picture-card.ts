@@ -46,7 +46,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       throw new Error("Image required");
     }
 
-    this._config = config;
+    this._config = {
+      tap_action: { action: "more-info" },
+      ...config,
+    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -97,7 +100,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     if (this._config.image_entity) {
       stateObj = this.hass.states[this._config.image_entity];
       if (!stateObj) {
-        return html`<hui-warning>
+        return html`<hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.image_entity)}
         </hui-warning>`;
       }

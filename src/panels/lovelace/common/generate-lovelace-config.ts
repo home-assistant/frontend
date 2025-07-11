@@ -35,6 +35,7 @@ import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { EntityBadgeConfig } from "../badges/types";
 
 const HIDE_DOMAIN = new Set([
+  "ai_task",
   "automation",
   "configurator",
   "device_tracker",
@@ -50,7 +51,7 @@ const HIDE_DOMAIN = new Set([
   ...ASSIST_ENTITIES,
 ]);
 
-const HIDE_PLATFORM = new Set(["mobile_app"]);
+const HIDE_PLATFORM = new Set(["backup", "mobile_app"]);
 
 interface SplittedByAreaDevice {
   areasWithEntities: Record<string, HassEntity[]>;

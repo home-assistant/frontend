@@ -105,7 +105,42 @@ export class HaSankeyChart extends LitElement {
 
   private _createData = memoizeOne((data: SankeyChartData, width = 0) => {
     const filteredNodes = data.nodes.filter((n) => n.value > 0);
-    const indexes = [...new Set(filteredNodes.map((n) => n.index))];
+    const indexes = [...new Set(filteredNodes.map((n) => n.index))].sort();
+    const depthMap = new Map<number, number>();
+    const sections: Node[][] = [];
+    indexes.forEach((index, i) => {
+      depthMap.set(index, i);
+      const nodesWithIndex = filteredNodes.filter((n) => n.index === index);
+      if (nodesWithIndex.length > 0) {
+        sections.push(
+          sections.length > 0
+            ? nodesWithIndex.sort((a, b) => {
+                // sort by the order of their parents in the previous section with orphans at the end
+                const aParentIndex = this._findParentIndex(
+                  a.id,
+                  data.links,
+                  sections
+                );
+                const bParentIndex = this._findParentIndex(
+                  b.id,
+                  data.links,
+                  sections
+                );
+                if (aParentIndex === bParentIndex) {
+                  return 0;
+                }
+                if (aParentIndex === -1) {
+                  return 1;
+                }
+                if (bParentIndex === -1) {
+                  return -1;
+                }
+                return aParentIndex - bParentIndex;
+              })
+            : nodesWithIndex
+        );
+      }
+    });
     const links = this._processLinks(filteredNodes, data.links);
     const sectionWidth = width / indexes.length;
     const labelSpace = sectionWidth - NODE_SIZE - LABEL_DISTANCE;
@@ -113,13 +148,13 @@ export class HaSankeyChart extends LitElement {
     return {
       id: "sankey",
       type: "sankey",
-      nodes: filteredNodes.map((node) => ({
+      nodes: sections.flat().map((node) => ({
         id: node.id,
         value: node.value,
         itemStyle: {
           color: node.color,
         },
-        depth: node.index,
+        depth: depthMap.get(node.index),
       })),
       links,
       draggable: false,
@@ -221,6 +256,23 @@ export class HaSankeyChart extends LitElement {
       }
     });
     return links;
+  }
+
+  private _findParentIndex(id: string, links: Link[], sections: Node[][]) {
+    const parent = links.find((l) => l.target === id)?.source;
+    if (!parent) {
+      return -1;
+    }
+    let offset = 0;
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      const index = section.findIndex((n) => n.id === parent);
+      if (index !== -1) {
+        return offset + index;
+      }
+      offset += section.length;
+    }
+    return -1;
   }
 
   static styles = css`

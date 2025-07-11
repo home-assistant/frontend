@@ -2,7 +2,7 @@ import defineProvider from "@babel/helper-define-polyfill-provider";
 import { join } from "node:path";
 import paths from "../paths.cjs";
 
-const POLYFILL_DIR = join(paths.polymer_dir, "src/resources/polyfills");
+const POLYFILL_DIR = join(paths.root_dir, "src/resources/polyfills");
 
 // List of polyfill keys with supported browser targets for the functionality
 const polyfillSupport = {

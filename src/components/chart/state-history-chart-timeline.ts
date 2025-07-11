@@ -66,6 +66,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
         .data=${this._chartData as ECOption["series"]}
+        small-controls
         @chart-click=${this._handleChartClick}
       ></ha-chart-base>
     `;
@@ -127,7 +128,7 @@ export class StateHistoryChartTimeline extends LitElement {
 
   private _renderTooltip: TooltipFormatterCallback<TooltipPositionCallbackParams> =
     (params: TooltipPositionCallbackParams) => {
-      const { value, name, marker, seriesName } = Array.isArray(params)
+      const { value, name, marker, seriesName, color } = Array.isArray(params)
         ? params[0]
         : params;
       const title = seriesName
@@ -138,8 +139,12 @@ export class StateHistoryChartTimeline extends LitElement {
         "ui.components.history_charts.duration"
       )}: ${millisecondsToDuration(durationInMs)}`;
 
+      const markerLocalized = !computeRTL(this.hass)
+        ? marker
+        : `<span style="direction: rtl;display:inline-block;margin-right:4px;margin-inline-end:4px;border-radius:10px;width:10px;height:10px;background-color:${color};"></span>`;
+
       const lines = [
-        marker + name,
+        markerLocalized + name,
         formatDateTimeWithSeconds(
           new Date(value![1]),
           this.hass.locale,

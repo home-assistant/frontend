@@ -25,15 +25,12 @@ export class HuiNotificationItemTemplate extends LitElement {
     }
 
     ha-card .header {
-      /* start paper-font-headline style */
-      font-family: "Roboto", "Noto", sans-serif;
-      -webkit-font-smoothing: antialiased; /* OS X subpixel AA bleed bug */
-      text-rendering: optimizeLegibility;
-      font-size: 24px;
-      font-weight: 400;
-      letter-spacing: -0.012em;
-      line-height: 32px;
-      /* end paper-font-headline style */
+      font-family: var(--ha-font-family-body);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      font-size: var(--ha-font-size-2xl);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
 
       color: var(--primary-text-color);
       padding: 16px 16px 0;

@@ -43,7 +43,7 @@ export class HaEntitySelector extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("selector") && this.value !== undefined) {
+    if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.entity?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
         fireEvent(this, "value-changed", { value: this.value });
@@ -76,10 +76,10 @@ export class HaEntitySelector extends LitElement {
     }
 
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : ""}
       <ha-entities-picker
         .hass=${this.hass}
         .value=${this.value}
+        .label=${this.label}
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}

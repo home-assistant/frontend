@@ -44,6 +44,8 @@ const entityConfigStruct = object({
   show_icon: optional(boolean()),
   color: optional(string()),
   tap_action: optional(actionConfigStruct),
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
   visibility: optional(array(any())),
 });
 
@@ -153,6 +155,21 @@ export class HuiHeadingEntityEditor
                   default_action: "none",
                 },
               },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
             },
           ],
         },

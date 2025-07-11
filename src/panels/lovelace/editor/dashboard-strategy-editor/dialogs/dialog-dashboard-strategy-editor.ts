@@ -1,8 +1,8 @@
 import {
   mdiAccountHardHat,
   mdiClose,
-  mdiCodeBraces,
   mdiDotsVertical,
+  mdiPlaylistEdit,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -15,15 +15,16 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showSaveSuccessToast } from "../../../../../util/toast-saved-success";
-import "../hui-dashboard-strategy-element-editor";
-import type { HuiDashboardStrategyElementEditor } from "../hui-dashboard-strategy-element-editor";
+import { cleanLegacyStrategyConfig } from "../../../strategies/legacy-strategy";
 import type { ConfigChangedEvent } from "../../hui-element-editor";
 import type { GUIModeChangedEvent } from "../../types";
-import { cleanLegacyStrategyConfig } from "../../../strategies/legacy-strategy";
+import "../hui-dashboard-strategy-element-editor";
+import type { HuiDashboardStrategyElementEditor } from "../hui-dashboard-strategy-element-editor";
 import type { DashboardStrategyEditorDialogParams } from "./show-dialog-dashboard-strategy-editor";
 
 @customElement("dialog-dashboard-strategy-editor")
@@ -52,6 +53,8 @@ class DialogDashboardStrategyEditor extends LitElement {
   public closeDialog(): void {
     this._params = undefined;
     this._strategyConfig = undefined;
+    this._guiModeAvailable = true;
+    this._GUImode = true;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -67,10 +70,6 @@ class DialogDashboardStrategyEditor extends LitElement {
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
-  private _toggleMode(): void {
-    this._strategyEditorEl?.toggleMode();
-  }
-
   private _opened() {
     this._strategyEditorEl?.focusYamlEditor();
   }
@@ -81,6 +80,39 @@ class DialogDashboardStrategyEditor extends LitElement {
       strategy: this._strategyConfig!,
     });
     showSaveSuccessToast(this, this.hass);
+    this.closeDialog();
+  }
+
+  private async _delete(ev) {
+    ev.stopPropagation();
+    if (await this._params!.deleteDashboard()) {
+      this.closeDialog();
+    }
+  }
+
+  private _cancel(ev): void {
+    ev.stopPropagation();
+    this.closeDialog();
+  }
+
+  private _handleAction(ev) {
+    ev.stopPropagation();
+    switch (ev.detail.index) {
+      case 0:
+        this._toggleMode();
+        break;
+      case 1:
+        this._takeControl();
+        break;
+    }
+  }
+
+  private _toggleMode(): void {
+    this._strategyEditorEl?.toggleMode();
+  }
+
+  private _takeControl() {
+    this._params!.takeControl();
     this.closeDialog();
   }
 
@@ -112,12 +144,16 @@ class DialogDashboardStrategyEditor extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
+          ${this._params.title
+            ? html`<span slot="subtitle">${this._params.title}</span>`
+            : nothing}
           <ha-button-menu
             corner="BOTTOM_END"
             menu-corner="END"
             slot="actionItems"
             @closed=${stopPropagation}
             fixed
+            @action=${this._handleAction}
           >
             <ha-icon-button
               slot="trigger"
@@ -126,14 +162,17 @@ class DialogDashboardStrategyEditor extends LitElement {
             ></ha-icon-button>
             <ha-list-item
               graphic="icon"
-              @request-selected=${this._showRawConfigEditor}
+              .disabled=${!this._guiModeAvailable && !this._GUImode}
             >
-              ${this.hass.localize(
-                "ui.panel.lovelace.editor.strategy-editor.raw_configuration_editor"
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.edit_view.edit_${!this._GUImode ? "ui" : "yaml"}`
               )}
-              <ha-svg-icon slot="graphic" .path=${mdiCodeBraces}></ha-svg-icon>
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiPlaylistEdit}
+              ></ha-svg-icon>
             </ha-list-item>
-            <ha-list-item graphic="icon" @request-selected=${this._takeControl}>
+            <ha-list-item graphic="icon">
               ${this.hass.localize(
                 "ui.panel.lovelace.editor.strategy-editor.take_control"
               )}
@@ -155,35 +194,17 @@ class DialogDashboardStrategyEditor extends LitElement {
           ></hui-dashboard-strategy-element-editor>
         </div>
 
-        <ha-button
-          slot="secondaryAction"
-          @click=${this._toggleMode}
-          .disabled=${!this._guiModeAvailable}
-          class="gui-mode-button"
-        >
-          ${this.hass!.localize(
-            !this._strategyEditorEl || this._GUImode
-              ? "ui.panel.lovelace.editor.strategy-editor.show_code_editor"
-              : "ui.panel.lovelace.editor.strategy-editor.show_visual_editor"
-          )}
+        <ha-button class="danger" @click=${this._delete} slot="secondaryAction">
+          ${this.hass!.localize("ui.common.delete")}
+        </ha-button>
+        <ha-button @click=${this._cancel} slot="primaryAction">
+          ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._save} slot="primaryAction">
           ${this.hass!.localize("ui.common.save")}
         </ha-button>
       </ha-dialog>
     `;
-  }
-
-  private _takeControl(ev) {
-    ev.stopPropagation();
-    this._params!.takeControl();
-    this.closeDialog();
-  }
-
-  private _showRawConfigEditor(ev) {
-    ev.stopPropagation();
-    this._params!.showRawConfigEditor();
-    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
@@ -209,6 +230,10 @@ class DialogDashboardStrategyEditor extends LitElement {
             --mdc-dialog-max-height: 100%;
             --dialog-content-padding: 8px;
           }
+        }
+
+        .danger {
+          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];

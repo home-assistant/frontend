@@ -1,11 +1,12 @@
-import { MdList } from "@material/web/list/list";
+import { List } from "@material/web/list/internal/list";
+import { styles } from "@material/web/list/internal/list-styles";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
 
 @customElement("ha-md-list")
-export class HaMdList extends MdList {
+export class HaMdList extends List {
   static override styles = [
-    ...super.styles,
+    styles,
     css`
       :host {
         --md-sys-color-surface: var(--card-background-color);

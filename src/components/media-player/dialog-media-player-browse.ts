@@ -12,6 +12,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -22,6 +23,7 @@ import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import "../ha-dialog";
 import "../ha-dialog-header";
+import "../ha-list-item";
 import "./ha-media-manage-button";
 import "./ha-media-player-browse";
 import type {
@@ -29,7 +31,6 @@ import type {
   MediaPlayerItemId,
 } from "./ha-media-player-browse";
 import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
-import { stopPropagation } from "../../common/dom/stop_propagation";
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {
@@ -118,7 +119,7 @@ class DialogMediaPlayerBrowse extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <mwc-list-item graphic="icon">
+            <ha-list-item graphic="icon">
               ${this.hass.localize("ui.components.media-browser.auto")}
               <ha-svg-icon
                 class=${this._preferredLayout === "auto"
@@ -127,8 +128,8 @@ class DialogMediaPlayerBrowse extends LitElement {
                 slot="graphic"
                 .path=${mdiAlphaABoxOutline}
               ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item graphic="icon">
+            </ha-list-item>
+            <ha-list-item graphic="icon">
               ${this.hass.localize("ui.components.media-browser.grid")}
               <ha-svg-icon
                 class=${this._preferredLayout === "grid"
@@ -137,8 +138,8 @@ class DialogMediaPlayerBrowse extends LitElement {
                 slot="graphic"
                 .path=${mdiGrid}
               ></ha-svg-icon>
-            </mwc-list-item>
-            <mwc-list-item graphic="icon">
+            </ha-list-item>
+            <ha-list-item graphic="icon">
               ${this.hass.localize("ui.components.media-browser.list")}
               <ha-svg-icon
                 slot="graphic"
@@ -147,7 +148,7 @@ class DialogMediaPlayerBrowse extends LitElement {
                   : ""}
                 .path=${mdiListBoxOutline}
               ></ha-svg-icon>
-            </mwc-list-item>
+            </ha-list-item>
           </ha-button-menu>
           <ha-icon-button
             .label=${this.hass.localize("ui.common.close")}
@@ -163,6 +164,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           .navigateIds=${this._navigateIds}
           .action=${this._action}
           .preferredLayout=${this._preferredLayout}
+          .accept=${this._params.accept}
           @close-dialog=${this.closeDialog}
           @media-picked=${this._mediaPicked}
           @media-browsed=${this._mediaBrowsed}
@@ -240,7 +242,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           }
           ha-media-player-browse {
             position: initial;
-            --media-browser-max-height: 100vh - 137px;
+            --media-browser-max-height: calc(100vh - 145px);
             width: 700px;
           }
         }

@@ -80,7 +80,16 @@ const SELECTOR_SCHEMAS = {
   ] as const,
   icon: [] as const,
   location: [] as const,
-  media: [] as const,
+  media: [
+    {
+      name: "accept",
+      selector: {
+        text: {
+          multiple: true,
+        },
+      },
+    },
+  ] as const,
   number: [
     {
       name: "min",
@@ -290,7 +299,7 @@ export class HaSelectorSelector extends LitElement {
       padding: 0px 16px 16px 16px;
     }
     .title {
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       padding-top: 16px;
       overflow: hidden;
       text-overflow: ellipsis;

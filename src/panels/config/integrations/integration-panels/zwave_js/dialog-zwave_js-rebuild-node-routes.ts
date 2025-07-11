@@ -4,10 +4,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-spinner";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import "../../../../../components/ha-spinner";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { computeDeviceName } from "../../../../../data/device_registry";
 import type { ZWaveJSNetwork } from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
@@ -68,9 +68,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
                       {
-                        device: html`<em
-                          >${computeDeviceName(this.device, this.hass!)}</em
-                        >`,
+                        device: html`<em>
+                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                        </em>`,
                       }
                     )}
                   </p>
@@ -102,9 +102,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
                       {
-                        device: html`<em
-                          >${computeDeviceName(this.device, this.hass!)}</em
-                        >`,
+                        device: html`<em>
+                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                        </em>`,
                       }
                     )}
                   </p>
@@ -128,7 +128,10 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                       "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed",
                       {
                         device: html`<em
-                          >${computeDeviceName(this.device, this.hass!)}</em
+                          >${computeDeviceNameDisplay(
+                            this.device,
+                            this.hass!
+                          )}</em
                         >`,
                       }
                     )}
@@ -161,9 +164,9 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
                       {
-                        device: html`<em
-                          >${computeDeviceName(this.device, this.hass!)}</em
-                        >`,
+                        device: html`<em>
+                          ${computeDeviceNameDisplay(this.device, this.hass!)}
+                        </em>`,
                       }
                     )}
                   </p>

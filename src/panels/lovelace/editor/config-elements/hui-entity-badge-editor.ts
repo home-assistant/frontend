@@ -48,6 +48,8 @@ const badgeConfigStruct = assign(
     show_icon: optional(boolean()),
     show_entity_picture: optional(boolean()),
     tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
     image: optional(string()), // For old badge config support
   })
 );
@@ -168,6 +170,21 @@ export class HuiEntityBadgeEditor
                   default_action: "more-info",
                 },
               },
+            },
+            {
+              name: "",
+              type: "optional_actions",
+              flatten: true,
+              schema: (["hold_action", "double_tap_action"] as const).map(
+                (action) => ({
+                  name: action,
+                  selector: {
+                    ui_action: {
+                      default_action: "none" as const,
+                    },
+                  },
+                })
+              ),
             },
           ],
         },

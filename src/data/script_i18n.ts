@@ -1,6 +1,7 @@
 import { ensureArray } from "../common/array/ensure-array";
 import { formatNumericDuration } from "../common/datetime/format_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { formatListWithAnds } from "../common/string/format-list";
 import { isTemplate } from "../common/string/has-template";
@@ -8,7 +9,6 @@ import type { HomeAssistant } from "../types";
 import type { Condition } from "./automation";
 import { describeCondition } from "./automation_i18n";
 import { localizeDeviceAutomationAction } from "./device_automation";
-import { computeDeviceName } from "./device_registry";
 import type { EntityRegistryEntry } from "./entity_registry";
 import {
   computeEntityRegistryName,
@@ -94,7 +94,14 @@ const tryDescribeAction = <T extends ActionType>(
 
     const targets: string[] = [];
     const targetOrData = config.target || config.data;
-    if (targetOrData) {
+    if (typeof targetOrData === "string" && isTemplate(targetOrData)) {
+      targets.push(
+        hass.localize(
+          `${actionTranslationBaseKey}.service.description.target_template`,
+          { name: "target" }
+        )
+      );
+    } else if (targetOrData) {
       for (const [key, name] of Object.entries({
         area_id: "areas",
         device_id: "devices",
@@ -147,7 +154,7 @@ const tryDescribeAction = <T extends ActionType>(
           } else if (key === "device_id") {
             const device = hass.devices[targetThing];
             if (device) {
-              targets.push(computeDeviceName(device, hass));
+              targets.push(computeDeviceNameDisplay(device, hass));
             } else {
               targets.push(
                 hass.localize(
@@ -461,9 +468,17 @@ const tryDescribeAction = <T extends ActionType>(
       return localized;
     }
     const stateObj = hass.states[config.entity_id];
-    return `${config.type || "Perform action with"} ${
-      stateObj ? computeStateName(stateObj) : config.entity_id
-    }`;
+    if (config.type) {
+      return `${config.type} ${
+        stateObj ? computeStateName(stateObj) : config.entity_id
+      }`;
+    }
+    return hass.localize(
+      `${actionTranslationBaseKey}.device_id.description.perform_device_action`,
+      {
+        device: stateObj ? computeStateName(stateObj) : config.entity_id,
+      }
+    );
   }
 
   if (actionType === "sequence") {

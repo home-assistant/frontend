@@ -92,11 +92,11 @@ class HaPanelDevEvent extends LitElement {
         </div>
 
         <div>
-          <div class="header">
+          <h2>
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.events.active_listeners"
             )}
-          </div>
+          </h2>
           <events-list
             @event-selected=${this._eventSelected}
             .hass=${this.hass}
@@ -148,10 +148,10 @@ class HaPanelDevEvent extends LitElement {
         .content {
           gap: 16px;
           padding: 16px;
-          padding: max(16px, env(safe-area-inset-top))
-            max(16px, env(safe-area-inset-right))
-            max(16px, env(safe-area-inset-bottom))
-            max(16px, env(safe-area-inset-left));
+          padding: max(16px, var(--safe-area-inset-top))
+            max(16px, var(--safe-area-inset-right))
+            max(16px, var(--safe-area-inset-bottom))
+            max(16px, var(--safe-area-inset-left));
           max-width: 1200px;
           margin: auto;
         }
@@ -160,7 +160,6 @@ class HaPanelDevEvent extends LitElement {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
-          @apply --paper-font-body1;
           display: block;
         }
 
@@ -178,10 +177,6 @@ class HaPanelDevEvent extends LitElement {
 
         ha-textfield {
           display: block;
-        }
-
-        .header {
-          @apply --paper-font-title;
         }
 
         event-subscribe-card {

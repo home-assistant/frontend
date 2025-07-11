@@ -207,7 +207,11 @@ export const computeUpdateStateDisplay = (
   return hass.formatEntityState(stateObj);
 };
 
-type UpdateType = "addon" | "home_assistant" | "generic";
+export type UpdateType =
+  | "addon"
+  | "home_assistant"
+  | "home_assistant_os"
+  | "generic";
 
 export const getUpdateType = (
   stateObj: UpdateEntity,
@@ -215,6 +219,7 @@ export const getUpdateType = (
 ): UpdateType => {
   const entity_id = stateObj.entity_id;
   const domain = entitySources[entity_id]?.domain;
+
   if (domain !== "hassio") {
     return "generic";
   }
@@ -224,13 +229,11 @@ export const getUpdateType = (
     return "home_assistant";
   }
 
-  if (
-    ![
-      HOME_ASSISTANT_CORE_TITLE,
-      HOME_ASSISTANT_SUPERVISOR_TITLE,
-      HOME_ASSISTANT_OS_TITLE,
-    ].includes(title)
-  ) {
+  if (title === HOME_ASSISTANT_OS_TITLE) {
+    return "home_assistant_os";
+  }
+
+  if (title !== HOME_ASSISTANT_SUPERVISOR_TITLE) {
     return "addon";
   }
   return "generic";

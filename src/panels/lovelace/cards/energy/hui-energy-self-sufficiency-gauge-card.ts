@@ -10,10 +10,10 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tooltip";
 import type { EnergyData } from "../../../../data/energy";
 import {
-  energySourcesByType,
+  computeConsumptionData,
   getEnergyDataCollection,
+  getSummedData,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -75,93 +75,16 @@ class HuiEnergySelfSufficiencyGaugeCard
       )}`;
     }
 
-    const prefs = this._data.prefs;
-    const types = energySourcesByType(prefs);
-
     // The strategy only includes this card if we have a grid.
-    const hasConsumption = true;
-
-    const hasSolarProduction = types.solar !== undefined;
-    const hasBattery = types.battery !== undefined;
-    const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
-
-    const totalFromGrid =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-      ) ?? 0;
-
-    let totalSolarProduction: number | null = null;
-
-    if (hasSolarProduction) {
-      totalSolarProduction =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.solar!.map((source) => source.stat_energy_from)
-        ) || 0;
-    }
-
-    let totalBatteryIn: number | null = null;
-    let totalBatteryOut: number | null = null;
-
-    if (hasBattery) {
-      totalBatteryIn =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery!.map((source) => source.stat_energy_to)
-        ) || 0;
-      totalBatteryOut =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.battery!.map((source) => source.stat_energy_from)
-        ) || 0;
-    }
-
-    let returnedToGrid: number | null = null;
-
-    if (hasReturnToGrid) {
-      returnedToGrid =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-        ) || 0;
-    }
-
-    let solarConsumption: number | null = null;
-    if (hasSolarProduction) {
-      solarConsumption =
-        (totalSolarProduction || 0) -
-        (returnedToGrid || 0) -
-        (totalBatteryIn || 0);
-    }
-
-    let batteryFromGrid: null | number = null;
-    let batteryToGrid: null | number = null;
-    if (solarConsumption !== null && solarConsumption < 0) {
-      // What we returned to the grid and what went in to the battery is more than produced,
-      // so we have used grid energy to fill the battery
-      // or returned battery energy to the grid
-      if (hasBattery) {
-        batteryFromGrid = solarConsumption * -1;
-        if (batteryFromGrid > totalFromGrid) {
-          batteryToGrid = batteryFromGrid - totalFromGrid;
-          batteryFromGrid = totalFromGrid;
-        }
-      }
-      solarConsumption = 0;
-    }
-
-    let batteryConsumption: number | null = null;
-    if (hasBattery) {
-      batteryConsumption = (totalBatteryOut || 0) - (batteryToGrid || 0);
-    }
-
-    const gridConsumption = Math.max(0, totalFromGrid - (batteryFromGrid || 0));
-
-    const totalHomeConsumption = Math.max(
-      0,
-      gridConsumption + (solarConsumption || 0) + (batteryConsumption || 0)
+    const { summedData, compareSummedData: _ } = getSummedData(this._data);
+    const { consumption, compareConsumption: __ } = computeConsumptionData(
+      summedData,
+      undefined
     );
+
+    const totalFromGrid = summedData.total.from_grid ?? 0;
+
+    const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
     let value: number | undefined;
     if (
@@ -169,7 +92,7 @@ class HuiEnergySelfSufficiencyGaugeCard
       totalHomeConsumption !== null &&
       totalHomeConsumption > 0
     ) {
-      value = (1 - totalFromGrid / totalHomeConsumption) * 100;
+      value = (1 - Math.min(1, totalFromGrid / totalHomeConsumption)) * 100;
     }
 
     return html`
@@ -242,7 +165,7 @@ class HuiEnergySelfSufficiencyGaugeCard
       line-height: initial;
       color: var(--primary-text-color);
       width: 100%;
-      font-size: 15px;
+      font-size: var(--ha-font-size-m);
       margin-top: 8px;
     }
 

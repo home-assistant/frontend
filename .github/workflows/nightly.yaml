@@ -28,7 +28,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node
-        uses: actions/setup-node@v4.3.0
+        uses: actions/setup-node@v4.4.0
         with:
           node-version-file: ".nvmrc"
           cache: yarn
@@ -57,14 +57,14 @@ jobs:
         run: tar -czvf translations.tar.gz translations
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
           if-no-files-found: error
 
       - name: Upload translations
-        uses: actions/upload-artifact@v4.6.1
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: translations
           path: translations.tar.gz

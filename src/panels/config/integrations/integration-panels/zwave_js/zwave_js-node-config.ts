@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import {
   mdiCheckCircle,
   mdiCircle,
@@ -10,17 +10,19 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { groupBy } from "../../../../../common/util/group-by";
+import "../../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
+import "../../../../../components/ha-selector/ha-selector-boolean";
 import "../../../../../components/ha-settings-row";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-textfield";
-import "../../../../../components/ha-selector/ha-selector-boolean";
-import "../../../../../components/buttons/ha-progress-button";
-import type { HaProgressButton } from "../../../../../components/buttons/ha-progress-button";
-import { computeDeviceName } from "../../../../../data/device_registry";
 import type {
   ZWaveJSNodeCapabilities,
   ZWaveJSNodeConfigParam,
@@ -35,6 +37,7 @@ import {
   invokeZWaveCCApi,
   setZwaveNodeConfigParameter,
 } from "../../../../../data/zwave_js";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -43,8 +46,6 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
 import "./zwave_js-custom-param";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 const icons = {
   accepted: mdiCheckCircle,
@@ -105,7 +106,9 @@ class ZWaveJSNodeConfig extends LitElement {
 
     const device = this.hass.devices[this.deviceId];
 
-    const deviceName = device ? computeDeviceName(device, this.hass) : "";
+    const deviceName = device
+      ? computeDeviceNameDisplay(device, this.hass)
+      : "";
 
     return html`
       <hass-tabs-subpage
@@ -352,7 +355,7 @@ class ZWaveJSNodeConfig extends LitElement {
         >
           ${Object.entries(item.metadata.states).map(
             ([key, entityState]) => html`
-              <mwc-list-item .value=${key}>${entityState}</mwc-list-item>
+              <ha-list-item .value=${key}>${entityState}</ha-list-item>
             `
           )}
         </ha-select>
@@ -599,7 +602,6 @@ class ZWaveJSNodeConfig extends LitElement {
         ha-settings-row {
           --settings-row-prefix-display: contents;
           --settings-row-content-width: 100%;
-          --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
           padding: 4px 16px;
         }
@@ -616,7 +618,7 @@ class ZWaveJSNodeConfig extends LitElement {
           padding-right: 24px;
           padding-inline-end: 24px;
           padding-inline-start: initial;
-          line-height: 1.5em;
+          line-height: var(--ha-line-height-normal);
         }
 
         .prefix span {

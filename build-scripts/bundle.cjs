@@ -18,30 +18,18 @@ module.exports.sourceMapURL = () => {
 module.exports.ignorePackages = () => [];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = ({ latestBuild, isHassioBuild }) =>
+module.exports.emptyPackages = ({ isHassioBuild }) =>
   [
-    // Contains all color definitions for all material color sets.
-    // We don't use it
-    require.resolve("@polymer/paper-styles/color.js"),
-    require.resolve("@polymer/paper-styles/default-theme.js"),
-    // Loads stuff from a CDN
-    require.resolve("@polymer/font-roboto/roboto.js"),
     require.resolve("@vaadin/vaadin-material-styles/typography.js"),
     require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
-    // Compatibility not needed for latest builds
-    latestBuild &&
-      // wrapped in require.resolve so it blows up if file no longer exists
-      require.resolve(
-        path.resolve(paths.polymer_dir, "src/resources/compatibility.ts")
-      ),
     // Icons in supervisor conflict with icons in HA so we don't load.
     isHassioBuild &&
       require.resolve(
-        path.resolve(paths.polymer_dir, "src/components/ha-icon.ts")
+        path.resolve(paths.root_dir, "src/components/ha-icon.ts")
       ),
     isHassioBuild &&
       require.resolve(
-        path.resolve(paths.polymer_dir, "src/components/ha-icon-picker.ts")
+        path.resolve(paths.root_dir, "src/components/ha-icon-picker.ts")
       ),
   ].filter(Boolean);
 
@@ -56,7 +44,8 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __HASS_URL__: `\`${
     "HASS_URL" in process.env
       ? process.env.HASS_URL
-      : "${location.protocol}//${location.host}"
+      : // eslint-disable-next-line no-template-curly-in-string
+        "${location.protocol}//${location.host}"
   }\``,
   "process.env.NODE_ENV": JSON.stringify(
     isProdBuild ? "production" : "development"
@@ -84,6 +73,19 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   sourceMap: !isTestBuild,
 });
 
+/** @type {import('@rspack/core').SwcLoaderOptions} */
+module.exports.swcOptions = () => ({
+  jsc: {
+    loose: true,
+    externalHelpers: true,
+    target: "ES2021",
+    parser: {
+      syntax: "typescript",
+      decorators: true,
+    },
+  },
+});
+
 module.exports.babelOptions = ({
   latestBuild,
   isProdBuild,
@@ -108,7 +110,6 @@ module.exports.babelOptions = ({
         shippedProposals: true,
       },
     ],
-    "@babel/preset-typescript",
   ],
   plugins: [
     [
@@ -145,12 +146,6 @@ module.exports.babelOptions = ({
       "@babel/plugin-transform-runtime",
       { version: dependencies["@babel/runtime"] },
     ],
-    // Transpile decorators (still in TC39 process)
-    // Modern browsers support class fields and private methods, but transform is required with the older decorator version dictated by Lit
-    [
-      "@babel/plugin-proposal-decorators",
-      { version: "2018-09", decoratorsBeforeExport: true },
-    ],
     "@babel/plugin-transform-class-properties",
     "@babel/plugin-transform-private-methods",
   ].filter(Boolean),
@@ -170,7 +165,7 @@ module.exports.babelOptions = ({
         ],
       ],
       exclude: [
-        path.join(paths.polymer_dir, "src/resources/polyfills"),
+        path.join(paths.root_dir, "src/resources/polyfills"),
         ...[
           "@formatjs/(?:ecma402-abstract|intl-\\w+)",
           "@lit-labs/virtualizer/polyfills",
@@ -188,6 +183,7 @@ module.exports.babelOptions = ({
       include: /\/node_modules\//,
       exclude: [
         "element-internals-polyfill",
+        "@shoelace-style",
         "@?lit(?:-labs|-element|-html)?",
       ].map((p) => new RegExp(`/node_modules/${p}/`)),
     },

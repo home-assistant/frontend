@@ -83,6 +83,10 @@ export class HaBackgroundSelector extends LitElement {
       display: block;
       position: relative;
     }
+    ha-picture-upload {
+      background-color: var(--primary-background-color);
+      border-radius: var(--file-upload-image-border-radius);
+    }
     div {
       display: flex;
       flex-direction: column;

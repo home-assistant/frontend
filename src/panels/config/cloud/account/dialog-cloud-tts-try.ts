@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
+
 import { mdiPlayCircleOutline, mdiRobot } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -11,6 +11,7 @@ import { computeStateDomain } from "../../../../common/entity/compute_state_doma
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
 import "../../../../components/ha-textarea";
 import type { HaTextArea } from "../../../../components/ha-textarea";
@@ -97,11 +98,11 @@ export class DialogTryTts extends LitElement {
             naturalMenuWidth
             @closed=${stopPropagation}
           >
-            <mwc-list-item value="browser">
+            <ha-list-item value="browser">
               ${this.hass.localize(
                 "ui.panel.config.cloud.account.tts.dialog.target_browser"
               )}
-            </mwc-list-item>
+            </ha-list-item>
             ${Object.values(this.hass.states)
               .filter(
                 (entity) =>
@@ -110,9 +111,9 @@ export class DialogTryTts extends LitElement {
               )
               .map(
                 (entity) => html`
-                  <mwc-list-item .value=${entity.entity_id}>
+                  <ha-list-item .value=${entity.entity_id}>
                     ${computeStateName(entity)}
-                  </mwc-list-item>
+                  </ha-list-item>
                 `
               )}
           </ha-select>

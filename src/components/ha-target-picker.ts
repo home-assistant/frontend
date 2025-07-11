@@ -26,12 +26,12 @@ import { computeCssColor } from "../common/color/compute-color";
 import { hex2rgb } from "../common/color/convert-color";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeDeviceNameDisplay } from "../common/entity/compute_device_name";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import type { AreaRegistryEntry } from "../data/area_registry";
 import type { DeviceRegistryEntry } from "../data/device_registry";
-import { computeDeviceName } from "../data/device_registry";
 import type { EntityRegistryDisplayEntry } from "../data/entity_registry";
 import type { LabelRegistryEntry } from "../data/label_registry";
 import { subscribeLabelRegistry } from "../data/label_registry";
@@ -45,6 +45,7 @@ import "./ha-area-floor-picker";
 import { floorDefaultIconPath } from "./ha-floor-icon";
 import "./ha-icon-button";
 import "./ha-input-helper-text";
+import "./ha-label-picker";
 import "./ha-svg-icon";
 import "./ha-tooltip";
 
@@ -150,7 +151,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               return this._renderChip(
                 "device_id",
                 device_id,
-                device ? computeDeviceName(device, this.hass) : device_id,
+                device
+                  ? computeDeviceNameDisplay(device, this.hass)
+                  : device_id,
                 undefined,
                 undefined,
                 mdiDevices
@@ -286,7 +289,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${this._renderPicker()}
       </div>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : ""}
     `;
   }
@@ -382,12 +387,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!this._addMode) {
       return nothing;
     }
+
     return html`<mwc-menu-surface
       open
       .anchor=${this._addContainer}
       @closed=${this._onClosed}
       @opened=${this._onOpened}
-      @opened-changed=${this._openedChanged}
       @input=${stopPropagation}
       >${this._addMode === "area_id"
         ? html`
@@ -395,10 +400,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .hass=${this.hass}
               id="input"
               .type=${"area_id"}
-              .label=${this.hass.localize(
+              .placeholder=${this.hass.localize(
                 "ui.components.target-picker.add_area_id"
               )}
-              no-add
+              .searchLabel=${this.hass.localize(
+                "ui.components.target-picker.add_area_id"
+              )}
               .deviceFilter=${this.deviceFilter}
               .entityFilter=${this.entityFilter}
               .includeDeviceClasses=${this.includeDeviceClasses}
@@ -406,6 +413,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .excludeAreas=${ensureArray(this.value?.area_id)}
               .excludeFloors=${ensureArray(this.value?.floor_id)}
               @value-changed=${this._targetPicked}
+              @opened-changed=${this._openedChanged}
               @click=${this._preventDefault}
             ></ha-area-floor-picker>
           `
@@ -415,7 +423,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .hass=${this.hass}
                 id="input"
                 .type=${"device_id"}
-                .label=${this.hass.localize(
+                .placeholder=${this.hass.localize(
+                  "ui.components.target-picker.add_device_id"
+                )}
+                .searchLabel=${this.hass.localize(
                   "ui.components.target-picker.add_device_id"
                 )}
                 .deviceFilter=${this.deviceFilter}
@@ -424,6 +435,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 .includeDomains=${this.includeDomains}
                 .excludeDevices=${ensureArray(this.value?.device_id)}
                 @value-changed=${this._targetPicked}
+                @opened-changed=${this._openedChanged}
                 @click=${this._preventDefault}
               ></ha-device-picker>
             `
@@ -433,7 +445,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   id="input"
                   .type=${"label_id"}
-                  .label=${this.hass.localize(
+                  .placeholder=${this.hass.localize(
+                    "ui.components.target-picker.add_label_id"
+                  )}
+                  .searchLabel=${this.hass.localize(
                     "ui.components.target-picker.add_label_id"
                   )}
                   no-add
@@ -443,6 +458,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .includeDomains=${this.includeDomains}
                   .excludeLabels=${ensureArray(this.value?.label_id)}
                   @value-changed=${this._targetPicked}
+                  @opened-changed=${this._openedChanged}
                   @click=${this._preventDefault}
                 ></ha-label-picker>
               `
@@ -451,7 +467,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   id="input"
                   .type=${"entity_id"}
-                  .label=${this.hass.localize(
+                  .placeholder=${this.hass.localize(
+                    "ui.components.target-picker.add_entity_id"
+                  )}
+                  .searchLabel=${this.hass.localize(
                     "ui.components.target-picker.add_entity_id"
                   )}
                   .entityFilter=${this.entityFilter}
@@ -460,11 +479,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .excludeEntities=${ensureArray(this.value?.entity_id)}
                   .createDomains=${this.createDomains}
                   @value-changed=${this._targetPicked}
+                  @opened-changed=${this._openedChanged}
                   @click=${this._preventDefault}
                   allow-custom-entity
                 ></ha-entity-picker>
               `}</mwc-menu-surface
-    >`;
+    > `;
   }
 
   private _targetPicked(ev) {
