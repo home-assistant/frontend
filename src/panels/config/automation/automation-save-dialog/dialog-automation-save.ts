@@ -33,6 +33,8 @@ import { isComponentLoaded } from "../../../../common/config/is_component_loaded
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import { subscribeLabelRegistry } from "../../../../data/label_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import { fetchCategoryRegistry } from "../../../../data/category_registry";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -349,16 +351,21 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   }
 
   private async _suggest() {
-    const labels = await subscribeOne(
-      this.hass.connection,
-      subscribeLabelRegistry
-    ).then((labs) =>
-      Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
-    );
+    const [labels, entities, categories] = await Promise.all([
+      subscribeOne(this.hass.connection, subscribeLabelRegistry).then((labs) =>
+        Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+      ),
+      subscribeOne(this.hass.connection, subscribeEntityRegistry).then((ents) =>
+        Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
+      ),
+      fetchCategoryRegistry(this.hass.connection, "automation").then((cats) =>
+        Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
+      ),
+    ]);
     const automationInspiration: string[] = [];
 
     for (const automation of Object.values(this.hass.states)) {
-      const entityEntry = this.hass.entities[automation.entity_id];
+      const entityEntry = entities[automation.entity_id];
       if (
         computeStateDomain(automation) !== "automation" ||
         automation.attributes.restored ||
@@ -369,6 +376,11 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       }
 
       let inspiration = `- ${automation.attributes.friendly_name}`;
+
+      const category = categories[entityEntry.categories.automation];
+      if (category) {
+        inspiration += ` (category: ${category})`;
+      }
 
       if (entityEntry.labels.length) {
         inspiration += ` (labels: ${entityEntry.labels
@@ -383,16 +395,17 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       name: string;
       description: string | undefined;
       labels: string[] | undefined;
+      category: string | undefined;
     }>(this.hass, {
       task_name: "frontend:automation:save",
-      instructions: `Suggest in language "${this.hass.language}" a name, description, and labels for the following Home Assistant automation.
+      instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant automation.
 
 The name should be relevant to the automation's purpose.
 ${
   automationInspiration.length
     ? `The name should be in same style as existing automations.
-Suggest labels if relevant to the automation's purpose.
-Only suggest labels that are already used by existing automations.`
+Suggest a category and labels if relevant to the automation's purpose.
+Only suggest category and labels that are already used by existing automations.`
     : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
 }
 If the automation contains 5+ steps, include a short description.
@@ -401,6 +414,7 @@ For inspiration, here are existing automations:
 ${automationInspiration.join("\n")}
 
 The automation configuration is as follows:
+
 ${dump(this._params.config)}
 `,
       structure: {
@@ -427,6 +441,18 @@ ${dump(this._params.config)}
             },
           },
         },
+        category: {
+          description: "The category of the automation",
+          required: false,
+          selector: {
+            select: {
+              options: Object.entries(categories).map(([id, name]) => ({
+                value: id,
+                label: name,
+              })),
+            },
+          },
+        },
       },
     });
     this._newName = result.data.name;
@@ -434,6 +460,15 @@ ${dump(this._params.config)}
       this._newDescription = result.data.description;
       if (!this._visibleOptionals.includes("description")) {
         this._visibleOptionals = [...this._visibleOptionals, "description"];
+      }
+    }
+    if (result.data.category) {
+      this._entryUpdates = {
+        ...this._entryUpdates,
+        category: result.data.category,
+      };
+      if (!this._visibleOptionals.includes("category")) {
+        this._visibleOptionals = [...this._visibleOptionals, "category"];
       }
     }
     if (result.data.labels?.length) {
