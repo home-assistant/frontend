@@ -151,8 +151,8 @@ class HuiWaterHeaterOperationModeCardFeature
         .options=${options}
         .value=${this._currentOperationMode}
         @value-changed=${this._valueChanged}
-        hide-label
-        .ariaLabel=${this.hass.localize("ui.card.water_heater.mode")}
+        hide-option-label
+        .label=${this.hass.localize("ui.card.water_heater.mode")}
         style=${styleMap({
           "--control-select-color": color,
         })}

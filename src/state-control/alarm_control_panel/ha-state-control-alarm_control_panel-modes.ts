@@ -87,9 +87,7 @@ export class HaStateControlAlarmControlPanelModes extends LitElement {
         .options=${options}
         .value=${this._currentMode}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${this.hass.localize(
-          "ui.card.alarm_control_panel.modes_label"
-        )}
+        .label=${this.hass.localize("ui.card.alarm_control_panel.modes_label")}
         style=${styleMap({
           "--control-select-color": color,
           "--modes-count": modes.length.toString(),
