@@ -281,6 +281,7 @@ export interface EnergyData {
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
   waterUnit: string;
+  gasUnit: string;
 }
 
 export const getReferencedStatisticIds = (
@@ -403,8 +404,6 @@ const getEnergyData = async (
         ? "day"
         : "hour";
 
-  const lengthUnit = hass.config.unit_system.length || "";
-
   const statsMetadata: Record<string, StatisticsMetaData> = {};
   const statsMetadataArray = allStatIDs.length
     ? await getStatisticMetadata(hass, allStatIDs)
@@ -416,9 +415,14 @@ const getEnergyData = async (
     });
   }
 
+  const gasUnit = getEnergyGasUnit(hass, prefs, statsMetadata);
+  const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
+
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
-    volume: lengthUnit === "km" ? "m³" : "ft³",
+    volume: gasIsVolume
+      ? (gasUnit as (typeof VOLUME_UNITS)[number])
+      : undefined,
   };
   const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
@@ -564,6 +568,7 @@ const getEnergyData = async (
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
     waterUnit,
+    gasUnit,
   };
 
   return data;
@@ -772,7 +777,7 @@ export const getEnergyGasUnitClass = (
   return undefined;
 };
 
-export const getEnergyGasUnit = (
+const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
@@ -780,6 +785,25 @@ export const getEnergyGasUnit = (
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
     return "kWh";
+  }
+
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "gas")
+    .map((s) =>
+      getDisplayUnit(
+        hass,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  if (units.length) {
+    const first = units[0];
+    if (
+      VOLUME_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof VOLUME_UNITS)[number];
+    }
   }
 
   return hass.config.unit_system.length === "km" ? "m³" : "ft³";

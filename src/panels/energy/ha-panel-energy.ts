@@ -24,7 +24,6 @@ import type {
 import {
   computeConsumptionData,
   getEnergyDataCollection,
-  getEnergyGasUnit,
   getSummedData,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
@@ -152,11 +151,7 @@ class PanelEnergy extends LitElement {
       return;
     }
 
-    const gasUnit = getEnergyGasUnit(
-      this.hass,
-      energyData.prefs,
-      energyData.state.statsMetadata
-    );
+    const gasUnit = energyData.state.gasUnit;
     const electricUnit = "kWh";
 
     const energy_sources = energyData.prefs.energy_sources;
