@@ -27,13 +27,7 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
-import {
-  fetchAITaskPreferences,
-  GenDataTask,
-  GenDataTaskResult,
-  generateDataAITask,
-} from "../../../../data/ai_task";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import type { GenDataTask, GenDataTaskResult } from "../../../../data/ai_task";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import { subscribeLabelRegistry } from "../../../../data/label_registry";
