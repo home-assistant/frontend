@@ -5,11 +5,9 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
-import {
-  computeGroupEntitiesState,
-  toggleGroupEntities,
-} from "../../../common/entity/group_entities";
+import { computeGroupEntitiesState } from "../../../common/entity/group_entities";
 import { stateActive } from "../../../common/entity/state_active";
 import { domainColorProperties } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
@@ -17,7 +15,8 @@ import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
-import { forwardHaptic } from "../../../data/haptics";
+import type { GroupToggleDialogParams } from "../../../dialogs/more-info/components/voice/ha-more-info-view-toggle-group";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { computeCssVariable } from "../../../resources/css-variables";
 import type { HomeAssistant } from "../../../types";
 import type { AreaCardFeatureContext } from "../cards/hui-area-card";
@@ -32,39 +31,24 @@ import type {
 import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
-  offIcon?: string;
-  onIcon?: string;
-  filter: {
-    domain: string;
-    device_class?: string;
-  };
+  domain: string;
+  device_class?: string;
 }
 
 const coverButton = (deviceClass: string) => ({
-  filter: {
-    domain: "cover",
-    device_class: deviceClass,
-  },
+  domain: "cover",
+  device_class: deviceClass,
 });
 
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
   light: {
-    // Overrides the icons for lights
-    offIcon: "mdi:lightbulb-off",
-    onIcon: "mdi:lightbulb",
-    filter: {
-      domain: "light",
-    },
+    domain: "light",
   },
   fan: {
-    filter: {
-      domain: "fan",
-    },
+    domain: "fan",
   },
   switch: {
-    filter: {
-      domain: "switch",
-    },
+    domain: "switch",
   },
   "cover-blind": coverButton("blind"),
   "cover-curtain": coverButton("curtain"),
@@ -98,7 +82,8 @@ export const getAreaControlEntities = (
       const filter = generateEntityFilter(hass, {
         area: areaId,
         entity_category: "none",
-        ...controlButton.filter,
+        domain: controlButton.domain,
+        device_class: controlButton.device_class,
       });
 
       acc[control] = Object.keys(hass.entities).filter(
@@ -160,9 +145,7 @@ class HuiAreaControlsCardFeature
     this._config = config;
   }
 
-  private _handleButtonTap(ev: MouseEvent) {
-    ev.stopPropagation();
-
+  private async _handleButtonTap(ev: MouseEvent) {
     if (!this.context?.area_id || !this.hass || !this._config) {
       return;
     }
@@ -178,12 +161,27 @@ class HuiAreaControlsCardFeature
     );
     const entitiesIds = controlEntities[control];
 
-    const entities = entitiesIds
-      .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
-      .filter((v): v is HassEntity => Boolean(v));
+    const { domain, device_class: dc } = AREA_CONTROLS_BUTTONS[control];
 
-    forwardHaptic("light");
-    toggleGroupEntities(this.hass, entities);
+    const domainName = this.hass.localize(
+      `component.${domain}.entity_component.${dc ?? "_"}.name`
+    );
+
+    showMoreInfoDialog(this, {
+      entityId: null,
+      parentView: {
+        title: computeAreaName(this._area!) || "",
+        subtitle: domainName,
+        tag: "ha-more-info-view-toggle-group",
+        import: () =>
+          import(
+            "../../../dialogs/more-info/components/voice/ha-more-info-view-toggle-group"
+          ),
+        params: {
+          entityIds: entitiesIds,
+        } as GroupToggleDialogParams,
+      },
+    });
   }
 
   private _controlEntities = memoizeOne(
@@ -254,15 +252,22 @@ class HuiAreaControlsCardFeature
             ? stateActive(entities[0], groupState)
             : false;
 
-          const label = this.hass!.localize(
-            `ui.card_features.area_controls.${control}.${active ? "off" : "on"}`
+          const domain = button.domain;
+          const dc = button.device_class;
+
+          const domainName = this.hass!.localize(
+            `component.${domain}.entity_component.${dc ?? "_"}.name`
           );
 
-          const icon = active ? button.onIcon : button.offIcon;
+          const label = `${domainName}: ${this.hass!.localize(
+            `ui.card_features.area_controls.open_more_info`
+          )}`;
 
-          const domain = button.filter.domain;
-          const deviceClass = button.filter.device_class
-            ? ensureArray(button.filter.device_class)[0]
+          const icon =
+            domain === "light" && !active ? "mdi:lightbulb-off" : undefined;
+
+          const deviceClass = button.device_class
+            ? ensureArray(button.device_class)[0]
             : undefined;
 
           const activeColor = computeCssVariable(

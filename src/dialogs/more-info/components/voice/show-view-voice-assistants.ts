@@ -8,9 +8,9 @@ export const showVoiceAssistantsView = (
   title: string
 ): void => {
   fireEvent(element, "show-child-view", {
-    viewTag: "ha-more-info-view-voice-assistants",
-    viewImport: loadVoiceAssistantsView,
-    viewTitle: title,
-    viewParams: {},
+    tag: "ha-more-info-view-voice-assistants",
+    import: loadVoiceAssistantsView,
+    title: title,
+    params: {},
   });
 };

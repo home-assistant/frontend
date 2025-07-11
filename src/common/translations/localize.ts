@@ -31,7 +31,8 @@ export type LocalizeKeys =
   | `ui.panel.lovelace.card.${string}`
   | `ui.panel.lovelace.editor.${string}`
   | `ui.panel.page-authorize.form.${string}`
-  | `component.${string}`;
+  | `component.${string}`
+  | `ui.entity.${string}`;
 
 export type LandingPageKeys = FlattenObjectKeys<
   TranslationDict["landing-page"]

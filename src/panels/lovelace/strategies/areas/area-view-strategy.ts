@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -148,7 +149,22 @@ export class AreaViewStrategy extends ReactiveElement {
             hass.localize("ui.panel.lovelace.strategy.areas.groups.security"),
             AREA_STRATEGY_GROUP_ICONS.security
           ),
-          ...security.map(computeTileCard),
+          ...security.map((entityId) => {
+            const domain = computeDomain(entityId);
+            if (domain === "camera") {
+              return {
+                type: "picture-entity",
+                entity: entityId,
+                show_state: false,
+                show_name: false,
+                grid_options: {
+                  columns: 6,
+                  rows: 2,
+                },
+              };
+            }
+            return computeTileCard(entityId);
+          }),
         ],
       });
     }

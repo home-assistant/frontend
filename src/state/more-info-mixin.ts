@@ -30,6 +30,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         {
           entityId: ev.detail.entityId,
           view: ev.detail.view || ev.detail.tab,
+          parentView: ev.detail.parentView,
         },
         () => import("../dialogs/more-info/ha-more-info-dialog")
       );

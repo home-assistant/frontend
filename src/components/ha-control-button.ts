@@ -72,6 +72,9 @@ export class HaControlButton extends LitElement {
         color 180ms ease-in-out;
       color: var(--control-button-icon-color);
     }
+    :host([vertical]) .button {
+      flex-direction: column;
+    }
     .button:focus-visible {
       box-shadow: 0 0 0 2px var(--control-button-focus-color);
     }
