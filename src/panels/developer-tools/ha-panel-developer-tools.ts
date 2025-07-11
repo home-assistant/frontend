@@ -80,6 +80,15 @@ class PanelDeveloperTools extends LitElement {
           <sl-tab slot="nav" panel="assist" .active=${page === "assist"}
             >Assist</sl-tab
           >
+          <sl-tab
+            slot="nav"
+            panel="blueprints"
+            .active=${page === "blueprints"}
+          >
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.title"
+            )}
+          </sl-tab>
         </sl-tab-group>
       </div>
       <developer-tools-router

@@ -6,7 +6,7 @@ import type {
   Blueprint,
   BlueprintDomain,
 } from "../../../data/blueprint";
-import "../automation/manual-automation-editor";
+import "../../config/automation/manual-automation-editor";
 
 @customElement("ha-blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
@@ -55,7 +55,6 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
       return nothing;
     }
 
-    // TODO: Update manual-automation-editor to allow for `!input <scalar>` YAML values
     return html`
       <manual-automation-editor
         .hass=${this.hass}

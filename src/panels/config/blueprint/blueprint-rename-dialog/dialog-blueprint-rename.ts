@@ -49,7 +49,9 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
     this._newPath = params.path || "";
     this._newName =
       params.blueprint.metadata.name ||
-      this.hass.localize(`ui.panel.config.blueprint.editor.default_name`);
+      this.hass.localize(
+        `ui.panel.developer-tools.tabs.blueprints.editor.default_name`
+      );
     this._newDescription = params.blueprint.metadata.description || "";
     this._newAuthor = params.blueprint.metadata.author || "";
     this._newMinimumVersion =
@@ -96,8 +98,8 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         @closed=${this.closeDialog}
         .heading=${this.hass.localize(
           this._params.blueprint.alias
-            ? "ui.panel.config.blueprint.editor.rename"
-            : "ui.panel.config.blueprint.editor.save"
+            ? "ui.panel.developer-tools.tabs.blueprints.editor.rename"
+            : "ui.panel.developer-tools.tabs.blueprints.editor.save"
         )}
       >
         <ha-dialog-header slot="heading">
@@ -110,22 +112,24 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           <span slot="title"
             >${this.hass.localize(
               this._params.blueprint.alias
-                ? "ui.panel.config.blueprint.editor.rename"
-                : "ui.panel.config.blueprint.editor.save"
+                ? "ui.panel.developer-tools.tabs.blueprints.editor.rename"
+                : "ui.panel.developer-tools.tabs.blueprints.editor.save"
             )}</span
           >
         </ha-dialog-header>
         ${this._error
           ? html` <ha-alert alert-type="error"
               >${this.hass.localize(
-                "ui.panel.config.blueprint.editor.missing_path"
+                "ui.panel.developer-tools.tabs.blueprints.editor.missing_path"
               )}
             </ha-alert>`
           : ""}
         <ha-textfield
           dialogInitialFocus
           .value=${this._newPath}
-          .label=${this.hass.localize("ui.panel.config.blueprint.editor.path")}
+          .label=${this.hass.localize(
+            "ui.panel.developer-tools.tabs.blueprints.editor.path"
+          )}
           name="path"
           required
           type="string"
@@ -134,16 +138,18 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         ${this._error
           ? html` <ha-alert alert-type="error"
               >${this.hass.localize(
-                "ui.panel.config.blueprint.editor.missing_name"
+                "ui.panel.developer-tools.tabs.blueprints.editor.missing_name"
               )}
             </ha-alert>`
           : ""}
         <ha-textfield
           .value=${this._newName}
           .placeholder=${this.hass.localize(
-            `ui.panel.config.blueprint.editor.default_name`
+            `ui.panel.developer-tools.tabs.blueprints.editor.default_name`
           )}
-          .label=${this.hass.localize("ui.panel.config.blueprint.editor.name")}
+          .label=${this.hass.localize(
+            "ui.panel.developer-tools.tabs.blueprints.editor.name"
+          )}
           name="name"
           required
           type="string"
@@ -153,7 +159,7 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         ${this._visibleOptionals.includes("description")
           ? html` <ha-textarea
               .label=${this.hass.localize(
-                "ui.panel.config.blueprint.editor.description.label"
+                "ui.panel.developer-tools.tabs.blueprints.editor.description.label"
               )}
               name="description"
               autogrow
@@ -164,10 +170,10 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         ${this._visibleOptionals.includes("author")
           ? html` <ha-textfield
               .label=${this.hass.localize(
-                "ui.panel.config.blueprint.editor.author.label"
+                "ui.panel.developer-tools.tabs.blueprints.editor.author.label"
               )}
               .placeholder=${this.hass.localize(
-                "ui.panel.config.blueprint.editor.author.placeholder"
+                "ui.panel.developer-tools.tabs.blueprints.editor.author.placeholder"
               )}
               name="author"
               autogrow
@@ -178,10 +184,10 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
         ${this._visibleOptionals.includes("minimumVersion")
           ? html` <ha-textfield
               .label=${this.hass.localize(
-                "ui.panel.config.blueprint.editor.minimum_version.label"
+                "ui.panel.developer-tools.tabs.blueprints.editor.minimum_version.label"
               )}
               .placeholder=${this.hass.localize(
-                "ui.panel.config.blueprint.editor.minimum_version.placeholder"
+                "ui.panel.developer-tools.tabs.blueprints.editor.minimum_version.placeholder"
               )}
               name="minimumVersion"
               autogrow
@@ -194,19 +200,19 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           ${this._renderOptionalChip(
             "description",
             this.hass.localize(
-              "ui.panel.config.blueprint.editor.dialog.add_description"
+              "ui.panel.developer-tools.tabs.blueprints.editor.dialog.add_description"
             )
           )}
           ${this._renderOptionalChip(
             "author",
             this.hass.localize(
-              "ui.panel.config.blueprint.editor.dialog.add_author"
+              "ui.panel.developer-tools.tabs.blueprints.editor.dialog.add_author"
             )
           )}
           ${this._renderOptionalChip(
             "minimumVersion",
             this.hass.localize(
-              "ui.panel.config.blueprint.editor.dialog.add_minimum_version"
+              "ui.panel.developer-tools.tabs.blueprints.editor.dialog.add_minimum_version"
             )
           )}
         </ha-chip-set>
@@ -218,8 +224,8 @@ class DialogBlueprintRename extends LitElement implements HassDialog {
           <mwc-button @click=${this._save}>
             ${this.hass.localize(
               this._params.blueprint.metadata.name
-                ? "ui.panel.config.blueprint.editor.rename"
-                : "ui.panel.config.blueprint.editor.save"
+                ? "ui.panel.developer-tools.tabs.blueprints.editor.rename"
+                : "ui.panel.developer-tools.tabs.blueprints.editor.save"
             )}
           </mwc-button>
         </div>

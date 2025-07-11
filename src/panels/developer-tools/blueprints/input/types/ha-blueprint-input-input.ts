@@ -55,7 +55,7 @@ export class HaBlueprintInputInput extends LitElement {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string =>
     this.hass.localize(
-      `ui.panel.config.blueprint.editor.inputs.type.single.${schema.name}`
+      `ui.panel.developer-tools.tabs.blueprints.editor.inputs.type.single.${schema.name}`
     );
 
   private _valueChanged(e: CustomEvent) {

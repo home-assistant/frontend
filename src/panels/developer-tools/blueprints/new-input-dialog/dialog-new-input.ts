@@ -39,13 +39,13 @@ class DialogNewInput extends LitElement implements HassDialog {
             [
               "input",
               this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.type.new.input"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.type.new.input"
               ),
             ],
             [
               "section",
               this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.type.new.section"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.type.new.section"
               ),
             ],
           ],
@@ -82,7 +82,7 @@ class DialogNewInput extends LitElement implements HassDialog {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
     this.hass.localize(
-      `ui.panel.config.blueprint.editor.inputs.type.new.${schema.name}`
+      `ui.panel.developer-tools.tabs.blueprints.editor.inputs.type.new.${schema.name}`
     );
 
   protected render() {
@@ -96,7 +96,9 @@ class DialogNewInput extends LitElement implements HassDialog {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize(`ui.panel.config.blueprint.dialog_new.header`)
+          this.hass.localize(
+            `ui.panel.developer-tools.tabs.blueprints.dialog_new.header`
+          )
         )}
       >
         <ha-form

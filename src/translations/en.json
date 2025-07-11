@@ -4497,13 +4497,11 @@
             },
             "types": {
               "automation": "Automation",
-              "script": "Script",
-              "blueprint": "Blueprint"
+              "script": "Script"
             },
             "types_plural": {
               "automation": "automations",
-              "script": "scripts",
-              "blueprint": "blueprints"
+              "script": "scripts"
             },
             "error": "{path} could not be loaded",
             "blueprint_in_use_title": "This blueprint is in use and can not be deleted",
@@ -4511,7 +4509,7 @@
             "blueprint_in_use_view": "view {type}",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
-            "add_blueprint": "Add blueprint",
+            "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
             "create_script": "Create script",
@@ -4530,17 +4528,8 @@
             "re_import_success": "{name} has been successfully re-imported.",
             "discover_more": "Discover more blueprints"
           },
-          "dialog_new": {
-            "header": "Add a blueprint",
-            "create_empty_automation": "Create new automation blueprint",
-            "create_empty_automation_description": "Start with an empty automation blueprint from scratch",
-            "create_empty_script": "Create new script blueprint",
-            "create_empty_script_description": "Start with an empty script blueprint from scratch",
-            "import_external": "Import a blueprint",
-            "import_external_description": "Import an existing blueprint from the internet"
-          },
           "add": {
-            "header": "Add a blueprint",
+            "header": "Import a blueprint",
             "import_header": "Blueprint ''{name}''",
             "import_introduction": "Import blueprints of other users from GitHub and the community forums by pasting the address below.",
             "community_forums": "View blueprints on the community forums",
@@ -4556,78 +4545,6 @@
             "error_no_url": "Please enter the blueprint address.",
             "unsupported_blueprint": "This blueprint is not supported",
             "file_name": "Blueprint path"
-          },
-          "editor": {
-            "default_name": "New blueprint",
-            "unsaved_confirm_title": "Leave editor?",
-            "unsaved_confirm_text": "Unsaved changes will be lost.",
-            "save": "Save",
-            "rename": "Rename",
-            "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
-            "load_error_unknown": "Error loading blueprint ({err_no}).",
-            "move_up": "Move up",
-            "move_down": "Move down",
-            "edit_ui": "UI editor",
-            "edit_yaml": "YAML editor",
-            "path": "Path",
-            "name": "Name",
-            "missing_path": "Cannot save blueprint without a path",
-            "missing_name": "Cannot save blueprint without a name",
-            "actions": {
-              "delete": "Delete",
-              "duplicate": "Duplicate"
-            },
-            "inputs": {
-              "header": "Inputs",
-              "section_description": "Inputs are variables that make blueprints generic. The exact value will be determined when an instance of this blueprint is created",
-              "learn_more": "Learn more about inputs",
-              "add": "Add new input",
-              "testing_pass": "Input passes",
-              "testing_error": "Input did not pass",
-              "copy": "Copy",
-              "cut": "Cut",
-              "rename": "Rename",
-              "delete_confirm_title": "Delete input",
-              "delete_confirm_text": "Do you want to delete this input from your blueprint?",
-              "id": "ID",
-              "change_id": "Change input ID",
-              "type": {
-                "new": {
-                  "input": "Input",
-                  "section": "Section",
-                  "type": "Type",
-                  "id": "ID"
-                },
-                "section": {
-                  "name": "Name",
-                  "description": "Description",
-                  "icon": "Icon",
-                  "collapsed": "Collapsed"
-                },
-                "single": {
-                  "name": "Name",
-                  "description": "Description",
-                  "default": "Default value",
-                  "selector": "Selector"
-                }
-              }
-            },
-            "dialog": {
-              "add_description": "Add description",
-              "add_author": "Add author",
-              "add_minimum_version": "Add minimum version"
-            },
-            "description": {
-              "label": "Description"
-            },
-            "author": {
-              "label": "Author",
-              "placeholder": "Linus Torvalds"
-            },
-            "minimum_version": {
-              "label": "Minimum version",
-              "placeholder": "2025.1.0"
-            }
           }
         },
         "script": {
@@ -8703,6 +8620,90 @@
                 "stop": "Stop",
                 "confirm_stop": "Are you sure you want to stop Home Assistant?",
                 "restart_error": "Failed to restart Home Assistant"
+              }
+            }
+          },
+          "blueprints": {
+            "title": "Blueprints",
+            "dialog_new": {
+              "header": "Add a blueprint",
+              "create_empty_automation": "Create new automation blueprint",
+              "create_empty_automation_description": "Start with an empty automation blueprint from scratch",
+              "create_empty_script": "Create new script blueprint",
+              "create_empty_script_description": "Start with an empty script blueprint from scratch",
+              "import_external": "Import a blueprint",
+              "import_external_description": "Import an existing blueprint from the internet"
+            },
+            "editor": {
+              "default_name": "New blueprint",
+              "unsaved_confirm_title": "Leave editor?",
+              "unsaved_confirm_text": "Unsaved changes will be lost.",
+              "save": "Save",
+              "rename": "Rename",
+              "load_error_not_editable": "Only blueprints in blueprints.yaml are editable.",
+              "load_error_unknown": "Error loading blueprint ({err_no}).",
+              "move_up": "Move up",
+              "move_down": "Move down",
+              "edit_ui": "UI editor",
+              "edit_yaml": "YAML editor",
+              "path": "Path",
+              "name": "Name",
+              "missing_path": "Cannot save blueprint without a path",
+              "missing_name": "Cannot save blueprint without a name",
+              "actions": {
+                "delete": "Delete",
+                "duplicate": "Duplicate"
+              },
+              "inputs": {
+                "header": "Inputs",
+                "section_description": "Inputs are variables that make blueprints generic. The exact value will be determined when an instance of this blueprint is created",
+                "learn_more": "Learn more about inputs",
+                "add": "Add new input",
+                "testing_pass": "Input passes",
+                "testing_error": "Input did not pass",
+                "copy": "Copy",
+                "cut": "Cut",
+                "rename": "Rename",
+                "delete_confirm_title": "Delete input",
+                "delete_confirm_text": "Do you want to delete this input from your blueprint?",
+                "id": "ID",
+                "change_id": "Change input ID",
+                "type": {
+                  "new": {
+                    "input": "Input",
+                    "section": "Section",
+                    "type": "Type",
+                    "id": "ID"
+                  },
+                  "section": {
+                    "name": "Name",
+                    "description": "Description",
+                    "icon": "Icon",
+                    "collapsed": "Collapsed"
+                  },
+                  "single": {
+                    "name": "Name",
+                    "description": "Description",
+                    "default": "Default value",
+                    "selector": "Selector"
+                  }
+                }
+              },
+              "dialog": {
+                "add_description": "Add description",
+                "add_author": "Add author",
+                "add_minimum_version": "Add minimum version"
+              },
+              "description": {
+                "label": "Description"
+              },
+              "author": {
+                "label": "Author",
+                "placeholder": "Linus Torvalds"
+              },
+              "minimum_version": {
+                "label": "Minimum version",
+                "placeholder": "2025.1.0"
               }
             }
           }

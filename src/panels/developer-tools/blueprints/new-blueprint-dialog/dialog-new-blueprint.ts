@@ -7,7 +7,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { shouldHandleRequestSelectedEvent } from "../../../../common/mwc/handle-request-selected-event";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import { showImportBlueprintDialog } from "../import-blueprint-dialog/show-dialog-import-blueprint";
+import { showImportBlueprintDialog } from "../../../config/blueprint/import-blueprint-dialog/show-dialog-import-blueprint";
 import type { Blueprint, BlueprintDomain } from "../../../../data/blueprint";
 import { showBlueprintEditor } from "../../../../data/blueprint";
 
@@ -75,14 +75,16 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this.hass.localize(`ui.panel.config.blueprint.dialog_new.header`)
+          this.hass.localize(
+            `ui.panel.developer-tools.tabs.blueprints.dialog_new.header`
+          )
         )}
       >
         <mwc-list
           innerRole="listbox"
           itemRoles="option"
           innerAriaLabel=${this.hass.localize(
-            `ui.panel.config.blueprint.dialog_new.header`
+            `ui.panel.developer-tools.tabs.blueprints.dialog_new.header`
           )}
           rootTabbable
           dialogInitialFocus
@@ -95,11 +97,11 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
           >
             <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
             ${this.hass.localize(
-              `ui.panel.config.blueprint.dialog_new.create_empty_automation`
+              `ui.panel.developer-tools.tabs.blueprints.dialog_new.create_empty_automation`
             )}
             <span slot="secondary">
               ${this.hass.localize(
-                `ui.panel.config.blueprint.dialog_new.create_empty_automation_description`
+                `ui.panel.developer-tools.tabs.blueprints.dialog_new.create_empty_automation_description`
               )}
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
@@ -112,11 +114,11 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
           >
             <ha-svg-icon slot="graphic" .path=${mdiPencilOutline}></ha-svg-icon>
             ${this.hass.localize(
-              `ui.panel.config.blueprint.dialog_new.create_empty_script`
+              `ui.panel.developer-tools.tabs.blueprints.dialog_new.create_empty_script`
             )}
             <span slot="secondary">
               ${this.hass.localize(
-                `ui.panel.config.blueprint.dialog_new.create_empty_script_description`
+                `ui.panel.developer-tools.tabs.blueprints.dialog_new.create_empty_script_description`
               )}
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>
@@ -133,11 +135,11 @@ class DialogNewBlueprint extends LitElement implements HassDialog {
               .path=${mdiDownloadOutline}
             ></ha-svg-icon>
             ${this.hass.localize(
-              `ui.panel.config.blueprint.dialog_new.import_external`
+              `ui.panel.developer-tools.tabs.blueprints.dialog_new.import_external`
             )}
             <span slot="secondary">
               ${this.hass.localize(
-                `ui.panel.config.blueprint.dialog_new.import_external_description`
+                `ui.panel.developer-tools.tabs.blueprints.dialog_new.import_external_description`
               )}
             </span>
             <ha-icon-next slot="meta"></ha-icon-next>

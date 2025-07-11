@@ -6,7 +6,7 @@ import type { RouterOptions } from "../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../types";
 import "./ha-blueprint-overview";
-import "./ha-blueprint-editor";
+import "../../developer-tools/blueprints/ha-blueprint-editor";
 
 declare global {
   // for fire event

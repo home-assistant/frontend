@@ -75,7 +75,7 @@ export class HaBlueprintInputSection extends LitElement {
     schema: SchemaUnion<typeof this._schema>
   ): string =>
     this.hass.localize(
-      `ui.panel.config.blueprint.editor.inputs.type.section.${schema.name}`
+      `ui.panel.developer-tools.tabs.blueprints.editor.inputs.type.section.${schema.name}`
     );
 
   protected render() {

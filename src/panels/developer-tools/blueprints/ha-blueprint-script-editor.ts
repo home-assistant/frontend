@@ -6,7 +6,7 @@ import type {
   BlueprintDomain,
   ScriptBlueprint,
 } from "../../../data/blueprint";
-import "../script/manual-script-editor";
+import "../../config/script/manual-script-editor";
 
 @customElement("ha-blueprint-script-editor")
 export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {

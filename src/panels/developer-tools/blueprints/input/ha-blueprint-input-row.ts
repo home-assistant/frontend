@@ -114,7 +114,7 @@ export default class HaBlueprintInputRow extends LitElement {
 
             <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.rename"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.rename"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
             </ha-list-item>
@@ -123,7 +123,7 @@ export default class HaBlueprintInputRow extends LitElement {
 
             <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.actions.duplicate"
+                "ui.panel.developer-tools.tabs.blueprints.editor.actions.duplicate"
               )}
               <ha-svg-icon
                 slot="graphic"
@@ -133,14 +133,14 @@ export default class HaBlueprintInputRow extends LitElement {
 
             <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.copy"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.copy"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
             </ha-list-item>
 
             <ha-list-item graphic="icon" .disabled=${this.disabled}>
               ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.cut"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.cut"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
             </ha-list-item>
@@ -149,7 +149,9 @@ export default class HaBlueprintInputRow extends LitElement {
               graphic="icon"
               .disabled=${this.disabled || this.first}
             >
-              ${this.hass.localize("ui.panel.config.blueprint.editor.move_up")}
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.blueprints.editor.move_up"
+              )}
               <ha-svg-icon slot="graphic" .path=${mdiArrowUp}></ha-svg-icon
             ></ha-list-item>
 
@@ -158,14 +160,14 @@ export default class HaBlueprintInputRow extends LitElement {
               .disabled=${this.disabled || this.last}
             >
               ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.move_down"
+                "ui.panel.developer-tools.tabs.blueprints.editor.move_down"
               )}
               <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon
             ></ha-list-item>
 
             <ha-list-item graphic="icon" .disabled=${this._warnings}>
               ${this.hass.localize(
-                `ui.panel.config.blueprint.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+                `ui.panel.developer-tools.tabs.blueprints.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
               )}
               <ha-svg-icon
                 slot="graphic"
@@ -181,7 +183,7 @@ export default class HaBlueprintInputRow extends LitElement {
               .disabled=${this.disabled}
             >
               ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.actions.delete"
+                "ui.panel.developer-tools.tabs.blueprints.editor.actions.delete"
               )}
               <ha-svg-icon
                 class="warning"
@@ -231,10 +233,10 @@ export default class HaBlueprintInputRow extends LitElement {
         >
           ${this._testingResult
             ? this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.testing_pass"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.testing_pass"
               )
             : this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.testing_error"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.testing_error"
               )}
         </div>
       </ha-card>
@@ -306,10 +308,10 @@ export default class HaBlueprintInputRow extends LitElement {
   private _onDelete() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.blueprint.editor.inputs.delete_confirm_title"
+        "ui.panel.developer-tools.tabs.blueprints.editor.inputs.delete_confirm_title"
       ),
       text: this.hass.localize(
-        "ui.panel.config.blueprint.editor.inputs.delete_confirm_text"
+        "ui.panel.developer-tools.tabs.blueprints.editor.inputs.delete_confirm_text"
       ),
       dismissText: this.hass.localize("ui.common.cancel"),
       confirmText: this.hass.localize("ui.common.delete"),
@@ -333,10 +335,10 @@ export default class HaBlueprintInputRow extends LitElement {
   private async _renameInput(): Promise<void> {
     const id = await showPromptDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.blueprint.editor.inputs.change_id"
+        "ui.panel.developer-tools.tabs.blueprints.editor.inputs.change_id"
       ),
       inputLabel: this.hass.localize(
-        "ui.panel.config.blueprint.editor.inputs.id"
+        "ui.panel.developer-tools.tabs.blueprints.editor.inputs.id"
       ),
       inputType: "string",
       placeholder: this.input[0],

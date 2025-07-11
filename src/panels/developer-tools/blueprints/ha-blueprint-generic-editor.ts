@@ -1,7 +1,6 @@
 import type { PropertyValues, TemplateResult, CSSResultGroup } from "lit";
 import { html, css, nothing, LitElement } from "lit";
-import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
-import { classMap } from "lit/directives/class-map";
+import { mdiHelpCircle } from "@mdi/js";
 import { property, state } from "lit/decorators";
 import yaml from "js-yaml";
 import "../../../layouts/hass-subpage";
@@ -33,10 +32,11 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../common/navigate";
-import { showBlueprintRenameDialog } from "./blueprint-rename-dialog/show-dialog-blueprint-rename";
+import { showBlueprintRenameDialog } from "../../config/blueprint/blueprint-rename-dialog/show-dialog-blueprint-rename";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./input/ha-blueprint-input";
 import { haStyle } from "../../../resources/styles";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
   KeyboardShortcutMixin(LitElement)
@@ -94,6 +94,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       return;
     }
     this._dirty = true;
+    fireEvent(this, "value-changed", { value: this._blueprint });
   }
 
   private async _promptBlueprintAlias(): Promise<boolean> {
@@ -106,6 +107,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
           this._dirty = true;
           this.requestUpdate();
           resolve(true);
+          fireEvent(this, "value-changed", { value: blueprint });
         },
         updatePath: (path) => {
           this._blueprintPath = path;
@@ -186,15 +188,16 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       this._readOnly = false;
       this._blueprint = this.normalizeBlueprint(blueprint);
       this._updateInputsInHass();
+      fireEvent(this, "value-changed", { value: this._blueprint });
     } catch (err: any) {
       await showAlertDialog(this, {
         text:
           err.status_code === 404
             ? this.hass.localize(
-                "ui.panel.config.blueprint.editor.load_error_not_editable"
+                "ui.panel.developer-tools.tabs.blueprints.editor.load_error_not_editable"
               )
             : this.hass.localize(
-                "ui.panel.config.blueprint.editor.load_error_unknown",
+                "ui.panel.developer-tools.tabs.blueprints.editor.load_error_unknown",
                 { err_no: err.status_code }
               ),
       });
@@ -206,10 +209,10 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     if (this._dirty) {
       return showConfirmationDialog(this, {
         title: this.hass!.localize(
-          "ui.panel.config.blueprint.editor.unsaved_confirm_title"
+          "ui.panel.developer-tools.tabs.blueprints.editor.unsaved_confirm_title"
         ),
         text: this.hass!.localize(
-          "ui.panel.config.blueprint.editor.unsaved_confirm_text"
+          "ui.panel.developer-tools.tabs.blueprints.editor.unsaved_confirm_text"
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
@@ -245,9 +248,10 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       },
     };
     this._dirty = true;
+    fireEvent(this, "value-changed", { value: this._blueprint });
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  protected async updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
     const oldBlueprintPath = changedProps.get("blueprintPath");
@@ -271,6 +275,7 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
       this._blueprintPath = undefined;
       this._readOnly = false;
       this._dirty = true;
+      fireEvent(this, "value-changed", { value: this._blueprint });
     }
   }
 
@@ -280,69 +285,45 @@ export abstract class HaBlueprintGenericEditor extends PreventUnsavedMixin(
     }
 
     return html`
-      <hass-subpage
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .route=${this.route}
-        .backCallback=${this._backTapped}
-        .header=${this._blueprint?.metadata?.name ||
-        this.hass.localize("ui.panel.config.blueprint.editor.default_name")}
-      >
-        ${this.renderHeader()}
-
-        <div class="editor-content">
-          <div class="header">
-            <h2 id="variables-heading" class="name">
-              ${this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.header"
+      <div class="editor-content">
+        <div class="header">
+          <h2 id="variables-heading" class="name">
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.blueprints.editor.inputs.header"
+            )}
+          </h2>
+          <a
+            href=${documentationUrl(this.hass, "/docs/blueprint/variable/")}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <ha-icon-button
+              .path=${mdiHelpCircle}
+              .label=${this.hass.localize(
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.learn_more"
               )}
-            </h2>
-            <a
-              href=${documentationUrl(this.hass, "/docs/blueprint/variable/")}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <ha-icon-button
-                .path=${mdiHelpCircle}
-                .label=${this.hass.localize(
-                  "ui.panel.config.blueprint.editor.inputs.learn_more"
-                )}
-              ></ha-icon-button>
-            </a>
-          </div>
-          ${!Object.entries(this._blueprint?.metadata?.input || {})?.length
-            ? html`<p class="section-description">
-                ${this.hass.localize(
-                  "ui.panel.config.blueprint.editor.inputs.section_description"
-                )}
-              </p>`
-            : nothing}
-
-          <ha-blueprint-input
-            role="region"
-            aria-labelledby="inputs-heading"
-            .inputs=${Object.entries(this._blueprint?.metadata?.input || {})}
-            @value-changed=${this._inputChanged}
-            .hass=${this.hass}
-            .disabled=${this._readOnly}
-          ></ha-blueprint-input>
-
-          ${this.renderEditor()}
+            ></ha-icon-button>
+          </a>
         </div>
+        ${!Object.entries(this._blueprint?.metadata?.input || {})?.length
+          ? html`<p class="section-description">
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.section_description"
+              )}
+            </p>`
+          : nothing}
 
-        <ha-fab
-          slot="fab"
-          class=${classMap({
-            dirty: !this._readOnly && this._dirty,
-          })}
-          .label=${this.hass.localize("ui.panel.config.blueprint.editor.save")}
-          .disabled=${this._saving}
-          extended
-          @click=${this._saveBlueprint}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </ha-fab>
-      </hass-subpage>
+        <ha-blueprint-input
+          role="region"
+          aria-labelledby="inputs-heading"
+          .inputs=${Object.entries(this._blueprint?.metadata?.input || {})}
+          @value-changed=${this._inputChanged}
+          .hass=${this.hass}
+          .disabled=${this._readOnly}
+        ></ha-blueprint-input>
+
+        ${this.renderEditor()}
+      </div>
     `;
   }
 

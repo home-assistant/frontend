@@ -213,7 +213,7 @@ export class HaBlueprintInput extends LitElement {
               outlined
               .disabled=${this.disabled}
               .label=${this.hass.localize(
-                "ui.panel.config.blueprint.editor.inputs.add"
+                "ui.panel.developer-tools.tabs.blueprints.editor.inputs.add"
               )}
               @click=${this._showNewInputDialog}
             >
