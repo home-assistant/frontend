@@ -23,7 +23,6 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
-  getEnergyGasUnit,
   formatConsumptionShort,
   getSummedData,
   computeConsumptionData,
@@ -334,11 +333,7 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           gasUsage,
-                          getEnergyGasUnit(
-                            this.hass,
-                            prefs,
-                            this._data.statsMetadata
-                          )
+                          this._data.gasUnit
                         )}
                       </div>
                       <svg width="80" height="30">
