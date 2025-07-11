@@ -10,12 +10,13 @@ import type { ECOption } from "../../resources/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
 import type { HomeAssistant } from "../../types";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { deepEqual } from "../../common/util/deep-equal";
 
 export interface NetworkNode {
   id: string;
   name?: string;
   category?: number;
-  label?: string;
   value?: number;
   symbolSize?: number;
   symbol?: string;
@@ -60,7 +61,7 @@ export interface NetworkData {
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
 @customElement("ha-network-graph")
-export class HaNetworkGraph extends LitElement {
+export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public data!: NetworkData;
@@ -77,8 +78,6 @@ export class HaNetworkGraph extends LitElement {
 
   @state() private _showLabels = true;
 
-  private _listeners: (() => void)[] = [];
-
   private _nodePositions: Record<string, { x: number; y: number }> = {};
 
   @query("ha-chart-base") private _baseChart?: HaChartBase;
@@ -93,22 +92,14 @@ export class HaNetworkGraph extends LitElement {
     }
   }
 
-  public async connectedCallback() {
-    super.connectedCallback();
-    this._listeners.push(
+  protected hassSubscribe() {
+    return [
       listenMediaQuery("(prefers-reduced-motion)", (matches) => {
         if (this._reducedMotion !== matches) {
           this._reducedMotion = matches;
         }
-      })
-    );
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    while (this._listeners.length) {
-      this._listeners.pop()!();
-    }
+      }),
+    ];
   }
 
   protected render() {
@@ -122,7 +113,7 @@ export class HaNetworkGraph extends LitElement {
         this._physicsEnabled,
         this._reducedMotion,
         this._showLabels
-      )}
+      ) as GraphSeriesOption}
       .options=${this._createOptions(this.data?.categories)}
       height="100%"
       .extraComponents=${[GraphChart]}
@@ -168,7 +159,8 @@ export class HaNetworkGraph extends LitElement {
         type: "inside",
         filterMode: "none",
       },
-    })
+    }),
+    deepEqual
   );
 
   private _getSeries = memoizeOne(
@@ -180,75 +172,80 @@ export class HaNetworkGraph extends LitElement {
     ) => {
       const containerWidth = this.clientWidth;
       const containerHeight = this.clientHeight;
-      return [
-        {
-          id: "network",
-          type: "graph",
-          layout: physicsEnabled ? "force" : "none",
-          draggable: true,
-          roam: true,
-          selectedMode: "single",
-          label: {
-            show: showLabels,
-            position: "right",
-          },
-          emphasis: {
-            focus: "adjacency",
-          },
-          force: {
-            repulsion: [400, 600],
-            edgeLength: [200, 300],
-            gravity: 0.1,
-            layoutAnimation: !reducedMotion && data.nodes.length < 100,
-          },
-          edgeSymbol: ["none", "arrow"],
-          edgeSymbolSize: 10,
-          data: data.nodes.map((node) => {
-            const echartsNode: NonNullable<GraphSeriesOption["data"]>[number] =
-              {
-                id: node.id,
-                name: node.name,
-                category: node.category,
-                value: node.value,
-                symbolSize: node.symbolSize || 30,
-                symbol: node.symbol || "circle",
-                itemStyle: node.itemStyle || {},
-                fixed: node.fixed,
-              };
-            if (this._nodePositions[node.id]) {
-              echartsNode.x = this._nodePositions[node.id].x;
-              echartsNode.y = this._nodePositions[node.id].y;
-            } else if (typeof node.polarDistance === "number") {
-              // set the position of the node at polarDistance from the center in a random direction
-              const angle = Math.random() * 2 * Math.PI;
-              echartsNode.x =
-                containerWidth / 2 +
-                ((Math.cos(angle) * containerWidth) / 2) * node.polarDistance;
-              echartsNode.y =
-                containerHeight / 2 +
-                ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance;
-              this._nodePositions[node.id] = {
-                x: echartsNode.x,
-                y: echartsNode.y,
-              };
-            }
-            return echartsNode;
-          }),
-          links: data.links.map((link) => ({
-            ...link,
-            value: link.reverseValue
-              ? Math.max(link.value ?? 0, link.reverseValue)
-              : link.value,
-            // remove arrow for bidirectional links
-            symbolSize: link.reverseValue ? 1 : link.symbolSize, // 0 doesn't work
-          })),
-          categories: data.categories || [],
+      return {
+        id: "network",
+        type: "graph",
+        layout: physicsEnabled ? "force" : "none",
+        draggable: true,
+        roam: true,
+        selectedMode: "single",
+        label: {
+          show: showLabels,
+          position: "right",
         },
-      ] as any;
-    }
+        emphasis: {
+          focus: "adjacency",
+        },
+        force: {
+          repulsion: [400, 600],
+          edgeLength: [200, 300],
+          gravity: 0.1,
+          layoutAnimation: !reducedMotion && data.nodes.length < 100,
+        },
+        edgeSymbol: ["none", "arrow"],
+        edgeSymbolSize: 10,
+        data: data.nodes.map((node) => {
+          const echartsNode: NonNullable<GraphSeriesOption["data"]>[number] = {
+            id: node.id,
+            name: node.name,
+            category: node.category,
+            value: node.value,
+            symbolSize: node.symbolSize || 30,
+            symbol: node.symbol || "circle",
+            itemStyle: node.itemStyle || {},
+            fixed: node.fixed,
+          };
+          if (this._nodePositions[node.id]) {
+            echartsNode.x = this._nodePositions[node.id].x;
+            echartsNode.y = this._nodePositions[node.id].y;
+          } else if (typeof node.polarDistance === "number") {
+            // set the position of the node at polarDistance from the center in a random direction
+            const angle = Math.random() * 2 * Math.PI;
+            echartsNode.x =
+              ((Math.cos(angle) * containerWidth) / 2) * node.polarDistance;
+            echartsNode.y =
+              ((Math.sin(angle) * containerHeight) / 2) * node.polarDistance;
+            this._nodePositions[node.id] = {
+              x: echartsNode.x,
+              y: echartsNode.y,
+            };
+          }
+          return echartsNode;
+        }),
+        links: data.links.map((link) => ({
+          ...link,
+          value: link.reverseValue
+            ? Math.max(link.value ?? 0, link.reverseValue)
+            : link.value,
+          // remove arrow for bidirectional links
+          symbolSize: link.reverseValue ? 1 : link.symbolSize, // 0 doesn't work
+        })),
+        categories: data.categories || [],
+      };
+    },
+    deepEqual
   );
 
   private _togglePhysics() {
+    this._saveNodePositions();
+    this._physicsEnabled = !this._physicsEnabled;
+  }
+
+  private _toggleLabels() {
+    this._showLabels = !this._showLabels;
+  }
+
+  private _saveNodePositions() {
     if (this._baseChart?.chart) {
       this._baseChart.chart
         // @ts-ignore private method but no other way to get the graph positions
@@ -265,11 +262,6 @@ export class HaNetworkGraph extends LitElement {
           }
         });
     }
-    this._physicsEnabled = !this._physicsEnabled;
-  }
-
-  private _toggleLabels() {
-    this._showLabels = !this._showLabels;
   }
 
   static styles = css`

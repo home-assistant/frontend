@@ -226,6 +226,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             : offlineColor,
         },
         polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
+        fixed: isCoordinator,
       });
 
       // Create links (edges)
