@@ -64,6 +64,10 @@ import "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
+import {
+  PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
+} from "../../../common/integrations/protocolIntegrationPicked";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -281,6 +285,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
     const devices = devicesRegs.filter(
       (device) => device.entry_type !== "service"
+    );
+
+    const canAddDevice = (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
+      this.domain
     );
 
     return html`
@@ -513,7 +521,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
             </div>
             <div class="actions">
-              <ha-button unelevated @click=${this._addIntegration}>
+              ${canAddDevice
+                ? html`
+                    <ha-button unelevated @click=${this._addDevice}>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.integration_page.add_device"
+                      )}
+                    </ha-button>
+                  `
+                : nothing}
+              <ha-button
+                .unelevated=${!canAddDevice}
+                .outlined=${canAddDevice}
+                @click=${this._addIntegration}
+              >
                 ${this._manifest?.integration_type
                   ? this.hass.localize(
                       `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
@@ -801,6 +822,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       );
     }
   );
+
+  private _addDevice() {
+    protocolIntegrationPicked(this, this.hass, this.domain);
+  }
 
   private async _addIntegration() {
     if (!this._manifest?.config_flow) {
