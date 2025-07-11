@@ -400,9 +400,25 @@ const tryDescribeTrigger = (
       return `${entityStr}${offsetStr}`;
     });
 
-    return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
-      time: formatListWithOrs(hass.locale, result),
-    });
+    // Handle weekday information if present
+    let weekdayStr = "";
+    if (trigger.weekday) {
+      const weekdayArray = ensureArray(trigger.weekday);
+      if (weekdayArray.length > 0) {
+        const localizedDays = weekdayArray.map((day) =>
+          hass.localize(
+            `ui.panel.config.automation.editor.triggers.type.time.weekdays.${day}` as any
+          )
+        );
+        weekdayStr = ` on ${formatListWithOrs(hass.locale, localizedDays)}`;
+      }
+    }
+
+    return (
+      hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
+        time: formatListWithOrs(hass.locale, result),
+      }) + weekdayStr
+    );
   }
 
   // Time Pattern Trigger
