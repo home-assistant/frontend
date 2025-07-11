@@ -1,13 +1,14 @@
 import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiClose, mdiPlus, mdiStarFourPoints } from "@mdi/js";
+import { mdiClose, mdiPlus } from "@mdi/js";
 import { dump } from "js-yaml";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-labels-picker";
@@ -460,13 +461,18 @@ ${dump(this._params.config)}
       }
     }
     if (result.data.category) {
-      // TODO search up category ID
-      this._entryUpdates = {
-        ...this._entryUpdates,
-        category: result.data.category,
-      };
-      if (!this._visibleOptionals.includes("category")) {
-        this._visibleOptionals = [...this._visibleOptionals, "category"];
+      // We get back category name, convert it to ID
+      const categoryId = Object.entries(categories).find(
+        ([, name]) => name === result.data.category
+      )?.[0];
+      if (categoryId) {
+        this._entryUpdates = {
+          ...this._entryUpdates,
+          category: categoryId,
+        };
+        if (!this._visibleOptionals.includes("category")) {
+          this._visibleOptionals = [...this._visibleOptionals, "category"];
+        }
       }
     }
     if (result.data.labels?.length) {

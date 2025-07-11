@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { html, LitElement, nothing } from "lit";
+import { html, css, LitElement, nothing } from "lit";
 import { mdiStarFourPoints } from "@mdi/js";
 
 import { customElement, state, property } from "lit/decorators";
@@ -10,6 +10,7 @@ import type {
 } from "../data/ai_task";
 import { fetchAITaskPreferences, generateDataAITask } from "../data/ai_task";
 import "./chips/ha-assist-chip";
+import "./ha-svg-icon";
 import type { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
@@ -57,7 +58,7 @@ export class HaSuggestWithAIButton extends LitElement {
         label=${this.hass.localize(
           this._suggesting ? "ui.common.suggesting_ai" : "ui.common.suggest_ai"
         )}
-        .active=${this._suggesting}
+        ?active=${this._suggesting}
       >
         <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>
       </ha-assist-chip>
@@ -77,6 +78,24 @@ export class HaSuggestWithAIButton extends LitElement {
       this._suggesting = false;
     }
   }
+
+  static styles = css`
+    ha-assist-chip[active] {
+      animation: pulse-glow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(var(--rgb-primary-color), 0);
+      }
+      50% {
+        box-shadow: 0 0 8px 2px rgba(var(--rgb-primary-color), 0.6);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(var(--rgb-primary-color), 0);
+      }
+    }
+  `;
 }
 
 declare global {
