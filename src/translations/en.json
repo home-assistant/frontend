@@ -437,7 +437,8 @@
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
       "markdown": "Markdown",
-      "suggest_ai": "Suggest with AI"
+      "suggest_ai": "Suggest with AI",
+      "suggesting_ai": "Suggesting…"
     },
 
     "components": {

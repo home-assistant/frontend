@@ -11,6 +11,7 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-labels-picker";
+import "../../../../components/ha-suggest-with-ai-button";
 import "../../category/ha-category-picker";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/chips/ha-chip-set";
@@ -27,6 +28,8 @@ import type {
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
 import {
   fetchAITaskPreferences,
+  GenDataTask,
+  GenDataTaskResult,
   generateDataAITask,
 } from "../../../../data/ai_task";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
@@ -47,8 +50,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   @state() private _visibleOptionals: string[] = [];
 
   @state() private _entryUpdates!: EntityRegistryUpdate;
-
-  @state() private _canSuggest = false;
 
   private _params!: SaveDialogParams;
 
@@ -92,15 +93,6 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     this._opened = false;
     this._visibleOptionals = [];
     return true;
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (isComponentLoaded(this.hass, "ai_task")) {
-      fetchAITaskPreferences(this.hass).then((prefs) => {
-        this._canSuggest = prefs.gen_data_entity_id !== null;
-      });
-    }
   }
 
   protected _renderOptionalChip(id: string, label: string) {
@@ -272,21 +264,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${this._params.title || title}</span>
-          ${this._canSuggest
-            ? html`
-                <ha-assist-chip
-                  id="suggest"
-                  slot="actionItems"
-                  @click=${this._suggest}
-                  label=${this.hass.localize("ui.common.suggest_ai")}
-                >
-                  <ha-svg-icon
-                    slot="icon"
-                    .path=${mdiStarFourPoints}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-              `
-            : nothing}
+          <ha-suggest-with-ai-button
+            slot="actionItems"
+            .hass=${this.hass}
+            .generateTask=${this._generateTask}
+            @suggestion=${this._handleSuggestion}
+          ></ha-suggest-with-ai-button>
         </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error"
@@ -350,8 +333,8 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     this.closeDialog();
   }
 
-  private async _suggest() {
-    const [labels, entities, categories] = await Promise.all([
+  private _getSuggestData() {
+    return Promise.all([
       subscribeOne(this.hass.connection, subscribeLabelRegistry).then((labs) =>
         Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
       ),
@@ -362,6 +345,10 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
       ),
     ]);
+  }
+
+  private _generateTask = async (): Promise<GenDataTask> => {
+    const [labels, entities, categories] = await this._getSuggestData();
     const automationInspiration: string[] = [];
 
     for (const automation of Object.values(this.hass.states)) {
@@ -391,12 +378,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       automationInspiration.push(inspiration);
     }
 
-    const result = await generateDataAITask<{
-      name: string;
-      description: string | undefined;
-      labels: string[] | undefined;
-      category: string | undefined;
-    }>(this.hass, {
+    return {
       task_name: "frontend:automation:save",
       instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant automation.
 
@@ -454,7 +436,22 @@ ${dump(this._params.config)}
           },
         },
       },
-    });
+    };
+  };
+
+  private async _handleSuggestion(
+    event: CustomEvent<
+      GenDataTaskResult<{
+        name: string;
+        description?: string;
+        category?: string;
+        labels?: string[];
+      }>
+    >
+  ) {
+    const result = event.detail;
+    const [labels, _entities, categories] = await this._getSuggestData();
+
     this._newName = result.data.name;
     if (result.data.description) {
       this._newDescription = result.data.description;
@@ -463,6 +460,7 @@ ${dump(this._params.config)}
       }
     }
     if (result.data.category) {
+      // TODO search up category ID
       this._entryUpdates = {
         ...this._entryUpdates,
         category: result.data.category,
@@ -570,7 +568,7 @@ ${dump(this._params.config)}
           --mdc-theme-primary: var(--error-color);
         }
 
-        #suggest {
+        ha-suggest-with-ai-button {
           margin: 8px 16px;
         }
       `,
