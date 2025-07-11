@@ -14,7 +14,6 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
   getEnergyGasUnit,
-  getEnergyWaterUnit,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -140,7 +139,7 @@ export class HuiEnergySourcesTableCard
       this._data.statsMetadata
     );
 
-    const waterUnit = getEnergyWaterUnit(this.hass);
+    const waterUnit = this._data.waterUnit;
 
     const compare = this._data.statsCompare !== undefined;
 

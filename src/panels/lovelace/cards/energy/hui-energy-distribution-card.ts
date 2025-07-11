@@ -24,7 +24,6 @@ import {
   energySourcesByType,
   getEnergyDataCollection,
   getEnergyGasUnit,
-  getEnergyWaterUnit,
   formatConsumptionShort,
   getSummedData,
   computeConsumptionData,
@@ -373,7 +372,7 @@ class HuiEnergyDistrubutionCard
                           ${formatConsumptionShort(
                             this.hass,
                             waterUsage,
-                            getEnergyWaterUnit(this.hass)
+                            this._data.waterUnit
                           )}
                         </div>
                         <svg width="80" height="30">
@@ -603,7 +602,7 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           waterUsage,
-                          getEnergyWaterUnit(this.hass)
+                          this._data.waterUnit
                         )}
                       </div>
                       <span class="label"

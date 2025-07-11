@@ -26,7 +26,12 @@ import type {
   StatisticsMetaData,
   StatisticsUnitConfiguration,
 } from "./recorder";
-import { fetchStatistics, getStatisticMetadata } from "./recorder";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+  VOLUME_UNITS,
+} from "./recorder";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
@@ -275,6 +280,7 @@ export interface EnergyData {
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
+  waterUnit: string;
 }
 
 export const getReferencedStatisticIds = (
@@ -398,12 +404,25 @@ const getEnergyData = async (
         : "hour";
 
   const lengthUnit = hass.config.unit_system.length || "";
+
+  const statsMetadata: Record<string, StatisticsMetaData> = {};
+  const statsMetadataArray = allStatIDs.length
+    ? await getStatisticMetadata(hass, allStatIDs)
+    : [];
+
+  if (allStatIDs.length) {
+    statsMetadataArray.forEach((x) => {
+      statsMetadata[x.statistic_id] = x;
+    });
+  }
+
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
     volume: lengthUnit === "km" ? "m³" : "ft³",
   };
+  const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
-    volume: lengthUnit === "km" ? "L" : "gal",
+    volume: waterUnit,
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
@@ -511,18 +530,11 @@ const getEnergyData = async (
     }
   }
 
-  const statsMetadata: Record<string, StatisticsMetaData> = {};
-  const _getStatisticMetadata:
-    | Promise<StatisticsMetaData[]>
-    | StatisticsMetaData[] = allStatIDs.length
-    ? getStatisticMetadata(hass, allStatIDs)
-    : [];
   const [
     energyStats,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
-    statsMetadataArray,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
@@ -530,18 +542,12 @@ const getEnergyData = async (
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
-    _getStatisticMetadata,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
   const stats = { ...energyStats, ...waterStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
-  }
-  if (allStatIDs.length) {
-    statsMetadataArray.forEach((x) => {
-      statsMetadata[x.statistic_id] = x;
-    });
   }
 
   const data: EnergyData = {
@@ -557,6 +563,7 @@ const getEnergyData = async (
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
+    waterUnit,
   };
 
   return data;
@@ -778,8 +785,32 @@ export const getEnergyGasUnit = (
   return hass.config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
-export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
-  hass.config.unit_system.length === "km" ? "L" : "gal";
+const getEnergyWaterUnit = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences,
+  statisticsMetaData: Record<string, StatisticsMetaData>
+): (typeof VOLUME_UNITS)[number] => {
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "water")
+    .map((s) =>
+      getDisplayUnit(
+        hass,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  if (units.length) {
+    const first = units[0];
+    if (
+      VOLUME_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof VOLUME_UNITS)[number];
+    }
+  }
+
+  return hass.config.unit_system.length === "km" ? "L" : "gal";
+};
 
 export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";

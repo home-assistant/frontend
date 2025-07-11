@@ -25,7 +25,6 @@ import {
   computeConsumptionData,
   getEnergyDataCollection,
   getEnergyGasUnit,
-  getEnergyWaterUnit,
   getSummedData,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
@@ -158,7 +157,6 @@ class PanelEnergy extends LitElement {
       energyData.prefs,
       energyData.state.statsMetadata
     );
-    const waterUnit = getEnergyWaterUnit(this.hass);
     const electricUnit = "kWh";
 
     const energy_sources = energyData.prefs.energy_sources;
@@ -335,7 +333,7 @@ class PanelEnergy extends LitElement {
     printCategory(
       "water_consumption",
       water_consumptions,
-      waterUnit,
+      energyData.state.waterUnit,
       "water_consumption_cost",
       water_consumptions_cost
     );
