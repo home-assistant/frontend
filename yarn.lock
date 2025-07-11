@@ -4676,12 +4676,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*, @types/leaflet@npm:1.9.19":
-  version: 1.9.19
-  resolution: "@types/leaflet@npm:1.9.19"
+"@types/leaflet@npm:*, @types/leaflet@npm:1.9.20":
+  version: 1.9.20
+  resolution: "@types/leaflet@npm:1.9.20"
   dependencies:
     "@types/geojson": "npm:*"
-  checksum: 10/5e6b2c15d7b77c760a44ed2b66e317b94800d4a0d23ad6073f80d936cd40c8162c2e4df95a06835b58f122fcbee7684fc618f98ba40b32a484ed3e413f356dbb
+  checksum: 10/d0d2d907b47264ff3440f1bd27132892b21c43b6e94fe921568ae2c79b0b5648b61d069e2c302e972df786c0395008a62da140d45602fb30b3e5e6a5441be924
   languageName: node
   linkType: hard
 
@@ -9388,7 +9388,7 @@ __metadata:
     "@types/color-name": "npm:2.0.0"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
-    "@types/leaflet": "npm:1.9.19"
+    "@types/leaflet": "npm:1.9.20"
     "@types/leaflet-draw": "npm:1.0.12"
     "@types/leaflet.markercluster": "npm:1.5.5"
     "@types/lodash.merge": "npm:4.6.9"
