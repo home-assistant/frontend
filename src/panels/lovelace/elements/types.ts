@@ -7,6 +7,8 @@ import type { HuiImage } from "../components/hui-image";
 interface LovelaceElementConfigBase {
   type: string;
   style?: Record<string, string>;
+  left?: number;
+  top?: number;
 }
 
 export type LovelaceElementConfig =
