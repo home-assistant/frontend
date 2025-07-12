@@ -121,7 +121,7 @@
     "leaflet.markercluster": "1.5.3",
     "lit": "3.3.0",
     "lit-html": "3.3.0",
-    "luxon": "3.6.1",
+    "luxon": "3.7.1",
     "marked": "16.0.0",
     "memoize-one": "6.0.0",
     "node-vibrant": "4.0.3",
