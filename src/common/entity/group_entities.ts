@@ -27,6 +27,14 @@ export const computeGroupEntitiesState = (states: HassEntity[]): string => {
     return "closed";
   }
 
+  if (domain === "media_player") {
+    if (states.some((stateObj) => stateObj.state === "playing")) {
+      return "playing";
+    }
+
+    return "standby";
+  }
+
   if (states.some((stateObj) => stateObj.state === "on")) {
     return "on";
   }
@@ -47,7 +55,7 @@ export const toggleGroupEntities = (
 
   const state = computeGroupEntitiesState(states);
 
-  const isOn = state === "on" || state === "open";
+  const isOn = state === "on" || state === "open" || state === "playing";
 
   let service = isOn ? "turn_off" : "turn_on";
   if (domain === "cover") {
@@ -58,6 +66,8 @@ export const toggleGroupEntities = (
       // For covers, we use the open/close service
       service = isOn ? "close_cover" : "open_cover";
     }
+  } else if (domain === "media_player") {
+    service = isOn ? "media_pause" : "media_play";
   }
 
   const entitiesIds = states.map((stateObj) => stateObj.entity_id);
