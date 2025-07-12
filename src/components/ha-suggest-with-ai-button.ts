@@ -21,6 +21,11 @@ declare global {
   }
 }
 
+export interface SuggestWithAIGenerateTask {
+  type: "data";
+  task: GenDataTask;
+}
+
 @customElement("ha-suggest-with-ai-button")
 export class HaSuggestWithAIButton extends LitElement {
   @property({ attribute: false })
@@ -30,7 +35,7 @@ export class HaSuggestWithAIButton extends LitElement {
   public taskType!: "data";
 
   @property({ attribute: false })
-  generateTask!: () => GenDataTask;
+  generateTask!: () => SuggestWithAIGenerateTask;
 
   @state()
   private _aiPrefs?: AITaskPreferences;
@@ -71,8 +76,13 @@ export class HaSuggestWithAIButton extends LitElement {
     }
     try {
       this._suggesting = true;
-      const task = await this.generateTask();
-      const result = await generateDataAITask(this.hass, task);
+      const info = await this.generateTask();
+      let result: GenDataTaskResult;
+      if (info.type === "data") {
+        result = await generateDataAITask(this.hass, info.task);
+      } else {
+        throw new Error("Unsupported task type");
+      }
       fireEvent(this, "suggestion", result);
     } finally {
       this._suggesting = false;

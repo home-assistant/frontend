@@ -13,6 +13,7 @@ import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-labels-picker";
 import "../../../../components/ha-suggest-with-ai-button";
+import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../category/ha-category-picker";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/chips/ha-chip-set";
@@ -27,7 +28,7 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
-import type { GenDataTask, GenDataTaskResult } from "../../../../data/ai_task";
+import type { GenDataTaskResult } from "../../../../data/ai_task";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import { subscribeLabelRegistry } from "../../../../data/label_registry";
@@ -342,7 +343,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     ]);
   }
 
-  private _generateTask = async (): Promise<GenDataTask> => {
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
     const [labels, entities, categories] = await this._getSuggestData();
     const automationInspiration: string[] = [];
 
@@ -374,8 +375,10 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     }
 
     return {
-      task_name: "frontend:automation:save",
-      instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant automation.
+      type: "data",
+      task: {
+        task_name: "frontend:automation:save",
+        instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant automation.
 
 The name should be relevant to the automation's purpose.
 ${
@@ -394,39 +397,40 @@ The automation configuration is as follows:
 
 ${dump(this._params.config)}
 `,
-      structure: {
-        name: {
-          description: "The name of the automation",
-          required: true,
-          selector: {
-            text: {},
-          },
-        },
-        description: {
-          description: "A short description of the automation",
-          required: false,
-          selector: {
-            text: {},
-          },
-        },
-        labels: {
-          description: "Labels for the automation",
-          required: false,
-          selector: {
-            text: {
-              multiple: true,
+        structure: {
+          name: {
+            description: "The name of the automation",
+            required: true,
+            selector: {
+              text: {},
             },
           },
-        },
-        category: {
-          description: "The category of the automation",
-          required: false,
-          selector: {
-            select: {
-              options: Object.entries(categories).map(([id, name]) => ({
-                value: id,
-                label: name,
-              })),
+          description: {
+            description: "A short description of the automation",
+            required: false,
+            selector: {
+              text: {},
+            },
+          },
+          labels: {
+            description: "Labels for the automation",
+            required: false,
+            selector: {
+              text: {
+                multiple: true,
+              },
+            },
+          },
+          category: {
+            description: "The category of the automation",
+            required: false,
+            selector: {
+              select: {
+                options: Object.entries(categories).map(([id, name]) => ({
+                  value: id,
+                  label: name,
+                })),
+              },
             },
           },
         },
