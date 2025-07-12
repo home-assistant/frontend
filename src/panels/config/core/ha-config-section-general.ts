@@ -28,7 +28,6 @@ import "../../../layouts/hass-subpage";
 import "./ai-task-pref";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-config-section-general")
 class HaConfigSectionGeneral extends LitElement {
@@ -267,12 +266,10 @@ class HaConfigSectionGeneral extends LitElement {
               </ha-progress-button>
             </div>
           </ha-card>
-          ${isComponentLoaded(this.hass, "ai_task")
-            ? html`<ai-task-pref
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ai-task-pref>`
-            : nothing}
+          <ai-task-pref
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></ai-task-pref>
         </div>
       </hass-subpage>
     `;
