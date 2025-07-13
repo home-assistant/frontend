@@ -10,6 +10,7 @@ import { haStyle } from "../../../resources/styles";
 import type { Blueprint } from "../../../data/blueprint";
 import { BlueprintYamlSchema } from "../../../data/blueprint";
 import "./ha-blueprint-editor";
+import "./blueprint-metadata-editor";
 
 @customElement("developer-tools-blueprints")
 class HaPanelDevBlueprints extends LitElement {
@@ -24,9 +25,14 @@ class HaPanelDevBlueprints extends LitElement {
     this.hass.loadFragmentTranslation("config");
   }
 
-  private _onBlueprintUiChanged(ev: CustomEvent<{ value: Blueprint }>) {
+  private _onBlueprintContentChanged(ev: CustomEvent<{ value: Blueprint }>) {
     ev.stopPropagation();
-    this._blueprint = ev.detail.value;
+    this._blueprint = { ...this._blueprint, ...ev.detail.value };
+  }
+
+  private _onBlueprintMetadataChanged(ev: CustomEvent<{ value: Blueprint["metadata"] }>) {
+    ev.stopPropagation();
+    this._blueprint = { ...this._blueprint!, metadata: ev.detail.value };
   }
 
   private _onBlueprintYamlChanged(ev: CustomEvent<{ value: Blueprint }>) {
@@ -41,7 +47,17 @@ class HaPanelDevBlueprints extends LitElement {
 
     return html`
       <div class=${containerClass}>
+        <div class="full-row">
+          <ha-button>${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.actions.pick")}</ha-button>
+          <ha-button>${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.actions.save")}</ha-button>
+          <ha-button>${this.hass.localize("ui.panel.developer-tools.tabs.blueprints.editor.actions.reset")}</ha-button>
+        </div>
         <ha-card>
+          <blueprint-metadata-editor
+            .hass=${this.hass}
+            .metadata=${this._blueprint?.metadata}
+            @value-changed=${this._onBlueprintMetadataChanged}
+          ></blueprint-metadata-editor>
           <ha-blueprint-editor
             .hass=${this.hass}
             .narrow=${this.narrow}
@@ -49,7 +65,7 @@ class HaPanelDevBlueprints extends LitElement {
             .blueprints=${[]}
             .blueprintPath=${""}
             .domain=${"automation"}
-            @value-changed=${this._onBlueprintUiChanged}
+            @value-changed=${this._onBlueprintContentChanged}
           >
           </ha-blueprint-editor>
         </ha-card>
@@ -73,6 +89,7 @@ class HaPanelDevBlueprints extends LitElement {
           margin: 16px;
           display: flex;
           gap: 16px;
+          flex-wrap: wrap;
         }
 
         .container.vertical {
@@ -89,6 +106,10 @@ class HaPanelDevBlueprints extends LitElement {
 
         ha-card {
           padding: 8px;
+        }
+        
+        .full-row {
+          flex: 1 0 100%;
         }
       `,
     ];

@@ -10,7 +10,7 @@ import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-labels-picker";
-import "../../category/ha-category-picker";
+import "../../../config/category/ha-category-picker";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/chips/ha-chip-set";
 import "../../../../components/chips/ha-assist-chip";

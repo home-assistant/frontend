@@ -8646,13 +8646,15 @@
               "move_down": "Move down",
               "edit_ui": "UI editor",
               "edit_yaml": "YAML editor",
-              "path": "Path",
-              "name": "Name",
               "missing_path": "Cannot save blueprint without a path",
               "missing_name": "Cannot save blueprint without a name",
+              "metadata": "Metadata",
               "actions": {
                 "delete": "Delete",
-                "duplicate": "Duplicate"
+                "duplicate": "Duplicate",
+                "pick": "Pick a blueprint",
+                "save": "Save",
+                "reset": "Reset"
               },
               "inputs": {
                 "header": "Inputs",
@@ -8693,6 +8695,12 @@
                 "add_description": "Add description",
                 "add_author": "Add author",
                 "add_minimum_version": "Add minimum version"
+              },
+              "name": {
+                "label": "Name"
+              },
+              "path": {
+                "label": "Path"
               },
               "description": {
                 "label": "Description"

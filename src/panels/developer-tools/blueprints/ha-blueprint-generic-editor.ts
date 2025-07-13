@@ -32,7 +32,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { navigate } from "../../../common/navigate";
-import { showBlueprintRenameDialog } from "../../config/blueprint/blueprint-rename-dialog/show-dialog-blueprint-rename";
+import { showBlueprintRenameDialog } from "./blueprint-rename-dialog/show-dialog-blueprint-rename";
 import { documentationUrl } from "../../../util/documentation-url";
 import "./input/ha-blueprint-input";
 import { haStyle } from "../../../resources/styles";
