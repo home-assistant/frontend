@@ -345,20 +345,22 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
     const [labels, entities, categories] = await this._getSuggestData();
-    const automationInspiration: string[] = [];
+    const inspirations: string[] = [];
 
-    for (const automation of Object.values(this.hass.states)) {
-      const entityEntry = entities[automation.entity_id];
+    const domain = this._params.domain;
+
+    for (const entity of Object.values(this.hass.states)) {
+      const entityEntry = entities[entity.entity_id];
       if (
-        computeStateDomain(automation) !== "automation" ||
-        automation.attributes.restored ||
-        !automation.attributes.friendly_name ||
+        computeStateDomain(entity) !== domain ||
+        entity.attributes.restored ||
+        !entity.attributes.friendly_name ||
         !entityEntry
       ) {
         continue;
       }
 
-      let inspiration = `- ${automation.attributes.friendly_name}`;
+      let inspiration = `- ${entity.attributes.friendly_name}`;
 
       const category = categories[entityEntry.categories.automation];
       if (category) {
@@ -371,29 +373,31 @@ class DialogAutomationSave extends LitElement implements HassDialog {
           .join(", ")})`;
       }
 
-      automationInspiration.push(inspiration);
+      inspirations.push(inspiration);
     }
+
+    const term = this._params.domain === "script" ? "script" : "automation";
 
     return {
       type: "data",
       task: {
-        task_name: "frontend:automation:save",
-        instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant automation.
+        task_name: `frontend:${term}:save`,
+        instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant ${term}.
 
-The name should be relevant to the automation's purpose.
+The name should be relevant to the ${term}'s purpose.
 ${
-  automationInspiration.length
-    ? `The name should be in same style as existing automations.
-Suggest a category and labels if relevant to the automation's purpose.
-Only suggest category and labels that are already used by existing automations.`
+  inspirations.length
+    ? `The name should be in same style as existing ${term}s.
+Suggest a category and labels if relevant to the ${term}'s purpose.
+Only suggest category and labels that are already used by existing ${term}s.`
     : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
 }
-If the automation contains 5+ steps, include a short description.
+If the ${term} contains 5+ steps, include a short description.
 
-For inspiration, here are existing automations:
-${automationInspiration.join("\n")}
+For inspiration, here are existing ${term}s:
+${inspirations.join("\n")}
 
-The automation configuration is as follows:
+The ${term} configuration is as follows:
 
 ${dump(this._params.config)}
 `,
