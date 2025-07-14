@@ -6273,6 +6273,8 @@
             "introduction_controller": "Select the firmware file you would like to use to update {device}. Note that once you start a firmware update, you MUST wait for the update to complete.",
             "firmware_target_intro": "Select the firmware target (0 for the Z-Wave chip, ≥1 for other chips if they exist) for this update.",
             "firmware_target": "Firmware target (chip)",
+            "uploading": "Uploading {name}. Please do not close this dialog.",
+            "device_asleep": "The device is asleep. Wake the device to start the update.",
             "upload_firmware": "Upload firmware",
             "upload_failed": "Upload failed",
             "begin_update": "Begin firmware update",
