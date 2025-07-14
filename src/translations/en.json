@@ -5138,6 +5138,7 @@
             "manufacturer": "Manufacturer",
             "model": "Model",
             "area": "Area",
+            "floor": "Floor",
             "integration": "Integration",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -5671,7 +5672,7 @@
           "other_networks": "Other networks",
           "my_network": "Preferred network",
           "no_preferred_network": "You don't have a preferred network yet.",
-          "more_info": "More Info",
+          "more_info": "More information",
           "add_open_thread_border_router": "Add an OpenThread border router",
           "reset_border_router": "Reset border router",
           "add_to_my_network": "Add to preferred network",
@@ -6191,9 +6192,10 @@
             "security_classes": "Security classes",
             "unprovision": "Unprovision",
             "included": "Included",
-            "not_included": "Not Included",
+            "not_included": "Not included",
             "confirm_unprovision_title": "Remove device?",
-            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network."
+            "confirm_unprovision_text": "{name} will be permanently removed from Home Assistant and your Z-Wave network.",
+            "active": "Active"
           },
           "security_classes": {
             "None": {
@@ -8510,7 +8512,7 @@
             "filter_states": "Filter states",
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
-            "more_info": "More Info",
+            "more_info": "More info",
             "alert_entity_field": "Entity is a mandatory field",
             "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
             "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",

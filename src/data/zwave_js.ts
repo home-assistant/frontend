@@ -439,6 +439,7 @@ export interface ZwaveJSProvisioningEntry {
   dsk: string;
   securityClasses: SecurityClass[];
   nodeId?: number;
+  status: ProvisioningEntryStatus;
   [prop: string]: any;
 }
 
