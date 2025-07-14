@@ -74,24 +74,15 @@ class HuiButtonCardFeature
     }
     
     return html`
-      ${this._buttonState === "done"
-        ? html`
-            <p class="open-done">
-              <ha-svg-icon path=${mdiCheck}></ha-svg-icon>
-              ${this.hass.localize("ui.card.lock.open_door_done")}
-            </p>
-          `
-        : html`
-            <ha-control-button-group>
-              <ha-control-button
-                .disabled=${!canOpen(this._stateObj)}
-                class="press-button"
-                @click=${this._open}
-              >
-                ${this.hass.localize("ui.card.button.press")}
-              </ha-control-button>
-            </ha-control-button-group>
-          `}
+      <ha-control-button-group>
+        <ha-control-button
+          .disabled=${(this._stateObj) === UNAVAILABLE}
+          class="press-button"
+          @click=${this._pressButton}
+        >
+          ${this.hass.localize("ui.card.button.press")}
+        </ha-control-button>
+      </ha-control-button-group>
     `;
   }
 
