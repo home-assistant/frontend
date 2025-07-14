@@ -119,7 +119,7 @@
     "leaflet": "1.9.4",
     "leaflet-draw": "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch",
     "leaflet.markercluster": "1.5.3",
-    "lit": "3.3.0",
+    "lit": "3.3.1",
     "lit-html": "3.3.0",
     "luxon": "3.7.1",
     "marked": "16.0.0",
@@ -226,7 +226,7 @@
   },
   "resolutions": {
     "@material/mwc-button@^0.25.3": "^0.27.0",
-    "lit": "3.3.0",
+    "lit": "3.3.1",
     "lit-html": "3.3.0",
     "clean-css": "5.3.3",
     "@lit/reactive-element": "2.1.0",
