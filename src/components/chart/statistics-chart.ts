@@ -612,7 +612,7 @@ export class StatisticsChart extends LitElement {
     });
 
     this._chartData = totalDataSets;
-    if (legendData.length !== this._legendData.length) {
+    if (legendData.length !== this._legendData!.length) {
       // only update the legend if it has changed or it will trigger options update
       this._legendData = legendData.map(({ id, name }) => ({ id, name }));
     }
