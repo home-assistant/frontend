@@ -97,7 +97,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
-  @state() private _legendData: CustomLegendOption["data"] = [];
+  @state() private _legendData: NonNullable<CustomLegendOption["data"]> = [];
 
   @state() private _statisticIds: string[] = [];
 
@@ -612,7 +612,7 @@ export class StatisticsChart extends LitElement {
     });
 
     this._chartData = totalDataSets;
-    if (legendData.length !== this._legendData!.length) {
+    if (legendData.length !== this._legendData.length) {
       // only update the legend if it has changed or it will trigger options update
       this._legendData = legendData.map(({ id, name }) => ({ id, name }));
     }
