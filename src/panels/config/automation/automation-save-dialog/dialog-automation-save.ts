@@ -387,7 +387,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 The name should be relevant to the ${term}'s purpose.
 ${
   inspirations.length
-    ? `The name should be in same style as existing ${term}s.
+    ? `The name should be in same style and sentence capitalization as existing ${term}s.
 Suggest a category and labels if relevant to the ${term}'s purpose.
 Only suggest category and labels that are already used by existing ${term}s.`
     : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
