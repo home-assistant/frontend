@@ -94,7 +94,8 @@ class HuiButtonCardFeature
           class="press-button"
           @click=${this._pressButton}
         >
-          ${this.hass.localize("ui.card.button.press")}
+          ${this._config.action_name ??
+            this.hass.localize("ui.card.button.press")}
         </ha-control-button>
       </ha-control-button-group>
     `;
