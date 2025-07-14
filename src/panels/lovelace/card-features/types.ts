@@ -4,6 +4,7 @@ import type { OperationMode } from "../../../data/water_heater";
 
 export interface ButtonCardFeatureConfig {
   type: "button";
+  action_name?: string[];
 }
 
 export interface CoverOpenCloseCardFeatureConfig {
@@ -189,6 +190,7 @@ export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
+  | ButtonCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
   | ClimateSwingHorizontalModesCardFeatureConfig
