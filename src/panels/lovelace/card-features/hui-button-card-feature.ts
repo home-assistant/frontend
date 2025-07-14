@@ -85,12 +85,10 @@ class HuiButtonCardFeature
             <ha-control-button-group>
               <ha-control-button
                 .disabled=${!canOpen(this._stateObj)}
-                class="open-button ${this._buttonState}"
+                class="press-button"
                 @click=${this._open}
               >
-                ${this._buttonState === "confirm"
-                  ? this.hass.localize("ui.card.lock.open_door_confirm")
-                  : this.hass.localize("ui.card.lock.open_door")}
+                ${this.hass.localize("ui.card.button.press")}
               </ha-control-button>
             </ha-control-button-group>
           `}
@@ -104,7 +102,7 @@ class HuiButtonCardFeature
         ha-control-button {
           font-size: var(--ha-font-size-m);
         }
-        .action-button {
+        .press-button {
           width: 130px;
         }
       `,
