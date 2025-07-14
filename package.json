@@ -54,7 +54,7 @@
     "@lezer/highlight": "1.2.1",
     "@lit-labs/motion": "1.0.9",
     "@lit-labs/observers": "2.0.5",
-    "@lit-labs/virtualizer": "2.1.0",
+    "@lit-labs/virtualizer": "2.1.1",
     "@lit/context": "1.1.5",
     "@lit/reactive-element": "2.1.0",
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",

@@ -2253,13 +2253,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@npm:2.1.0":
-  version: 2.1.0
-  resolution: "@lit-labs/virtualizer@npm:2.1.0"
+"@lit-labs/virtualizer@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@lit-labs/virtualizer@npm:2.1.1"
   dependencies:
     lit: "npm:^3.2.0"
     tslib: "npm:^2.0.3"
-  checksum: 10/63837ee0728e3f4873ab604a135c78b2188e2edd15b2cdd70be1651c1bcbd3918f418e41586349d3bb92e264ba4db44fe83bdd580045beac5b43d2d0723e34de
+  checksum: 10/c663835075ae483f54bff712bcaa2ba40283658ed19c9d955820abfc7fad2fc935a1deaeb3a90f460b463edf3235e00977b87f7cf70d3ff99b2aa3d7db8c97b4
   languageName: node
   linkType: hard
 
@@ -9340,7 +9340,7 @@ __metadata:
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
     "@lit-labs/observers": "npm:2.0.5"
-    "@lit-labs/virtualizer": "npm:2.1.0"
+    "@lit-labs/virtualizer": "npm:2.1.1"
     "@lit/context": "npm:1.1.5"
     "@lit/reactive-element": "npm:2.1.0"
     "@lokalise/node-api": "npm:14.9.1"
