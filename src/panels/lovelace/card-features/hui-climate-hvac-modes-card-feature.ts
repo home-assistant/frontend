@@ -205,8 +205,8 @@ class HuiClimateHvacModesCardFeature
         .options=${options}
         .value=${this._currentHvacMode}
         @value-changed=${this._valueChanged}
-        hide-label
-        .ariaLabel=${this.hass.localize("ui.card.climate.mode")}
+        hide-option-label
+        .label=${this.hass.localize("ui.card.climate.mode")}
         style=${styleMap({
           "--control-select-color": color,
         })}

@@ -109,8 +109,8 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
           .options=${options}
           .value=${speed}
           @value-changed=${this._speedValueChanged}
-          hide-label
-          .ariaLabel=${computeAttributeNameDisplay(
+          hide-option-label
+          .label=${computeAttributeNameDisplay(
             this.hass.localize,
             this._stateObj,
             this.hass.entities,
@@ -131,7 +131,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
         max="100"
         .step=${this._stateObj.attributes.percentage_step ?? 1}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this._stateObj,
           this.hass.entities,
