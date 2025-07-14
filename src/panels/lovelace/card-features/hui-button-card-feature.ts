@@ -1,18 +1,17 @@
-import { mdiCheck } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  LockOpenDoorCardFeatureConfig,
-  ButtonCardFeatureConfig, ##########to still create
+  LovelaceCardFeatureContext,
+  ButtonCardFeatureConfig, 
 } from "./types";
 
 export const supportsButtonCardFeature = (
@@ -31,7 +30,7 @@ export const supportsButtonCardFeature = (
   ].includes(domain);
 };
 
-@customElement("hui-lock-open-door-card-feature")
+@customElement("hui-button-card-feature")
 class HuiButtonCardFeature
   extends LitElement
   implements LovelaceCardFeature
@@ -49,13 +48,28 @@ class HuiButtonCardFeature
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
+  private _pressButton() {
+    if (!this.hass || !this._stateObj) return;
+  
+    const domain = computeDomain(this._stateObj.entity_id);
+    const service = domain === "button"
+      ? "press"
+      : domain === "automation"
+      ? "trigger"
+      : "turn_on";
+  
+    this.hass.callService(domain, service, {
+      entity_id: this._stateObj.entity_id,
+    });
+  }
+
   static getStubConfig(): ButtonCardFeatureConfig {
     return {
       type: "button",
     };
   }
 
-  public setConfig(config: LockOpenDoorCardFeatureConfig): void {
+  public setConfig(config: ButtonCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -76,7 +90,7 @@ class HuiButtonCardFeature
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${(this._stateObj) === UNAVAILABLE}
+          .disabled=${this._stateObj.state === UNAVAILABLE}
           class="press-button"
           @click=${this._pressButton}
         >
