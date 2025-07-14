@@ -198,7 +198,8 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
                   )}
                 </p>
                 ${beginFirmwareUpdateHTML}
-                ${this._uploading && this._nodeStatus.status === NodeStatus.Asleep
+                ${this._uploading &&
+                this._nodeStatus.status === NodeStatus.Asleep
                   ? html`<p class="wakeup">
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.update_firmware.device_asleep"
@@ -332,15 +333,18 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     try {
       this._subscribeNodeFirmwareUpdate();
       await new Promise<void>((resolve, reject) => {
+        const abortController = new AbortController();
         this._cancelUpload = () => {
           this._cancelUpload = undefined;
+          abortController.abort();
           resolve();
         };
         uploadFirmwareAndBeginUpdate(
           this.hass,
           this.device!.id,
           this._firmwareFile!,
-          this._firmwareTarget
+          this._firmwareTarget,
+          abortController.signal
         )
           .then(() => this._cancelUpload?.())
           .catch(reject);

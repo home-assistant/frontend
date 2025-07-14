@@ -923,7 +923,8 @@ export const uploadFirmwareAndBeginUpdate = async (
   hass: HomeAssistant,
   device_id: string,
   file: File,
-  target?: number
+  target?: number,
+  signal?: AbortSignal
 ) => {
   const fd = new FormData();
   fd.append("file", file);
@@ -935,6 +936,7 @@ export const uploadFirmwareAndBeginUpdate = async (
     {
       method: "POST",
       body: fd,
+      signal,
     }
   );
 
