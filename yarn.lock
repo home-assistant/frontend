@@ -2236,13 +2236,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/observers@npm:2.0.5":
-  version: 2.0.5
-  resolution: "@lit-labs/observers@npm:2.0.5"
+"@lit-labs/observers@npm:2.0.6":
+  version: 2.0.6
+  resolution: "@lit-labs/observers@npm:2.0.6"
   dependencies:
     "@lit/reactive-element": "npm:^1.0.0 || ^2.0.0"
     lit-html: "npm:^3.2.0"
-  checksum: 10/4de55e32072f5825ca288c0b32b40e6805c09cd6101c345c44dfceb6bfd03cadf652dbfcd023252ebc2f7519f036d7e0f2f8fa1e58915abbc18733ed11218086
+  checksum: 10/30e55dbbe3483de643bdde453a6271e49be0f42ac7039dc580ce6ae18687599fd8fed9ba720f075ed4adb2095160a11920283ad51415dc4d2152761d8742833c
   languageName: node
   linkType: hard
 
@@ -9339,7 +9339,7 @@ __metadata:
     "@fullcalendar/timegrid": "npm:6.1.18"
     "@lezer/highlight": "npm:1.2.1"
     "@lit-labs/motion": "npm:1.0.9"
-    "@lit-labs/observers": "npm:2.0.5"
+    "@lit-labs/observers": "npm:2.0.6"
     "@lit-labs/virtualizer": "npm:2.1.1"
     "@lit/context": "npm:1.1.6"
     "@lit/reactive-element": "npm:2.1.0"
