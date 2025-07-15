@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
@@ -44,20 +45,14 @@ class MoreInfoContent extends LitElement {
         entry: this.entry,
         editMode: this.editMode,
       })}
-      ${this._entityIds.length > 0
+      ${this.stateObj.attributes.entity_id &&
+      this.stateObj.attributes.entity_id.length
         ? html`
             <hui-section
               .hass=${this.hass}
-              .config=${{
-                type: "grid",
-                cards: this._entityIds.map(
-                  (entityId) =>
-                    ({
-                      type: "tile",
-                      entity: entityId,
-                    }) as TileCardConfig
-                ),
-              }}
+              .config=${this._entitiesSectionConfig(
+                this.stateObj.attributes.entity_id
+              )}
             >
             </hui-section>
           `
@@ -65,16 +60,22 @@ class MoreInfoContent extends LitElement {
     `;
   }
 
-  private get _entityIds() {
-    if (!this.stateObj || !this.hass) return [];
-    return this.stateObj.attributes.entity_id || [];
-  }
+  private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => ({
+    type: "grid",
+    cards: entityIds.map(
+      (entityId) =>
+        ({
+          type: "tile",
+          entity: entityId,
+        }) as TileCardConfig
+    ),
+  }));
 
   static styles = css`
     hui-section {
       width: 100%;
       display: block;
-      margin-top: 8px;
+      margin-top: 16px;
     }
   `;
 }
