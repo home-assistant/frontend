@@ -106,6 +106,8 @@ export class StatisticsChart extends LitElement {
 
   private _computedStyle?: CSSStyleDeclaration;
 
+  private _previousYAxisLabelValue = 0;
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
   }
@@ -314,6 +316,9 @@ export class StatisticsChart extends LitElement {
         splitLine: {
           show: true,
         },
+        axisLabel: {
+          formatter: this._formatYAxisLabel,
+        } as any,
       },
       legend: {
         type: "custom",
@@ -639,6 +644,22 @@ export class StatisticsChart extends LitElement {
   private _roundYAxis(value: number, roundingFn: (value: number) => number) {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
+
+  private _formatYAxisLabel = (value: number) => {
+    // show the first significant digit for tiny values
+    const maximumFractionDigits = Math.max(
+      1,
+      // use the difference to the previous value to determine the number of significant digits #25526
+      -Math.floor(
+        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
+      )
+    );
+    const label = formatNumber(value, this.hass.locale, {
+      maximumFractionDigits,
+    });
+    this._previousYAxisLabelValue = value;
+    return label;
+  };
 
   static styles = css`
     :host {
