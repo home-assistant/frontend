@@ -1,11 +1,14 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
+import type { TileCardConfig } from "../../panels/lovelace/cards/types";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
+import "../../panels/lovelace/sections/hui-section";
 import type { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 
 @customElement("more-info-content")
 class MoreInfoContent extends LitElement {
@@ -33,13 +36,47 @@ class MoreInfoContent extends LitElement {
     }
 
     if (!moreInfoType) return nothing;
-    return dynamicElement(moreInfoType, {
-      hass: this.hass,
-      stateObj: this.stateObj,
-      entry: this.entry,
-      editMode: this.editMode,
-    });
+
+    return html`
+      ${dynamicElement(moreInfoType, {
+        hass: this.hass,
+        stateObj: this.stateObj,
+        entry: this.entry,
+        editMode: this.editMode,
+      })}
+      ${this._entityIds.length > 0
+        ? html`
+            <hui-section
+              .hass=${this.hass}
+              .config=${{
+                type: "grid",
+                cards: this._entityIds.map(
+                  (entityId) =>
+                    ({
+                      type: "tile",
+                      entity: entityId,
+                    }) as TileCardConfig
+                ),
+              }}
+            >
+            </hui-section>
+          `
+        : nothing}
+    `;
   }
+
+  private get _entityIds() {
+    if (!this.stateObj || !this.hass) return [];
+    return this.stateObj.attributes.entity_id || [];
+  }
+
+  static styles = css`
+    hui-section {
+      width: 100%;
+      display: block;
+      margin-top: 8px;
+    }
+  `;
 }
 
 declare global {
