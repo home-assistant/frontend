@@ -12,7 +12,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { join } from "lit/directives/join";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
@@ -50,7 +50,6 @@ import { getSensorNumericDeviceClasses } from "../../data/sensor";
 import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import type { HomeAssistant } from "../../types";
-import type { HaDialog } from "../../components/ha-dialog";
 import {
   DOMAINS_WITH_MORE_INFO,
   EDITABLE_DOMAINS_WITH_ID,
@@ -112,8 +111,6 @@ export class MoreInfoDialog extends LitElement {
   @state() private _isEscapeEnabled = true;
 
   @state() private _sensorNumericDeviceClasses?: string[] = [];
-
-  @query("ha-dialog") private _dialog?: HaDialog;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -272,11 +269,6 @@ export class MoreInfoDialog extends LitElement {
 
   private _handleToggleInfoEditModeEvent(ev) {
     this._infoEditMode = ev.detail;
-  }
-
-  private _handleScrollToTopEvent(ev: Event): void {
-    ev.stopPropagation();
-    this._dialog!.scrollToPos(0, 0);
   }
 
   private _goToRelated(ev): void {
@@ -529,7 +521,6 @@ export class MoreInfoDialog extends LitElement {
           @show-child-view=${this._showChildView}
           @entity-entry-updated=${this._entryUpdated}
           @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
-          @more-info-update-clicked=${this._handleScrollToTopEvent}
         >
           ${cache(
             this._childView
