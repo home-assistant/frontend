@@ -2942,7 +2942,7 @@
             "create_and_write": "Create and write",
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
-            "companion_apps": "companion apps"
+            "companion_apps": "Companion apps"
           }
         },
         "energy": {
@@ -3986,7 +3986,7 @@
                 "tag": {
                   "label": "Tag",
                   "description": {
-                    "picker": "When a tag is scanned (tags are usually created from the companion app).",
+                    "picker": "When a tag is scanned (tags are usually created from the Companion app).",
                     "full": "When a tag is scanned"
                   }
                 },
