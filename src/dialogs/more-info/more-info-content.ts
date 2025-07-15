@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
 import type { TileCardConfig } from "../../panels/lovelace/cards/types";
@@ -45,8 +46,7 @@ class MoreInfoContent extends LitElement {
         entry: this.entry,
         editMode: this.editMode,
       })}
-      ${this.stateObj.attributes.entity_id &&
-      this.stateObj.attributes.entity_id.length
+      ${this._showEntityMembers(this.stateObj)
         ? html`
             <hui-section
               .hass=${this.hass}
@@ -58,6 +58,19 @@ class MoreInfoContent extends LitElement {
           `
         : nothing}
     `;
+  }
+
+  private _showEntityMembers(stateObj: HassEntity): boolean {
+    if (computeStateDomain(stateObj) === "group") {
+      // Don't show entity members for legacy groups as they already show
+      // the members in their more info dialog.
+      return false;
+    }
+    return (
+      stateObj.attributes &&
+      stateObj.attributes.entity_id &&
+      Array.isArray(stateObj.attributes.entity_id)
+    );
   }
 
   private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => ({
