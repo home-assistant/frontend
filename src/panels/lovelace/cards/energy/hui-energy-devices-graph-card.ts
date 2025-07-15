@@ -14,6 +14,7 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import type { EnergyData } from "../../../../data/energy";
 import { getEnergyDataCollection } from "../../../../data/energy";
+import type { Statistics } from "../../../../data/recorder";
 import {
   calculateStatisticSumGrowth,
   getStatisticLabel,
@@ -207,12 +208,42 @@ export class HuiEnergyDevicesGraphCard
 
     const computedStyle = getComputedStyle(this);
 
-    energyData.prefs.device_consumption.forEach((device, id) => {
-      const value =
-        device.stat_consumption in data
-          ? calculateStatisticSumGrowth(data[device.stat_consumption]) || 0
+    function calculateDeviceConsumption(
+      device: EnergyData["prefs"]["device_consumption"][0],
+      statsData: Statistics
+    ): number {
+      // Get the base consumption value for this device
+      const baseValue =
+        device.stat_consumption in statsData
+          ? calculateStatisticSumGrowth(statsData[device.stat_consumption]) || 0
           : 0;
+
+      // Find all child devices (devices where included_in_stat points to this device)
+      const childDevices = energyData.prefs.device_consumption.filter(
+        (childDevice) =>
+          childDevice.included_in_stat === device.stat_consumption
+      );
+
+      // Subtract child device values from the parent value
+      let adjustedValue = baseValue;
+      for (const childDevice of childDevices) {
+        if (childDevice.stat_consumption in statsData) {
+          const childValue =
+            calculateStatisticSumGrowth(
+              statsData[childDevice.stat_consumption]
+            ) ?? 0;
+
+          adjustedValue -= childValue;
+        }
+      }
+
+      return adjustedValue;
+    }
+
+    energyData.prefs.device_consumption.forEach((device, id) => {
       const color = getGraphColorByIndex(id, computedStyle);
+
+      const value = calculateDeviceConsumption(device, data);
 
       chartData.push({
         id,
@@ -224,12 +255,7 @@ export class HuiEnergyDevicesGraphCard
       });
 
       if (compareData) {
-        const compareValue =
-          device.stat_consumption in compareData
-            ? calculateStatisticSumGrowth(
-                compareData[device.stat_consumption]
-              ) || 0
-            : 0;
+        const compareValue = calculateDeviceConsumption(device, compareData);
 
         chartDataCompare.push({
           id,
