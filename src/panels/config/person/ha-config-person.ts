@@ -1,12 +1,13 @@
 import { mdiPlus } from "@mdi/js";
-import "@material/mwc-list/mwc-list";
+
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
+import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-person-badge";
 import type { Person } from "../../../data/person";
 import {
@@ -64,6 +65,7 @@ export class HaConfigPerson extends LitElement {
         .route=${this.route}
         back-path="/config"
         .tabs=${configSections.persons}
+        has-fab
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header"
@@ -91,7 +93,7 @@ export class HaConfigPerson extends LitElement {
           </span>
 
           <ha-card outlined class="storage">
-            <mwc-list>
+            <ha-list>
               ${this._storageItems.map(
                 (entry) => html`
                   <ha-list-item
@@ -108,7 +110,7 @@ export class HaConfigPerson extends LitElement {
                   </ha-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-list>
             ${this._storageItems.length === 0
               ? html`
                   <div class="empty">
@@ -127,7 +129,7 @@ export class HaConfigPerson extends LitElement {
           ${this._configItems.length > 0
             ? html`
                 <ha-card outlined header="Configuration.yaml persons">
-                  <mwc-list>
+                  <ha-list>
                     ${this._configItems.map(
                       (entry) => html`
                         <ha-list-item graphic="avatar">
@@ -140,7 +142,7 @@ export class HaConfigPerson extends LitElement {
                         </ha-list-item>
                       `
                     )}
-                  </mwc-list>
+                  </ha-list>
                 </ha-card>
               `
             : nothing}
@@ -292,7 +294,7 @@ export class HaConfigPerson extends LitElement {
       align-items: center;
       justify-content: space-around;
     }
-    mwc-list:has(+ .empty) {
+    ha-list:has(+ .empty) {
       display: none;
     }
   `;

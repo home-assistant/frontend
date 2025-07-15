@@ -83,10 +83,13 @@ export class HaServiceControl extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: "show-advanced", type: Boolean }) public showAdvanced =
-    false;
+  @property({ attribute: "show-advanced", type: Boolean })
+  public showAdvanced = false;
+
+  @property({ attribute: "show-service-id", type: Boolean })
+  public showServiceId = false;
 
   @property({ attribute: "hide-picker", type: Boolean, reflect: true })
   public hidePicker = false;
@@ -273,6 +276,16 @@ export class HaServiceControl extends LitElement {
 
   private _getTargetedEntities = memoizeOne((target, value) => {
     const targetSelector = target ? { target } : { target: {} };
+    if (
+      hasTemplate(value?.target) ||
+      hasTemplate(value?.data?.entity_id) ||
+      hasTemplate(value?.data?.device_id) ||
+      hasTemplate(value?.data?.area_id) ||
+      hasTemplate(value?.data?.floor_id) ||
+      hasTemplate(value?.data?.label_id)
+    ) {
+      return null;
+    }
     const targetEntities =
       ensureArray(
         value?.target?.entity_id || value?.data?.entity_id
@@ -346,8 +359,11 @@ export class HaServiceControl extends LitElement {
 
   private _filterField(
     filter: ExtHassService["fields"][number]["filter"],
-    targetEntities: string[]
+    targetEntities: string[] | null
   ) {
+    if (targetEntities === null) {
+      return true; // Target is a template, show all fields
+    }
     if (!targetEntities.length) {
       return false;
     }
@@ -383,8 +399,21 @@ export class HaServiceControl extends LitElement {
   }
 
   private _targetSelector = memoizeOne(
-    (targetSelector: TargetSelector | null | undefined) =>
-      targetSelector ? { target: { ...targetSelector } } : { target: {} }
+    (targetSelector: TargetSelector | null | undefined, value) => {
+      if (!value || (typeof value === "object" && !Object.keys(value).length)) {
+        delete this._stickySelector.target;
+      } else if (hasTemplate(value)) {
+        if (typeof value === "string") {
+          this._stickySelector.target = { template: null };
+        } else {
+          this._stickySelector.target = { object: null };
+        }
+      }
+      return (
+        this._stickySelector.target ??
+        (targetSelector ? { target: { ...targetSelector } } : { target: {} })
+      );
+    }
   );
 
   protected render() {
@@ -435,6 +464,7 @@ export class HaServiceControl extends LitElement {
           .value=${this._value?.action}
           .disabled=${this.disabled}
           @value-changed=${this._serviceChanged}
+          .showServiceId=${this.showServiceId}
         ></ha-service-picker>`}
     ${this.hideDescription
       ? nothing
@@ -478,7 +508,8 @@ export class HaServiceControl extends LitElement {
           ><ha-selector
             .hass=${this.hass}
             .selector=${this._targetSelector(
-              serviceData.target as TargetSelector
+              serviceData.target as TargetSelector,
+              this._value?.target
             )}
             .disabled=${this.disabled}
             @value-changed=${this._targetChanged}
@@ -571,7 +602,7 @@ export class HaServiceControl extends LitElement {
 
   private _hasFilteredFields(
     dataFields: ExtHassService["fields"],
-    targetEntities: string[]
+    targetEntities: string[] | null
   ) {
     return dataFields.some(
       (dataField) =>
@@ -584,7 +615,7 @@ export class HaServiceControl extends LitElement {
     hasOptional: boolean,
     domain: string | undefined,
     serviceName: string | undefined,
-    targetEntities: string[]
+    targetEntities: string[] | null
   ) => {
     if (
       dataField.filter &&
@@ -818,6 +849,10 @@ export class HaServiceControl extends LitElement {
 
   private _targetChanged(ev: CustomEvent) {
     ev.stopPropagation();
+    if (ev.detail.isValid === false) {
+      // Don't clear an object selector that returns invalid YAML
+      return;
+    }
     const newValue = ev.detail.value;
     if (this._value?.target === newValue) {
       return;
@@ -895,8 +930,10 @@ export class HaServiceControl extends LitElement {
     ha-settings-row {
       padding: var(--service-control-padding, 0 16px);
     }
+    ha-settings-row[narrow] {
+      padding-bottom: 8px;
+    }
     ha-settings-row {
-      --paper-time-input-justify-content: flex-end;
       --settings-row-content-width: 100%;
       --settings-row-prefix-display: contents;
       border-top: var(
@@ -917,7 +954,7 @@ export class HaServiceControl extends LitElement {
       margin: var(--service-control-padding, 0 16px);
       padding: 16px 0;
     }
-    :host([hidePicker]) p {
+    :host([hide-picker]) p {
       padding-top: 0;
     }
     .checkbox-spacer {

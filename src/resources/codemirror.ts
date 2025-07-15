@@ -51,7 +51,7 @@ export const haTheme = EditorView.theme({
   "&": {
     color: "var(--primary-text-color)",
     backgroundColor:
-      "var(--code-editor-background-color, var(--mdc-text-field-fill-color, whitesmoke))",
+      "var(--code-editor-background-color, var(--card-background-color))",
     borderRadius:
       "var(--mdc-shape-small, 4px) var(--mdc-shape-small, 4px) 0px 0px",
     caretColor: "var(--secondary-text-color)",
@@ -106,7 +106,7 @@ export const haTheme = EditorView.theme({
     background: "none",
     color: "var(--primary-color)",
     fontFamily:
-      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, Roboto, sans-serif))",
+      "var(--mdc-typography-button-font-family, var(--mdc-typography-font-family, var(--ha-font-family-body)))",
     fontSize: "var(--mdc-typography-button-font-size, 0.875rem)",
     height: "36px",
     fontWeight: "var(--mdc-typography-button-font-weight, 500)",
@@ -191,7 +191,7 @@ export const haTheme = EditorView.theme({
   ".cm-gutters": {
     backgroundColor:
       "var(--code-editor-gutter-color, var(--secondary-background-color, whitesmoke))",
-    color: "var(--paper-dialog-color, var(--secondary-text-color))",
+    color: "var(--secondary-text-color)",
     border: "none",
     borderRight: "1px solid var(--secondary-text-color)",
     paddingRight: "1px",

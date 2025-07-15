@@ -1,12 +1,11 @@
-import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-select";
 import type {
   HassioAddonDetails,
@@ -29,6 +28,8 @@ class HassioAddonAudio extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _error?: string;
 
   @state() private _inputDevices?: HassioHardwareAudioDevice[];
@@ -48,7 +49,7 @@ class HassioAddonAudio extends LitElement {
         <div class="card-content">
           ${this._error
             ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : ""}
+            : nothing}
           ${this._inputDevices &&
           html`<ha-select
             .label=${this.supervisor.localize(
@@ -59,12 +60,13 @@ class HassioAddonAudio extends LitElement {
             fixedMenuPosition
             naturalMenuWidth
             .value=${this._selectedInput!}
+            .disabled=${this.disabled}
           >
             ${this._inputDevices.map(
               (item) => html`
-                <mwc-list-item .value=${item.device || ""}>
+                <ha-list-item .value=${item.device || ""}>
                   ${item.name}
-                </mwc-list-item>
+                </ha-list-item>
               `
             )}
           </ha-select>`}
@@ -78,18 +80,22 @@ class HassioAddonAudio extends LitElement {
             fixedMenuPosition
             naturalMenuWidth
             .value=${this._selectedOutput!}
+            .disabled=${this.disabled}
           >
             ${this._outputDevices.map(
               (item) => html`
-                <mwc-list-item .value=${item.device || ""}
-                  >${item.name}</mwc-list-item
+                <ha-list-item .value=${item.device || ""}
+                  >${item.name}</ha-list-item
                 >
               `
             )}
           </ha-select>`}
         </div>
         <div class="card-actions">
-          <ha-progress-button @click=${this._saveSettings}>
+          <ha-progress-button
+            .disabled=${this.disabled}
+            @click=${this._saveSettings}
+          >
             ${this.supervisor.localize("common.save")}
           </ha-progress-button>
         </div>
@@ -171,6 +177,10 @@ class HassioAddonAudio extends LitElement {
   }
 
   private async _saveSettings(ev: CustomEvent): Promise<void> {
+    if (this.disabled) {
+      return;
+    }
+
     const button = ev.currentTarget as any;
     button.progress = true;
 

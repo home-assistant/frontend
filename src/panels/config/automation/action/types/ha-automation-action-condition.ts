@@ -4,6 +4,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-select";
 import type { HaSelect } from "../../../../../components/ha-select";
 import type { Condition } from "../../../../../data/automation";
@@ -38,9 +39,9 @@ export class HaConditionAction extends LitElement implements ActionElement {
       >
         ${this._processedTypes(this.hass.localize).map(
           ([opt, label, icon]) => html`
-            <mwc-list-item .value=${opt} graphic="icon">
+            <ha-list-item .value=${opt} graphic="icon">
               ${label}<ha-svg-icon slot="graphic" .path=${icon}></ha-svg-icon
-            ></mwc-list-item>
+            ></ha-list-item>
           `
         )}
       </ha-select>

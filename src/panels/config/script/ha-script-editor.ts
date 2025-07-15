@@ -1,3 +1,4 @@
+import { consume } from "@lit/context";
 import "@material/mwc-button";
 import {
   mdiCog,
@@ -20,21 +21,23 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "@lit-labs/context";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
+import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
+import { substituteBlueprint } from "../../../data/blueprint";
 import { validateConfig } from "../../../data/config";
+import { fullEntitiesContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
   type EntityRegistryEntry,
@@ -42,12 +45,12 @@ import {
 } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
+  normalizeScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
-  migrateAutomationAction,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -58,21 +61,18 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-subpage";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
+import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import type { EntityRegistryUpdate } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
+import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import "./blueprint-script-editor";
 import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
-import { substituteBlueprint } from "../../../data/blueprint";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
-import { fullEntitiesContext } from "../../../data/context";
-import { transform } from "../../../common/decorators/transform";
 
 export class HaScriptEditor extends SubscribeMixin(
   PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
@@ -105,8 +105,9 @@ export class HaScriptEditor extends SubscribeMixin(
 
   @state() private _readOnly = false;
 
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
-  @transform<EntityRegistryEntry | undefined, EntityRegistryEntry[]>({
+  @transform<EntityRegistryEntry[], EntityRegistryEntry>({
     transformer: function (this: HaScriptEditor, value) {
       return value.find(({ entity_id }) => entity_id === this._entityId);
     },
@@ -427,6 +428,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .isWide=${this.isWide}
                           .config=${this._config}
                           .disabled=${this._readOnly}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
                         ></manual-script-editor>
                       `}
@@ -438,7 +440,9 @@ export class HaScriptEditor extends SubscribeMixin(
                   .hass=${this.hass}
                   .defaultValue=${this._preprocessYaml()}
                   .readOnly=${this._readOnly}
+                  disable-fullscreen
                   @value-changed=${this._yamlChanged}
+                  .showErrors=${false}
                 ></ha-yaml-editor>`
               : nothing}
         </div>
@@ -499,12 +503,11 @@ export class HaScriptEditor extends SubscribeMixin(
         ...initData,
       } as ScriptConfig;
       this._readOnly = false;
-      this._dirty = true;
     }
 
     if (changedProps.has("entityId") && this.entityId) {
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
-        this._config = this._normalizeConfig(c.config);
+        this._config = normalizeScriptConfig(c.config);
         this._checkValidation();
       });
       const regEntry = this.entityRegistry.find(
@@ -543,25 +546,12 @@ export class HaScriptEditor extends SubscribeMixin(
     );
   }
 
-  private _normalizeConfig(config: ScriptConfig): ScriptConfig {
-    // Normalize data: ensure sequence is a list
-    // Happens when people copy paste their scripts into the config
-    const value = config.sequence;
-    if (value && !Array.isArray(value)) {
-      config.sequence = [value];
-    }
-    if (config.sequence) {
-      config.sequence = migrateAutomationAction(config.sequence);
-    }
-    return config;
-  }
-
   private async _loadConfig() {
     fetchScriptFileConfig(this.hass, this.scriptId!).then(
       (config) => {
         this._dirty = false;
         this._readOnly = false;
-        this._config = this._normalizeConfig(config);
+        this._config = normalizeScriptConfig(config);
         const entity = this.entityRegistry.find(
           (ent) => ent.platform === "script" && ent.unique_id === this.scriptId
         );
@@ -770,7 +760,7 @@ export class HaScriptEditor extends SubscribeMixin(
       );
 
       const newConfig = {
-        ...this._normalizeConfig(result.substituted_config),
+        ...normalizeScriptConfig(result.substituted_config),
         alias: config.alias,
         description: config.description,
       };
@@ -913,6 +903,8 @@ export class HaScriptEditor extends SubscribeMixin(
       return;
     }
 
+    this._manualEditor?.resetPastedConfig();
+
     if (!this.scriptId) {
       const saved = await this._promptScriptAlias();
       if (!saved) {
@@ -1031,7 +1023,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         .errors {
           padding: 20px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           color: var(--error-color);
         }
         .yaml-mode {
@@ -1066,7 +1058,7 @@ export class HaScriptEditor extends SubscribeMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-fab.dirty {
@@ -1081,8 +1073,8 @@ export class HaScriptEditor extends SubscribeMixin(
           align-items: center;
         }
         .header .name {
-          font-size: 20px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
           flex: 1;
         }
         .header a {

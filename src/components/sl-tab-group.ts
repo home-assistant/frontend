@@ -1,30 +1,16 @@
 import TabGroup from "@shoelace-style/shoelace/dist/components/tab-group/tab-group.component";
 import TabGroupStyles from "@shoelace-style/shoelace/dist/components/tab-group/tab-group.styles";
 import "@shoelace-style/shoelace/dist/components/tab/tab";
-import type { PropertyValues } from "lit";
 import { css } from "lit";
-import { customElement, query } from "lit/decorators";
+import { customElement } from "lit/decorators";
+import { DragScrollController } from "../common/controllers/drag-scroll-controller";
 
 @customElement("sl-tab-group")
 // @ts-ignore
 export class HaSlTabGroup extends TabGroup {
-  private _mouseIsDown = false;
-
-  private _scrolled = false;
-
-  private _mouseReleasedAt?: number;
-
-  private _scrollStartX = 0;
-
-  private _scrollLeft = 0;
-
-  @query(".tab-group__nav", true) private _scrollContainer?: HTMLElement;
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("mousemove", this._mouseMove);
-    window.removeEventListener("mouseup", this._mouseUp);
-  }
+  private _dragScrollController = new DragScrollController(this, {
+    selector: ".tab-group__nav",
+  });
 
   override setAriaLabels() {
     // Override the method to prevent setting aria-labels, as we don't use panels
@@ -38,72 +24,14 @@ export class HaSlTabGroup extends TabGroup {
     return [];
   }
 
-  protected override firstUpdated(_changedProperties: PropertyValues): void {
-    super.firstUpdated(_changedProperties);
-
-    const scrollContainer = this._scrollContainer;
-
-    if (scrollContainer) {
-      scrollContainer.addEventListener("mousedown", this._mouseDown);
-    }
-  }
-
   // @ts-ignore
   protected override handleClick(event: MouseEvent) {
-    if (
-      this._mouseReleasedAt &&
-      new Date().getTime() - this._mouseReleasedAt < 100
-    ) {
+    if (this._dragScrollController.scrolled) {
       return;
     }
     // @ts-ignore
     super.handleClick(event);
   }
-
-  private _mouseDown = (event: MouseEvent) => {
-    const scrollContainer = this._scrollContainer;
-
-    if (!scrollContainer) {
-      return;
-    }
-
-    this._scrollStartX = event.pageX - scrollContainer.offsetLeft;
-    this._scrollLeft = scrollContainer.scrollLeft;
-    this._mouseIsDown = true;
-    this._scrolled = false;
-
-    window.addEventListener("mousemove", this._mouseMove);
-    window.addEventListener("mouseup", this._mouseUp, { once: true });
-  };
-
-  private _mouseUp = () => {
-    this._mouseIsDown = false;
-    if (this._scrolled) {
-      this._mouseReleasedAt = new Date().getTime();
-    }
-    window.removeEventListener("mousemove", this._mouseMove);
-  };
-
-  private _mouseMove = (event: MouseEvent) => {
-    if (!this._mouseIsDown) {
-      return;
-    }
-
-    const scrollContainer = this._scrollContainer;
-
-    if (!scrollContainer) {
-      return;
-    }
-
-    const x = event.pageX - scrollContainer.offsetLeft;
-    const scroll = x - this._scrollStartX;
-
-    if (!this._scrolled) {
-      this._scrolled = Math.abs(scroll) > 1;
-    }
-
-    scrollContainer.scrollLeft = this._scrollLeft - scroll;
-  };
 
   static override styles = [
     TabGroupStyles,
@@ -135,8 +63,8 @@ export class HaSlTabGroup extends TabGroup {
 
         --sl-color-neutral-600: inherit;
 
-        --sl-font-weight-semibold: 500;
-        --sl-font-size-small: 14px;
+        --sl-font-weight-semibold: var(--ha-font-weight-medium);
+        --sl-font-size-small: var(--ha-font-size-m);
 
         --sl-color-primary-600: var(
           --ha-tab-active-text-color,

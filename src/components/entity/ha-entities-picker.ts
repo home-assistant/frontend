@@ -8,7 +8,7 @@ import "./ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
-class HaEntitiesPickerLight extends LitElement {
+class HaEntitiesPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ type: Array }) public value?: string[];
@@ -16,6 +16,10 @@ class HaEntitiesPickerLight extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
+
+  @property() public label?: string;
+
+  @property() public placeholder?: string;
 
   @property() public helper?: string;
 
@@ -67,11 +71,6 @@ class HaEntitiesPickerLight extends LitElement {
   @property({ type: Array, attribute: "exclude-entities" })
   public excludeEntities?: string[];
 
-  @property({ attribute: "picked-entity-label" })
-  public pickedEntityLabel?: string;
-
-  @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
-
   @property({ attribute: false })
   public entityFilter?: HaEntityPickerEntityFilterFunc;
 
@@ -84,6 +83,7 @@ class HaEntitiesPickerLight extends LitElement {
 
     const currentEntities = this._currentEntities;
     return html`
+      ${this.label ? html`<label>${this.label}</label>` : nothing}
       ${currentEntities.map(
         (entityId) => html`
           <div>
@@ -99,7 +99,6 @@ class HaEntitiesPickerLight extends LitElement {
               .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
               .entityFilter=${this.entityFilter}
               .value=${entityId}
-              .label=${this.pickedEntityLabel}
               .disabled=${this.disabled}
               .createDomains=${this.createDomains}
               @value-changed=${this._entityChanged}
@@ -121,7 +120,7 @@ class HaEntitiesPickerLight extends LitElement {
           .includeDeviceClasses=${this.includeDeviceClasses}
           .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
           .entityFilter=${this.entityFilter}
-          .label=${this.pickEntityLabel}
+          .placeholder=${this.placeholder}
           .helper=${this.helper}
           .disabled=${this.disabled}
           .createDomains=${this.createDomains}
@@ -198,11 +197,15 @@ class HaEntitiesPickerLight extends LitElement {
     div {
       margin-top: 8px;
     }
+    label {
+      display: block;
+      margin: 0 0 8px;
+    }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-entities-picker": HaEntitiesPickerLight;
+    "ha-entities-picker": HaEntitiesPicker;
   }
 }

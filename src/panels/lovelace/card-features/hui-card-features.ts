@@ -1,19 +1,25 @@
-import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import "./hui-card-feature";
-import type { LovelaceCardFeatureConfig } from "./types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
+} from "./types";
 
 @customElement("hui-card-features")
 export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public stateObj!: HassEntity;
+  @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public features?: LovelaceCardFeatureConfig[];
 
   @property({ attribute: false }) public color?: string;
+
+  @property({ attribute: false })
+  public position?: LovelaceCardFeaturePosition;
 
   protected render() {
     if (!this.features) {
@@ -24,9 +30,10 @@ export class HuiCardFeatures extends LitElement {
         (feature) => html`
           <hui-card-feature
             .hass=${this.hass}
-            .stateObj=${this.stateObj}
+            .context=${this.context}
             .color=${this.color}
             .feature=${feature}
+            .position=${this.position}
           ></hui-card-feature>
         `
       )}
@@ -39,6 +46,7 @@ export class HuiCardFeatures extends LitElement {
       --feature-height: 42px;
       --feature-border-radius: 12px;
       --feature-button-spacing: 12px;
+      pointer-events: none;
       position: relative;
       width: 100%;
       display: flex;

@@ -55,6 +55,7 @@ export class HaConfigLabels extends LitElement {
 
   @state() private _labels: LabelRegistryEntry[] = [];
 
+  @state()
   @storage({
     storage: "sessionStorage",
     key: "labels-table-search",

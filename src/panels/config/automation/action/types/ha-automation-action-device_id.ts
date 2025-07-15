@@ -1,4 +1,4 @@
-import { consume } from "@lit-labs/context";
+import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -127,6 +127,7 @@ export class HaDeviceAction extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("device_automation");
     if (!this._capabilities) {
       this._getCapabilities();
     }
@@ -135,8 +136,8 @@ export class HaDeviceAction extends LitElement {
     }
   }
 
-  protected updated(changedPros) {
-    const prevAction = changedPros.get("action");
+  protected updated(changedProps) {
+    const prevAction = changedProps.get("action");
     if (
       prevAction &&
       !deviceAutomationsEqual(this._entityReg, prevAction, this.action)

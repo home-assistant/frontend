@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import {
   mdiBug,
   mdiFileDocument,
@@ -14,19 +13,23 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
-import "../../../components/ha-clickable-list-item";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-logo-svg";
+import "../../../components/ha-md-list";
+import "../../../components/ha-md-list-item";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import type { HassioInfo } from "../../../data/hassio/supervisor";
 import { fetchHassioInfo } from "../../../data/hassio/supervisor";
+import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
-import "../../../components/ha-icon-next";
-import { showShortcutsDialog } from "../../../dialogs/shortcuts/show-shortcuts-dialog";
+import { subscribeSystemHealthInfo } from "../../../data/system_health";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -97,6 +100,8 @@ class HaConfigInfo extends LitElement {
 
   @state() private _hassioInfo?: HassioInfo;
 
+  @state() private _installationMethod?: string;
+
   protected render(): TemplateResult {
     const hass = this.hass;
     const customUiList: { name: string; url: string; version: string }[] =
@@ -126,6 +131,14 @@ class HaConfigInfo extends LitElement {
             <p>Home Assistant</p>
             <ul class="versions">
               <li>
+                <span class="version-label"
+                  >${this.hass.localize(
+                    `ui.panel.config.info.installation_method`
+                  )}</span
+                >
+                <span class="version">${this._installationMethod || "…"}</span>
+              </li>
+              <li>
                 <span class="version-label">Core</span>
                 <span class="version">${hass.connection.haVersion}</span>
               </li>
@@ -154,7 +167,7 @@ class HaConfigInfo extends LitElement {
                   )}
                 </span>
                 <span class="version">
-                  ${JS_VERSION}${JS_TYPE !== "modern" ? ` ⸱ ${JS_TYPE}` : ""}
+                  ${JS_VERSION}${JS_TYPE !== "modern" ? ` · ${JS_TYPE}` : ""}
                 </span>
               </li>
             </ul>
@@ -173,10 +186,10 @@ class HaConfigInfo extends LitElement {
           </ha-card>
 
           <ha-card outlined class="pages">
-            <mwc-list>
-              <ha-list-item graphic="avatar" @click=${this._showShortcuts}>
+            <ha-md-list>
+              <ha-md-list-item type="button" @click=${this._showShortcuts}>
                 <div
-                  slot="graphic"
+                  slot="start"
                   class="icon-background"
                   style="background-color: #9e4dd1;"
                 >
@@ -185,18 +198,18 @@ class HaConfigInfo extends LitElement {
                 <span
                   >${this.hass.localize("ui.panel.config.info.shortcuts")}</span
                 >
-              </ha-list-item>
+              </ha-md-list-item>
 
               ${PAGES.map(
                 (page) => html`
-                  <ha-clickable-list-item
-                    graphic="avatar"
-                    open-new-tab
-                    href=${documentationUrl(this.hass, page.path)}
-                    hasMeta
+                  <ha-md-list-item
+                    type="link"
+                    .href=${documentationUrl(this.hass, page.path)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <div
-                      slot="graphic"
+                      slot="start"
                       class="icon-background"
                       .style="background-color: ${page.iconColor}"
                     >
@@ -207,14 +220,11 @@ class HaConfigInfo extends LitElement {
                         `ui.panel.config.info.items.${page.name}`
                       )}
                     </span>
-                    <ha-svg-icon
-                      slot="meta"
-                      .path=${mdiOpenInNew}
-                    ></ha-svg-icon>
-                  </ha-clickable-list-item>
+                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                  </ha-md-list-item>
                 `
               )}
-            </mwc-list>
+            </ha-md-list>
             ${customUiList.length
               ? html`
                   <div class="custom-ui">
@@ -250,6 +260,13 @@ class HaConfigInfo extends LitElement {
     if (isComponentLoaded(this.hass, "hassio")) {
       this._loadSupervisorInfo();
     }
+
+    const unsubSystemHealth = subscribeSystemHealthInfo(this.hass, (info) => {
+      if (info?.homeassistant) {
+        this._installationMethod = info.homeassistant.info.installation_type;
+        unsubSystemHealth.then((unsub) => unsub());
+      }
+    });
   }
 
   private async _loadSupervisorInfo(): Promise<void> {
@@ -298,9 +315,9 @@ class HaConfigInfo extends LitElement {
         }
 
         .header p {
-          font-size: 22px;
-          font-weight: 400;
-          line-height: 28px;
+          font-size: var(--ha-font-size-xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
           text-align: center;
           margin: 24px;
         }
@@ -329,8 +346,8 @@ class HaConfigInfo extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
-          font-size: 14px;
-          font-weight: 400;
+          font-size: var(--ha-font-size-m);
+          font-weight: var(--ha-font-weight-normal);
           padding: 4px 0;
         }
 
@@ -344,23 +361,13 @@ class HaConfigInfo extends LitElement {
 
         .ha-version {
           color: var(--primary-text-color);
-          font-weight: 500;
-          font-size: 16px;
+          font-size: var(--ha-font-size-l);
+          font-weight: var(--ha-font-weight-medium);
         }
 
         .pages {
-          margin-bottom: max(24px, env(safe-area-inset-bottom));
+          margin-bottom: max(24px, var(--safe-area-inset-bottom));
           padding: 4px 0;
-        }
-
-        mwc-list {
-          --mdc-list-side-padding: 16px;
-          --mdc-list-vertical-padding: 0;
-        }
-
-        ha-clickable-list-item,
-        ha-list-item {
-          height: 64px;
         }
 
         .icon-background ha-svg-icon {

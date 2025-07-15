@@ -73,6 +73,19 @@ module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   sourceMap: !isTestBuild,
 });
 
+/** @type {import('@rspack/core').SwcLoaderOptions} */
+module.exports.swcOptions = () => ({
+  jsc: {
+    loose: true,
+    externalHelpers: true,
+    target: "ES2021",
+    parser: {
+      syntax: "typescript",
+      decorators: true,
+    },
+  },
+});
+
 module.exports.babelOptions = ({
   latestBuild,
   isProdBuild,
@@ -97,7 +110,6 @@ module.exports.babelOptions = ({
         shippedProposals: true,
       },
     ],
-    "@babel/preset-typescript",
   ],
   plugins: [
     [
@@ -133,12 +145,6 @@ module.exports.babelOptions = ({
     [
       "@babel/plugin-transform-runtime",
       { version: dependencies["@babel/runtime"] },
-    ],
-    // Transpile decorators (still in TC39 process)
-    // Modern browsers support class fields and private methods, but transform is required with the older decorator version dictated by Lit
-    [
-      "@babel/plugin-proposal-decorators",
-      { version: "2018-09", decoratorsBeforeExport: true },
     ],
     "@babel/plugin-transform-class-properties",
     "@babel/plugin-transform-private-methods",

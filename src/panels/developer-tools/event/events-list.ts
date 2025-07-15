@@ -64,7 +64,7 @@ class EventsList extends LitElement {
 
     li {
       list-style: none;
-      line-height: 2em;
+      line-height: var(--ha-line-height-expanded);
     }
 
     a {

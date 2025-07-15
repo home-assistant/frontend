@@ -63,7 +63,7 @@ export class DemoHaControlSwitch extends LitElement {
                 @change=${this.handleValueChanged}
                 .pathOn=${mdiLightbulb}
                 .pathOff=${mdiLightbulbOff}
-                aria-labelledby=${id}
+                .label=${label}
                 ?disabled=${config.disabled}
                 ?reversed=${config.reversed}
               >
@@ -84,7 +84,7 @@ export class DemoHaControlSwitch extends LitElement {
                   vertical
                   class=${ifDefined(config.class)}
                   @change=${this.handleValueChanged}
-                  aria-label=${label}
+                  .label=${label}
                   .pathOn=${mdiGarageOpen}
                   .pathOff=${mdiGarage}
                   ?disabled=${config.disabled}
@@ -112,7 +112,7 @@ export class DemoHaControlSwitch extends LitElement {
       margin: 0;
     }
     label {
-      font-weight: 600;
+      font-weight: var(--ha-font-weight-bold);
     }
     .custom {
       --control-switch-on-color: var(--green-color);

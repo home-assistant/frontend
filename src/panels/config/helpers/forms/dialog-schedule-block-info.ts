@@ -139,7 +139,7 @@ class DialogScheduleBlockInfo extends LitElement {
         return this.hass!.localize("ui.dialogs.helper_settings.schedule.data");
       case "advanced_settings":
         return this.hass!.localize(
-          "ui.dialogs.helper_settings.schedule.advanced_settings"
+          "ui.dialogs.helper_settings.generic.advanced_settings"
         );
     }
     return "";

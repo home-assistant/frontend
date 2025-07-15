@@ -1,5 +1,5 @@
-import { consume } from "@lit-labs/context";
-import "@material/mwc-list/mwc-list";
+import { consume } from "@lit/context";
+
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import {
   mdiCog,
@@ -37,6 +37,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-picker";
+import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-textfield";
@@ -97,8 +98,6 @@ export class HaSceneEditor extends PreventUnsavedMixin(
   @property({ attribute: false }) public sceneId: string | null = null;
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
-
-  @property({ attribute: false }) public showAdvanced = false;
 
   @state() private _dirty = false;
 
@@ -321,6 +320,8 @@ export class HaSceneEditor extends PreventUnsavedMixin(
       .hass=${this.hass}
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
+      .showErrors=${false}
+      disable-fullscreen
     ></ha-yaml-editor>`;
   }
 
@@ -429,7 +430,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                         @click=${this._deleteDevice}
                       ></ha-icon-button>
                     </h1>
-                    <mwc-list>
+                    <ha-list>
                       ${device.entities.map((entityId) => {
                         const entityStateObj = this.hass.states[entityId];
                         if (!entityStateObj) {
@@ -460,7 +461,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                           </ha-list-item>
                         `;
                       })}
-                    </mwc-list>
+                    </ha-list>
                   </ha-card>
                 `
               )}
@@ -486,88 +487,86 @@ export class HaSceneEditor extends PreventUnsavedMixin(
                 : nothing}
             </ha-config-section>
 
-            ${this.showAdvanced
-              ? html` <ha-config-section vertical .isWide=${this.isWide}>
-                  <div slot="header">
+            <ha-config-section vertical .isWide=${this.isWide}>
+              <div slot="header">
+                ${this.hass.localize(
+                  "ui.panel.config.scene.editor.entities.header"
+                )}
+              </div>
+              ${this._mode === "live" || entities.length === 0
+                ? html`<div slot="introduction">
                     ${this.hass.localize(
-                      "ui.panel.config.scene.editor.entities.header"
+                      `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
                     )}
-                  </div>
-                  ${this._mode === "live" || entities.length === 0
-                    ? html`<div slot="introduction">
-                        ${this.hass.localize(
-                          `ui.panel.config.scene.editor.entities.introduction${this._mode === "review" ? "_review" : ""}`
-                        )}
-                      </div>`
-                    : nothing}
-                  ${entities.length
-                    ? html`
-                        <ha-card outlined class="entities">
-                          <mwc-list>
-                            ${entities.map((entityId) => {
-                              const entityStateObj = this.hass.states[entityId];
-                              if (!entityStateObj) {
-                                return nothing;
-                              }
-                              return html`
-                                <ha-list-item
-                                  class="entity"
-                                  hasMeta
-                                  .graphic=${this._mode === "live"
-                                    ? "icon"
-                                    : undefined}
+                  </div>`
+                : nothing}
+              ${entities.length
+                ? html`
+                    <ha-card outlined class="entities">
+                      <ha-list>
+                        ${entities.map((entityId) => {
+                          const entityStateObj = this.hass.states[entityId];
+                          if (!entityStateObj) {
+                            return nothing;
+                          }
+                          return html`
+                            <ha-list-item
+                              class="entity"
+                              hasMeta
+                              .graphic=${this._mode === "live"
+                                ? "icon"
+                                : undefined}
+                              .entityId=${entityId}
+                              @click=${this._mode === "live"
+                                ? this._showMoreInfo
+                                : undefined}
+                              .noninteractive=${this._mode === "review"}
+                            >
+                              ${this._mode === "live"
+                                ? html` <state-badge
+                                    .hass=${this.hass}
+                                    .stateObj=${entityStateObj}
+                                    slot="graphic"
+                                  ></state-badge>`
+                                : nothing}
+                              ${computeStateName(entityStateObj)}
+                              <div slot="meta">
+                                <ha-icon-button
+                                  .path=${mdiDelete}
                                   .entityId=${entityId}
-                                  @click=${this._mode === "live"
-                                    ? this._showMoreInfo
-                                    : undefined}
-                                  .noninteractive=${this._mode === "review"}
-                                >
-                                  ${this._mode === "live"
-                                    ? html` <state-badge
-                                        .hass=${this.hass}
-                                        .stateObj=${entityStateObj}
-                                        slot="graphic"
-                                      ></state-badge>`
-                                    : nothing}
-                                  ${computeStateName(entityStateObj)}
-                                  <div slot="meta">
-                                    <ha-icon-button
-                                      .path=${mdiDelete}
-                                      .entityId=${entityId}
-                                      .label=${this.hass.localize(
-                                        "ui.panel.config.scene.editor.entities.delete"
-                                      )}
-                                      @click=${this._deleteEntity}
-                                    ></ha-icon-button>
-                                  </div>
-                                </ha-list-item>
-                              `;
-                            })}
-                          </mwc-list>
-                        </ha-card>
-                      `
-                    : ""}
-                  ${this._mode === "live"
-                    ? html` <ha-card
-                        outlined
-                        header=${this.hass.localize(
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.scene.editor.entities.delete"
+                                  )}
+                                  @click=${this._deleteEntity}
+                                ></ha-icon-button>
+                              </div>
+                            </ha-list-item>
+                          `;
+                        })}
+                      </ha-list>
+                    </ha-card>
+                  `
+                : ""}
+              ${this._mode === "live"
+                ? html` <ha-card
+                    outlined
+                    header=${this.hass.localize(
+                      "ui.panel.config.scene.editor.entities.add"
+                    )}
+                  >
+                    <div class="card-content">
+                      <ha-entity-picker
+                        @value-changed=${this._entityPicked}
+                        .excludeDomains=${SCENE_IGNORED_DOMAINS}
+                        .hass=${this.hass}
+                        label=${this.hass.localize(
                           "ui.panel.config.scene.editor.entities.add"
                         )}
-                      >
-                        <div class="card-content">
-                          <ha-entity-picker
-                            @value-changed=${this._entityPicked}
-                            .excludeDomains=${SCENE_IGNORED_DOMAINS}
-                            .hass=${this.hass}
-                            label=${this.hass.localize(
-                              "ui.panel.config.scene.editor.entities.add"
-                            )}
-                          ></ha-entity-picker>
-                        </div>
-                      </ha-card>`
-                    : nothing}
-                </ha-config-section>`
-              : nothing}
+                      ></ha-entity-picker>
+                    </div>
+                  </ha-card>`
+                : nothing}
+            </ha-config-section>
           `
         : nothing}
     </div>`;
@@ -1232,7 +1231,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         }
         .errors {
           padding: 20px;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
           color: var(--error-color);
         }
         ha-config-section {
@@ -1254,7 +1253,7 @@ export class HaSceneEditor extends PreventUnsavedMixin(
         }
         ha-fab {
           position: relative;
-          bottom: calc(-80px - env(safe-area-inset-bottom));
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
           transition: bottom 0.3s;
         }
         ha-alert {

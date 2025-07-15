@@ -15,6 +15,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { join } from "lit/directives/join";
+import { keyed } from "lit/directives/keyed";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -25,6 +26,10 @@ import {
   computeEntityEntryName,
   computeEntityName,
 } from "../../common/entity/compute_entity_name";
+import {
+  getEntityContext,
+  getEntityEntryContext,
+} from "../../common/entity/context/get_entity_context";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-button-menu";
@@ -58,10 +63,6 @@ import "./ha-more-info-history-and-logbook";
 import "./ha-more-info-info";
 import "./ha-more-info-settings";
 import "./more-info-content";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/get_entity_context";
 
 export interface MoreInfoDialogParams {
   entityId: string | null;
@@ -95,6 +96,8 @@ export class MoreInfoDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;
+
+  @state() private _parentEntityIds: string[] = [];
 
   @state() private _entityId?: string | null;
 
@@ -207,8 +210,16 @@ export class MoreInfoDialog extends LitElement {
   private _goBack() {
     if (this._childView) {
       this._childView = undefined;
-    } else {
+      return;
+    }
+    if (this._initialView !== this._currView) {
       this._setView(this._initialView);
+      return;
+    }
+    if (this._parentEntityIds.length > 0) {
+      this._entityId = this._parentEntityIds.pop();
+      this._currView = DEFAULT_VIEW;
+      this._loadEntityRegistryEntry();
     }
   }
 
@@ -302,7 +313,9 @@ export class MoreInfoDialog extends LitElement {
     const isDefaultView = this._currView === DEFAULT_VIEW && !this._childView;
     const isSpecificInitialView =
       this._initialView !== DEFAULT_VIEW && !this._childView;
-    const showCloseIcon = isDefaultView || isSpecificInitialView;
+    const showCloseIcon =
+      (isDefaultView && this._parentEntityIds.length === 0) ||
+      isSpecificInitialView;
 
     const context = stateObj
       ? getEntityContext(stateObj, this.hass)
@@ -521,54 +534,58 @@ export class MoreInfoDialog extends LitElement {
           @show-child-view=${this._showChildView}
           @entity-entry-updated=${this._entryUpdated}
           @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
+          @hass-more-info=${this._handleMoreInfoEvent}
         >
-          ${cache(
-            this._childView
-              ? html`
-                  <div class="child-view">
-                    ${dynamicElement(this._childView.viewTag, {
-                      hass: this.hass,
-                      entry: this._entry,
-                      params: this._childView.viewParams,
-                    })}
-                  </div>
-                `
-              : this._currView === "info"
+          ${keyed(
+            this._entityId,
+            cache(
+              this._childView
                 ? html`
-                    <ha-more-info-info
-                      dialogInitialFocus
-                      .hass=${this.hass}
-                      .entityId=${this._entityId}
-                      .entry=${this._entry}
-                      .editMode=${this._infoEditMode}
-                    ></ha-more-info-info>
+                    <div class="child-view">
+                      ${dynamicElement(this._childView.viewTag, {
+                        hass: this.hass,
+                        entry: this._entry,
+                        params: this._childView.viewParams,
+                      })}
+                    </div>
                   `
-                : this._currView === "history"
+                : this._currView === "info"
                   ? html`
-                      <ha-more-info-history-and-logbook
+                      <ha-more-info-info
+                        dialogInitialFocus
                         .hass=${this.hass}
                         .entityId=${this._entityId}
-                      ></ha-more-info-history-and-logbook>
+                        .entry=${this._entry}
+                        .editMode=${this._infoEditMode}
+                      ></ha-more-info-info>
                     `
-                  : this._currView === "settings"
+                  : this._currView === "history"
                     ? html`
-                        <ha-more-info-settings
+                        <ha-more-info-history-and-logbook
                           .hass=${this.hass}
                           .entityId=${this._entityId}
-                          .entry=${this._entry}
-                        ></ha-more-info-settings>
+                        ></ha-more-info-history-and-logbook>
                       `
-                    : this._currView === "related"
+                    : this._currView === "settings"
                       ? html`
-                          <ha-related-items
+                          <ha-more-info-settings
                             .hass=${this.hass}
-                            .itemId=${entityId}
-                            .itemType=${SearchableDomains.has(domain)
-                              ? (domain as ItemType)
-                              : "entity"}
-                          ></ha-related-items>
+                            .entityId=${this._entityId}
+                            .entry=${this._entry}
+                          ></ha-more-info-settings>
                         `
-                      : nothing
+                      : this._currView === "related"
+                        ? html`
+                            <ha-related-items
+                              .hass=${this.hass}
+                              .itemId=${entityId}
+                              .itemType=${SearchableDomains.has(domain)
+                                ? (domain as ItemType)
+                                : "entity"}
+                            ></ha-related-items>
+                          `
+                        : nothing
+            )
           )}
         </div>
       </ha-dialog>
@@ -600,6 +617,19 @@ export class MoreInfoDialog extends LitElement {
   private _handleOpened() {
     window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.addEventListener("show-dialog", this._disableEscapeKeyClose);
+  }
+
+  private _handleMoreInfoEvent(ev) {
+    ev.stopPropagation();
+    const entityId = ev.detail.entityId;
+    if (!entityId) {
+      return;
+    }
+    this._parentEntityIds = [...this._parentEntityIds, this._entityId!];
+    this._entityId = entityId;
+    this._currView = DEFAULT_VIEW;
+    this._childView = undefined;
+    this._loadEntityRegistryEntry();
   }
 
   private _enableEscapeKeyClose = () => {
@@ -667,6 +697,7 @@ export class MoreInfoDialog extends LitElement {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
+          margin: 0 0 -10px 0;
         }
 
         .title p {
@@ -679,13 +710,13 @@ export class MoreInfoDialog extends LitElement {
 
         .title .main {
           color: var(--primary-text-color);
-          font-size: 20px;
-          line-height: 24px;
+          font-size: var(--ha-font-size-xl);
+          line-height: var(--ha-line-height-condensed);
         }
 
         .title .breadcrumb {
           color: var(--secondary-text-color);
-          font-size: 14px;
+          font-size: var(--ha-font-size-m);
           line-height: 16px;
           --mdc-icon-size: 16px;
           padding: 4px;

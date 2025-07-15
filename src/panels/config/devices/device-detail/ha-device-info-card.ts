@@ -8,6 +8,7 @@ import type { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { createSearchParam } from "../../../../common/url/search-params";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
@@ -103,16 +104,25 @@ export class HaDeviceCard extends LitElement {
           ${this._getAddresses().map(
             ([type, value]) => html`
               <div class="extra-info">
-                ${type === "bluetooth"
-                  ? html`${titleCase(type)}
+                ${type === "bluetooth" &&
+                isComponentLoaded(this.hass, "bluetooth")
+                  ? html`${titleCase(type)}:
                       <a
                         href="/config/bluetooth/advertisement-monitor?${createSearchParam(
                           { address: value }
                         )}"
                         >${value.toUpperCase()}</a
                       >`
-                  : html`${type === "mac" ? "MAC" : titleCase(type)}:
-                    ${value.toUpperCase()}`}
+                  : type === "mac" && isComponentLoaded(this.hass, "dhcp")
+                    ? html`MAC:
+                        <a
+                          href="/config/dhcp?${createSearchParam({
+                            mac_address: value,
+                          })}"
+                          >${value.toUpperCase()}</a
+                        >`
+                    : html`${type === "mac" ? "MAC" : titleCase(type)}:
+                      ${value.toUpperCase()}`}
               </div>
             `
           )}

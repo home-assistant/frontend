@@ -1,6 +1,5 @@
 import "@lit-labs/virtualizer";
 import "@material/mwc-button";
-import "@material/mwc-list";
 import { mdiClose } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -15,6 +14,7 @@ import "../../../components/search-input";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-header";
 import "../../../components/ha-state-icon";
+import "../../../components/ha-list";
 import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { haStyle } from "../../../resources/styles";
@@ -85,7 +85,7 @@ class DialogExposeEntity extends LitElement {
             @value-changed=${this._filterChanged}
           ></search-input>
         </ha-dialog-header>
-        <mwc-list multi>
+        <ha-list multi>
           <lit-virtualizer
             scroller
             class="ha-scrollbar"
@@ -94,7 +94,7 @@ class DialogExposeEntity extends LitElement {
             .renderItem=${this._renderItem}
           >
           </lit-virtualizer>
-        </mwc-list>
+        </ha-list>
         <mwc-button
           slot="primaryAction"
           @click=${this._expose}
@@ -181,7 +181,7 @@ class DialogExposeEntity extends LitElement {
           --mdc-dialog-min-width: 500px;
           --mdc-dialog-max-width: 600px;
         }
-        mwc-list {
+        ha-list {
           position: relative;
         }
         lit-virtualizer {
@@ -196,7 +196,8 @@ class DialogExposeEntity extends LitElement {
         .header {
           margin: 0;
           pointer-events: auto;
-          -webkit-font-smoothing: antialiased;
+          -webkit-font-smoothing: var(--ha-font-smoothing);
+          -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
           font-weight: inherit;
           font-size: inherit;
           box-sizing: border-box;
@@ -206,8 +207,8 @@ class DialogExposeEntity extends LitElement {
         }
         .subtitle {
           color: var(--secondary-text-color);
-          font-size: 1rem;
-          line-height: normal;
+          font-size: var(--ha-font-size-m);
+          line-height: var(--ha-line-height-condensed);
         }
         lit-virtualizer {
           width: 100%;
@@ -235,10 +236,10 @@ class DialogExposeEntity extends LitElement {
         @media all and (max-width: 500px), all and (max-height: 500px) {
           ha-dialog {
             --mdc-dialog-min-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
             );
             --mdc-dialog-max-width: calc(
-              100vw - env(safe-area-inset-right) - env(safe-area-inset-left)
+              100vw - var(--safe-area-inset-right) - var(--safe-area-inset-left)
             );
             --mdc-dialog-min-height: 100%;
             --mdc-dialog-max-height: 100%;

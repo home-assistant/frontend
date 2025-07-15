@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import {
   mdiAlertCircle,
   mdiCheckCircle,
@@ -12,15 +10,17 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
 import "../../../../../components/ha-fab";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-svg-icon";
+import "../../../../../components/ha-list";
+import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-progress-ring";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import {
   ERROR_STATES,
@@ -37,23 +37,24 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
+  ProvisioningEntryStatus,
   restoreZwaveNVM,
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
   subscribeZwaveControllerStatistics,
   subscribeZwaveNVMBackup,
 } from "../../../../../data/zwave_js";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { fileDownload } from "../../../../../util/file_download";
+import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-node";
 import { showZWaveJSRebuildNetworkRoutesDialog } from "./show-dialog-zwave_js-rebuild-network-routes";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
-import { fileDownload } from "../../../../../util/file_download";
 
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
@@ -101,7 +102,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         const inclusion_state = this._network?.controller.inclusion_state;
         // show dialog if inclusion/exclusion is already in progress
         if (inclusion_state === InclusionState.Including) {
-          this._addNodeClicked();
+          this._openInclusionDialog(undefined, true);
         } else if (inclusion_state === InclusionState.Excluding) {
           this._removeNodeClicked();
         }
@@ -133,8 +134,14 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
+    const provisioningDevices =
+      this._provisioningEntries?.filter(
+        (entry) =>
+          !entry.nodeId && entry.status === ProvisioningEntryStatus.Active
+      ).length ?? 0;
     const notReadyDevices =
-      this._network?.controller.nodes.filter((node) => !node.ready).length ?? 0;
+      (this._network?.controller.nodes.filter((node) => !node.ready).length ??
+        0) + provisioningDevices;
 
     return html`
       <hass-tabs-subpage
@@ -142,6 +149,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         .tabs=${configTabs}
+        has-fab
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -181,7 +189,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               ${this.hass.localize(
                                 `ui.panel.config.zwave_js.dashboard.devices`,
                                 {
-                                  count: this._network.controller.nodes.length,
+                                  count:
+                                    this._network.controller.nodes.length +
+                                    provisioningDevices,
                                 }
                               )}
                               ${notReadyDevices > 0
@@ -263,8 +273,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       "ui.panel.config.zwave_js.dashboard.statistics.title"
                     )}
                   >
-                    <mwc-list noninteractive>
-                      <mwc-list-item twoline hasmeta>
+                    <ha-list noninteractive>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_tx.label"
@@ -278,8 +288,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_tx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_rx.label"
@@ -293,8 +303,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_rx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_tx.label"
@@ -308,8 +318,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_dropped_tx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.messages_dropped_rx.label"
@@ -323,8 +333,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.messages_dropped_rx ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.nak.label"
@@ -336,8 +346,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </span>
                         <span slot="meta">${this._statistics?.nak ?? 0}</span>
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.can.label"
@@ -349,8 +359,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </span>
                         <span slot="meta">${this._statistics?.can ?? 0}</span>
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_ack.label"
@@ -364,8 +374,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.timeout_ack ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_response.label"
@@ -379,8 +389,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.timeout_response ?? 0}</span
                         >
-                      </mwc-list-item>
-                      <mwc-list-item twoline hasmeta>
+                      </ha-list-item>
+                      <ha-list-item twoline hasmeta>
                         <span>
                           ${this.hass.localize(
                             "ui.panel.config.zwave_js.dashboard.statistics.timeout_callback.label"
@@ -394,8 +404,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         <span slot="meta"
                           >${this._statistics?.timeout_callback ?? 0}</span
                         >
-                      </mwc-list-item>
-                    </mwc-list>
+                      </ha-list-item>
+                    </ha-list>
                   </ha-expansion-panel>
                 </div>
                 <div class="card-actions">
@@ -408,7 +418,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         InclusionState.SmartStart)}
                   >
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.remove_node"
+                      "ui.panel.config.zwave_js.common.remove_a_node"
                     )}
                   </ha-button>
                   <ha-button
@@ -419,16 +429,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                       "ui.panel.config.zwave_js.common.rebuild_network_routes"
                     )}
                   </ha-button>
-                  <ha-button @click=${this._openOptionFlow}>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.reconfigure_server"
-                    )}
-                  </ha-button>
                 </div>
               </ha-card>
               <ha-card>
                 <div class="card-header">
-                  <h1>Third-Party Data Reporting</h1>
+                  <h1>Third-party data reporting</h1>
                   ${this._dataCollectionOptIn !== undefined
                     ? html`
                         <ha-switch
@@ -473,7 +478,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           .value=${this._backupProgress}
                         ></ha-progress-ring>
                         ${this.hass.localize(
-                          "ui.panel.config.zwave_js.dashboard.nvm_backup.downloading"
+                          "ui.panel.config.zwave_js.dashboard.nvm_backup.creating"
                         )}
                         ${this._backupProgress}%`
                     : this._restoreProgress !== undefined
@@ -508,7 +513,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               @change=${this._handleRestoreFileSelected}
                               style="display: none"
                             />
-                          </div>`}
+                          </div>
+                          <ha-button
+                            @click=${this._openConfigFlow}
+                            class="warning migrate-button"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
+                            )}
+                          </ha-button>`}
                 </div>
               </ha-card>
             `
@@ -595,7 +608,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     history.back();
   }
 
-  private async _fetchData() {
+  private _fetchData = async () => {
     if (!this.configEntryId) {
       return;
     }
@@ -629,7 +642,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
-  }
+  };
 
   private async _addNodeClicked() {
     this._openInclusionDialog();
@@ -637,10 +650,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
-      entry_id: this.configEntryId!,
+      entryId: this.configEntryId!,
       skipConfirmation:
         this._network?.controller.inclusion_state === InclusionState.Excluding,
-      removedCallback: () => this._fetchData(),
+      onClose: this._fetchData,
     });
   }
 
@@ -658,17 +671,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     );
   }
 
-  private async _openOptionFlow() {
+  private async _openConfigFlow() {
     if (!this.configEntryId) {
       return;
     }
-    const configEntries = await getConfigEntries(this.hass, {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "zwave_js",
       domain: "zwave_js",
+      entryId: this.configEntryId,
     });
-    const configEntry = configEntries.find(
-      (entry) => entry.entry_id === this.configEntryId
-    );
-    showOptionsFlowDialog(this, configEntry!);
   }
 
   private async _downloadBackup() {
@@ -743,7 +754,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     input.value = "";
   }
 
-  private _openInclusionDialog(dsk?: string) {
+  private _openInclusionDialog(dsk?: string, inclusionOngoing = false) {
     if (!this._dialogOpen) {
       // Unsubscribe from S2 inclusion before opening dialog
       if (this._s2InclusionUnsubscribe) {
@@ -755,6 +766,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         entry_id: this.configEntryId!,
         dsk,
         onStop: this._handleInclusionDialogClosed,
+        longRangeSupported: !!this._network?.controller?.supports_long_range,
+        inclusionOngoing,
       });
       this._dialogOpen = true;
     }
@@ -862,7 +875,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .error-message h3 {
           text-align: center;
-          font-weight: bold;
+          font-weight: var(--ha-font-weight-bold);
         }
 
         .error-message ha-svg-icon {
@@ -916,7 +929,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           font-size: 1rem;
         }
 
-        mwc-list-item {
+        ha-list-item {
           height: 60px;
         }
 
@@ -961,6 +974,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
         .button-content {
           pointer-events: none;
+        }
+
+        .migrate-button {
+          margin-left: auto;
         }
       `,
     ];

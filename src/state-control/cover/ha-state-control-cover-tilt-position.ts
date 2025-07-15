@@ -79,7 +79,7 @@ export class HaStateControlInfoCoverTiltPosition extends LitElement {
         max="100"
         mode="cursor"
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,
@@ -111,7 +111,7 @@ export class HaStateControlInfoCoverTiltPosition extends LitElement {
         --control-slider-color: var(--primary-color);
         --control-slider-background: var(--disabled-color);
         --control-slider-background-opacity: 0.2;
-        --control-slider-tooltip-font-size: 20px;
+        --control-slider-tooltip-font-size: var(--ha-font-size-xl);
       }
       .gradient {
         background: -webkit-linear-gradient(top, ${GRADIENT});

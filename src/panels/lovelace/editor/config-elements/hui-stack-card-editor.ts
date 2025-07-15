@@ -219,7 +219,7 @@ export class HuiStackCardEditor
   }
 
   private _getKey(cards: LovelaceCardConfig[], index: number): string {
-    const key = `${cards[index].type}${index}${cards.length}`;
+    const key = `${index}-${cards.length}`;
     if (!this._keys.has(key)) {
       this._keys.set(key, Math.random().toString());
     }
@@ -234,7 +234,7 @@ export class HuiStackCardEditor
   }
 
   protected _handleSelectedCard(ev) {
-    this._setMode(true);
+    this._GUImode = true;
     this._guiModeAvailable = true;
     this._selectedCard = parseInt(ev.detail.name, 10);
   }
@@ -315,13 +315,6 @@ export class HuiStackCardEditor
 
   protected _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
-  }
-
-  protected _setMode(value: boolean): void {
-    this._GUImode = value;
-    if (this._cardEditorEl) {
-      this._cardEditorEl!.GUImode = value;
-    }
   }
 
   protected _valueChanged(ev: CustomEvent): void {

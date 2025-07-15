@@ -1,4 +1,3 @@
-import "@material/mwc-list";
 import {
   mdiBackupRestore,
   mdiFolder,
@@ -10,12 +9,15 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-metric";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-icon-next";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHostInfo } from "../../../data/hassio/host";
 import { fetchHassioHostInfo } from "../../../data/hassio/host";
@@ -40,7 +42,6 @@ import {
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
-import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -165,7 +166,7 @@ class HaConfigSectionStorage extends LitElement {
                       )}
                 </ha-alert>`
               : validMounts?.length
-                ? html`<mwc-list>
+                ? html`<ha-list>
                     ${validMounts.map(
                       (mount) => html`
                         <ha-list-item
@@ -206,7 +207,7 @@ class HaConfigSectionStorage extends LitElement {
                         </ha-list-item>
                       `
                     )}
-                  </mwc-list>`
+                  </ha-list>`
                 : html`<div class="no-mounts">
                     <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
                     <p>

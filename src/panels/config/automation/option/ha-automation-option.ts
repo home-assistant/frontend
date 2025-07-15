@@ -29,6 +29,7 @@ export default class HaAutomationOption extends LitElement {
 
   @state() private _showReorder = false;
 
+  @state()
   @storage({
     key: "automationClipboard",
     state: true,

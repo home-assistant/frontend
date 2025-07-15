@@ -15,6 +15,7 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-header";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-list-item";
 import type { LovelaceStrategyConfig } from "../../../../../data/lovelace/config/strategy";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
@@ -143,6 +144,9 @@ class DialogDashboardStrategyEditor extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
+          ${this._params.title
+            ? html`<span slot="subtitle">${this._params.title}</span>`
+            : nothing}
           <ha-button-menu
             corner="BOTTOM_END"
             menu-corner="END"

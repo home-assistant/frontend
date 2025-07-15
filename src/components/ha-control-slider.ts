@@ -3,11 +3,12 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
-import type { FrontendLocaleData } from "../data/translation";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
+import type { FrontendLocaleData } from "../data/translation";
 
 declare global {
   interface HASSDomEvents {
@@ -75,6 +76,9 @@ export class HaControlSlider extends LitElement {
   @property({ type: Number })
   public max = 100;
 
+  @property({ type: String })
+  public label?: string;
+
   @state()
   public pressed = false;
 
@@ -107,10 +111,6 @@ export class HaControlSlider extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     this.setupListeners();
-    this.setAttribute("role", "slider");
-    if (!this.hasAttribute("tabindex")) {
-      this.setAttribute("tabindex", "0");
-    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -197,9 +197,6 @@ export class HaControlSlider extends LitElement {
         this.value = this.steppedValue(this.percentageToValue(percentage));
         fireEvent(this, "value-changed", { value: this.value });
       });
-
-      this.addEventListener("keydown", this._handleKeyDown);
-      this.addEventListener("keyup", this._handleKeyUp);
     }
   }
 
@@ -208,8 +205,6 @@ export class HaControlSlider extends LitElement {
       this._mc.destroy();
       this._mc = undefined;
     }
-    this.removeEventListener("keydown", this._handleKeyDown);
-    this.removeEventListener("keyup", this._handleKeyUp);
   }
 
   private get _tenPercentStep() {
@@ -323,6 +318,7 @@ export class HaControlSlider extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const valuenow = this.steppedValue(this.value ?? 0);
     return html`
       <div
         class="container${classMap({
@@ -332,7 +328,24 @@ export class HaControlSlider extends LitElement {
           "--value": `${this.valueToPercentage(this.value ?? 0)}`,
         })}
       >
-        <div id="slider" class="slider">
+        <div
+          id="slider"
+          class="slider"
+          role="slider"
+          tabindex="0"
+          aria-label=${ifDefined(this.label)}
+          aria-valuenow=${valuenow.toString()}
+          aria-valuetext=${this._formatValue(valuenow)}
+          aria-valuemin=${ifDefined(
+            this.min != null ? this.min.toString() : undefined
+          )}
+          aria-valuemax=${ifDefined(
+            this.max != null ? this.max.toString() : undefined
+          )}
+          aria-orientation=${this.vertical ? "vertical" : "horizontal"}
+          @keydown=${this._handleKeyDown}
+          @keyup=${this._handleKeyUp}
+        >
           <div class="slider-track-background"></div>
           <slot name="background"></slot>
           ${this.mode === "cursor"
@@ -368,15 +381,9 @@ export class HaControlSlider extends LitElement {
       --control-slider-background-opacity: 0.2;
       --control-slider-thickness: 40px;
       --control-slider-border-radius: 10px;
-      --control-slider-tooltip-font-size: 14px;
+      --control-slider-tooltip-font-size: var(--ha-font-size-m);
       height: var(--control-slider-thickness);
       width: 100%;
-      border-radius: var(--control-slider-border-radius);
-      outline: none;
-      transition: box-shadow 180ms ease-in-out;
-    }
-    :host(:focus-visible) {
-      box-shadow: 0 0 0 2px var(--control-slider-color);
     }
     :host([vertical]) {
       width: var(--control-slider-thickness);
@@ -471,8 +478,13 @@ export class HaControlSlider extends LitElement {
       width: 100%;
       border-radius: var(--control-slider-border-radius);
       transform: translateZ(0);
+      transition: box-shadow 180ms ease-in-out;
+      outline: none;
       overflow: hidden;
       cursor: pointer;
+    }
+    .slider:focus-visible {
+      box-shadow: 0 0 0 2px var(--control-slider-color);
     }
     .slider * {
       pointer-events: none;

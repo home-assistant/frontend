@@ -1,5 +1,3 @@
-import "@material/mwc-list/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import type { ActionDetail, SelectedDetail } from "@material/mwc-list";
 import {
   mdiDelete,
@@ -30,6 +28,7 @@ import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-button-menu";
 import "./ha-list-item";
+import "./ha-list";
 import { stopPropagation } from "../common/dom/stop_propagation";
 
 @customElement("ha-filter-categories")
@@ -82,7 +81,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         </div>
         ${this._shouldRender
           ? html`
-              <mwc-list
+              <ha-list
                 @selected=${this._categorySelected}
                 class="ha-scrollbar"
                 activatable
@@ -126,16 +125,16 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                           .path=${mdiDotsVertical}
                           slot="trigger"
                         ></ha-icon-button>
-                        <mwc-list-item graphic="icon"
+                        <ha-list-item graphic="icon"
                           ><ha-svg-icon
                             .path=${mdiPencil}
                             slot="graphic"
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.category.editor.edit"
-                          )}</mwc-list-item
+                          )}</ha-list-item
                         >
-                        <mwc-list-item graphic="icon" class="warning"
+                        <ha-list-item graphic="icon" class="warning"
                           ><ha-svg-icon
                             class="warning"
                             .path=${mdiDelete}
@@ -143,12 +142,12 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                           ></ha-svg-icon
                           >${this.hass.localize(
                             "ui.panel.config.category.editor.delete"
-                          )}</mwc-list-item
+                          )}</ha-list-item
                         >
                       </ha-button-menu>
                     </ha-list-item>`
                 )}
-              </mwc-list>
+              </ha-list>
             `
           : nothing}
       </ha-expansion-panel>
@@ -169,7 +168,7 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     if (changed.has("expanded") && this.expanded) {
       setTimeout(() => {
         if (!this.expanded) return;
-        this.renderRoot.querySelector("mwc-list")!.style.height =
+        this.renderRoot.querySelector("ha-list")!.style.height =
           `${this.clientHeight - (49 + 48)}px`;
       }, 300);
     }
@@ -304,15 +303,15 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           min-width: 16px;
           box-sizing: border-box;
           border-radius: 50%;
-          font-weight: 400;
-          font-size: 11px;
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
           background-color: var(--primary-color);
-          line-height: 16px;
+          line-height: var(--ha-line-height-normal);
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        mwc-list {
+        ha-list {
           --mdc-list-item-meta-size: auto;
           --mdc-list-side-padding-right: 4px;
           --mdc-icon-button-size: 36px;

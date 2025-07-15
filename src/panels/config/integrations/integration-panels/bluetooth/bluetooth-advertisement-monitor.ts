@@ -27,6 +27,18 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
+
+export const bluetoothAdvertisementMonitorTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.bluetooth.advertisement_monitor",
+    path: "advertisement-monitor",
+  },
+  {
+    translationKey: "ui.panel.config.bluetooth.visualization",
+    path: "visualization",
+  },
+];
 
 @customElement("bluetooth-advertisement-monitor")
 export class BluetoothAdvertisementMonitorPanel extends LitElement {
@@ -210,6 +222,9 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.bluetooth.no_advertisements_found"
+        )}
         @row-click=${this._handleRowClicked}
         .initialGroupColumn=${this._activeGrouping}
         .initialCollapsedGroups=${this._activeCollapsed}
@@ -217,6 +232,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         @collapsed-changed=${this._handleCollapseChanged}
         filter=${this.address || ""}
         clickable
+        .tabs=${bluetoothAdvertisementMonitorTabs}
       ></hass-tabs-subpage-data-table>
     `;
   }

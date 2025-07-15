@@ -8,15 +8,18 @@ export const configFlowContentStyles = css`
     padding: 0 24px;
     padding-inline-start: 24px;
     padding-inline-end: 24px;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+    -webkit-font-smoothing: var(--ha-font-smoothing);
     font-family: var(
       --mdc-typography-headline6-font-family,
-      var(--mdc-typography-font-family, Roboto, sans-serif)
+      var(--mdc-typography-font-family, var(--ha-font-family-body))
     );
-    font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+    font-size: var(--mdc-typography-headline6-font-size, var(--ha-font-size-l));
     line-height: var(--mdc-typography-headline6-line-height, 2rem);
-    font-weight: var(--mdc-typography-headline6-font-weight, 500);
+    font-weight: var(
+      --mdc-typography-headline6-font-weight,
+      var(--ha-font-weight-medium)
+    );
     letter-spacing: var(--mdc-typography-headline6-letter-spacing, 0.0125em);
     text-decoration: var(--mdc-typography-headline6-text-decoration, inherit);
     text-transform: var(--mdc-typography-headline6-text-transform, inherit);

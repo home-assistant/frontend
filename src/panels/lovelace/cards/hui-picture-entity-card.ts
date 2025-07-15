@@ -55,6 +55,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
@@ -117,7 +119,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning>
+        <hui-warning .hass=${this.hass}>
           ${createEntityNotFoundWarning(this.hass, this._config.entity)}
         </hui-warning>
       `;
@@ -155,6 +157,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const ignoreAspectRatio =
+      this.layout === "grid" &&
+      typeof this._config.grid_options?.rows === "number";
+
     return html`
       <ha-card>
         <hui-image
@@ -167,7 +173,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
             : this._config.camera_image}
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
-          .aspectRatio=${this._config.aspect_ratio}
+          .aspectRatio=${ignoreAspectRatio
+            ? undefined
+            : this._config.aspect_ratio}
           .fitMode=${this._config.fit_mode}
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
@@ -213,7 +221,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         rgba(0, 0, 0, 0.3)
       );
       padding: 16px;
-      font-size: 16px;
+      font-size: var(--ha-font-size-l);
       line-height: 16px;
       color: var(--ha-picture-card-text-color, white);
       pointer-events: none;

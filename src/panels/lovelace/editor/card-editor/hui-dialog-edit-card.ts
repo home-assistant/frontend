@@ -74,8 +74,6 @@ export class HuiDialogEditCard
 
   @state() private _dirty = false;
 
-  @state() private _isEscapeEnabled = true;
-
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -93,9 +91,6 @@ export class HuiDialogEditCard
   }
 
   public closeDialog(): boolean {
-    this._isEscapeEnabled = true;
-    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
-    window.removeEventListener("hass-more-info", this._disableEscapeKeyClose);
     if (this._dirty) {
       this._confirmCancel();
       return false;
@@ -110,11 +105,7 @@ export class HuiDialogEditCard
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (
-      !this._cardConfig ||
-      this._documentationURL !== undefined ||
-      !changedProps.has("_cardConfig")
-    ) {
+    if (!this._cardConfig || !changedProps.has("_cardConfig")) {
       return;
     }
 
@@ -127,16 +118,6 @@ export class HuiDialogEditCard
       );
     }
   }
-
-  private _enableEscapeKeyClose = (ev: any) => {
-    if (ev.detail.dialog === "ha-more-info-dialog") {
-      this._isEscapeEnabled = true;
-    }
-  };
-
-  private _disableEscapeKeyClose = () => {
-    this._isEscapeEnabled = false;
-  };
 
   protected render() {
     if (!this._params || !this._cardConfig) {
@@ -174,7 +155,7 @@ export class HuiDialogEditCard
       <ha-dialog
         open
         scrimClickAction
-        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
+        escapeKeyAction
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
@@ -308,8 +289,6 @@ export class HuiDialogEditCard
   }
 
   private _opened() {
-    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
-    window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._cardEditorEl?.focusYamlEditor();
   }
 

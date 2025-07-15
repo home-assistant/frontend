@@ -101,6 +101,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   slug: string;
   startup: AddonStartup;
   stdin: boolean;
+  system_managed: boolean;
+  system_managed_config_entry: string | null;
   translations: Record<string, AddonTranslations>;
   watchdog: null | boolean;
   webui: null | string;

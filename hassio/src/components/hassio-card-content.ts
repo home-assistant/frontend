@@ -85,7 +85,7 @@ class HassioCardContent extends LitElement {
     }
     ha-svg-icon.hassupdate,
     ha-svg-icon.backup {
-      color: var(--paper-item-icon-color);
+      color: var(--state-icon-color);
     }
     ha-svg-icon.not_available {
       color: var(--error-color);
@@ -101,7 +101,7 @@ class HassioCardContent extends LitElement {
       overflow: hidden;
       position: relative;
       height: 2.4em;
-      line-height: 1.2em;
+      line-height: var(--ha-line-height-condensed);
     }
     .icon_image img {
       max-height: 40px;
