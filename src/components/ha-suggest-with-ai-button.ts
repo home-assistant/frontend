@@ -49,6 +49,9 @@ export class HaSuggestWithAIButton extends LitElement {
     suggestionIndex: 1,
   };
 
+  @state()
+  private _minWidth?: string;
+
   private _intervalId?: number;
 
   protected firstUpdated(_changedProperties: PropertyValues): void {
@@ -93,6 +96,7 @@ export class HaSuggestWithAIButton extends LitElement {
           : this._state.status === "done"
             ? "done"
             : ""}
+        style=${this._minWidth ? `min-width: ${this._minWidth}` : ""}
       >
         <ha-svg-icon slot="icon" .path=${mdiStarFourPoints}></ha-svg-icon>
       </ha-assist-chip>
@@ -102,6 +106,12 @@ export class HaSuggestWithAIButton extends LitElement {
   private async _suggest() {
     if (!this.generateTask || this._state.status === "suggesting") {
       return;
+    }
+
+    // Capture current width before changing state
+    const chip = this.shadowRoot?.querySelector("ha-assist-chip");
+    if (chip) {
+      this._minWidth = `${chip.offsetWidth}px`;
     }
 
     // Reset to suggesting state
@@ -152,6 +162,7 @@ export class HaSuggestWithAIButton extends LitElement {
           ...this._state,
           status: "idle",
         };
+        this._minWidth = undefined;
       }, 3000);
     }
   }
