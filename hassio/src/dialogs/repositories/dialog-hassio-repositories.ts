@@ -233,6 +233,7 @@ class HassioRepositoriesDialog extends LitElement {
       this._repositories = await fetchStoreRepositories(this.hass);
 
       fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
+      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }

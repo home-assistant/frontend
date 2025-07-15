@@ -206,6 +206,7 @@ export class HassioAddonStore extends LitElement {
     fireEvent(this, "supervisor-collection-refresh", {
       collection: "supervisor",
     });
+    fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
   }
 
   private _filterChanged(e) {
