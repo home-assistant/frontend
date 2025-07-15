@@ -1,11 +1,15 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import { LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity_registry";
+import type { TileCardConfig } from "../../panels/lovelace/cards/types";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
+import "../../panels/lovelace/sections/hui-section";
 import type { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 
 @customElement("more-info-content")
 class MoreInfoContent extends LitElement {
@@ -33,13 +37,47 @@ class MoreInfoContent extends LitElement {
     }
 
     if (!moreInfoType) return nothing;
-    return dynamicElement(moreInfoType, {
-      hass: this.hass,
-      stateObj: this.stateObj,
-      entry: this.entry,
-      editMode: this.editMode,
-    });
+
+    return html`
+      ${dynamicElement(moreInfoType, {
+        hass: this.hass,
+        stateObj: this.stateObj,
+        entry: this.entry,
+        editMode: this.editMode,
+      })}
+      ${this.stateObj.attributes.entity_id &&
+      this.stateObj.attributes.entity_id.length
+        ? html`
+            <hui-section
+              .hass=${this.hass}
+              .config=${this._entitiesSectionConfig(
+                this.stateObj.attributes.entity_id
+              )}
+            >
+            </hui-section>
+          `
+        : nothing}
+    `;
   }
+
+  private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => ({
+    type: "grid",
+    cards: entityIds.map(
+      (entityId) =>
+        ({
+          type: "tile",
+          entity: entityId,
+        }) as TileCardConfig
+    ),
+  }));
+
+  static styles = css`
+    hui-section {
+      width: 100%;
+      display: block;
+      margin-top: 16px;
+    }
+  `;
 }
 
 declare global {
