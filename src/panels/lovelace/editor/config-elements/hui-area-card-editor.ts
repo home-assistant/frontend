@@ -48,6 +48,7 @@ const cardConfigStruct = assign(
   object({
     area: optional(string()),
     name: optional(string()),
+    show_name: optional(boolean()),
     color: optional(string()),
     navigation_path: optional(string()),
     show_camera: optional(boolean()),
@@ -95,6 +96,10 @@ export class HuiAreaCardEditor
               type: "grid",
               schema: [
                 { name: "name", selector: { text: {} } },
+                {
+                  name: "show_name",
+                  selector: { boolean: {} },
+                },
                 { name: "color", selector: { ui_color: {} } },
                 {
                   name: "display_type",

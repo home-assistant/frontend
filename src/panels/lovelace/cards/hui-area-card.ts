@@ -131,9 +131,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
 
     const displayType = this._config?.display_type || "picture";
+    const showName = this._config?.show_name !== false;
 
     if (displayType !== "compact") {
       rows += 2;
+    }
+
+    if (!showName) {
+      rows = 3;
+      min_columns = 6;
     }
 
     return {
@@ -437,8 +443,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const icon = area.icon;
 
     const name = this._config.name || computeAreaName(area);
+    const showName = this._config.show_name !== false;
 
-    const primary = name;
+    const primary = showName ? name : undefined;
     const secondary = this._computeSensorsDisplay();
 
     const featurePosition = this._featurePosition(this._config);
@@ -472,7 +479,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           .actionHandler=${actionHandler()}
           role=${ifDefined(this._hasCardAction ? "button" : undefined)}
           tabindex=${ifDefined(this._hasCardAction ? "0" : undefined)}
-          aria-labelledby="info"
+          aria-labelledby=${ifDefined(
+            showName || secondary ? "info" : undefined
+          )}
+          aria-label=${ifDefined(
+            !showName && !secondary && this._hasCardAction ? name : undefined
+          )}
         >
           <ha-ripple .disabled=${!this._hasCardAction}></ha-ripple>
         </div>
@@ -513,26 +525,45 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
               </div>
             `}
         <div class="container ${containerOrientationClass}">
-          <div class="content">
-            <ha-tile-icon>
-              ${displayType === "compact"
-                ? this._renderAlertSensorBadge()
-                : nothing}
-              ${icon
-                ? html`<ha-icon slot="icon" .icon=${icon}></ha-icon>`
-                : html`
-                    <ha-svg-icon
-                      slot="icon"
-                      .path=${mdiTextureBox}
-                    ></ha-svg-icon>
-                  `}
-            </ha-tile-icon>
-            <ha-tile-info
-              id="info"
-              .primary=${primary}
-              .secondary=${secondary}
-            ></ha-tile-info>
-          </div>
+          ${showName || secondary || features.length > 0
+            ? html`
+                <div class="content ${showName ? "" : "no-name"}">
+                  ${showName
+                    ? html`
+                        <ha-tile-icon>
+                          ${displayType === "compact"
+                            ? this._renderAlertSensorBadge()
+                            : nothing}
+                          ${icon
+                            ? html`<ha-icon
+                                slot="icon"
+                                .icon=${icon}
+                              ></ha-icon>`
+                            : html`
+                                <ha-svg-icon
+                                  slot="icon"
+                                  .path=${mdiTextureBox}
+                                ></ha-svg-icon>
+                              `}
+                        </ha-tile-icon>
+                        <ha-tile-info
+                          id="info"
+                          .primary=${primary}
+                          .secondary=${secondary}
+                        ></ha-tile-info>
+                      `
+                    : secondary
+                      ? html`
+                          <ha-tile-info
+                            id="info"
+                            .primary=${secondary}
+                            .secondary=${undefined}
+                          ></ha-tile-info>
+                        `
+                      : nothing}
+                </div>
+              `
+            : nothing}
           ${features.length > 0
             ? html`
                 <hui-card-features
@@ -593,9 +624,12 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       flex: 1;
       overflow: hidden;
       border-radius: var(--ha-card-border-radius, 12px);
+      pointer-events: none;
+    }
+    .header:has(+ .container .content),
+    .header:has(+ .container hui-card-features) {
       border-end-end-radius: 0;
       border-end-start-radius: 0;
-      pointer-events: none;
     }
     .picture {
       height: 100%;
@@ -649,6 +683,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       box-sizing: border-box;
       pointer-events: none;
       gap: 10px;
+    }
+    .content.no-name {
+      justify-content: center;
     }
 
     ha-tile-icon {

@@ -7252,6 +7252,7 @@
             "area": {
               "name": "Area",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
+              "show_name": "Show name",
               "alert_classes": "Alert classes",
               "alert_classes_helper": "In compact style, only the first one will be shown. Order alerts by priority.",
               "sensor_classes": "Sensor classes",
