@@ -11,6 +11,9 @@ import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers
 import "../../panels/lovelace/sections/hui-section";
 import type { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
+import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";
+import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
+import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
 
 @customElement("more-info-content")
 class MoreInfoContent extends LitElement {
@@ -73,16 +76,31 @@ class MoreInfoContent extends LitElement {
     );
   }
 
-  private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => ({
-    type: "grid",
-    cards: entityIds.map(
-      (entityId) =>
-        ({
-          type: "tile",
-          entity: entityId,
-        }) as TileCardConfig
-    ),
-  }));
+  private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => {
+    const cards = entityIds.map((entityId) => {
+      const features: LovelaceCardFeatureConfig[] = [];
+      const context = { entity_id: entityId };
+      if (supportsCoverPositionCardFeature(this.hass!, context)) {
+        features.push({
+          type: "cover-position",
+        });
+      } else if (supportsLightBrightnessCardFeature(this.hass!, context)) {
+        features.push({
+          type: "light-brightness",
+        });
+      }
+      return {
+        type: "tile",
+        entity: entityId,
+        features_position: "inline",
+        features,
+      } as TileCardConfig;
+    });
+    return {
+      type: "grid",
+      cards,
+    };
+  });
 
   static styles = css`
     hui-section {
