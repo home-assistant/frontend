@@ -1908,10 +1908,12 @@
         "title": "[%key:supervisor::system::supervisor::unhealthy_title%]",
         "description": "[%key:supervisor::system::supervisor::unhealthy_description%]",
         "reasons": {
+          "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
+          "oserror_bad_message": "[%key:supervisor::system::supervisor::unhealthy_reason::oserror_bad_message%]",
+          "duplicate_os_installation": "[%key:supervisor::system::supervisor::unhealthy_reason::duplicate_os_installation%]",
           "privileged": "[%key:supervisor::system::supervisor::unhealthy_reason::privileged%]",
           "supervisor": "[%key:supervisor::system::supervisor::unhealthy_reason::supervisor%]",
           "setup": "[%key:supervisor::system::supervisor::unhealthy_reason::setup%]",
-          "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
           "untrusted": "[%key:supervisor::system::supervisor::unhealthy_reason::untrusted%]"
         }
       },
@@ -9352,10 +9354,12 @@
           "systemd_resolved": "Systemd-Resolved"
         },
         "unhealthy_reason": {
-          "privileged": "Supervisor is not privileged",
-          "supervisor": "Supervisor was not able to update",
-          "setup": "Setup of the Supervisor failed",
           "docker": "The Docker environment is not working properly",
+          "duplicate_os_installation": " Duplicate Home Assistant OS installation",
+          "oserror_bad_message": "Operating System error: Bad message",
+          "privileged": "Supervisor is not privileged",
+          "setup": "Setup of the Supervisor failed",
+          "supervisor": "Supervisor was not able to update",
           "untrusted": "Detected untrusted content"
         }
       },
