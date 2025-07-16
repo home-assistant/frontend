@@ -436,8 +436,7 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown",
-      "suggest_ai": "Suggest with AI"
+      "markdown": "Markdown"
     },
 
     "components": {
@@ -1219,6 +1218,14 @@
       },
       "combo-box": {
         "no_match": "No matching items found"
+      },
+      "suggest_with_ai": {
+        "label": "Suggest with AI",
+        "suggesting_1": "Analyzing…",
+        "suggesting_2": "Suggesting…",
+        "suggesting_3": "Enchanting…",
+        "done": "Done!",
+        "error": "Fail!"
       }
     },
     "dialogs": {
