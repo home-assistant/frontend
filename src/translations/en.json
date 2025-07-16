@@ -4318,7 +4318,7 @@
                 },
                 "wait_template": {
                   "label": "Wait for a template",
-                  "wait_template": "Wait Template",
+                  "wait_template": "Wait template",
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
@@ -4516,7 +4516,7 @@
               "error": "Error: {error}",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
-              "no_logbook_entries": "No Logbook entries found for this step.",
+              "no_logbook_entries": "No logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
             },
@@ -6265,7 +6265,7 @@
             "title": "Rebuild routes for a Z-Wave device",
             "introduction": "Assign new routes between {device} and the adapter. This can help with communication issues if you have recently moved the device or your adapter.",
             "traffic_warning": "The route rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuilding is in progress.",
-            "start_rebuilding_routes": "Rebuild Routes for Device",
+            "start_rebuilding_routes": "Rebuild routes for device",
             "rebuilding_routes_failed": "{device} routes could not be rebuild.",
             "rebuilding_routes_failed_check_logs": "Additional information may be available in the logs.",
             "rebuilding_routes_complete": "{device} routes have been rebuilt.",
