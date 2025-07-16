@@ -7954,7 +7954,9 @@
             },
             "areas": {
               "areas_display": "Areas to display",
-              "no_entities": "No entities in this group, the section will not be displayed"
+              "no_entities": "No entities in this group, the section will not be displayed",
+              "use_compact_card": "Use compact card",
+              "use_large_card": "Use large card"
             }
           },
           "view": {
