@@ -4961,7 +4961,7 @@
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
               "security_devices": "Security devices",
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Assistant.",
-              "devices_pin": "Security Devices PIN",
+              "devices_pin": "Security devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "show_entities": "Show entities",
               "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
