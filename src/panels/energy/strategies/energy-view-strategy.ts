@@ -184,6 +184,11 @@ export class EnergyViewStrategy extends ReactiveElement {
         type: "energy-devices-graph",
         collection_key: "energy_dashboard",
       });
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
+        type: "energy-sankey",
+        collection_key: "energy_dashboard",
+      });
     }
 
     return view;
