@@ -94,6 +94,7 @@ class MoreInfoContent extends LitElement {
         entity: entityId,
         features_position: "inline",
         features,
+        grid_options: { columns: 12 },
       } as TileCardConfig;
     });
     return {
