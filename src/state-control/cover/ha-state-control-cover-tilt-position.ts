@@ -79,7 +79,7 @@ export class HaStateControlInfoCoverTiltPosition extends LitElement {
         max="100"
         mode="cursor"
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,

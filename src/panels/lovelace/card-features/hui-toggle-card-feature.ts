@@ -185,7 +185,7 @@ class HuiToggleCardFeature extends LitElement implements LovelaceCardFeature {
         .pathOff=${offIcon}
         .checked=${isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this.hass.localize("ui.card.common.toggle")}
+        .label=${this.hass.localize("ui.card.common.toggle")}
         .disabled=${this._stateObj.state === UNAVAILABLE}
       >
       </ha-control-switch>
