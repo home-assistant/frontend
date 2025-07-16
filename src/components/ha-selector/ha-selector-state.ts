@@ -23,7 +23,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public context?: {
     filter_attribute?: string;
-    filter_entity?: string;
+    filter_entity?: string | string[];
   };
 
   protected render() {
@@ -41,6 +41,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         .disabled=${this.disabled}
         .required=${this.required}
         allow-custom-value
+        .excludeStates=${this.selector.state?.exclude_states}
       ></ha-entity-state-picker>
     `;
   }

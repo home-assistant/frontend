@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ensureArray } from "../../common/array/ensure-array";
 import { fireEvent } from "../../common/dom/fire_event";
 import { getStates } from "../../common/entity/get_states";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
@@ -14,7 +15,7 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 class HaEntityStatePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId?: string;
+  @property({ attribute: false }) public entityId?: string | string[];
 
   @property() public attribute?: string;
 
@@ -29,6 +30,9 @@ class HaEntityStatePicker extends LitElement {
 
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
+
+  @property({ attribute: false })
+  public excludeStates?: string[];
 
   @property() public label?: string;
 
@@ -51,23 +55,37 @@ class HaEntityStatePicker extends LitElement {
       changedProps.has("attribute") ||
       changedProps.has("extraOptions")
     ) {
-      const stateObj = this.entityId
-        ? this.hass.states[this.entityId]
-        : undefined;
-      (this._comboBox as any).items = [
-        ...(this.extraOptions ?? []),
-        ...(this.entityId && stateObj
-          ? getStates(this.hass, stateObj, this.attribute).map((key) => ({
-              value: key,
+      const entityIds = this.entityId ? ensureArray(this.entityId) : [];
+      const stateOptions: { value: string; label: string }[] = [];
+      const statesSet = new Set<string>();
+
+      for (const entityId of entityIds) {
+        const stateObj = this.hass.states[entityId];
+        const states = getStates(this.hass, stateObj, this.attribute).filter(
+          (s) => !this.excludeStates || !this.excludeStates.includes(s)
+        );
+
+        for (const s of states) {
+          if (!statesSet.has(s)) {
+            statesSet.add(s);
+            const options = {
+              value: s,
               label: !this.attribute
-                ? this.hass.formatEntityState(stateObj, key)
+                ? this.hass.formatEntityState(stateObj, s)
                 : this.hass.formatEntityAttributeValue(
                     stateObj,
                     this.attribute,
-                    key
+                    s
                   ),
-            }))
-          : []),
+            };
+            stateOptions.push(options);
+          }
+        }
+      }
+
+      (this._comboBox as any).filteredItems = [
+        ...(this.extraOptions ?? []),
+        ...stateOptions,
       ];
     }
   }

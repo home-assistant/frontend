@@ -24,7 +24,10 @@ import { baseTriggerStruct, forDictStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -121,6 +124,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         },
         {
           name: "from",
+          context: {
+            filter_entity: "entity_id",
+          },
           selector: {
             state: {
               extra_options: (attribute
@@ -133,13 +139,15 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       value: ANY_STATE_VALUE,
                     },
                   ]) as any,
-              entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
           },
         },
         {
           name: "to",
+          context: {
+            filter_entity: "entity_id",
+          },
           selector: {
             state: {
               extra_options: (attribute
@@ -152,13 +160,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       value: ANY_STATE_VALUE,
                     },
                   ]) as any,
-              entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
           },
         },
         { name: "for", selector: { duration: {} } },
-      ] as const
+      ] as const satisfies HaFormSchema[]
   );
 
   public shouldUpdate(changedProperties: PropertyValues) {

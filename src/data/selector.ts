@@ -393,8 +393,9 @@ export interface SelectorSelector {
 export interface StateSelector {
   state: {
     extra_options?: { label: string; value: any }[];
-    entity_id?: string;
+    entity_id?: string | string[];
     attribute?: string;
+    exclude_states?: string[];
   } | null;
 }
 

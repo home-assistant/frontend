@@ -627,7 +627,7 @@ export class HaServiceControl extends LitElement {
     const fieldDataHasTemplate =
       this._value?.data && hasTemplate(this._value.data[dataField.key]);
 
-    const selector =
+    let selector =
       fieldDataHasTemplate &&
       typeof this._value!.data![dataField.key] === "string"
         ? { template: null }
@@ -636,6 +636,16 @@ export class HaServiceControl extends LitElement {
           ? { object: null }
           : (this._stickySelector[dataField.key] ??
             dataField?.selector ?? { text: null });
+
+    if ("state" in selector) {
+      selector = {
+        ...selector,
+        state: {
+          ...selector.state,
+          entity_id: targetEntities || undefined,
+        },
+      };
+    }
 
     if (fieldDataHasTemplate) {
       // Hold this selector type until the field is cleared
