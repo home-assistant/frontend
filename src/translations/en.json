@@ -6569,6 +6569,7 @@
           "caption": "Storage",
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used space",
+          "detailed_description": "{used} used of {total} total, {free_space} remaining",
           "emmc_lifetime_used": "eMMC lifetime used",
           "disk_metrics": "Disk metrics",
           "datadisk": {
