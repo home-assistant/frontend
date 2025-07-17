@@ -7582,7 +7582,7 @@
             },
             "picture-elements": {
               "name": "Picture elements",
-              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even actions! On an image based on coordinates.",
+              "description": "The Picture elements card is one of the most versatile types of cards. The card allows you to position icons or text and even actions on an image based on coordinates.",
               "card_options": "Card options",
               "elements": "Elements",
               "new_element": "Add new element",
