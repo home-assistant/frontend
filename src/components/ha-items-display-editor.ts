@@ -143,9 +143,11 @@ export class HaItemDisplayEditor extends LitElement {
                           `
                         : nothing}
                   ${this.showNavigationButton
-                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                    ? html`
+                        <ha-icon-next slot="end"></ha-icon-next>
+                        <div slot="end" class="separator"></div>
+                      `
                     : nothing}
-                  <div slot="end" class="separator"></div>
                   ${this.actionsRenderer
                     ? html`
                         <div slot="end" @click=${stopPropagation}>
