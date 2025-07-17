@@ -1,6 +1,8 @@
 import { mdiThermometerWater } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
+import { keyed } from "lit/directives/keyed";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-areas-display-editor";
@@ -55,12 +57,23 @@ export class HuiAreasDashboardStrategyEditor
       return nothing;
     }
 
-    if (this._area) {
-      const groups = getAreaGroupedEntities(this._area, this.hass);
+    return cache(
+      this._area ? this._renderOverviewEditor() : this._renderAreaEditor()
+    );
+  }
 
-      const area = this.hass.areas[this._area];
+  private _renderOverviewEditor() {
+    if (!this.hass || !this._config || !this._area) {
+      return nothing;
+    }
 
-      return html`
+    const groups = getAreaGroupedEntities(this._area, this.hass);
+
+    const area = this.hass.areas[this._area];
+
+    return keyed(
+      area.area_id,
+      html`
         <div class="toolbar">
           <ha-icon-button-prev @click=${this._back}></ha-icon-button-prev>
           <p>${area.name}</p>
@@ -69,6 +82,7 @@ export class HuiAreasDashboardStrategyEditor
           .header=${this.hass!.localize(
             `ui.panel.lovelace.strategy.areas.sensors`
           )}
+          left-chevron
           expanded
           outlined
         >
@@ -101,6 +115,7 @@ export class HuiAreasDashboardStrategyEditor
               .header=${this.hass!.localize(
                 `ui.panel.lovelace.strategy.areas.groups.${group}`
               )}
+              left-chevron
               expanded
               outlined
             >
@@ -108,7 +123,7 @@ export class HuiAreasDashboardStrategyEditor
                 slot="leading-icon"
                 .icon=${AREA_STRATEGY_GROUP_ICONS[group]}
               ></ha-icon>
-              ${entities.length
+              ${entities.length > 0
                 ? html`
                     <ha-entities-display-editor
                       .hass=${this.hass}
@@ -130,7 +145,13 @@ export class HuiAreasDashboardStrategyEditor
             </ha-expansion-panel>
           `;
         })}
-      `;
+      `
+    );
+  }
+
+  private _renderAreaEditor() {
+    if (!this.hass || !this._config) {
+      return nothing;
     }
 
     const value = this._areasFloorsDisplayValue(this._config);
@@ -286,7 +307,6 @@ export class HuiAreasDashboardStrategyEditor
         }
         ha-expansion-panel {
           margin-bottom: 8px;
-          max-width: 600px;
           --expansion-panel-summary-padding: 0 16px;
         }
         ha-expansion-panel [slot="leading-icon"] {
