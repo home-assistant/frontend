@@ -16,6 +16,10 @@ import {
   updateAreaRegistryEntry,
   type AreaRegistryEntry,
 } from "../../../../../data/area_registry";
+import {
+  haCardSizeLarge,
+  haCardSizeSmall,
+} from "../../../../../resources/ha-icons";
 import { buttonLinkStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showAreaRegistryDetailDialog } from "../../../../config/areas/show-dialog-area-registry-detail";
@@ -27,6 +31,7 @@ import {
   AREA_STRATEGY_GROUPS,
   getAreaGroupedEntities,
 } from "../helpers/areas-strategy-helper";
+import type { DisplayItem } from "../../../../../components/ha-items-display-editor";
 
 @customElement("hui-areas-dashboard-strategy-editor")
 export class HuiAreasDashboardStrategyEditor
@@ -140,10 +145,64 @@ export class HuiAreasDashboardStrategyEditor
         @value-changed=${this._areasFloorsDisplayChanged}
         expanded
         show-navigation-button
+        .actionsRenderer=${this._areasActionsButtonsRenderer}
         @item-display-navigate-clicked=${this._handleAreaNavigate}
       ></ha-areas-floors-display-editor>
     `;
   }
+
+  private _areasActionsButtonsRenderer = (item: DisplayItem) => {
+    const areaId = item.value;
+    const isHidden =
+      this._config?.areas_display?.hidden?.includes(areaId) || false;
+    const isLarge =
+      !isHidden && this._config?.areas_options?.[areaId]?.card_size === "large";
+
+    return html`
+      <ha-icon-button
+        .label=${this.hass!.localize(
+          `ui.panel.lovelace.editor.strategy.areas.${isLarge ? "use_compact_card" : "use_large_card"}`
+        )}
+        @click=${this._toggleAreaLargeCard}
+        .area=${areaId}
+        .path=${isLarge ? haCardSizeLarge : haCardSizeSmall}
+        .disabled=${isHidden}
+      >
+      </ha-icon-button>
+    `;
+  };
+
+  private _toggleAreaLargeCard = (ev: Event) => {
+    ev.stopPropagation();
+    const area = (ev.currentTarget! as any).area as string;
+    const newConfig: AreasDashboardStrategyConfig = {
+      ...this._config!,
+      areas_options: {
+        ...this._config!.areas_options,
+        [area]: {
+          ...this._config!.areas_options?.[area],
+          card_size:
+            this._config!.areas_options?.[area]?.card_size === "large"
+              ? "small"
+              : "large",
+        },
+      },
+    };
+
+    if (newConfig.areas_options![area]!.card_size === "small") {
+      delete newConfig.areas_options![area].card_size;
+    }
+
+    if (Object.keys(newConfig.areas_options![area]).length === 0) {
+      delete newConfig.areas_options![area];
+    }
+
+    if (Object.keys(newConfig.areas_options!).length === 0) {
+      delete newConfig.areas_options;
+    }
+
+    fireEvent(this, "config-changed", { config: newConfig });
+  };
 
   private _back(): void {
     if (this._area) {

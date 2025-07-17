@@ -18,6 +18,7 @@ const UNASSIGNED_FLOOR = "__unassigned__";
 
 interface AreaOptions {
   groups_options?: Record<string, EntitiesDisplay>;
+  card_size?: "small" | "large";
 }
 
 export interface AreasViewStrategyConfig {
@@ -100,7 +101,8 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
           return {
             type: "area",
             area: area.area_id,
-            display_type: "compact",
+            display_type:
+              areaOptions.card_size === "large" ? "camera" : "compact",
             sensor_classes: sensorClasses,
             exclude_entities: hiddenEntities,
             features: filteredControls.length
