@@ -16,8 +16,6 @@ interface StateOption {
   label: string;
 }
 
-const DEFAULT_COMBINE_MODE: "union" | "intersection" = "union";
-
 @customElement("ha-entity-state-picker")
 class HaEntityStatePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -40,9 +38,6 @@ class HaEntityStatePicker extends LitElement {
 
   @property({ attribute: false })
   public hideStates?: string[];
-
-  @property({ attribute: "combine-mode" })
-  public combineMode?: "union" | "intersection";
 
   @property() public label?: string;
 
@@ -74,47 +69,25 @@ class HaEntityStatePicker extends LitElement {
         }
 
         const states = getStates(this.hass, stateObj, this.attribute).filter(
-          (s) => !this.hideStates || !this.hideStates.includes(s)
+          (s) => !this.hideStates?.includes(s)
         );
 
         return states.map((s) => ({
           value: s,
-          label: !this.attribute
-            ? this.hass.formatEntityState(stateObj, s)
-            : this.hass.formatEntityAttributeValue(stateObj, this.attribute, s),
+          label: this.attribute
+            ? this.hass.formatEntityAttributeValue(stateObj, this.attribute, s)
+            : this.hass.formatEntityState(stateObj, s),
         }));
       });
 
-      const mode: "union" | "intersection" =
-        this.combineMode || DEFAULT_COMBINE_MODE;
-
-      let options: StateOption[] = [];
-
-      if (mode === "union") {
-        // Union: combine all unique states from all entities
-        options = entitiesOptions.reduce(
-          (acc, curr) => [
-            ...acc,
-            ...curr.filter(
-              (item) => !acc.some((existing) => existing.value === item.value)
-            ),
-          ],
-          [] as StateOption[]
-        );
-      } else if (mode === "intersection") {
-        // Intersection: only states that exist in ALL entities
-        if (entitiesOptions.length === 0) {
-          options = [];
-        } else if (entitiesOptions.length === 1) {
-          options = entitiesOptions[0];
-        } else {
-          options = entitiesOptions[0].filter((item) =>
-            entitiesOptions
-              .slice(1)
-              .every((entityOptions) =>
-                entityOptions.some((option) => option.value === item.value)
-              )
-          );
+      const options: StateOption[] = [];
+      const optionsSet = new Set<string>();
+      for (const entityOptions of entitiesOptions) {
+        for (const option of entityOptions) {
+          if (!optionsSet.has(option.value)) {
+            optionsSet.add(option.value);
+            options.push(option);
+          }
         }
       }
 

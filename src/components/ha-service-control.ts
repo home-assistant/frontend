@@ -55,20 +55,6 @@ const showOptionalToggle = (field) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
-const enrichSelector = (selector: Selector): Selector => {
-  // Default combine_mode to intersection for state selectors
-  if ("state" in selector) {
-    return {
-      ...selector,
-      state: {
-        ...selector.state,
-        combine_mode: selector.state?.combine_mode || "intersection",
-      },
-    };
-  }
-  return selector;
-};
-
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
   selector?: Selector;
@@ -258,9 +244,7 @@ export class HaServiceControl extends LitElement {
       ).map(([key, value]) => ({
         key,
         ...value,
-        selector: (value.selector
-          ? enrichSelector(value.selector)
-          : undefined) as Selector | undefined,
+        selector: (value.selector || undefined) as Selector | undefined,
       }));
 
       const flatFields: Field[] = [];
