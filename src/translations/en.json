@@ -9355,7 +9355,7 @@
         },
         "unhealthy_reason": {
           "docker": "The Docker environment is not working properly",
-          "duplicate_os_installation": " Duplicate Home Assistant OS installation",
+          "duplicate_os_installation": "Duplicate Home Assistant OS installation",
           "oserror_bad_message": "Operating System error: Bad message",
           "privileged": "Supervisor is not privileged",
           "setup": "Setup of the Supervisor failed",
