@@ -98,11 +98,11 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
             sensorClasses.push("humidity");
           }
 
+          const isLarge = areaOptions.card_size === "large";
           return {
             type: "area",
             area: area.area_id,
-            display_type:
-              areaOptions.card_size === "large" ? "camera" : "compact",
+            display_type: isLarge ? "camera" : "compact",
             sensor_classes: sensorClasses,
             exclude_entities: hiddenEntities,
             features: filteredControls.length
@@ -114,7 +114,7 @@ export class AreasOverviewViewStrategy extends ReactiveElement {
                 ]
               : [],
             grid_options: {
-              rows: 1,
+              rows: isLarge ? 4 : 1,
               columns: 12,
             },
             features_position: "inline",
