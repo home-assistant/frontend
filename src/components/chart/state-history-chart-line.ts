@@ -111,7 +111,7 @@ export class StateHistoryChartLine extends LitElement {
     this._chartData.forEach((dataset, index) => {
       if (
         dataset.tooltip?.show === false ||
-        this._hiddenStats.has(dataset.name as string)
+        this._hiddenStats.has(dataset.id as string)
       )
         return;
       const param = params.find(
@@ -185,11 +185,11 @@ export class StateHistoryChartLine extends LitElement {
   };
 
   private _datasetHidden(ev: CustomEvent) {
-    this._hiddenStats.add(ev.detail.name);
+    this._hiddenStats.add(ev.detail.id);
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    this._hiddenStats.delete(ev.detail.name);
+    this._hiddenStats.delete(ev.detail.id);
   }
 
   public willUpdate(changedProps: PropertyValues) {

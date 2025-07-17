@@ -436,8 +436,7 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown",
-      "suggest_ai": "Suggest with AI"
+      "markdown": "Markdown"
     },
 
     "components": {
@@ -1219,6 +1218,14 @@
       },
       "combo-box": {
         "no_match": "No matching items found"
+      },
+      "suggest_with_ai": {
+        "label": "Suggest with AI",
+        "suggesting_1": "Analyzing…",
+        "suggesting_2": "Suggesting…",
+        "suggesting_3": "Enchanting…",
+        "done": "Done!",
+        "error": "Fail!"
       }
     },
     "dialogs": {
@@ -2099,7 +2106,7 @@
       "sidebar_toggle": "Sidebar toggle",
       "edit_sidebar": "Edit sidebar",
       "edit_subtitle": "Synced on all devices",
-      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged into. To create a sidebar per device, you should use a different user for that device."
+      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged in to. To create a sidebar per device, you should use a different user for that device."
     },
     "panel": {
       "my": {
@@ -2942,7 +2949,7 @@
             "create_and_write": "Create and write",
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
-            "companion_apps": "companion apps"
+            "companion_apps": "Companion apps"
           }
         },
         "energy": {
@@ -3986,7 +3993,7 @@
                 "tag": {
                   "label": "Tag",
                   "description": {
-                    "picker": "When a tag is scanned (tags are usually created from the companion app).",
+                    "picker": "When a tag is scanned (tags are usually created from the Companion app).",
                     "full": "When a tag is scanned"
                   }
                 },
@@ -4914,7 +4921,7 @@
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
-              "drop_connection_warning_title": "Remote log in has been deactivated",
+              "drop_connection_warning_title": "Remote login has been deactivated",
               "drop_connection_warning": "The below security options may make it appear the system is not running.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
@@ -9116,7 +9123,7 @@
           },
           "auth_api": {
             "title": "Home Assistant authentication",
-            "description": "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability."
+            "description": "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log in to applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability."
           },
           "ingress": {
             "title": "Ingress",
