@@ -41,7 +41,7 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
         .disabled=${this.disabled}
         .required=${this.required}
         allow-custom-value
-        .excludeStates=${this.selector.state?.exclude_states}
+        .hideStates=${this.selector.state?.hide_states}
       ></ha-entity-state-picker>
     `;
   }

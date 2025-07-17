@@ -32,7 +32,7 @@ class HaEntityStatePicker extends LitElement {
   public allowCustomValue;
 
   @property({ attribute: false })
-  public excludeStates?: string[];
+  public hideStates?: string[];
 
   @property() public label?: string;
 
@@ -56,19 +56,19 @@ class HaEntityStatePicker extends LitElement {
       changedProps.has("extraOptions")
     ) {
       const entityIds = this.entityId ? ensureArray(this.entityId) : [];
-      const stateOptions: { value: string; label: string }[] = [];
+      const options: { value: string; label: string }[] = [];
       const statesSet = new Set<string>();
 
       for (const entityId of entityIds) {
         const stateObj = this.hass.states[entityId];
         const states = getStates(this.hass, stateObj, this.attribute).filter(
-          (s) => !this.excludeStates || !this.excludeStates.includes(s)
+          (s) => !this.hideStates || !this.hideStates.includes(s)
         );
 
         for (const s of states) {
           if (!statesSet.has(s)) {
             statesSet.add(s);
-            const options = {
+            options.push({
               value: s,
               label: !this.attribute
                 ? this.hass.formatEntityState(stateObj, s)
@@ -77,15 +77,14 @@ class HaEntityStatePicker extends LitElement {
                     this.attribute,
                     s
                   ),
-            };
-            stateOptions.push(options);
+            });
           }
         }
       }
 
       (this._comboBox as any).filteredItems = [
         ...(this.extraOptions ?? []),
-        ...stateOptions,
+        ...options,
       ];
     }
   }
@@ -106,6 +105,7 @@ class HaEntityStatePicker extends LitElement {
         .required=${this.required}
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
+        item-id-path="value"
         item-value-path="value"
         item-label-path="label"
         @opened-changed=${this._openedChanged}

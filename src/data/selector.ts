@@ -395,7 +395,7 @@ export interface StateSelector {
     extra_options?: { label: string; value: any }[];
     entity_id?: string | string[];
     attribute?: string;
-    exclude_states?: string[];
+    hide_states?: string[];
   } | null;
 }
 

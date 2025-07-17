@@ -6,6 +6,8 @@ import { computeAttributeNameDisplay } from "../../common/entity/compute_attribu
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
+import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -13,7 +15,7 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 class HaEntityAttributePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId?: string;
+  @property({ attribute: false }) public entityId?: string | string[];
 
   /**
    * List of attributes to be hidden.
@@ -48,23 +50,37 @@ class HaEntityAttributePicker extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("_opened") && this._opened) {
-      const entityState = this.entityId
-        ? this.hass.states[this.entityId]
-        : undefined;
-      (this._comboBox as any).items = entityState
-        ? Object.keys(entityState.attributes)
-            .filter((key) => !this.hideAttributes?.includes(key))
-            .map((key) => ({
-              value: key,
+    if (
+      (changedProps.has("_opened") && this._opened) ||
+      changedProps.has("entityId") ||
+      changedProps.has("attribute")
+    ) {
+      const entityIds = this.entityId ? ensureArray(this.entityId) : [];
+      const options: { value: string; label: string }[] = [];
+      const attributesSet = new Set<string>();
+
+      for (const entityId of entityIds) {
+        const stateObj = this.hass.states[entityId];
+        const attributes = Object.keys(stateObj.attributes).filter(
+          (a) => !this.hideAttributes?.includes(a)
+        );
+        for (const a of attributes) {
+          if (!attributesSet.has(a)) {
+            attributesSet.add(a);
+            options.push({
+              value: a,
               label: computeAttributeNameDisplay(
                 this.hass.localize,
-                entityState,
+                stateObj,
                 this.hass.entities,
-                key
+                a
               ),
-            }))
-        : [];
+            });
+          }
+        }
+      }
+
+      (this._comboBox as any).filteredItems = options;
     }
   }
 
@@ -73,21 +89,10 @@ class HaEntityAttributePicker extends LitElement {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this.entityId!] as HassEntity | undefined;
-
     return html`
       <ha-combo-box
         .hass=${this.hass}
-        .value=${this.value
-          ? stateObj
-            ? computeAttributeNameDisplay(
-                this.hass.localize,
-                stateObj,
-                this.hass.entities,
-                this.value
-              )
-            : this.value
-          : ""}
+        .value=${this.value}
         .autofocus=${this.autofocus}
         .label=${this.label ??
         this.hass.localize(
@@ -97,6 +102,7 @@ class HaEntityAttributePicker extends LitElement {
         .required=${this.required}
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
+        item-id-path="value"
         item-value-path="value"
         item-label-path="label"
         @opened-changed=${this._openedChanged}
@@ -106,12 +112,28 @@ class HaEntityAttributePicker extends LitElement {
     `;
   }
 
+  private get _value() {
+    return this.value || "";
+  }
+
   private _openedChanged(ev: ValueChangedEvent<boolean>) {
     this._opened = ev.detail.value;
   }
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
-    this.value = ev.detail.value;
+    ev.stopPropagation();
+    const newValue = ev.detail.value;
+    if (newValue !== this._value) {
+      this._setValue(newValue);
+    }
+  }
+
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 }
 
