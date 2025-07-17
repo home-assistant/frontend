@@ -11,6 +11,13 @@ import type { HaComboBox } from "../ha-combo-box";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
+interface StateOption {
+  value: string;
+  label: string;
+}
+
+const DEFAULT_COMBINE_MODE: "union" | "intersection" = "union";
+
 @customElement("ha-entity-state-picker")
 class HaEntityStatePicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -34,6 +41,9 @@ class HaEntityStatePicker extends LitElement {
   @property({ attribute: false })
   public hideStates?: string[];
 
+  @property({ attribute: "combine-mode" })
+  public combineMode?: "union" | "intersection";
+
   @property() public label?: string;
 
   @property() public value?: string;
@@ -56,29 +66,55 @@ class HaEntityStatePicker extends LitElement {
       changedProps.has("extraOptions")
     ) {
       const entityIds = this.entityId ? ensureArray(this.entityId) : [];
-      const options: { value: string; label: string }[] = [];
-      const statesSet = new Set<string>();
 
-      for (const entityId of entityIds) {
+      const entitiesOptions = entityIds.map<StateOption[]>((entityId) => {
         const stateObj = this.hass.states[entityId];
+        if (!stateObj) {
+          return [];
+        }
+
         const states = getStates(this.hass, stateObj, this.attribute).filter(
           (s) => !this.hideStates || !this.hideStates.includes(s)
         );
 
-        for (const s of states) {
-          if (!statesSet.has(s)) {
-            statesSet.add(s);
-            options.push({
-              value: s,
-              label: !this.attribute
-                ? this.hass.formatEntityState(stateObj, s)
-                : this.hass.formatEntityAttributeValue(
-                    stateObj,
-                    this.attribute,
-                    s
-                  ),
-            });
-          }
+        return states.map((s) => ({
+          value: s,
+          label: !this.attribute
+            ? this.hass.formatEntityState(stateObj, s)
+            : this.hass.formatEntityAttributeValue(stateObj, this.attribute, s),
+        }));
+      });
+
+      const mode: "union" | "intersection" =
+        this.combineMode || DEFAULT_COMBINE_MODE;
+
+      let options: StateOption[] = [];
+
+      if (mode === "union") {
+        // Union: combine all unique states from all entities
+        options = entitiesOptions.reduce(
+          (acc, curr) => [
+            ...acc,
+            ...curr.filter(
+              (item) => !acc.some((existing) => existing.value === item.value)
+            ),
+          ],
+          [] as StateOption[]
+        );
+      } else if (mode === "intersection") {
+        // Intersection: only states that exist in ALL entities
+        if (entitiesOptions.length === 0) {
+          options = [];
+        } else if (entitiesOptions.length === 1) {
+          options = entitiesOptions[0];
+        } else {
+          options = entitiesOptions[0].filter((item) =>
+            entitiesOptions
+              .slice(1)
+              .every((entityOptions) =>
+                entityOptions.some((option) => option.value === item.value)
+              )
+          );
         }
       }
 

@@ -55,6 +55,20 @@ const showOptionalToggle = (field) =>
   !field.required &&
   !("boolean" in field.selector && field.default);
 
+const enrichSelector = (selector: Selector): Selector => {
+  // Default combine_mode to intersection for state selectors
+  if ("state" in selector) {
+    return {
+      ...selector,
+      state: {
+        ...selector.state,
+        combine_mode: selector.state?.combine_mode || "intersection",
+      },
+    };
+  }
+  return selector;
+};
+
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
   selector?: Selector;
@@ -244,7 +258,9 @@ export class HaServiceControl extends LitElement {
       ).map(([key, value]) => ({
         key,
         ...value,
-        selector: value.selector as Selector | undefined,
+        selector: (value.selector
+          ? enrichSelector(value.selector)
+          : undefined) as Selector | undefined,
       }));
 
       const flatFields: Field[] = [];
@@ -314,7 +330,12 @@ export class HaServiceControl extends LitElement {
           targetSelector
         );
         targetDevices.push(...expanded.devices);
-        targetEntities.push(...expanded.entities);
+        const primaryEntities = expanded.entities.filter(
+          (entityId) =>
+            !this.hass.entities[entityId]?.entity_category &&
+            !this.hass.entities[entityId]?.hidden
+        );
+        targetEntities.push(primaryEntities);
         targetAreas.push(...expanded.areas);
       });
     }
@@ -338,20 +359,29 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        targetEntities.push(...expanded.entities);
+        const primaryEntities = expanded.entities.filter(
+          (entityId) =>
+            !this.hass.entities[entityId]?.entity_category &&
+            !this.hass.entities[entityId]?.hidden
+        );
+        targetEntities.push(...primaryEntities);
         targetDevices.push(...expanded.devices);
       });
     }
     if (targetDevices.length) {
       targetDevices.forEach((deviceId) => {
-        targetEntities.push(
-          ...expandDeviceTarget(
-            this.hass,
-            deviceId,
-            this.hass.entities,
-            targetSelector
-          ).entities
+        const expanded = expandDeviceTarget(
+          this.hass,
+          deviceId,
+          this.hass.entities,
+          targetSelector
         );
+        const primaryEntities = expanded.entities.filter(
+          (entityId) =>
+            !this.hass.entities[entityId]?.entity_category &&
+            !this.hass.entities[entityId]?.hidden
+        );
+        targetEntities.push(...primaryEntities);
       });
     }
     return targetEntities;
