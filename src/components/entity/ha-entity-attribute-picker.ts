@@ -2,14 +2,18 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
+import { ensureArray } from "../../common/array/ensure-array";
+import { fireEvent } from "../../common/dom/fire_event";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import { ensureArray } from "../../common/array/ensure-array";
-import { fireEvent } from "../../common/dom/fire_event";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
+
+interface AttributeOption {
+  value: string;
+  label: string;
+}
 
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
@@ -56,26 +60,29 @@ class HaEntityAttributePicker extends LitElement {
       changedProps.has("attribute")
     ) {
       const entityIds = this.entityId ? ensureArray(this.entityId) : [];
-      const options: { value: string; label: string }[] = [];
-      const attributesSet = new Set<string>();
-
-      for (const entityId of entityIds) {
+      const entitiesOptions = entityIds.map<AttributeOption[]>((entityId) => {
         const stateObj = this.hass.states[entityId];
+        if (!stateObj) {
+          return [];
+        }
+
         const attributes = Object.keys(stateObj.attributes).filter(
           (a) => !this.hideAttributes?.includes(a)
         );
-        for (const a of attributes) {
-          if (!attributesSet.has(a)) {
-            attributesSet.add(a);
-            options.push({
-              value: a,
-              label: computeAttributeNameDisplay(
-                this.hass.localize,
-                stateObj,
-                this.hass.entities,
-                a
-              ),
-            });
+
+        return attributes.map((a) => ({
+          value: a,
+          label: this.hass.formatEntityAttributeName(stateObj, a),
+        }));
+      });
+
+      const options: AttributeOption[] = [];
+      const optionsSet = new Set<string>();
+      for (const entityOptions of entitiesOptions) {
+        for (const option of entityOptions) {
+          if (!optionsSet.has(option.value)) {
+            optionsSet.add(option.value);
+            options.push(option);
           }
         }
       }

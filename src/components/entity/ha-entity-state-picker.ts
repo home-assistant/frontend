@@ -91,10 +91,11 @@ class HaEntityStatePicker extends LitElement {
         }
       }
 
-      (this._comboBox as any).filteredItems = [
-        ...(this.extraOptions ?? []),
-        ...options,
-      ];
+      if (this.extraOptions) {
+        options.unshift(...this.extraOptions);
+      }
+
+      (this._comboBox as any).filteredItems = options;
     }
   }
 

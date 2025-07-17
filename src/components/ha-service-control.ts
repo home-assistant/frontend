@@ -244,7 +244,7 @@ export class HaServiceControl extends LitElement {
       ).map(([key, value]) => ({
         key,
         ...value,
-        selector: (value.selector || undefined) as Selector | undefined,
+        selector: value.selector as Selector | undefined,
       }));
 
       const flatFields: Field[] = [];
