@@ -4937,7 +4937,7 @@
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
               "config_documentation": "Configuration documentation",
-              "enable_state_reporting": "Enable State Reporting",
+              "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
               "show_entities": "[%key:ui::panel::config::cloud::account::google::show_entities%]",
