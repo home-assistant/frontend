@@ -17,7 +17,6 @@ import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "./hui-warning";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-generic-entity-row")
 export class HuiGenericEntityRow extends LitElement {
@@ -148,13 +147,8 @@ export class HuiGenericEntityRow extends LitElement {
                                       )}
                                       %`
                                     : this.config.secondary_info === "state"
-                                      ? html`${computeStateDisplay(
-                                          this.hass.localize,
-                                          stateObj,
-                                          this.hass.locale,
-                                          [],
-                                          this.hass.config,
-                                          this.hass.entities
+                                      ? html`${this.hass.formatEntityState(
+                                          stateObj
                                         )}`
                                       : nothing)}
                     </div>
