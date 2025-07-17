@@ -98,7 +98,7 @@ export interface AreasDisplaySelector {
 
 export interface AttributeSelector {
   attribute: {
-    entity_id?: string;
+    entity_id?: string | string[];
     hide_attributes?: readonly string[];
   } | null;
 }

@@ -627,7 +627,7 @@ export class HaServiceControl extends LitElement {
     const fieldDataHasTemplate =
       this._value?.data && hasTemplate(this._value.data[dataField.key]);
 
-    let selector =
+    const selector =
       fieldDataHasTemplate &&
       typeof this._value!.data![dataField.key] === "string"
         ? { template: null }
@@ -636,16 +636,6 @@ export class HaServiceControl extends LitElement {
           ? { object: null }
           : (this._stickySelector[dataField.key] ??
             dataField?.selector ?? { text: null });
-
-    if ("state" in selector) {
-      selector = {
-        ...selector,
-        state: {
-          ...selector.state,
-          entity_id: targetEntities || undefined,
-        },
-      };
-    }
 
     if (fieldDataHasTemplate) {
       // Hold this selector type until the field is cleared
@@ -685,6 +675,7 @@ export class HaServiceControl extends LitElement {
             ) || dataField?.description}</span
           >
           <ha-selector
+            .context=${this._selectorContext(targetEntities)}
             .disabled=${this.disabled ||
             (showOptional &&
               !this._checkedKeys.has(dataField.key) &&
@@ -703,6 +694,10 @@ export class HaServiceControl extends LitElement {
         </ha-settings-row>`
       : "";
   };
+
+  private _selectorContext = memoizeOne((targetEntities: string[] | null) => ({
+    filter_entity: targetEntities || undefined,
+  }));
 
   private _localizeValueCallback = (key: string) => {
     if (!this._value?.action) {
