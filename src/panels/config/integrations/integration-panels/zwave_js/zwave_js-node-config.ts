@@ -295,9 +295,10 @@ class ZWaveJSNodeConfig extends LitElement {
               ? this.hass.localize(
                   item.metadata.default === 1 ? "ui.common.yes" : "ui.common.no"
                 )
-              : item.configuration_value_type === "enumerated"
-                ? item.metadata.states[item.metadata.default] ||
-                  item.metadata.default
+              : item.metadata.states?.[item.metadata.default]
+                ? item.configuration_value_type === "manual_entry"
+                  ? `${item.metadata.default} - ${item.metadata.states[item.metadata.default]}`
+                  : item.metadata.states[item.metadata.default]
                 : item.metadata.default
           }`
         : "";
@@ -335,7 +336,7 @@ class ZWaveJSNodeConfig extends LitElement {
             allow-custom-value
             hide-clear-icon
             .items=${Object.entries(item.metadata.states).map(
-              ([value, label]) => ({ value, label })
+              ([value, label]) => ({ value, label: `${value} - ${label}` })
             )}
             .disabled=${!item.metadata.writeable}
             .invalid=${result?.status === "error"}
