@@ -59,7 +59,11 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         services: null as any,
         user: null as any,
         panelUrl: (this as any)._panelUrl,
-        defaultPanel: DEFAULT_PANEL,
+        sidebar: {
+          defaultPanel: DEFAULT_PANEL,
+          hiddenPanels: [],
+          panelOrder: [],
+        },
         language,
         selectedLanguage: null,
         locale: {
