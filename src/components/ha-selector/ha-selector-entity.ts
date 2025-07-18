@@ -83,6 +83,7 @@ export class HaEntitySelector extends LitElement {
         .helper=${this.helper}
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
+        .reorder=${this.selector.entity.reorder ?? false}
         .entityFilter=${this._filterEntities}
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
