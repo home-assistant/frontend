@@ -6402,7 +6402,7 @@
           "join": "Join the community on our {forums}, {fediverse}, {bluesky}, {twitter}, {discord}, {blog} or {newsletter}",
           "join_x": "X (formerly Twitter)",
           "join_mastodon": "Mastodon",
-          "join_fediverse": "Fediverse",
+          "join_fediverse": "Fediverse (Mastodon, etc.)",
           "join_bluesky": "Bluesky",
           "join_forums": "Forums",
           "join_chat": "Chat",
