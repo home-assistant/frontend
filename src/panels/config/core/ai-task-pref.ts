@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { mdiHelpCircle, mdiStarFourPoints } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../components/ha-settings-row";
@@ -14,6 +14,7 @@ import {
   type AITaskPreferences,
 } from "../../../data/ai_task";
 import { documentationUrl } from "../../../util/documentation-url";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ai-task-pref")
 export class AITaskPref extends LitElement {
@@ -25,16 +26,15 @@ export class AITaskPref extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
+    if (!this.hass || !isComponentLoaded(this.hass, "ai_task")) {
+      return;
+    }
     fetchAITaskPreferences(this.hass).then((prefs) => {
       this._prefs = prefs;
     });
   }
 
   protected render() {
-    if (!this._prefs) {
-      return nothing;
-    }
-
     return html`
       <ha-card outlined>
         <h1 class="card-header">
@@ -84,7 +84,9 @@ export class AITaskPref extends LitElement {
             <ha-entity-picker
               data-name="gen_data_entity_id"
               .hass=${this.hass}
-              .value=${this._prefs.gen_data_entity_id}
+              .disabled=${this._prefs === undefined &&
+              isComponentLoaded(this.hass, "ai_task")}
+              .value=${this._prefs?.gen_data_entity_id}
               .includeDomains=${["ai_task"]}
               @value-changed=${this._handlePrefChange}
             ></ha-entity-picker>
