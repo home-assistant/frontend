@@ -1292,7 +1292,7 @@
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
-            "energy": "Energy Configuration",
+            "energy": "Energy configuration",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
             "users": "[%key:ui::panel::config::users::caption%]",
@@ -1309,9 +1309,9 @@
             "blueprint": "[%key:ui::panel::config::blueprint::caption%]",
             "server_control": "[%key:ui::panel::developer-tools::tabs::yaml::title%]",
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
-            "addon_dashboard": "Add-on Dashboard",
-            "addon_store": "Add-on Store",
-            "addon_info": "{addon} Info"
+            "addon_dashboard": "Add-on dashboard",
+            "addon_store": "Add-on store",
+            "addon_info": "{addon} info"
           }
         },
         "filter_placeholder": "Search entities",
@@ -7195,7 +7195,7 @@
           },
           "save_config": {
             "header": "Take control of your dashboard",
-            "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or dashboard components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in configuration to play around with.",
+            "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or dashboard components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in settings to play around with.",
             "para_sure": "Are you sure you want to take control of your user interface?",
             "yaml_mode": "You are using YAML mode for this dashboard, which means you cannot change your dashboard config from the UI. If you want to manage this dashboard from the UI, remove 'mode: yaml' from your dashboard configuration in 'configuration.yaml.'.",
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
