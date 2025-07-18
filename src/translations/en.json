@@ -5875,7 +5875,8 @@
         "zwave_js": {
           "navigation": {
             "network": "Network",
-            "logs": "Logs"
+            "logs": "Logs",
+            "visualization": "Visualization"
           },
           "common": {
             "network": "Network",
@@ -6324,6 +6325,33 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
+          },
+          "visualization": {
+            "controller": "Controller",
+            "node": "Node",
+            "asleep_node": "Asleep node",
+            "dead_node": "Dead node",
+            "toggle_live": "Toggle live updates",
+            "node_id": "Node ID",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "status": "Status",
+            "version": "Version",
+            "data_rate": "Data rate"
+          },
+          "node_status": {
+            "0": "Unknown",
+            "1": "Asleep",
+            "2": "Awake",
+            "3": "Dead",
+            "4": "Alive"
+          },
+          "protocol_data_rate": {
+            "0": "Unspecified",
+            "1": "Z-Wave 9.6 kbps",
+            "2": "Z-Wave 40 kbps",
+            "3": "Z-Wave 100 kbps",
+            "4": "Long Range 100 kbps"
           },
           "node_installer": {
             "header": "Installer settings",
