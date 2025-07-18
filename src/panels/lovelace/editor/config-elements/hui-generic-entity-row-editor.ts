@@ -19,6 +19,7 @@ const SECONDARY_INFO_VALUES = {
   "last-updated": {},
   "last-triggered": { domains: ["automation", "script"] },
   position: { domains: ["cover"] },
+  state: {},
   "tilt-position": { domains: ["cover"] },
   brightness: { domains: ["light"] },
 };

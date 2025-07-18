@@ -115,7 +115,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
-    const columns = 6;
+    let columns = 6;
     let min_columns = 6;
     let rows = 1;
     const featurePosition = this._config
@@ -125,6 +125,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     if (featuresCount) {
       if (featurePosition === "inline") {
         min_columns = 12;
+        columns = 12;
       } else {
         rows += featuresCount;
       }
@@ -133,7 +134,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     const displayType = this._config?.display_type || "picture";
 
     if (displayType !== "compact") {
-      rows += 2;
+      if (featurePosition === "inline" && featuresCount > 0) {
+        rows += 3;
+      } else {
+        rows += 2;
+      }
     }
 
     return {
