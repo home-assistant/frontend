@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-sortable";
 import "./ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
