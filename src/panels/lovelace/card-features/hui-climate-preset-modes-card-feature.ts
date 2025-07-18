@@ -176,8 +176,8 @@ class HuiClimatePresetModesCardFeature
           .options=${options}
           .value=${this._currentPresetMode}
           @value-changed=${this._valueChanged}
-          hide-label
-          .ariaLabel=${this.hass!.formatEntityAttributeName(
+          hide-option-label
+          .label=${this.hass!.formatEntityAttributeName(
             stateObj,
             "preset_mode"
           )}

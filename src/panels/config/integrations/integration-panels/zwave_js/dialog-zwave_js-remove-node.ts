@@ -323,7 +323,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._subscribed.then((unsub) => unsub && unsub());
       this._subscribed = undefined;
     }
-    if (this._step === "exclusion") {
+    if (this._step === "exclusion" && this._entryId) {
       this._stopExclusion();
     }
     if (this._removeNodeTimeoutHandle) {
@@ -332,6 +332,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
   };
 
   public closeDialog(): void {
+    this._unsubscribe();
     this._entryId = undefined;
   }
 

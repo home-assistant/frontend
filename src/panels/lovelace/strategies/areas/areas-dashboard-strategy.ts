@@ -13,6 +13,7 @@ import type { AreasViewStrategyConfig } from "./areas-overview-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
 interface AreaOptions {
+  card_size?: "small" | "large";
   groups_options?: Record<string, EntitiesDisplay>;
 }
 
