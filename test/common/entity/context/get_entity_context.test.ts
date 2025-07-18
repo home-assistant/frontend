@@ -26,7 +26,13 @@ describe("getEntityContext", () => {
       floors: {},
     } as unknown as HomeAssistant;
 
-    const result = getEntityContext(stateObj, hass);
+    const result = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     expect(result).toEqual({
       entity,
@@ -71,7 +77,13 @@ describe("getEntityContext", () => {
       },
     } as unknown as HomeAssistant;
 
-    const result = getEntityContext(stateObj, hass);
+    const result = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     expect(result).toEqual({
       entity,
@@ -105,7 +117,13 @@ describe("getEntityContext", () => {
       },
     } as unknown as HomeAssistant;
 
-    const result = getEntityContext(stateObj, hass);
+    const result = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     expect(result).toEqual({
       entity,
@@ -138,7 +156,13 @@ describe("getEntityContext", () => {
       floors: {},
     } as unknown as HomeAssistant;
 
-    const result = getEntityContext(stateObj, hass);
+    const result = getEntityContext(
+      stateObj,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors
+    );
 
     expect(result).toEqual({
       entity,

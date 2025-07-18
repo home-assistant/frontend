@@ -1225,7 +1225,7 @@ export class HaConfigDevicePage extends LitElement {
   private _computeEntityName(entity: EntityRegistryEntry) {
     const device = this.hass.devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, this.hass) ||
+      computeEntityEntryName(entity, this.hass.devices) ||
       computeDeviceNameDisplay(device, this.hass)
     );
   }
