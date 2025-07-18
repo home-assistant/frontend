@@ -1,16 +1,17 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
+import { load } from "js-yaml";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
+import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import { extractSearchParamsObject } from "../../../../../common/url/search-params";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-relative-time";
@@ -23,11 +24,11 @@ import {
   subscribeBluetoothScannersDetails,
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { showBluetoothDeviceInfoDialog } from "./show-dialog-bluetooth-device-info";
-import type { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 export const bluetoothAdvertisementMonitorTabs: PageNavigation[] = [
   {
@@ -58,6 +59,8 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @state() private _sourceDevices: Record<string, DeviceRegistryEntry> = {};
 
+  @state() private _manufacturers: Record<string, string> = {};
+
   @storage({
     key: "bluetooth-advertisement-table-grouping",
     state: false,
@@ -75,6 +78,24 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
   private _unsub_advertisements?: UnsubscribeFunc;
 
   private _unsub_scanners?: UnsubscribeFunc;
+
+  public firstUpdated(_changedProperties: PropertyValues): void {
+    this._fetchManufacturers();
+  }
+
+  private async _fetchManufacturers() {
+    const response = await fetch("/static/bluetooth_company_identifiers.yaml");
+    const yamlText = await response.text();
+    const data = load(yamlText) as any;
+
+    this._manufacturers = (data.company_identifiers || []).reduce(
+      (acc, entry) => {
+        acc[parseInt(entry.value).toString()] = entry.name;
+        return acc;
+      },
+      {}
+    );
+  }
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -188,17 +209,25 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           maxWidth: "60px",
           sortable: true,
         },
+        manufacturer: {
+          title: localize("ui.panel.config.bluetooth.manufacturer"),
+          filterable: true,
+          sortable: true,
+          defaultHidden: true,
+        },
       };
 
       return columns;
     }
   );
 
-  private _dataWithNamedSourceAndIds = memoizeOne((data) =>
+  private _dataWithNamedSourceAndIds = memoizeOne((data, manufacturers) =>
     data.map((row) => {
       const device = this._sourceDevices[row.address];
       const scannerDevice = this._sourceDevices[row.source];
       const scanner = this._scanners[row.source];
+      const manufacturerCode = Object.keys(row.manufacturer_data)?.[0];
+
       return {
         ...row,
         id: row.address,
@@ -210,6 +239,9 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           row.source,
         device: device?.name_by_user || device?.name || undefined,
         datetime: new Date(row.time * 1000),
+        manufacturer: manufacturerCode
+          ? manufacturers[manufacturerCode]
+          : undefined,
       };
     })
   );
@@ -221,7 +253,10 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
-        .data=${this._dataWithNamedSourceAndIds(this._data)}
+        .data=${this._dataWithNamedSourceAndIds(
+          this._data,
+          this._manufacturers
+        )}
         .noDataText=${this.hass.localize(
           "ui.panel.config.bluetooth.no_advertisements_found"
         )}
@@ -249,6 +284,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     const entry = this._data.find((ent) => ent.address === ev.detail.id);
     showBluetoothDeviceInfoDialog(this, {
       entry: entry!,
+      manufacturers: this._manufacturers,
     });
   }
 
