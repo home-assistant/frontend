@@ -26,7 +26,6 @@ export const supportsButtonCardFeature = (
   return [
     "button",
     "script",
-    "automation",
   ].includes(domain);
 };
 
@@ -52,11 +51,7 @@ class HuiButtonCardFeature
     if (!this.hass || !this._stateObj) return;
   
     const domain = computeDomain(this._stateObj.entity_id);
-    const service = domain === "button"
-      ? "press"
-      : domain === "automation"
-      ? "trigger"
-      : "turn_on";
+    const service = domain === "button" ? "press" : "turn_on";
   
     this.hass.callService(domain, service, {
       entity_id: this._stateObj.entity_id,
@@ -90,7 +85,7 @@ class HuiButtonCardFeature
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${this._stateObj.state === UNAVAILABLE}
+          .disabled=${["unavailable", "unknown"].includes(this._stateObj.state)}
           class="press-button"
           @click=${this._pressButton}
         >
