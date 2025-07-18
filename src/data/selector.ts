@@ -226,6 +226,7 @@ export interface EntitySelector {
     include_entities?: string[];
     exclude_entities?: string[];
     filter?: EntitySelectorFilter | readonly EntitySelectorFilter[];
+    reorder?: boolean;
   } | null;
 }
 
