@@ -10,6 +10,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../../../common/entity/compute_device_name";
 import { groupBy } from "../../../../../common/util/group-by";
@@ -335,9 +336,7 @@ class ZWaveJSNodeConfig extends LitElement {
             .value=${item.value?.toString()}
             allow-custom-value
             hide-clear-icon
-            .items=${Object.entries(item.metadata.states).map(
-              ([value, label]) => ({ value, label: `${value} - ${label}` })
-            )}
+            .items=${this._getComboBoxOptions(item.metadata.states)}
             .disabled=${!item.metadata.writeable}
             .invalid=${result?.status === "error"}
             .placeholder=${item.metadata.unit}
@@ -475,6 +474,13 @@ class ZWaveJSNodeConfig extends LitElement {
     this._setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, value);
   }
+
+  private _getComboBoxOptions = memoizeOne((states: Record<string, string>) =>
+    Object.entries(states).map(([value, label]) => ({
+      value,
+      label: `${value} - ${label}`,
+    }))
+  );
 
   private _getComboBoxValueChangedCallback(
     id: string,
