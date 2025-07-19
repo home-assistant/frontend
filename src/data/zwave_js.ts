@@ -358,6 +358,8 @@ export enum ProtocolDataRate {
 export interface ZWaveJSNodeStatisticsUpdatedMessage {
   event: "statistics updated";
   source: "node";
+  nodeId?: number;
+  node_id?: number;
   commands_tx: number;
   commands_rx: number;
   commands_dropped_tx: number;

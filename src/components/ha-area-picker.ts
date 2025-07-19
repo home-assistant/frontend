@@ -411,6 +411,7 @@ export class HaAreaPicker extends LitElement {
           }
         },
       });
+      return;
     }
 
     this._setValue(value);

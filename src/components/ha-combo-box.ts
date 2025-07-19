@@ -205,7 +205,7 @@ export class HaComboBox extends LitElement {
               role="button"
               tabindex="-1"
               aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
-              class="clear-button"
+              class=${`clear-button ${this.label ? "" : "no-label"}`}
               .path=${mdiClose}
               @click=${this._clearValue}
             ></ha-svg-icon>`
@@ -215,7 +215,7 @@ export class HaComboBox extends LitElement {
           tabindex="-1"
           aria-label=${ifDefined(this.label)}
           aria-expanded=${this.opened ? "true" : "false"}
-          class="toggle-button"
+          class=${`toggle-button ${this.label ? "" : "no-label"}`}
           .path=${this.opened ? mdiMenuUp : mdiMenuDown}
           ?disabled=${this.disabled}
           @click=${this._toggleOpen}
@@ -397,6 +397,9 @@ export class HaComboBox extends LitElement {
       color: var(--disabled-text-color);
       pointer-events: none;
     }
+    .toggle-button.no-label {
+      top: -3px;
+    }
     .clear-button {
       --mdc-icon-size: 20px;
       top: -7px;
@@ -404,6 +407,9 @@ export class HaComboBox extends LitElement {
       inset-inline-start: initial;
       inset-inline-end: 36px;
       direction: var(--direction);
+    }
+    .clear-button.no-label {
+      top: 0;
     }
     ha-input-helper-text {
       margin-top: 4px;

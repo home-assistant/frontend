@@ -1,9 +1,11 @@
+import { mdiDrag } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import "../ha-sortable";
 import "./ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
@@ -76,6 +78,9 @@ class HaEntitiesPicker extends LitElement {
 
   @property({ attribute: false, type: Array }) public createDomains?: string[];
 
+  @property({ type: Boolean })
+  public reorder = false;
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -84,28 +89,44 @@ class HaEntitiesPicker extends LitElement {
     const currentEntities = this._currentEntities;
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
-      ${currentEntities.map(
-        (entityId) => html`
-          <div>
-            <ha-entity-picker
-              allow-custom-entity
-              .curValue=${entityId}
-              .hass=${this.hass}
-              .includeDomains=${this.includeDomains}
-              .excludeDomains=${this.excludeDomains}
-              .includeEntities=${this.includeEntities}
-              .excludeEntities=${this.excludeEntities}
-              .includeDeviceClasses=${this.includeDeviceClasses}
-              .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
-              .entityFilter=${this.entityFilter}
-              .value=${entityId}
-              .disabled=${this.disabled}
-              .createDomains=${this.createDomains}
-              @value-changed=${this._entityChanged}
-            ></ha-entity-picker>
-          </div>
-        `
-      )}
+      <ha-sortable
+        .disabled=${!this.reorder || this.disabled}
+        handle-selector=".entity-handle"
+        @item-moved=${this._entityMoved}
+      >
+        <div class="list">
+          ${currentEntities.map(
+            (entityId) => html`
+              <div class="entity">
+                <ha-entity-picker
+                  allow-custom-entity
+                  .curValue=${entityId}
+                  .hass=${this.hass}
+                  .includeDomains=${this.includeDomains}
+                  .excludeDomains=${this.excludeDomains}
+                  .includeEntities=${this.includeEntities}
+                  .excludeEntities=${this.excludeEntities}
+                  .includeDeviceClasses=${this.includeDeviceClasses}
+                  .includeUnitOfMeasurement=${this.includeUnitOfMeasurement}
+                  .entityFilter=${this.entityFilter}
+                  .value=${entityId}
+                  .disabled=${this.disabled}
+                  .createDomains=${this.createDomains}
+                  @value-changed=${this._entityChanged}
+                ></ha-entity-picker>
+                ${this.reorder
+                  ? html`
+                      <ha-svg-icon
+                        class="entity-handle"
+                        .path=${mdiDrag}
+                      ></ha-svg-icon>
+                    `
+                  : nothing}
+              </div>
+            `
+          )}
+        </div>
+      </ha-sortable>
       <div>
         <ha-entity-picker
           allow-custom-entity
@@ -129,6 +150,17 @@ class HaEntitiesPicker extends LitElement {
         ></ha-entity-picker>
       </div>
     `;
+  }
+
+  private _entityMoved(e: CustomEvent) {
+    e.stopPropagation();
+    const { oldIndex, newIndex } = e.detail;
+    const currentEntities = this._currentEntities;
+    const movedEntity = currentEntities[oldIndex];
+    const newEntities = [...currentEntities];
+    newEntities.splice(oldIndex, 1);
+    newEntities.splice(newIndex, 0, movedEntity);
+    this._updateEntities(newEntities);
   }
 
   private _excludeEntities = memoizeOne(
@@ -200,6 +232,19 @@ class HaEntitiesPicker extends LitElement {
     label {
       display: block;
       margin: 0 0 8px;
+    }
+    .entity {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .entity ha-entity-picker {
+      flex: 1;
+    }
+    .entity-handle {
+      padding: 8px;
+      cursor: move; /* fallback if grab cursor is unsupported */
+      cursor: grab;
     }
   `;
 }

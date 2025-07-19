@@ -495,6 +495,7 @@ export class HuiAreaCardEditor
       case "name":
       case "camera_view":
       case "content":
+      case "interactions":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
@@ -502,7 +503,6 @@ export class HuiAreaCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.action-editor.navigation_path"
         );
-      case "interactions":
       case "features_position":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`

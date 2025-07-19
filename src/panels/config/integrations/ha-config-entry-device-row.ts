@@ -115,9 +115,7 @@ class HaConfigEntryDeviceRow extends LitElement {
           : nothing}
         ${entities.length
           ? html`
-              <ha-md-menu-item
-                href=${`/config/entities/?historyBack=1&device=${device.id}`}
-              >
+              <ha-md-menu-item @click=${this._handleNavigateToEntities}>
                 <ha-svg-icon
                   .path=${mdiShapeOutline}
                   slot="start"
@@ -185,6 +183,10 @@ class HaConfigEntryDeviceRow extends LitElement {
         await updateDeviceRegistryEntry(this.hass, this.device.id, updates);
       },
     });
+  }
+
+  private _handleNavigateToEntities() {
+    navigate(`/config/entities/?historyBack=1&device=${this.device.id}`);
   }
 
   private async _handleDisableDevice() {

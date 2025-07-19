@@ -106,6 +106,16 @@ class HaConfigSectionStorage extends LitElement {
                       )}
                       .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
                     ></ha-metric>
+                    <div class="detailed-storage-info">
+                      ${this.hass.localize(
+                        "ui.panel.config.storage.detailed_description",
+                        {
+                          used: `${this._hostInfo?.disk_used} GB`,
+                          total: `${this._hostInfo?.disk_total} GB`,
+                          free_space: `${this._hostInfo.disk_free} GB`,
+                        }
+                      )}
+                    </div>
                     ${this._hostInfo.disk_life_time !== "" &&
                     this._hostInfo.disk_life_time >= 10
                       ? // prettier-ignore
@@ -315,6 +325,11 @@ class HaConfigSectionStorage extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-direction: column;
+    }
+
+    .detailed-storage-info {
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
     }
     .mount-state-failed {
       color: var(--error-color);
