@@ -7255,13 +7255,17 @@
               "state": {
                 "label": "Entity state",
                 "state_equal": "State is equal to",
-                "state_not_equal": "State is not equal to"
+                "state_not_equal": "State is not equal to",
+                "for": "For"
               },
               "user": {
                 "label": "User"
               },
               "or": {
                 "label": "Or"
+              },
+              "not": {
+                "label": "Not"
               },
               "and": {
                 "label": "And"
