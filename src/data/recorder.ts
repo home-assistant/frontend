@@ -214,10 +214,10 @@ export const fetchStatistic = (
       : undefined,
     calendar: period.calendar
       ? {
-          ...period.calendar,
           ...(period.calendar.period === "week"
             ? { first_weekday: firstWeekday(hass.locale).substring(0, 3) }
             : {}),
+          ...period.calendar,
         }
       : undefined,
     rolling_window: period.rolling_window,
