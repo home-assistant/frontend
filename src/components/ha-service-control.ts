@@ -314,7 +314,12 @@ export class HaServiceControl extends LitElement {
           targetSelector
         );
         targetDevices.push(...expanded.devices);
-        targetEntities.push(...expanded.entities);
+        const primaryEntities = expanded.entities.filter(
+          (entityId) =>
+            !this.hass.entities[entityId]?.entity_category &&
+            !this.hass.entities[entityId]?.hidden
+        );
+        targetEntities.push(primaryEntities);
         targetAreas.push(...expanded.areas);
       });
     }
@@ -338,20 +343,29 @@ export class HaServiceControl extends LitElement {
           this.hass.entities,
           targetSelector
         );
-        targetEntities.push(...expanded.entities);
+        const primaryEntities = expanded.entities.filter(
+          (entityId) =>
+            !this.hass.entities[entityId]?.entity_category &&
+            !this.hass.entities[entityId]?.hidden
+        );
+        targetEntities.push(...primaryEntities);
         targetDevices.push(...expanded.devices);
       });
     }
     if (targetDevices.length) {
       targetDevices.forEach((deviceId) => {
-        targetEntities.push(
-          ...expandDeviceTarget(
-            this.hass,
-            deviceId,
-            this.hass.entities,
-            targetSelector
-          ).entities
+        const expanded = expandDeviceTarget(
+          this.hass,
+          deviceId,
+          this.hass.entities,
+          targetSelector
         );
+        const primaryEntities = expanded.entities.filter(
+          (entityId) =>
+            !this.hass.entities[entityId]?.entity_category &&
+            !this.hass.entities[entityId]?.hidden
+        );
+        targetEntities.push(...primaryEntities);
       });
     }
     return targetEntities;
@@ -675,6 +689,7 @@ export class HaServiceControl extends LitElement {
             ) || dataField?.description}</span
           >
           <ha-selector
+            .context=${this._selectorContext(targetEntities)}
             .disabled=${this.disabled ||
             (showOptional &&
               !this._checkedKeys.has(dataField.key) &&
@@ -693,6 +708,10 @@ export class HaServiceControl extends LitElement {
         </ha-settings-row>`
       : "";
   };
+
+  private _selectorContext = memoizeOne((targetEntities: string[] | null) => ({
+    filter_entity: targetEntities || undefined,
+  }));
 
   private _localizeValueCallback = (key: string) => {
     if (!this._value?.action) {

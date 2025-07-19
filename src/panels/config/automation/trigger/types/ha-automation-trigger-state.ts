@@ -24,7 +24,10 @@ import { baseTriggerStruct, forDictStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-form/ha-form";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
-import type { SchemaUnion } from "../../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../../components/ha-form/types";
 
 const stateTriggerStruct = assign(
   baseTriggerStruct,
@@ -54,7 +57,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, entityId, attribute) =>
+    (localize: LocalizeFunc, attribute) =>
       [
         {
           name: "entity_id",
@@ -63,9 +66,11 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         },
         {
           name: "attribute",
+          context: {
+            filter_entity: "entity_id",
+          },
           selector: {
             attribute: {
-              entity_id: entityId ? entityId[0] : undefined,
               hide_attributes: [
                 "access_token",
                 "available_modes",
@@ -121,6 +126,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         },
         {
           name: "from",
+          context: {
+            filter_entity: "entity_id",
+          },
           selector: {
             state: {
               extra_options: (attribute
@@ -133,13 +141,15 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       value: ANY_STATE_VALUE,
                     },
                   ]) as any,
-              entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
           },
         },
         {
           name: "to",
+          context: {
+            filter_entity: "entity_id",
+          },
           selector: {
             state: {
               extra_options: (attribute
@@ -152,13 +162,12 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
                       value: ANY_STATE_VALUE,
                     },
                   ]) as any,
-              entity_id: entityId ? entityId[0] : undefined,
               attribute: attribute,
             },
           },
         },
         { name: "for", selector: { duration: {} } },
-      ] as const
+      ] as const satisfies HaFormSchema[]
   );
 
   public shouldUpdate(changedProperties: PropertyValues) {
@@ -204,11 +213,7 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     if (!data.attribute && data.from === null) {
       data.from = ANY_STATE_VALUE;
     }
-    const schema = this._schema(
-      this.hass.localize,
-      this.trigger.entity_id,
-      this.trigger.attribute
-    );
+    const schema = this._schema(this.hass.localize, this.trigger.attribute);
 
     return html`
       <ha-form

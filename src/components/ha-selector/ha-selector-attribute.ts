@@ -5,6 +5,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import type { AttributeSelector } from "../../data/selector";
 import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
+import { ensureArray } from "../../common/array/ensure-array";
 
 @customElement("ha-selector-attribute")
 export class HaSelectorAttribute extends LitElement {
@@ -23,7 +24,7 @@ export class HaSelectorAttribute extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @property({ attribute: false }) public context?: {
-    filter_entity?: string;
+    filter_entity?: string | string[];
   };
 
   protected render() {
@@ -69,11 +70,16 @@ export class HaSelectorAttribute extends LitElement {
     // Validate that that the attribute is still valid for this entity, else unselect.
     let invalid = false;
     if (this.context.filter_entity) {
-      const stateObj = this.hass.states[this.context.filter_entity];
+      const entityIds = ensureArray(this.context.filter_entity);
 
-      if (!(stateObj && this.value in stateObj.attributes)) {
-        invalid = true;
-      }
+      invalid = !entityIds.some((entityId) => {
+        const stateObj = this.hass.states[entityId];
+        return (
+          stateObj &&
+          this.value in stateObj.attributes &&
+          stateObj.attributes[this.value] !== undefined
+        );
+      });
     } else {
       invalid = this.value !== undefined;
     }
