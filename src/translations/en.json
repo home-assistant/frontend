@@ -6072,6 +6072,7 @@
             "parameter_is_read_only": "This parameter is read-only.",
             "between_min_max": "Between {min} and {max}",
             "error_not_in_range": "Value must be between {min} and {max}",
+            "error_not_numeric": "Value must be a number",
             "error_required": "{entity} is required",
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
