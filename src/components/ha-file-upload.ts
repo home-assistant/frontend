@@ -86,11 +86,12 @@ export class HaFileUpload extends LitElement {
         ? html`<div class="container">
             <div class="uploading">
               <span class="header"
-                >${this.uploadingLabel || this.value
+                >${this.uploadingLabel ||
+                (this.value
                   ? localize("ui.components.file-upload.uploading_name", {
                       name: this._name,
                     })
-                  : localize("ui.components.file-upload.uploading")}</span
+                  : localize("ui.components.file-upload.uploading"))}</span
               >
               ${this.progress
                 ? html`<div class="progress">
