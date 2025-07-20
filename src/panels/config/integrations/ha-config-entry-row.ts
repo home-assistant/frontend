@@ -22,7 +22,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { isDevVersion } from "../../../common/config/version";
 import {
@@ -500,7 +500,7 @@ class HaConfigEntryRow extends LitElement {
           device.entry_type !== "service"
       )
       .sort((a, b) =>
-        caseInsensitiveStringCompare(
+        stringCompare(
           computeDeviceNameDisplay(a, this.hass),
           computeDeviceNameDisplay(b, this.hass),
           this.hass.locale.language
@@ -515,7 +515,7 @@ class HaConfigEntryRow extends LitElement {
           device.entry_type === "service"
       )
       .sort((a, b) =>
-        caseInsensitiveStringCompare(
+        stringCompare(
           computeDeviceNameDisplay(a, this.hass),
           computeDeviceNameDisplay(b, this.hass),
           this.hass.locale.language

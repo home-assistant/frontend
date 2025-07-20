@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { computeDeviceNameDisplay } from "../../../../src/common/entity/compute_device_name";
-import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
+import { stringCompare } from "../../../../src/common/string/compare";
 import type { DeviceRegistryEntry } from "../../../../src/data/device_registry";
 
 describe("Device sorting in ha-config-entry-row", () => {
@@ -59,7 +59,7 @@ describe("Device sorting in ha-config-entry-row", () => {
 
     // Sort using the same logic as our implementation
     const sortedDevices = devices.sort((a, b) =>
-      caseInsensitiveStringCompare(
+      stringCompare(
         computeDeviceNameDisplay(a, mockHass),
         computeDeviceNameDisplay(b, mockHass),
         mockHass.locale.language
@@ -93,7 +93,7 @@ describe("Device sorting in ha-config-entry-row", () => {
     ];
 
     const sortedDevices = devices.sort((a, b) =>
-      caseInsensitiveStringCompare(
+      stringCompare(
         computeDeviceNameDisplay(a, mockHass),
         computeDeviceNameDisplay(b, mockHass),
         mockHass.locale.language
@@ -117,7 +117,7 @@ describe("Device sorting in ha-config-entry-row", () => {
     ];
 
     const sortedServices = services.sort((a, b) =>
-      caseInsensitiveStringCompare(
+      stringCompare(
         computeDeviceNameDisplay(a, mockHass),
         computeDeviceNameDisplay(b, mockHass),
         mockHass.locale.language
