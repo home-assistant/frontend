@@ -58,4 +58,3 @@ declare global {
     "hui-button-card-feature-editor": HuiButtonCardFeatureEditor;
   }
 }
-
