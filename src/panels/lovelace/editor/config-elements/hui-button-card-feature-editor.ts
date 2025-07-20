@@ -2,7 +2,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../../types";
 import type { ButtonCardFeatureConfig } from "../../card-features/types";
-import type { LovelaceCardFeatureEditor } from "../types";
+import type { LovelaceCardFeatureEditor } from "../../types";
 import "../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 
