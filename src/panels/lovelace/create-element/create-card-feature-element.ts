@@ -1,5 +1,5 @@
 import "../card-features/hui-alarm-modes-card-feature";
-import "../cars-features/hui-button-card-feature";
+import "../card-features/hui-button-card-feature";
 import "../card-features/hui-climate-fan-modes-card-feature";
 import "../card-features/hui-climate-hvac-modes-card-feature";
 import "../card-features/hui-climate-preset-modes-card-feature";
