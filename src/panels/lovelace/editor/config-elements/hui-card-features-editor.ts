@@ -18,8 +18,8 @@ import {
 } from "../../../../data/lovelace_custom_cards";
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
-import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
