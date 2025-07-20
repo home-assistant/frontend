@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../../types";
 import type { ButtonCardFeatureConfig } from "../../card-features/types";
@@ -30,7 +30,7 @@ export class HuiButtonCardFeatureEditor
 
   protected render() {
     if (!this.hass || !this._config) {
-      return html``;
+      return nothing;
     }
 
     return html`
