@@ -10,7 +10,7 @@ import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
-  ButtonCardFeatureConfig, 
+  ButtonCardFeatureConfig,
 } from "./types";
 
 export const supportsButtonCardFeature = (
@@ -22,10 +22,7 @@ export const supportsButtonCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return [
-    "button",
-    "script",
-  ].includes(domain);
+  return ["button", "script"].includes(domain);
 };
 
 @customElement("hui-button-card-feature")
@@ -43,15 +40,17 @@ class HuiButtonCardFeature
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
+    return this.hass.states[
+      this.context.entity_id!
+    ] as HassEntity | undefined;
   }
 
   private _pressButton() {
     if (!this.hass || !this._stateObj) return;
-  
+
     const domain = computeDomain(this._stateObj.entity_id);
     const service = domain === "button" ? "press" : "turn_on";
-  
+
     this.hass.callService(domain, service, {
       entity_id: this._stateObj.entity_id,
     });
@@ -80,16 +79,18 @@ class HuiButtonCardFeature
     ) {
       return nothing;
     }
-    
+
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${["unavailable", "unknown"].includes(this._stateObj.state)}
+          .disabled=${["unavailable", "unknown"].includes(
+            this._stateObj.state
+          )}
           class="press-button"
           @click=${this._pressButton}
         >
           ${this._config.action_name ??
-            this.hass.localize("ui.card.button.press")}
+          this.hass.localize("ui.card.button.press")}
         </ha-control-button>
       </ha-control-button-group>
     `;
