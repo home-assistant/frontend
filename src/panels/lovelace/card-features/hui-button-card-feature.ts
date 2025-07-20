@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
