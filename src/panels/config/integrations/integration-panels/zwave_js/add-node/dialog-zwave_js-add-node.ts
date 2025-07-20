@@ -878,7 +878,7 @@ class DialogZWaveJSAddNode extends SubscribeMixin(LitElement) {
               (entity) => entity.device_id === this._device!.id
             );
 
-            const entityIdsMapping = getAutomaticEntityIds(
+            const entityIdsMapping = await getAutomaticEntityIds(
               this.hass,
               entities.map((entity) => entity.entity_id)
             );

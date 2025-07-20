@@ -35,6 +35,15 @@ const LEGEND_OVERFLOW_LIMIT = 10;
 const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
 
+export type CustomLegendOption = ECOption["legend"] & {
+  type: "custom";
+  data?: {
+    id?: string;
+    name: string;
+    itemStyle?: Record<string, any>;
+  }[];
+};
+
 @customElement("ha-chart-base")
 export class HaChartBase extends LitElement {
   public chart?: EChartsType;
@@ -219,16 +228,18 @@ export class HaChartBase extends LitElement {
     if (!this.options?.legend || !this.data) {
       return nothing;
     }
-    const legend = ensureArray(this.options.legend)[0] as LegendComponentOption;
-    if (!legend.show || legend.type !== "custom") {
+    const legend = ensureArray(this.options.legend).find(
+      (l) => l.show && l.type === "custom"
+    ) as CustomLegendOption | undefined;
+    if (!legend) {
       return nothing;
     }
     const datasets = ensureArray(this.data);
-    const items: LegendComponentOption["data"] =
+    const items =
       legend.data ||
-      ((datasets
+      datasets
         .filter((d) => (d.data as any[])?.length && (d.id || d.name))
-        .map((d) => d.name ?? d.id) || []) as string[]);
+        .map((d) => ({ id: d.id, name: d.name }));
 
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
@@ -249,25 +260,29 @@ export class HaChartBase extends LitElement {
           }
           let itemStyle: Record<string, any> = {};
           let name = "";
+          let id = "";
           if (typeof item === "string") {
             name = item;
-            const dataset = datasets.find(
-              (d) => d.id === item || d.name === item
-            );
-            itemStyle = {
-              color: dataset?.color as string,
-              ...(dataset?.itemStyle as { borderColor?: string }),
-            };
+            id = item;
           } else {
             name = item.name ?? "";
+            id = item.id ?? name;
             itemStyle = item.itemStyle ?? {};
           }
+          const dataset =
+            datasets.find((d) => d.id === id) ??
+            datasets.find((d) => d.name === id);
+          itemStyle = {
+            color: dataset?.color as string,
+            ...(dataset?.itemStyle as { borderColor?: string }),
+            itemStyle,
+          };
           const color = itemStyle?.color as string;
           const borderColor = itemStyle?.borderColor as string;
           return html`<li
-            .name=${name}
+            .id=${id}
             @click=${this._legendClick}
-            class=${classMap({ hidden: this._hiddenDatasets.has(name) })}
+            class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
             .title=${name}
           >
             <div
@@ -645,7 +660,7 @@ export class HaChartBase extends LitElement {
       | YAXisOption
       | undefined;
     const series = ensureArray(this.data).map((s) => {
-      const data = this._hiddenDatasets.has(String(s.name ?? s.id))
+      const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined
         : s.data;
       if (data && s.type === "line") {
@@ -740,13 +755,13 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
-    const name = ev.currentTarget?.name;
-    if (this._hiddenDatasets.has(name)) {
-      this._hiddenDatasets.delete(name);
-      fireEvent(this, "dataset-unhidden", { name });
+    const id = ev.currentTarget?.id;
+    if (this._hiddenDatasets.has(id)) {
+      this._hiddenDatasets.delete(id);
+      fireEvent(this, "dataset-unhidden", { id });
     } else {
-      this._hiddenDatasets.add(name);
-      fireEvent(this, "dataset-hidden", { name });
+      this._hiddenDatasets.add(id);
+      fireEvent(this, "dataset-hidden", { id });
     }
     this.requestUpdate("_hiddenDatasets");
   }
@@ -881,8 +896,8 @@ declare global {
     "ha-chart-base": HaChartBase;
   }
   interface HASSDomEvents {
-    "dataset-hidden": { name: string };
-    "dataset-unhidden": { name: string };
+    "dataset-hidden": { id: string };
+    "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
   }
 }

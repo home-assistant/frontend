@@ -44,6 +44,10 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: false }) public actionsRenderer?: () =>
+    | TemplateResult<1>
+    | typeof nothing;
+
   @property({ type: Boolean, attribute: "show-navigation-button" })
   public showNavigationButton = false;
 
@@ -109,6 +113,7 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
                   .items=${groupedAreasItems[floor.floor_id]}
                   .value=${value}
                   .floorId=${floor.floor_id}
+                  .actionsRenderer=${this.actionsRenderer}
                   @value-changed=${this._areaDisplayChanged}
                   .showNavigationButton=${this.showNavigationButton}
                 ></ha-items-display-editor>

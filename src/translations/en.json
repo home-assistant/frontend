@@ -436,8 +436,7 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown",
-      "suggest_ai": "Suggest with AI"
+      "markdown": "Markdown"
     },
 
     "components": {
@@ -1003,7 +1002,7 @@
         "media_player": "Media player",
         "audio_not_supported": "Your browser does not support the audio element.",
         "video_not_supported": "Your browser does not support the video element.",
-        "media_not_supported": "The Browser Media Player does not support this type of media",
+        "media_not_supported": "Your browser's media player does not support this type of media",
         "media_browsing_error": "Media browsing error",
         "learn_adding_local_media": "Learn more about adding media in the {documentation}.",
         "local_media_files": "Place your video, audio, and image files in the media directory to be able to browse and play them in the browser or on supported media players.",
@@ -1219,6 +1218,14 @@
       },
       "combo-box": {
         "no_match": "No matching items found"
+      },
+      "suggest_with_ai": {
+        "label": "Suggest with AI",
+        "suggesting_1": "Analyzing…",
+        "suggesting_2": "Suggesting…",
+        "suggesting_3": "Enchanting…",
+        "done": "Done!",
+        "error": "Fail!"
       }
     },
     "dialogs": {
@@ -1901,10 +1908,12 @@
         "title": "[%key:supervisor::system::supervisor::unhealthy_title%]",
         "description": "[%key:supervisor::system::supervisor::unhealthy_description%]",
         "reasons": {
+          "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
+          "oserror_bad_message": "[%key:supervisor::system::supervisor::unhealthy_reason::oserror_bad_message%]",
+          "duplicate_os_installation": "[%key:supervisor::system::supervisor::unhealthy_reason::duplicate_os_installation%]",
           "privileged": "[%key:supervisor::system::supervisor::unhealthy_reason::privileged%]",
           "supervisor": "[%key:supervisor::system::supervisor::unhealthy_reason::supervisor%]",
           "setup": "[%key:supervisor::system::supervisor::unhealthy_reason::setup%]",
-          "docker": "[%key:supervisor::system::supervisor::unhealthy_reason::docker%]",
           "untrusted": "[%key:supervisor::system::supervisor::unhealthy_reason::untrusted%]"
         }
       },
@@ -2099,7 +2108,7 @@
       "sidebar_toggle": "Sidebar toggle",
       "edit_sidebar": "Edit sidebar",
       "edit_subtitle": "Synced on all devices",
-      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged into. To create a sidebar per device, you should use a different user for that device."
+      "migrate_to_user_data": "This will change the sidebar on all the devices you are logged in to. To create a sidebar per device, you should use a different user for that device."
     },
     "panel": {
       "my": {
@@ -2942,7 +2951,7 @@
             "create_and_write": "Create and write",
             "required_error_msg": "[%key:ui::panel::config::zone::detail::required_error_msg%]",
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or copy and print the QR code below.",
-            "companion_apps": "companion apps"
+            "companion_apps": "Companion apps"
           }
         },
         "energy": {
@@ -3986,7 +3995,7 @@
                 "tag": {
                   "label": "Tag",
                   "description": {
-                    "picker": "When a tag is scanned (tags are usually created from the companion app).",
+                    "picker": "When a tag is scanned (tags are usually created from the Companion app).",
                     "full": "When a tag is scanned"
                   }
                 },
@@ -4311,7 +4320,7 @@
                 },
                 "wait_template": {
                   "label": "Wait for a template",
-                  "wait_template": "Wait Template",
+                  "wait_template": "Wait template",
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout",
                   "description": {
@@ -4509,7 +4518,7 @@
               "error": "Error: {error}",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
-              "no_logbook_entries": "No Logbook entries found for this step.",
+              "no_logbook_entries": "No logbook entries found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
             },
@@ -4914,7 +4923,7 @@
               "security_options": "Security options",
               "external_activation": "Allow external activation of remote access",
               "external_activation_secondary": "If you disable remote access on this page, having this setting enabled allows you to reactivate it remotely via your Nabu Casa account.",
-              "drop_connection_warning_title": "Remote log in has been deactivated",
+              "drop_connection_warning_title": "Remote login has been deactivated",
               "drop_connection_warning": "The below security options may make it appear the system is not running.",
               "certificate_info": "Certificate information",
               "certificate_expire": "Certificate renewal at {date}",
@@ -4930,7 +4939,7 @@
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
               "config_documentation": "Configuration documentation",
-              "enable_state_reporting": "Enable State Reporting",
+              "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "state_reporting_error": "Unable to {enable_disable} report state.",
               "show_entities": "[%key:ui::panel::config::cloud::account::google::show_entities%]",
@@ -4954,7 +4963,7 @@
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
               "security_devices": "Security devices",
               "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Assistant.",
-              "devices_pin": "Security Devices PIN",
+              "devices_pin": "Security devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "show_entities": "Show entities",
               "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
@@ -5866,7 +5875,8 @@
         "zwave_js": {
           "navigation": {
             "network": "Network",
-            "logs": "Logs"
+            "logs": "Logs",
+            "visualization": "Visualization"
           },
           "common": {
             "network": "Network",
@@ -6062,6 +6072,7 @@
             "parameter_is_read_only": "This parameter is read-only.",
             "between_min_max": "Between {min} and {max}",
             "error_not_in_range": "Value must be between {min} and {max}",
+            "error_not_numeric": "Value must be a number",
             "error_required": "{entity} is required",
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
@@ -6258,7 +6269,7 @@
             "title": "Rebuild routes for a Z-Wave device",
             "introduction": "Assign new routes between {device} and the adapter. This can help with communication issues if you have recently moved the device or your adapter.",
             "traffic_warning": "The route rebuilding process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the rebuilding is in progress.",
-            "start_rebuilding_routes": "Rebuild Routes for Device",
+            "start_rebuilding_routes": "Rebuild routes for device",
             "rebuilding_routes_failed": "{device} routes could not be rebuild.",
             "rebuilding_routes_failed_check_logs": "Additional information may be available in the logs.",
             "rebuilding_routes_complete": "{device} routes have been rebuilt.",
@@ -6315,6 +6326,33 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS log messages…",
             "log_level_changed": "Log level changed to: {level}",
             "download_logs": "Download logs"
+          },
+          "visualization": {
+            "controller": "Controller",
+            "node": "Node",
+            "asleep_node": "Asleep node",
+            "dead_node": "Dead node",
+            "toggle_live": "Toggle live updates",
+            "node_id": "Node ID",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "status": "Status",
+            "version": "Version",
+            "data_rate": "Data rate"
+          },
+          "node_status": {
+            "0": "Unknown",
+            "1": "Asleep",
+            "2": "Awake",
+            "3": "Dead",
+            "4": "Alive"
+          },
+          "protocol_data_rate": {
+            "0": "Unspecified",
+            "1": "Z-Wave 9.6 kbps",
+            "2": "Z-Wave 40 kbps",
+            "3": "Z-Wave 100 kbps",
+            "4": "Long Range 100 kbps"
           },
           "node_installer": {
             "header": "Installer settings",
@@ -6562,6 +6600,7 @@
           "caption": "Storage",
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used space",
+          "detailed_description": "{used} used of {total} total, {free_space} remaining",
           "emmc_lifetime_used": "eMMC lifetime used",
           "disk_metrics": "Disk metrics",
           "datadisk": {
@@ -7296,7 +7335,8 @@
                 "position": "Position",
                 "tilt-position": "Tilt position",
                 "brightness": "Brightness",
-                "last-updated": "Last updated"
+                "last-updated": "Last updated",
+                "state": "State"
               },
               "entity_row": {
                 "divider": "Divider",
@@ -7575,7 +7615,7 @@
             },
             "picture-elements": {
               "name": "Picture elements",
-              "description": "The Picture elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even actions! On an image based on coordinates.",
+              "description": "The Picture elements card is one of the most versatile types of cards. The card allows you to position icons or text and even actions on an image based on coordinates.",
               "card_options": "Card options",
               "elements": "Elements",
               "new_element": "Add new element",
@@ -7947,7 +7987,9 @@
             },
             "areas": {
               "areas_display": "Areas to display",
-              "no_entities": "No entities in this group, the section will not be displayed"
+              "no_entities": "No entities in this group, the section will not be displayed",
+              "use_compact_card": "Use compact card",
+              "use_large_card": "Use large card"
             }
           },
           "view": {
@@ -9116,7 +9158,7 @@
           },
           "auth_api": {
             "title": "Home Assistant authentication",
-            "description": "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability."
+            "description": "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log in to applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability."
           },
           "ingress": {
             "title": "Ingress",
@@ -9345,10 +9387,12 @@
           "systemd_resolved": "Systemd-Resolved"
         },
         "unhealthy_reason": {
-          "privileged": "Supervisor is not privileged",
-          "supervisor": "Supervisor was not able to update",
-          "setup": "Setup of the Supervisor failed",
           "docker": "The Docker environment is not working properly",
+          "duplicate_os_installation": "Duplicate Home Assistant OS installation",
+          "oserror_bad_message": "Operating System error: Bad message",
+          "privileged": "Supervisor is not privileged",
+          "setup": "Setup of the Supervisor failed",
+          "supervisor": "Supervisor was not able to update",
           "untrusted": "Detected untrusted content"
         }
       },
