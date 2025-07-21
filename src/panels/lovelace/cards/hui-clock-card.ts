@@ -312,7 +312,98 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
-    /* [Same styles as before] */
+    ha-card {
+      height: 100%;
+    }
+    .time-wrapper {
+      display: flex;
+      height: calc(100% - 12px);
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6px 8px;
+      row-gap: 6px;
+    }
+    .time-wrapper.size-medium,
+    .time-wrapper.size-large {
+      height: calc(100% - 32px);
+      padding: 16px;
+      row-gap: 12px;
+    }
+    .time-title {
+      color: var(--primary-text-color);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-normal);
+      line-height: var(--ha-line-height-condensed);
+      overflow: hidden;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .time-wrapper.size-medium .time-title {
+      font-size: var(--ha-font-size-l);
+      line-height: var(--ha-line-height-condensed);
+    }
+    .time-wrapper.size-large .time-title {
+      font-size: var(--ha-font-size-2xl);
+      line-height: var(--ha-line-height-condensed);
+    }
+    .time-parts {
+      align-items: center;
+      display: grid;
+      grid-template-areas:
+        "hour minute second"
+        "hour minute am-pm";
+      font-size: 2rem;
+      font-weight: var(--ha-font-weight-medium);
+      line-height: 0.8;
+      direction: ltr;
+    }
+    .time-title + .time-parts {
+      font-size: 1.5rem;
+    }
+    .time-wrapper.size-medium .time-parts {
+      font-size: 3rem;
+    }
+    .time-wrapper.size-large .time-parts {
+      font-size: 4rem;
+    }
+    .time-wrapper.size-medium .time-parts .time-part.second,
+    .time-wrapper.size-medium .time-parts .time-part.am-pm {
+      font-size: var(--ha-font-size-l);
+      margin-left: 6px;
+    }
+    .time-wrapper.size-large .time-parts .time-part.second,
+    .time-wrapper.size-large .time-parts .time-part.am-pm {
+      font-size: var(--ha-font-size-2xl);
+      margin-left: 8px;
+    }
+    .time-parts .time-part.hour {
+      grid-area: hour;
+    }
+    .time-parts .time-part.minute {
+      grid-area: minute;
+    }
+    .time-parts .time-part.second {
+      grid-area: second;
+      line-height: 0.9;
+      opacity: 0.4;
+    }
+    .time-parts .time-part.am-pm {
+      grid-area: am-pm;
+      line-height: 0.9;
+      opacity: 0.6;
+    }
+    .time-parts .time-part.second,
+    .time-parts .time-part.am-pm {
+      font-size: var(--ha-font-size-xs);
+      margin-left: 4px;
+    }
+    .time-parts .time-part.hour:after {
+      content: ":";
+      margin: 0 2px;
+    }
   `;
 }
 
