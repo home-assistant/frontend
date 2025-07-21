@@ -223,7 +223,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     await this._tryDisconnect();
 
-    // Subscribe to content template
     if (this._config.content?.includes("{{")) {
       this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
@@ -248,14 +247,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       );
     }
 
-    // Subscribe to time_zone template
     if (this._config.time_zone?.includes("{{")) {
       this._unsubTimeZoneTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
           if (!("error" in result)) {
             this._resolvedTimeZone = result.result;
-            this._initDate(); // reapply formatting
+            this._initDate(); 
           }
         },
         {
