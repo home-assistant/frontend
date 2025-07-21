@@ -478,6 +478,8 @@ export class StatisticsChart extends LitElement {
         this.statTypes.includes("min") && statisticsHaveType(stats, "min");
       const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
 
+      const hasState = this.statTypes.includes("state");
+
       const bandTop = hasMax ? "max" : "mean";
       const bandBottom = hasMin ? "min" : "mean";
 
@@ -499,7 +501,8 @@ export class StatisticsChart extends LitElement {
           const band = drawBands && (type === bandTop || type === bandBottom);
           statTypes.push(type);
           const borderColor =
-            band && hasMin && hasMax && hasMean
+            (band && hasMin && hasMax && hasMean) ||
+            (hasState && ["change", "sum"].includes(type))
               ? color + (this.hideLegend ? "00" : "7F")
               : color;
           const backgroundColor = band ? color + "3F" : color + "7F";
