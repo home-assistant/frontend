@@ -44,10 +44,10 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   @state() private _error?: string;
 
   @state() private _errorLevel?: "ERROR" | "WARNING";
+  
+  @state() private _resolvedTimeZone?: string;
 
   @state() private _templateResult?: RenderTemplateResult;
-
-  @state() private _resolvedTimeZone?: string;
 
   @state() private _timeHour?: string;
 
@@ -57,11 +57,11 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _timeAmPm?: string;
 
+  private _tickInterval?: undefined | number;
+
   private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   private _unsubTimeZoneTemplate?: Promise<UnsubscribeFunc>;
-
-  private _tickInterval?: undefined | number;
 
   public setConfig(config: ClockCardConfig): void {
     this._config = config;
