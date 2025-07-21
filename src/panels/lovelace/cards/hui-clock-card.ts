@@ -271,14 +271,14 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   private async _tryDisconnect(): Promise<void> {
     if (this._unsubRenderTemplate) {
       this._unsubRenderTemplate.then((unsub) => unsub()).catch(() => {
-        //ignore
+        // ignore
       });
       this._unsubRenderTemplate = undefined;
     }
 
     if (this._unsubTimeZoneTemplate) {
       this._unsubTimeZoneTemplate.then((unsub) => unsub()).catch(() => {
-        //ignore
+        // ignore
       });
       this._unsubTimeZoneTemplate = undefined;
     }
