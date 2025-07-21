@@ -184,6 +184,16 @@ export class EnergyViewStrategy extends ReactiveElement {
         type: "energy-devices-graph",
         collection_key: "energy_dashboard",
       });
+      const showFloorsNAreas = !prefs.device_consumption.some(
+        (d) => d.included_in_stat
+      );
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
+        type: "energy-sankey",
+        collection_key: "energy_dashboard",
+        group_by_floor: showFloorsNAreas,
+        group_by_area: showFloorsNAreas,
+      });
     }
 
     return view;
