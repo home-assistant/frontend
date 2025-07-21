@@ -135,7 +135,7 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
               .data=${{ firmware_target: this._firmwareTarget }}
               .schema=${firmwareTargetSchema}
               @value-changed=${this._firmwareTargetChanged}
-              disabled=${this._uploading}
+              .disabled=${this._uploading}
             ></ha-form>`}
       <ha-button
         slot="primaryAction"
