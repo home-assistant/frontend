@@ -97,7 +97,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
-  @state() private _legendData: NonNullable<CustomLegendOption["data"]> = [];
+  @state() private _legendData: CustomLegendOption["data"];
 
   @state() private _statisticIds: string[] = [];
 
@@ -184,11 +184,17 @@ export class StatisticsChart extends LitElement {
   }
 
   private _datasetHidden(ev: CustomEvent) {
+    if (!this._legendData) {
+      return;
+    }
     this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
+    if (!this._legendData) {
+      return;
+    }
     this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
@@ -472,6 +478,8 @@ export class StatisticsChart extends LitElement {
         this.statTypes.includes("min") && statisticsHaveType(stats, "min");
       const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
 
+      const hasState = this.statTypes.includes("state");
+
       const bandTop = hasMax ? "max" : "mean";
       const bandBottom = hasMin ? "min" : "mean";
 
@@ -493,7 +501,8 @@ export class StatisticsChart extends LitElement {
           const band = drawBands && (type === bandTop || type === bandBottom);
           statTypes.push(type);
           const borderColor =
-            band && hasMin && hasMax && hasMean
+            (band && hasMin && hasMax && hasMean) ||
+            (hasState && ["change", "sum"].includes(type))
               ? color + (this.hideLegend ? "00" : "7F")
               : color;
           const backgroundColor = band ? color + "3F" : color + "7F";
@@ -617,9 +626,13 @@ export class StatisticsChart extends LitElement {
     });
 
     this._chartData = totalDataSets;
-    if (legendData.length !== this._legendData.length) {
+    if (legendData.length !== this._legendData?.length) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData = legendData.map(({ id, name }) => ({ id, name }));
+      this._legendData =
+        legendData.length > 1
+          ? legendData.map(({ id, name }) => ({ id, name }))
+          : // if there is only one entity, let the base chart handle the legend
+            undefined;
     }
     this._statisticIds = statisticIds;
   }
