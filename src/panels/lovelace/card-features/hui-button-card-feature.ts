@@ -15,7 +15,7 @@ import type {
 
 export const supportsButtonCardFeature = (
   hass: HomeAssistant,
-  context: LovelaceCardFeatureContext,
+  context: LovelaceCardFeatureContext
 ) => {
   const stateObj = context.entity_id
     ? hass.states[context.entity_id]
