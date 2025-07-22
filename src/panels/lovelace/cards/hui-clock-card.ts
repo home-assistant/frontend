@@ -47,14 +47,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _timeAmPm?: string;
 
-  private _tickInterval?: undefined | number;
-
-  public setConfig(config: ClockCardConfig): void {
-    this._config = config;
-    this._initDate();
-  }
-
-  private getTimeZoneFromConfig(): string {
+  private _getTimeZoneFromConfig(): string {
     if (!this._config || !this.hass) {
       return this.hass?.config?.time_zone ?? "UTC";
     }
@@ -72,6 +65,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _tickInterval?: undefined | number;
+
+  public setConfig(config: ClockCardConfig): void {
+    this._config = config;
+    this._initDate();
+  }
+
   private _initDate() {
     if (!this._config || !this.hass) {
       return;
@@ -83,7 +83,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       locale = { ...locale, time_format: this._config.time_format };
     }
 
-    const timeZone = this.getTimeZoneFromConfig();
+    const timeZone = this._getTimeZoneFromConfig();
     
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       hour: "2-digit",
