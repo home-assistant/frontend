@@ -61,12 +61,8 @@ class HaHLSPlayer extends LitElement {
 
   private _handleVisibilityChange = () => {
     if (document.hidden) {
-      // eslint-disable-next-line no-console
-      console.log("Player is hidden");
       this._cleanUp();
     } else {
-      // eslint-disable-next-line no-console
-      console.log("Player is visible");
       this._resetError();
       this._startHls();
     }
