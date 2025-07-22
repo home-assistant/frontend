@@ -59,6 +59,19 @@ class HaHLSPlayer extends LitElement {
 
   private static streamCount = 0;
 
+  private _handleVisibilityChange = () => {
+    if (document.hidden) {
+      // eslint-disable-next-line no-console
+      console.log("Player is hidden");
+      this._cleanUp();
+    } else {
+      // eslint-disable-next-line no-console
+      console.log("Player is visible");
+      this._resetError();
+      this._startHls();
+    }
+  };
+
   public connectedCallback() {
     super.connectedCallback();
     HaHLSPlayer.streamCount += 1;
@@ -66,10 +79,15 @@ class HaHLSPlayer extends LitElement {
       this._resetError();
       this._startHls();
     }
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     HaHLSPlayer.streamCount -= 1;
     this._cleanUp();
   }
