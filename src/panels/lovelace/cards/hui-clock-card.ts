@@ -17,7 +17,7 @@ const INTERVAL = 1000;
 
 const safeResolveTimeZone = resolveTimeZone as unknown as (
   zone: string,
-  fallback: string
+  fallback: string,
 ) => string;
 
 @customElement("hui-clock-card")
@@ -51,20 +51,17 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     if (!this._config || !this.hass) {
       return this.hass?.config?.time_zone ?? "UTC";
     }
-  
+
     let zone: string | undefined = this._config.time_zone;
-  
-    if (
-      zone?.startsWith("sensor.") || 
-      zone?.startsWith("input_text.")
-    ) {
+
+    if (zone?.startsWith("sensor.") || zone?.startsWith("input_text.")) {
       const entity = this.hass.states[zone];
       zone = entity?.state;
     }
-  
+
     return safeResolveTimeZone(
       zone ?? this.hass.config.time_zone,
-      this.hass.config.time_zone
+      this.hass.config.time_zone,
     );
   }
 
@@ -87,7 +84,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     const timeZone = this._getTimeZoneFromConfig();
-    
+
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       hour: "2-digit",
       minute: "2-digit",
