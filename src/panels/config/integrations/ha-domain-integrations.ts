@@ -138,6 +138,7 @@ class HaDomainIntegrations extends LitElement {
                 this.hass.locale.language
               );
             })
+            .filter(([, val]) => val.integration_type !== "hardware")
             .map(
               ([dom, val]) =>
                 html`<ha-integration-list-item
