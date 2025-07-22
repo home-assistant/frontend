@@ -48,7 +48,7 @@ export class HuiButtonCardFeatureEditor
     this.dispatchEvent(
       new CustomEvent("config-changed", {
         detail: { config: ev.detail.value },
-      }),
+      })
     );
   }
 }
