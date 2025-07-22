@@ -12,7 +12,6 @@ import type {
 import type { ClockCardConfig } from "./types";
 import { useAmPm } from "../../../common/datetime/use_am_pm";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
-import type { TimeZone } from "../../../common/datetime/resolve-time-zone";
 
 const INTERVAL = 1000;
 
@@ -74,8 +73,8 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
     
     timeZone = resolveTimeZone(
-      (timeZone ?? this.hass.config?.time_zone) as unknown as TimeZone,
-      this.hass.config?.time_zone as TimeZone
+      timeZone ?? this.hass.config?.time_zone as any,
+      this.hass.config?.time_zone as any
     );
     
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
