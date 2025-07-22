@@ -54,14 +54,17 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
     let zone: string | undefined = this._config.time_zone;
 
-    if (zone?.startsWith("sensor.") || zone?.startsWith("input_text.")) {
+    if (
+      zone?.startsWith("sensor.") || 
+      zone?.startsWith("input_text.")
+    ) {
       const entity = this.hass.states[zone];
       zone = entity?.state;
     }
 
     return safeResolveTimeZone(
       zone ?? this.hass.config.time_zone,
-      this.hass.config.time_zone,
+      this.hass.config.time_zone
     );
   }
 
