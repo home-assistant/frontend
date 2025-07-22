@@ -40,10 +40,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   @state() private _config?: ClockCardConfig;
 
   @state() private _dateTimeFormat?: Intl.DateTimeFormat;
-
-  @state() private _error?: string;
-
-  @state() private _errorLevel?: "ERROR" | "WARNING";
   
   @state() private _resolvedTimeZone?: string;
 
@@ -228,8 +224,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
         this.hass.connection,
         (result) => {
           if ("error" in result) {
-            this._error = result.error;
-            this._errorLevel = result.level;
             return;
           }
           this._templateResult = result;
@@ -242,7 +236,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
             user: this.hass.user?.name,
           },
           strict: true,
-          report_errors: this.preview,
         }
       );
     }
@@ -282,9 +275,6 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       });
       this._unsubTimeZoneTemplate = undefined;
     }
-
-    this._error = undefined;
-    this._errorLevel = undefined;
   }
 
   protected render() {
