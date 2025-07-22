@@ -60,6 +60,18 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       locale = { ...locale, time_format: this._config.time_format };
     }
 
+    let timeZone = string | undefined;
+
+    if (
+      this._config.time_zone?.startsWith("sensor.") ||
+      this._config.time_zone?.startsWith("input_text.")
+    ) {
+      const entity = this.hass.states[this._config.time_zone];
+      timeZone = entity?.state;
+    } else {
+      timeZone = this._config.time_zone;
+    }
+
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       hour: "2-digit",
       minute: "2-digit",
