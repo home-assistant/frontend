@@ -15,7 +15,7 @@ import type {
 
 export const supportsButtonCardFeature = (
   hass: HomeAssistant,
-  context: LovelaceCardFeatureContext
+  context: LovelaceCardFeatureContext,
 ) => {
   const stateObj = context.entity_id
     ? hass.states[context.entity_id]
@@ -26,10 +26,7 @@ export const supportsButtonCardFeature = (
 };
 
 @customElement("hui-button-card-feature")
-class HuiButtonCardFeature
-  extends LitElement
-  implements LovelaceCardFeature
-{
+class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
@@ -40,9 +37,7 @@ class HuiButtonCardFeature
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[
-      this.context.entity_id!
-    ] as HassEntity | undefined;
+    return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
 
   private _pressButton() {
@@ -83,9 +78,7 @@ class HuiButtonCardFeature
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${["unavailable", "unknown"].includes(
-            this._stateObj.state
-          )}
+          .disabled=${["unavailable", "unknown"].includes(this._stateObj.state)}
           class="press-button"
           @click=${this._pressButton}
         >
