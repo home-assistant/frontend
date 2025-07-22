@@ -73,8 +73,8 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
     
     timeZone = resolveTimeZone(
-      timeZone ?? this.hass.config?.time_zone,
-      this.hass.config?.time_zone
+      (timeZone ?? this.hass.config?.time_zone) as unknown as TimeZone,
+      this.hass.config?.time_zone as TimeZone
     );
     
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
