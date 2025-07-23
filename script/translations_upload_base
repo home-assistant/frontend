@@ -33,7 +33,7 @@ fi
 
 docker run \
     -v ${LOCAL_FILE}:/opt/src/${LOCAL_FILE} \
-     lokalise/lokalise-cli-2:v3.1.14 lokalise2 \
+     lokalise/lokalise-cli-2:v3.1.4 lokalise2 \
     --token ${LOKALISE_TOKEN} \
     --project-id ${PROJECT_ID} \
     file upload \
