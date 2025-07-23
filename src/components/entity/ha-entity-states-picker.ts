@@ -31,6 +31,9 @@ export class HaEntityStatesPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ attribute: false })
+  public hideStates?: string[];
+
   private _keys: string[] = [];
 
   private _getKey(index: number) {
@@ -53,6 +56,7 @@ export class HaEntityStatesPicker extends LitElement {
     }
 
     const value = this.value || [];
+    const hide = [...(this.hideStates || []), ...value];
 
     return html`
       ${repeat(
@@ -66,7 +70,7 @@ export class HaEntityStatesPicker extends LitElement {
               .entityId=${this.entityId}
               .attribute=${this.attribute}
               .extraOptions=${this.extraOptions}
-              .excludeOptions=${value.filter((v) => v !== state)}
+              .hideStates=${hide.filter((v) => v !== state)}
               .allowCustomValue=${this.allowCustomValue}
               .label=${this.label}
               .value=${state}
@@ -89,7 +93,7 @@ export class HaEntityStatesPicker extends LitElement {
                 .entityId=${this.entityId}
                 .attribute=${this.attribute}
                 .extraOptions=${this.extraOptions}
-                .excludeOptions=${value}
+                .hideStates=${hide}
                 .allowCustomValue=${this.allowCustomValue}
                 .label=${this.label}
                 .helper=${this.helper}
@@ -107,7 +111,7 @@ export class HaEntityStatesPicker extends LitElement {
     const newState = ev.detail.value;
     const newValue = [...this.value!];
     const index = (ev.currentTarget as any)?.index;
-    if (!index) {
+    if (index == null) {
       return;
     }
     if (newState === undefined) {
