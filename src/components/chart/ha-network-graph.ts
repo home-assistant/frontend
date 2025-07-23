@@ -76,7 +76,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @state() private _reducedMotion = false;
 
-  @state() private _physicsEnabled = false;
+  @state() private _physicsEnabled = true;
 
   @state() private _showLabels = true;
 
