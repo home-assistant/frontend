@@ -15,7 +15,7 @@ import "../../components/ha-textfield";
 import {
   DefaultAccentColor,
   DefaultPrimaryColor,
-} from "../../resources/theme/color.globals";
+} from "../../resources/theme/color/color.globals";
 import type { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 

@@ -1,5 +1,5 @@
 import type { ThemeVars } from "../../data/ws-themes";
-import { darkColorVariables } from "../../resources/theme/color.globals";
+import { darkColorVariables } from "../../resources/theme/color";
 import { derivedStyles } from "../../resources/theme/theme";
 import type { HomeAssistant } from "../../types";
 import {
