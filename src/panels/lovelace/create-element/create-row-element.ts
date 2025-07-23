@@ -25,7 +25,6 @@ const ALWAYS_LOADED_TYPES = new Set([
   "call-service",
 ]);
 const LAZY_LOAD_TYPES = {
-  "ai-task-entity": () => import("../entity-rows/hui-ai-task-entity-row"),
   "button-entity": () => import("../entity-rows/hui-button-entity-row"),
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
   "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
@@ -63,7 +62,6 @@ const LAZY_LOAD_TYPES = {
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "simple",
-  ai_task: "ai-task",
   alert: "toggle",
   automation: "toggle",
   button: "button",
