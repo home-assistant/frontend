@@ -123,6 +123,9 @@ export const getMyRedirects = (): Redirects => ({
     component: "bluetooth",
     redirect: "/config/bluetooth/visualization",
   },
+  config_ai_task: {
+    redirect: "/config/general/#ai-task",
+  },
   config_bluetooth: {
     component: "bluetooth",
     redirect: "/config/bluetooth",
@@ -349,7 +352,10 @@ class HaPanelMy extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    const path = this.route.path.substring(1);
+    const path = this.route.path.substring(
+      1,
+      this.route.path.endsWith("/") ? this.route.path.length - 1 : undefined
+    );
     const hasSupervisor = isComponentLoaded(this.hass, "hassio");
 
     this._redirect = getRedirect(path);

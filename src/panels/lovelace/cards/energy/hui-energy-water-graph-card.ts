@@ -13,10 +13,7 @@ import type {
   EnergyData,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import {
-  getEnergyDataCollection,
-  getEnergyWaterUnit,
-} from "../../../../data/energy";
+import { getEnergyDataCollection } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -163,7 +160,7 @@ export class HuiEnergyWaterGraphCard
         (source) => source.type === "water"
       ) as WaterSourceTypeEnergyPreference[];
 
-    this._unit = getEnergyWaterUnit(this.hass);
+    this._unit = energyData.waterUnit;
 
     const datasets: BarSeriesOption[] = [];
 

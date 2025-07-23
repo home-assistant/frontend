@@ -3,13 +3,17 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiClose, mdiPlus } from "@mdi/js";
+import { dump } from "js-yaml";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-icon-picker";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-textarea";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-labels-picker";
+import "../../../../components/ha-suggest-with-ai-button";
+import type { SuggestWithAIGenerateTask } from "../../../../components/ha-suggest-with-ai-button";
 import "../../category/ha-category-picker";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/chips/ha-chip-set";
@@ -24,6 +28,12 @@ import type {
   SaveDialogParams,
 } from "./show-dialog-automation-save";
 import { supportsMarkdownHelper } from "../../../../common/translations/markdown_support";
+import type { GenDataTaskResult } from "../../../../data/ai_task";
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { subscribeOne } from "../../../../common/util/subscribe-one";
+import { subscribeLabelRegistry } from "../../../../data/label_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import { fetchCategoryRegistry } from "../../../../data/category_registry";
 
 @customElement("ha-dialog-automation-save")
 class DialogAutomationSave extends LitElement implements HassDialog {
@@ -39,7 +49,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
 
   private _params!: SaveDialogParams;
 
-  private _newName?: string;
+  @state() private _newName?: string;
 
   private _newIcon?: string;
 
@@ -67,7 +77,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       this._entryUpdates.category ? "category" : "",
       this._entryUpdates.labels.length > 0 ? "labels" : "",
       this._entryUpdates.area ? "area" : "",
-    ];
+    ].filter(Boolean);
   }
 
   public closeDialog() {
@@ -250,6 +260,12 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${this._params.title || title}</span>
+          <ha-suggest-with-ai-button
+            slot="actionItems"
+            .hass=${this.hass}
+            .generateTask=${this._generateTask}
+            @suggestion=${this._handleSuggestion}
+          ></ha-suggest-with-ai-button>
         </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error"
@@ -311,6 +327,184 @@ class DialogAutomationSave extends LitElement implements HassDialog {
   private _handleDiscard() {
     this._params.onDiscard?.();
     this.closeDialog();
+  }
+
+  private _getSuggestData() {
+    return Promise.all([
+      subscribeOne(this.hass.connection, subscribeLabelRegistry).then((labs) =>
+        Object.fromEntries(labs.map((lab) => [lab.label_id, lab.name]))
+      ),
+      subscribeOne(this.hass.connection, subscribeEntityRegistry).then((ents) =>
+        Object.fromEntries(ents.map((ent) => [ent.entity_id, ent]))
+      ),
+      fetchCategoryRegistry(this.hass.connection, "automation").then((cats) =>
+        Object.fromEntries(cats.map((cat) => [cat.category_id, cat.name]))
+      ),
+    ]);
+  }
+
+  private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
+    const [labels, entities, categories] = await this._getSuggestData();
+    const inspirations: string[] = [];
+
+    const domain = this._params.domain;
+
+    for (const entity of Object.values(this.hass.states)) {
+      const entityEntry = entities[entity.entity_id];
+      if (
+        computeStateDomain(entity) !== domain ||
+        entity.attributes.restored ||
+        !entity.attributes.friendly_name ||
+        !entityEntry
+      ) {
+        continue;
+      }
+
+      let inspiration = `- ${entity.attributes.friendly_name}`;
+
+      const category = categories[entityEntry.categories.automation];
+      if (category) {
+        inspiration += ` (category: ${category})`;
+      }
+
+      if (entityEntry.labels.length) {
+        inspiration += ` (labels: ${entityEntry.labels
+          .map((label) => labels[label])
+          .join(", ")})`;
+      }
+
+      inspirations.push(inspiration);
+    }
+
+    const term = this._params.domain === "script" ? "script" : "automation";
+
+    return {
+      type: "data",
+      task: {
+        task_name: `frontend:${term}:save`,
+        instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant ${term}.
+
+The name should be relevant to the ${term}'s purpose.
+${
+  inspirations.length
+    ? `The name should be in same style and sentence capitalization as existing ${term}s.
+Suggest a category and labels if relevant to the ${term}'s purpose.
+Only suggest category and labels that are already used by existing ${term}s.`
+    : `The name should be short, descriptive, sentence case, and written in the language ${this.hass.language}.`
+}
+If the ${term} contains 5+ steps, include a short description.
+
+For inspiration, here are existing ${term}s:
+${inspirations.join("\n")}
+
+The ${term} configuration is as follows:
+
+${dump(this._params.config)}
+`,
+        structure: {
+          name: {
+            description: "The name of the automation",
+            required: true,
+            selector: {
+              text: {},
+            },
+          },
+          description: {
+            description: "A short description of the automation",
+            required: false,
+            selector: {
+              text: {},
+            },
+          },
+          labels: {
+            description: "Labels for the automation",
+            required: false,
+            selector: {
+              text: {
+                multiple: true,
+              },
+            },
+          },
+          category: {
+            description: "The category of the automation",
+            required: false,
+            selector: {
+              select: {
+                options: Object.entries(categories).map(([id, name]) => ({
+                  value: id,
+                  label: name,
+                })),
+              },
+            },
+          },
+        },
+      },
+    };
+  };
+
+  private async _handleSuggestion(
+    event: CustomEvent<
+      GenDataTaskResult<{
+        name: string;
+        description?: string;
+        category?: string;
+        labels?: string[];
+      }>
+    >
+  ) {
+    const result = event.detail;
+    const [labels, _entities, categories] = await this._getSuggestData();
+
+    this._newName = result.data.name;
+    if (result.data.description) {
+      this._newDescription = result.data.description;
+      if (!this._visibleOptionals.includes("description")) {
+        this._visibleOptionals = [...this._visibleOptionals, "description"];
+      }
+    }
+    if (result.data.category) {
+      // We get back category name, convert it to ID
+      const categoryId = Object.entries(categories).find(
+        ([, name]) => name === result.data.category
+      )?.[0];
+      if (categoryId) {
+        this._entryUpdates = {
+          ...this._entryUpdates,
+          category: categoryId,
+        };
+        if (!this._visibleOptionals.includes("category")) {
+          this._visibleOptionals = [...this._visibleOptionals, "category"];
+        }
+      }
+    }
+    if (result.data.labels?.length) {
+      // We get back label names, convert them to IDs
+      const newLabels: Record<string, undefined | string> = Object.fromEntries(
+        result.data.labels.map((name) => [name, undefined])
+      );
+      let toFind = result.data.labels.length;
+      for (const [labelId, labelName] of Object.entries(labels)) {
+        if (labelName in newLabels && newLabels[labelName] === undefined) {
+          newLabels[labelName] = labelId;
+          toFind--;
+          if (toFind === 0) {
+            break;
+          }
+        }
+      }
+      const foundLabels = Object.values(newLabels).filter(
+        (labelId) => labelId !== undefined
+      );
+      if (foundLabels.length) {
+        this._entryUpdates = {
+          ...this._entryUpdates,
+          labels: foundLabels,
+        };
+        if (!this._visibleOptionals.includes("labels")) {
+          this._visibleOptionals = [...this._visibleOptionals, "labels"];
+        }
+      }
+    }
   }
 
   private async _save(): Promise<void> {
@@ -380,6 +574,10 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         }
         .destructive {
           --mdc-theme-primary: var(--error-color);
+        }
+
+        ha-suggest-with-ai-button {
+          margin: 8px 16px;
         }
       `,
     ];

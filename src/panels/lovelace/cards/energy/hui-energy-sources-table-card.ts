@@ -13,8 +13,6 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -134,13 +132,9 @@ export class HuiEnergySourcesTableCard
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
 
-    const gasUnit = getEnergyGasUnit(
-      this.hass,
-      this._data.prefs,
-      this._data.statsMetadata
-    );
+    const gasUnit = this._data.gasUnit;
 
-    const waterUnit = getEnergyWaterUnit(this.hass);
+    const waterUnit = this._data.waterUnit;
 
     const compare = this._data.statsCompare !== undefined;
 

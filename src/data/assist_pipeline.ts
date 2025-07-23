@@ -134,7 +134,8 @@ export interface ConversationChatLogToolResultDelta {
 interface PipelineIntentProgressEvent extends PipelineEventBase {
   type: "intent-progress";
   data: {
-    chat_log_delta:
+    tts_start_streaming?: boolean;
+    chat_log_delta?:
       | Partial<ConversationChatLogAssistantDelta>
       // These always come in 1 chunk
       | ConversationChatLogToolResultDelta;

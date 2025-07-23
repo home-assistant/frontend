@@ -13,6 +13,7 @@ import type { Constructor, HomeAssistant } from "../../types";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
 } from "./card-features/types";
 import type { LovelaceElement, LovelaceElementConfig } from "./elements/types";
 import type { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
@@ -62,6 +63,8 @@ export interface LovelaceGridOptions {
   min_columns?: number;
   min_rows?: number;
   max_rows?: number;
+  fixed_rows?: boolean;
+  fixed_columns?: boolean;
 }
 
 export interface LovelaceCard extends HTMLElement {
@@ -177,6 +180,7 @@ export interface LovelaceCardFeature extends HTMLElement {
   context?: LovelaceCardFeatureContext;
   setConfig(config: LovelaceCardFeatureConfig);
   color?: string;
+  position?: LovelaceCardFeaturePosition;
 }
 
 export interface LovelaceCardFeatureConstructor

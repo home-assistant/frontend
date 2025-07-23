@@ -13,6 +13,7 @@ import type { AreasViewStrategyConfig } from "./areas-overview-view-strategy";
 import { computeAreaPath, getAreas } from "./helpers/areas-strategy-helper";
 
 interface AreaOptions {
+  card_size?: "small" | "large";
   groups_options?: Record<string, EntitiesDisplay>;
 }
 
@@ -20,6 +21,9 @@ export interface AreasDashboardStrategyConfig {
   type: "areas";
   areas_display?: {
     hidden?: string[];
+    order?: string[];
+  };
+  floors_display?: {
     order?: string[];
   };
   areas_options?: Record<string, AreaOptions>;
@@ -66,6 +70,7 @@ export class AreasDashboardStrategy extends ReactiveElement {
       return {
         title: area.name,
         path: path,
+        subview: true,
         strategy: {
           type: "area",
           area: area.area_id,
@@ -77,13 +82,13 @@ export class AreasDashboardStrategy extends ReactiveElement {
     return {
       views: [
         {
-          title: "Home",
           icon: "mdi:home",
           path: "home",
           strategy: {
             type: "areas-overview",
             areas_display: config.areas_display,
             areas_options: config.areas_options,
+            floors_display: config.floors_display,
           } satisfies AreasViewStrategyConfig,
         },
         ...areaViews,

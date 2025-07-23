@@ -258,7 +258,7 @@ export default class HaAutomationCondition extends LitElement {
   private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const conditions = [
+    let conditions = [
       ...this.conditions.slice(0, index),
       data,
       ...this.conditions.slice(index),
@@ -266,7 +266,15 @@ export default class HaAutomationCondition extends LitElement {
     // Add condition locally to avoid UI jump
     this.conditions = conditions;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.conditions });
+    if (this.conditions !== conditions) {
+      // Ensure condition is added even after update
+      conditions = [
+        ...this.conditions.slice(0, index),
+        data,
+        ...this.conditions.slice(index),
+      ];
+    }
+    fireEvent(this, "value-changed", { value: conditions });
   }
 
   private async _conditionRemoved(ev: CustomEvent): Promise<void> {

@@ -212,7 +212,10 @@ class StepFlowCreateEntry extends LitElement {
         entityIds.push(...entities.map((entity) => entity.entity_id));
       });
 
-      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+      const entityIdsMapping = await getAutomaticEntityIds(
+        this.hass,
+        entityIds
+      );
 
       Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
         if (newEntityId) {
