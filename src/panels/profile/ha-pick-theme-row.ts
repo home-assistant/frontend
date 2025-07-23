@@ -3,6 +3,7 @@ import "@material/mwc-button/mwc-button";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { normalizeLuminance } from "../../common/color/palette";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
 import "../../components/ha-list-item";
@@ -171,6 +172,12 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleColorChange(ev: CustomEvent) {
     const target = ev.target as any;
+
+    // normalize primary color if needed for contrast
+    if (target.name === "primaryColor") {
+      target.value = normalizeLuminance(target.value);
+    }
+
     fireEvent(this, "settheme", { [target.name]: target.value });
   }
 

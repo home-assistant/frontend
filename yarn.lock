@@ -4467,6 +4467,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/culori@npm:4":
+  version: 4.0.0
+  resolution: "@types/culori@npm:4.0.0"
+  checksum: 10/62a9058d6125fe489ca1e7df27ac9837ea7a34c772b8bed8e5e00177b141574830efaa0c93363e9532878490d3245a9c9c8183ebee181a450097584af0cfefc1
+  languageName: node
+  linkType: hard
+
 "@types/deep-eql@npm:*":
   version: 4.0.2
   resolution: "@types/deep-eql@npm:4.0.2"
@@ -7033,6 +7040,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"culori@npm:4.0.2":
+  version: 4.0.2
+  resolution: "culori@npm:4.0.2"
+  checksum: 10/9d297ca5c6fc86b2637200e1d9edb5a7d1015a2e978a6748781ef53c9577269ce1df96dc0925b0002239c85665ba881a3d580564dfd2807c65ee65dc2e829849
+  languageName: node
+  linkType: hard
+
 "data-urls@npm:^5.0.0":
   version: 5.0.0
   resolution: "data-urls@npm:5.0.0"
@@ -9378,6 +9392,7 @@ __metadata:
     "@types/chromecast-caf-receiver": "npm:6.0.22"
     "@types/chromecast-caf-sender": "npm:1.0.11"
     "@types/color-name": "npm:2.0.0"
+    "@types/culori": "npm:4"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.20"
@@ -9407,6 +9422,7 @@ __metadata:
     comlink: "npm:4.4.2"
     core-js: "npm:3.44.0"
     cropperjs: "npm:1.6.2"
+    culori: "npm:4.0.2"
     date-fns: "npm:4.1.0"
     date-fns-tz: "npm:3.2.0"
     deep-clone-simple: "npm:1.1.1"
