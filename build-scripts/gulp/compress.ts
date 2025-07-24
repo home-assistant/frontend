@@ -1,10 +1,10 @@
 // Tasks to compress
 
-import { constants } from "node:zlib";
-import gulp from "gulp";
+import { dest, parallel, src } from "gulp";
 import brotli from "gulp-brotli";
 import zopfli from "gulp-zopfli-green";
-import paths from "../paths.cjs";
+import { constants } from "node:zlib";
+import paths from "../paths.ts";
 
 const filesGlob = "*.{js,json,css,svg,xml}";
 const brotliOptions = {
@@ -16,27 +16,25 @@ const brotliOptions = {
 const zopfliOptions = { threshold: 150 };
 
 const compressModern = (rootDir, modernDir, compress) =>
-  gulp
-    .src([`${modernDir}/**/${filesGlob}`, `${rootDir}/sw-modern.js`], {
-      base: rootDir,
-      allowEmpty: true,
-    })
+  src([`${modernDir}/**/${filesGlob}`, `${rootDir}/sw-modern.js`], {
+    base: rootDir,
+    allowEmpty: true,
+  })
     .pipe(compress === "zopfli" ? zopfli(zopfliOptions) : brotli(brotliOptions))
-    .pipe(gulp.dest(rootDir));
+    .pipe(dest(rootDir));
 
 const compressOther = (rootDir, modernDir, compress) =>
-  gulp
-    .src(
-      [
-        `${rootDir}/**/${filesGlob}`,
-        `!${modernDir}/**/${filesGlob}`,
-        `!${rootDir}/{sw-modern,service_worker}.js`,
-        `${rootDir}/{authorize,onboarding}.html`,
-      ],
-      { base: rootDir, allowEmpty: true }
-    )
+  src(
+    [
+      `${rootDir}/**/${filesGlob}`,
+      `!${modernDir}/**/${filesGlob}`,
+      `!${rootDir}/{sw-modern,service_worker}.js`,
+      `${rootDir}/{authorize,onboarding}.html`,
+    ],
+    { base: rootDir, allowEmpty: true }
+  )
     .pipe(compress === "zopfli" ? zopfli(zopfliOptions) : brotli(brotliOptions))
-    .pipe(gulp.dest(rootDir));
+    .pipe(dest(rootDir));
 
 const compressAppModernBrotli = () =>
   compressModern(paths.app_output_root, paths.app_output_latest, "brotli");
@@ -66,21 +64,16 @@ const compressHassioOtherBrotli = () =>
 const compressHassioOtherZopfli = () =>
   compressOther(paths.hassio_output_root, paths.hassio_output_latest, "zopfli");
 
-gulp.task(
-  "compress-app",
-  gulp.parallel(
-    compressAppModernBrotli,
-    compressAppOtherBrotli,
-    compressAppModernZopfli,
-    compressAppOtherZopfli
-  )
+export const compressApp = parallel(
+  compressAppModernBrotli,
+  compressAppOtherBrotli,
+  compressAppModernZopfli,
+  compressAppOtherZopfli
 );
-gulp.task(
-  "compress-hassio",
-  gulp.parallel(
-    compressHassioModernBrotli,
-    compressHassioOtherBrotli,
-    compressHassioModernZopfli,
-    compressHassioOtherZopfli
-  )
+
+export const compressHassio = parallel(
+  compressHassioModernBrotli,
+  compressHassioOtherBrotli,
+  compressHassioModernZopfli,
+  compressHassioOtherZopfli
 );

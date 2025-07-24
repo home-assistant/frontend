@@ -1,19 +1,23 @@
-import fs from "fs";
 import { glob } from "glob";
-import gulp from "gulp";
+import { parallel, series, watch } from "gulp";
 import yaml from "js-yaml";
 import { marked } from "marked";
-import path from "path";
-import paths from "../paths.cjs";
-import "./clean.js";
-import "./entry-html.js";
-import "./gather-static.js";
-import "./gen-icons-json.js";
-import "./service-worker.js";
-import "./translations.js";
-import "./rspack.js";
+import fs from "node:fs";
+import path from "node:path";
+import paths from "../paths.ts";
+import { cleanGallery } from "./clean.ts";
+import { genPagesGalleryDev, genPagesGalleryProd } from "./entry-html.ts";
+import { copyStaticGallery } from "./gather-static.ts";
+import { genIconsJson } from "./gen-icons-json.ts";
+import { buildLocaleData } from "./locale-data.ts";
+import { rspackDevServerGallery, rspackProdGallery } from "./rspack.ts";
+import {
+  buildTranslations,
+  translationsEnableMergeBackend,
+} from "./translations.ts";
 
-gulp.task("gather-gallery-pages", async function gatherPages() {
+// gather-gallery-pages
+export const gatherGalleryPages = async function gatherPages() {
   const pageDir = path.resolve(paths.gallery_dir, "src/pages");
   const files = await glob(path.resolve(pageDir, "**/*"));
 
@@ -22,7 +26,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
   let content = "export const PAGES = {\n";
 
-  const processed = new Set();
+  const processed = new Set<string>();
 
   for (const file of files) {
     if (fs.lstatSync(file).isDirectory()) {
@@ -47,7 +51,9 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
 
       if (descriptionContent.startsWith("---")) {
         const metadataEnd = descriptionContent.indexOf("---", 3);
-        metadata = yaml.load(descriptionContent.substring(3, metadataEnd));
+        metadata = yaml.load(
+          descriptionContent.substring(3, metadataEnd)
+        ) as any;
         descriptionContent = descriptionContent
           .substring(metadataEnd + 3)
           .trim();
@@ -57,7 +63,9 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
       if (descriptionContent === "") {
         hasDescription = false;
       } else {
-        descriptionContent = marked(descriptionContent).replace(/`/g, "\\`");
+        // eslint-disable-next-line no-await-in-loop
+        descriptionContent = await marked(descriptionContent);
+        descriptionContent = descriptionContent.replace(/`/g, "\\`");
         fs.mkdirSync(path.resolve(galleryBuild, category), { recursive: true });
         fs.writeFileSync(
           path.resolve(galleryBuild, `${pageId}-description.ts`),
@@ -95,7 +103,10 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
     pagesToProcess[category].add(page);
   }
 
-  for (const group of Object.values(sidebar)) {
+  for (const group of Object.values(sidebar) as {
+    category: string;
+    pages?: string[];
+  }[]) {
     const toProcess = pagesToProcess[group.category];
     delete pagesToProcess[group.category];
 
@@ -118,7 +129,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
       group.pages = [];
     }
     for (const page of Array.from(toProcess).sort()) {
-      group.pages.push(page);
+      group.pages.push(page as string);
     }
   }
 
@@ -126,7 +137,7 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
     sidebar.push({
       category,
       header: category,
-      pages: Array.from(pages).sort(),
+      pages: Array.from(pages as Set<string>).sort(),
     });
   }
 
@@ -137,55 +148,48 @@ gulp.task("gather-gallery-pages", async function gatherPages() {
     content,
     "utf-8"
   );
-});
+};
 
-gulp.task(
-  "develop-gallery",
-  gulp.series(
-    async function setEnv() {
-      process.env.NODE_ENV = "development";
-    },
-    "clean-gallery",
-    "translations-enable-merge-backend",
-    gulp.parallel(
-      "gen-icons-json",
-      "build-translations",
-      "build-locale-data",
-      "gather-gallery-pages"
-    ),
-    "copy-static-gallery",
-    "gen-pages-gallery-dev",
-    gulp.parallel(
-      "rspack-dev-server-gallery",
-      async function watchMarkdownFiles() {
-        gulp.watch(
-          [
-            path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
-            path.resolve(paths.gallery_dir, "sidebar.js"),
-          ],
-          gulp.series("gather-gallery-pages")
-        );
-      }
-    )
-  )
+// develop-gallery
+export const developGallery = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "development";
+  },
+  cleanGallery,
+  translationsEnableMergeBackend,
+  parallel(
+    genIconsJson,
+    buildTranslations,
+    buildLocaleData,
+    gatherGalleryPages
+  ),
+  copyStaticGallery,
+  genPagesGalleryDev,
+  parallel(rspackDevServerGallery, async function watchMarkdownFiles() {
+    watch(
+      [
+        path.resolve(paths.gallery_dir, "src/pages/**/*.markdown"),
+        path.resolve(paths.gallery_dir, "sidebar.js"),
+      ],
+      series(gatherGalleryPages)
+    );
+  })
 );
 
-gulp.task(
-  "build-gallery",
-  gulp.series(
-    async function setEnv() {
-      process.env.NODE_ENV = "production";
-    },
-    "clean-gallery",
-    "translations-enable-merge-backend",
-    gulp.parallel(
-      "gen-icons-json",
-      "build-translations",
-      "build-locale-data",
-      "gather-gallery-pages"
-    ),
-    "copy-static-gallery",
-    "rspack-prod-gallery",
-    "gen-pages-gallery-prod"
-  )
+// build-gallery
+export const buildGallery = series(
+  async function setEnv() {
+    process.env.NODE_ENV = "production";
+  },
+  cleanGallery,
+  translationsEnableMergeBackend,
+  parallel(
+    genIconsJson,
+    buildTranslations,
+    buildLocaleData,
+    gatherGalleryPages
+  ),
+  copyStaticGallery,
+  rspackProdGallery,
+  genPagesGalleryProd
 );
