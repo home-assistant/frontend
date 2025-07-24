@@ -3183,7 +3183,7 @@
         },
         "url": {
           "caption": "Home Assistant URL",
-          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (eg. to play text-to-speech or other hosted media).",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (e.g. to play text-to-speech or other hosted media).",
           "internal_url_label": "Local network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
@@ -4839,7 +4839,7 @@
           "forgot_password": {
             "title": "Forgot password",
             "subtitle": "Forgot your password",
-            "instructions": "Enter your email address and we will send you a link to reset your password.",
+            "instructions": "Enter your email address, and we will send you a link to reset your password.",
             "email": "Email",
             "email_error_msg": "Invalid email",
             "send_reset_email": "Send reset email",
@@ -9253,7 +9253,7 @@
       "failed_to_update_name": "Failed to update {name}",
       "learn_more": "Learn more",
       "new_version_available": "New version available",
-      "newest_version": "Newest Version",
+      "newest_version": "Newest version",
       "refresh": "[%key:ui::common::refresh%]",
       "release_notes": "Release notes",
       "reload": "Reload",
