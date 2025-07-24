@@ -5084,7 +5084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/combo-box@npm:=24.7.9":
+"@vaadin/combo-box@npm:24.7.9":
   version: 24.7.9
   resolution: "@vaadin/combo-box@npm:24.7.9"
   dependencies:
@@ -9401,8 +9401,8 @@ __metadata:
     "@types/tar": "npm:6.1.13"
     "@types/ua-parser-js": "npm:0.7.39"
     "@types/webspeechapi": "npm:0.0.29"
-    "@vaadin/combo-box": "npm:=24.7.9"
-    "@vaadin/vaadin-themable-mixin": "npm:=24.7.9"
+    "@vaadin/combo-box": "npm:24.7.9"
+    "@vaadin/vaadin-themable-mixin": "npm:24.7.9"
     "@vibrant/color": "npm:4.0.0"
     "@vitest/coverage-v8": "npm:3.2.4"
     "@vue/web-component-wrapper": "npm:1.3.0"
