@@ -5084,7 +5084,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vaadin/combo-box@npm:24.7.9":
+"@vaadin/combo-box@npm:=24.7.9":
   version: 24.7.9
   resolution: "@vaadin/combo-box@npm:24.7.9"
   dependencies:
@@ -5237,16 +5237,6 @@ __metadata:
     "@open-wc/dedupe-mixin": "npm:^1.3.0"
     lit: "npm:^3.0.0"
   checksum: 10/167827b3082b2fb1028f4ab036d6503667b20f51d81b5857f75390a0341d78067c13064073268de996b24383b4c7d732c621a617e57357003d32e76d1b464a0c
-  languageName: node
-  linkType: hard
-
-"@vaadin/vaadin-themable-mixin@npm:~24.7.11, @vaadin/vaadin-themable-mixin@npm:~24.7.9":
-  version: 24.7.11
-  resolution: "@vaadin/vaadin-themable-mixin@npm:24.7.11"
-  dependencies:
-    "@open-wc/dedupe-mixin": "npm:^1.3.0"
-    lit: "npm:^3.0.0"
-  checksum: 10/d8492d4162f438a91d509c18838757e51fa1a14160d7a17f2dbf93770877fa18235c6bebabcb3d5996a9af009a5a347960322b16a9bc36a66487f1297659e582
   languageName: node
   linkType: hard
 
@@ -9411,8 +9401,8 @@ __metadata:
     "@types/tar": "npm:6.1.13"
     "@types/ua-parser-js": "npm:0.7.39"
     "@types/webspeechapi": "npm:0.0.29"
-    "@vaadin/combo-box": "npm:24.7.9"
-    "@vaadin/vaadin-themable-mixin": "npm:24.7.9"
+    "@vaadin/combo-box": "npm:=24.7.9"
+    "@vaadin/vaadin-themable-mixin": "npm:=24.7.9"
     "@vibrant/color": "npm:4.0.0"
     "@vitest/coverage-v8": "npm:3.2.4"
     "@vue/web-component-wrapper": "npm:1.3.0"
