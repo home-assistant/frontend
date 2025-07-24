@@ -888,7 +888,7 @@
           "now-7d": "Last 7 days",
           "now-30d": "Last 30 days",
           "this_year": "This year",
-          "now-12m": "Last 12 month"
+          "now-12m": "Last 12 months"
         }
       },
       "grid-size-picker": {
@@ -3183,7 +3183,7 @@
         },
         "url": {
           "caption": "Home Assistant URL",
-          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (eg. to play text-to-speech or other hosted media).",
+          "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (e.g. to play text-to-speech or other hosted media).",
           "internal_url_label": "Local network",
           "external_url_label": "Internet",
           "external_use_ha_cloud": "Use Home Assistant Cloud",
@@ -3210,7 +3210,7 @@
             "attributes": "Attributes"
           },
           "reboot_moved_title": "Reboot and shutdown moved",
-          "reboot_moved_description": "Reboot and shutdown actions has been moved to system page.",
+          "reboot_moved_description": "Reboot and shutdown actions have been moved to system page.",
           "reboot_moved_link": "Go to system page.",
           "processor": "Processor",
           "memory": "Memory",
@@ -3924,7 +3924,7 @@
                   "description": {
                     "picker": "When Home Assistant starts up or shuts down.",
                     "started": "When Home Assistant is started",
-                    "shutdown": "When Home Assistant is shutdown"
+                    "shutdown": "When Home Assistant is shut down"
                   }
                 },
                 "mqtt": {
@@ -4148,7 +4148,7 @@
                   "upper_limit": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::upper_limit%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]",
                   "description": {
-                    "picker": "If the numeric value of an entity''s state (or attribute''s value) is above or below a given threshold.",
+                    "picker": "If the numeric value of an entity's state (or attribute's value) is above or below a given threshold.",
                     "above": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above}",
                     "below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} below {below}",
                     "above-below": "If {attribute, select, \n undefined {} \n other {{attribute} from }\n }{entity} {numberOfEntities, plural,\n one {is}\n other {are}\n} above {above} and below {below}"
@@ -4641,7 +4641,7 @@
             "delete": "[%key:ui::common::delete%]",
             "duplicate": "[%key:ui::common::duplicate%]",
             "empty_header": "Create your first script",
-            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine''' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
+            "empty_text": "A script is a sequence of actions that can be run from a dashboard, an automation, or be triggered by voice. For example, a ''Wake-up routine'' script that gradually turns on the light in the bedroom and opens the blinds after a delay.",
             "search": "Search {number} {number, plural,\n  one {script}\n  other {scripts}\n}",
             "migrate_script": "Migrate script?",
             "migrate_script_description": "You can migrate this script, so it can be edited from the UI. After it is migrated and you have saved it, you will have to manually delete your old script from your configuration. Do you want to migrate this script?"
@@ -4814,7 +4814,7 @@
             "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
             "introduction2": "This service is run by our partner ",
             "introduction2a": ", a company founded by the founders of Home Assistant.",
-            "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
+            "introduction3": "Home Assistant Cloud is a subscription service with a free one-month trial. No payment information necessary.",
             "learn_more_link": "Learn more about Home Assistant Cloud",
             "sign_in": "Sign in",
             "email": "Email",
@@ -4826,7 +4826,7 @@
             "cancel": "Cancel",
             "submit": "Submit",
             "forgot_password": "Forgot password?",
-            "start_trial": "Start your free 1 month trial",
+            "start_trial": "Start your free 1-month trial",
             "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
             "alert_email_confirm_necessary": "You need to confirm your email before logging in.",
@@ -4839,7 +4839,7 @@
           "forgot_password": {
             "title": "Forgot password",
             "subtitle": "Forgot your password",
-            "instructions": "Enter your email address and we will send you a link to reset your password.",
+            "instructions": "Enter your email address, and we will send you a link to reset your password.",
             "email": "Email",
             "email_error_msg": "Invalid email",
             "send_reset_email": "Send reset email",
@@ -4848,7 +4848,7 @@
           "register": {
             "title": "Register account",
             "headline": "Start your free trial",
-            "information": "Create an account to start your free one month trial with Home Assistant Cloud. No payment information necessary.",
+            "information": "Create an account to start your free one-month trial with Home Assistant Cloud. No payment information necessary.",
             "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
             "feature_remote_control": "Control of Home Assistant away from home",
             "feature_google_home": "Integration with Google Assistant",
@@ -4998,7 +4998,7 @@
           },
           "dialog_already_connected": {
             "heading": "Account linked to other Home Assistant",
-            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed into one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services and you will need to be physically present to reconnect it.  Nabu Casa support is unable to remotely reconnect a disconnected Home Assistant instance.",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed in to one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services and you will need to be physically present to reconnect it.  Nabu Casa support is unable to remotely reconnect a disconnected Home Assistant instance.",
             "other_home_assistant": "Other Home Assistant",
             "instance_name": "Instance name",
             "instance_version": "Instance version",
@@ -8896,7 +8896,7 @@
           "password": "[%key:supervisor::backup::password%]",
           "confirm_password": "[%key:supervisor::backup::confirm_password%]",
           "confirm_restore_partial_backup_title": "[%key:supervisor::backup::confirm_restore_partial_backup_title%]",
-          "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
+          "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shut down and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again and you see the login screen. If it fails it will bring you back to the onboarding.",
           "confirm_restore_full_backup_title": "[%key:supervisor::backup::confirm_restore_full_backup_title%]",
           "confirm_restore_full_backup_text": "Depending on the size of the backup, this can take up to 45 minutes. Home Assistant will restart and you will see the login screen when it’s restored.",
           "restore": "[%key:supervisor::backup::restore%]",
@@ -9253,7 +9253,7 @@
       "failed_to_update_name": "Failed to update {name}",
       "learn_more": "Learn more",
       "new_version_available": "New version available",
-      "newest_version": "Newest Version",
+      "newest_version": "Newest version",
       "refresh": "[%key:ui::common::refresh%]",
       "release_notes": "Release notes",
       "reload": "Reload",
@@ -9401,7 +9401,7 @@
       "host": {
         "failed_to_get_hardware_list": "Failed to get hardware list",
         "failed_to_reboot": "Failed to reboot the host",
-        "failed_to_shutdown": "Failed to shutdown the host",
+        "failed_to_shutdown": "Failed to shut down the host",
         "failed_to_set_hostname": "Setting hostname failed",
         "failed_to_import_from_usb": "Failed to import from USB",
         "failed_to_move": "Failed to move data disk",
@@ -9417,8 +9417,8 @@
         "emmc_lifetime_used": "eMMC lifetime used",
         "reboot_host": "Reboot host",
         "confirm_reboot": "Are you sure you want to reboot the host?",
-        "confirm_shutdown": "Are you sure you want to shutdown the host?",
-        "shutdown_host": "Shutdown host",
+        "confirm_shutdown": "Are you sure you want to shut down the host?",
+        "shutdown_host": "Shut down host",
         "hardware": "Hardware",
         "import_from_usb": "Import from USB",
         "move_datadisk": "Move data disk"
@@ -9464,9 +9464,9 @@
       "passwords_not_matching": "The passwords do not match",
       "backup_already_running": "A backup or restore is already running. Creating a new backup is currently not possible, try again later.",
       "confirm_restore_partial_backup_title": "Restore partial backup",
-      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
+      "confirm_restore_partial_backup_text": "The backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shut down and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
       "confirm_restore_full_backup_title": "Restore full backup",
-      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shutdown and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
+      "confirm_restore_full_backup_text": "Your entire system will be wiped and the backup will be restored. Depending on the size of the backup, this can take up to 45 min. Home Assistant needs to shut down and the restore progress is running in the background. If it succeeds, Home Assistant will automatically start again.",
       "confirm_delete_title": "Delete backup",
       "confirm_delete_text": "This backup will be permanently deleted and cannot be restored later.",
       "restore": "Restore",
