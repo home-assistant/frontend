@@ -6996,7 +6996,7 @@
             "top_margin": "Add additional space above",
             "top_margin_helper": "Helps reveal more of the background",
             "subview_helper": "Subviews don't appear in tabs and have a back button.",
-            "path_helper": "This value will become part of the URL path to this view.",
+            "path_helper": "This value will become part of the URL path to open this view.",
             "edit_ui": "Edit in visual editor",
             "edit_yaml": "Edit in YAML",
             "saving_failed": "Saving failed",
