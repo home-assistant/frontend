@@ -74,6 +74,7 @@ import type {
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity_registry";
 import {
+  entityRegistryByEntityId,
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
@@ -520,9 +521,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
             : true
         )
         .map((item) => {
-          const entityRegEntry = entityReg.find(
-            (reg) => reg.entity_id === item.entity_id
-          );
+          const entityRegEntry =
+            entityRegistryByEntityId(entityReg)[item.entity_id];
           const labels = labelReg && entityRegEntry?.labels;
           const category = entityRegEntry?.categories.helpers;
           return {
@@ -547,7 +547,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _labelsForEntity(entityId: string): string[] {
     return (
       this.hass.entities[entityId]?.labels ||
-      this._entityReg.find((e) => e.entity_id === entityId)?.labels ||
+      entityRegistryByEntityId(this._entityReg)[entityId]?.labels ||
       []
     );
   }
@@ -885,9 +885,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         const labelItems = new Set<string>();
         this._stateItems
           .filter((stateItem) =>
-            this._entityReg
-              .find((reg) => reg.entity_id === stateItem.entity_id)
-              ?.labels.some((lbl) => filter.includes(lbl))
+            entityRegistryByEntityId(this._entityReg)[
+              stateItem.entity_id
+            ]?.labels.some((lbl) => filter.includes(lbl))
           )
           .forEach((stateItem) => labelItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
@@ -913,9 +913,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .filter(
             (stateItem) =>
               filter[0] ===
-              this._entityReg.find(
-                (reg) => reg.entity_id === stateItem.entity_id
-              )?.categories.helpers
+              entityRegistryByEntityId(this._entityReg)[stateItem.entity_id]
+                ?.categories.helpers
           )
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
@@ -943,9 +942,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _editCategory(helper: any) {
-    const entityReg = this._entityReg.find(
-      (reg) => reg.entity_id === helper.entity_id
-    );
+    const entityReg = entityRegistryByEntityId(this._entityReg)[
+      helper.entity_id
+    ];
     if (!entityReg) {
       showAlertDialog(this, {
         title: this.hass.localize(

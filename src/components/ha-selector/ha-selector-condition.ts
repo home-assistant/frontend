@@ -9,6 +9,8 @@ import type { HomeAssistant } from "../../types";
 export class HaConditionSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public selector!: ConditionSelector;
 
   @property({ attribute: false }) public value?: Condition;
@@ -24,6 +26,7 @@ export class HaConditionSelector extends LitElement {
         .disabled=${this.disabled}
         .conditions=${this.value || []}
         .hass=${this.hass}
+        .narrow=${this.narrow}
       ></ha-automation-condition>
     `;
   }

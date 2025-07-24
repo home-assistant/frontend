@@ -203,6 +203,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-tts-pref
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-tts-pref>
 

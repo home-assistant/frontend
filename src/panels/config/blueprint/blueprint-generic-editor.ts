@@ -172,6 +172,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .content=${value?.description}
       ></ha-markdown>
       ${html`<ha-selector
+        narrow
         .hass=${this.hass}
         .selector=${selector}
         .key=${key}

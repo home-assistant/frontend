@@ -221,7 +221,7 @@ export default class HaAutomationTrigger extends LitElement {
   private async _triggerAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const triggers = [
+    let triggers = [
       ...this.triggers.slice(0, index),
       data,
       ...this.triggers.slice(index),
@@ -229,7 +229,15 @@ export default class HaAutomationTrigger extends LitElement {
     // Add trigger locally to avoid UI jump
     this.triggers = triggers;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.triggers });
+    if (this.triggers !== triggers) {
+      // Ensure trigger is added even after update
+      triggers = [
+        ...this.triggers.slice(0, index),
+        data,
+        ...this.triggers.slice(index),
+      ];
+    }
+    fireEvent(this, "value-changed", { value: triggers });
   }
 
   private async _triggerRemoved(ev: CustomEvent): Promise<void> {

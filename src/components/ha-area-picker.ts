@@ -366,6 +366,7 @@ export class HaAreaPicker extends LitElement {
         .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
+        .helper=${this.helper}
         .notFoundLabel=${this.hass.localize(
           "ui.components.area-picker.no_match"
         )}
@@ -410,6 +411,7 @@ export class HaAreaPicker extends LitElement {
           }
         },
       });
+      return;
     }
 
     this._setValue(value);

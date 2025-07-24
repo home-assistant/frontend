@@ -248,6 +248,8 @@ class HassioRepositoriesDialog extends LitElement {
       await addStoreRepository(this.hass, input.value);
       await this._loadData();
 
+      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
+
       input.value = "";
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
@@ -260,6 +262,8 @@ class HassioRepositoriesDialog extends LitElement {
     try {
       await removeStoreRepository(this.hass, slug);
       await this._loadData();
+
+      fireEvent(this, "supervisor-collection-refresh", { collection: "store" });
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }

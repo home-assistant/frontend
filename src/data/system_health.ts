@@ -34,6 +34,7 @@ export type SystemHealthInfo = Partial<{
       dev: boolean;
       hassio: boolean;
       docker: boolean;
+      container_arch: string;
       user: string;
       virtualenv: boolean;
       python_version: string;

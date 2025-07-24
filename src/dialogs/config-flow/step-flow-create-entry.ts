@@ -212,7 +212,10 @@ class StepFlowCreateEntry extends LitElement {
         entityIds.push(...entities.map((entity) => entity.entity_id));
       });
 
-      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+      const entityIdsMapping = await getAutomaticEntityIds(
+        this.hass,
+        entityIds
+      );
 
       Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
         if (newEntityId) {
@@ -235,9 +238,13 @@ class StepFlowCreateEntry extends LitElement {
 
     fireEvent(this, "flow-update", { step: undefined });
     if (this.step.result && this.navigateToResult) {
-      navigate(
-        `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-      );
+      if (this.devices.length === 1) {
+        navigate(`/config/devices/device/${this.devices[0].id}`);
+      } else {
+        navigate(
+          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+        );
+      }
     }
   }
 

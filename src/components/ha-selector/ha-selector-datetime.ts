@@ -54,7 +54,9 @@ export class HaDateTimeSelector extends LitElement {
         ></ha-time-input>
       </div>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : ""}
     `;
   }

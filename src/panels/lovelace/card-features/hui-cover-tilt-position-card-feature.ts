@@ -105,7 +105,7 @@ class HuiCoverTiltPositionCardFeature
         mode="cursor"
         inverted
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this._stateObj,
           this.hass.entities,

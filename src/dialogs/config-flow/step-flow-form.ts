@@ -27,6 +27,8 @@ import { configFlowContentStyles } from "./styles";
 class StepFlowForm extends LitElement {
   @property({ attribute: false }) public flowConfig!: FlowConfig;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -35,7 +37,13 @@ class StepFlowForm extends LitElement {
 
   @state() private _stepData?: Record<string, any>;
 
+  @state() private _previewErrors?: Record<string, string>;
+
+  @state() private _submitErrors?: Record<string, string>;
+
   @state() private _errorMsg?: string;
+
+  private _errors?: Record<string, string>;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -63,13 +71,14 @@ class StepFlowForm extends LitElement {
           : ""}
         <ha-form
           .hass=${this.hass}
+          .narrow=${this.narrow}
           .data=${stepData}
           .disabled=${this._loading}
           @value-changed=${this._stepDataChanged}
           .schema=${autocompleteLoginFields(
             this.handleReadOnlyFields(step.data_schema)
           )}
-          .error=${step.errors}
+          .error=${this._errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
@@ -116,7 +125,7 @@ class StepFlowForm extends LitElement {
   }
 
   private _setError(ev: CustomEvent) {
-    this.step = { ...this.step, errors: ev.detail };
+    this._previewErrors = ev.detail;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -129,6 +138,21 @@ class StepFlowForm extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
       import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
+    }
+
+    if (
+      changedProps.has("step") ||
+      changedProps.has("_previewErrors") ||
+      changedProps.has("_submitErrors")
+    ) {
+      this._errors =
+        this.step.errors || this._previewErrors || this._submitErrors
+          ? {
+              ...this.step.errors,
+              ...this._previewErrors,
+              ...this._submitErrors,
+            }
+          : undefined;
     }
   }
 
@@ -186,6 +210,7 @@ class StepFlowForm extends LitElement {
 
     this._loading = true;
     this._errorMsg = undefined;
+    this._submitErrors = undefined;
 
     const flowId = this.step.flow_id;
 
@@ -214,6 +239,7 @@ class StepFlowForm extends LitElement {
         return;
       }
 
+      this._previewErrors = undefined;
       fireEvent(this, "flow-update", {
         step,
       });
@@ -223,7 +249,7 @@ class StepFlowForm extends LitElement {
           this._errorMsg = err.body.message;
         }
         if (err.body.errors) {
-          this.step = { ...this.step, errors: err.body.errors };
+          this._submitErrors = err.body.errors;
         }
         if (!err.body.message && !err.body.errors) {
           this._errorMsg = "Unknown error occurred";

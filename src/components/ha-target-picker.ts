@@ -288,7 +288,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${this._renderPicker()}
       </div>
       ${this.helper
-        ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+        ? html`<ha-input-helper-text .disabled=${this.disabled}
+            >${this.helper}</ha-input-helper-text
+          >`
         : ""}
     `;
   }
@@ -716,7 +718,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   }
 
   private _entityRegMeetsFilter(entity: EntityRegistryDisplayEntry): boolean {
-    if (entity.entity_category) {
+    if (entity.hidden || entity.entity_category) {
       return false;
     }
 

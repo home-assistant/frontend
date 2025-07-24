@@ -112,7 +112,7 @@ export class HaStateControlCoverToggle extends LitElement {
         reversed
         .checked=${isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${isOn
+        .label=${isOn
           ? this.hass.localize("ui.card.cover.close_cover")
           : this.hass.localize("ui.card.cover.open_cover")}
         style=${styleMap({

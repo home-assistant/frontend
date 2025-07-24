@@ -36,6 +36,8 @@ declare global {
   }
 }
 
+const PROGRAMMITIC_FIT_DELAY = 250;
+
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
 
@@ -56,6 +58,7 @@ export interface HaMapEntity {
   color: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
+  unit?: string;
   name?: string;
   focus?: boolean;
 }
@@ -112,14 +115,33 @@ export class HaMap extends ReactiveElement {
 
   private _clickCount = 0;
 
+  private _isProgrammaticFit = false;
+
+  private _pauseAutoFit = false;
+
   public connectedCallback(): void {
+    this._pauseAutoFit = false;
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
+    this._handleVisibilityChange();
     super.connectedCallback();
     this._loadMap();
     this._attachObserver();
   }
 
+  private _handleVisibilityChange = async () => {
+    if (!document.hidden) {
+      setTimeout(() => {
+        this._pauseAutoFit = false;
+      }, 500);
+    }
+  };
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    document.removeEventListener(
+      "visibilitychange",
+      this._handleVisibilityChange
+    );
     if (this.leafletMap) {
       this.leafletMap.remove();
       this.leafletMap = undefined;
@@ -144,7 +166,7 @@ export class HaMap extends ReactiveElement {
 
     if (changedProps.has("_loaded") || changedProps.has("entities")) {
       this._drawEntities();
-      autoFitRequired = true;
+      autoFitRequired = !this._pauseAutoFit;
     } else if (this._loaded && oldHass && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
@@ -153,7 +175,7 @@ export class HaMap extends ReactiveElement {
           this.hass!.states[getEntityId(entity)]
         ) {
           this._drawEntities();
-          autoFitRequired = true;
+          autoFitRequired = !this._pauseAutoFit;
           break;
         }
       }
@@ -177,7 +199,11 @@ export class HaMap extends ReactiveElement {
     }
 
     if (changedProps.has("zoom")) {
+      this._isProgrammaticFit = true;
       this.leafletMap!.setZoom(this.zoom);
+      setTimeout(() => {
+        this._isProgrammaticFit = false;
+      }, PROGRAMMITIC_FIT_DELAY);
     }
 
     if (
@@ -233,13 +259,30 @@ export class HaMap extends ReactiveElement {
         }
         this._clickCount++;
       });
+      this.leafletMap.on("zoomstart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
+      });
+      this.leafletMap.on("movestart", () => {
+        if (!this._isProgrammaticFit) {
+          this._pauseAutoFit = true;
+        }
+      });
       this._loaded = true;
     } finally {
       this._loading = false;
     }
   }
 
-  public fitMap(options?: { zoom?: number; pad?: number }): void {
+  public fitMap(options?: {
+    zoom?: number;
+    pad?: number;
+    unpause_autofit?: boolean;
+  }): void {
+    if (options?.unpause_autofit) {
+      this._pauseAutoFit = false;
+    }
     if (!this.leafletMap || !this.Leaflet || !this.hass) {
       return;
     }
@@ -249,6 +292,7 @@ export class HaMap extends ReactiveElement {
       !this._mapFocusZones.length &&
       !this.layers?.length
     ) {
+      this._isProgrammaticFit = true;
       this.leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -256,6 +300,9 @@ export class HaMap extends ReactiveElement {
         ),
         options?.zoom || this.zoom
       );
+      setTimeout(() => {
+        this._isProgrammaticFit = false;
+      }, PROGRAMMITIC_FIT_DELAY);
       return;
     }
 
@@ -276,8 +323,11 @@ export class HaMap extends ReactiveElement {
     });
 
     bounds = bounds.pad(options?.pad ?? 0.5);
-
+    this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+    setTimeout(() => {
+      this._isProgrammaticFit = false;
+    }, PROGRAMMITIC_FIT_DELAY);
   }
 
   public fitBounds(
@@ -290,7 +340,11 @@ export class HaMap extends ReactiveElement {
     const bounds = this.Leaflet.latLngBounds(boundingbox).pad(
       options?.pad ?? 0.5
     );
+    this._isProgrammaticFit = true;
     this.leafletMap.fitBounds(bounds, { maxZoom: options?.zoom || this.zoom });
+    setTimeout(() => {
+      this._isProgrammaticFit = false;
+    }, PROGRAMMITIC_FIT_DELAY);
   }
 
   private _drawLayers(prevLayers: Layer[] | undefined): void {
@@ -549,6 +603,12 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && entity.label_mode === "icon";
       entityMarker.entityId = getEntityId(entity);
       entityMarker.entityName = entityName;
+      entityMarker.entityUnit =
+        typeof entity !== "string" &&
+        entity.unit &&
+        entity.label_mode === "attribute"
+          ? entity.unit
+          : "";
       entityMarker.entityPicture =
         entityPicture && (typeof entity === "string" || !entity.label_mode)
           ? this.hass.hassUrl(entityPicture)

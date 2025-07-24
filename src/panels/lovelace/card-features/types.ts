@@ -158,6 +158,31 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
+export const AREA_CONTROLS = [
+  "light",
+  "fan",
+  "cover-shutter",
+  "cover-blind",
+  "cover-curtain",
+  "cover-shade",
+  "cover-awning",
+  "cover-garage",
+  "cover-gate",
+  "cover-door",
+  "cover-window",
+  "cover-damper",
+  "switch",
+] as const;
+
+export type AreaControl = (typeof AREA_CONTROLS)[number];
+
+export interface AreaControlsCardFeatureConfig {
+  type: "area-controls";
+  controls?: AreaControl[];
+}
+
+export type LovelaceCardFeaturePosition = "bottom" | "inline";
+
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
@@ -187,8 +212,10 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
-  | WaterHeaterOperationModesCardFeatureConfig;
+  | WaterHeaterOperationModesCardFeatureConfig
+  | AreaControlsCardFeatureConfig;
 
 export interface LovelaceCardFeatureContext {
   entity_id?: string;
+  area_id?: string;
 }

@@ -144,6 +144,9 @@ class DialogDashboardStrategyEditor extends LitElement {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title" .title=${title}>${title}</span>
+          ${this._params.title
+            ? html`<span slot="subtitle">${this._params.title}</span>`
+            : nothing}
           <ha-button-menu
             corner="BOTTOM_END"
             menu-corner="END"
@@ -221,8 +224,8 @@ class DialogDashboardStrategyEditor extends LitElement {
           --dialog-content-padding: 0 24px;
           --dialog-surface-position: fixed;
           --dialog-surface-top: 40px;
-          --mdc-dialog-min-width: min(600px, calc(100% - 32px));
-          --mdc-dialog-max-width: calc(100% - 32px);
+          --mdc-dialog-min-width: min(640px, calc(100% - 32px));
+          --mdc-dialog-max-width: min(640px, calc(100% - 32px));
           --mdc-dialog-max-height: calc(100% - 80px);
         }
 

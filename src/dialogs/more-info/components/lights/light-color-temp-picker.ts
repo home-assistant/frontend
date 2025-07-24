@@ -79,7 +79,7 @@ class LightColorTempPicker extends LitElement {
         mode="cursor"
         @value-changed=${this._ctColorChanged}
         @slider-moved=${this._ctColorCursorMoved}
-        .ariaLabel=${this.hass.localize(
+        .label=${this.hass.localize(
           "ui.dialogs.more_info_control.light.color_temp"
         )}
         style=${styleMap({

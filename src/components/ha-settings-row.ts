@@ -89,6 +89,7 @@ export class HaSettingsRow extends LitElement {
       display: var(--settings-row-content-display, flex);
       justify-content: flex-end;
       flex: 1;
+      min-width: 0;
       padding: 16px 0;
     }
     .content ::slotted(*) {

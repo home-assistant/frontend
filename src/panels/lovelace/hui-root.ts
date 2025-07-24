@@ -56,6 +56,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import {
   QuickBarMode,
   showQuickBar,
@@ -489,7 +490,16 @@ class HUIRoot extends LitElement {
     } else if (searchParams.conversation === "1") {
       this._clearParam("conversation");
       this._showVoiceCommandDialog();
+    } else if (searchParams["more-info-entity-id"]) {
+      const entityId = searchParams["more-info-entity-id"];
+      this._clearParam("more-info-entity-id");
+      // Wait for the next render to ensure the view is fully loaded
+      // because the more info dialog is closed when the url changes
+      afterNextRender(() => {
+        this._showMoreInfoDialog(entityId);
+      });
     }
+
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
@@ -729,6 +739,10 @@ class HUIRoot extends LitElement {
     showVoiceCommandDialog(this, this.hass, { pipeline_id: "last_used" });
   }
 
+  private _showMoreInfoDialog(entityId: string): void {
+    showMoreInfoDialog(this, { entityId });
+  }
+
   private _handleEnableEditMode(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
@@ -767,6 +781,7 @@ class HUIRoot extends LitElement {
 
       showDashboardStrategyEditorDialog(this, {
         config: this.lovelace!.rawConfig,
+        title: this.panel ? getPanelTitle(this.hass, this.panel) : undefined,
         saveConfig: this.lovelace!.saveConfig,
         takeControl: () => {
           showSaveDialog(this, {
@@ -1107,6 +1122,16 @@ class HUIRoot extends LitElement {
         }
         sl-tab[aria-selected="true"] .edit-icon {
           display: inline-flex;
+        }
+        sl-tab::part(base) {
+          padding-inline-start: var(
+            --ha-tab-padding-start,
+            var(--sl-spacing-large)
+          );
+          padding-inline-end: var(
+            --ha-tab-padding-end,
+            var(--sl-spacing-large)
+          );
         }
         sl-tab::part(base) {
           padding-top: calc((var(--header-height) - 20px) / 2);

@@ -18,6 +18,7 @@ import "./integration-badge";
 import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([
+  "backup",
   "google_translate",
   "hassio",
   "met",

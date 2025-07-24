@@ -19,6 +19,7 @@ import type { HomeAssistant } from "../types";
 import "./ha-combo-box-item";
 import "./ha-combo-box-textfield";
 import "./ha-icon-button";
+import "./ha-input-helper-text";
 import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
@@ -195,8 +196,6 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .helper=${this.helper}
-          helperPersistent
           .disableSetValue=${this._disableSetValue}
         >
           <slot name="icon" slot="leadingIcon"></slot>
@@ -206,7 +205,7 @@ export class HaComboBox extends LitElement {
               role="button"
               tabindex="-1"
               aria-label=${ifDefined(this.hass?.localize("ui.common.clear"))}
-              class="clear-button"
+              class=${`clear-button ${this.label ? "" : "no-label"}`}
               .path=${mdiClose}
               @click=${this._clearValue}
             ></ha-svg-icon>`
@@ -216,13 +215,22 @@ export class HaComboBox extends LitElement {
           tabindex="-1"
           aria-label=${ifDefined(this.label)}
           aria-expanded=${this.opened ? "true" : "false"}
-          class="toggle-button"
+          class=${`toggle-button ${this.label ? "" : "no-label"}`}
           .path=${this.opened ? mdiMenuUp : mdiMenuDown}
           ?disabled=${this.disabled}
           @click=${this._toggleOpen}
         ></ha-svg-icon>
       </vaadin-combo-box-light>
+      ${this._renderHelper()}
     `;
+  }
+
+  private _renderHelper() {
+    return this.helper
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
+      : "";
   }
 
   private _defaultRowRenderer: ComboBoxLitRenderer<
@@ -345,8 +353,10 @@ export class HaComboBox extends LitElement {
       // @ts-ignore
       this._comboBox._closeOnBlurIsPrevented = true;
     }
+    if (!this.opened) {
+      return;
+    }
     const newValue = ev.detail.value;
-
     if (newValue !== this.value) {
       fireEvent(this, "value-changed", { value: newValue || undefined });
     }
@@ -359,7 +369,6 @@ export class HaComboBox extends LitElement {
     }
     vaadin-combo-box-light {
       position: relative;
-      --vaadin-combo-box-overlay-max-height: calc(45vh - 56px);
     }
     ha-combo-box-textfield {
       width: 100%;
@@ -388,6 +397,9 @@ export class HaComboBox extends LitElement {
       color: var(--disabled-text-color);
       pointer-events: none;
     }
+    .toggle-button.no-label {
+      top: -3px;
+    }
     .clear-button {
       --mdc-icon-size: 20px;
       top: -7px;
@@ -395,6 +407,12 @@ export class HaComboBox extends LitElement {
       inset-inline-start: initial;
       inset-inline-end: 36px;
       direction: var(--direction);
+    }
+    .clear-button.no-label {
+      top: 0;
+    }
+    ha-input-helper-text {
+      margin-top: 4px;
     }
   `;
 }

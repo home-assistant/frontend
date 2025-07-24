@@ -142,6 +142,7 @@ class HaPanelDevAction extends LitElement {
                   .hass=${this.hass}
                   .value=${this._serviceData?.action}
                   @value-changed=${this._serviceChanged}
+                  show-service-id
                 ></ha-service-picker>
                 <ha-yaml-editor
                   id="yaml-editor"
@@ -156,6 +157,7 @@ class HaPanelDevAction extends LitElement {
                   .value=${this._serviceData}
                   .narrow=${this.narrow}
                   show-advanced
+                  show-service-id
                   @value-changed=${this._serviceDataChanged}
                   class="card-content"
                 ></ha-service-control>
@@ -539,7 +541,7 @@ class HaPanelDevAction extends LitElement {
     if (
       this._serviceData &&
       Object.entries(this._serviceData).some(
-        ([key, val]) => key !== "data" && hasTemplate(val)
+        ([key, val]) => !["data", "target"].includes(key) && hasTemplate(val)
       )
     ) {
       this._yamlMode = true;

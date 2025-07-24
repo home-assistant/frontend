@@ -234,6 +234,8 @@ export class CloudLogin extends LitElement {
               text: this.hass.localize(
                 "ui.panel.config.cloud.login.cloud_pipeline_text"
               ),
+              confirmText: this.hass.localize("ui.common.yes"),
+              dismissText: this.hass.localize("ui.common.no"),
             })
           ) {
             setAssistPipelinePreferred(this.hass, result.cloud_pipeline);
