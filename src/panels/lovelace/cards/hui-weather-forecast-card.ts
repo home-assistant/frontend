@@ -464,10 +464,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (this._config?.show_forecast !== false) {
       rows += 1;
       min_rows += 1;
+      if (this._config?.forecast_type === "daily") {
+        rows += 1;
+      }
     }
-    if (this._config?.forecast_type === "daily") {
-      rows += 1;
-    }
+
     return {
       columns: 12,
       rows: rows,

@@ -578,7 +578,7 @@ export const computeHistory = (
   const unitStates = Object.keys(lineChartDevices).map((key) => {
     const splitKey = key.split("_");
     const unit = splitKey[0];
-    const deviceClass = splitKey[1] || undefined;
+    const deviceClass = splitKey.slice(1).join("_") || undefined;
     return processLineChartEntities(
       unit,
       deviceClass,

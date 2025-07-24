@@ -37,6 +37,7 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
+  ProvisioningEntryStatus,
   restoreZwaveNVM,
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
@@ -134,7 +135,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       return this._renderErrorScreen();
     }
     const provisioningDevices =
-      this._provisioningEntries?.filter((entry) => !entry.nodeId).length ?? 0;
+      this._provisioningEntries?.filter(
+        (entry) =>
+          !entry.nodeId && entry.status === ProvisioningEntryStatus.Active
+      ).length ?? 0;
     const notReadyDevices =
       (this._network?.controller.nodes.filter((node) => !node.ready).length ??
         0) + provisioningDevices;

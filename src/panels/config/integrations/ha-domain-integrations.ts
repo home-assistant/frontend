@@ -125,6 +125,7 @@ class HaDomainIntegrations extends LitElement {
       "integrations" in this.integration &&
       this.integration.integrations
         ? Object.entries(this.integration.integrations)
+            .filter(([, val]) => val.integration_type !== "hardware")
             .sort((a, b) => {
               if (a[1].config_flow && !b[1].config_flow) {
                 return -1;
