@@ -1130,14 +1130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.27.6":
-  version: 7.27.6
-  resolution: "@babel/runtime@npm:7.27.6"
-  checksum: 10/cc957a12ba3781241b83d528eb69ddeb86ca5ac43179a825e83aa81263a6b3eb88c57bed8a937cdeacfc3192e07ec24c73acdfea4507d0c0428c8e23d6322bfe
-  languageName: node
-  linkType: hard
-
-"@babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2":
+"@babel/runtime@npm:7.28.2, @babel/runtime@npm:^7.10.2, @babel/runtime@npm:^7.11.2":
   version: 7.28.2
   resolution: "@babel/runtime@npm:7.28.2"
   checksum: 10/a0965fbdd6aaa40709290923bbe05e1c4314021f0cef608eb1d69f04f717c41829e50a53d79c4a0f461512b4be9b3c0190dc19387b219bcdaacdd793b2fe1b8a
@@ -9330,7 +9323,7 @@ __metadata:
     "@babel/helper-define-polyfill-provider": "npm:0.6.5"
     "@babel/plugin-transform-runtime": "npm:7.28.0"
     "@babel/preset-env": "npm:7.28.0"
-    "@babel/runtime": "npm:7.27.6"
+    "@babel/runtime": "npm:7.28.2"
     "@braintree/sanitize-url": "npm:7.1.1"
     "@bundle-stats/plugin-webpack-filter": "npm:4.21.0"
     "@codemirror/autocomplete": "npm:6.18.6"
