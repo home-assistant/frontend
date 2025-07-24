@@ -1,8 +1,5 @@
 import { formatHex, oklch, wcagLuminance, type Oklch } from "culori";
 
-export const DARK_COLOR_STEPS = [5, 10, 20, 30, 40];
-export const LIGHT_COLOR_STEPS = [60, 70, 80, 90, 95];
-
 const MIN_LUMINANCE = 0.3;
 const MAX_LUMINANCE = 0.6;
 

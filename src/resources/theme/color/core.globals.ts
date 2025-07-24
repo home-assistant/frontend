@@ -1,4 +1,5 @@
 import { css } from "lit";
+import { extractVars } from "../../../common/style/derived-css-vars";
 
 export const coreColorStyles = css`
   html {
@@ -149,3 +150,5 @@ export const coreColorStyles = css`
     --color-blue-95: #e8f3ff;
   }
 `;
+
+export const coreColorVariables = extractVars(coreColorStyles);

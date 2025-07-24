@@ -3,6 +3,7 @@ import {
   extractVar,
   extractVars,
 } from "../../../common/style/derived-css-vars";
+import { coreColorVariables } from "./core.globals";
 
 export const colorStyles = css`
   html {
@@ -10,20 +11,20 @@ export const colorStyles = css`
     --primary-text-color: var(--color-text-primary);
     --secondary-text-color: var(--color-text-secondary);
     --text-primary-color: #ffffff;
-    --text-light-primary-color: var(--color-text-disabled);
+    --text-light-primary-color: #212121;
     --disabled-text-color: #bdbdbd;
 
     /* main interface colors */
-    --primary-color: var(--color-primary-50);
-    --dark-primary-color: var(--color-primary-40);
-    --light-primary-color: var(--color-primary-70);
-    --accent-color: var(--color-orange-60);
+    --primary-color: var(--color-primary-40);
+    --dark-primary-color: #0288d1;
+    --light-primary-color: #b3e5fc;
+    --accent-color: #ff9800;
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
     --outline-hover-color: rgba(0, 0, 0, 0.24);
 
     /* rgb */
-    --rgb-primary-color: 3, 169, 244;
+    --rgb-primary-color: 0, 154, 199;
     --rgb-accent-color: 255, 152, 0;
     --rgb-primary-text-color: 33, 33, 33;
     --rgb-secondary-text-color: 114, 114, 114;
@@ -360,5 +361,9 @@ export const darkColorStyles = css`
 `;
 export const colorVariables = extractVars(colorStyles);
 
-export const DefaultPrimaryColor = extractVar(colorStyles, "primary-color");
+export const DefaultPrimaryColor = extractVar(
+  colorStyles,
+  "primary-color",
+  coreColorVariables
+);
 export const DefaultAccentColor = extractVar(colorStyles, "accent-color");
