@@ -37,6 +37,7 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
+  ProvisioningEntryStatus,
   restoreZwaveNVM,
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
@@ -133,8 +134,14 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     if (ERROR_STATES.includes(this._configEntry.state)) {
       return this._renderErrorScreen();
     }
+    const provisioningDevices =
+      this._provisioningEntries?.filter(
+        (entry) =>
+          !entry.nodeId && entry.status === ProvisioningEntryStatus.Active
+      ).length ?? 0;
     const notReadyDevices =
-      this._network?.controller.nodes.filter((node) => !node.ready).length ?? 0;
+      (this._network?.controller.nodes.filter((node) => !node.ready).length ??
+        0) + provisioningDevices;
 
     return html`
       <hass-tabs-subpage
@@ -182,7 +189,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                               ${this.hass.localize(
                                 `ui.panel.config.zwave_js.dashboard.devices`,
                                 {
-                                  count: this._network.controller.nodes.length,
+                                  count:
+                                    this._network.controller.nodes.length +
+                                    provisioningDevices,
                                 }
                               )}
                               ${notReadyDevices > 0
@@ -409,7 +418,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         InclusionState.SmartStart)}
                   >
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.common.remove_node"
+                      "ui.panel.config.zwave_js.common.remove_a_node"
                     )}
                   </ha-button>
                   <ha-button
@@ -424,7 +433,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
               </ha-card>
               <ha-card>
                 <div class="card-header">
-                  <h1>Third-Party Data Reporting</h1>
+                  <h1>Third-party data reporting</h1>
                   ${this._dataCollectionOptIn !== undefined
                     ? html`
                         <ha-switch
@@ -599,7 +608,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     history.back();
   }
 
-  private async _fetchData() {
+  private _fetchData = async () => {
     if (!this.configEntryId) {
       return;
     }
@@ -633,7 +642,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
-  }
+  };
 
   private async _addNodeClicked() {
     this._openInclusionDialog();
@@ -641,10 +650,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
-      entry_id: this.configEntryId!,
+      entryId: this.configEntryId!,
       skipConfirmation:
         this._network?.controller.inclusion_state === InclusionState.Excluding,
-      removedCallback: () => this._fetchData(),
+      onClose: this._fetchData,
     });
   }
 

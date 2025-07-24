@@ -41,7 +41,7 @@ class HaConfigRepairs extends LitElement {
     const issues = this.repairsIssues;
 
     return html`
-      <div class="title">
+      <div class="title" role="heading" aria-level="2">
         ${this.hass.localize("ui.panel.config.repairs.title", {
           count: this.total || this.repairsIssues.length,
         })}

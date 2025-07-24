@@ -71,7 +71,7 @@ export class HuiCardEditMode extends LitElement {
       if (this._touchStarted) return;
       this._hover = true;
     });
-    this.addEventListener("mouseout", () => {
+    this.addEventListener("mouseleave", () => {
       this._hover = false;
     });
     this.addEventListener("click", () => {

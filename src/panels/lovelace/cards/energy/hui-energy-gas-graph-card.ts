@@ -14,10 +14,7 @@ import type {
   EnergyData,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import {
-  getEnergyDataCollection,
-  getEnergyGasUnit,
-} from "../../../../data/energy";
+import { getEnergyDataCollection } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -163,11 +160,7 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    this._unit = getEnergyGasUnit(
-      this.hass,
-      energyData.prefs,
-      energyData.statsMetadata
-    );
+    this._unit = energyData.gasUnit;
 
     const datasets: BarSeriesOption[] = [];
 

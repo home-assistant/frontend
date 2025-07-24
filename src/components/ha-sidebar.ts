@@ -14,6 +14,7 @@ import {
   mdiTooltipAccount,
   mdiViewDashboard,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import {
@@ -205,6 +206,8 @@ class HaSidebar extends SubscribeMixin(LitElement) {
 
   private _recentKeydownActiveUntil = 0;
 
+  private _unsubPersistentNotifications: UnsubscribeFunc | undefined;
+
   @query(".tooltip") private _tooltip!: HTMLDivElement;
 
   public hassSubscribe() {
@@ -227,9 +230,6 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           }
         }
       ),
-      subscribeNotifications(this.hass.connection, (notifications) => {
-        this._notifications = notifications;
-      }),
       ...(this.hass.user?.is_admin
         ? [
             subscribeRepairsIssueRegistry(this.hass.connection!, (repairs) => {
@@ -300,6 +300,23 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     );
   }
 
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._subscribePersistentNotifications();
+  }
+
+  private _subscribePersistentNotifications(): void {
+    if (this._unsubPersistentNotifications) {
+      this._unsubPersistentNotifications();
+    }
+    this._unsubPersistentNotifications = subscribeNotifications(
+      this.hass.connection,
+      (notifications) => {
+        this._notifications = notifications;
+      }
+    );
+  }
+
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
@@ -310,6 +327,14 @@ class HaSidebar extends SubscribeMixin(LitElement) {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (
+      this.hass &&
+      oldHass?.connected === false &&
+      this.hass.connected === true
+    ) {
+      this._subscribePersistentNotifications();
+    }
 
     this._calculateCounts();
 
@@ -626,12 +651,15 @@ class HaSidebar extends SubscribeMixin(LitElement) {
       this._tooltipHideTimeout = undefined;
     }
     const tooltip = this._tooltip;
-    const listbox = this.shadowRoot!.querySelector("ha-md-list")!;
-    let top = item.offsetTop + 11;
-    if (listbox.contains(item)) {
-      top += listbox.offsetTop;
-      top -= listbox.scrollTop;
-    }
+    const allListbox = this.shadowRoot!.querySelectorAll("ha-md-list")!;
+    const listbox = [...allListbox].find((lb) => lb.contains(item));
+
+    const top =
+      item.offsetTop +
+      11 +
+      (listbox?.offsetTop ?? 0) -
+      (listbox?.scrollTop ?? 0);
+
     tooltip.innerText = (
       item.querySelector(".item-text") as HTMLElement
     ).innerText;

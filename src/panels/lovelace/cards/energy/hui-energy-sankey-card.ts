@@ -238,7 +238,6 @@ class HuiEnergySankeyCard
       if (value < 0.01) {
         return;
       }
-      untrackedConsumption -= value;
       const node = {
         id: device.stat_consumption,
         label:
@@ -260,6 +259,8 @@ class HuiEnergySankeyCard
           source: node.parent,
           target: node.id,
         });
+      } else {
+        untrackedConsumption -= value;
       }
       deviceNodes.push(node);
     });

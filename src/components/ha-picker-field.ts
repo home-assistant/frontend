@@ -88,6 +88,12 @@ export class HaPickerField extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       css`
+        ha-combo-box-item[disabled] {
+          background-color: var(
+            --mdc-text-field-disabled-fill-color,
+            whitesmoke
+          );
+        }
         ha-combo-box-item {
           background-color: var(--mdc-text-field-fill-color, whitesmoke);
           border-radius: 4px;
@@ -106,6 +112,12 @@ export class HaPickerField extends LitElement {
         }
 
         /* Add Similar focus style as the text field */
+        ha-combo-box-item[disabled]:after {
+          background-color: var(
+            --mdc-text-field-disabled-line-color,
+            rgba(0, 0, 0, 0.42)
+          );
+        }
         ha-combo-box-item:after {
           display: block;
           content: "";

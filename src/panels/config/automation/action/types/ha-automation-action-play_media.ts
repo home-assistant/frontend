@@ -2,11 +2,18 @@ import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-selector/ha-selector-media";
+import "../../../../../components/ha-selector/ha-selector";
 import type { PlayMediaAction } from "../../../../../data/script";
-import type { MediaSelectorValue } from "../../../../../data/selector";
+import type {
+  MediaSelectorValue,
+  Selector,
+} from "../../../../../data/selector";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+
+const MEDIA_SELECTOR_SCHEMA: Selector = {
+  media: {},
+};
 
 @customElement("ha-automation-action-play_media")
 export class HaPlayMediaAction extends LitElement implements ActionElement {
@@ -38,12 +45,13 @@ export class HaPlayMediaAction extends LitElement implements ActionElement {
 
   protected render() {
     return html`
-      <ha-selector-media
+      <ha-selector
+        .selector=${MEDIA_SELECTOR_SCHEMA}
         .hass=${this.hass}
         .disabled=${this.disabled}
         .value=${this._getSelectorValue(this.action)}
         @value-changed=${this._valueChanged}
-      ></ha-selector-media>
+      ></ha-selector>
     `;
   }
 

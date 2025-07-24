@@ -25,7 +25,10 @@ import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
 import "../ha-icon-button";
 import "../ha-input-helper-text";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
@@ -435,10 +438,8 @@ export class HaStatisticPicker extends LitElement {
               `
             : nothing}
         <span slot="headline">${item.primary} </span>
-        ${item.secondary || item.type
-          ? html`<span slot="supporting-text"
-              >${item.secondary} - ${item.type}</span
-            >`
+        ${item.secondary
+          ? html`<span slot="supporting-text">${item.secondary}</span>`
           : nothing}
         ${item.statistic_id && showEntityId
           ? html`<span slot="supporting-text" class="code">
@@ -470,12 +471,31 @@ export class HaStatisticPicker extends LitElement {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .hideClearIcon=${this.hideClearIcon}
+        .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;
   }
+
+  private _searchFn: PickerComboBoxSearchFn<StatisticComboBoxItem> = (
+    search,
+    filteredItems
+  ) => {
+    // If there is exact match for entity id or statistic id, put it first
+    const index = filteredItems.findIndex(
+      (item) =>
+        item.stateObj?.entity_id === search || item.statistic_id === search
+    );
+    if (index === -1) {
+      return filteredItems;
+    }
+
+    const [exactMatch] = filteredItems.splice(index, 1);
+    filteredItems.unshift(exactMatch);
+    return filteredItems;
+  };
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();

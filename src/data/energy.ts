@@ -26,7 +26,12 @@ import type {
   StatisticsMetaData,
   StatisticsUnitConfiguration,
 } from "./recorder";
-import { fetchStatistics, getStatisticMetadata } from "./recorder";
+import {
+  fetchStatistics,
+  getDisplayUnit,
+  getStatisticMetadata,
+  VOLUME_UNITS,
+} from "./recorder";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import type { DateRange } from "../common/datetime/calc_date_range";
 import { formatNumber } from "../common/number/format_number";
@@ -275,6 +280,8 @@ export interface EnergyData {
   co2SignalEntity?: string;
   fossilEnergyConsumption?: FossilEnergyConsumption;
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
+  waterUnit: string;
+  gasUnit: string;
 }
 
 export const getReferencedStatisticIds = (
@@ -397,13 +404,29 @@ const getEnergyData = async (
         ? "day"
         : "hour";
 
-  const lengthUnit = hass.config.unit_system.length || "";
+  const statsMetadata: Record<string, StatisticsMetaData> = {};
+  const statsMetadataArray = allStatIDs.length
+    ? await getStatisticMetadata(hass, allStatIDs)
+    : [];
+
+  if (allStatIDs.length) {
+    statsMetadataArray.forEach((x) => {
+      statsMetadata[x.statistic_id] = x;
+    });
+  }
+
+  const gasUnit = getEnergyGasUnit(hass, prefs, statsMetadata);
+  const gasIsVolume = VOLUME_UNITS.includes(gasUnit as any);
+
   const energyUnits: StatisticsUnitConfiguration = {
     energy: "kWh",
-    volume: lengthUnit === "km" ? "m³" : "ft³",
+    volume: gasIsVolume
+      ? (gasUnit as (typeof VOLUME_UNITS)[number])
+      : undefined,
   };
+  const waterUnit = getEnergyWaterUnit(hass, prefs, statsMetadata);
   const waterUnits: StatisticsUnitConfiguration = {
-    volume: lengthUnit === "km" ? "L" : "gal",
+    volume: waterUnit,
   };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
@@ -511,18 +534,11 @@ const getEnergyData = async (
     }
   }
 
-  const statsMetadata: Record<string, StatisticsMetaData> = {};
-  const _getStatisticMetadata:
-    | Promise<StatisticsMetaData[]>
-    | StatisticsMetaData[] = allStatIDs.length
-    ? getStatisticMetadata(hass, allStatIDs)
-    : [];
   const [
     energyStats,
     waterStats,
     energyStatsCompare,
     waterStatsCompare,
-    statsMetadataArray,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
@@ -530,18 +546,12 @@ const getEnergyData = async (
     _waterStats,
     _energyStatsCompare,
     _waterStatsCompare,
-    _getStatisticMetadata,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
   const stats = { ...energyStats, ...waterStats };
   if (compare) {
     statsCompare = { ...energyStatsCompare, ...waterStatsCompare };
-  }
-  if (allStatIDs.length) {
-    statsMetadataArray.forEach((x) => {
-      statsMetadata[x.statistic_id] = x;
-    });
   }
 
   const data: EnergyData = {
@@ -557,6 +567,8 @@ const getEnergyData = async (
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
+    waterUnit,
+    gasUnit,
   };
 
   return data;
@@ -679,7 +691,9 @@ export const getEnergyDataCollection = (
   const period =
     preferredPeriod === "today" && hour === "0" ? "yesterday" : preferredPeriod;
 
-  [collection.start, collection.end] = calcDateRange(hass, period);
+  const [start, end] = calcDateRange(hass, period);
+  collection.start = calcDate(start, startOfDay, hass.locale, hass.config);
+  collection.end = calcDate(end, endOfDay, hass.locale, hass.config);
 
   const scheduleUpdatePeriod = () => {
     collection._updatePeriodTimeout = window.setTimeout(
@@ -763,7 +777,7 @@ export const getEnergyGasUnitClass = (
   return undefined;
 };
 
-export const getEnergyGasUnit = (
+const getEnergyGasUnit = (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
@@ -773,11 +787,54 @@ export const getEnergyGasUnit = (
     return "kWh";
   }
 
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "gas")
+    .map((s) =>
+      getDisplayUnit(
+        hass,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  if (units.length) {
+    const first = units[0];
+    if (
+      VOLUME_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof VOLUME_UNITS)[number];
+    }
+  }
+
   return hass.config.unit_system.length === "km" ? "m³" : "ft³";
 };
 
-export const getEnergyWaterUnit = (hass: HomeAssistant): string =>
-  hass.config.unit_system.length === "km" ? "L" : "gal";
+const getEnergyWaterUnit = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences,
+  statisticsMetaData: Record<string, StatisticsMetaData>
+): (typeof VOLUME_UNITS)[number] => {
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "water")
+    .map((s) =>
+      getDisplayUnit(
+        hass,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  if (units.length) {
+    const first = units[0];
+    if (
+      VOLUME_UNITS.includes(first as any) &&
+      units.every((u) => u === first)
+    ) {
+      return first as (typeof VOLUME_UNITS)[number];
+    }
+  }
+
+  return hass.config.unit_system.length === "km" ? "L" : "gal";
+};
 
 export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";
@@ -1107,17 +1164,31 @@ export const computeConsumptionSingle = (data: {
 export const formatConsumptionShort = (
   hass: HomeAssistant,
   consumption: number | null,
-  unit: string
+  unit: string,
+  targetUnit?: string
 ): string => {
-  if (!consumption) {
-    return `0 ${unit}`;
-  }
-  const units = ["kWh", "MWh", "GWh", "TWh"];
+  const units = ["Wh", "kWh", "MWh", "GWh", "TWh"];
   let pickedUnit = unit;
-  let val = consumption;
+  let val = consumption || 0;
+  let targetUnitIndex = -1;
+  if (targetUnit) {
+    targetUnitIndex = units.findIndex((u) => u === targetUnit);
+  }
   let unitIndex = units.findIndex((u) => u === unit);
   if (unitIndex >= 0) {
-    while (val >= 1000 && unitIndex < units.length - 1) {
+    while (
+      targetUnitIndex > -1
+        ? targetUnitIndex < unitIndex
+        : Math.abs(val) < 1 && unitIndex > 0
+    ) {
+      val *= 1000;
+      unitIndex--;
+    }
+    while (
+      targetUnitIndex > -1
+        ? targetUnitIndex > unitIndex
+        : Math.abs(val) >= 1000 && unitIndex < units.length - 1
+    ) {
       val /= 1000;
       unitIndex++;
     }
@@ -1125,7 +1196,8 @@ export const formatConsumptionShort = (
   }
   return (
     formatNumber(val, hass.locale, {
-      maximumFractionDigits: val < 10 ? 2 : val < 100 ? 1 : 0,
+      maximumFractionDigits:
+        Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
     }) +
     " " +
     pickedUnit

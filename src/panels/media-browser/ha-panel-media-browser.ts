@@ -45,14 +45,37 @@ import type { BarMediaPlayer } from "./ha-bar-media-player";
 import { showWebBrowserPlayMediaDialog } from "./show-media-player-dialog";
 
 const createMediaPanelUrl = (entityId: string, items: MediaPlayerItemId[]) => {
-  let path = `/media-browser/${entityId}`;
-  for (const item of items.slice(1)) {
-    path +=
-      "/" +
-      encodeURIComponent(`${item.media_content_type},${item.media_content_id}`);
+  const path = `/media-browser/${entityId}`;
+  if (items.length <= 1) {
+    return path;
   }
-  return path;
+  const navigateIds = items
+    .slice(1)
+    .map((item) =>
+      encodeURIComponent(`${item.media_content_type},${item.media_content_id}`)
+    );
+  const urlparams = new URLSearchParams();
+  urlparams.set("ids", navigateIds.join(","));
+  return path + "?" + urlparams.toString();
 };
+
+const decodeNavigateIds = (
+  navigateIdsEncoded: string[]
+): MediaPlayerItemId[] => [
+  {
+    media_content_id: undefined,
+    media_content_type: undefined,
+  },
+  ...navigateIdsEncoded.map((navigateId) => {
+    const decoded = decodeURIComponent(navigateId);
+    // Don't use split because media_content_id could contain commas
+    const delimiter = decoded.indexOf(",");
+    return {
+      media_content_type: decoded.substring(0, delimiter),
+      media_content_id: decoded.substring(delimiter + 1),
+    };
+  }),
+];
 
 @customElement("ha-panel-media-browser")
 class PanelMediaBrowser extends LitElement {
@@ -211,9 +234,19 @@ class PanelMediaBrowser extends LitElement {
       return;
     }
 
-    const [routePlayer, ...navigateIdsEncoded] = this.route.path
-      .substring(1)
-      .split("/");
+    const [routePlayer, ...paths] = this.route.path.substring(1).split("/");
+
+    const navigateIdsEncoded =
+      new URLSearchParams(location.search).get("ids")?.split(",") || [];
+
+    // Backwards compatibility with old URLs
+    if (navigateIdsEncoded.length === 0 && paths.length > 0) {
+      const navigateIds = decodeNavigateIds(paths);
+      navigate(createMediaPanelUrl(this._entityId, navigateIds), {
+        replace: true,
+      });
+      return;
+    }
 
     if (routePlayer !== this._entityId) {
       // Detect if picked player doesn't exist (anymore)
@@ -236,21 +269,7 @@ class PanelMediaBrowser extends LitElement {
       this._entityId = routePlayer;
     }
 
-    this._navigateIds = [
-      {
-        media_content_type: undefined,
-        media_content_id: undefined,
-      },
-      ...navigateIdsEncoded.map((navigateId) => {
-        const decoded = decodeURIComponent(navigateId);
-        // Don't use split because media_content_id could contain commas
-        const delimiter = decoded.indexOf(",");
-        return {
-          media_content_type: decoded.substring(0, delimiter),
-          media_content_id: decoded.substring(delimiter + 1),
-        };
-      }),
-    ];
+    this._navigateIds = decodeNavigateIds(navigateIdsEncoded);
     this._currentItem = undefined;
   }
 
@@ -258,6 +277,7 @@ class PanelMediaBrowser extends LitElement {
     navigate(
       createMediaPanelUrl(this._entityId, this._navigateIds.slice(0, -1))
     );
+    this.requestUpdate("route");
   }
 
   private _mediaBrowsed(ev: { detail: HASSDomEvents["media-browsed"] }) {
@@ -269,6 +289,7 @@ class PanelMediaBrowser extends LitElement {
     navigate(createMediaPanelUrl(this._entityId, ev.detail.ids), {
       replace: ev.detail.replace,
     });
+    this.requestUpdate("route");
   }
 
   private async _mediaPicked(
