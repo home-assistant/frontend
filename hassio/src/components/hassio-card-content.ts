@@ -40,6 +40,7 @@ class HassioCardContent extends LitElement {
                 src=${this.iconImage}
                 .title=${this.iconTitle}
                 alt=${this.iconTitle ?? ""}
+                width="40"
               />
               <div></div>
             </div>
