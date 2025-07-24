@@ -6541,7 +6541,8 @@
           },
           "need_base_enabled": "You need to enable basic analytics for this option to be available",
           "learn_more": "How we process your data",
-          "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features."
+          "intro": "Share anonymized information from your installation to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
+          "download_device_info": "Download device info (beta)"
         },
         "network": {
           "caption": "Network",
