@@ -408,6 +408,10 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _handleInstall(): void {
+    if (this._isUpdateButtonDisabled()) {
+      return;
+    }
+
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
