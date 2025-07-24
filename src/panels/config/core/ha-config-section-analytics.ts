@@ -19,8 +19,6 @@ class HaConfigSectionAnalytics extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @state() private _error?: string;
-
   protected render(): TemplateResult {
     return html`
       <hass-subpage
