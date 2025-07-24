@@ -88,6 +88,29 @@ class MoreInfoUpdate extends LitElement {
     return ["home_assistant", "home_assistant_os"].includes(type);
   }
 
+  private _isVersionSkipped(): boolean {
+    if (!this.stateObj) {
+      return false;
+    }
+
+    return !!(
+      this.stateObj.attributes.latest_version &&
+      this.stateObj.attributes.skipped_version ===
+        this.stateObj.attributes.latest_version
+    );
+  }
+
+  private _isUpdateButtonDisabled(): boolean {
+    if (!this.stateObj) {
+      return true;
+    }
+
+    return (
+      (this.stateObj.state === BINARY_STATE_OFF && !this._isVersionSkipped()) ||
+      updateIsInstalling(this.stateObj)
+    );
+  }
+
   private _computeCreateBackupTexts():
     | { title: string; description?: string }
     | undefined {
@@ -180,11 +203,6 @@ class MoreInfoUpdate extends LitElement {
     ) {
       return nothing;
     }
-
-    const skippedVersion =
-      this.stateObj.attributes.latest_version &&
-      this.stateObj.attributes.skipped_version ===
-        this.stateObj.attributes.latest_version;
 
     const createBackupTexts = this._computeCreateBackupTexts();
 
@@ -309,7 +327,7 @@ class MoreInfoUpdate extends LitElement {
             : html`
                 <ha-button
                   @click=${this._handleSkip}
-                  .disabled=${skippedVersion ||
+                  .disabled=${this._isVersionSkipped() ||
                   this.stateObj.state === BINARY_STATE_OFF ||
                   updateIsInstalling(this.stateObj)}
                 >
@@ -323,9 +341,7 @@ class MoreInfoUpdate extends LitElement {
                 <ha-progress-button
                   @click=${this._handleInstall}
                   .progress=${updateIsInstalling(this.stateObj)}
-                  .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
-                    !skippedVersion) ||
-                  updateIsInstalling(this.stateObj)}
+                  .disabled=${this._isUpdateButtonDisabled()}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
