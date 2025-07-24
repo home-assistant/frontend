@@ -89,7 +89,8 @@ export type LovelaceRowConfig =
   | ButtonsRowConfig
   | ConditionalRowConfig
   | AttributeRowConfig
-  | TextConfig;
+  | TextConfig
+  | FilterRowConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
@@ -107,4 +108,11 @@ export interface AttributeRowConfig extends EntityConfig {
   prefix?: string;
   suffix?: string;
   format?: TimestampRenderingFormat;
+}
+
+export interface FilterRowConfig {
+  type: "Filter";
+  filter: {
+    label: string | string[];
+  };
 }
