@@ -7,6 +7,7 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
@@ -319,8 +320,9 @@ class MoreInfoUpdate extends LitElement {
               `}
           ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
             ? html`
-                <ha-button
+                <ha-progress-button
                   @click=${this._handleInstall}
+                  .progress=${updateIsInstalling(this.stateObj)}
                   .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
                     !skippedVersion) ||
                   updateIsInstalling(this.stateObj)}
@@ -328,7 +330,7 @@ class MoreInfoUpdate extends LitElement {
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
                   )}
-                </ha-button>
+                </ha-progress-button>
               `
             : nothing}
         </div>
