@@ -79,6 +79,8 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import "./cards/hui-active-alerts-card";
+import "./editor/config-elements/hui-active-alerts-card-editor";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
