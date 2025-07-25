@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -6,6 +5,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { YamlIntegrationDialogParams } from "./show-add-integration-dialog";
 import "../../../components/ha-dialog";
+import "../../../components/ha-button";
 
 @customElement("dialog-yaml-integration")
 export class DialogYamlIntegration extends LitElement {
@@ -43,25 +43,30 @@ export class DialogYamlIntegration extends LitElement {
             "ui.panel.config.integrations.config_flow.yaml_only"
           )}
         </p>
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="primaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
+        </ha-button>
         ${docLink
-          ? html`<a
+          ? html`<ha-button
+              appearance="plain"
               href=${docLink}
               target="_blank"
               rel="noreferrer noopener"
               slot="primaryAction"
+              @click=${this.closeDialog}
+              dialogInitialFocus
             >
-              <mwc-button @click=${this.closeDialog} dialogInitialFocus>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.open_documentation"
-                )}
-              </mwc-button>
-            </a>`
-          : html`<mwc-button @click=${this.closeDialog} dialogInitialFocus>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_flow.open_documentation"
+              )}
+            </ha-button>`
+          : html`<ha-button @click=${this.closeDialog} dialogInitialFocus>
               ${this.hass.localize("ui.common.ok")}
-            </mwc-button>`}
+            </ha-button>`}
       </ha-dialog>
     `;
   }

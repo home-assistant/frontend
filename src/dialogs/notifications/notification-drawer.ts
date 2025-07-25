@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, html, css, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -10,6 +9,7 @@ import { subscribeNotifications } from "../../data/persistent_notification";
 import type { HomeAssistant } from "../../types";
 import "./notification-item";
 import "../../components/ha-header-bar";
+import "../../components/ha-button";
 import "../../components/ha-drawer";
 import type { HaDrawer } from "../../components/ha-drawer";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
@@ -122,11 +122,11 @@ export class HuiNotificationDrawer extends LitElement {
               )}
               ${this._notifications.length > 1
                 ? html`<div class="notification-actions">
-                    <mwc-button raised @click=${this._dismissAll}>
+                    <ha-button appearance="filled" @click=${this._dismissAll}>
                       ${this.hass.localize(
                         "ui.notification_drawer.dismiss_all"
                       )}
-                    </mwc-button>
+                    </ha-button>
                   </div>`
                 : ""}`
             : html` <div class="empty">

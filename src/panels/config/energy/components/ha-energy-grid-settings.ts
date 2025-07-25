@@ -1,9 +1,9 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiDelete,
   mdiHomeExportOutline,
   mdiHomeImportOutline,
   mdiPencil,
+  mdiPlus,
   mdiTransmissionTower,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -11,7 +11,9 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   deleteConfigEntry,
@@ -160,10 +162,15 @@ export class EnergyGridSettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeImportOutline}></ha-svg-icon>
-            <mwc-button @click=${this._addFromSource}
-              >${this.hass.localize(
+            <ha-button
+              appearance="filled"
+              size="small"
+              @click=${this._addFromSource}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.energy.grid.add_consumption"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
 
@@ -207,10 +214,15 @@ export class EnergyGridSettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeExportOutline}></ha-svg-icon>
-            <mwc-button @click=${this._addToSource}
+            <ha-button
+              @click=${this._addToSource}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.grid.add_return"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
 
@@ -257,11 +269,16 @@ export class EnergyGridSettings extends LitElement {
                       darkOptimized: this.hass.themes?.darkMode,
                     })}
                   />
-                  <mwc-button @click=${this._addCO2Sensor}>
+                  <ha-button
+                    @click=${this._addCO2Sensor}
+                    appearance="filled"
+                    size="small"
+                  >
+                    <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.energy.grid.add_co2_signal"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>
               `}
         </div>

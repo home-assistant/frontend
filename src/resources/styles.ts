@@ -80,11 +80,6 @@ export const haStyle = css`
     color: var(--error-color);
   }
 
-  ha-button.warning,
-  mwc-button.warning {
-    --mdc-theme-primary: var(--error-color);
-  }
-
   ${buttonLinkStyle}
 
   .card-actions a {
@@ -171,10 +166,6 @@ export const haStyleDialog = css`
       --vertical-align-dialog: flex-end;
       --ha-dialog-border-radius: 0;
     }
-  }
-  mwc-button.warning,
-  ha-button.warning {
-    --mdc-theme-primary: var(--error-color);
   }
   .error {
     color: var(--error-color);

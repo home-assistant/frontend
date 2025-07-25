@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +7,7 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-textfield";
+import "../../../components/ha-button";
 import { adminChangePassword } from "../../../data/auth";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -121,9 +121,9 @@ class DialogAdminChangePassword extends LitElement {
                   "ui.panel.config.users.change_password.password_changed"
                 )}
               </p>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.ok")}
-              </mwc-button>
+              </ha-button>
             `
           : html`
               <ha-form
@@ -136,10 +136,14 @@ class DialogAdminChangePassword extends LitElement {
                 @value-changed=${this._valueChanged}
                 .disabled=${this._submitting}
               ></ha-form>
-              <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+              <ha-button
+                appearance="plain"
+                slot="primaryAction"
+                @click=${this.closeDialog}
+              >
                 ${this.hass.localize("ui.common.cancel")}
-              </mwc-button>
-              <mwc-button
+              </ha-button>
+              <ha-button
                 slot="primaryAction"
                 @click=${this._changePassword}
                 .disabled=${this._submitting || !canSubmit}
@@ -147,7 +151,7 @@ class DialogAdminChangePassword extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.users.change_password.change"
                 )}
-              </mwc-button>
+              </ha-button>
             `}
       </ha-dialog>
     `;

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -11,6 +10,7 @@ import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import type { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
+import "../../../../components/ha-button";
 import "../../../../components/ha-copy-textfield";
 
 export class DialogManageCloudhook extends LitElement {
@@ -86,21 +86,20 @@ export class DialogManageCloudhook extends LitElement {
           ></ha-copy-textfield>
         </div>
 
-        <a
+        <ha-button
           href=${docsUrl}
           target="_blank"
           rel="noreferrer"
           slot="secondaryAction"
+          appearance="plain"
         >
-          <mwc-button>
-            ${this.hass!.localize(
-              "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
-            )}
-          </mwc-button>
-        </a>
-        <mwc-button @click=${this.closeDialog} slot="primaryAction">
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
+          )}
+        </ha-button>
+        <ha-button @click=${this.closeDialog} slot="primaryAction">
           ${this.hass!.localize("ui.panel.config.cloud.dialog_cloudhook.close")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

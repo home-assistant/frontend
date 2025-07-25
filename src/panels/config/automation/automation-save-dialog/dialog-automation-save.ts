@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -111,7 +110,8 @@ class DialogAutomationSave extends LitElement implements HassDialog {
       <ha-button
         @click=${this._handleDiscard}
         slot="secondaryAction"
-        class="destructive"
+        variant="danger"
+        appearance="plain"
       >
         ${this.hass.localize("ui.common.dont_save")}
       </ha-button>
@@ -280,16 +280,16 @@ class DialogAutomationSave extends LitElement implements HassDialog {
         ${this._renderInputs()} ${this._renderDiscard()}
 
         <div slot="primaryAction">
-          <mwc-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
-          </mwc-button>
-          <mwc-button @click=${this._save}>
+          </ha-button>
+          <ha-button @click=${this._save}>
             ${this.hass.localize(
               this._params.config.alias && !this._params.onDiscard
                 ? "ui.panel.config.automation.editor.rename"
                 : "ui.panel.config.automation.editor.save"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-dialog>
     `;
@@ -571,9 +571,6 @@ ${dump(this._params.config)}
         ha-alert {
           display: block;
           margin-bottom: 16px;
-        }
-        .destructive {
-          --mdc-theme-primary: var(--error-color);
         }
 
         ha-suggest-with-ai-button {

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -9,6 +8,7 @@ import "../../../../../components/ha-spinner";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-tooltip";
+import "../../../../../components/ha-button";
 import type {
   AttributeConfigurationStatus,
   Cluster,
@@ -95,14 +95,14 @@ class DialogZHAReconfigureDevice extends LitElement {
                   )}
                 </em>
               </p>
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._startReconfiguration}
               >
                 ${this.hass.localize(
                   "ui.dialogs.zha_reconfigure_device.start_reconfiguration"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "started"
@@ -124,10 +124,11 @@ class DialogZHAReconfigureDevice extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
+              <ha-button
+                appearance="plain"
+                slot="secondaryAction"
+                @click=${this._toggleDetails}
+              >
                 ${this._showDetails
                   ? this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_hide`
@@ -135,7 +136,10 @@ class DialogZHAReconfigureDevice extends LitElement {
                   : this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_show`
                     )}
-              </mwc-button>
+              </ha-button>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass.localize("ui.common.close")}
+              </ha-button>
             `
           : ``}
         ${this._status === "failed"
@@ -153,10 +157,10 @@ class DialogZHAReconfigureDevice extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
+              </ha-button>
+              <ha-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
                   ? this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_hide`
@@ -164,7 +168,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                   : this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_show`
                     )}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._status === "finished"
@@ -182,10 +186,10 @@ class DialogZHAReconfigureDevice extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
-              </mwc-button>
-              <mwc-button slot="secondaryAction" @click=${this._toggleDetails}>
+              </ha-button>
+              <ha-button slot="secondaryAction" @click=${this._toggleDetails}>
                 ${this._showDetails
                   ? this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_hide`
@@ -193,7 +197,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                   : this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_show`
                     )}
-              </mwc-button>
+              </ha-button>
             `
           : ``}
         ${this._stages

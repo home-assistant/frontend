@@ -294,7 +294,8 @@ export class HuiDialogEditView extends LitElement {
         ${this._params.viewIndex !== undefined
           ? html`
               <ha-button
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 slot="secondaryAction"
                 @click=${this._deleteConfirm}
               >
@@ -656,7 +657,7 @@ export class HuiDialogEditView extends LitElement {
           width: 100%;
           justify-content: center;
         }
-        ha-button.warning {
+        ha-button[slot="secondaryAction"] {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;

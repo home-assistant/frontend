@@ -1,10 +1,10 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../src/components/ha-form/types";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -77,20 +77,21 @@ class HassioBackupLocationDialog extends LitElement {
           @value-changed=${this._valueChanged}
           dialogInitialFocus
         ></ha-form>
-        <mwc-button
+        <ha-button
+          appearance="plain"
           slot="secondaryAction"
           @click=${this.closeDialog}
           dialogInitialFocus
         >
           ${this._dialogParams.supervisor.localize("common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           .disabled=${this._waiting || !this._data}
           slot="primaryAction"
           @click=${this._changeMount}
         >
           ${this._dialogParams.supervisor.localize("common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

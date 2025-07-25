@@ -1,5 +1,4 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
-import "@material/mwc-button/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowUp,
@@ -767,12 +766,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
     .active-filters ha-svg-icon {
       color: var(--primary-color);
-    }
-    .active-filters mwc-button {
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
-      direction: var(--direction);
     }
     .active-filters::before {
       background-color: var(--primary-color);
