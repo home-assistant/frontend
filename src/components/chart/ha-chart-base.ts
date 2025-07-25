@@ -29,7 +29,7 @@ import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../chips/ha-assist-chip";
 import { downSampleLineData } from "./down-sample";
-import { colorVariables } from "../../resources/theme/color.globals";
+import { colorVariables } from "../../resources/theme/color/color.globals";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
