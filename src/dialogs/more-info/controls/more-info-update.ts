@@ -7,6 +7,7 @@ import { relativeTime } from "../../../common/datetime/relative_time";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
+import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-faded";
 import "../../../components/ha-markdown";
@@ -85,6 +86,29 @@ class MoreInfoUpdate extends LitElement {
 
   private _isHaOrOsUpdate(type: UpdateType): boolean {
     return ["home_assistant", "home_assistant_os"].includes(type);
+  }
+
+  private _isVersionSkipped(): boolean {
+    if (!this.stateObj) {
+      return false;
+    }
+
+    return !!(
+      this.stateObj.attributes.latest_version &&
+      this.stateObj.attributes.skipped_version ===
+        this.stateObj.attributes.latest_version
+    );
+  }
+
+  private _isUpdateButtonDisabled(): boolean {
+    if (!this.stateObj) {
+      return true;
+    }
+
+    return (
+      (this.stateObj.state === BINARY_STATE_OFF && !this._isVersionSkipped()) ||
+      updateIsInstalling(this.stateObj)
+    );
   }
 
   private _computeCreateBackupTexts():
@@ -179,11 +203,6 @@ class MoreInfoUpdate extends LitElement {
     ) {
       return nothing;
     }
-
-    const skippedVersion =
-      this.stateObj.attributes.latest_version &&
-      this.stateObj.attributes.skipped_version ===
-        this.stateObj.attributes.latest_version;
 
     const createBackupTexts = this._computeCreateBackupTexts();
 
@@ -308,7 +327,7 @@ class MoreInfoUpdate extends LitElement {
             : html`
                 <ha-button
                   @click=${this._handleSkip}
-                  .disabled=${skippedVersion ||
+                  .disabled=${this._isVersionSkipped() ||
                   this.stateObj.state === BINARY_STATE_OFF ||
                   updateIsInstalling(this.stateObj)}
                 >
@@ -319,16 +338,15 @@ class MoreInfoUpdate extends LitElement {
               `}
           ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
             ? html`
-                <ha-button
+                <ha-progress-button
                   @click=${this._handleInstall}
-                  .disabled=${(this.stateObj.state === BINARY_STATE_OFF &&
-                    !skippedVersion) ||
-                  updateIsInstalling(this.stateObj)}
+                  .progress=${updateIsInstalling(this.stateObj)}
+                  .disabled=${this._isUpdateButtonDisabled()}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
                   )}
-                </ha-button>
+                </ha-progress-button>
               `
             : nothing}
         </div>
@@ -390,6 +408,10 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _handleInstall(): void {
+    if (this._isUpdateButtonDisabled()) {
+      return;
+    }
+
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
