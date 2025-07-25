@@ -15,6 +15,11 @@ import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 
 const INTERVAL = 1000;
 
+const safeResolveTimeZone = resolveTimeZone as unknown as (
+  zone: string,
+  fallback: string,
+) => string;
+
 @customElement("hui-clock-card")
 export class HuiClockCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -42,6 +47,27 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
 
   @state() private _timeAmPm?: string;
 
+  private _getTimeZoneFromConfig(): string {
+    if (!this._config || !this.hass) {
+      return this.hass?.config?.time_zone ?? "UTC";
+    }
+
+    let zone: string | undefined = this._config.time_zone;
+
+    if (
+      zone?.startsWith("sensor.") || 
+      zone?.startsWith("input_text.")
+    ) {
+      const entity = this.hass.states[zone];
+      zone = entity?.state;
+    }
+
+    return safeResolveTimeZone(
+      zone ?? this.hass.config.time_zone,
+      this.hass.config.time_zone
+    );
+  }
+
   private _tickInterval?: undefined | number;
 
   public setConfig(config: ClockCardConfig): void {
@@ -60,14 +86,14 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
       locale = { ...locale, time_format: this._config.time_format };
     }
 
+    const timeZone = this._getTimeZoneFromConfig();
+
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
-      timeZone:
-        this._config?.time_zone ||
-        resolveTimeZone(locale.time_zone, this.hass.config?.time_zone),
+      timeZone,
     });
 
     this._tick();
