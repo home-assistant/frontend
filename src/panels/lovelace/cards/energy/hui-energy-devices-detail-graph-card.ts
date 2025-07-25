@@ -6,7 +6,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
-import type { LegendComponentOption } from "echarts/components";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
@@ -39,6 +38,7 @@ import {
 import { storage } from "../../../../common/decorators/storage";
 import type { ECOption } from "../../../../resources/echarts";
 import { formatNumber } from "../../../../common/number/format_number";
+import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 
 const UNIT = "kWh";
 
@@ -55,7 +55,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
   @state() private _data?: EnergyData;
 
-  @state() private _legendData?: LegendComponentOption["data"];
+  @state() private _legendData?: CustomLegendOption["data"];
 
   @state() private _start = startOfToday();
 
@@ -149,12 +149,12 @@ export class HuiEnergyDevicesDetailGraphCard
     );
 
   private _datasetHidden(ev) {
-    this._hiddenStats = [...this._hiddenStats, ev.detail.name];
+    this._hiddenStats = [...this._hiddenStats, ev.detail.id];
   }
 
   private _datasetUnhidden(ev) {
     this._hiddenStats = this._hiddenStats.filter(
-      (stat) => stat !== ev.detail.name
+      (stat) => stat !== ev.detail.id
     );
   }
 
@@ -314,6 +314,7 @@ export class HuiEnergyDevicesDetailGraphCard
 
     datasets.push(...processedData);
     this._legendData = processedData.map((d) => ({
+      id: d.id as string,
       name: d.name as string,
       itemStyle: {
         color: d.color as string,
@@ -330,6 +331,7 @@ export class HuiEnergyDevicesDetailGraphCard
       );
       datasets.push(untrackedData);
       this._legendData.push({
+        id: untrackedData.id as string,
         name: untrackedData.name as string,
         itemStyle: {
           color: untrackedData.color as string,

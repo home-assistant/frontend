@@ -358,6 +358,8 @@ export enum ProtocolDataRate {
 export interface ZWaveJSNodeStatisticsUpdatedMessage {
   event: "statistics updated";
   source: "node";
+  nodeId?: number;
+  node_id?: number;
   commands_tx: number;
   commands_rx: number;
   commands_dropped_tx: number;
@@ -923,7 +925,8 @@ export const uploadFirmwareAndBeginUpdate = async (
   hass: HomeAssistant,
   device_id: string,
   file: File,
-  target?: number
+  target?: number,
+  signal?: AbortSignal
 ) => {
   const fd = new FormData();
   fd.append("file", file);
@@ -935,6 +938,7 @@ export const uploadFirmwareAndBeginUpdate = async (
     {
       method: "POST",
       body: fd,
+      signal,
     }
   );
 
