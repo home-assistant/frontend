@@ -397,6 +397,7 @@ export interface StateSelector {
     entity_id?: string | string[];
     attribute?: string;
     hide_states?: string[];
+    multiple?: boolean;
   } | null;
 }
 

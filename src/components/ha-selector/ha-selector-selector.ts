@@ -121,6 +121,10 @@ const SELECTOR_SCHEMAS = {
       name: "entity_id",
       selector: { entity: {} },
     },
+    {
+      name: "multiple",
+      selector: { boolean: {} },
+    },
   ] as const,
   target: [] as const,
   template: [] as const,
