@@ -4,6 +4,9 @@ import { listenMediaQuery } from "../../../common/dom/media_query";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
+import { createDurationData } from "../../../common/datetime/create_duration_data";
+import type { HaDurationData } from "../../../components/ha-duration-input";
+import { HaDurationData_to_milliseconds } from "../../../common/datetime/duration_to_seconds";
 
 export type Condition =
   | NumericStateCondition
@@ -11,13 +14,15 @@ export type Condition =
   | ScreenCondition
   | UserCondition
   | OrCondition
-  | AndCondition;
+  | AndCondition
+  | NotCondition;
 
 // Legacy conditional card condition
 export interface LegacyCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
+  for?: number | string | HaDurationData;
 }
 
 interface BaseCondition {
@@ -36,6 +41,7 @@ export interface StateCondition extends BaseCondition {
   entity?: string;
   state?: string | string[];
   state_not?: string | string[];
+  for?: number | string | HaDurationData;
 }
 
 export interface ScreenCondition extends BaseCondition {
@@ -58,6 +64,11 @@ export interface AndCondition extends BaseCondition {
   conditions?: Condition[];
 }
 
+export interface NotCondition extends BaseCondition {
+  condition: "not";
+  conditions?: Condition[];
+}
+
 function getValueFromEntityId(
   hass: HomeAssistant,
   value: string
@@ -77,6 +88,10 @@ function checkStateCondition(
       ? hass.states[condition.entity].state
       : UNKNOWN;
   let value = condition.state ?? condition.state_not;
+  const state_last_changed =
+    condition.entity && hass.states[condition.entity]
+      ? hass.states[condition.entity].last_changed
+      : UNKNOWN;
 
   // Handle entity_id, UI should be updated for conditional card (filters does not have UI for now)
   if (Array.isArray(value)) {
@@ -92,9 +107,22 @@ function checkStateCondition(
     }
   }
 
+  const forDuration =
+    HaDurationData_to_milliseconds(createDurationData(condition.for)) || 0;
+
+  const numericStateLastChanged = new Date(state_last_changed).getTime();
+  if (isNaN(numericStateLastChanged)) {
+    return false;
+  }
+  const numericFor = numericStateLastChanged + forDuration;
+
+  const now = new Date().getTime();
+  const last_changed_condition =
+    condition.for == null || isNaN(numericFor) || now > numericFor;
+
   return condition.state != null
-    ? ensureArray(value).includes(state)
-    : !ensureArray(value).includes(state);
+    ? ensureArray(value).includes(state) && last_changed_condition
+    : !ensureArray(value).includes(state) && last_changed_condition;
 }
 
 function checkStateNumericCondition(
@@ -149,6 +177,11 @@ function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
   return checkConditionsMet(condition.conditions, hass);
 }
 
+function checkNotCondition(condition: NotCondition, hass: HomeAssistant) {
+  if (!condition.conditions) return true;
+  return !checkConditionsMet(condition.conditions, hass);
+}
+
 function checkOrCondition(condition: OrCondition, hass: HomeAssistant) {
   if (!condition.conditions) return true;
   return condition.conditions.some((c) => checkConditionsMet([c], hass));
@@ -175,6 +208,8 @@ export function checkConditionsMet(
           return checkStateNumericCondition(c, hass);
         case "and":
           return checkAndCondition(c, hass);
+        case "not":
+          return checkNotCondition(c, hass);
         case "or":
           return checkOrCondition(c, hass);
         default:
@@ -247,6 +282,10 @@ function validateAndCondition(condition: AndCondition) {
   return condition.conditions != null;
 }
 
+function validateNotCondition(condition: NotCondition) {
+  return condition.conditions != null;
+}
+
 function validateOrCondition(condition: OrCondition) {
   return condition.conditions != null;
 }
@@ -276,6 +315,8 @@ export function validateConditionalConfig(
           return validateNumericStateCondition(c);
         case "and":
           return validateAndCondition(c);
+        case "not":
+          return validateNotCondition(c);
         case "or":
           return validateOrCondition(c);
         default:
