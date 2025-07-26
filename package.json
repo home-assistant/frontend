@@ -153,7 +153,7 @@
     "@babel/plugin-transform-runtime": "7.28.0",
     "@babel/preset-env": "7.28.0",
     "@bundle-stats/plugin-webpack-filter": "4.21.0",
-    "@lokalise/node-api": "14.9.1",
+    "@lokalise/node-api": "15.0.0",
     "@octokit/auth-oauth-device": "8.0.1",
     "@octokit/plugin-retry": "8.0.1",
     "@octokit/rest": "22.0.0",
