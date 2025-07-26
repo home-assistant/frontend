@@ -146,7 +146,12 @@ const cloudyStates = new Set<string>([
   "lightning-rainy",
 ]);
 
-const rainStates = new Set<string>(["hail", "rainy", "pouring"]);
+const rainStates = new Set<string>([
+  "hail",
+  "rainy",
+  "pouring",
+  "lightning-rainy",
+]);
 
 const windyStates = new Set<string>(["windy", "windy-variant"]);
 
