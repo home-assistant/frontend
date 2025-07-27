@@ -8,6 +8,7 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -17,6 +18,7 @@ import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
 import "../../../components/ha-metric";
+import "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHostInfo } from "../../../data/hassio/host";
@@ -42,6 +44,107 @@ import {
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
+import type { SupervisorStorageInfo } from "../../../data/supervisor/storage";
+import type { Segment } from "../../../components/ha-segmented-bar";
+
+const STORAGE_MOCK_DATA = {
+  result: "ok",
+  data: {
+    addons: {
+      total: 41972643652,
+      children: {
+        core_samba: 517,
+        a0d7b954_nodered: 331,
+        cebe7a76_hassio_google_drive_backup: 46726,
+        core_mosquitto: 249056,
+        "15ef4d2f_esphome": 14354089692,
+        a0d7b954_nginxproxymanager: 45347094,
+        a0d7b954_influxdb: 17802827648,
+        local_pytorch: 2,
+        core_mariadb: 3512027057,
+        a0d7b954_ssh: 6042,
+        a0d7b954_nut: 332,
+        "75a80a57_rtsp_simple_server": 126,
+        "04377e81_shortumation": 2,
+        a0d7b954_vscode: 161396597,
+        a0d7b954_motioneye: 0,
+        core_whisper: 560933174,
+        core_piper: 582311120,
+        "402f1039_eufy_security_ws": 2473,
+        core_openwakeword: 70,
+        "47701997_assist_microphone": 556,
+        a0d7b954_tailscale: 17404,
+        db21ed7f_qbittorrent: 309,
+        "29b65938_postgres": 4062558819,
+        a0d7b954_grafana: 18484398,
+        db21ed7f_portainer: 2361187,
+        "local_open-webui": 2,
+        "local_open-webui-pipelines": 35841,
+        c03d64a7_tesla_http_proxy: 7335,
+        a0d7b954_appdaemon: 111,
+        "77f1785d_remote_api": 2,
+        core_zwave_js: 6554003,
+        core_matter_server: 556624,
+        "77f1785d_zwave_mock_server": 2,
+        core_openthread_border_router: 449,
+        d5369777_music_assistant_beta: 10866899,
+        local_vnc_web_browser: 177282490,
+        a0d7b954_zwavejs2mqtt: 6644743,
+        a0d7b954_plex: 667809784,
+        "6be3d3da_teslamate": 719,
+        d5369777_ytm_po_token_generator: 2,
+        "77b2833f_pgadmin4": 223645,
+        db21ed7f_postgres_latest: 37,
+        "76e18fb5_ollama": 232,
+      },
+    },
+    media: { total: 95872809691, children: { Data: 895 } },
+    share: {
+      total: 37018578930,
+      children: {
+        supervisor: 45990,
+        openwakeword: 2263836,
+        "open-webui": 125288604,
+        mosquitto: 93,
+        tesla: 1029,
+        sda1: 65682,
+        mic_test: 475332,
+        piper: 63518135,
+      },
+    },
+    backup: { total: 229854289920, children: {} },
+    tmp: {
+      total: 386560037,
+      children: {
+        tmp93q3rj4l: 2938,
+        tmpyn4lun8w: 3041,
+        tmpp9ilvz3z: 386550277,
+      },
+    },
+    config: {
+      total: 399501440,
+      children: {
+        views: 49564,
+        tts: 51979486,
+        esphome: 49401,
+        custom_zha_quirks: 29003,
+        ".cloud": 11701,
+        www: 23219,
+        ".storage": 11049641,
+        scripts: 134,
+      },
+    },
+  },
+};
+
+const STORAGE_SEGMENT_COLORS = {
+  addons: "#F1C447",
+  media: "var(--primary-color)",
+  share: "var(--success-color)",
+  backup: "#B1345C",
+  tmp: "var(--primary-color)",
+  config: "var(--primary-color)",
+};
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -96,26 +199,10 @@ class HaConfigSectionStorage extends LitElement {
                   )}
                 >
                   <div class="card-content">
-                    <ha-metric
-                      .heading=${this.hass.localize(
-                        "ui.panel.config.storage.used_space"
-                      )}
-                      .value=${this._getUsedSpace(
-                        this._hostInfo?.disk_used,
-                        this._hostInfo?.disk_total
-                      )}
-                      .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
-                    ></ha-metric>
-                    <div class="detailed-storage-info">
-                      ${this.hass.localize(
-                        "ui.panel.config.storage.detailed_description",
-                        {
-                          used: `${this._hostInfo?.disk_used} GB`,
-                          total: `${this._hostInfo?.disk_total} GB`,
-                          free_space: `${this._hostInfo.disk_free} GB`,
-                        }
-                      )}
-                    </div>
+                    ${this._renderStorageMetrics(
+                      this._hostInfo,
+                      STORAGE_MOCK_DATA.data
+                    )}
                     ${this._hostInfo.disk_life_time !== "" &&
                     this._hostInfo.disk_life_time >= 10
                       ? // prettier-ignore
@@ -240,6 +327,76 @@ class HaConfigSectionStorage extends LitElement {
       </hass-subpage>
     `;
   }
+
+  private _renderStorageMetrics = memoizeOne(
+    (hostInfo?: HassioHostInfo, storageInfo?: SupervisorStorageInfo) => {
+      if (!hostInfo || !storageInfo) {
+        return nothing;
+      }
+      // hostInfo.disk_free is sometimes 0, so we may need to calculate it
+      const freeSpace =
+        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+      const segments: Segment[] = [];
+      if (Object.keys(storageInfo).length > 0) {
+        let otherUsedSpace = hostInfo.disk_used;
+        Object.keys(storageInfo).forEach((key) => {
+          if (storageInfo[key].total) {
+            const space = storageInfo[key].total / 1024 / 1024 / 1024;
+            otherUsedSpace -= space;
+            segments.push({
+              value: space,
+              color: STORAGE_SEGMENT_COLORS[key] ?? "var(--primary-color)",
+              label: html`${this.hass.localize(
+                  `ui.panel.config.storage.segments.${key}`
+                ) || key}
+                <span style="color: var(--secondary-text-color)"
+                  >${roundWithOneDecimal(space)} GB</span
+                >`,
+            });
+          }
+        });
+        segments.push({
+          value: otherUsedSpace,
+          color: "var(--primary-color)",
+          label: html`Other
+            <span style="color: var(--secondary-text-color)"
+              >${roundWithOneDecimal(otherUsedSpace)} GB</span
+            >`,
+        });
+      } else {
+        segments.push({
+          value: hostInfo.disk_used,
+          color: "var(--primary-color)",
+          label: html`Used space
+            <span style="color: var(--secondary-text-color)"
+              >${roundWithOneDecimal(hostInfo.disk_used)} GB</span
+            >`,
+        });
+      }
+      segments.push({
+        value: freeSpace,
+        color:
+          "var(--ha-bar-background-color, var(--secondary-background-color))",
+        label: html`Free space
+          <span style="color: var(--secondary-text-color)"
+            >${roundWithOneDecimal(freeSpace)} GB</span
+          >`,
+      });
+      return html`
+        <ha-segmented-bar
+          .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
+          .description=${this.hass.localize(
+            "ui.panel.config.storage.detailed_description",
+            {
+              used: `${hostInfo?.disk_used} GB`,
+              total: `${hostInfo?.disk_total} GB`,
+            }
+          )}
+          .segments=${segments}
+        ></ha-segmented-bar>
+      `;
+    }
+  );
 
   private async _load() {
     try {
