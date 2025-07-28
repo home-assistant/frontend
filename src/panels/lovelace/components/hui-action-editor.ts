@@ -140,7 +140,7 @@ export class HuiActionEditor extends LitElement {
           .value=${action}
           @closed=${stopPropagation}
           fixedMenuPosition
-          naturalMenuWidt
+          naturalMenuWidth
         >
           <ha-list-item value="default">
             ${this.hass!.localize(
