@@ -781,7 +781,7 @@ export class HaConfigDevicePage extends LitElement {
                               <ha-svg-icon
                                 class=${ifDefined(firstDeviceAction!.classes)}
                                 .path=${firstDeviceAction!.icon}
-                                slot="prefix"
+                                slot="start"
                               ></ha-svg-icon>
                             `
                           : nothing}

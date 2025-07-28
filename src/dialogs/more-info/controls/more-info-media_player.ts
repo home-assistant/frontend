@@ -78,7 +78,7 @@ class MoreInfoMediaPlayer extends LitElement {
               >
                 <ha-svg-icon
                   .path=${mdiPlayBoxMultiple}
-                  slot="prefix"
+                  slot="start"
                 ></ha-svg-icon>
                 ${this.hass.localize("ui.card.media_player.browse_media")}
               </ha-button>
@@ -94,7 +94,7 @@ class MoreInfoMediaPlayer extends LitElement {
               >
                 <ha-svg-icon
                   .path=${mdiSpeakerMultiple}
-                  slot="prefix"
+                  slot="start"
                 ></ha-svg-icon>
                 ${groupMembers && groupMembers > 1
                   ? html`<span class="badge">

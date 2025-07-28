@@ -40,7 +40,7 @@ class MediaUploadButton extends LitElement {
         @click=${this._startUpload}
         .loading=${this._uploading > 0}
       >
-        <ha-svg-icon .path=${mdiUpload} slot="prefix"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiUpload} slot="start"></ha-svg-icon>
         ${this._uploading > 0
           ? this.hass.localize(
               "ui.components.media-browser.file_management.uploading",

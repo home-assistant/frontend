@@ -23,12 +23,8 @@ export class HaProgressButton extends LitElement {
 
   @property() appearance: Appearance = "accent";
 
-  @property() variant:
-    | "primary"
-    | "danger"
-    | "neutral"
-    | "warning"
-    | "success" = "primary";
+  @property() variant: "brand" | "danger" | "neutral" | "warning" | "success" =
+    "brand";
 
   @state() private _result?: "success" | "error";
 
@@ -53,7 +49,7 @@ export class HaProgressButton extends LitElement {
         .hideContent=${this._result !== undefined}
       >
         ${this._hasInitialIcon
-          ? html`<slot name="icon" slot="prefix"></slot>`
+          ? html`<slot name="icon" slot="start"></slot>`
           : nothing}
         <slot
           >${this._result

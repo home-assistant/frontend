@@ -167,7 +167,7 @@ export class EnergyGridSettings extends LitElement {
               size="small"
               @click=${this._addFromSource}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.energy.grid.add_consumption"
               )}</ha-button
@@ -219,7 +219,7 @@ export class EnergyGridSettings extends LitElement {
               appearance="filled"
               size="small"
             >
-              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.grid.add_return"
               )}</ha-button
@@ -274,7 +274,7 @@ export class EnergyGridSettings extends LitElement {
                     appearance="filled"
                     size="small"
                   >
-                    <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                     ${this.hass.localize(
                       "ui.panel.config.energy.grid.add_co2_signal"
                     )}

@@ -127,7 +127,7 @@ class DialogMediaManage extends LitElement {
                   )}
                   @click=${this._handleDelete}
                 >
-                  <ha-svg-icon .path=${mdiDelete} slot="prefix"></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
                 </ha-button>
 
                 ${this._deleting

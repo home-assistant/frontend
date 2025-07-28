@@ -451,7 +451,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                       .path=${this.action === "play"
                                         ? mdiPlay
                                         : mdiPlus}
-                                      slot="prefix"
+                                      slot="start"
                                     ></ha-svg-icon>
                                     ${this.hass.localize(
                                       `ui.components.media-browser.${this.action}`

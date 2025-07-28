@@ -265,7 +265,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 @click=${this._handleActionClick}
                 appearance="filled"
                 size="small"
-                variant=${stateAction === "disarm" ? "danger" : "primary"}
+                variant=${stateAction === "disarm" ? "danger" : "brand"}
               >
                 ${this._actionDisplay(stateAction)}
               </ha-button>

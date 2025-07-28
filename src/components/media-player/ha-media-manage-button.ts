@@ -39,7 +39,7 @@ class MediaManageButton extends LitElement {
     }
     return html`
       <ha-button appearance="plain" size="small" @click=${this._manage}>
-        <ha-svg-icon .path=${mdiFolderEdit} slot="prefix"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiFolderEdit} slot="start"></ha-svg-icon>
         ${this.hass.localize(
           "ui.components.media-browser.file_management.manage"
         )}

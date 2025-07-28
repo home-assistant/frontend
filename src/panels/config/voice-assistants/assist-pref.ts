@@ -215,7 +215,7 @@ export class AssistPref extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.voice_assistants.assistants.pipeline.add_assistant"
           )}
-          <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
         <ha-settings-row>
           <span slot="heading">

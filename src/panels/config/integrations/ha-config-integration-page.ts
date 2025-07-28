@@ -550,7 +550,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     .flowType=${flowType}
                     .disabled=${!normalEntries.length}
                   >
-                    <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
                       `component.${this.domain}.config_subentries.${flowType}.initiate_flow.user`
                     )}</ha-button

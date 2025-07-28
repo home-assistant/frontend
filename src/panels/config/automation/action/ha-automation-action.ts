@@ -113,7 +113,7 @@ export default class HaAutomationAction extends LitElement {
               @click=${this._addActionDialog}
               size="small"
             >
-              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add"
               )}
@@ -124,7 +124,7 @@ export default class HaAutomationAction extends LitElement {
               @click=${this._addActionBuildingBlockDialog}
               size="small"
             >
-              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add_building_block"
               )}

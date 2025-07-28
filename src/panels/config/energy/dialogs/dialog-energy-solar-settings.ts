@@ -185,7 +185,7 @@ export class DialogEnergySolarSettings
                 size="small"
                 @click=${this._addForecast}
               >
-                <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.energy.solar.dialog.add_forecast"
                 )}

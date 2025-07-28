@@ -176,7 +176,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
               .url=${externalUrl}
               @click=${this._copyURL}
             >
-              <ha-svg-icon slot="prefix" .path=${mdiContentCopy}></ha-svg-icon>
+              <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
               ${this.hass.localize("ui.panel.config.common.copy_link")}
             </ha-button>
           </div>

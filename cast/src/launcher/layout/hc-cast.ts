@@ -86,7 +86,7 @@ class HcCast extends LitElement {
             ? html`
                 <p class="center-item">
                   <ha-button @click=${this._handleLaunch}>
-                    <ha-svg-icon slot="prefix" .path=${mdiCast}></ha-svg-icon>
+                    <ha-svg-icon slot="start" .path=${mdiCast}></ha-svg-icon>
                     Start Casting
                   </ha-button>
                 </p>
@@ -130,7 +130,7 @@ class HcCast extends LitElement {
             ? html`
                 <ha-button appearance="plain" @click=${this._handleLaunch}>
                   <ha-svg-icon
-                    slot="prefix"
+                    slot="start"
                     .path=${mdiCastConnected}
                   ></ha-svg-icon>
                   Manage

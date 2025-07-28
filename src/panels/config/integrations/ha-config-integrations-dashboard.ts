@@ -610,7 +610,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                       appearance="filled"
                       size="small"
                     >
-                      <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${this.hass.localize(
                         "ui.panel.config.integrations.add_integration"
                       )}
@@ -643,7 +643,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                           size="small"
                         >
                           <ha-svg-icon
-                            slot="prefix"
+                            slot="start"
                             .path=${mdiPlus}
                           ></ha-svg-icon>
                           ${this.hass.localize(

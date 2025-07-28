@@ -8,6 +8,7 @@ import {
   darkSemanticColorStyles,
   semanticColorStyles,
 } from "./semantic.globals";
+import { waColorStyles } from "./wa.globals";
 
 export const darkColorVariables = {
   ...extractVars(darkColorStyles),
@@ -17,10 +18,12 @@ export const darkColorVariables = {
 export const colorDerivedVariables = {
   ...extractDerivedVars(colorStyles),
   ...extractDerivedVars(semanticColorStyles),
+  ...extractDerivedVars(waColorStyles),
 };
 
 export const colorStylesCollection = [
   coreColorStyles.toString(),
   semanticColorStyles.toString(),
   colorStyles.toString(),
+  waColorStyles.toString(),
 ];

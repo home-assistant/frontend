@@ -103,7 +103,7 @@ export class CloudStepIntro extends LitElement {
           rel="noreferrer noopener"
           appearance="plain"
         >
-          <ha-svg-icon .path=${mdiOpenInNew} slot="prefix"></ha-svg-icon>
+          <ha-svg-icon .path=${mdiOpenInNew} slot="start"></ha-svg-icon>
           nabucasa.com
         </ha-button>
         <ha-button @click=${this._signUp}

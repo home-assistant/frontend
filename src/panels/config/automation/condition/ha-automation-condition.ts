@@ -162,7 +162,7 @@ export default class HaAutomationCondition extends LitElement {
               @click=${this._addConditionDialog}
               size="small"
             >
-              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add"
               )}
@@ -173,7 +173,7 @@ export default class HaAutomationCondition extends LitElement {
               @click=${this._addConditionBuildingBlockDialog}
               size="small"
             >
-              <ha-svg-icon .path=${mdiPlus} slot="prefix"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add_building_block"
               )}

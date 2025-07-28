@@ -272,10 +272,7 @@ class HaConfigAreaPage extends LitElement {
                   .entry=${area}
                   @click=${this._showSettings}
                 >
-                  <ha-svg-icon
-                    .path=${mdiImagePlus}
-                    slot="prefix"
-                  ></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiImagePlus} slot="start"></ha-svg-icon>
                   ${this.hass.localize("ui.panel.config.areas.add_picture")}
                 </ha-button>`}
             <ha-card

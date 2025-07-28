@@ -51,7 +51,7 @@ export class HaConfigFlowCard extends LitElement {
           : ""}
         <ha-button
           @click=${this._continueFlow}
-          variant=${attention ? "danger" : "primary"}
+          variant=${attention ? "danger" : "brand"}
           appearance="filled"
         >
           ${this.hass.localize(

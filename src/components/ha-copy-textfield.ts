@@ -49,7 +49,7 @@ export class HaCopyTextfield extends LitElement {
             : nothing}
         </div>
         <ha-button @click=${this._copy} appearance="filled">
-          <ha-svg-icon slot="prefix" .path=${mdiContentCopy}></ha-svg-icon>
+          <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
           ${this.label || this.hass.localize("ui.common.copy")}
         </ha-button>
       </div>

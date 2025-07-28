@@ -95,7 +95,7 @@ class HassioRegistriesDialog extends LitElement {
                   appearance="filled"
                   size="small"
                 >
-                  <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.supervisor.localize("dialog.registries.add_registry")}
                 </ha-button>
               </div>
@@ -136,7 +136,7 @@ class HassioRegistriesDialog extends LitElement {
                   appearance="filled"
                   size="small"
                 >
-                  <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.supervisor.localize(
                     "dialog.registries.add_new_registry"
                   )}

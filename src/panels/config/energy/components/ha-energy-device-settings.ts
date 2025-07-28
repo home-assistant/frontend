@@ -122,7 +122,7 @@ export class EnergyDeviceSettings extends LitElement {
               appearance="filled"
               size="small"
             >
-              <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption.add_device"
               )}</ha-button

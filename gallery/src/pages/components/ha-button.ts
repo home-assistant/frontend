@@ -10,7 +10,7 @@ import "../../../../src/components/ha-svg-icon";
 import { mdiHomeAssistant } from "../../../../src/resources/home-assistant-logo-svg";
 
 const appearances = ["accent", "filled", "plain"];
-const variants = ["primary", "danger", "neutral", "warning", "success"];
+const variants = ["brand", "danger", "neutral", "warning", "success"];
 
 @customElement("demo-components-ha-button")
 export class DemoHaButton extends LitElement {
@@ -32,7 +32,41 @@ export class DemoHaButton extends LitElement {
                           >
                             <ha-svg-icon
                               .path=${mdiHomeAssistant}
-                              slot="prefix"
+                              slot="start"
+                            ></ha-svg-icon>
+                            ${titleCase(`${variant} ${appearance}`)}
+                            <ha-svg-icon
+                              .path=${mdiHome}
+                              slot="end"
+                            ></ha-svg-icon>
+                          </ha-button>
+                        `
+                      )}
+                    </div>
+                    <div>
+                      ${appearances.map(
+                        (appearance) => html`
+                          <ha-button
+                            .appearance=${appearance}
+                            .variant=${variant}
+                            size="small"
+                          >
+                            ${titleCase(`${variant} ${appearance}`)}
+                          </ha-button>
+                        `
+                      )}
+                    </div>
+                    <div>
+                      ${appearances.map(
+                        (appearance) => html`
+                          <ha-button
+                            .appearance=${appearance}
+                            .variant=${variant}
+                            loading
+                          >
+                            <ha-svg-icon
+                              .path=${mdiHomeAssistant}
+                              slot="start"
                             ></ha-svg-icon>
                             ${titleCase(`${variant} ${appearance}`)}
                             <ha-svg-icon
@@ -43,15 +77,19 @@ export class DemoHaButton extends LitElement {
                         `
                       )}
                     </div>
+                  `
+                )}
+                ${variants.map(
+                  (variant) => html`
                     <div>
                       ${appearances.map(
                         (appearance) => html`
                           <ha-button
-                            .appearance=${appearance}
                             .variant=${variant}
-                            size="small"
+                            .appearance=${appearance}
+                            disabled
                           >
-                            ${titleCase(`${variant} ${appearance}`)}
+                            ${titleCase(`${appearance}`)}
                           </ha-button>
                         `
                       )}
@@ -60,25 +98,12 @@ export class DemoHaButton extends LitElement {
                       ${appearances.map(
                         (appearance) => html`
                           <ha-button
-                            .appearance=${appearance}
                             .variant=${variant}
-                            disabled
-                          >
-                            ${titleCase(`${variant} ${appearance}`)}
-                          </ha-button>
-                        `
-                      )}
-                    </div>
-                    <div>
-                      ${appearances.map(
-                        (appearance) => html`
-                          <ha-button
                             .appearance=${appearance}
-                            .variant=${variant}
                             size="small"
                             disabled
                           >
-                            ${titleCase(`${variant} ${appearance}`)}
+                            ${titleCase(`${appearance}`)}
                           </ha-button>
                         `
                       )}

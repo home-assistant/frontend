@@ -295,7 +295,7 @@ class HaConfigBackupSettings extends LitElement {
                 rel="noreferrer"
                 appearance="plain"
               >
-                <ha-svg-icon slot="prefix" .path=${mdiOpenInNew}></ha-svg-icon>
+                <ha-svg-icon slot="start" .path=${mdiOpenInNew}></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.backup.settings.locations.more_locations"
                 )}

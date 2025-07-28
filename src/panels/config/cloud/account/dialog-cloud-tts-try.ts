@@ -122,10 +122,7 @@ export class DialogTryTts extends LitElement {
           @click=${this._playExample}
           .disabled=${this._loadingExample}
         >
-          <ha-svg-icon
-            slot="prefix"
-            .path=${mdiPlayCircleOutline}
-          ></ha-svg-icon>
+          <ha-svg-icon slot="start" .path=${mdiPlayCircleOutline}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.cloud.account.tts.dialog.play")}
         </ha-button>
         <ha-button
@@ -134,7 +131,7 @@ export class DialogTryTts extends LitElement {
           .disabled=${target === "browser"}
           @click=${this._createAutomation}
         >
-          <ha-svg-icon slot="prefix" .path=${mdiRobot}></ha-svg-icon>
+          <ha-svg-icon slot="start" .path=${mdiRobot}></ha-svg-icon>
           ${this.hass.localize(
             "ui.panel.config.cloud.account.tts.dialog.create_automation"
           )}

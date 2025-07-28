@@ -42,7 +42,7 @@ class HaBackupConfigEncryptionKey extends LitElement {
               @click=${this._download}
               size="small"
             >
-              <ha-svg-icon .path=${mdiDownload} slot="prefix"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
               ${this.hass.localize(
                 "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
               )}

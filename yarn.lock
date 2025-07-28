@@ -41,6 +41,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@awesome.me/webawesome@npm:3.0.0-beta.3":
+  version: 3.0.0-beta.3
+  resolution: "@awesome.me/webawesome@npm:3.0.0-beta.3"
+  dependencies:
+    "@ctrl/tinycolor": "npm:^4.1.0"
+    "@floating-ui/dom": "npm:^1.6.13"
+    "@shoelace-style/animations": "npm:^1.2.0"
+    "@shoelace-style/localize": "npm:^3.2.1"
+    composed-offset-position: "npm:^0.0.6"
+    lit: "npm:^3.2.1"
+    nanoid: "npm:^5.1.5"
+    qr-creator: "npm:^1.0.0"
+    style-observer: "npm:^0.0.7"
+  checksum: 10/d01adab1e415f015c255e99e5ab7962eac3299bfafe3d6feb7dca0e44452b5e64f05d5c8b212ac1c513c8a0e2a9bdbe8dd68ec8b9ec1c216acf6a689dcc6cfc1
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:7.26.2":
   version: 7.26.2
   resolution: "@babel/code-frame@npm:7.26.2"
@@ -1651,7 +1668,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/dom@npm:^1.6.12":
+"@floating-ui/dom@npm:^1.6.12, @floating-ui/dom@npm:^1.6.13":
   version: 1.7.2
   resolution: "@floating-ui/dom@npm:1.7.2"
   dependencies:
@@ -9323,6 +9340,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "home-assistant-frontend@workspace:."
   dependencies:
+    "@awesome.me/webawesome": "npm:3.0.0-beta.3"
     "@babel/core": "npm:7.28.0"
     "@babel/helper-define-polyfill-provider": "npm:0.6.5"
     "@babel/plugin-transform-runtime": "npm:7.28.0"
@@ -11513,6 +11531,15 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 10/73b5afe5975a307aaa3c95dfe3334c52cdf9ae71518176895229b8d65ab0d1c0417dd081426134eb7571c055720428ea5d57c645138161e7d10df80815527c48
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^5.1.5":
+  version: 5.1.5
+  resolution: "nanoid@npm:5.1.5"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 10/6de2d006b51c983be385ef7ee285f7f2a57bd96f8c0ca881c4111461644bd81fafc2544f8e07cb834ca0f3e0f3f676c1fe78052183f008b0809efe6e273119f5
   languageName: node
   linkType: hard
 
@@ -13976,6 +14003,13 @@ __metadata:
   version: 4.1.2
   resolution: "style-mod@npm:4.1.2"
   checksum: 10/9da37909d6dbc3c043ab6d18da5d997073a4698c91e86058293252493eb18aca4e44e3fb18f32fcee26dcee8785f393c6c95f3c96cc722a0dd6b8de622b5b293
+  languageName: node
+  linkType: hard
+
+"style-observer@npm:^0.0.7":
+  version: 0.0.7
+  resolution: "style-observer@npm:0.0.7"
+  checksum: 10/bb57f98bae4463c1e1b57234f8ffe72ec0de27fb08b032c1919910129c210aacd1ddd615432b9453d491e10d3b719cf6c2a68a97165ca55d6fc9b86c0fca37fb
   languageName: node
   linkType: hard
 

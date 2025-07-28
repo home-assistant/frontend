@@ -118,13 +118,13 @@ export class HaFileUpload extends LitElement {
             @dragleave=${this._handleDragEnd}
             @dragend=${this._handleDragEnd}
             >${!this.value
-              ? html` <ha-button
+              ? html`<ha-button
                     size="small"
                     appearance="filled"
                     @click=${this._openFilePicker}
                   >
                     <ha-svg-icon
-                      slot="prefix"
+                      slot="start"
                       .path=${this.icon || mdiFileUpload}
                     ></ha-svg-icon>
                     ${this.label || localize("ui.components.file-upload.label")}

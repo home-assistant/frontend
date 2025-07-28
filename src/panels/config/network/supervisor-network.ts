@@ -455,7 +455,7 @@ export class HassioNetwork extends LitElement {
                       ${this.hass.localize(
                         "ui.panel.config.network.supervisor.add_address"
                       )}
-                      <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     </ha-button>
                   `
                 : nothing}
@@ -513,7 +513,7 @@ export class HassioNetwork extends LitElement {
                     "ui.panel.config.network.supervisor.add_dns_server"
                   )}
                   <ha-svg-icon
-                    slot="prefix"
+                    slot="start"
                     .path=${this._dnsMenuOpen ? mdiMenuDown : mdiPlus}
                   ></ha-svg-icon>
                 </ha-button>

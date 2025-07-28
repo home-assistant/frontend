@@ -122,7 +122,7 @@ export class HaConfigPerson extends LitElement {
                       appearance="filled"
                       size="small"
                     >
-                      <ha-svg-icon slot="prefix" .path=${mdiPlus}></ha-svg-icon>
+                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${hass.localize(
                         "ui.panel.config.person.create_person"
                       )}</ha-button
