@@ -3,8 +3,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-button";
+import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import type { HassioStats } from "../../../src/data/hassio/common";
@@ -94,7 +94,7 @@ class HassioCoreInfo extends LitElement {
         <div class="card-actions">
           <ha-progress-button
             slot="primaryAction"
-            class="warning"
+            variant="danger"
             @click=${this._coreRestart}
             .title=${this.supervisor.localize("common.restart_name", {
               name: "Core",
@@ -187,11 +187,6 @@ class HassioCoreInfo extends LitElement {
           white-space: normal;
           color: var(--secondary-text-color);
         }
-
-        .warning {
-          --mdc-theme-primary: var(--error-color);
-        }
-
         ha-button-menu {
           color: var(--secondary-text-color);
           --mdc-menu-min-width: 200px;

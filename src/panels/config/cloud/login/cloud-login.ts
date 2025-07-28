@@ -114,7 +114,6 @@ export class CloudLogin extends LitElement {
           )}
         </ha-button>
         <ha-progress-button
-          unelevated
           @click=${this._handleLogin}
           .progress=${this._inProgress}
           >${this.localize(

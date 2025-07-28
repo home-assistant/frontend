@@ -2,16 +2,11 @@ import { mdiAlertOctagram, mdiCheckBold } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../ha-button";
+import type { Appearance } from "../ha-button";
 import "../ha-spinner";
 import "../ha-svg-icon";
-import type { Appearance } from "../ha-button";
-
-const HIGHLIGHT_APPEARANCE = {
-  accent: "accent" as Appearance,
-  filled: "accent" as Appearance,
-  plain: "filled" as Appearance,
-};
 
 @customElement("ha-progress-button")
 export class HaProgressButton extends LitElement {
@@ -23,18 +18,16 @@ export class HaProgressButton extends LitElement {
 
   @property() appearance: Appearance = "accent";
 
+  @property({ attribute: false }) public iconPath?: string;
+
   @property() variant: "brand" | "danger" | "neutral" | "warning" | "success" =
     "brand";
 
   @state() private _result?: "success" | "error";
 
-  @state() private _hasInitialIcon = false;
-
   public render(): TemplateResult {
     const appearance =
-      this.progress || this._result
-        ? HIGHLIGHT_APPEARANCE[this.appearance]
-        : this.appearance;
+      this.progress || this._result ? "accent" : this.appearance;
 
     return html`
       <ha-button
@@ -46,20 +39,20 @@ export class HaProgressButton extends LitElement {
           : this._result === "error"
             ? "danger"
             : this.variant}
-        .hideContent=${this._result !== undefined}
+        class=${classMap({
+          result: !!this._result,
+          success: this._result === "success",
+          error: this._result === "error",
+        })}
       >
-        ${this._hasInitialIcon
-          ? html`<slot name="icon" slot="start"></slot>`
+        ${this.iconPath
+          ? html`<ha-svg-icon
+              .path=${this.iconPath}
+              slot="start"
+            ></ha-svg-icon>`
           : nothing}
-        <slot
-          >${this._result
-            ? html`<ha-svg-icon
-                .path=${this._result === "success"
-                  ? mdiCheckBold
-                  : mdiAlertOctagram}
-              ></ha-svg-icon>`
-            : this.label}</slot
-        >
+
+        <slot>${this.label}</slot>
       </ha-button>
       ${!this._result
         ? nothing
@@ -73,14 +66,6 @@ export class HaProgressButton extends LitElement {
             </div>
           `}
     `;
-  }
-
-  firstUpdated() {
-    const iconSlot = this.shadowRoot!.querySelector(
-      'slot[name="icon"]'
-    ) as HTMLSlotElement;
-    this._hasInitialIcon =
-      iconSlot && iconSlot.assignedNodes({ flatten: true }).length > 0;
   }
 
   public actionSuccess(): void {
@@ -109,10 +94,6 @@ export class HaProgressButton extends LitElement {
       pointer-events: none;
     }
 
-    ha-button {
-      transition: all 1s;
-    }
-
     .progress {
       bottom: 0;
       display: flex;
@@ -123,13 +104,20 @@ export class HaProgressButton extends LitElement {
       width: 100%;
     }
 
-    ha-svg-icon {
-      color: white;
+    ha-button {
+      width: 100%;
     }
 
-    ha-button.success slot,
-    ha-button.error slot {
+    ha-button.result::part(start),
+    ha-button.result::part(end),
+    ha-button.result::part(label),
+    ha-button.result::part(caret),
+    ha-button.result::part(spinner) {
       visibility: hidden;
+    }
+
+    ha-svg-icon {
+      color: var(--white);
     }
   `;
 }

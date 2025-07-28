@@ -171,7 +171,7 @@ class HassioHostInfo extends LitElement {
         <div class="card-actions">
           ${this.supervisor.host.features.includes("reboot")
             ? html`
-                <ha-progress-button class="warning" @click=${this._hostReboot}>
+                <ha-progress-button variant="danger" @click=${this._hostReboot}>
                   ${this.supervisor.localize("system.host.reboot_host")}
                 </ha-progress-button>
               `
@@ -179,7 +179,7 @@ class HassioHostInfo extends LitElement {
           ${this.supervisor.host.features.includes("shutdown")
             ? html`
                 <ha-progress-button
-                  class="warning"
+                  variant="danger"
                   @click=${this._hostShutdown}
                 >
                   ${this.supervisor.localize("system.host.shutdown_host")}
@@ -433,10 +433,6 @@ class HassioHostInfo extends LitElement {
         ha-settings-row > span[slot="description"] {
           white-space: normal;
           color: var(--secondary-text-color);
-        }
-
-        .warning {
-          --mdc-theme-primary: var(--error-color);
         }
 
         ha-button-menu {

@@ -1,6 +1,6 @@
 import Button from "@awesome.me/webawesome/dist/components/button/button";
 import { css, type CSSResultGroup } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement } from "lit/decorators";
 
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
 
@@ -35,9 +35,6 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
 @customElement("ha-button")
 export class HaButton extends Button {
   variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
-
-  @property({ type: Boolean, attribute: "hide-content", reflect: true })
-  hideContent = false;
 
   static get styles(): CSSResultGroup {
     return [
@@ -149,6 +146,10 @@ export class HaButton extends Button {
         :host([appearance~="accent"]) .button.disabled {
           background-color: var(--color-fill-disabled-loud-resting);
           color: var(--color-on-disabled-loud);
+        }
+
+        :host([loading]) {
+          pointer-events: none;
         }
       `,
     ];

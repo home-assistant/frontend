@@ -8,7 +8,6 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { round } from "../../../common/number/round";
 import { blankBeforePercent } from "../../../common/translations/blank_before_percent";
-import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
