@@ -98,13 +98,11 @@ export class CloudDiscover extends LitElement {
         ${isComponentLoaded(this.hass, "cloud")
           ? html`
               <div class="card-actions">
-                <a href="/config/cloud/login">
-                  <ha-button appearance="plain">
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                    )}
-                  </ha-button>
-                </a>
+                <ha-button appearance="plain" href="/config/cloud/login">
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                  )}
+                </ha-button>
                 <ha-button href="/config/cloud/register" appearance="filled">
                   ${this.hass.localize(
                     "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
