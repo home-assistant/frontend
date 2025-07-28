@@ -51,5 +51,7 @@ export const waColorStyles = css`
     --wa-color-danger-on-loud: var(--color-on-danger-loud);
     --wa-color-danger-on-normal: var(--color-on-danger-normal);
     --wa-color-danger-on-quiet: var(--color-on-danger-quiet);
+
+    --wa-focus-ring-color: var(--color-neutral-60);
   }
 `;
