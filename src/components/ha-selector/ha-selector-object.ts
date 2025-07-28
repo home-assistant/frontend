@@ -137,7 +137,7 @@ export class HaObjectSelector extends LitElement {
                 ${items.map((item, index) => this._renderItem(item, index))}
               </ha-md-list>
             </ha-sortable>
-            <ha-button outlined @click=${this._addItem}>
+            <ha-button appearance="filled" @click=${this._addItem}>
               ${this.hass.localize("ui.common.add")}
             </ha-button>
           </div>
@@ -152,7 +152,7 @@ export class HaObjectSelector extends LitElement {
                 ${this._renderItem(this.value, 0)}
               </ha-md-list>`
             : html`
-                <ha-button outlined @click=${this._addItem}>
+                <ha-button appearance="filled" @click=${this._addItem}>
                   ${this.hass.localize("ui.common.add")}
                 </ha-button>
               `}

@@ -176,7 +176,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           : nothing}
       </div>
       <div class="footer">
-        <ha-button unelevated @click=${this._finish}>
+        <ha-button @click=${this._finish}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.integration.finish"
           )}

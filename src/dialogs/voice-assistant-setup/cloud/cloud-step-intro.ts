@@ -97,17 +97,16 @@ export class CloudStepIntro extends LitElement {
         </div>
       </div>
       <div class="footer side-by-side">
-        <a
+        <ha-button
           href="https://www.nabucasa.com"
           target="_blank"
           rel="noreferrer noopener"
+          appearance="plain"
         >
-          <ha-button>
-            <ha-svg-icon .path=${mdiOpenInNew} slot="icon"></ha-svg-icon>
-            nabucasa.com
-          </ha-button>
-        </a>
-        <ha-button unelevated @click=${this._signUp}
+          <ha-svg-icon .path=${mdiOpenInNew} slot="prefix"></ha-svg-icon>
+          nabucasa.com
+        </ha-button>
+        <ha-button @click=${this._signUp}
           >${this.hass.localize(
             "ui.panel.config.cloud.register.headline"
           )}</ha-button
