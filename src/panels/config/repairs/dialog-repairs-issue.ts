@@ -145,7 +145,7 @@ class DialogRepairsIssue extends LitElement {
                     : undefined}
                 >
                   ${this.hass!.localize("ui.panel.config.repairs.dialog.learn")}
-                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                 </ha-button>
               `
             : ""}

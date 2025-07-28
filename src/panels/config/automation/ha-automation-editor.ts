@@ -216,6 +216,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           ? html`
               <ha-button
                 appearance="plain"
+                size="small"
                 @click=${this._showTrace}
                 slot="toolbar-icon"
               >
