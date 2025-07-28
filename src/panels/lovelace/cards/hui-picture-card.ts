@@ -41,7 +41,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: PictureCardConfig;
 
-  @state() private _resolvedImage?: string | null;
+  @state() private _resolvedImage?: string;
 
   public getCardSize(): number {
     return 5;
@@ -93,19 +93,17 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       changedProps.has("_config") &&
       changedProps.get("_config")?.image !== this._config?.image;
 
-    if (imageChanged) {
-      this._resolvedImage = this._config?.image;
-    }
-
     if (
       (firstHass || imageChanged) &&
       typeof this._config?.image === "string" &&
       isMediaSourceContentId(this._config.image)
     ) {
-      this._resolvedImage = null;
+      this._resolvedImage = undefined;
       resolveMediaSource(this.hass, this._config?.image).then((result) => {
         this._resolvedImage = result.url;
       });
+    } else if (imageChanged) {
+      this._resolvedImage = this._config?.image;
     }
   }
 
@@ -145,7 +143,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       }
     }
 
-    let image: string | null | undefined = this._resolvedImage;
+    let image: string | undefined = this._resolvedImage;
     if (this._config.image_entity) {
       const domain: string = computeDomain(this._config.image_entity);
       switch (domain) {
@@ -160,7 +158,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       }
     }
 
-    if (image === null) {
+    if (image === undefined) {
       // Bail if we're waiting for our image to be resolved from the media-source.
       return nothing;
     }
