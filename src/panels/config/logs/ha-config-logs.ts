@@ -118,10 +118,7 @@ export class HaConfigLogs extends LitElement {
           ? html`
               <ha-button-menu slot="toolbar-icon">
                 <ha-button slot="trigger" appearance="filled">
-                  <ha-svg-icon
-                    slot="suffix"
-                    .path=${mdiChevronDown}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
                   ${this._logProviders.find(
                     (p) => p.key === this._selectedLogProvider
                   )!.name}

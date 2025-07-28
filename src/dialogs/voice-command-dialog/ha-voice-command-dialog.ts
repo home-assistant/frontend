@@ -117,10 +117,7 @@ export class HaVoiceCommandDialog extends LitElement {
                 size="small"
               >
                 ${this._pipeline?.name}
-                <ha-svg-icon
-                  slot="suffix"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${!this._pipelines
                 ? html`<div class="pipelines-loading">

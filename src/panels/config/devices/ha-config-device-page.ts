@@ -789,7 +789,7 @@ export class HaConfigDevicePage extends LitElement {
                           ? html`
                               <ha-svg-icon
                                 .path=${firstDeviceAction!.trailingIcon}
-                                slot="suffix"
+                                slot="end"
                               ></ha-svg-icon>
                             `
                           : nothing}

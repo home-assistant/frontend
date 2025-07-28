@@ -134,7 +134,7 @@ export class HcConnect extends LitElement {
             <ha-button appearance="plain" @click=${this._handleDemo}>
               Show Demo
               <ha-svg-icon
-                slot="suffix"
+                slot="end"
                 .path=${this.castManager.castState === "CONNECTED"
                   ? mdiCastConnected
                   : mdiCast}

@@ -71,7 +71,7 @@ export class DemoHaButton extends LitElement {
                             ${titleCase(`${variant} ${appearance}`)}
                             <ha-svg-icon
                               .path=${mdiHome}
-                              slot="suffix"
+                              slot="end"
                             ></ha-svg-icon>
                           </ha-button>
                         `

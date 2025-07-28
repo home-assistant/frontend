@@ -147,10 +147,7 @@ class DialogImportBlueprint extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.blueprint.add.community_forums"
                   )}
-                  <ha-svg-icon
-                    slot="suffix"
-                    .path=${mdiOpenInNew}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
                 </ha-button>
                 <ha-textfield
                   id="input"

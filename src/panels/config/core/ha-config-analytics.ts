@@ -61,7 +61,7 @@ class ConfigAnalytics extends LitElement {
           target="_blank"
           rel="noreferrer"
         >
-          <ha-svg-icon slot="suffix" .path=${mdiOpenInNew}></ha-svg-icon>
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.analytics.learn_more")}
         </ha-button>
       </div>

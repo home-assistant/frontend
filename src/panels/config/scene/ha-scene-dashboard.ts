@@ -789,7 +789,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
                 size="small"
               >
                 ${this.hass.localize("ui.panel.config.common.learn_more")}
-                <ha-svg-icon slot="suffix" .path=${mdiOpenInNew}></ha-svg-icon>
+                <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
               </ha-button>
             </div>`
           : nothing}

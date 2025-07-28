@@ -91,7 +91,7 @@ export class CloudDiscover extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.voice_assistants.assistants.cloud.and_more"
               )}
-              <ha-svg-icon slot="suffix" .path=${mdiOpenInNew}></ha-svg-icon>
+              <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
             </ha-button>
           </div>
         </div>

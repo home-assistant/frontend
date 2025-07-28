@@ -86,7 +86,7 @@ class HaMultiTextField extends LitElement {
               })
             : this.hass?.localize("ui.common.add")) ??
           "Add"}
-          <ha-svg-icon slot="suffix" .path=${mdiPlus}></ha-svg-icon>
+          <ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
       </div>
       ${this.helper
