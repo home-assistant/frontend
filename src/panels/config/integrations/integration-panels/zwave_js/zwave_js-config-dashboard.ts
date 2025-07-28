@@ -224,10 +224,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                         appearance="plain"
                         href=${`provisioned?config_entry=${this.configEntryId}`}
                       >
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.provisioned_devices"
-                          )}
-                        </ha-button>`
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.provisioned_devices"
+                        )}
+                      </ha-button>`
                     : nothing}
                 </div>
               </ha-card>
@@ -490,7 +490,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
                           )}
                           ${this._restoreProgress}%`
-                      : html`<ha-button appearance="plain" @click=${this._downloadBackup}>
+                      : html`<ha-button
+                            appearance="plain"
+                            @click=${this._downloadBackup}
+                          >
                             ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
                             )}

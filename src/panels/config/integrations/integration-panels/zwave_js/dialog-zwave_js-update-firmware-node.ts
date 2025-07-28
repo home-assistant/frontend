@@ -160,7 +160,11 @@ class DialogZWaveJSUpdateFirmwareNode extends LitElement {
     const abortFirmwareUpdateButton = this._nodeStatus.is_controller_node
       ? nothing
       : html`
-          <ha-button slot="primaryAction" @click=${this._abortFirmwareUpdate} variant="danger">
+          <ha-button
+            slot="primaryAction"
+            @click=${this._abortFirmwareUpdate}
+            variant="danger"
+          >
             ${this.hass.localize(
               "ui.panel.config.zwave_js.update_firmware.abort"
             )}
