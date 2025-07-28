@@ -10,12 +10,12 @@ import {
   mdiPlusCircle,
   mdiRestore,
 } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -770,6 +770,7 @@ export class HaConfigDevicePage extends LitElement {
                         rel=${ifDefined(
                           firstDeviceAction!.target ? "noreferrer" : undefined
                         )}
+                        appearance="plain"
                         target=${ifDefined(firstDeviceAction!.target)}
                         class=${ifDefined(firstDeviceAction!.classes)}
                         .action=${firstDeviceAction!.action}

@@ -12,8 +12,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-progress-button";
 import "../../../../../components/ha-alert";
-import "../../../../../components/ha-card";
 import "../../../../../components/ha-button";
+import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
 import "../../../../../components/ha-form/ha-form";
 import "../../../../../components/ha-icon-button";
@@ -425,6 +425,11 @@ class ZHAConfigDashboard extends LitElement {
           margin: auto;
           margin-top: 16px;
           max-width: 500px;
+        }
+
+        ha-card .card-actions {
+          display: flex;
+          justify-content: flex-end;
         }
 
         .network-settings ha-settings-row {
