@@ -1,4 +1,5 @@
 import { css } from "lit";
+import { extractDerivedVars } from "../../common/style/derived-css-vars";
 
 export const waMainStyles = css`
   html {
@@ -9,3 +10,5 @@ export const waMainStyles = css`
       var(--wa-focus-ring-color);
   }
 `;
+
+export const waMainDerivedVariables = extractDerivedVars(waMainStyles);

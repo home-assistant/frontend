@@ -5,7 +5,7 @@ import {
   typographyDerivedVariables,
   typographyStyles,
 } from "./typography.globals";
-import { waMainStyles } from "./wa.globals";
+import { waMainDerivedVariables, waMainStyles } from "./wa.globals";
 
 export const themeStyles = [
   mainStyles.toString(),
@@ -19,5 +19,5 @@ export const derivedStyles = {
   ...mainDerivedVariables,
   ...typographyDerivedVariables,
   ...colorDerivedVariables,
-  ...waMainStyles,
+  ...waMainDerivedVariables,
 };
