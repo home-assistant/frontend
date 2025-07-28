@@ -99,20 +99,20 @@ export class BluetoothConfigDashboard extends LitElement {
               </p>
             </div>
             <div class="card-actions">
-              <a href="/config/bluetooth/advertisement-monitor"
-                ><ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.advertisement_monitor"
-                  )}
-                </ha-button></a
+              <ha-button
+                href="/config/bluetooth/advertisement-monitor"
+                appearance="plain"
               >
-              <a href="/config/bluetooth/visualization"
-                ><ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.visualization"
-                  )}
-                </ha-button></a
+                ${this.hass.localize(
+                  "ui.panel.config.bluetooth.advertisement_monitor"
+                )}
+              </ha-button>
+              <ha-button
+                href="/config/bluetooth/visualization"
+                appearance="plain"
               >
+                ${this.hass.localize("ui.panel.config.bluetooth.visualization")}
+              </ha-button>
             </div>
           </ha-card>
           <ha-card
@@ -124,13 +124,14 @@ export class BluetoothConfigDashboard extends LitElement {
               ${this._renderConnectionAllocations()}
             </div>
             <div class="card-actions">
-              <a href="/config/bluetooth/connection-monitor"
-                ><ha-button>
-                  ${this.hass.localize(
-                    "ui.panel.config.bluetooth.connection_monitor"
-                  )}
-                </ha-button></a
+              <ha-button
+                href="/config/bluetooth/connection-monitor"
+                appearance="plain"
               >
+                ${this.hass.localize(
+                  "ui.panel.config.bluetooth.connection_monitor"
+                )}
+              </ha-button>
             </div>
           </ha-card>
         </div>
@@ -217,7 +218,7 @@ export class BluetoothConfigDashboard extends LitElement {
         }
         .card-actions {
           display: flex;
-          justify-content: space-between;
+          justify-content: flex-end;
         }
       `,
     ];
