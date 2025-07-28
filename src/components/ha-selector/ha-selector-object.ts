@@ -279,6 +279,7 @@ export class HaObjectSelector extends LitElement {
   }
 
   private _handleChange(ev) {
+    ev.stopPropagation();
     this._valueChangedFromChild = true;
     const value = ev.target.value;
     if (!ev.target.isValid) {

@@ -1,9 +1,9 @@
 import { mdiPower } from "@mdi/js";
+import type { SeriesOption } from "echarts/types/dist/shared";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { SeriesOption } from "echarts/types/dist/shared";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { round } from "../../../common/number/round";
@@ -11,11 +11,11 @@ import { blankBeforePercent } from "../../../common/translations/blank_before_pe
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-alert";
-import "../../../components/ha-card";
 import "../../../components/ha-button";
-import "../../../components/ha-md-list-item";
+import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-md-list-item";
 import "../../../components/ha-settings-row";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { subscribeConfigEntries } from "../../../data/config_entries";
@@ -24,6 +24,7 @@ import type {
   SystemStatusStreamMessage,
 } from "../../../data/hardware";
 import { BOARD_NAMES } from "../../../data/hardware";
+import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHassOSInfo } from "../../../data/hassio/host";
 import { fetchHassioHassOsInfo } from "../../../data/hassio/host";
 import { scanUSBDevices } from "../../../data/usb";
@@ -31,13 +32,12 @@ import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { DefaultPrimaryColor } from "../../../resources/theme/color.globals";
+import type { ECOption } from "../../../resources/echarts";
 import { haStyle } from "../../../resources/styles";
+import { DefaultPrimaryColor } from "../../../resources/theme/color/color.globals";
 import type { HomeAssistant } from "../../../types";
 import { hardwareBrandsUrl } from "../../../util/brands-url";
 import { showhardwareAvailableDialog } from "./show-dialog-hardware-available";
-import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { ECOption } from "../../../resources/echarts";
 
 const DATASAMPLES = 60;
 
