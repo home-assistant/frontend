@@ -44,107 +44,12 @@ import {
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
-import type { SupervisorStorageInfo } from "../../../data/supervisor/storage";
+import {
+  fetchSupervisorStorageInfo,
+  type SupervisorStorageInfo,
+} from "../../../data/supervisor/storage";
 import type { Segment } from "../../../components/ha-segmented-bar";
-
-const STORAGE_MOCK_DATA = {
-  result: "ok",
-  data: {
-    addons: {
-      total: 41972643652,
-      children: {
-        core_samba: 517,
-        a0d7b954_nodered: 331,
-        cebe7a76_hassio_google_drive_backup: 46726,
-        core_mosquitto: 249056,
-        "15ef4d2f_esphome": 14354089692,
-        a0d7b954_nginxproxymanager: 45347094,
-        a0d7b954_influxdb: 17802827648,
-        local_pytorch: 2,
-        core_mariadb: 3512027057,
-        a0d7b954_ssh: 6042,
-        a0d7b954_nut: 332,
-        "75a80a57_rtsp_simple_server": 126,
-        "04377e81_shortumation": 2,
-        a0d7b954_vscode: 161396597,
-        a0d7b954_motioneye: 0,
-        core_whisper: 560933174,
-        core_piper: 582311120,
-        "402f1039_eufy_security_ws": 2473,
-        core_openwakeword: 70,
-        "47701997_assist_microphone": 556,
-        a0d7b954_tailscale: 17404,
-        db21ed7f_qbittorrent: 309,
-        "29b65938_postgres": 4062558819,
-        a0d7b954_grafana: 18484398,
-        db21ed7f_portainer: 2361187,
-        "local_open-webui": 2,
-        "local_open-webui-pipelines": 35841,
-        c03d64a7_tesla_http_proxy: 7335,
-        a0d7b954_appdaemon: 111,
-        "77f1785d_remote_api": 2,
-        core_zwave_js: 6554003,
-        core_matter_server: 556624,
-        "77f1785d_zwave_mock_server": 2,
-        core_openthread_border_router: 449,
-        d5369777_music_assistant_beta: 10866899,
-        local_vnc_web_browser: 177282490,
-        a0d7b954_zwavejs2mqtt: 6644743,
-        a0d7b954_plex: 667809784,
-        "6be3d3da_teslamate": 719,
-        d5369777_ytm_po_token_generator: 2,
-        "77b2833f_pgadmin4": 223645,
-        db21ed7f_postgres_latest: 37,
-        "76e18fb5_ollama": 232,
-      },
-    },
-    media: { total: 95872809691, children: { Data: 895 } },
-    share: {
-      total: 37018578930,
-      children: {
-        supervisor: 45990,
-        openwakeword: 2263836,
-        "open-webui": 125288604,
-        mosquitto: 93,
-        tesla: 1029,
-        sda1: 65682,
-        mic_test: 475332,
-        piper: 63518135,
-      },
-    },
-    backup: { total: 229854289920, children: {} },
-    tmp: {
-      total: 386560037,
-      children: {
-        tmp93q3rj4l: 2938,
-        tmpyn4lun8w: 3041,
-        tmpp9ilvz3z: 386550277,
-      },
-    },
-    config: {
-      total: 399501440,
-      children: {
-        views: 49564,
-        tts: 51979486,
-        esphome: 49401,
-        custom_zha_quirks: 29003,
-        ".cloud": 11701,
-        www: 23219,
-        ".storage": 11049641,
-        scripts: 134,
-      },
-    },
-  },
-};
-
-const STORAGE_SEGMENT_COLORS = {
-  addons: "#F1C447",
-  media: "var(--primary-color)",
-  share: "var(--success-color)",
-  backup: "#B1345C",
-  tmp: "var(--primary-color)",
-  config: "var(--primary-color)",
-};
+import { getGraphColorByIndex } from "../../../common/color/colors";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -157,6 +62,8 @@ class HaConfigSectionStorage extends LitElement {
   @state() private _error?: { code: string; message: string };
 
   @state() private _hostInfo?: HassioHostInfo;
+
+  @state() private _storageInfo?: SupervisorStorageInfo;
 
   @state() private _mountsInfo?: SupervisorMounts | null;
 
@@ -201,7 +108,7 @@ class HaConfigSectionStorage extends LitElement {
                   <div class="card-content">
                     ${this._renderStorageMetrics(
                       this._hostInfo,
-                      STORAGE_MOCK_DATA.data
+                      this._storageInfo && Object.values(this._storageInfo)[0]
                     )}
                     ${this._hostInfo.disk_life_time !== "" &&
                     this._hostInfo.disk_life_time >= 10
@@ -329,23 +236,27 @@ class HaConfigSectionStorage extends LitElement {
   }
 
   private _renderStorageMetrics = memoizeOne(
-    (hostInfo?: HassioHostInfo, storageInfo?: SupervisorStorageInfo) => {
+    (
+      hostInfo?: HassioHostInfo,
+      storageInfo?: SupervisorStorageInfo[string]
+    ) => {
       if (!hostInfo || !storageInfo) {
         return nothing;
       }
+      const computedStyles = getComputedStyle(this);
       // hostInfo.disk_free is sometimes 0, so we may need to calculate it
       const freeSpace =
         hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
       const segments: Segment[] = [];
       if (Object.keys(storageInfo).length > 0) {
         let otherUsedSpace = hostInfo.disk_used;
-        Object.keys(storageInfo).forEach((key) => {
-          if (storageInfo[key].total) {
-            const space = storageInfo[key].total / 1024 / 1024 / 1024;
+        Object.keys(storageInfo).forEach((key, index) => {
+          if (storageInfo[key].size) {
+            const space = storageInfo[key].size / 1024 / 1024 / 1024;
             otherUsedSpace -= space;
             segments.push({
               value: space,
-              color: STORAGE_SEGMENT_COLORS[key] ?? "var(--primary-color)",
+              color: getGraphColorByIndex(index, computedStyles),
               label: html`${this.hass.localize(
                   `ui.panel.config.storage.segments.${key}`
                 ) || key}
@@ -357,7 +268,7 @@ class HaConfigSectionStorage extends LitElement {
         });
         segments.push({
           value: otherUsedSpace,
-          color: "var(--primary-color)",
+          color: getGraphColorByIndex(segments.length, computedStyles),
           label: html`Other
             <span style="color: var(--secondary-text-color)"
               >${roundWithOneDecimal(otherUsedSpace)} GB</span
@@ -401,6 +312,7 @@ class HaConfigSectionStorage extends LitElement {
   private async _load() {
     try {
       this._hostInfo = await fetchHassioHostInfo(this.hass);
+      this._storageInfo = await fetchSupervisorStorageInfo(this.hass);
     } catch (err: any) {
       this._error = err.message || err;
     }
