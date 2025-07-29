@@ -29,6 +29,7 @@ declare global {
 }
 
 const VALID_PATH_REGEX = /^[a-zA-Z0-9_-]+$/;
+const INTEGER_REGEX = /^[0-9]+$/;
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
@@ -165,14 +166,21 @@ export class HuiViewEditor extends LitElement {
       delete config.top_margin;
     }
 
+    const slugifyTitle = (title: string | undefined) => {
+      const slug = slugify(title || "", "-");
+      if (INTEGER_REGEX.test(slug)) {
+        return `view-${slug}`;
+      }
+      return slug;
+    };
+
     if (
       this.isNew &&
       !this._suggestedPath &&
       this._config.path === config.path &&
-      (!this._config.path ||
-        config.path === slugify(this._config.title || "", "-"))
+      (!this._config.path || config.path === slugifyTitle(this._config.title))
     ) {
-      config.path = slugify(config.title || "", "-");
+      config.path = slugifyTitle(config.title);
     }
 
     let valid = true;
@@ -180,6 +188,9 @@ export class HuiViewEditor extends LitElement {
     if (config.path && !VALID_PATH_REGEX.test(config.path)) {
       valid = false;
       this._error = { path: "error_invalid_path" };
+    } else if (config.path && INTEGER_REGEX.test(config.path)) {
+      valid = false;
+      this._error = { path: "error_number" };
     }
 
     fireEvent(this, "view-config-changed", { valid, config });

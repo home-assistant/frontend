@@ -7035,6 +7035,7 @@
             "saving_failed": "Saving failed",
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "error_invalid_path": "URL contains invalid/reserved characters. Please enter a simple string only for the path of this view.",
+            "error_number": "URL may not be a number.",
             "move_to_dashboard": "Move to dashboard"
           },
           "edit_view_header": {
