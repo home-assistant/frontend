@@ -2,6 +2,8 @@ import Button from "@awesome.me/webawesome/dist/components/button/button";
 import { css, type CSSResultGroup } from "lit";
 import { customElement } from "lit/decorators";
 
+import { StateSet } from "../resources/polyfills/stateset";
+
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
 
 /**
@@ -35,6 +37,14 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
 @customElement("ha-button")
 export class HaButton extends Button {
   variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
+
+  attachInternals() {
+    const internals = super.attachInternals();
+    Object.defineProperty(internals, "states", {
+      value: new StateSet(this, internals.states),
+    });
+    return internals;
+  }
 
   static get styles(): CSSResultGroup {
     return [
