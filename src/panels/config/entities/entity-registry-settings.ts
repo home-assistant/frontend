@@ -28,8 +28,6 @@ import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detai
 import "./entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
 
-const invalidDomainUpdate = false;
-
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -142,10 +140,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </ha-button>
-        <ha-button
-          @click=${this._updateEntry}
-          .disabled=${invalidDomainUpdate || this._submitting}
-        >
+        <ha-button @click=${this._updateEntry} .loading=${!!this._submitting}>
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </ha-button>
       </div>

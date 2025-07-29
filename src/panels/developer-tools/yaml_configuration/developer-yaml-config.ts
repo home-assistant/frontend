@@ -267,6 +267,7 @@ export class DeveloperYamlConfig extends LitElement {
         .card-actions {
           display: flex;
           justify-content: space-between;
+          padding: 4px;
         }
       `,
     ];

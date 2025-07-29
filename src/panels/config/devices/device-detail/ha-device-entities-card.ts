@@ -301,6 +301,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       height: 40px;
       --mdc-ripple-color: transparent;
     }
+    .card-actions {
+      padding: 4px 16px 4px 4px;
+    }
   `;
 }
 

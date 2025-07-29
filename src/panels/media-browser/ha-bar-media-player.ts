@@ -20,13 +20,13 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { debounce } from "../../common/util/debounce";
-import "../../components/ha-slider";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
-import "../../components/ha-spinner";
 import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
+import "../../components/ha-slider";
+import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../data/entity";
@@ -322,22 +322,17 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                     </ha-icon-button>
                   `
                 : html`
-                    <ha-button
-                      slot="trigger"
-                      .label=${this.narrow
-                        ? nothing
-                        : `${
-                            stateObj
-                              ? computeStateName(stateObj)
-                              : this.entityId
-                          }
-                `}
-                    >
-                      <span slot="icon">
+                    <ha-button slot="trigger">
+                      <span slot="start">
                         ${this._renderIcon(isBrowser, stateObj)}
                       </span>
+                      ${this.narrow
+                        ? nothing
+                        : stateObj
+                          ? computeStateName(stateObj)
+                          : this.entityId}
                       <ha-svg-icon
-                        slot="trailingIcon"
+                        slot="end"
                         .path=${mdiChevronDown}
                       ></ha-svg-icon>
                     </ha-button>
