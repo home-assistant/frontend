@@ -1092,11 +1092,16 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           flex-direction: column;
           padding-bottom: 0;
         }
-        manual-automation-editor,
         blueprint-automation-editor,
         :not(.yaml-mode) > ha-alert {
           margin: 0 auto;
           max-width: 1040px;
+          padding: 28px 20px 0;
+          display: block;
+        }
+        manual-automation-editor {
+          margin: 0 auto;
+          max-width: 1540px;
           padding: 28px 20px 0;
           display: block;
         }

@@ -55,7 +55,11 @@ class HassSubpage extends LitElement {
         <div class="main-title"><slot name="header">${this.header}</slot></div>
         <slot name="toolbar-icon"></slot>
       </div>
-      <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+      <div
+        class="content ha-scrollbar"
+        @scroll=${this._saveScrollPos}
+        @scroll-to=${this._scrollTo}
+      >
         <slot></slot>
       </div>
       <div id="fab">
@@ -67,6 +71,15 @@ class HassSubpage extends LitElement {
   @eventOptions({ passive: true })
   private _saveScrollPos(e: Event) {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
+
+  private _scrollTo(e: CustomEvent<{ up: number }>): void {
+    this.renderRoot
+      .querySelector(".content")!
+      .scrollTo(
+        0,
+        e.detail.up + this.renderRoot.querySelector(".content")?.scrollTop
+      );
   }
 
   private _backTapped(): void {

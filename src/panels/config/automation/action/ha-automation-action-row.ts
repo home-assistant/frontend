@@ -203,7 +203,7 @@ export default class HaAutomationActionRow extends LitElement {
               </div>
             `
           : nothing}
-        <ha-expansion-panel left-chevron>
+        <ha-automation-row>
           ${type === "service" && "action" in this.action && this.action.action
             ? html`
                 <ha-service-icon
@@ -328,16 +328,6 @@ export default class HaAutomationActionRow extends LitElement {
               <ha-svg-icon slot="start" .path=${mdiArrowDown}></ha-svg-icon
             ></ha-md-menu-item>
 
-            <ha-md-menu-item
-              .clickAction=${this._toggleYamlMode}
-              .disabled=${!this._uiModeAvailable}
-            >
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
-              )}
-              <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
-            </ha-md-menu-item>
-
             <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
             <ha-md-menu-item
@@ -430,7 +420,7 @@ export default class HaAutomationActionRow extends LitElement {
                   </div>
                 `}
           </div>
-        </ha-expansion-panel>
+        </ha-automation-row>
       </ha-card>
     `;
   }
@@ -676,8 +666,8 @@ export default class HaAutomationActionRow extends LitElement {
         }
         :host([highlight]) ha-card {
           --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-          border-color: var(--state-inactive-color);
+          --shadow-focus: 0 0 0 1px var(--primary-color);
+          border-color: var(--primary-color);
           box-shadow: var(--shadow-default), var(--shadow-focus);
         }
       `,

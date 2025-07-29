@@ -142,6 +142,7 @@ export default class HaAutomationCondition extends LitElement {
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
+                @click=${this._conditionClicked}
                 .hass=${this.hass}
                 ?highlight=${this.highlightedConditions?.includes(cond)}
               >
@@ -179,6 +180,15 @@ export default class HaAutomationCondition extends LitElement {
         </div>
       </ha-sortable>
     `;
+  }
+
+  private _conditionClicked(ev: MouseEvent) {
+    fireEvent(this, "element-selected", {
+      type: "condition",
+      element: (ev.currentTarget as HaAutomationConditionRow).condition,
+      index: (ev.currentTarget as HaAutomationConditionRow).index,
+      path: (ev.currentTarget as HaAutomationConditionRow).path,
+    });
   }
 
   private _addConditionDialog() {

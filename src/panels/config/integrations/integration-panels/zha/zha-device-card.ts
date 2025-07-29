@@ -156,7 +156,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         newName = name.replace(oldDeviceName, newDeviceName);
       }
 
-      if (newName !== undefined && !newEntityId) {
+      if (newName === undefined && !newEntityId) {
         return undefined;
       }
 

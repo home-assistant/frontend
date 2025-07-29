@@ -34,6 +34,8 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ attribute: false }) public highlightedTriggers?: Trigger[];
 
+  @property({ type: Array }) public path?: ItemPath;
+
   @property({ type: Boolean }) public disabled = false;
 
   @state() private _showReorder = false;
@@ -89,10 +91,12 @@ export default class HaAutomationTrigger extends LitElement {
                 .first=${idx === 0}
                 .last=${idx === this.triggers.length - 1}
                 .trigger=${trg}
+                .path=${[...(this.path ?? []), idx]}
                 @duplicate=${this._duplicateTrigger}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._triggerChanged}
+                @click=${this._triggerClicked}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 ?highlight=${this.highlightedTriggers?.includes(trg)}
@@ -133,6 +137,15 @@ export default class HaAutomationTrigger extends LitElement {
         : isTriggerList(this._clipboard.trigger)
           ? "list"
           : this._clipboard?.trigger?.trigger,
+    });
+  }
+
+  private _triggerClicked(ev: MouseEvent) {
+    fireEvent(this, "element-selected", {
+      type: "trigger",
+      element: (ev.currentTarget as HaAutomationTriggerRow).trigger,
+      index: (ev.currentTarget as HaAutomationTriggerRow).index,
+      path: (ev.currentTarget as HaAutomationTriggerRow).path,
     });
   }
 

@@ -1,5 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import { mdiHelpCircle } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDotsVertical,
+  mdiHelpCircle,
+  mdiIdentifier,
+  mdiPlaylistEdit,
+} from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -49,6 +55,51 @@ import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { showToast } from "../../../util/toast";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
+import "@shoelace-style/shoelace/dist/components/split-panel/split-panel";
+import "@shoelace-style/shoelace/dist/components/drawer/drawer";
+import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
+import { classMap } from "lit/directives/class-map";
+import { getType } from "./action/ha-automation-action-row";
+import { storage } from "../../../common/decorators/storage";
+import { nextRender } from "../../../common/util/render-status";
+import {
+  DIRECTION_ALL,
+  DIRECTION_VERTICAL,
+  Manager,
+  Pan,
+  Swipe,
+} from "@egjs/hammerjs";
+
+function findNestedItem(
+  obj: any,
+  path: ItemPath,
+  createNonExistingPath?: boolean
+): any {
+  return path.reduce((ac, p, index, array) => {
+    if (ac === undefined) return undefined;
+    if (!ac[p] && createNonExistingPath) {
+      const nextP = array[index + 1];
+      // Create object or array depending on next path
+      if (nextP === undefined || typeof nextP === "number") {
+        ac[p] = [];
+      } else {
+        ac[p] = {};
+      }
+    }
+    return ac[p];
+  }, obj);
+}
+
+function updateNestedItem(obj: any, path: ItemPath, newValue): any {
+  const lastKey = path.pop()!;
+  const parent = findNestedItem(obj, path);
+  parent[lastKey] = newValue
+    ? newValue
+    : Array.isArray(parent[lastKey])
+      ? [...parent[lastKey]]
+      : [parent[lastKey]];
+  return obj;
+}
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -85,6 +136,14 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _pastedConfig?: ManualAutomationConfig;
 
+  @state() private _selectedElement?: any;
+
+  @state()
+  @storage({ key: "automationSidebarPosition" })
+  private _sidebarWidth = 99999;
+
+  @state() private _yamlMode = false;
+
   private _previousConfig?: ManualAutomationConfig;
 
   public connectedCallback() {
@@ -114,6 +173,13 @@ export class HaManualAutomationEditor extends LitElement {
     }
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("narrow") && this.narrow && this._selectedElement) {
+      this.renderRoot.querySelector("sl-drawer").show();
+    }
+  }
+
   private _clearParam(param: string) {
     window.history.replaceState(
       null,
@@ -123,149 +189,409 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   protected render() {
-    return html`
-      ${this.stateObj?.state === "off"
-        ? html`
-            <ha-alert alert-type="info">
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.disabled"
-              )}
-              <mwc-button slot="action" @click=${this._enable}>
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.enable"
-                )}
-              </mwc-button>
-            </ha-alert>
-          `
-        : nothing}
-      ${this.config.description
-        ? html`<ha-markdown
-            class="description"
-            breaks
-            .content=${this.config.description}
-          ></ha-markdown>`
-        : nothing}
-      <div class="header">
-        <h2 id="triggers-heading" class="name">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.header"
-          )}
-        </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
-      </div>
-      ${!ensureArray(this.config.triggers)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.description"
-            )}
-          </p>`
-        : nothing}
+    const selectedElement = this._selectedElement?.element;
+    const selectedElementType = this._selectedElement?.type;
+    const path = this._selectedElement?.path || [];
 
-      <ha-automation-trigger
-        role="region"
-        aria-labelledby="triggers-heading"
-        .triggers=${this.config.triggers || []}
-        .highlightedTriggers=${this._pastedConfig?.triggers || []}
-        .path=${["triggers"]}
-        @value-changed=${this._triggerChanged}
-        .hass=${this.hass}
-        .disabled=${this.disabled}
-      ></ha-automation-trigger>
+    const type = "";
+    const supported = true;
+    const yamlMode = this._yamlMode;
 
-      <div class="header">
-        <h2 id="conditions-heading" class="name">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.conditions.header"
-          )}
-          <span class="small"
-            >(${this.hass.localize("ui.common.optional")})</span
-          >
-        </h2>
-        <a
-          href=${documentationUrl(this.hass, "/docs/automation/condition/")}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <ha-icon-button
-            .path=${mdiHelpCircle}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.learn_more"
-            )}
-          ></ha-icon-button>
-        </a>
-      </div>
-      ${!ensureArray(this.config.conditions)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.conditions.description",
-              { user: this.hass.user?.name || "Alice" }
-            )}
-          </p>`
-        : nothing}
-
-      <ha-automation-condition
-        role="region"
-        aria-labelledby="conditions-heading"
-        .conditions=${this.config.conditions || []}
-        .highlightedConditions=${this._pastedConfig?.conditions || []}
-        .path=${["conditions"]}
-        @value-changed=${this._conditionChanged}
-        .hass=${this.hass}
-        .disabled=${this.disabled}
-      ></ha-automation-condition>
-
-      <div class="header">
-        <h2 id="actions-heading" class="name">
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.header"
-          )}
-        </h2>
-        <div>
-          <a
-            href=${documentationUrl(this.hass, "/docs/automation/action/")}
-            target="_blank"
-            rel="noreferrer"
-          >
+    const sidePanel = this._selectedElement
+      ? html`<ha-dialog-header>
             <ha-icon-button
-              .path=${mdiHelpCircle}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.learn_more"
-              )}
+              slot="navigationIcon"
+              .label=${this.hass.localize("ui.common.close")}
+              .path=${mdiClose}
+              @click=${this._closeSidebar}
             ></ha-icon-button>
-          </a>
-        </div>
-      </div>
-      ${!ensureArray(this.config.actions)?.length
-        ? html`<p>
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.actions.description"
-            )}
-          </p>`
-        : nothing}
+            <span slot="title">${`Edit ${selectedElementType}`}</span>
+            <ha-button-menu slot="actionItems" fixed>
+              <ha-icon-button
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
+              ${selectedElementType === "trigger"
+                ? html`<ha-md-menu-item
+                    .clickAction=${this._showTriggerId}
+                    .disabled=${this.disabled || type === "list"}
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.edit_id"
+                    )}
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiIdentifier}
+                    ></ha-svg-icon>
+                  </ha-md-menu-item>`
+                : nothing}
+              <ha-md-menu-item
+                @click=${this._toggleYamlMode}
+                .disabled=${!supported}
+              >
+                ${this.hass.localize(
+                  `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
+                )}
+                <ha-svg-icon
+                  slot="start"
+                  .path=${mdiPlaylistEdit}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
+            </ha-button-menu>
+          </ha-dialog-header>
+          <div
+            class=${classMap({
+              "card-content": true,
+              disabled:
+                "enabled" in this._selectedElement &&
+                this._selectedElement.enabled === false,
+            })}
+          >
+            ${this._yamlMode
+              ? html`<ha-yaml-editor
+                  .hass=${this.hass}
+                  .defaultValue=${selectedElement}
+                  .readOnly=${this.disabled}
+                  @value-changed=${this._onYamlChange}
+                ></ha-yaml-editor>`
+              : selectedElementType === "trigger"
+                ? html`<div
+                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                    @value-changed=${this._onUiChanged}
+                    .path=${path}
+                  >
+                    ${dynamicElement(
+                      `ha-automation-trigger-${selectedElement.trigger}`,
+                      {
+                        hass: this.hass,
+                        trigger: selectedElement,
+                        disabled: this.disabled,
+                      }
+                    )}
+                  </div>`
+                : selectedElementType === "condition"
+                  ? html`<ha-automation-condition-editor
+                      @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                      @value-changed=${this._onUiChanged}
+                      .path=${path}
+                      .yamlMode=${this._yamlMode}
+                      .disabled=${this.disabled}
+                      .hass=${this.hass}
+                      .condition=${selectedElement}
+                    ></ha-automation-condition-editor>`
+                  : selectedElementType === "action"
+                    ? html`<div
+                        @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                        @value-changed=${this._onUiChanged}
+                        .path=${path}
+                      >
+                        ${dynamicElement(
+                          `ha-automation-action-${getType(selectedElement)}`,
+                          {
+                            hass: this.hass,
+                            action: selectedElement,
+                            narrow: true,
+                            disabled: this.disabled,
+                          }
+                        )}
+                      </div>`
+                    : nothing}
+          </div>`
+      : nothing;
 
-      <ha-automation-action
-        role="region"
-        aria-labelledby="actions-heading"
-        .actions=${this.config.actions || []}
-        .highlightedActions=${this._pastedConfig?.actions || []}
-        .path=${["actions"]}
-        @value-changed=${this._actionChanged}
-        .hass=${this.hass}
-        .narrow=${this.narrow}
-        .disabled=${this.disabled}
-      ></ha-automation-action>
+    return html`
+      ${this.narrow
+        ? html`<sl-drawer
+            no-header
+            placement="bottom"
+            class="drawer-placement-bottom"
+            @sl-show=${this._drawerOpen}
+            @sl-hide=${this._drawerClose}
+          >
+            ${sidePanel}
+          </sl-drawer>`
+        : nothing}
+      <sl-split-panel
+        primary="start"
+        .positionInPixels=${selectedElement && !this.narrow
+          ? this.clientWidth - 40 - this._sidebarWidth || 99999
+          : 0}
+        style=${selectedElement && !this.narrow
+          ? "--min: 300px; --max: calc(100% - 300px); --divider-width: 32px;"
+          : "--min: 100%; --max: 100%;"}
+        @sl-reposition=${this._splitPanelRepositioned}
+      >
+        <div slot="start" style="overflow: auto; height: 100%">
+          ${this.stateObj?.state === "off"
+            ? html`
+                <ha-alert alert-type="info">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.disabled"
+                  )}
+                  <mwc-button slot="action" @click=${this._enable}>
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.enable"
+                    )}
+                  </mwc-button>
+                </ha-alert>
+              `
+            : nothing}
+          ${this.config.description
+            ? html`<ha-markdown
+                class="description"
+                breaks
+                .content=${this.config.description}
+              ></ha-markdown>`
+            : nothing}
+          <div class="header">
+            <h2 id="triggers-heading" class="name">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.header"
+              )}
+            </h2>
+            <a
+              href=${documentationUrl(this.hass, "/docs/automation/trigger/")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.learn_more"
+                )}
+              ></ha-icon-button>
+            </a>
+          </div>
+          ${!ensureArray(this.config.triggers)?.length
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.description"
+                )}
+              </p>`
+            : nothing}
+
+          <ha-automation-trigger
+            role="region"
+            aria-labelledby="triggers-heading"
+            .triggers=${this.config.triggers || []}
+            .highlightedTriggers=${this._pastedConfig?.triggers || [
+              selectedElement,
+            ]}
+            .path=${["triggers"]}
+            @value-changed=${this._triggerChanged}
+            .hass=${this.hass}
+            .disabled=${this.disabled}
+            @element-selected=${this._elementSelected}
+          ></ha-automation-trigger>
+
+          <div class="header">
+            <h2 id="conditions-heading" class="name">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.header"
+              )}
+              <span class="small"
+                >(${this.hass.localize("ui.common.optional")})</span
+              >
+            </h2>
+            <a
+              href=${documentationUrl(this.hass, "/docs/automation/condition/")}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.learn_more"
+                )}
+              ></ha-icon-button>
+            </a>
+          </div>
+          ${!ensureArray(this.config.conditions)?.length
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.conditions.description",
+                  { user: this.hass.user?.name || "Alice" }
+                )}
+              </p>`
+            : nothing}
+
+          <ha-automation-condition
+            role="region"
+            aria-labelledby="conditions-heading"
+            .conditions=${this.config.conditions || []}
+            .highlightedConditions=${this._pastedConfig?.conditions || [
+              selectedElement,
+            ]}
+            .path=${["conditions"]}
+            @value-changed=${this._conditionChanged}
+            .hass=${this.hass}
+            .disabled=${this.disabled}
+            @element-selected=${this._elementSelected}
+          ></ha-automation-condition>
+
+          <div class="header">
+            <h2 id="actions-heading" class="name">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.header"
+              )}
+            </h2>
+            <div>
+              <a
+                href=${documentationUrl(this.hass, "/docs/automation/action/")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ha-icon-button
+                  .path=${mdiHelpCircle}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.learn_more"
+                  )}
+                ></ha-icon-button>
+              </a>
+            </div>
+          </div>
+          ${!ensureArray(this.config.actions)?.length
+            ? html`<p>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.description"
+                )}
+              </p>`
+            : nothing}
+
+          <ha-automation-action
+            role="region"
+            aria-labelledby="actions-heading"
+            .actions=${this.config.actions || []}
+            .highlightedActions=${this._pastedConfig?.actions || [
+              selectedElement,
+            ]}
+            .path=${["actions"]}
+            @value-changed=${this._actionChanged}
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+            .disabled=${this.disabled}
+            @element-selected=${this._elementSelected}
+          ></ha-automation-action>
+        </div>
+        ${!this.narrow && selectedElement
+          ? html`<ha-card
+              slot="end"
+              style="--ha-card-border-color: var(--primary-color); --ha-card-border-width: 2px;"
+            >
+              ${sidePanel}
+            </ha-card>`
+          : nothing}
+      </sl-split-panel>
     `;
+  }
+
+  private _onUiChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const path = ev.currentTarget?.path || [];
+
+    const newConfig = updateNestedItem(
+      { ...this.config },
+      path,
+      ev.detail.value
+    );
+
+    console.log(newConfig);
+
+    fireEvent(this, "value-changed", { value: newConfig });
+  }
+
+  private async _toggleYamlMode() {
+    this._yamlMode = !this._yamlMode;
+    if (this._yamlMode) {
+      await this.updateComplete;
+      // this.renderRoot.querySelector("ha-yaml-editor").positionInPixels = 0;
+    }
+  }
+
+  private async _elementSelected(ev) {
+    console.log(ev);
+    this._selectedElement = ev.detail;
+    console.log("repo", this._sidebarWidth);
+    const target = ev.target;
+    await this.updateComplete;
+    this.renderRoot.querySelector("sl-split-panel").positionInPixels =
+      this.clientWidth - 40 - this._sidebarWidth;
+    if (this.narrow) {
+      this.renderRoot.querySelector("sl-drawer").show();
+      console.log(target);
+      this._targetEl = target;
+    }
+  }
+
+  private _splitPanelRepositioned(ev: CustomEvent): void {
+    if (!this._selectedElement) {
+      return;
+    }
+    console.log(ev);
+    console.log("reposition", ev.target.positionInPixels);
+    let sidebarWidth = ev.target.clientWidth - ev.target.positionInPixels;
+    if (this._oldClientWidth && this._oldClientWidth !== this.clientWidth) {
+      // If the client width has changed, we need to subtract the difference
+      sidebarWidth = sidebarWidth + (this._oldClientWidth - this.clientWidth);
+    }
+    this._oldClientWidth = this.clientWidth;
+    console.log(sidebarWidth);
+    console.log(this.clientWidth);
+    console.log(this.clientWidth - 40 - sidebarWidth);
+    // if (Math.abs(sidebarWidth - this._sidebarWidth) > 20) {
+    //   this._sidebarWidth = sidebarWidth;
+    // }
+    this._sidebarWidth = sidebarWidth;
+  }
+
+  private _closeSidebar() {
+    if (this.narrow) {
+      this.renderRoot.querySelector("sl-drawer").hide();
+    }
+    this._selectedElement = undefined;
+  }
+
+  private async _drawerOpen() {
+    // this._oldScrollPosition = window.scrollY;
+    this.renderRoot.querySelector("div[slot='start']").style.paddingBottom =
+      "66vh";
+    await nextRender();
+    fireEvent(this, "scroll-to", {
+      up: this._targetEl.getBoundingClientRect().top,
+    });
+    this._setupListeners();
+  }
+
+  private _setupListeners() {
+    const mc = new Manager(this.renderRoot.querySelector("ha-dialog-header"), {
+      touchAction: "pan-y",
+    });
+
+    mc.add(
+      new Swipe({
+        direction: DIRECTION_VERTICAL,
+      })
+    );
+    mc.on("swipeup", (e) => {
+      console.log("up", e);
+      this.toggleAttribute("big-drawer", true);
+    });
+
+    mc.on("swipedown", (e) => {
+      console.log("down", e);
+      if (this.hasAttribute("big-drawer")) {
+        this.toggleAttribute("big-drawer", false);
+      } else {
+        this.renderRoot.querySelector("sl-drawer").hide();
+      }
+    });
+
+    this._manager = mc;
+  }
+
+  private _drawerClose() {
+    this.renderRoot.querySelector("div[slot='start']").style.paddingBottom =
+      "0";
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -551,6 +877,45 @@ export class HaManualAutomationEditor extends LitElement {
           font-size: small;
           font-weight: var(--ha-font-weight-normal);
           line-height: 0;
+        }
+
+        sl-split-panel {
+          height: calc(100vh - var(--header-height, 64px) - 28px - 20px - 1px);
+        }
+
+        sl-drawer {
+          --sl-z-index-drawer: 9999;
+          --size: 66vh;
+          --sl-panel-background-color: var(--ha-card-background, white);
+          --sl-overlay-background-color: rgba(0, 0, 0, 0.32);
+          --sl-shadow-x-large: var(
+            --ha-card-box-shadow,
+            0px -1px 4px 1px rgba(0, 0, 0, 0.2),
+            0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+          );
+          --sl-panel-border-color: var(--ha-card-border-color, #e0e0e0);
+        }
+        :host([big-drawer]) sl-drawer {
+          --size: 90vh;
+        }
+        sl-drawer::part(panel) {
+          border-radius: 12px 12px 0 0;
+          border: 1px solid var(--ha-card-border-color, #e0e0e0);
+        }
+        sl-drawer .card-content {
+          padding: 12px;
+        }
+        sl-drawer ha-dialog-header {
+          position: sticky;
+          top: 0;
+          background: var(--card-background-color);
+          z-index: 999;
+        }
+        .card-content {
+          overflow: auto;
+          height: 100%;
+          padding-bottom: 16px;
         }
       `,
     ];

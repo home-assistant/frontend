@@ -93,6 +93,7 @@ export default class HaAutomationAction extends LitElement {
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._actionChanged}
+                @click=${this._actionClicked}
                 .hass=${this.hass}
                 ?highlight=${this.highlightedActions?.includes(action)}
               >
@@ -102,8 +103,74 @@ export default class HaAutomationAction extends LitElement {
                         <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                       </div>
                     `
-                  : nothing}
-              </ha-automation-action-row>
+                  : nothing} </ha-automation-action-row
+              >${Object.keys(action)[0] === "choose"
+                ? html`<div
+                    style="padding-left: 24px; border-left: 1px solid var(--primary-color);"
+                  >
+                    <ha-card outlined
+                      ><ha-automation-row>
+                        <h3
+                          slot="header"
+                          style="          margin: 0;
+          font-size: inherit;
+          font-weight: inherit;"
+                        >
+                          Option 1:
+                        </h3>
+                      </ha-automation-row></ha-card
+                    >
+                    <div
+                      style="padding-left: 24px; border-left: 1px solid var(--primary-color); margin-top: 8px;"
+                    >
+                    <ha-automation-condition></ha-automation-condition>
+                      <ha-button
+                        outlined
+                        style="    padding: 16px 0; padding-top: 8px;"
+                        .disabled=${this.disabled}
+                        .label=${"Condition"}
+                      >
+                        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+                      </ha-button>
+                      <ha-card style="    padding: 0 16px;
+    padding-top: 8px;"
+                        >Actions</br>
+                        <ha-button
+                          style="    padding: 16px 0;"
+                          outlined
+                          .disabled=${this.disabled}
+                          .label=${"Action"}
+                        >
+                          <ha-svg-icon
+                            .path=${mdiPlus}
+                            slot="icon"
+                          ></ha-svg-icon> </ha-button
+                      ></ha-card>
+                    </div>
+                    <ha-button
+                      outlined
+                      style="    padding: 16px 0;"
+                      .disabled=${this.disabled}
+                      .label=${"Option"}
+                    >
+                      <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+                    </ha-button>
+                    <ha-card style="    padding: 0 16px;
+    padding-top: 8px;"
+                      >Default actions</br>
+                      <ha-button
+                        style="    padding: 16px 0;"
+                        outlined
+                        .disabled=${this.disabled}
+                        .label=${"Action"}
+                      >
+                        <ha-svg-icon
+                          .path=${mdiPlus}
+                          slot="icon"
+                        ></ha-svg-icon></ha-button
+                    ></ha-card>
+                  </div>`
+                : nothing}
             `
           )}
           <div class="buttons">
@@ -130,6 +197,15 @@ export default class HaAutomationAction extends LitElement {
         </div>
       </ha-sortable>
     `;
+  }
+
+  private _actionClicked(ev: MouseEvent) {
+    fireEvent(this, "element-selected", {
+      type: "action",
+      element: (ev.currentTarget as HaAutomationActionRow).action,
+      index: (ev.currentTarget as HaAutomationActionRow).index,
+      path: (ev.currentTarget as HaAutomationActionRow).path,
+    });
   }
 
   protected updated(changedProps: PropertyValues) {
