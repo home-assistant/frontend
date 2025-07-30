@@ -133,6 +133,10 @@ export class HaButton extends Button {
             .button:not(.disabled):not(.loading):hover {
             background-color: var(--color-fill-loud-hover);
           }
+          :host([appearance~="plain"])
+            .button:not(.disabled):not(.loading):hover {
+            color: var(--wa-color-on-normal);
+          }
         }
         :host([appearance~="filled"])
           .button:not(.disabled):not(.loading):active {
