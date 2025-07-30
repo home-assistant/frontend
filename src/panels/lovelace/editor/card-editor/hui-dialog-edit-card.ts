@@ -502,6 +502,11 @@ export class HuiDialogEditCard
           color: inherit;
           text-decoration: none;
         }
+
+        [slot="primaryAction"] {
+          gap: 8px;
+          display: flex;
+        }
       `,
     ];
   }
