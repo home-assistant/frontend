@@ -381,7 +381,7 @@ class DialogAutomationSave extends LitElement implements HassDialog {
     return {
       type: "data",
       task: {
-        task_name: `frontend:${term}:save`,
+        task_name: `frontend__${term}__save`,
         instructions: `Suggest in language "${this.hass.language}" a name, description, category and labels for the following Home Assistant ${term}.
 
 The name should be relevant to the ${term}'s purpose.
