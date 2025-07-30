@@ -271,13 +271,12 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: -8px;
         }
         ha-button-menu ha-button {
-          --ha-button-theme-color: transparent;
-          --ha-button-text-color: var(--primary-text-color);
-          --ha-button-padding-inline-start: 8px;
-          --ha-button-font-weight: var(--ha-font-weight-normal);
-          --ha-button-border-radius: 4px;
-          --ha-button-theme-lighter-color: rgba(0, 0, 0, 0.1);
-          --ha-button-height: 24px;
+          --ha-font-size-l: var(--ha-font-size-m);
+          --ha-button-height: 20px;
+        }
+        ha-button-menu ha-button::part(base) {
+          margin-left: 5px;
+          padding: 0;
         }
         @media (prefers-color-scheme: dark) {
           ha-button-menu ha-button {
