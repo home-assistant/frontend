@@ -36,6 +36,9 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -96,6 +99,7 @@ export default class HaAutomationTrigger extends LitElement {
                 .hass=${this.hass}
                 .disabled=${this.disabled}
                 ?highlight=${this.highlightedTriggers?.includes(trg)}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`

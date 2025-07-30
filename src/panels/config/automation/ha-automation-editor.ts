@@ -1101,6 +1101,11 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           padding: 28px 20px 0;
           display: block;
         }
+
+        manual-automation-editor {
+          max-width: 1540px;
+        }
+
         ha-yaml-editor {
           flex-grow: 1;
           --actions-border-radius: 0;
