@@ -5,11 +5,11 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-list-item";
 import "../../../../components/ha-tip";
-import "../../../../components/ha-button";
 import type {
   CloudStatusLoggedIn,
   SubscriptionInfo,
@@ -149,7 +149,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
               <div class="card-actions">
                 <ha-button
-                  appearance="plain"
+                  appearance="filled"
                   href="https://account.nabucasa.com"
                   target="_blank"
                   rel="noreferrer"
@@ -158,7 +158,11 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
                     "ui.panel.config.cloud.account.manage_account"
                   )}
                 </ha-button>
-                <ha-button @click=${this._signOut} variant="danger">
+                <ha-button
+                  @click=${this._signOut}
+                  variant="danger"
+                  appearance="plain"
+                >
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.sign_out"
                   )}
