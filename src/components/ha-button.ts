@@ -65,7 +65,7 @@ export class HaButton extends Button {
             var(--button-height, 40px)
           );
 
-          font-size: var(--ha-font-size-l);
+          font-size: var(--ha-font-size-m);
         }
 
         :host([size="small"]) .button {
@@ -73,7 +73,7 @@ export class HaButton extends Button {
             --ha-button-height,
             var(--button-height, 32px)
           );
-          font-size: var(--wa-font-size-s, var(--ha-font-size-l));
+          font-size: var(--wa-font-size-s, var(--ha-font-size-m));
         }
 
         :host([variant="brand"]) {
