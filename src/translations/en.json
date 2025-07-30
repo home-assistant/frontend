@@ -4017,9 +4017,19 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
+                  "weekday": "Weekdays",
+                  "weekdays": {
+                    "mon": "[%key:ui::weekdays::monday%]",
+                    "tue": "[%key:ui::weekdays::tuesday%]",
+                    "wed": "[%key:ui::weekdays::wednesday%]",
+                    "thu": "[%key:ui::weekdays::thursday%]",
+                    "fri": "[%key:ui::weekdays::friday%]",
+                    "sat": "[%key:ui::weekdays::saturday%]",
+                    "sun": "[%key:ui::weekdays::sunday%]"
+                  },
                   "description": {
                     "picker": "At a specific time, or on a specific date.",
-                    "full": "When the time is equal to {time}"
+                    "full": "When the time is equal to {time}{hasWeekdays, select, \n true { on {weekdays}} \n other {}\n}"
                   }
                 },
                 "time_pattern": {
