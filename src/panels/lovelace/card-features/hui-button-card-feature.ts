@@ -89,13 +89,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     `;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      cardFeatureStyles,
-      css`
-      `,
-    ];
-  }
+  static styles = cardFeatureStyles;
 }
 
 declare global {
