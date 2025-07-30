@@ -1,11 +1,10 @@
-import "@material/mwc-button";
 import type { ActionDetail } from "@material/mwc-list";
 import {
+  mdiCellphoneKey,
   mdiDeleteOutline,
   mdiDevices,
   mdiDotsVertical,
   mdiInformationOutline,
-  mdiCellphoneKey,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -14,9 +13,10 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
 import { extractSearchParam } from "../../../../../common/url/search-params";
+import "../../../../../components/ha-button";
 import "../../../../../components/ha-button-menu";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-list-item";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
 import type { OTBRInfo, OTBRInfoDict } from "../../../../../data/otbr";
@@ -47,8 +47,8 @@ import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
-import { fileDownload } from "../../../../../util/file_download";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { fileDownload } from "../../../../../util/file_download";
 import { showThreadDatasetDialog } from "./show-dialog-thread-dataset";
 
 export interface ThreadNetwork {
@@ -117,16 +117,16 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                     )}
                   </h3>
                   <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-                  <a
+                  <ha-button
+                    appearance="plain"
+                    size="small"
                     href=${documentationUrl(this.hass, `/integrations/thread`)}
                     target="_blank"
                   >
-                    <mwc-button
-                      >${this.hass.localize(
-                        "ui.panel.config.thread.more_info"
-                      )}</mwc-button
-                    >
-                  </a>
+                    ${this.hass.localize(
+                      "ui.panel.config.thread.more_info"
+                    )}</ha-button
+                  >
                 </div>
               </ha-card>`}
           ${networks.networks.length
@@ -294,21 +294,23 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
               ? html`${this.hass.localize(
                     "ui.panel.config.thread.no_routers_otbr_network"
                   )}
-                  <mwc-button
+                  <ha-button
+                    appearance="plain"
+                    size="small"
                     .otbr=${otbrForNetwork}
                     @click=${this._resetBorderRouterEvent}
                     >${this.hass.localize(
                       "ui.panel.config.thread.reset_border_router"
-                    )}</mwc-button
+                    )}</ha-button
                   >`
               : this.hass.localize("ui.panel.config.thread.no_border_routers")}
           </div> `}
       ${network.dataset && !network.dataset.preferred
         ? html`<div class="card-actions">
-            <mwc-button
+            <ha-button
               .datasetId=${network.dataset.dataset_id}
               @click=${this._setPreferred}
-              >Make preferred network</mwc-button
+              >Make preferred network</ha-button
             >
           </div>`
         : ""}
@@ -316,10 +318,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       network.dataset?.preferred &&
       network.routers?.length
         ? html`<div class="card-actions">
-            <mwc-button
+            <ha-button
+              size="small"
               .networkDataset=${network.dataset}
               @click=${this._sendCredentials}
-              >Send credentials to phone</mwc-button
+              >Send credentials to phone</ha-button
             >
           </div>`
         : ""}

@@ -1,6 +1,6 @@
-import "@material/mwc-button";
 import type { HassEntity } from "home-assistant-js-websocket";
 import "../components/entity/state-info";
+import "../components/ha-button";
 import { customElement, property } from "lit/decorators";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -24,8 +24,8 @@ class StateCardConfigurator extends LitElement {
           .inDialog=${this.inDialog}
         ></state-info>
         ${this.inDialog
-          ? html`<mwc-button
-              >${this.hass.formatEntityState(this.stateObj)}</mwc-button
+          ? html`<ha-button appearance="plain" size="small"
+              >${this.hass.formatEntityState(this.stateObj)}</ha-button
             >`
           : nothing}
       </div>
@@ -36,7 +36,7 @@ class StateCardConfigurator extends LitElement {
     return [
       haStyle,
       css`
-        mwc-button {
+        ha-button {
           top: 3px;
           height: 37px;
           margin-right: -0.57em;

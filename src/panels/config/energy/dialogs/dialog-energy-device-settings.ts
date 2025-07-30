@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiDevices } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -9,6 +8,7 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-button";
 import "../../../../components/ha-select";
 import "../../../../components/ha-list-item";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
@@ -183,16 +183,20 @@ export class DialogEnergyDeviceSettings
               )}
         </ha-select>
 
-        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="primaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
-        </mwc-button>
-        <mwc-button
+        </ha-button>
+        <ha-button
           @click=${this._save}
           .disabled=${!this._device}
           slot="primaryAction"
         >
           ${this.hass.localize("ui.common.save")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

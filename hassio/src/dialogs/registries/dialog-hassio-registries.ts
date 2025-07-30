@@ -1,5 +1,4 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete } from "@mdi/js";
+import { mdiDelete, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -7,6 +6,8 @@ import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-button";
+import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-settings-row";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
@@ -84,16 +85,19 @@ class HassioRegistriesDialog extends LitElement {
                 dialogInitialFocus
               ></ha-form>
               <div class="action">
-                <mwc-button
+                <ha-button
                   ?disabled=${Boolean(
                     !this._input.registry ||
                       !this._input.username ||
                       !this._input.password
                   )}
                   @click=${this._addNewRegistry}
+                  appearance="filled"
+                  size="small"
                 >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.supervisor.localize("dialog.registries.add_registry")}
-                </mwc-button>
+                </ha-button>
               </div>
             `
           : html`${this._registries?.length
@@ -126,11 +130,17 @@ class HassioRegistriesDialog extends LitElement {
                     </ha-alert>
                   `}
               <div class="action">
-                <mwc-button @click=${this._addRegistry} dialogInitialFocus>
+                <ha-button
+                  @click=${this._addRegistry}
+                  dialogInitialFocus
+                  appearance="filled"
+                  size="small"
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this.supervisor.localize(
                     "dialog.registries.add_new_registry"
                   )}
-                </mwc-button>
+                </ha-button>
               </div> `}
       </ha-dialog>
     `;

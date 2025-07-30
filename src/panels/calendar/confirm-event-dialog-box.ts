@@ -47,7 +47,7 @@ class ConfirmEventDialogBox extends LitElement {
           slot="primaryAction"
           @click=${this._confirm}
           dialogInitialFocus
-          destructive
+          variant="danger"
         >
           ${this._params.confirmText}
         </ha-button>
@@ -56,7 +56,7 @@ class ConfirmEventDialogBox extends LitElement {
               <ha-button
                 @click=${this._confirmFuture}
                 slot="primaryAction"
-                destructive
+                variant="danger"
               >
                 ${this._params.confirmFutureText}
               </ha-button>

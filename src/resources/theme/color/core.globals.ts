@@ -17,7 +17,7 @@ export const coreColorStyles = css`
     --color-primary-60: #37c8fd;
     --color-primary-70: #7bd4fb;
     --color-primary-80: #b9e6fc;
-    --color-primary-90: #b9e6fc;
+    --color-primary-90: #dff3fc;
     --color-primary-95: #eff9fe;
 
     /* neutral */

@@ -1,11 +1,11 @@
-import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiDevices, mdiDrag, mdiPencil } from "@mdi/js";
+import { mdiDelete, mdiDevices, mdiDrag, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { repeat } from "lit/directives/repeat";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
@@ -117,10 +117,15 @@ export class EnergyDeviceSettings extends LitElement {
           </ha-sortable>
           <div class="row">
             <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-            <mwc-button @click=${this._addDevice}
+            <ha-button
+              @click=${this._addDevice}
+              appearance="filled"
+              size="small"
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption.add_device"
-              )}</mwc-button
+              )}</ha-button
             >
           </div>
         </div>

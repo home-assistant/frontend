@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import {
   mdiChevronDown,
   mdiClose,
@@ -11,14 +10,14 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import "../../components/ha-alert";
+import "../../components/ha-assist-chat";
 import "../../components/ha-button";
 import "../../components/ha-button-menu";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-header";
 import "../../components/ha-icon-button";
 import "../../components/ha-list-item";
-import "../../components/ha-alert";
-import "../../components/ha-assist-chat";
 import "../../components/ha-spinner";
 import type { AssistPipeline } from "../../data/assist_pipeline";
 import {
@@ -111,12 +110,14 @@ export class HaVoiceCommandDialog extends LitElement {
               activatable
               fixed
             >
-              <ha-button slot="trigger">
+              <ha-button
+                slot="trigger"
+                appearance="plain"
+                variant="neutral"
+                size="small"
+              >
                 ${this._pipeline?.name}
-                <ha-svg-icon
-                  slot="trailingIcon"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${!this._pipelines
                 ? html`<div class="pipelines-loading">
@@ -270,19 +271,17 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: -8px;
         }
         ha-button-menu ha-button {
-          --mdc-theme-primary: var(--secondary-text-color);
-          --mdc-typography-button-text-transform: none;
-          --mdc-typography-button-font-size: unset;
-          --mdc-typography-button-font-weight: var(--ha-font-weight-normal);
-          --mdc-typography-button-letter-spacing: var(
-            --mdc-typography-headline6-letter-spacing,
-            0.0125em
-          );
-          --mdc-typography-button-line-height: var(
-            --mdc-typography-headline6-line-height,
-            var(--ha-line-height-expanded)
-          );
-          --button-height: auto;
+          --ha-font-size-l: var(--ha-font-size-m);
+          --ha-button-height: 20px;
+        }
+        ha-button-menu ha-button::part(base) {
+          margin-left: 5px;
+          padding: 0;
+        }
+        @media (prefers-color-scheme: dark) {
+          ha-button-menu ha-button {
+            --ha-button-theme-lighter-color: rgba(255, 255, 255, 0.1);
+          }
         }
         ha-button-menu ha-button ha-svg-icon {
           height: 28px;

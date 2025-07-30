@@ -83,6 +83,9 @@ export const applyThemesOnElement = (
 
       themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
       themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
+      themeRules["darker-primary-color"] = lab2hex(
+        labDarken(labPrimaryColor, 2)
+      );
       themeRules["text-primary-color"] =
         rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
       themeRules["text-light-primary-color"] =

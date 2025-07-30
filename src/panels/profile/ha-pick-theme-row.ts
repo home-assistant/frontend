@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,6 +6,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
 import "../../components/ha-list-item";
 import "../../components/ha-radio";
+import "../../components/ha-button";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-select";
 import "../../components/ha-settings-row";
@@ -148,9 +147,13 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></ha-textfield>
                   ${themeSettings?.primaryColor || themeSettings?.accentColor
-                    ? html` <mwc-button @click=${this._resetColors}>
+                    ? html` <ha-button
+                        appearance="plain"
+                        size="small"
+                        @click=${this._resetColors}
+                      >
                         ${this.hass.localize("ui.panel.profile.themes.reset")}
-                      </mwc-button>`
+                      </ha-button>`
                     : ""}
                 </div>`
               : ""}

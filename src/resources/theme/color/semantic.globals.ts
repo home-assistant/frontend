@@ -263,7 +263,7 @@ export const darkSemanticColorStyles = css`
 
     /* on primary */
     --color-on-primary-quiet: var(--color-primary-70);
-    --color-on-primary-normal: var(--color-primary-80);
+    --color-on-primary-normal: var(--color-primary-60);
 
     /* on neutral */
     --color-on-neutral-quiet: var(--color-neutral-70);

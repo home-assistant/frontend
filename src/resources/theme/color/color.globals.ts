@@ -17,6 +17,7 @@ export const colorStyles = css`
     /* main interface colors */
     --primary-color: var(--color-primary-40);
     --dark-primary-color: #0288d1;
+    --darker-primary-color: #016194;
     --light-primary-color: #b3e5fc;
     --accent-color: #ff9800;
     --divider-color: rgba(0, 0, 0, 0.12);
@@ -357,6 +358,11 @@ export const darkColorStyles = css`
     --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5) contrast(1.2)
       saturate(0.3);
     --disabled-color: #464646;
+
+    --ha-button-primary-light-color: #4082a040;
+    --ha-button-warning-light-color: #917b54c1;
+    --ha-button-neutral-color: #d9dae0;
+    --ha-button-neutral-light-color: #6a7081;
   }
 `;
 export const colorVariables = extractVars(colorStyles);

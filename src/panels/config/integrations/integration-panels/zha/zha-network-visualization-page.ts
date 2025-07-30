@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiRefresh } from "@mdi/js";
 import type {
   CallbackDataParams,
