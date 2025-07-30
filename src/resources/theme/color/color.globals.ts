@@ -1,21 +1,21 @@
 import { css } from "lit";
 import {
-  extractDerivedVars,
   extractVar,
   extractVars,
-} from "../../common/style/derived-css-vars";
+} from "../../../common/style/derived-css-vars";
+import { coreColorVariables } from "./core.globals";
 
 export const colorStyles = css`
   html {
     /* text */
-    --primary-text-color: #212121;
-    --secondary-text-color: #727272;
+    --primary-text-color: var(--color-text-primary);
+    --secondary-text-color: var(--color-text-secondary);
     --text-primary-color: #ffffff;
     --text-light-primary-color: #212121;
     --disabled-text-color: #bdbdbd;
 
     /* main interface colors */
-    --primary-color: #03a9f4;
+    --primary-color: var(--color-primary-40);
     --dark-primary-color: #0288d1;
     --light-primary-color: #b3e5fc;
     --accent-color: #ff9800;
@@ -24,7 +24,7 @@ export const colorStyles = css`
     --outline-hover-color: rgba(0, 0, 0, 0.24);
 
     /* rgb */
-    --rgb-primary-color: 3, 169, 244;
+    --rgb-primary-color: 0, 154, 199;
     --rgb-accent-color: 255, 152, 0;
     --rgb-primary-text-color: 33, 33, 33;
     --rgb-secondary-text-color: 114, 114, 114;
@@ -303,7 +303,7 @@ export const colorStyles = css`
   }
 `;
 
-const darkColorStyles = css`
+export const darkColorStyles = css`
   html {
     --primary-background-color: #111111;
     --card-background-color: #1c1c1c;
@@ -359,9 +359,11 @@ const darkColorStyles = css`
     --disabled-color: #464646;
   }
 `;
-export const colorDerivedVariables = extractDerivedVars(colorStyles);
 export const colorVariables = extractVars(colorStyles);
-export const darkColorVariables = extractVars(darkColorStyles);
 
-export const DefaultPrimaryColor = extractVar(colorStyles, "primary-color");
+export const DefaultPrimaryColor = extractVar(
+  colorStyles,
+  "primary-color",
+  coreColorVariables
+);
 export const DefaultAccentColor = extractVar(colorStyles, "accent-color");

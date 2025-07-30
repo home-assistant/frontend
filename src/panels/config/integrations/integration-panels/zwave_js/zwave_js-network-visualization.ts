@@ -1,33 +1,33 @@
-import { customElement, property, state } from "lit/decorators";
-import { css, html, LitElement } from "lit";
-import memoizeOne from "memoize-one";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import type { HomeAssistant, Route } from "../../../../../types";
-import { configTabs } from "./zwave_js-config-router";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { navigate } from "../../../../../common/navigate";
+import { debounce } from "../../../../../common/util/debounce";
+import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
-import "../../../../../components/chart/ha-network-graph";
-import "../../../../../layouts/hass-tabs-subpage";
+import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import type {
+  ZWaveJSNodeStatisticsUpdatedMessage,
+  ZWaveJSNodeStatus,
+} from "../../../../../data/zwave_js";
 import {
   fetchZwaveNetworkStatus,
   NodeStatus,
   subscribeZwaveNodeStatistics,
 } from "../../../../../data/zwave_js";
-import type {
-  ZWaveJSNodeStatisticsUpdatedMessage,
-  ZWaveJSNodeStatus,
-} from "../../../../../data/zwave_js";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { debounce } from "../../../../../common/util/debounce";
-import { navigate } from "../../../../../common/navigate";
+import "../../../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { colorVariables } from "../../../../../resources/theme/color/color.globals";
+import type { HomeAssistant, Route } from "../../../../../types";
+import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-network-visualization")
 export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {

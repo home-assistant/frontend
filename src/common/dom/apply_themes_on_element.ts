@@ -1,5 +1,5 @@
 import type { ThemeVars } from "../../data/ws-themes";
-import { darkColorVariables } from "../../resources/theme/color.globals";
+import { darkColorVariables } from "../../resources/theme/color";
 import { derivedStyles } from "../../resources/theme/theme";
 import type { HomeAssistant } from "../../types";
 import {
@@ -11,6 +11,7 @@ import {
 } from "../color/convert-color";
 import { hexBlend } from "../color/hex";
 import { labBrighten, labDarken } from "../color/lab";
+import { generateColorPalette } from "../color/palette";
 import { rgbContrast } from "../color/rgb";
 
 interface ProcessedTheme {
@@ -75,6 +76,11 @@ export const applyThemesOnElement = (
       const labPrimaryColor = rgb2lab(rgbPrimaryColor);
       themeRules["primary-color"] = primaryColor;
       const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
+
+      generateColorPalette(primaryColor, "primary").forEach(([key, color]) => {
+        themeRules[key] = color;
+      });
+
       themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
       themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
       themeRules["text-primary-color"] =
