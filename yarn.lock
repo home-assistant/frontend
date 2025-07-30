@@ -4474,7 +4474,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/culori@npm:4":
+"@types/culori@npm:4.0.0":
   version: 4.0.0
   resolution: "@types/culori@npm:4.0.0"
   checksum: 10/62a9058d6125fe489ca1e7df27ac9837ea7a34c772b8bed8e5e00177b141574830efaa0c93363e9532878490d3245a9c9c8183ebee181a450097584af0cfefc1
@@ -9402,7 +9402,7 @@ __metadata:
     "@types/chromecast-caf-receiver": "npm:6.0.22"
     "@types/chromecast-caf-sender": "npm:1.0.11"
     "@types/color-name": "npm:2.0.0"
-    "@types/culori": "npm:4"
+    "@types/culori": "npm:4.0.0"
     "@types/html-minifier-terser": "npm:7.0.2"
     "@types/js-yaml": "npm:4.0.9"
     "@types/leaflet": "npm:1.9.20"
