@@ -158,11 +158,7 @@ export class DialogDataTableSettings extends LitElement {
           @click=${this._reset}
           >${localize("ui.components.data-table.settings.restore")}</ha-button
         >
-        <ha-button
-          appearance="filled"
-          slot="primaryAction"
-          @click=${this.closeDialog}
-        >
+        <ha-button slot="primaryAction" @click=${this.closeDialog}>
           ${localize("ui.components.data-table.settings.done")}
         </ha-button>
       </ha-dialog>
