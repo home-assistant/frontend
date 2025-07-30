@@ -4029,7 +4029,7 @@
                   },
                   "description": {
                     "picker": "At a specific time, or on a specific date.",
-                    "full": "When the time is equal to {time}"
+                    "full": "When the time is equal to {time}{hasWeekdays, select, \n true { on {weekdays}} \n other {}\n}"
                   }
                 },
                 "time_pattern": {
