@@ -165,6 +165,10 @@ export class HaButton extends Button {
         :host([loading]) {
           pointer-events: none;
         }
+
+        .button.disabled {
+          opacity: 1;
+        }
       `,
     ];
   }
