@@ -1,4 +1,3 @@
-import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
