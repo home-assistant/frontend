@@ -157,10 +157,8 @@ export default class HaAutomationCondition extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              appearance="filled"
               .disabled=${this.disabled}
               @click=${this._addConditionDialog}
-              size="small"
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -171,7 +169,6 @@ export default class HaAutomationCondition extends LitElement {
               .disabled=${this.disabled}
               appearance="plain"
               @click=${this._addConditionBuildingBlockDialog}
-              size="small"
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(

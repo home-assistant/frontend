@@ -109,10 +109,8 @@ export default class HaAutomationTrigger extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              appearance="filled"
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
-              size="small"
             >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.add"
