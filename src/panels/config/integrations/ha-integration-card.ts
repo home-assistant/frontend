@@ -312,7 +312,6 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 4px 16px 4px 4px;
         }
         .debug-logging {
           --state-color: var(--warning-color);
