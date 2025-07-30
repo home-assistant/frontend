@@ -93,12 +93,6 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return [
       cardFeatureStyles,
       css`
-        ha-control-button {
-          font-size: var(--ha-font-size-m);
-        }
-        .press-button {
-          width: 130px;
-        }
       `,
     ];
   }
