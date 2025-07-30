@@ -15,6 +15,7 @@ import "../ha-md-list-item";
 import "../ha-sortable";
 import "../ha-yaml-editor";
 import type { HaYamlEditor } from "../ha-yaml-editor";
+import { deepEqual } from "../../common/util/deep-equal";
 
 @customElement("ha-selector-object")
 export class HaObjectSelector extends LitElement {
@@ -271,7 +272,8 @@ export class HaObjectSelector extends LitElement {
     if (
       changedProps.has("value") &&
       !this._valueChangedFromChild &&
-      this._yamlEditor
+      this._yamlEditor &&
+      !deepEqual(this.value, changedProps.get("value"))
     ) {
       this._yamlEditor.setValue(this.value);
     }

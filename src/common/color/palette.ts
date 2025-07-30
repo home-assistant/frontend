@@ -12,7 +12,7 @@ const MAX_LUMINANCE = 0.6;
  * The adjustment is performed using a binary search to find the appropriate lightness value.
  * If the color is already within the range, it is returned unchanged.
  *
- * @param color - HEX color string
+ * @param color - css color string
  * @returns The normalized color as a hex string, or the original color if normalization is not needed.
  * @throws If the provided color is invalid or cannot be parsed.
  */

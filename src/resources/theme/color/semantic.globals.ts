@@ -15,12 +15,6 @@ export const semanticColorStyles = css`
     --color-text-secondary: var(--color-neutral-40);
     --color-text-disabled: var(--color-neutral-60);
     --color-text-link: var(--color-primary-40);
-
-    /* text purple */
-    --color-text-purple-type: var(--color-neutral-05);
-    --color-text-purple-property: var(--color-purple-40);
-    --color-text-purple-target: var(--color-primary-40);
-
     /* border primary */
     --color-border-quiet: var(--color-primary-80);
     --color-border-normal: var(--color-primary-70);
@@ -45,11 +39,6 @@ export const semanticColorStyles = css`
     --color-border-success-quiet: var(--color-green-80);
     --color-border-success-normal: var(--color-green-70);
     --color-border-success-loud: var(--color-green-40);
-
-    /* border purple */
-    --color-border-purple-quiet: var(--color-purple-80);
-    --color-border-purple-normal: var(--color-purple-70);
-    --color-border-purple-loud: var(--color-purple-40);
 
     /* fill primary quiet */
     --color-fill-primary-quiet-resting: var(--color-primary-95);
@@ -135,21 +124,6 @@ export const semanticColorStyles = css`
     --color-fill-success-loud-hover: var(--color-green-40);
     --color-fill-success-loud-active: var(--color-green-50);
 
-    /* fill purple quiet */
-    --color-fill-purple-quiet-resting: var(--color-purple-95);
-    --color-fill-purple-quiet-hover: var(--color-purple-90);
-    --color-fill-purple-quiet-active: var(--color-purple-95);
-
-    /* fill purple normal */
-    --color-fill-purple-normal-resting: var(--color-purple-90);
-    --color-fill-purple-normal-hover: var(--color-purple-80);
-    --color-fill-purple-normal-active: var(--color-purple-90);
-
-    /* fill purple loud */
-    --color-fill-purple-loud-resting: var(--color-purple-50);
-    --color-fill-purple-loud-hover: var(--color-purple-40);
-    --color-fill-purple-loud-active: var(--color-purple-50);
-
     /* on primary */
     --color-on-primary-quiet: var(--color-primary-50);
     --color-on-primary-normal: var(--color-primary-40);
@@ -180,11 +154,6 @@ export const semanticColorStyles = css`
     --color-on-success-normal: var(--color-green-40);
     --color-on-success-loud: var(--white);
 
-    /* on purple */
-    --color-on-purple-quiet: var(--color-purple-30);
-    --color-on-purple-normal: var(--color-purple-40);
-    --color-on-purple-loud: var(--white);
-
     /* logo */
     --color-logo-primary: var(--color-primary-50);
   }
@@ -202,11 +171,6 @@ export const darkSemanticColorStyles = css`
     --color-text-secondary: var(--color-neutral-80);
     --color-text-link: var(--color-primary-60);
 
-    /* text purple */
-    --color-text-purple-type: var(--white);
-    --color-text-purple-property: var(--color-purple-60);
-    --color-text-purple-target: var(--color-primary-60);
-
     /* border primary */
     --color-border-normal: var(--color-primary-50);
 
@@ -222,10 +186,6 @@ export const darkSemanticColorStyles = css`
     /* border warning */
     --color-border-warning-normal: var(--color-orange-50);
     --color-border-warning-loud: var(--color-orange-50);
-
-    /* border purple */
-    --color-border-purple-normal: var(--color-purple-50);
-    --color-border-purple-loud: var(--color-purple-50);
 
     /* fill primary quiet */
     --color-fill-primary-quiet-resting: var(--color-primary-05);
@@ -301,21 +261,6 @@ export const darkSemanticColorStyles = css`
     --color-fill-success-loud-hover: var(--color-green-30);
     --color-fill-success-loud-active: var(--color-green-40);
 
-    /* fill purple quiet */
-    --color-fill-purple-quiet-resting: var(--color-purple-05);
-    --color-fill-purple-quiet-hover: var(--color-purple-10);
-    --color-fill-purple-quiet-active: var(--color-purple-05);
-
-    /* fill purple normal */
-    --color-fill-purple-normal-resting: var(--color-purple-10);
-    --color-fill-purple-normal-hover: var(--color-purple-20);
-    --color-fill-purple-normal-active: var(--color-purple-10);
-
-    /* fill purple loud */
-    --color-fill-purple-loud-resting: var(--color-purple-40);
-    --color-fill-purple-loud-hover: var(--color-purple-30);
-    --color-fill-purple-loud-active: var(--color-purple-40);
-
     /* on primary */
     --color-on-primary-quiet: var(--color-primary-70);
     --color-on-primary-normal: var(--color-primary-60);
@@ -344,10 +289,5 @@ export const darkSemanticColorStyles = css`
     --color-on-success-quiet: var(--color-green-70);
     --color-on-success-normal: var(--color-green-60);
     --color-on-success-loud: var(--white);
-
-    /* on purple */
-    --color-on-purple-quiet: var(--color-purple-70);
-    --color-on-purple-normal: var(--color-purple-60);
-    --color-on-purple-loud: var(--white);
   }
 `;
