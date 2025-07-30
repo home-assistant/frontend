@@ -19,6 +19,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
@@ -63,6 +64,7 @@ type SupportsFeature = (
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "area-controls",
+  "button",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -98,6 +100,7 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "area-controls",
+  "button",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -120,6 +123,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "area-controls": supportsAreaControlsCardFeature,
+  button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
   "climate-swing-horizontal-modes":

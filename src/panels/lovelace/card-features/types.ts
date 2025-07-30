@@ -2,6 +2,11 @@ import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
 
+export interface ButtonCardFeatureConfig {
+  type: "button";
+  action_name?: string;
+}
+
 export interface CoverOpenCloseCardFeatureConfig {
   type: "cover-open-close";
 }
@@ -185,6 +190,7 @@ export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
+  | ButtonCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
   | ClimateSwingHorizontalModesCardFeatureConfig

@@ -1,11 +1,10 @@
-import "@material/mwc-button/mwc-button";
-
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
@@ -28,8 +27,6 @@ import type { HomeAssistant } from "../../../types";
 import { showDeviceRegistryDetailDialog } from "../devices/device-registry-detail/show-dialog-device-registry-detail";
 import "./entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "./entity-registry-settings-editor";
-
-const invalidDomainUpdate = false;
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
@@ -88,27 +85,31 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
               ${device?.disabled_by
                 ? html`${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.device_disabled"
-                    )}<mwc-button
+                    )}<ha-button
+                      size="small"
+                      variant="warning"
                       @click=${this._openDeviceSettings}
                       slot="action"
                     >
                       ${this.hass!.localize(
                         "ui.dialogs.entity_registry.editor.open_device_settings"
                       )}
-                    </mwc-button>`
+                    </ha-button>`
                 : this.entry.disabled_by
                   ? html`${this.hass!.localize(
                       "ui.dialogs.entity_registry.editor.entity_disabled"
                     )}${["user", "integration"].includes(
                       this.entry.disabled_by!
                     )
-                      ? html`<mwc-button
+                      ? html`<ha-button
+                          size="small"
+                          variant="warning"
                           slot="action"
                           @click=${this._enableEntry}
                         >
                           ${this.hass!.localize(
                             "ui.dialogs.entity_registry.editor.enable_entity"
-                          )}</mwc-button
+                          )}</ha-button
                         >`
                       : ""}`
                   : this.hass!.localize(
@@ -130,20 +131,18 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         ></entity-registry-settings-editor>
       </div>
       <div class="buttons">
-        <mwc-button
-          class="warning"
+        <ha-button
+          variant="danger"
+          appearance="plain"
           @click=${this._confirmDeleteEntry}
           .disabled=${this._submitting ||
           (!this._helperConfigEntry && !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
-        </mwc-button>
-        <mwc-button
-          @click=${this._updateEntry}
-          .disabled=${invalidDomainUpdate || this._submitting}
-        >
+        </ha-button>
+        <ha-button @click=${this._updateEntry} .loading=${!!this._submitting}>
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
-        </mwc-button>
+        </ha-button>
       </div>
     `;
   }
@@ -250,7 +249,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         .buttons {
           box-sizing: border-box;
           display: flex;
-          padding: 8px 16px 8px 24px;
+          padding: 8px;
           justify-content: space-between;
           padding-bottom: max(var(--safe-area-inset-bottom), 8px);
           background-color: var(--mdc-theme-surface, #fff);
@@ -258,7 +257,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           position: sticky;
           bottom: 0px;
         }
-        ha-alert mwc-button {
+        ha-alert ha-button {
           width: max-content;
         }
       `,

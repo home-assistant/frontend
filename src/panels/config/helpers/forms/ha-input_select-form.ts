@@ -235,11 +235,6 @@ class HaInputSelectForm extends LitElement {
           cursor: default;
           background-color: var(--card-background-color);
         }
-        mwc-button {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
-        }
         ha-textfield {
           display: block;
           margin-bottom: 8px;

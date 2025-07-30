@@ -64,7 +64,7 @@ export class HaDialogHeader extends LitElement {
         }
         @media all and (min-width: 450px) and (min-height: 500px) {
           .header-bar {
-            padding: 12px;
+            padding: 16px;
           }
         }
         .header-navigation-icon {

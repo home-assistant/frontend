@@ -106,6 +106,7 @@ class DialogBox extends LitElement {
               @click=${this._dismiss}
               ?dialogInitialFocus=${!this._params.prompt &&
               this._params.destructive}
+              appearance="plain"
             >
               ${this._params.dismissText
                 ? this._params.dismissText
@@ -116,7 +117,7 @@ class DialogBox extends LitElement {
             @click=${this._confirm}
             ?dialogInitialFocus=${!this._params.prompt &&
             !this._params.destructive}
-            ?destructive=${this._params.destructive}
+            variant=${this._params.destructive ? "danger" : "brand"}
           >
             ${this._params.confirmText
               ? this._params.confirmText

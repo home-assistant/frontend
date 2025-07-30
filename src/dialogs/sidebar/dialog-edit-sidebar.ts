@@ -160,7 +160,7 @@ class DialogEditSidebar extends LitElement {
         </ha-dialog-header>
         <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button

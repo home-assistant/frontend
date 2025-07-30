@@ -183,6 +183,10 @@ export class HaMdDialog extends Dialog {
         display: contents;
       }
 
+      slot[name="actions"]::slotted(*) {
+        padding: 16px;
+      }
+
       .scroller {
         overflow: var(--dialog-content-overflow, auto);
       }

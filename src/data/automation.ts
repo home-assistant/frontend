@@ -169,6 +169,7 @@ export interface TagTrigger extends BaseTrigger {
 export interface TimeTrigger extends BaseTrigger {
   trigger: "time";
   at: string | { entity_id: string; offset?: string };
+  weekday?: string | string[];
 }
 
 export interface TemplateTrigger extends BaseTrigger {

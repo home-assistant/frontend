@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
@@ -20,6 +18,7 @@ import { atLeastVersion } from "../../../../src/common/config/version";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 import "../../../../src/components/ha-icon";
 import "../../../../src/components/ha-list";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-list-item";
 import "../../../../src/components/ha-svg-icon";
 import {
@@ -63,12 +62,20 @@ class HcCast extends LitElement {
               <p class="question action-item">
                 Stay logged in?
                 <span>
-                  <mwc-button @click=${this._handleSaveTokens}>
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    @click=${this._handleSaveTokens}
+                  >
                     YES
-                  </mwc-button>
-                  <mwc-button @click=${this._handleSkipSaveTokens}>
+                  </ha-button>
+                  <ha-button
+                    appearance="plain"
+                    size="small"
+                    @click=${this._handleSkipSaveTokens}
+                  >
                     NO
-                  </mwc-button>
+                  </ha-button>
                 </span>
               </p>
             `
@@ -78,10 +85,10 @@ class HcCast extends LitElement {
           : !this.castManager.status
             ? html`
                 <p class="center-item">
-                  <mwc-button raised @click=${this._handleLaunch}>
-                    <ha-svg-icon .path=${mdiCast}></ha-svg-icon>
+                  <ha-button @click=${this._handleLaunch}>
+                    <ha-svg-icon slot="start" .path=${mdiCast}></ha-svg-icon>
                     Start Casting
-                  </mwc-button>
+                  </ha-button>
                 </p>
               `
             : html`
@@ -121,14 +128,22 @@ class HcCast extends LitElement {
         <div class="card-actions">
           ${this.castManager.status
             ? html`
-                <mwc-button @click=${this._handleLaunch}>
-                  <ha-svg-icon .path=${mdiCastConnected}></ha-svg-icon>
+                <ha-button appearance="plain" @click=${this._handleLaunch}>
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiCastConnected}
+                  ></ha-svg-icon>
                   Manage
-                </mwc-button>
+                </ha-button>
               `
             : ""}
           <div class="spacer"></div>
-          <mwc-button @click=${this._handleLogout}>Log out</mwc-button>
+          <ha-button
+            variant="danger"
+            appearance="plain"
+            @click=${this._handleLogout}
+            >Log out</ha-button
+          >
         </div>
       </hc-layout>
     `;
@@ -243,13 +258,6 @@ class HcCast extends LitElement {
     .connection,
     .connection a {
       color: var(--secondary-text-color);
-    }
-
-    mwc-button ha-svg-icon {
-      margin-right: 8px;
-      margin-inline-end: 8px;
-      margin-inline-start: initial;
-      height: 18px;
     }
 
     ha-list-item ha-icon,

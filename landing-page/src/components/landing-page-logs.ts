@@ -64,7 +64,7 @@ class LandingPageLogs extends LitElement {
   protected render() {
     return html`
       <div class="actions">
-        <ha-button @click=${this._toggleLogDetails}>
+        <ha-button appearance="plain" @click=${this._toggleLogDetails}>
           ${this.localize(this._show ? "hide_details" : "show_details")}
         </ha-button>
         ${this._show
@@ -81,7 +81,11 @@ class LandingPageLogs extends LitElement {
               alert-type="error"
               .title=${this.localize("logs.fetch_error")}
             >
-              <ha-button @click=${this._startLogStream}>
+              <ha-button
+                size="small"
+                variant="danger"
+                @click=${this._startLogStream}
+              >
                 ${this.localize("logs.retry")}
               </ha-button>
             </ha-alert>
