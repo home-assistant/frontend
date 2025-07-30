@@ -1972,11 +1972,11 @@
         },
         "google_home": {
           "header": "Share from Google Home",
-          "step_1": "Find your device in the Google Home app. Tap the gear icon to open the device settings.",
+          "step_1": "Find your device in the Google Home app. Tap the gear icon to open the device settings, then tap on Device information.",
           "step_2": "Tap {linked_matter_apps_services}.",
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
           "linked_matter_apps_services": "Linked Matter apps and services",
-          "link_apps_services": "Link apps & services",
+          "link_apps_services": "Link apps and services",
           "no_home_assistant": "I can't find Home Assistant on the list",
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
