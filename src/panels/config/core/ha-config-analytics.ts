@@ -46,7 +46,7 @@ class ConfigAnalytics extends LitElement {
           ></ha-analytics>
         </div>
         <div class="card-actions">
-          <ha-button appearance="plain" @click=${this._save}>
+          <ha-button @click=${this._save}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
