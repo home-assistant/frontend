@@ -438,7 +438,10 @@ class DataEntryFlowDialog extends LitElement {
       return;
     }
 
-    this._loading = "loading_step";
+    const delayedLoading = setTimeout(() => {
+      // only show loading for slow steps to avoid flickering
+      this._loading = "loading_step";
+    }, 250);
     let _step: DataEntryFlowStep;
     try {
       _step = await step;
@@ -452,6 +455,7 @@ class DataEntryFlowDialog extends LitElement {
       });
       return;
     } finally {
+      clearTimeout(delayedLoading);
       this._loading = undefined;
     }
 

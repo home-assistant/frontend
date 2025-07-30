@@ -73,6 +73,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-triggered"
     | "last-updated"
     | "position"
+    | "state"
     | "tilt-position"
     | "brightness";
   action_name?: string;
@@ -228,6 +229,7 @@ export interface EntityFilterCardConfig extends LovelaceCardConfig {
 
 export interface ErrorCardConfig extends LovelaceCardConfig {
   error?: string;
+  message?: string;
   origConfig?: LovelaceCardConfig;
   severity?: "warning" | "error";
 }

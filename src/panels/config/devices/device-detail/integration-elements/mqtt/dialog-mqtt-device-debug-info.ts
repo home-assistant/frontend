@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { computeStateName } from "../../../../../../common/entity/compute_state_
 import "../../../../../../components/ha-dialog";
 import "../../../../../../components/ha-formfield";
 import "../../../../../../components/ha-switch";
+import "../../../../../../components/ha-button";
 import type { HaSwitch } from "../../../../../../components/ha-switch";
 import type { MQTTDeviceDebugInfo } from "../../../../../../data/mqtt";
 import { fetchMQTTDebugInfo } from "../../../../../../data/mqtt";
@@ -107,9 +107,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 )}
               `}
         </ul>
-        <mwc-button slot="primaryAction" @click=${this._close}>
+        <ha-button slot="primaryAction" @click=${this._close}>
           ${this.hass!.localize("ui.common.close")}
-        </mwc-button>
+        </ha-button>
       </ha-dialog>
     `;
   }

@@ -180,7 +180,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         </div>
       </div>
       <div class="footer">
-        <ha-button @click=${this._done} unelevated
+        <ha-button @click=${this._done}
           >${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.success.done"
           )}</ha-button

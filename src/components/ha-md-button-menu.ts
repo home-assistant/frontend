@@ -1,9 +1,9 @@
-import type { Button } from "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { FOCUS_TARGET } from "../dialogs/make-dialog-manager";
+import type { HaButton } from "./ha-button";
 import type { HaIconButton } from "./ha-icon-button";
 import "./ha-md-menu";
 import type { HaMdMenu } from "./ha-md-menu";
@@ -71,8 +71,8 @@ export class HaMdButtonMenu extends LitElement {
 
   private get _triggerButton() {
     return this.querySelector(
-      'ha-icon-button[slot="trigger"], mwc-button[slot="trigger"], ha-assist-chip[slot="trigger"]'
-    ) as HaIconButton | Button | null;
+      'ha-icon-button[slot="trigger"], ha-button[slot="trigger"], ha-assist-chip[slot="trigger"]'
+    ) as HaIconButton | HaButton | null;
   }
 
   private _setTriggerAria() {

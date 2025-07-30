@@ -67,7 +67,7 @@ export class HaStateControlLightBrightness extends LitElement {
         max="100"
         .showHandle=${stateActive(this.stateObj)}
         @value-changed=${this._valueChanged}
-        .ariaLabel=${this.hass.formatEntityAttributeName(
+        .label=${this.hass.formatEntityAttributeName(
           this.stateObj,
           "brightness"
         )}

@@ -1,10 +1,9 @@
-import "@material/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-svg-icon";
 import type { HassioHassOSInfo } from "../../../src/data/hassio/host";
@@ -109,10 +108,9 @@ export class HassioUpdate extends LitElement {
           </ha-settings-row>
         </div>
         <div class="card-actions">
-          <a href="/hassio/update-available/${key}">
-            <mwc-button .label=${this.supervisor.localize("common.show")}>
-            </mwc-button>
-          </a>
+          <ha-button appearance="plain" href="/hassio/update-available/${key}">
+            ${this.supervisor.localize("common.show")}
+          </ha-button>
         </div>
       </ha-card>
     `;

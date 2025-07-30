@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/buttons/ha-progress-button";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
@@ -10,7 +11,6 @@ import { convertTextToSpeech } from "../../data/tts";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
 import type { TTSTryDialogParams } from "./show-dialog-tts-try";
-import "../../components/buttons/ha-progress-button";
 
 @customElement("dialog-tts-try")
 export class TTSTryDialog extends LitElement {
@@ -85,11 +85,11 @@ export class TTSTryDialog extends LitElement {
           .progress=${this._loadingExample}
           ?dialogInitialFocus=${Boolean(this._defaultMessage)}
           slot="primaryAction"
-          .label=${this.hass.localize("ui.dialogs.tts-try.play")}
           @click=${this._playExample}
           .disabled=${!this._valid}
+          .iconPath=${mdiPlayCircleOutline}
         >
-          <ha-svg-icon slot="icon" .path=${mdiPlayCircleOutline}></ha-svg-icon>
+          ${this.hass.localize("ui.dialogs.tts-try.play")}
         </ha-progress-button>
       </ha-dialog>
     `;

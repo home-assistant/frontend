@@ -37,6 +37,7 @@ import {
   fetchZwaveNetworkStatus,
   fetchZwaveProvisioningEntries,
   InclusionState,
+  ProvisioningEntryStatus,
   restoreZwaveNVM,
   setZwaveDataCollectionPreference,
   subscribeS2Inclusion,
@@ -134,7 +135,10 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
       return this._renderErrorScreen();
     }
     const provisioningDevices =
-      this._provisioningEntries?.filter((entry) => !entry.nodeId).length ?? 0;
+      this._provisioningEntries?.filter(
+        (entry) =>
+          !entry.nodeId && entry.status === ProvisioningEntryStatus.Active
+      ).length ?? 0;
     const notReadyDevices =
       (this._network?.controller.nodes.filter((node) => !node.ready).length ??
         0) + provisioningDevices;
@@ -203,29 +207,27 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </div>
                 </div>
                 <div class="card-actions">
-                  <a
+                  <ha-button
+                    appearance="plain"
                     href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                   >
-                    <ha-button>
-                      ${this.hass.localize("ui.panel.config.devices.caption")}
-                    </ha-button>
-                  </a>
-                  <a
+                    ${this.hass.localize("ui.panel.config.devices.caption")}
+                  </ha-button>
+                  <ha-button
+                    appearance="plain"
                     href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                   >
-                    <ha-button>
-                      ${this.hass.localize("ui.panel.config.entities.caption")}
-                    </ha-button>
-                  </a>
+                    ${this.hass.localize("ui.panel.config.entities.caption")}
+                  </ha-button>
                   ${this._provisioningEntries?.length
-                    ? html`<a
+                    ? html`<ha-button
+                        appearance="plain"
                         href=${`provisioned?config_entry=${this.configEntryId}`}
-                        ><ha-button>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.dashboard.provisioned_devices"
-                          )}
-                        </ha-button></a
-                      >`
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.zwave_js.dashboard.provisioned_devices"
+                        )}
+                      </ha-button>`
                     : nothing}
                 </div>
               </ha-card>
@@ -406,6 +408,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </div>
                 <div class="card-actions">
                   <ha-button
+                    appearance="plain"
                     @click=${this._removeNodeClicked}
                     .disabled=${this._status !== "connected" ||
                     (this._network?.controller.inclusion_state !==
@@ -418,6 +421,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     )}
                   </ha-button>
                   <ha-button
+                    appearance="plain"
                     @click=${this._rebuildNetworkRoutesClicked}
                     .disabled=${this._status === "disconnected"}
                   >
@@ -486,15 +490,19 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             "ui.panel.config.zwave_js.dashboard.nvm_backup.restoring"
                           )}
                           ${this._restoreProgress}%`
-                      : html`<ha-button @click=${this._downloadBackup}>
+                      : html`<ha-button
+                            appearance="plain"
+                            @click=${this._downloadBackup}
+                          >
                             ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
                             )}
                           </ha-button>
                           <div class="upload-button">
                             <ha-button
+                              appearance="plain"
                               @click=${this._restoreButtonClick}
-                              class="warning"
+                              variant="danger"
                             >
                               <span class="button-content">
                                 ${this.hass.localize(
@@ -511,8 +519,9 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                             />
                           </div>
                           <ha-button
+                            variant="danger"
                             @click=${this._openConfigFlow}
-                            class="warning migrate-button"
+                            class="migrate-button"
                           >
                             ${this.hass.localize(
                               "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
@@ -959,8 +968,8 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         }
 
         .upload-button {
-          display: inline-block;
           position: relative;
+          display: flex;
         }
 
         .upload-button ha-button {

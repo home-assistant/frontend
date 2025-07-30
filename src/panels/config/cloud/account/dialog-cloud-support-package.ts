@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";

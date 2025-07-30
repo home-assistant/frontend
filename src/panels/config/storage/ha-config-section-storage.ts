@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -106,6 +107,16 @@ class HaConfigSectionStorage extends LitElement {
                       )}
                       .tooltip=${`${this._hostInfo.disk_used} GB/${this._hostInfo.disk_total} GB`}
                     ></ha-metric>
+                    <div class="detailed-storage-info">
+                      ${this.hass.localize(
+                        "ui.panel.config.storage.detailed_description",
+                        {
+                          used: `${this._hostInfo?.disk_used} GB`,
+                          total: `${this._hostInfo?.disk_total} GB`,
+                          free_space: `${this._hostInfo.disk_free} GB`,
+                        }
+                      )}
+                    </div>
                     ${this._hostInfo.disk_life_time !== "" &&
                     this._hostInfo.disk_life_time >= 10
                       ? // prettier-ignore
@@ -123,11 +134,14 @@ class HaConfigSectionStorage extends LitElement {
                   </div>
                   ${this._hostInfo
                     ? html`<div class="card-actions">
-                        <mwc-button @click=${this._moveDatadisk}>
+                        <ha-button
+                          appearance="plain"
+                          @click=${this._moveDatadisk}
+                        >
                           ${this.hass.localize(
                             "ui.panel.config.storage.datadisk.title"
                           )}
-                        </mwc-button>
+                        </ha-button>
                       </div>`
                     : nothing}
                 </ha-card>
@@ -153,14 +167,15 @@ class HaConfigSectionStorage extends LitElement {
                           "ui.panel.config.storage.network_mounts.not_supported.os",
                           { version: "10.2" }
                         )}
-                        <mwc-button
+                        <ha-button
+                          appearance="plain"
                           slot="action"
                           @click=${this._navigateToUpdates}
                         >
                           ${this.hass.localize(
                             "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
                           )}
-                        </mwc-button>`
+                        </ha-button>`
                     : this.hass.localize(
                         "ui.panel.config.storage.network_mounts.not_supported.supervised"
                       )}
@@ -218,11 +233,11 @@ class HaConfigSectionStorage extends LitElement {
                   </div>`}
             ${this._mountsInfo !== null
               ? html`<div class="card-actions">
-                  <mwc-button @click=${this._addMount}>
+                  <ha-button appearance="plain" @click=${this._addMount}>
                     ${this.hass.localize(
                       "ui.panel.config.storage.network_mounts.add_title"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>`
               : nothing}
           </ha-card>
@@ -304,6 +319,10 @@ class HaConfigSectionStorage extends LitElement {
       max-width: 1040px;
       margin: 0 auto;
     }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
     ha-card {
       max-width: 600px;
       margin: 0 auto 12px;
@@ -315,6 +334,11 @@ class HaConfigSectionStorage extends LitElement {
       display: flex;
       justify-content: space-between;
       flex-direction: column;
+    }
+
+    .detailed-storage-info {
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
     }
     .mount-state-failed {
       color: var(--error-color);

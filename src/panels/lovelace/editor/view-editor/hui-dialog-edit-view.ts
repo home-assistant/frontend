@@ -73,6 +73,8 @@ export class HuiDialogEditView extends LitElement {
 
   @state() private _dirty = false;
 
+  @state() private _valid = true;
+
   @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
@@ -292,7 +294,8 @@ export class HuiDialogEditView extends LitElement {
         ${this._params.viewIndex !== undefined
           ? html`
               <ha-button
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 slot="secondaryAction"
                 @click=${this._deleteConfirm}
               >
@@ -308,6 +311,7 @@ export class HuiDialogEditView extends LitElement {
           ?disabled=${!this._config ||
           this._saving ||
           !this._dirty ||
+          !this._valid ||
           convertToSection ||
           convertNotSupported}
           @click=${this._save}
@@ -579,6 +583,9 @@ export class HuiDialogEditView extends LitElement {
       ev.detail.config &&
       !deepEqual(this._config, ev.detail.config)
     ) {
+      if (ev.detail.valid !== undefined) {
+        this._valid = ev.detail.valid;
+      }
       this._config = ev.detail.config;
       this._dirty = true;
     }
@@ -650,7 +657,7 @@ export class HuiDialogEditView extends LitElement {
           width: 100%;
           justify-content: center;
         }
-        ha-button.warning {
+        ha-button[slot="secondaryAction"] {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;

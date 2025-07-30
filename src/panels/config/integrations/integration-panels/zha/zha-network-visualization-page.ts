@@ -1,26 +1,25 @@
-import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { mdiRefresh } from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import { mdiRefresh } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
-  NetworkNode,
   NetworkLink,
+  NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
+import { colorVariables } from "../../../../../resources/theme/color/color.globals";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -226,6 +225,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             : offlineColor,
         },
         polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
+        fixed: isCoordinator,
       });
 
       // Create links (edges)
@@ -289,7 +289,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
               },
               symbolSize: (width / 4) * 6 + 3, // range 3-9
               // By default, all links should be ignored for force layout
-              ignoreForceLayout: true,
+              // unless it's a route to the coordinator
+              ignoreForceLayout: route.dest_nwk !== "0x0000",
             };
             links.push(link);
             existingLinks.push(link);
@@ -330,7 +331,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     });
 
-    // Now set ignoreForceLayout to false for the strongest connection of each device
+    // Now set ignoreForceLayout to false for the best connection of each device
     // Except for the coordinator which can have multiple strong connections
     devices.forEach((device) => {
       if (device.device_type === "Coordinator") {
@@ -341,18 +342,21 @@ export class ZHANetworkVisualizationPage extends LitElement {
         });
       } else {
         // Find the link that corresponds to this strongest connection
-        let strongestLink: NetworkLink | undefined;
-        links.forEach((link) => {
-          if (
-            (link.source === device.ieee || link.target === device.ieee) &&
-            link.value! > (strongestLink?.value ?? 0)
-          ) {
-            strongestLink = link;
+        let bestLink: NetworkLink | undefined;
+        const alreadyHasBestLink = links.some((link) => {
+          if (link.source === device.ieee || link.target === device.ieee) {
+            if (!link.ignoreForceLayout) {
+              return true;
+            }
+            if (link.value! > (bestLink?.value ?? -1)) {
+              bestLink = link;
+            }
           }
+          return false;
         });
 
-        if (strongestLink) {
-          strongestLink.ignoreForceLayout = false;
+        if (!alreadyHasBestLink && bestLink) {
+          bestLink.ignoreForceLayout = false;
         }
       }
     });

@@ -1,6 +1,7 @@
 name: Translations
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
