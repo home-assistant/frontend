@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
@@ -23,6 +22,7 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -134,11 +134,16 @@ export class HaManualAutomationEditor extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.disabled"
               )}
-              <mwc-button slot="action" @click=${this._enable}>
+              <ha-button
+                size="small"
+                appearance="filled"
+                slot="action"
+                @click=${this._enable}
+              >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-alert>
           `
         : nothing}
@@ -230,6 +235,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        root
       ></ha-automation-condition>
 
       <div class="header">
@@ -271,6 +277,7 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        root
       ></ha-automation-action>
     `;
   }

@@ -105,6 +105,7 @@ export class CloudLogin extends LitElement {
       </div>
       <div class="card-actions">
         <ha-button
+          appearance="plain"
           .disabled=${this._inProgress}
           @click=${this._handleForgotPassword}
         >
@@ -113,7 +114,6 @@ export class CloudLogin extends LitElement {
           )}
         </ha-button>
         <ha-progress-button
-          unelevated
           @click=${this._handleLogin}
           .progress=${this._inProgress}
           >${this.localize(

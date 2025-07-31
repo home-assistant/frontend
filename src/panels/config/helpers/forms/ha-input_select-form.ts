@@ -145,7 +145,7 @@ class HaInputSelectForm extends LitElement {
             )}
             @keydown=${this._handleKeyAdd}
           ></ha-textfield>
-          <ha-button @click=${this._addOption}
+          <ha-button size="small" appearance="plain" @click=${this._addOption}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
             )}</ha-button
@@ -234,11 +234,6 @@ class HaInputSelectForm extends LitElement {
           --mdc-list-side-padding: 16px;
           cursor: default;
           background-color: var(--card-background-color);
-        }
-        mwc-button {
-          margin-left: 8px;
-          margin-inline-start: 8px;
-          margin-inline-end: initial;
         }
         ha-textfield {
           display: block;

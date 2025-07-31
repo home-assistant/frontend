@@ -1,10 +1,10 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
+import "./ha-button";
 
 const STATES_INTERCEPTABLE: Record<
   string,
@@ -56,9 +56,14 @@ export class HaVacuumState extends LitElement {
       this.stateObj.attributes.supported_features
     );
     return html`
-      <mwc-button @click=${this._callService} .disabled=${!interceptable}>
+      <ha-button
+        appearance="plain"
+        size="small"
+        @click=${this._callService}
+        .disabled=${!interceptable}
+      >
         ${this._computeLabel(this.stateObj.state, interceptable)}
-      </mwc-button>
+      </ha-button>
     `;
   }
 
@@ -92,16 +97,12 @@ export class HaVacuumState extends LitElement {
     return [
       haStyle,
       css`
-        mwc-button {
+        ha-button {
           top: 3px;
           height: 37px;
           margin-right: -0.57em;
           margin-inline-end: -0.57em;
           margin-inline-start: initial;
-        }
-        mwc-button[disabled] {
-          background-color: transparent;
-          color: var(--secondary-text-color);
         }
       `,
     ];

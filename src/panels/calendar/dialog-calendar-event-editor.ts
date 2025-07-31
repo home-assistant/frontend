@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { formatInTimeZone, toDate } from "date-fns-tz";
 import {
   addDays,
@@ -23,6 +22,7 @@ import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
+import "../../components/ha-button";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
@@ -262,34 +262,34 @@ class DialogCalendarEventEditor extends LitElement {
         </div>
         ${isCreate
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._createEvent}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.calendar.event.add")}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._saveEvent}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.calendar.event.save")}
-              </mwc-button>
+              </ha-button>
               ${this._params.canDelete
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      variant="danger"
                       @click=${this._deleteEvent}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize(
                         "ui.components.calendar.event.delete"
                       )}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
             `}

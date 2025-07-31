@@ -93,14 +93,11 @@ export class HaCardConditionsEditor extends LitElement {
             fixed
             @closed=${stopPropagation}
           >
-            <ha-button
-              slot="trigger"
-              outlined
-              .label=${this.hass.localize(
+            <ha-button slot="trigger" appearance="filled">
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.lovelace.editor.condition-editor.add"
               )}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             ${UI_CONDITION.map(
               (condition) => html`

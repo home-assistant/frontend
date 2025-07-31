@@ -69,10 +69,13 @@ class NotificationManager extends LitElement {
         ${this._parameters?.action
           ? html`
               <ha-button
+                appearance="plain"
+                size="small"
                 slot="action"
-                .label=${this._parameters?.action.text}
                 @click=${this._buttonClicked}
-              ></ha-button>
+              >
+                ${this._parameters?.action.text}
+              </ha-button>
             `
           : nothing}
         ${this._parameters?.dismissable

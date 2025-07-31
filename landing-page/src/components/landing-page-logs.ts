@@ -64,7 +64,7 @@ class LandingPageLogs extends LitElement {
   protected render() {
     return html`
       <div class="actions">
-        <ha-button @click=${this._toggleLogDetails}>
+        <ha-button appearance="plain" @click=${this._toggleLogDetails}>
           ${this.localize(this._show ? "hide_details" : "show_details")}
         </ha-button>
         ${this._show
@@ -81,7 +81,11 @@ class LandingPageLogs extends LitElement {
               alert-type="error"
               .title=${this.localize("logs.fetch_error")}
             >
-              <ha-button @click=${this._startLogStream}>
+              <ha-button
+                size="small"
+                variant="danger"
+                @click=${this._startLogStream}
+              >
                 ${this.localize("logs.retry")}
               </ha-button>
             </ha-alert>
@@ -106,12 +110,9 @@ class LandingPageLogs extends LitElement {
         })}"
         @click=${this._scrollToBottom}
       >
-        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="icon"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="start"></ha-svg-icon>
         ${this.localize("logs.scroll_down_button")}
-        <ha-svg-icon
-          .path=${mdiArrowCollapseDown}
-          slot="trailingIcon"
-        ></ha-svg-icon>
+        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
       </ha-button>
     `;
   }
