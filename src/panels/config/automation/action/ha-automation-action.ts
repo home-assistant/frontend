@@ -30,6 +30,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @property({ attribute: false }) public actions!: Action[];
 
   @property({ attribute: false }) public highlightedActions?: Action[];
@@ -110,6 +112,8 @@ export default class HaAutomationAction extends LitElement {
             <ha-button
               .disabled=${this.disabled}
               @click=${this._addActionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -117,9 +121,10 @@ export default class HaAutomationAction extends LitElement {
               )}
             </ha-button>
             <ha-button
-              appearance="plain"
               .disabled=${this.disabled}
               @click=${this._addActionBuildingBlockDialog}
+              appearance="plain"
+              .size=${this.root ? "medium" : "small"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
