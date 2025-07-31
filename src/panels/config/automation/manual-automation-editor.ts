@@ -4,6 +4,7 @@ import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import {
   any,
   array,
@@ -283,22 +284,19 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   protected render() {
-    if (!this.isWide) {
-      return this._renderContent();
-    }
-
     return html`
       <div class="split-view">
-        <div class="content${!this._sidebarConfig ? " full" : ""}">
-          ${this._renderContent()}
-        </div>
-        <div class="sidebar${!this._sidebarConfig ? " hidden" : ""}">
-          <ha-automation-sidebar
-            class="sidebar"
-            .hass=${this.hass}
-            .config=${this._sidebarConfig}
-          ></ha-automation-sidebar>
-        </div>
+        <div class="content">${this._renderContent()}</div>
+        <ha-automation-sidebar
+          class=${classMap({
+            sidebar: true,
+            hidden: !this._sidebarConfig,
+            overlay: !this.isWide,
+          })}
+          .isWide=${this.isWide}
+          .hass=${this.hass}
+          .config=${this._sidebarConfig}
+        ></ha-automation-sidebar>
       </div>
     `;
   }
@@ -572,6 +570,7 @@ export class HaManualAutomationEditor extends LitElement {
           flex-direction: row;
           height: 100%;
           gap: 32px;
+          position: relative;
         }
 
         .content.full {
@@ -583,21 +582,42 @@ export class HaManualAutomationEditor extends LitElement {
         }
 
         .sidebar {
-          transition: flex 0.3s ease-out;
-          max-width: 30%;
+          transition:
+            height 0.3s ease-out,
+            flex 0.3s ease-out;
           flex: 4;
           height: calc(100vh - 110px);
-        }
-        .sidebar ha-card {
-          border-color: var(--primary-color);
-          height: 100%;
-          width: 100%;
         }
         .sidebar.hidden {
           border-color: transparent;
           border-width: 0;
           overflow: hidden;
           flex: 0;
+        }
+
+        .sidebar.overlay {
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          height: calc(100% - 64px);
+          width: 40%;
+        }
+
+        @media all and (max-width: 870px) {
+          .sidebar.overlay {
+            height: 80vh;
+            width: 100%;
+          }
+        }
+
+        @media all and (max-width: 870px) {
+          .sidebar.overlay.hidden {
+            height: 0;
+          }
+        }
+
+        .sidebar.overlay.hidden {
+          width: 0;
         }
 
         ha-card {

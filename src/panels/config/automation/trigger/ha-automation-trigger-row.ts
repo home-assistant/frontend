@@ -311,7 +311,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : nothing}
         ${this.optionsInSidebar
-          ? html`<ha-automation-row @click=${this._openSidebar}
+          ? html`<ha-automation-row @click=${this.openSidebar}
               >${this._selected
                 ? "selected"
                 : nothing}${this._renderRow()}</ha-automation-row
@@ -414,7 +414,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._triggerUnsub = triggerUnsub;
   }, 5000);
 
-  private _openSidebar(ev?: CustomEvent, trigger?: Trigger): void {
+  public openSidebar(ev?: CustomEvent, trigger?: Trigger): void {
     ev?.stopPropagation();
     // TODO on click it's called twice, should be just once
     fireEvent(this, "open-sidebar", {
@@ -423,6 +423,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       },
       closeCallback: () => {
         this._selected = false;
+        fireEvent(this, "close-sidebar");
       },
       type: "trigger",
       config: trigger || this.trigger,
@@ -460,7 +461,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     const enabled = !(this.trigger.enabled ?? true);
     const value = { ...this.trigger, enabled };
     fireEvent(this, "value-changed", { value });
-    this._openSidebar(undefined, value); // refresh sidebar
+    this.openSidebar(undefined, value); // refresh sidebar
 
     // TODO handle this
     // if (this._yamlMode) {

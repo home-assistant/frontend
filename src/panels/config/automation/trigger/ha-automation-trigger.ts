@@ -168,7 +168,11 @@ export default class HaAutomationTrigger extends LitElement {
         "ha-automation-trigger-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
+        if (this.optionsInSidebar) {
+          row.openSidebar();
+        } else {
+          row.expand();
+        }
         row.scrollIntoView();
         row.focus();
       });

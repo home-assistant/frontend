@@ -22,6 +22,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ attribute: false }) public config?: OpenSidebarConfig;
 
+  @property({ type: Boolean, attribute: "wide" }) public isWide = false;
+
   protected render() {
     if (!this.config) {
       return nothing;
@@ -30,7 +32,7 @@ export default class HaAutomationSidebar extends LitElement {
     const selectedElementType = Object.keys(this.config.config)[0];
 
     return html`
-      <ha-card outlined>
+      <ha-card outlined class=${!this.isWide ? "mobile" : ""}>
         <ha-dialog-header>
           <ha-icon-button
             slot="navigationIcon"
@@ -72,6 +74,20 @@ export default class HaAutomationSidebar extends LitElement {
   static styles = css`
     :host {
       height: 100%;
+    }
+
+    ha-card {
+      height: 100%;
+      width: 100%;
+      outline: solid;
+      outline-color: var(--primary-color);
+      outline-offset: -2px;
+      outline-width: 2px;
+    }
+    ha-card.mobile {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+      outline: none;
     }
   `;
 }
