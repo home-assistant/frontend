@@ -70,6 +70,7 @@ export class HaVoiceAssistantSetupStepArea extends LitElement {
         display: block;
         width: 100%;
         margin-bottom: 24px;
+        text-align: initial;
       }
     `,
   ];
