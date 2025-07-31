@@ -145,13 +145,12 @@ export class HassioNetwork extends LitElement {
                   class="scan"
                   @click=${this._scanForAP}
                   .disabled=${this._scanning}
+                  .loading=${this._scanning}
                 >
-                  ${this._scanning
-                    ? html`<ha-spinner size="small"> </ha-spinner>`
-                    : this.hass.localize(
-                        "ui.panel.config.network.supervisor.scan_ap"
-                      )}
-                  <ha-svg-icon slot="icon" .path=${mdiWifi}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.network.supervisor.scan_ap"
+                  )}
+                  <ha-svg-icon slot="start" .path=${mdiWifi}></ha-svg-icon>
                 </ha-button>
                 ${this._accessPoints.length
                   ? html`
@@ -261,15 +260,15 @@ export class HassioNetwork extends LitElement {
           : nothing}
       </div>
       <div class="card-actions">
+        <ha-button appearance="plain" @click=${this._clear}>
+          ${this.hass.localize("ui.panel.config.network.supervisor.reset")}
+        </ha-button>
         <ha-button
           .loading=${this._processing}
           @click=${this._updateNetwork}
           .disabled=${!this._dirty}
         >
           ${this.hass.localize("ui.common.save")}
-        </ha-button>
-        <ha-button appearance="plain" @click=${this._clear}>
-          ${this.hass.localize("ui.panel.config.network.supervisor.reset")}
         </ha-button>
       </div>`;
   }

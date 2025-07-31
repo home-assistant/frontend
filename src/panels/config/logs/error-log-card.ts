@@ -312,17 +312,16 @@ class ErrorLogCard extends LitElement {
                   !this._scrolledToBottomController.value) ||
                 false,
             })}"
+            size="small"
+            appearance="filled"
             @click=${this._scrollToBottom}
           >
             <ha-svg-icon
               .path=${mdiArrowCollapseDown}
-              slot="icon"
+              slot="start"
             ></ha-svg-icon>
             ${localize("ui.panel.config.logs.scroll_down_button")}
-            <ha-svg-icon
-              .path=${mdiArrowCollapseDown}
-              slot="trailingIcon"
-            ></ha-svg-icon>
+            <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
           </ha-button>
           ${streaming && this._boot === 0 && !this._error
             ? html`<div class="live-indicator">
@@ -823,25 +822,15 @@ class ErrorLogCard extends LitElement {
     }
 
     .new-logs-indicator {
-      --mdc-theme-primary: var(--text-primary-color);
-
       overflow: hidden;
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 4px;
       height: 0;
-      background-color: var(--primary-color);
-      border-radius: 8px;
-
       transition: height 0.4s ease-out;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
 
     .new-logs-indicator.visible {
-      height: 24px;
+      height: 32px;
     }
 
     .error {

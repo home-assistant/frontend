@@ -110,7 +110,11 @@ export class HuiDialogSelectDashboard extends LitElement {
               </div>`}
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog} .disabled=${this._saving}>
+          <ha-button
+            appearance="plain"
+            @click=${this.closeDialog}
+            .disabled=${this._saving}
+          >
             ${this.hass!.localize("ui.common.cancel")}
           </ha-button>
           <ha-button

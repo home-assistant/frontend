@@ -154,14 +154,11 @@ export class HuiDialogSuggestCard extends LitElement {
                 slot="primaryAction"
                 .disabled=${this._saving}
                 @click=${this._save}
+                .loading=${this._saving}
               >
-                ${this._saving
-                  ? html`
-                      <ha-spinner aria-label="Saving" size="small"></ha-spinner>
-                    `
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.editor.suggest_card.add"
-                    )}
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.suggest_card.add"
+                )}
               </ha-button>
             `
           : nothing}

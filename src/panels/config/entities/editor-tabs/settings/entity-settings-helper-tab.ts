@@ -202,7 +202,7 @@ export class EntitySettingsHelperTab extends LitElement {
           box-sizing: border-box;
           display: flex;
           justify-content: space-between;
-          padding: 0 24px 24px 24px;
+          padding: 16px;
           background-color: var(--mdc-theme-surface, #fff);
         }
         .error {
