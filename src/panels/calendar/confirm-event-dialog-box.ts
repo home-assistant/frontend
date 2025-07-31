@@ -40,7 +40,11 @@ class ConfirmEventDialogBox extends LitElement {
         <div>
           <p>${this._params.text}</p>
         </div>
-        <ha-button @click=${this._dismiss} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this._dismiss}
+          slot="secondaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button

@@ -508,7 +508,7 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 12px;
+      padding: 16px;
       z-index: 1;
       gap: 8px;
     }

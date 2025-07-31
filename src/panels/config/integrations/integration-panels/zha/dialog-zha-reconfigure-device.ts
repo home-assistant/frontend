@@ -160,7 +160,11 @@ class DialogZHAReconfigureDevice extends LitElement {
               <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </ha-button>
-              <ha-button slot="secondaryAction" @click=${this._toggleDetails}>
+              <ha-button
+                appearance="plain"
+                slot="secondaryAction"
+                @click=${this._toggleDetails}
+              >
                 ${this._showDetails
                   ? this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_hide`
@@ -189,7 +193,11 @@ class DialogZHAReconfigureDevice extends LitElement {
               <ha-button slot="primaryAction" @click=${this.closeDialog}>
                 ${this.hass.localize("ui.common.close")}
               </ha-button>
-              <ha-button slot="secondaryAction" @click=${this._toggleDetails}>
+              <ha-button
+                appearance="plain"
+                slot="secondaryAction"
+                @click=${this._toggleDetails}
+              >
                 ${this._showDetails
                   ? this.hass.localize(
                       `ui.dialogs.zha_reconfigure_device.button_hide`

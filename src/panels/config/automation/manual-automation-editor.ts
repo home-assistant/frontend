@@ -228,6 +228,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        root
       ></ha-automation-condition>
 
       <div class="header">
@@ -269,6 +270,7 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        root
       ></ha-automation-action>
     `;
   }

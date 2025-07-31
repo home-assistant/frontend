@@ -34,6 +34,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -159,6 +161,8 @@ export default class HaAutomationCondition extends LitElement {
             <ha-button
               .disabled=${this.disabled}
               @click=${this._addConditionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -168,6 +172,7 @@ export default class HaAutomationCondition extends LitElement {
             <ha-button
               .disabled=${this.disabled}
               appearance="plain"
+              .size=${this.root ? "medium" : "small"}
               @click=${this._addConditionBuildingBlockDialog}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>

@@ -703,17 +703,6 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
     ha-list-item[selected] {
       font-weight: var(--ha-font-weight-bold);
     }
-
-    span[slot="icon"] {
-      display: flex;
-      align-items: center;
-    }
-
-    ha-svg-icon[slot="trailingIcon"] {
-      margin-inline-start: 8px !important;
-      margin-inline-end: 0px !important;
-      direction: var(--direction);
-    }
   `;
 }
 

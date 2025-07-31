@@ -271,7 +271,6 @@ export class HaVoiceCommandDialog extends LitElement {
           margin-inline-start: -8px;
         }
         ha-button-menu ha-button {
-          --ha-font-size-l: var(--ha-font-size-m);
           --ha-button-height: 20px;
         }
         ha-button-menu ha-button::part(base) {

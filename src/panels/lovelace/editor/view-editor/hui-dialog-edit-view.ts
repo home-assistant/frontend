@@ -253,12 +253,13 @@ export class HuiDialogEditView extends LitElement {
                     "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
                   )}
                   <ha-button
+                    size="small"
                     slot="action"
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.convert_view"
-                    )}
                     @click=${this._convertToSection}
                   >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.convert_view"
+                    )}
                   </ha-button>
                 </ha-alert>
               `

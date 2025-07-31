@@ -78,21 +78,13 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action",
     type: "error",
-    actionSlot: html`<ha-button
-      size="small"
-      slot="action"
-      label="restart"
-    ></ha-button>`,
+    actionSlot: html`<ha-button size="small" slot="action">restart</ha-button>`,
   },
   {
     title: "Unsaved data",
     description: "You have unsaved data",
     type: "warning",
-    actionSlot: html`<ha-button
-      size="small"
-      slot="action"
-      label="save"
-    ></ha-button>`,
+    actionSlot: html`<ha-button size="small" slot="action">save</ha-button>`,
   },
   {
     title: "Slotted icon",
@@ -116,7 +108,7 @@ const alerts: {
     title: "Slotted action",
     description: "Alert with slotted action",
     type: "info",
-    actionSlot: html`<ha-button slot="action" label="action"></ha-button>`,
+    actionSlot: html`<ha-button slot="action">action</ha-button>`,
   },
   {
     description: "Dismissable information (RTL)",
@@ -128,7 +120,7 @@ const alerts: {
     title: "Error with action",
     description: "This is a test error alert with action (RTL)",
     type: "error",
-    actionSlot: html`<ha-button slot="action" label="restart"></ha-button>`,
+    actionSlot: html`<ha-button slot="action">restart</ha-button>`,
     rtl: true,
   },
   {

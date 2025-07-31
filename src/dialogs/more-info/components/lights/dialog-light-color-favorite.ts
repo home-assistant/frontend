@@ -228,7 +228,7 @@ class DialogLightColorFavorite extends LitElement {
           </div>
         </div>
         <div slot="actions">
-          <ha-button @click=${this._cancelDialog}>
+          <ha-button appearance="plain" @click=${this._cancelDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button @click=${this._save} .disabled=${!this._color}

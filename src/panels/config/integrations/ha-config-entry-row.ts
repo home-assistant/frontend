@@ -207,7 +207,7 @@ class HaConfigEntryRow extends LitElement {
             : nothing}
         </div>
         ${item.disabled_by === "user"
-          ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
+          ? html`<ha-button slot="end" @click=${this._handleEnable}>
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel &&
