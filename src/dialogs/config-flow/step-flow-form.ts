@@ -301,7 +301,7 @@ class StepFlowForm extends LitElement {
         }
 
         .buttons {
-          padding: 8px;
+          padding: 16px;
         }
       `,
     ];

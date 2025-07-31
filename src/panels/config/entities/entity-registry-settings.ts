@@ -249,9 +249,9 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         .buttons {
           box-sizing: border-box;
           display: flex;
-          padding: 8px;
+          padding: 16px;
           justify-content: space-between;
-          padding-bottom: max(var(--safe-area-inset-bottom), 8px);
+          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
           background-color: var(--mdc-theme-surface, #fff);
           border-top: 1px solid var(--divider-color);
           position: sticky;
