@@ -1,15 +1,15 @@
-import { html, LitElement, nothing } from "lit";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  LovelaceCardFeatureContext,
   ButtonCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
 
 export const supportsButtonCardFeature = (
@@ -89,6 +89,11 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   }
 
   static styles = cardFeatureStyles;
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-button-card-feature-editor");
+    return document.createElement("hui-button-card-feature-editor");
+  }
 }
 
 declare global {
