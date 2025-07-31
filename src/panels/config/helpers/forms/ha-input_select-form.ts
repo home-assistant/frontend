@@ -145,7 +145,7 @@ class HaInputSelectForm extends LitElement {
             )}
             @keydown=${this._handleKeyAdd}
           ></ha-textfield>
-          <ha-button @click=${this._addOption}
+          <ha-button size="small" appearance="plain" @click=${this._addOption}
             >${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add"
             )}</ha-button

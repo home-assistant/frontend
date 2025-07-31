@@ -310,7 +310,11 @@ export class DialogMyFeature
         .heading=${createCloseHeading(this.hass, this._params.title)}
       >
         <!-- Dialog content -->
-        <ha-button @click=${this.closeDialog} slot="secondaryAction">
+        <ha-button
+          appearance="plain"
+          @click=${this.closeDialog}
+          slot="secondaryAction"
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button @click=${this._submit} slot="primaryAction">

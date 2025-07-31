@@ -110,12 +110,9 @@ class LandingPageLogs extends LitElement {
         })}"
         @click=${this._scrollToBottom}
       >
-        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="icon"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="start"></ha-svg-icon>
         ${this.localize("logs.scroll_down_button")}
-        <ha-svg-icon
-          .path=${mdiArrowCollapseDown}
-          slot="trailingIcon"
-        ></ha-svg-icon>
+        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
       </ha-button>
     `;
   }

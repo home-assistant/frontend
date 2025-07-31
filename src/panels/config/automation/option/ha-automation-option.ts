@@ -107,7 +107,7 @@ export default class HaAutomationOption extends LitElement {
               )}
               @click=${this._addOption}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
             </ha-button>
           </div>
         </div>

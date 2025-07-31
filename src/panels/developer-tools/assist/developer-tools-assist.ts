@@ -164,12 +164,16 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
         ${this._results.length
           ? html`
               <div class="result-toolbar">
-                <ha-button outlined @click=${this._clear} variant="danger">
-                  <ha-svg-icon slot="icon" .path=${mdiTrashCan}></ha-svg-icon>
+                <ha-button
+                  appearance="filled"
+                  @click=${this._clear}
+                  variant="danger"
+                >
+                  <ha-svg-icon slot="start" .path=${mdiTrashCan}></ha-svg-icon>
                   ${this.hass.localize("ui.common.clear")}
                 </ha-button>
-                <ha-button outlined @click=${this._download}>
-                  <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+                <ha-button appearance="filled" @click=${this._download}>
+                  <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
                   ${this.hass.localize(
                     "ui.panel.developer-tools.tabs.assist.download_results"
                   )}

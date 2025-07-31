@@ -142,7 +142,7 @@ class DialogMediaManage extends LitElement {
                       >
                         <ha-svg-icon
                           .path=${mdiClose}
-                          slot="icon"
+                          slot="start"
                         ></ha-svg-icon>
                       </ha-button>
                     `}
@@ -331,18 +331,8 @@ class DialogMediaManage extends LitElement {
           --mdc-theme-primary: var(--error-color);
         }
 
-        ha-svg-icon[slot="icon"] {
-          vertical-align: middle;
-        }
-
         ha-tip {
           margin: 16px;
-        }
-
-        ha-svg-icon[slot="icon"] {
-          margin-inline-start: 0px !important;
-          margin-inline-end: 8px !important;
-          direction: var(--direction);
         }
 
         .refresh {

@@ -58,7 +58,7 @@ class DialogPasteReplace extends LitElement implements HassDialog {
         ></ha-yaml-editor>
 
         <div slot="primaryAction">
-          <ha-button @click=${this._handleAppend}>
+          <ha-button appearance="plain" @click=${this._handleAppend}>
             ${this.hass.localize("ui.common.append")}
           </ha-button>
           <ha-button @click=${this._handleReplace}>
@@ -88,6 +88,10 @@ class DialogPasteReplace extends LitElement implements HassDialog {
           margin: 0;
           font-size: inherit;
           font-weight: inherit;
+        }
+        div[slot="primaryAction"] {
+          display: flex;
+          gap: 8px;
         }
       `,
     ];

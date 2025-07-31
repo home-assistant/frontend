@@ -191,14 +191,13 @@ class OnboardingRestoreBackupRestore extends LitElement {
 
       <div class="actions${this.mode === "cloud" ? " cloud" : ""}">
         ${this.mode === "cloud"
-          ? html`<ha-button @click=${this._signOut}>
+          ? html`<ha-button appearance="plain" @click=${this._signOut}>
               ${this.localize(
                 "ui.panel.page-onboarding.restore.ha-cloud.sign_out"
               )}
             </ha-button>`
           : nothing}
         <ha-progress-button
-          unelevated
           .progress=${this._loading}
           .disabled=${this._loading ||
           (backupProtected && this._encryptionKey === "") ||

@@ -126,7 +126,7 @@ export class CloudTTSPref extends LitElement {
                 `}
           </div>
           <div class="flex"></div>
-          <ha-button @click=${this._openTryDialog}>
+          <ha-button appearance="plain" @click=${this._openTryDialog}>
             ${this.hass.localize("ui.panel.config.cloud.account.tts.try")}
           </ha-button>
         </div>

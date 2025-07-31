@@ -22,7 +22,9 @@ class HaInitPage extends LitElement {
           <p class="retry-text">
             Retrying in ${this._retryInSeconds} seconds...
           </p>
-          <ha-button @click=${this._retry}>Retry now</ha-button>
+          <ha-button size="small" appearance="plain" @click=${this._retry}
+            >Retry now</ha-button
+          >
           ${location.host.includes("ui.nabu.casa")
             ? html`
                 <p>

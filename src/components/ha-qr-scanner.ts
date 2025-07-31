@@ -103,7 +103,7 @@ class HaQrScanner extends LitElement {
         >
           ${this._error || this._warning}
           ${this._error
-            ? html` <ha-button @click=${this._retry} slot="action">
+            ? html`<ha-button @click=${this._retry} slot="action">
                 ${this.hass.localize("ui.components.qr-scanner.retry")}
               </ha-button>`
             : nothing}
