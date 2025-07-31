@@ -139,10 +139,8 @@ export class HuiDialogEditViewHeader extends LitElement {
           slot="primaryAction"
           .disabled=${!this._config || this._saving || !this._dirty}
           @click=${this._save}
+          .loading=${this._saving}
         >
-          ${this._saving
-            ? html`<ha-spinner size="small" aria-label="Saving"></ha-spinner>`
-            : nothing}
           ${this.hass!.localize("ui.common.save")}</ha-button
         >
       </ha-dialog>

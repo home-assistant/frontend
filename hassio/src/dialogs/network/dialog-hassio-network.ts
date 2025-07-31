@@ -604,8 +604,8 @@ export class DialogHassioNetwork
             var(--mdc-dialog-scroll-divider-color, rgba(0, 0, 0, 0.12));
           display: flex;
           justify-content: space-between;
-          padding: 8px;
-          padding-bottom: max(var(--safe-area-inset-bottom), 8px);
+          padding: 16px;
+          padding-bottom: max(var(--safe-area-inset-bottom), 16px);
           background-color: var(--mdc-theme-surface, #fff);
         }
         .warning {

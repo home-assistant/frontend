@@ -1,5 +1,5 @@
 import { mdiFolderEdit } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { MediaPlayerItem } from "../../data/media-player";
@@ -53,18 +53,6 @@ class MediaManageButton extends LitElement {
       onClose: () => fireEvent(this, "media-refresh"),
     });
   }
-
-  static styles = css`
-    ha-svg-icon[slot="icon"] {
-      vertical-align: middle;
-    }
-
-    ha-svg-icon[slot="icon"] {
-      margin-inline-start: 0px;
-      margin-inline-end: 8px;
-      direction: var(--direction);
-    }
-  `;
 }
 
 declare global {

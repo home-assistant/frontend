@@ -287,6 +287,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends LitElement {
         slot="secondaryAction"
         .disabled=${this._busy}
         @click=${this._clearChosenStatistic}
+        appearance="plain"
       >
         ${this.hass.localize("ui.common.back")}</ha-button
       >

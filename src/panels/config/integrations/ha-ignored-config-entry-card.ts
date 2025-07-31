@@ -34,12 +34,11 @@ export class HaIgnoredConfigEntryCard extends LitElement {
             this.entry.localized_domain_name
           : this.entry.title}
       >
-        <ha-button
-          @click=${this._removeIgnoredIntegration}
-          .label=${this.hass.localize(
+        <ha-button appearance="plain" @click=${this._removeIgnoredIntegration}>
+          ${this.hass.localize(
             "ui.panel.config.integrations.ignore.stop_ignore"
           )}
-        ></ha-button>
+        </ha-button>
       </ha-integration-action-card>
     `;
   }

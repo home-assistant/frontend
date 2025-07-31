@@ -32,7 +32,7 @@ class DialogBox extends LitElement {
         )}
       >
         <p>${this.hass.localize("ui.dialogs.update_backup.text")}</p>
-        <ha-button @click=${this._no} slot="secondaryAction">
+        <ha-button appearance="plain" @click=${this._no} slot="secondaryAction">
           ${this.hass!.localize("ui.common.no")}
         </ha-button>
         <ha-button @click=${this._yes} slot="primaryAction">

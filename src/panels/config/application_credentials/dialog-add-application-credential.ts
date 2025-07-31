@@ -220,32 +220,25 @@ export class DialogAddApplicationCredential extends LitElement {
             helperPersistent
           ></ha-password-field>
         </div>
-        ${this._loading
-          ? html`
-              <div slot="primaryAction" class="submit-spinner">
-                <ha-spinner></ha-spinner>
-              </div>
-            `
-          : html`
-              <ha-button
-                appearance="plain"
-                slot="secondaryAction"
-                @click=${this._abortDialog}
-              >
-                ${this.hass.localize("ui.common.cancel")}
-              </ha-button>
-              <ha-button
-                slot="primaryAction"
-                .disabled=${!this._domain ||
-                !this._clientId ||
-                !this._clientSecret}
-                @click=${this._addApplicationCredential}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.application_credentials.editor.add"
-                )}
-              </ha-button>
-            `}
+
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._abortDialog}
+          .disabled=${this._loading}
+        >
+          ${this.hass.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button
+          slot="primaryAction"
+          .disabled=${!this._domain || !this._clientId || !this._clientSecret}
+          @click=${this._addApplicationCredential}
+          .loading=${this._loading}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.application_credentials.editor.add"
+          )}
+        </ha-button>
       </ha-dialog>
     `;
   }
