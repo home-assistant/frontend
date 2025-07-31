@@ -104,22 +104,12 @@ class StepFlowForm extends LitElement {
           </div>`
         : nothing}
       <div class="buttons">
-        ${this._loading
-          ? html`
-              <div class="submit-spinner">
-                <ha-spinner size="small"></ha-spinner>
-              </div>
-            `
-          : html`
-              <div>
-                <ha-button @click=${this._submitStep}>
-                  ${this.flowConfig.renderShowFormStepSubmitButton(
-                    this.hass,
-                    this.step
-                  )}
-                </ha-button>
-              </div>
-            `}
+        <ha-button @click=${this._submitStep} .loading=${this._loading}>
+          ${this.flowConfig.renderShowFormStepSubmitButton(
+            this.hass,
+            this.step
+          )}
+        </ha-button>
       </div>
     `;
   }
@@ -302,15 +292,6 @@ class StepFlowForm extends LitElement {
       css`
         .error {
           color: red;
-        }
-
-        .submit-spinner {
-          height: 36px;
-          display: flex;
-          align-items: center;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
         }
 
         ha-alert,

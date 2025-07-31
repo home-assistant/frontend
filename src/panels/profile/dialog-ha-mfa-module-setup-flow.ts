@@ -187,11 +187,6 @@ class HaMfaModuleSetupFlow extends LitElement {
           padding: 10px 100px 34px;
           text-align: center;
         }
-        .submit-spinner {
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-        }
       `,
     ];
   }
