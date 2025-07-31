@@ -118,7 +118,11 @@ export class HuiHeadingBadgesEditor extends LitElement {
           `
         : nothing}
       <div class="add-container">
-        <ha-button data-add-entity outlined @click=${this._addEntity}>
+        <ha-button
+          data-add-entity
+          appearance="filled"
+          @click=${this._addEntity}
+        >
           <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
           ${this.hass!.localize(`ui.panel.lovelace.editor.entities.add`)}
         </ha-button>
