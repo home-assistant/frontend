@@ -1,10 +1,11 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-form/ha-form";
 import type { HomeAssistant } from "../../../../types";
 import type { ButtonCardFeatureConfig } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
-import "../../../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../components/ha-form/types";
 
 @customElement("hui-button-card-feature-editor")
 export class HuiButtonCardFeatureEditor
@@ -19,14 +20,15 @@ export class HuiButtonCardFeatureEditor
     this._config = config;
   }
 
-  private _schema: HaFormSchema[] = [
+  private _schema = memoizeOne((localize: LocalizeFunc) => [
     {
       name: "action_name",
+      default: localize("ui.card.button.press"),
       selector: {
         text: {},
       },
     },
-  ];
+  ]);
 
   protected render() {
     if (!this.hass || !this._config) {
@@ -37,11 +39,14 @@ export class HuiButtonCardFeatureEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${this._schema}
+        .schema=${this._schema(this.hass.localize)}
+        .computeLabel=${this._computeLabel}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
+
+  private _computeLabel = () => this.hass.localize("ui.common.name");
 
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
