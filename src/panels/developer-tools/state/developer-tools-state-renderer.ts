@@ -61,23 +61,26 @@ class HaPanelDevStateRenderer extends LitElement {
   protected render() {
     const showAttributes = !this.narrow && this.showAttributes;
     return html`
-        <div class=${classMap({ entities: true, "hide-attributes": !showAttributes })}>
-          <div class="row">
-            <div class="header">
+        <div 
+          class=${classMap({ entities: true, "hide-attributes": !showAttributes })}
+          role="table"
+        >
+          <div class="row" role="row" aria-rowindex="1">
+            <div class="header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.entity"
                 )}
               </span>
             </div>
-            <div class = "header">
+            <div class = "header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.state"
                 )}
               </span>
             </div>
-            <div class="header">
+            <div class="header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.attributes"
@@ -85,21 +88,21 @@ class HaPanelDevStateRenderer extends LitElement {
               </span>
             </div>
           </div>
-          <div class="row filters">
-            <div class="header filter-entities">
+          <div class="row filters" role="row" aria-rowindex="2">
+            <div class="header filter-entities" role="columnheader">
               <slot name="filter-entities"></slot>
             </div></span>
-            <div class="header filter-states">
+            <div class="header filter-states" role="columnheader">
               <slot name="filter-states"></slot>
             </div>
-            <div class="header filter-attributes">
+            <div class="header filter-attributes" role="columnheader">
               <slot name="filter-attributes"></slot>
             </div>
           </div>
           ${
             this.entities.length === 0
-              ? html` <div class="row">
-                  <div class="cell">
+              ? html` <div class="row" role="row" aria-rowindex="3">
+                  <div class="cell" role="cell" aria-colspan="3">
                     <span class="padded">
                       ${this.hass.localize(
                         "ui.panel.developer-tools.tabs.states.no_entities"
@@ -138,8 +141,10 @@ class HaPanelDevStateRenderer extends LitElement {
           odd: index % 2 === 0,
           even: index % 2 !== 0,
         })}
+        role="row"
+        aria-rowindex=${index + 3}
       >
-        <div class="cell">
+        <div class="cell" role="cell">
           <span class="padded">
             <div class="id-name-container">
               <div class="id-name-row">
@@ -177,10 +182,10 @@ class HaPanelDevStateRenderer extends LitElement {
             </div>
           </span>
         </div>
-        <div class="cell">
+        <div class="cell" role="cell">
           <span class="padded">${item.state}</span>
         </div>
-        <div class="cell">
+        <div class="cell" role="cell">
           <span class="padded">${this._attributeString(item)}</span>
         </div>
       </div>
