@@ -32,7 +32,8 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @attr {("small"|"medium")} size - Sets the button size.
  * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
  * @attr {("accent"|"filled"|"plain")} appearance - Sets the button appearance.
- * @attr {boolean} hideContent - Hides the button content (for overlays).
+ * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
+ * @attr {boolean} disabled - Disables the button and prevents user interaction.
  */
 @customElement("ha-button")
 export class HaButton extends Button {
