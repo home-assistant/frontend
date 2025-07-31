@@ -5,7 +5,7 @@ export default function durationToSeconds(duration: string): number {
   return parts[0] * 3600 + parts[1] * 60 + parts[2];
 }
 
-export function HaDurationData_to_milliseconds(
+export function HaDurationDataToMilliseconds(
   duration: HaDurationData | undefined
 ): number | undefined {
   if (duration) {

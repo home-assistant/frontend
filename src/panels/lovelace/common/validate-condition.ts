@@ -8,7 +8,7 @@ import { getUserPerson } from "../../../data/person";
 import type { HomeAssistant } from "../../../types";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import type { HaDurationData } from "../../../components/ha-duration-input";
-import { HaDurationData_to_milliseconds } from "../../../common/datetime/duration_to_seconds";
+import { HaDurationDataToMilliseconds } from "../../../common/datetime/duration_to_seconds";
 
 export type Condition =
   | LocationCondition
@@ -96,7 +96,7 @@ function checkStateCondition(
       ? hass.states[condition.entity].state
       : UNKNOWN;
   let value = condition.state ?? condition.state_not;
-  const state_last_changed =
+  const stateLastChanged =
     condition.entity && hass.states[condition.entity]
       ? hass.states[condition.entity].last_changed
       : UNKNOWN;
@@ -116,21 +116,21 @@ function checkStateCondition(
   }
 
   const forDuration =
-    HaDurationData_to_milliseconds(createDurationData(condition.for)) || 0;
+    HaDurationDataToMilliseconds(createDurationData(condition.for)) || 0;
 
-  const numericStateLastChanged = new Date(state_last_changed).getTime();
+  const numericStateLastChanged = new Date(stateLastChanged).getTime();
   if (isNaN(numericStateLastChanged)) {
     return false;
   }
   const numericFor = numericStateLastChanged + forDuration;
 
   const now = new Date().getTime();
-  const last_changed_condition =
+  const lastChangedCondition =
     condition.for == null || isNaN(numericFor) || now > numericFor;
 
   return condition.state != null
-    ? ensureArray(value).includes(state) && last_changed_condition
-    : !ensureArray(value).includes(state) && last_changed_condition;
+    ? ensureArray(value).includes(state) && lastChangedCondition
+    : !ensureArray(value).includes(state) && lastChangedCondition;
 }
 
 function checkStateNumericCondition(
