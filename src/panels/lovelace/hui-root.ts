@@ -1192,9 +1192,6 @@ class HUIRoot extends LitElement {
         a {
           color: var(--text-primary-color, white);
         }
-        mwc-button.warning:not([disabled]) {
-          color: var(--error-color);
-        }
         .banner-container {
           padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
         }
