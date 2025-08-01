@@ -312,7 +312,7 @@ export interface ExternalConfig {
   hasBarCodeScanner: number;
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
-  addEntityToSupported: boolean;
+  canAddEntityToApp: boolean;
 }
 
 export class ExternalMessaging {
