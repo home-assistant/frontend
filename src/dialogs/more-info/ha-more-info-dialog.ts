@@ -8,6 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
+  mdiPlus,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -186,6 +187,10 @@ export class MoreInfoDialog extends LitElement {
     );
   }
 
+  private _shouldShowAddEntityTo(): boolean {
+    return !!this.hass.auth.external?.config.addEntityToSupported;
+  }
+
   private _getDeviceId(): string | null {
     const entity = this.hass.entities[this._entityId!] as
       | EntityRegistryEntry
@@ -285,6 +290,15 @@ export class MoreInfoDialog extends LitElement {
   private _goToRelated(ev): void {
     if (!shouldHandleRequestSelectedEvent(ev)) return;
     this._setView("related");
+  }
+
+  private _goToAddEntityTo(): void {
+    this.hass.auth.external!.fireMessage({
+      type: "entity/add_to",
+      payload: {
+        entity_id: this._entityId!,
+      },
+    });
   }
 
   private _breadcrumbClick(ev: Event) {
@@ -494,6 +508,22 @@ export class MoreInfoDialog extends LitElement {
                             .path=${mdiInformationOutline}
                           ></ha-svg-icon>
                         </ha-list-item>
+                        ${this._shouldShowAddEntityTo()
+                          ? html`
+                              <ha-list-item
+                                graphic="icon"
+                                @request-selected=${this._goToAddEntityTo}
+                              >
+                                ${this.hass.localize(
+                                  "ui.dialogs.more_info_control.add_entity_to"
+                                )}
+                                <ha-svg-icon
+                                  slot="graphic"
+                                  .path=${mdiPlus}
+                                ></ha-svg-icon>
+                              </ha-list-item>
+                            `
+                          : nothing}
                       </ha-button-menu>
                     `
                   : nothing}
