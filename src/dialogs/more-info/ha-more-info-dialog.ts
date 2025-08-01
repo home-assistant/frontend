@@ -8,7 +8,7 @@ import {
   mdiPencil,
   mdiPencilOff,
   mdiPencilOutline,
-  mdiPlus,
+  mdiPlusBoxMultipleOutline,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -519,7 +519,7 @@ export class MoreInfoDialog extends LitElement {
                                 )}
                                 <ha-svg-icon
                                   slot="graphic"
-                                  .path=${mdiPlus}
+                                  .path=${mdiPlusBoxMultipleOutline}
                                 ></ha-svg-icon>
                               </ha-list-item>
                             `
