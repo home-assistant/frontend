@@ -4732,10 +4732,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:3.6.2":
-  version: 3.6.2
-  resolution: "@types/luxon@npm:3.6.2"
-  checksum: 10/73ca30059e0b1e352ce3a208837bc042e0bae9cf6e5b42f63de9ddfe15348a9e9bf9fcde3d4034038be24cb24adc579ae984cadff3bf70432e54fed1ad249d12
+"@types/luxon@npm:3.7.0":
+  version: 3.7.0
+  resolution: "@types/luxon@npm:3.7.0"
+  checksum: 10/6924bdb5afd06abcef746bcb15aba0851add10bb253f2247a1ec19230348fa538825c99da16920530c50c6923521ba378429e0134c9ef718a481e449f03c23c9
   languageName: node
   linkType: hard
 
@@ -9427,7 +9427,7 @@ __metadata:
     "@types/leaflet-draw": "npm:1.0.12"
     "@types/leaflet.markercluster": "npm:1.5.5"
     "@types/lodash.merge": "npm:4.6.9"
-    "@types/luxon": "npm:3.6.2"
+    "@types/luxon": "npm:3.7.0"
     "@types/mocha": "npm:10.0.10"
     "@types/qrcode": "npm:1.5.5"
     "@types/sortablejs": "npm:1.15.8"
