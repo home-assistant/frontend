@@ -22,6 +22,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ attribute: false }) public yamlMode = false;
 
+  @property({ type: Boolean }) public indent = false;
+
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
@@ -50,6 +52,7 @@ export default class HaAutomationConditionEditor extends LitElement {
           "card-content": true,
           disabled: this.condition.enabled === false && !this.yamlMode,
           yaml: yamlMode,
+          indent: this.indent,
         })}
       >
         ${this._warnings
@@ -97,6 +100,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                     hass: this.hass,
                     condition: condition,
                     disabled: this.disabled,
+                    optionsInSidebar: this.indent,
                   }
                 )}
               </div>
@@ -147,6 +151,12 @@ export default class HaAutomationConditionEditor extends LitElement {
         padding: 0 1px;
         border-top: 1px solid var(--divider-color);
         border-bottom: 1px solid var(--divider-color);
+      }
+      .card-content.indent {
+        margin-top: 12px;
+        padding: 16px;
+        border-left: 1px solid var(--color-border-neutral-normal);
+        background: transparent;
       }
     `,
   ];

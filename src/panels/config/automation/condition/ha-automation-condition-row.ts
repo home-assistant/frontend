@@ -304,9 +304,7 @@ export default class HaAutomationConditionRow extends LitElement {
           : nothing}
         ${this.optionsInSidebar
           ? html`<ha-automation-row @click=${this.openSidebar}
-              >${this._selected
-                ? "selected"
-                : nothing}${this._renderRow()}</ha-automation-row
+              >${this._renderRow()}</ha-automation-row
             >`
           : html`
               <ha-expansion-panel left-chevron>
@@ -329,6 +327,18 @@ export default class HaAutomationConditionRow extends LitElement {
               )}
         </div>
       </ha-card>
+
+      ${this.optionsInSidebar &&
+      ["and", "or", "not"].includes(this.condition.condition)
+        ? html`<ha-automation-condition-editor
+            .hass=${this.hass}
+            .condition=${this.condition}
+            .disabled=${this.disabled}
+            .yamlMode=${this._yamlMode}
+            .uiSupported=${this._uiSupported(this.condition.condition)}
+            indent
+          ></ha-automation-condition-editor>`
+        : nothing}
     `;
   }
 

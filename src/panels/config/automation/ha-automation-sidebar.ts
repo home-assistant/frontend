@@ -79,12 +79,19 @@ export default class HaAutomationSidebar extends LitElement {
       : this.config.config[this.config.type];
 
     const title = this.hass.localize(
-      `ui.panel.config.automation.editor.${this.config.type}s.edit` as LocalizeKeys
+      `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type !== "condition" || !["and", "or", "not"].includes(type) ? "edit" : "condition"}` as LocalizeKeys
     );
     const subtitle =
       this.hass.localize(
         `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label` as LocalizeKeys
       ) || type;
+
+    const description =
+      this.config.type === "condition" && ["and", "or", "not"].includes(type)
+        ? this.hass.localize(
+            `ui.panel.config.automation.editor.conditions.type.${type}.description.picker` as LocalizeKeys
+          )
+        : nothing;
 
     return html`
       <ha-card outlined class=${!this.isWide ? "mobile" : ""}>
@@ -186,7 +193,8 @@ export default class HaAutomationSidebar extends LitElement {
               .showId=${this._requestShowId}
               .yamlMode=${this._yamlMode}
             ></ha-automation-trigger-content>`
-          : this.config.type === "condition"
+          : this.config.type === "condition" &&
+              !["and", "or", "not"].includes(type)
             ? html`
                 <ha-automation-condition-editor
                   class="sidebar-editor"
@@ -197,7 +205,9 @@ export default class HaAutomationSidebar extends LitElement {
                   @value-changed=${this._valueChangedSidebar}
                 ></ha-automation-condition-editor>
               `
-            : nothing}
+            : description
+              ? html`<div class="card-content">${description}</div>`
+              : nothing}
       </ha-card>
     `;
   }
