@@ -609,6 +609,7 @@ export class HaManualAutomationEditor extends LitElement {
           right: 0;
           height: calc(100% - 64px);
           width: 40%;
+          padding: 32px 0 0;
         }
 
         @media all and (max-width: 870px) {

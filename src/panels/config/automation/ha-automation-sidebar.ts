@@ -252,11 +252,34 @@ export default class HaAutomationSidebar extends LitElement {
       outline-color: var(--primary-color);
       outline-offset: -2px;
       outline-width: 2px;
+      display: block;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
     ha-card.mobile {
       border-bottom-right-radius: 0;
       border-bottom-left-radius: 0;
       outline: none;
+    }
+
+    ha-dialog-header {
+      background-color: var(--card-background-color);
+      z-index: 1;
+      position: sticky;
+      top: 2px;
+      margin-left: 2px;
+      margin-right: 2px;
+    }
+
+    ha-card.mobile ha-dialog-header {
+      top: 0;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    .card-content,
+    .sidebar-editor {
+      padding-top: 64px;
     }
   `;
 }
