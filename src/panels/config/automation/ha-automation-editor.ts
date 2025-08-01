@@ -403,9 +403,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           </ha-list-item>
         </ha-button-menu>
         <div
-          class="content ${classMap({
+          class=${classMap({
+            content: useBlueprint,
             "yaml-mode": this._mode === "yaml",
-          })}"
+          })}
           @subscribe-automation-config=${this._subscribeAutomationConfig}
         >
           ${this._errors || stateObj?.state === UNAVAILABLE
@@ -1120,6 +1121,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
 
         manual-automation-editor {
           max-width: 1540px;
+          padding: 0 20px;
         }
 
         ha-yaml-editor {

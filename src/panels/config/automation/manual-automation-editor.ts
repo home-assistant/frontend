@@ -572,8 +572,8 @@ export class HaManualAutomationEditor extends LitElement {
           display: flex;
           flex-direction: row;
           height: 100%;
-          gap: 32px;
           position: relative;
+          gap: 16px;
         }
 
         .content.full {
@@ -581,15 +581,20 @@ export class HaManualAutomationEditor extends LitElement {
         }
 
         .content {
+          padding: 32px 16px 32px 0;
+          height: calc(100vh - 121px);
+          overflow-y: auto;
+          overflow-x: hidden;
           flex: 6;
         }
 
         .sidebar {
+          padding: 32px 0;
           transition:
             height 0.3s ease-out,
             flex 0.3s ease-out;
           flex: 4;
-          height: calc(100vh - 110px);
+          height: calc(100vh - 121px);
         }
         .sidebar.hidden {
           border-color: transparent;
