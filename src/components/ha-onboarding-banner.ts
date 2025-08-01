@@ -1,59 +1,48 @@
-import { LitElement, html, css, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { mdiClose } from "@mdi/js";
+import { LitElement, html, css } from "lit";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import type { HomeAssistant } from "../types";
-import { navigate } from "../common/navigate";
-import "./ha-icon";
 import "./ha-icon-button";
 
 @customElement("ha-onboarding-banner")
 export class HaOnboardingBanner extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _dismissed = false;
-
-  private _navigate(ev: Event) {
-    ev.preventDefault();
-    if (this.hass && this.hass.connected) {
-      navigate("/config/devices/dashboard");
-    }
-  }
-
-  private _dismiss() {
-    this._dismissed = true;
+  private _fireDismissEvent() {
+    fireEvent(this, "banner-closed");
   }
 
   render() {
-    const devices = this.hass.devices ? Object.values(this.hass.devices) : [];
-    const physicalDevices = devices.filter(
-      (device) =>
-        device.entry_type !== "service" && device.connections.length > 0
-    );
-    const hasPhysicalDevices = physicalDevices.length > 0;
-
-    if (
-      !this.hass.connected ||
-      !this.hass.config ||
-      hasPhysicalDevices ||
-      this._dismissed
-    ) {
-      return nothing;
-    }
-
     return html`
-      <div class="onboarding-banner" role="region" aria-label="Getting started">
-        <div class="message">
-          <strong>Welcome!</strong>&nbsp;Start by&nbsp;
-          <a href="#/config/devices/dashboard" @click=${this._navigate}>
-            adding your first device
+      <div
+        class="onboarding-banner"
+        role="region"
+        aria-label=${this.hass.localize(
+          "ui.components.ha_onboarding_banner.aria_label"
+        )}
+      >
+        <div class="message" aria-live="polite">
+          <span
+            >${this.hass.localize(
+              "ui.components.ha_onboarding_banner.welcome"
+            )}</span
+          >
+          ${this.hass.localize("ui.components.ha_onboarding_banner.start_by")}
+          <a href="/config/devices/dashboard">
+            ${this.hass.localize(
+              "ui.components.ha_onboarding_banner.link_text"
+            )}
           </a>
-          &nbsp;to get going.
+          ${this.hass.localize("ui.components.ha_onboarding_banner.end")}
         </div>
         <ha-icon-button
-          class="close-btn"
-          title="Dismiss"
-          @click=${this._dismiss}
+          .path=${mdiClose}
+          .label=${this.hass.localize(
+            "ui.components.ha_onboarding_banner.dismiss"
+          )}
+          @click=${this._fireDismissEvent}
         >
-          <ha-icon icon="mdi:close"></ha-icon>
         </ha-icon-button>
       </div>
     `;
@@ -61,12 +50,22 @@ export class HaOnboardingBanner extends LitElement {
 
   static styles = css`
     .onboarding-banner {
-      position: relative;
-      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px;
+      margin-bottom: 8px;
       background-color: var(--primary-background-color);
       border-bottom: 1px solid var(--divider-color);
-      font-size: 1rem;
-      margin-bottom: 16px;
+      font-size: var(--ha-font-size-m);
+    }
+
+    .onboarding-banner span {
+      margin-right: 4px;
+    }
+
+    .onboarding-banner .message {
+      flex: 1;
       text-align: center;
     }
 
@@ -79,22 +78,14 @@ export class HaOnboardingBanner extends LitElement {
     .onboarding-banner a:hover {
       text-decoration: underline;
     }
-
-    .onboarding-banner .close-btn {
-      position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
-    }
-
-    .onboarding-banner .close-btn ha-icon {
-      color: var(--secondary-text-color);
-    }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-onboarding-banner": HaOnboardingBanner;
+  }
+  interface HASSDomEvents {
+    "banner-closed": undefined;
   }
 }

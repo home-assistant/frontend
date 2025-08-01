@@ -46,7 +46,6 @@ import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { getViewType } from "./get-view-type";
 import "../../../components/ha-onboarding-banner";
-import type { HaOnboardingBanner } from "../../../components/ha-onboarding-banner";
 
 declare global {
   // for fire event
@@ -95,8 +94,6 @@ export class HUIView extends ReactiveElement {
   private _layoutElementConfig?: LovelaceViewConfig;
 
   private _rendered = false;
-
-  private _banner?: HaOnboardingBanner;
 
   @storage({
     key: "dashboardCardClipboard",
@@ -274,10 +271,6 @@ export class HUIView extends ReactiveElement {
         });
 
         this._layoutElement.hass = this.hass;
-
-        if (this._banner) {
-          this._banner.hass = this.hass;
-        }
       }
       if (changedProperties.has("narrow")) {
         this._layoutElement.narrow = this.narrow;
@@ -356,12 +349,6 @@ export class HUIView extends ReactiveElement {
     if (addLayoutElement) {
       while (this.lastChild) {
         this.removeChild(this.lastChild);
-      }
-
-      if (!this._banner) {
-        this._banner = document.createElement("ha-onboarding-banner");
-        this._banner.hass = this.hass;
-        this.appendChild(this._banner);
       }
 
       this.appendChild(this._layoutElement!);

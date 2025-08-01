@@ -1226,6 +1226,14 @@
         "suggesting_3": "Enchanting…",
         "done": "Done!",
         "error": "Fail!"
+      },
+      "ha_onboarding_banner": {
+        "aria_label": "Getting started",
+        "welcome": "Welcome!",
+        "start_by": "Start by",
+        "link_text": "adding your first device",
+        "end": "to get going",
+        "dismiss": "Dismiss"
       }
     },
     "dialogs": {

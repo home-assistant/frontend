@@ -79,6 +79,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { storage } from "../../common/decorators/storage";
 
 @customElement("hui-root")
 class HUIRoot extends LitElement {
@@ -96,6 +97,18 @@ class HUIRoot extends LitElement {
   };
 
   @state() private _curView?: number | "hass-unused-entities";
+
+  @storage({ key: "ha-onboarding-banner-dismissed", state: true })
+  private _bannerDismissed = false;
+
+  private _onBannerClosed() {
+    this._bannerDismissed = true;
+  }
+
+  private get _shouldShowBanner(): boolean {
+    // TODO: Add a flag check to only show banner for new users
+    return this.hass.connected && this.hass.config && !this._bannerDismissed;
+  }
 
   private _viewCache?: Record<string, HUIView>;
 
@@ -441,6 +454,16 @@ class HUIRoot extends LitElement {
               </div>`
             : nothing}
         </div>
+        ${this._shouldShowBanner
+          ? html`
+              <div class="banner-container">
+                <ha-onboarding-banner
+                  .hass=${this.hass}
+                  @banner-closed=${this._onBannerClosed}
+                ></ha-onboarding-banner>
+              </div>
+            `
+          : nothing}
         <hui-view-container
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
@@ -1172,6 +1195,9 @@ class HUIRoot extends LitElement {
         }
         mwc-button.warning:not([disabled]) {
           color: var(--error-color);
+        }
+        .banner-container {
+          padding-top: calc(var(--header-height) + var(--safe-area-inset-top));
         }
         hui-view-container {
           position: relative;
