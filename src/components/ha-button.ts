@@ -67,6 +67,7 @@ export class HaButton extends Button {
           );
 
           font-size: var(--ha-font-size-m);
+          line-height: 1;
         }
 
         :host([size="small"]) .button {
