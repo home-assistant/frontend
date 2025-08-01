@@ -157,6 +157,13 @@ interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageAddEntityTo extends EMMessage {
+  type: "entity/add_to";
+  payload: {
+    entity_id: string;
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -177,7 +184,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThemeUpdate
   | EMOutgoingMessageThreadStoreInPlatformKeychain
   | EMOutgoingMessageImprovScan
-  | EMOutgoingMessageImprovConfigureDevice;
+  | EMOutgoingMessageImprovConfigureDevice
+  | EMOutgoingMessageAddEntityTo;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -305,6 +313,7 @@ export interface ExternalConfig {
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
   appVersion: string;
+  addEntityToSupported: boolean;
 }
 
 export class ExternalMessaging {

@@ -1441,6 +1441,7 @@
         "last_updated": "Last updated",
         "show_more": "Show more",
         "exit_edit_mode": "Exit edit mode",
+        "add_entity_to": "Add to",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"
