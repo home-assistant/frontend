@@ -1,24 +1,16 @@
-import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "./types/ha-automation-condition-and";
-import "./types/ha-automation-condition-device";
-import "./types/ha-automation-condition-not";
-import "./types/ha-automation-condition-numeric_state";
-import "./types/ha-automation-condition-or";
-import "./types/ha-automation-condition-state";
-import "./types/ha-automation-condition-sun";
-import "./types/ha-automation-condition-template";
-import "./types/ha-automation-condition-time";
-import "./types/ha-automation-condition-trigger";
-import "./types/ha-automation-condition-zone";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -30,47 +22,96 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ attribute: false }) public yamlMode = false;
 
+  @property({ type: Boolean, attribute: "supported" }) public uiSupported =
+    false;
+
+  @state() private _warnings?: string[];
+
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
   );
 
+  protected willUpdate(changedProperties) {
+    // on yaml toggle --> clear warnings
+    if (changedProperties.has("yamlMode")) {
+      this._warnings = undefined;
+    }
+  }
+
   protected render() {
     const condition = this._processedCondition(this.condition);
-    const supported =
-      customElements.get(`ha-automation-condition-${condition.condition}`) !==
-      undefined;
-    const yamlMode = this.yamlMode || !supported;
+    const yamlMode = this.yamlMode || !this.uiSupported;
+
     return html`
-      ${yamlMode
-        ? html`
-            ${!supported
-              ? html`
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                    { condition: condition.condition }
-                  )}
-                `
-              : ""}
-            <ha-yaml-editor
-              .hass=${this.hass}
-              .defaultValue=${this.condition}
-              @value-changed=${this._onYamlChange}
-              .readOnly=${this.disabled}
-            ></ha-yaml-editor>
-          `
-        : html`
-            <div @value-changed=${this._onUiChanged}>
-              ${dynamicElement(
-                `ha-automation-condition-${condition.condition}`,
-                {
-                  hass: this.hass,
-                  condition: condition,
-                  disabled: this.disabled,
-                }
+      <div
+        class=${classMap({
+          "card-content": true,
+          disabled: this.condition.enabled === false && !this.yamlMode,
+          yaml: yamlMode,
+        })}
+      >
+        ${this._warnings
+          ? html`<ha-alert
+              alert-type="warning"
+              .title=${this.hass.localize(
+                "ui.errors.config.editor_not_supported"
               )}
-            </div>
-          `}
+            >
+              ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                ? html` <ul>
+                    ${this._warnings!.map(
+                      (warning) => html`<li>${warning}</li>`
+                    )}
+                  </ul>`
+                : ""}
+              ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
+            </ha-alert>`
+          : nothing}
+        ${yamlMode
+          ? html`
+              ${!this.uiSupported
+                ? html`
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                      { condition: condition.condition }
+                    )}
+                  `
+                : ""}
+              <ha-yaml-editor
+                .hass=${this.hass}
+                .defaultValue=${this.condition}
+                @value-changed=${this._onYamlChange}
+                .readOnly=${this.disabled}
+              ></ha-yaml-editor>
+            `
+          : html`
+              <div
+                @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                @value-changed=${this._onUiChanged}
+              >
+                ${dynamicElement(
+                  `ha-automation-condition-${condition.condition}`,
+                  {
+                    hass: this.hass,
+                    condition: condition,
+                    disabled: this.disabled,
+                  }
+                )}
+              </div>
+            `}
+      </div>
     `;
+  }
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    // Prevent possible parent action-row from switching to yamlMode
+    ev.stopPropagation();
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this.yamlMode) {
+      this.yamlMode = true;
+    }
   }
 
   private _onYamlChange(ev: CustomEvent) {
@@ -91,7 +132,24 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = haStyle;
+  static styles = [
+    haStyle,
+    css`
+      .disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .card-content {
+        padding: 16px;
+      }
+      .card-content.yaml {
+        padding: 0 1px;
+        border-top: 1px solid var(--divider-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
+    `,
+  ];
 }
 
 declare global {

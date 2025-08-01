@@ -193,7 +193,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._closeSidebar}
-        .optionsInSidebar=${true}
+        sidebar
       ></ha-automation-trigger>
 
       <div class="header">
@@ -236,7 +236,10 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._closeSidebar}
         root
+        sidebar
       ></ha-automation-condition>
 
       <div class="header">

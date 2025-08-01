@@ -1,5 +1,5 @@
 import type { CSSResultGroup } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
@@ -71,10 +71,10 @@ export default class HaAutomationTriggerContent extends LitElement {
                       (warning) => html`<li>${warning}</li>`
                     )}
                   </ul>`
-                : ""}
+                : nothing}
               ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
             </ha-alert>`
-          : ""}
+          : nothing}
         ${yamlMode
           ? html`
               ${!this.uiSupported

@@ -36,6 +36,9 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public root = false;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -96,7 +99,11 @@ export default class HaAutomationCondition extends LitElement {
         "ha-automation-condition-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
+        if (this.optionsInSidebar) {
+          row.openSidebar();
+        } else {
+          row.expand();
+        }
         row.scrollIntoView();
         row.focus();
       });
@@ -146,6 +153,7 @@ export default class HaAutomationCondition extends LitElement {
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
                 ?highlight=${this.highlightedConditions?.includes(cond)}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`

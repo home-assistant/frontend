@@ -19,10 +19,11 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
-import type { Trigger } from "../../../data/automation";
+import type { Condition, Trigger } from "../../../data/automation";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
-import type { Condition } from "../../lovelace/common/validate-condition";
+import "./condition/ha-automation-condition-editor";
+import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
 import "./trigger/ha-automation-trigger-content";
 import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-content";
 
@@ -51,8 +52,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _requestShowId = false;
 
-  @query("ha-automation-trigger-content")
-  public triggerContent?: HaAutomationTriggerContent;
+  @query(".sidebar-editor")
+  public editor?: HaAutomationTriggerContent | HaAutomationConditionEditor;
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("config")) {
@@ -60,7 +61,7 @@ export default class HaAutomationSidebar extends LitElement {
       if (this.config) {
         this._yamlMode = this.config.yamlMode;
         if (this._yamlMode) {
-          this.triggerContent?.yamlEditor?.setValue(this.config.config);
+          this.editor?.yamlEditor?.setValue(this.config.config);
         }
       }
     }
@@ -73,16 +74,17 @@ export default class HaAutomationSidebar extends LitElement {
 
     const disabled =
       "enabled" in this.config.config && this.config.config.enabled === false;
-    let subtitle: string | undefined;
-    let type = "";
+    const type = isTriggerList(this.config.config as Trigger)
+      ? "list"
+      : this.config.config[this.config.type];
 
-    if (this.config.type === "trigger") {
-      const trigger = this.config.config as Trigger;
-      type = isTriggerList(trigger) ? "list" : trigger.trigger;
-      const localizationKey =
-        `ui.panel.config.automation.editor.triggers.type.${type}.label` as LocalizeKeys;
-      subtitle = this.hass.localize(localizationKey) || type;
-    }
+    const title = this.hass.localize(
+      `ui.panel.config.automation.editor.${this.config.type}s.edit` as LocalizeKeys
+    );
+    const subtitle =
+      this.hass.localize(
+        `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label` as LocalizeKeys
+      ) || type;
 
     return html`
       <ha-card outlined class=${!this.isWide ? "mobile" : ""}>
@@ -93,7 +95,7 @@ export default class HaAutomationSidebar extends LitElement {
             .path=${mdiClose}
             @click=${this._closeSidebar}
           ></ha-icon-button>
-          <span slot="title">${this.hass.localize("ui.common.edit")}</span>
+          <span slot="title">${title}</span>
           <span slot="subtitle">${subtitle}</span>
           <ha-md-button-menu
             slot="actionItems"
@@ -176,6 +178,7 @@ export default class HaAutomationSidebar extends LitElement {
         </ha-dialog-header>
         ${this.config.type === "trigger"
           ? html`<ha-automation-trigger-content
+              class="sidebar-editor"
               .hass=${this.hass}
               .trigger=${this.config.config}
               @value-changed=${this._valueChangedSidebar}
@@ -183,7 +186,18 @@ export default class HaAutomationSidebar extends LitElement {
               .showId=${this._requestShowId}
               .yamlMode=${this._yamlMode}
             ></ha-automation-trigger-content>`
-          : nothing}
+          : this.config.type === "condition"
+            ? html`
+                <ha-automation-condition-editor
+                  class="sidebar-editor"
+                  .hass=${this.hass}
+                  .condition=${this.config.config}
+                  .yamlMode=${this._yamlMode}
+                  .uiSupported=${this.config.uiSupported}
+                  @value-changed=${this._valueChangedSidebar}
+                ></ha-automation-condition-editor>
+              `
+            : nothing}
       </ha-card>
     `;
   }
