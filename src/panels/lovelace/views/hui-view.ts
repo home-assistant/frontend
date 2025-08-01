@@ -45,7 +45,6 @@ import type { HuiSection } from "../sections/hui-section";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
 import { getViewType } from "./get-view-type";
-import "../../../components/ha-onboarding-banner";
 
 declare global {
   // for fire event
@@ -350,7 +349,6 @@ export class HUIView extends ReactiveElement {
       while (this.lastChild) {
         this.removeChild(this.lastChild);
       }
-
       this.appendChild(this._layoutElement!);
     }
   }
