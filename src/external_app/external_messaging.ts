@@ -313,7 +313,7 @@ export interface ExternalConfig {
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
   appVersion: string;
-  addEntityToSupported: boolean;
+  canAddEntityToApp: boolean;
 }
 
 export class ExternalMessaging {
