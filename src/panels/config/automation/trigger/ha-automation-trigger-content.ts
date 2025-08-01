@@ -1,6 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -8,6 +8,7 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-textfield";
 import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Trigger } from "../../../../data/automation";
 import { migrateAutomationTrigger } from "../../../../data/automation";
 import { isTriggerList } from "../../../../data/trigger";
@@ -24,11 +25,14 @@ export default class HaAutomationTriggerContent extends LitElement {
 
   @property({ type: Boolean, attribute: "yaml" }) public yamlMode = false;
 
+  @property({ type: Boolean, attribute: "supported" }) public uiSupported =
+    false;
+
   @property({ type: Boolean, attribute: "show-id" }) public showId = false;
 
   @state() private _warnings?: string[];
 
-  // @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   protected willUpdate(changedProperties) {
     // on yaml toggle --> clear warnings
@@ -40,17 +44,18 @@ export default class HaAutomationTriggerContent extends LitElement {
   protected render() {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
 
-    const supported =
-      customElements.get(`ha-automation-trigger-${type}`) !== undefined;
-
-    const yamlMode = this.yamlMode || !supported;
+    const yamlMode = this.yamlMode || !this.uiSupported;
     const showId = "id" in this.trigger || this.showId;
 
     return html`
       <div
         class=${classMap({
           "card-content": true,
-          disabled: "enabled" in this.trigger && this.trigger.enabled === false,
+          disabled:
+            "enabled" in this.trigger &&
+            this.trigger.enabled === false &&
+            !this.yamlMode,
+          yaml: yamlMode,
         })}
       >
         ${this._warnings
@@ -72,7 +77,7 @@ export default class HaAutomationTriggerContent extends LitElement {
           : ""}
         ${yamlMode
           ? html`
-              ${!supported
+              ${!this.uiSupported
                 ? html`
                     ${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.unsupported_platform",
@@ -173,6 +178,11 @@ export default class HaAutomationTriggerContent extends LitElement {
 
         .card-content {
           padding: 16px;
+        }
+        .card-content.yaml {
+          padding: 0 1px;
+          border-top: 1px solid var(--divider-color);
+          border-bottom: 1px solid var(--divider-color);
         }
         ha-textfield {
           display: block;

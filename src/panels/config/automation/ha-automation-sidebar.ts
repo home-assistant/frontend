@@ -1,19 +1,42 @@
 import type { Action } from "@fullcalendar/core/internal";
-import { mdiClose } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiIdentifier,
+  mdiPlayCircleOutline,
+  mdiPlaylistEdit,
+  mdiRenameBox,
+  mdiStopCircleOutline,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
+import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/ha-dialog-header";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-md-button-menu";
+import "../../../components/ha-md-divider";
+import "../../../components/ha-md-menu-item";
 import type { Trigger } from "../../../data/automation";
+import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import type { Condition } from "../../lovelace/common/validate-condition";
 import "./trigger/ha-automation-trigger-content";
+import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-content";
 
 export interface OpenSidebarConfig {
-  saveCallback: (config: Trigger | Condition | Action) => void;
-  closeCallback: () => void;
-  type: "trigger" | "condition" | "action";
+  save: (config: Trigger | Condition | Action) => void;
+  close: () => void;
+  rename: () => void;
+  toggleYamlMode: () => boolean;
+  disable: () => void;
+  delete: () => void;
   config: Trigger | Condition | Action;
+  type: "trigger" | "condition" | "action";
+  uiSupported: boolean;
+  yamlMode: boolean;
 }
 
 @customElement("ha-automation-sidebar")
@@ -24,12 +47,42 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ type: Boolean, attribute: "wide" }) public isWide = false;
 
+  @state() private _yamlMode = false;
+
+  @state() private _requestShowId = false;
+
+  @query("ha-automation-trigger-content")
+  public triggerContent?: HaAutomationTriggerContent;
+
+  protected willUpdate(changedProperties) {
+    if (changedProperties.has("config")) {
+      this._requestShowId = false;
+      if (this.config) {
+        this._yamlMode = this.config.yamlMode;
+        if (this._yamlMode) {
+          this.triggerContent?.yamlEditor?.setValue(this.config.config);
+        }
+      }
+    }
+  }
+
   protected render() {
     if (!this.config) {
       return nothing;
     }
 
-    const selectedElementType = Object.keys(this.config.config)[0];
+    const disabled =
+      "enabled" in this.config.config && this.config.config.enabled === false;
+    let subtitle: string | undefined;
+    let type = "";
+
+    if (this.config.type === "trigger") {
+      const trigger = this.config.config as Trigger;
+      type = isTriggerList(trigger) ? "list" : trigger.trigger;
+      const localizationKey =
+        `ui.panel.config.automation.editor.triggers.type.${type}.label` as LocalizeKeys;
+      subtitle = this.hass.localize(localizationKey) || type;
+    }
 
     return html`
       <ha-card outlined class=${!this.isWide ? "mobile" : ""}>
@@ -40,18 +93,97 @@ export default class HaAutomationSidebar extends LitElement {
             .path=${mdiClose}
             @click=${this._closeSidebar}
           ></ha-icon-button>
-          <span slot="title">${`Edit ${selectedElementType}`}</span>
-        </ha-dialog-header>
+          <span slot="title">${this.hass.localize("ui.common.edit")}</span>
+          <span slot="subtitle">${subtitle}</span>
+          <ha-md-button-menu
+            slot="actionItems"
+            @click=${this._openOverflowMenu}
+            @keydown=${stopPropagation}
+            @closed=${stopPropagation}
+            positioning="fixed"
+          >
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.common.menu")}
+              .path=${mdiDotsVertical}
+            ></ha-icon-button>
+            <ha-md-menu-item
+              .clickAction=${this.config.rename}
+              .disabled=${disabled || type === "list"}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.rename"
+              )}
+              <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+            </ha-md-menu-item>
 
-        <div class="card-content">
-          ${this.config.type === "trigger"
-            ? html`<ha-automation-trigger-content
-                .hass=${this.hass}
-                .trigger=${this.config.config}
-                @value-changed=${this._valueChangedSidebar}
-              ></ha-automation-trigger-content>`
-            : nothing}
-        </div>
+            ${this.config.type === "trigger" &&
+            !this._yamlMode &&
+            !("id" in this.config.config) &&
+            !this._requestShowId
+              ? html`<ha-md-menu-item
+                  .clickAction=${this._showTriggerId}
+                  .disabled=${disabled || type === "list"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.edit_id"
+                  )}
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiIdentifier}
+                  ></ha-svg-icon>
+                </ha-md-menu-item>`
+              : nothing}
+            <ha-md-menu-item
+              .clickAction=${this._toggleYamlMode}
+              .disabled=${!this.config.uiSupported}
+            >
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              )}
+              <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-md-menu-item>
+
+            <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+
+            <ha-md-menu-item
+              .clickAction=${this.config.disable}
+              .disabled=${type === "list"}
+            >
+              ${disabled
+                ? this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.enable"
+                  )
+                : this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.disable"
+                  )}
+              <ha-svg-icon
+                slot="start"
+                .path=${disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
+              ></ha-svg-icon>
+            </ha-md-menu-item>
+            <ha-md-menu-item .clickAction=${this.config.delete} class="warning">
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.delete"
+              )}
+              <ha-svg-icon
+                class="warning"
+                slot="start"
+                .path=${mdiDelete}
+              ></ha-svg-icon>
+            </ha-md-menu-item>
+          </ha-md-button-menu>
+        </ha-dialog-header>
+        ${this.config.type === "trigger"
+          ? html`<ha-automation-trigger-content
+              .hass=${this.hass}
+              .trigger=${this.config.config}
+              @value-changed=${this._valueChangedSidebar}
+              .uiSupported=${this.config.uiSupported}
+              .showId=${this._requestShowId}
+              .yamlMode=${this._yamlMode}
+            ></ha-automation-trigger-content>`
+          : nothing}
       </ha-card>
     `;
   }
@@ -59,7 +191,7 @@ export default class HaAutomationSidebar extends LitElement {
   private _valueChangedSidebar(ev: CustomEvent) {
     ev.stopPropagation();
 
-    this.config?.saveCallback(ev.detail.value);
+    this.config?.save(ev.detail.value);
 
     if (this.config) {
       this.config.config = ev.detail.value;
@@ -67,9 +199,22 @@ export default class HaAutomationSidebar extends LitElement {
   }
 
   private _closeSidebar() {
-    this.config?.closeCallback();
+    this.config?.close();
     this.config = undefined;
   }
+
+  private _openOverflowMenu(ev: MouseEvent) {
+    ev.stopPropagation();
+    ev.preventDefault();
+  }
+
+  private _toggleYamlMode = () => {
+    this._yamlMode = this.config!.toggleYamlMode();
+  };
+
+  private _showTriggerId = () => {
+    this._requestShowId = true;
+  };
 
   static styles = css`
     :host {

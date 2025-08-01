@@ -16,8 +16,9 @@ import {
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -46,6 +47,7 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "./ha-automation-trigger-content";
+import type HaAutomationTriggerContent from "./ha-automation-trigger-content";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -116,6 +118,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _requestShowId = false;
 
+  @query("ha-automation-trigger-content")
+  public triggerContent?: HaAutomationTriggerContent;
+
   @storage({
     key: "automationClipboard",
     state: false,
@@ -131,10 +136,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   private _triggerUnsub?: Promise<UnsubscribeFunc>;
 
   private _renderRow() {
-    const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
+    const type = this._getType(this.trigger);
 
-    const supported =
-      customElements.get(`ha-automation-trigger-${type}`) !== undefined;
+    const supported = this._uiSupported(type);
 
     const yamlMode = this._yamlMode || !supported;
 
@@ -163,27 +167,29 @@ export default class HaAutomationTriggerRow extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
 
-        <ha-md-menu-item
-          .clickAction=${this._renameTrigger}
-          .disabled=${this.disabled || type === "list"}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.rename"
-          )}
-          <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-        </ha-md-menu-item>
+        ${!this.optionsInSidebar
+          ? html` <ha-md-menu-item
+                .clickAction=${this._renameTrigger}
+                .disabled=${this.disabled || type === "list"}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.rename"
+                )}
+                <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+              </ha-md-menu-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._showTriggerId}
-          .disabled=${this.disabled || type === "list"}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.triggers.edit_id"
-          )}
-          <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
-        </ha-md-menu-item>
+              <ha-md-menu-item
+                .clickAction=${this._showTriggerId}
+                .disabled=${this.disabled || type === "list"}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.triggers.edit_id"
+                )}
+                <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
+              </ha-md-menu-item>
 
-        <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
+              <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>`
+          : nothing}
 
         <ha-md-menu-item
           .clickAction=${this._duplicateTrigger}
@@ -291,6 +297,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             .disabled=${this.disabled}
             .yamlMode=${this._yamlMode}
             .showId=${this._requestShowId}
+            .uiSupported=${supported}
           ></ha-automation-trigger-content>`
         : nothing}
     `;
@@ -418,15 +425,26 @@ export default class HaAutomationTriggerRow extends LitElement {
     ev?.stopPropagation();
     // TODO on click it's called twice, should be just once
     fireEvent(this, "open-sidebar", {
-      saveCallback: (value) => {
+      save: (value) => {
         fireEvent(this, "value-changed", { value });
       },
-      closeCallback: () => {
+      close: () => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
       },
-      type: "trigger",
+      rename: () => {
+        this._renameTrigger();
+      },
+      toggleYamlMode: () => {
+        this._toggleYamlMode();
+        return this._yamlMode;
+      },
+      disable: this._onDisable,
+      delete: this._onDelete,
       config: trigger || this.trigger,
+      type: "trigger",
+      uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
+      yamlMode: this._yamlMode,
     });
     this._selected = true;
   }
@@ -463,19 +481,16 @@ export default class HaAutomationTriggerRow extends LitElement {
     fireEvent(this, "value-changed", { value });
     this.openSidebar(undefined, value); // refresh sidebar
 
-    // TODO handle this
-    // if (this._yamlMode) {
-    //   this._yamlEditor?.setValue(value);
-    // }
+    if (this._yamlMode && !this.optionsInSidebar) {
+      this.triggerContent?.yamlEditor?.setValue(value);
+    }
   };
 
   private _switchUiMode() {
-    // TODO non sidebar only
     this._yamlMode = false;
   }
 
   private _switchYamlMode() {
-    // TODO non sidebar only
     this._yamlMode = true;
   }
 
@@ -523,10 +538,13 @@ export default class HaAutomationTriggerRow extends LitElement {
         value,
       });
 
-      // TODO fix issue with yaml editor
-      // if (this._yamlMode) {
-      //   this._yamlEditor?.setValue(value);
-      // }
+      if (this._yamlMode) {
+        if (this.openSidebar) {
+          this.openSidebar(undefined, value); // refresh sidebar
+        } else {
+          this.triggerContent?.yamlEditor?.setValue(value);
+        }
+      }
     }
   };
 
@@ -582,6 +600,15 @@ export default class HaAutomationTriggerRow extends LitElement {
     ev.stopPropagation();
     ev.preventDefault();
   }
+
+  private _getType = memoizeOne((trigger: Trigger) =>
+    isTriggerList(trigger) ? "list" : trigger.trigger
+  );
+
+  private _uiSupported = memoizeOne(
+    (type: string) =>
+      customElements.get(`ha-automation-trigger-${type}`) !== undefined
+  );
 
   static get styles(): CSSResultGroup {
     return [

@@ -303,7 +303,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _openSidebar(ev: CustomEvent<OpenSidebarConfig>) {
     // deselect previous selected row
-    this._sidebarConfig?.closeCallback?.();
+    this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
   }
 
