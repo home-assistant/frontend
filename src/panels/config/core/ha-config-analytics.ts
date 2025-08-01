@@ -1,12 +1,14 @@
-import "@material/mwc-button/mwc-button";
+import { mdiOpenInNew } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-analytics";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-settings-row";
+import "../../../components/ha-svg-icon";
 import type { Analytics } from "../../../data/analytics";
 import {
   getAnalyticsDetails,
@@ -44,21 +46,24 @@ class ConfigAnalytics extends LitElement {
           ></ha-analytics>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._save}>
+          <ha-button @click=${this._save}>
             ${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.save_button"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
       <div class="footer">
-        <a
+        <ha-button
+          size="small"
+          appearance="plain"
           href=${documentationUrl(this.hass, "/integrations/analytics/")}
           target="_blank"
           rel="noreferrer"
         >
+          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.analytics.learn_more")}
-        </a>
+        </ha-button>
       </div>
     `;
   }
@@ -121,6 +126,10 @@ class ConfigAnalytics extends LitElement {
         .footer {
           padding: 32px 0 16px;
           text-align: center;
+        }
+
+        ha-button[size="small"] ha-svg-icon {
+          --mdc-icon-size: 16px;
         }
       `, // row-reverse so we tab first to "save"
     ];

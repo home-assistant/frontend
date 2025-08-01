@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -19,6 +17,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-select";
 import "../../../components/ha-slider";
+import "../../../components/ha-button";
 import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
@@ -73,15 +72,15 @@ class MoreInfoMediaPlayer extends LitElement {
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
           ? html`
               <ha-button
-                .label=${this.hass.localize(
-                  "ui.card.media_player.browse_media"
-                )}
                 @click=${this._showBrowseMedia}
+                appearance="plain"
+                size="small"
               >
                 <ha-svg-icon
                   .path=${mdiPlayBoxMultiple}
-                  slot="icon"
+                  slot="start"
                 ></ha-svg-icon>
+                ${this.hass.localize("ui.card.media_player.browse_media")}
               </ha-button>
             `
           : ""}
@@ -89,18 +88,20 @@ class MoreInfoMediaPlayer extends LitElement {
         supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
           ? html`
               <ha-button
-                .label=${this.hass.localize("ui.card.media_player.join")}
                 @click=${this._showGroupMediaPlayers}
+                appearance="plain"
+                size="small"
               >
                 <ha-svg-icon
                   .path=${mdiSpeakerMultiple}
-                  slot="icon"
+                  slot="start"
                 ></ha-svg-icon>
                 ${groupMembers && groupMembers > 1
                   ? html`<span class="badge">
-                      ${stateObj.attributes.group_members?.length}
+                      ${stateObj.attributes.group_members?.length || 4}
                     </span>`
                   : nothing}
+                ${this.hass.localize("ui.card.media_player.join")}
               </ha-button>
             `
           : ""}
@@ -284,14 +285,14 @@ class MoreInfoMediaPlayer extends LitElement {
       font-style: italic;
     }
 
-    mwc-button > ha-svg-icon {
+    ha-button > ha-svg-icon {
       vertical-align: text-bottom;
     }
 
     .badge {
       position: absolute;
-      top: 0;
-      left: 16px;
+      top: -6px;
+      left: 24px;
       display: flex;
       justify-content: center;
       align-items: center;

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
+import "../../components/ha-button";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
@@ -171,10 +171,10 @@ class StepFlowCreateEntry extends LitElement {
               `}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this._flowDone}
+        <ha-button @click=${this._flowDone}
           >${localize(
             `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
-          )}</mwc-button
+          )}</ha-button
         >
       </div>
     `;

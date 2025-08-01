@@ -92,8 +92,9 @@ class DialogScheduleBlockInfo extends LitElement {
         </div>
         <ha-button
           slot="secondaryAction"
-          class="warning"
           @click=${this._deleteBlock}
+          appearance="plain"
+          variant="danger"
         >
           ${this.hass!.localize("ui.common.delete")}
         </ha-button>

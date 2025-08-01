@@ -1,10 +1,9 @@
-import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { load } from "js-yaml";
 import {
   any,
   array,
@@ -16,7 +15,14 @@ import {
   union,
 } from "superstruct";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { constructUrlCurrentPath } from "../../../common/url/construct-url";
+import {
+  extractSearchParam,
+  removeSearchParam,
+} from "../../../common/url/search-params";
+import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -35,20 +41,14 @@ import { getActionType, type Action } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
+import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
+import type HaAutomationCondition from "./condition/ha-automation-condition";
+import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import "./trigger/ha-automation-trigger";
 import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
-import type HaAutomationAction from "./action/ha-automation-action";
-import type HaAutomationCondition from "./condition/ha-automation-condition";
-import {
-  extractSearchParam,
-  removeSearchParam,
-} from "../../../common/url/search-params";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
-import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
-import { showToast } from "../../../util/toast";
-import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -130,11 +130,16 @@ export class HaManualAutomationEditor extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.disabled"
               )}
-              <mwc-button slot="action" @click=${this._enable}>
+              <ha-button
+                size="small"
+                appearance="filled"
+                slot="action"
+                @click=${this._enable}
+              >
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
                 )}
-              </mwc-button>
+              </ha-button>
             </ha-alert>
           `
         : nothing}
@@ -223,6 +228,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        root
       ></ha-automation-condition>
 
       <div class="header">
@@ -264,6 +270,7 @@ export class HaManualAutomationEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        root
       ></ha-automation-action>
     `;
   }

@@ -1,5 +1,3 @@
-import "@material/mwc-button/mwc-button";
-
 import type { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 
 import { mdiCalendar } from "@mdi/js";
@@ -22,6 +20,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { TimeZone } from "../data/translation";
 import type { HomeAssistant } from "../types";
 import "./date-range-picker";
+import "./ha-button";
 import "./ha-icon-button";
 import "./ha-icon-button-next";
 import "./ha-icon-button-prev";
@@ -197,13 +196,13 @@ export class HaDateRangePicker extends LitElement {
             </div>`
           : nothing}
         <div slot="footer" class="date-range-footer">
-          <mwc-button @click=${this._cancelDateRange}
-            >${this.hass.localize("ui.common.cancel")}</mwc-button
+          <ha-button appearance="plain" @click=${this._cancelDateRange}
+            >${this.hass.localize("ui.common.cancel")}</ha-button
           >
-          <mwc-button @click=${this._applyDateRange}
+          <ha-button @click=${this._applyDateRange}
             >${this.hass.localize(
               "ui.components.date-range-picker.select"
-            )}</mwc-button
+            )}</ha-button
           >
         </div>
       </date-range-picker>

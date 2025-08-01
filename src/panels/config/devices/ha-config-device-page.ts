@@ -10,12 +10,12 @@ import {
   mdiPlusCircle,
   mdiRestore,
 } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -27,6 +27,7 @@ import { stringCompare } from "../../../common/string/compare";
 import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -405,9 +406,13 @@ export class HaConfigDevicePage extends LitElement {
         ${device.disabled_by === "user"
           ? html`
               <div class="card-actions" slot="actions">
-                <mwc-button unelevated @click=${this._enableDevice}>
+                <ha-button
+                  variant="warning"
+                  size="small"
+                  @click=${this._enableDevice}
+                >
                   ${this.hass.localize("ui.common.enable")}
-                </mwc-button>
+                </ha-button>
               </div>
             `
           : ""}
@@ -760,39 +765,36 @@ export class HaConfigDevicePage extends LitElement {
               ? html`
                   <div class="card-actions" slot="actions">
                     <div>
-                      <a
+                      <ha-button
                         href=${ifDefined(firstDeviceAction!.href)}
                         rel=${ifDefined(
                           firstDeviceAction!.target ? "noreferrer" : undefined
                         )}
+                        appearance="plain"
                         target=${ifDefined(firstDeviceAction!.target)}
+                        class=${ifDefined(firstDeviceAction!.classes)}
+                        .action=${firstDeviceAction!.action}
+                        @click=${this._deviceActionClicked}
                       >
-                        <mwc-button
-                          class=${ifDefined(firstDeviceAction!.classes)}
-                          .action=${firstDeviceAction!.action}
-                          @click=${this._deviceActionClicked}
-                          graphic="icon"
-                        >
-                          ${firstDeviceAction!.label}
-                          ${firstDeviceAction!.icon
-                            ? html`
-                                <ha-svg-icon
-                                  class=${ifDefined(firstDeviceAction!.classes)}
-                                  .path=${firstDeviceAction!.icon}
-                                  slot="graphic"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                          ${firstDeviceAction!.trailingIcon
-                            ? html`
-                                <ha-svg-icon
-                                  .path=${firstDeviceAction!.trailingIcon}
-                                  slot="trailingIcon"
-                                ></ha-svg-icon>
-                              `
-                            : ""}
-                        </mwc-button>
-                      </a>
+                        ${firstDeviceAction!.label}
+                        ${firstDeviceAction!.icon
+                          ? html`
+                              <ha-svg-icon
+                                class=${ifDefined(firstDeviceAction!.classes)}
+                                .path=${firstDeviceAction!.icon}
+                                slot="start"
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                        ${firstDeviceAction!.trailingIcon
+                          ? html`
+                              <ha-svg-icon
+                                .path=${firstDeviceAction!.trailingIcon}
+                                slot="end"
+                              ></ha-svg-icon>
+                            `
+                          : nothing}
+                      </ha-button>
                     </div>
 
                     ${actions.length
@@ -1440,10 +1442,9 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _signUrl(ev) {
-    const anchor = ev.currentTarget.closest("a");
     const signedUrl = await getSignedPath(
       this.hass,
-      anchor.getAttribute("href")
+      ev.currentTarget.getAttribute("href")
     );
     fileDownload(signedUrl.path);
   }
@@ -1620,6 +1621,7 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          padding: 4px 16px 4px 4px;
         }
       `,
     ];

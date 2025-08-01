@@ -21,6 +21,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-check-list-item";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
+import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/search-input";
@@ -485,12 +486,15 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                           "ui.panel.config.integrations.disable.disabled_integrations",
                           { number: disabledConfigEntries.length }
                         )}
-                        <mwc-button
+                        <ha-button
+                          appearance="plain"
+                          size="small"
                           @click=${this._toggleShowDisabled}
-                          .label=${this.hass.localize(
+                        >
+                          ${this.hass.localize(
                             "ui.panel.config.integrations.disable.show"
                           )}
-                        ></mwc-button>
+                        </ha-button>
                       </div>`
                     : ""}
                   ${filterMenu}
@@ -601,13 +605,16 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                         "ui.panel.config.integrations.none_found_detail"
                       )}
                     </p>
-                    <mwc-button
+                    <ha-button
                       @click=${this._createFlow}
-                      unelevated
-                      .label=${this.hass.localize(
+                      appearance="filled"
+                      size="small"
+                    >
+                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                      ${this.hass.localize(
                         "ui.panel.config.integrations.add_integration"
                       )}
-                    ></mwc-button>
+                    </ha-button>
                   </div>
                 `
               : // If we have a filter, never show a card
@@ -630,13 +637,19 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                             "ui.panel.config.integrations.no_integrations"
                           )}
                         </p>
-                        <mwc-button
+                        <ha-button
                           @click=${this._createFlow}
-                          unelevated
-                          .label=${this.hass.localize(
+                          appearance="filled"
+                          size="small"
+                        >
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiPlus}
+                          ></ha-svg-icon>
+                          ${this.hass.localize(
                             "ui.panel.config.integrations.add_integration"
                           )}
-                        ></mwc-button>
+                        </ha-button>
                       </div>
                     `
                   : ""}
@@ -1038,7 +1051,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           direction: var(--direction);
           height: 32px;
         }
-        .active-filters mwc-button {
+        .active-filters ha-button {
           margin-left: 8px;
           margin-inline-start: 8px;
           margin-inline-end: initial;

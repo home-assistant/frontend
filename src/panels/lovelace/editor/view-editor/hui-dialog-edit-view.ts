@@ -253,12 +253,13 @@ export class HuiDialogEditView extends LitElement {
                     "ui.panel.lovelace.editor.edit_view.card_to_section_convert"
                   )}
                   <ha-button
+                    size="small"
                     slot="action"
-                    .label=${this.hass!.localize(
-                      "ui.panel.lovelace.editor.edit_view.convert_view"
-                    )}
                     @click=${this._convertToSection}
                   >
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.convert_view"
+                    )}
                   </ha-button>
                 </ha-alert>
               `
@@ -294,7 +295,8 @@ export class HuiDialogEditView extends LitElement {
         ${this._params.viewIndex !== undefined
           ? html`
               <ha-button
-                class="warning"
+                variant="danger"
+                appearance="plain"
                 slot="secondaryAction"
                 @click=${this._deleteConfirm}
               >
@@ -656,7 +658,7 @@ export class HuiDialogEditView extends LitElement {
           width: 100%;
           justify-content: center;
         }
-        ha-button.warning {
+        ha-button[slot="secondaryAction"] {
           margin-right: auto;
           margin-inline-end: auto;
           margin-inline-start: initial;

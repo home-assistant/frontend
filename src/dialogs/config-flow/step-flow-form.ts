@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import "../../components/ha-button";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
@@ -104,22 +104,12 @@ class StepFlowForm extends LitElement {
           </div>`
         : nothing}
       <div class="buttons">
-        ${this._loading
-          ? html`
-              <div class="submit-spinner">
-                <ha-spinner size="small"></ha-spinner>
-              </div>
-            `
-          : html`
-              <div>
-                <mwc-button @click=${this._submitStep}>
-                  ${this.flowConfig.renderShowFormStepSubmitButton(
-                    this.hass,
-                    this.step
-                  )}
-                </mwc-button>
-              </div>
-            `}
+        <ha-button @click=${this._submitStep} .loading=${this._loading}>
+          ${this.flowConfig.renderShowFormStepSubmitButton(
+            this.hass,
+            this.step
+          )}
+        </ha-button>
       </div>
     `;
   }
@@ -304,19 +294,14 @@ class StepFlowForm extends LitElement {
           color: red;
         }
 
-        .submit-spinner {
-          height: 36px;
-          display: flex;
-          align-items: center;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-        }
-
         ha-alert,
         ha-form {
           margin-top: 24px;
           display: block;
+        }
+
+        .buttons {
+          padding: 16px;
         }
       `,
     ];

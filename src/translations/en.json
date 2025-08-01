@@ -1980,11 +1980,11 @@
         },
         "google_home": {
           "header": "Share from Google Home",
-          "step_1": "Find your device in the Google Home app. Tap the gear icon to open the device settings.",
+          "step_1": "Find your device in the Google Home app. Tap the gear icon to open the device settings, then tap on Device information.",
           "step_2": "Tap {linked_matter_apps_services}.",
           "step_3": "Tap {link_apps_services} and choose {home_assistant} from the list.",
           "linked_matter_apps_services": "Linked Matter apps and services",
-          "link_apps_services": "Link apps & services",
+          "link_apps_services": "Link apps and services",
           "no_home_assistant": "I can't find Home Assistant on the list",
           "redirect": "You are redirected to the Home Assistant app. Please follow the instructions."
         },
@@ -2719,7 +2719,7 @@
               },
               "description": {
                 "create_backup": {
-                  "addon_repositories": "Backing up add-ons repositories",
+                  "addon_repositories": "Backing up add-on repositories",
                   "addons": "Backing up add-ons",
                   "await_addon_restarts": "Waiting for add-ons to restart",
                   "docker_config": "Backing up Docker configuration",
@@ -2729,7 +2729,7 @@
                   "upload_to_agents": "Uploading to locations"
                 },
                 "restore_backup": {
-                  "addon_repositories": "Restoring add-ons repositories",
+                  "addon_repositories": "Restoring add-on repositories",
                   "addons": "Restoring add-ons",
                   "await_addon_restarts": "Waiting for add-ons to restart",
                   "await_home_assistant_restart": "Waiting for Home Assistant to restart",
@@ -4025,9 +4025,19 @@
                   "entity": "Entity with timestamp",
                   "offset_by": "offset by {offset}",
                   "mode": "Mode",
+                  "weekday": "Weekdays",
+                  "weekdays": {
+                    "mon": "[%key:ui::weekdays::monday%]",
+                    "tue": "[%key:ui::weekdays::tuesday%]",
+                    "wed": "[%key:ui::weekdays::wednesday%]",
+                    "thu": "[%key:ui::weekdays::thursday%]",
+                    "fri": "[%key:ui::weekdays::friday%]",
+                    "sat": "[%key:ui::weekdays::saturday%]",
+                    "sun": "[%key:ui::weekdays::sunday%]"
+                  },
                   "description": {
                     "picker": "At a specific time, or on a specific date.",
-                    "full": "When the time is equal to {time}"
+                    "full": "When the time is equal to {time}{hasWeekdays, select, \n true { on {weekdays}} \n other {}\n}"
                   }
                 },
                 "time_pattern": {
@@ -7043,6 +7053,7 @@
             "saving_failed": "Saving failed",
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "error_invalid_path": "URL contains invalid/reserved characters. Please enter a simple string only for the path of this view.",
+            "error_number": "URL may not be a number.",
             "move_to_dashboard": "Move to dashboard"
           },
           "edit_view_header": {
@@ -9120,12 +9131,12 @@
         "not_available_arch": "This add-on is not compatible with the processor of your device or the operating system you have installed on your device.",
         "not_available_version": "You are running Home Assistant {core_version_installed}, to update to this version of the add-on you need at least version {core_version_needed} of Home Assistant",
         "visit_addon_page": "Visit the {name} page for more details.",
-        "restart": "restart",
-        "start": "start",
-        "stop": "stop",
-        "install": "install",
-        "uninstall": "uninstall",
-        "rebuild": "rebuild",
+        "restart": "Restart",
+        "start": "Start",
+        "stop": "Stop",
+        "install": "Install",
+        "uninstall": "Uninstall",
+        "rebuild": "Rebuild",
         "open_web_ui": "Open web UI",
         "protection_mode": {
           "title": "Protection mode is disabled!",
@@ -9167,7 +9178,7 @@
           },
           "apparmor": {
             "title": "AppArmor",
-            "description": "AppArmor ('Application Armor') is a Linux kernel security module that restricts add-ons capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAdd-on authors can provide their security profiles, optimized for the add-on, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the add-on."
+            "description": "AppArmor ('Application Armor') is a Linux kernel security module that restricts add-on capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAdd-on authors can provide their security profiles, optimized for the add-on, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the add-on."
           },
           "auth_api": {
             "title": "Home Assistant authentication",
