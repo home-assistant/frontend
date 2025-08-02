@@ -14,6 +14,7 @@ import {
   validateConditionalConfig,
 } from "../common/validate-condition";
 import type { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
@@ -147,6 +148,7 @@ export class HuiConditionalBase extends ReactiveElement {
     if (this.hidden !== !visible) {
       this.toggleAttribute("hidden", !visible);
       this.style.setProperty("display", visible ? "" : "none");
+      fireEvent(this, "visibility-changed", { value: visible });
     }
     if (visible) {
       this._element.hass = this.hass;

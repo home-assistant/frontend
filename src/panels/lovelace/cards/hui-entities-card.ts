@@ -60,6 +60,22 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private _footerElement?: LovelaceHeaderFooter;
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    this.addEventListener(
+      "visibility-changed",
+      this._updateRowVisibility.bind(this)
+    );
+  }
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this.removeEventListener(
+      "visibility-changed",
+      this._updateRowVisibility.bind(this)
+    );
+  }
+
   set hass(hass: HomeAssistant) {
     this._hass = hass;
     this.shadowRoot
@@ -244,18 +260,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     #states {
       flex: 1;
-    }
-
-    #states > * {
-      margin: 8px 0;
-    }
-
-    #states > *:first-child {
-      margin-top: 0;
-    }
-
-    #states > *:last-child {
-      margin-bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--vertical-stack-card-gap, var(--stack-card-gap, 8px));
     }
 
     #states > div > * {
@@ -301,7 +308,19 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
 
-    return html`<div>${element}</div>`;
+    return html`<div ?hidden=${element.hidden}>${element}</div>`;
+  }
+
+  private _updateRowVisibility() {
+    this.shadowRoot
+      ?.querySelectorAll("#states > div > *")
+      .forEach((element: unknown) => {
+        if ((element as LovelaceRow).hidden) {
+          (element as LovelaceRow).parentElement!.style.display = "none";
+        } else {
+          (element as LovelaceRow).parentElement!.style.display = "";
+        }
+      });
   }
 }
 
