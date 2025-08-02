@@ -173,7 +173,7 @@
     "@types/leaflet-draw": "1.0.12",
     "@types/leaflet.markercluster": "1.5.5",
     "@types/lodash.merge": "4.6.9",
-    "@types/luxon": "3.7.0",
+    "@types/luxon": "3.7.1",
     "@types/mocha": "10.0.10",
     "@types/qrcode": "1.5.5",
     "@types/sortablejs": "1.15.8",
