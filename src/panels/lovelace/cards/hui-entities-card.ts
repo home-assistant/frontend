@@ -262,7 +262,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: var(--vertical-stack-card-gap, var(--stack-card-gap, 8px));
+      gap: var(--entities-card-row-gap, var(--card-row-gap, 8px));
     }
 
     #states > div > * {
