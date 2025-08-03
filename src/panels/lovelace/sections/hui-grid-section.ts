@@ -87,8 +87,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
       : CARD_SORTABLE_OPTIONS;
 
-    const background = this._config.background_color
-      ? rgb2hex(this._config.background_color as any)
+    const background = this._config.style?.background_color
+      ? rgb2hex(this._config.style?.background_color as any)
       : "";
 
     return html`
@@ -260,7 +260,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           padding: 0 !important;
         }
         .container.has-background {
-          padding: 0 8px 8px 8px;
+          padding: 8px;
           border-radius: var(--ha-card-border-radius, 12px);
         }
 
