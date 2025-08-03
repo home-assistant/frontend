@@ -260,12 +260,14 @@ class DialogAutomationSave extends LitElement implements HassDialog {
             .path=${mdiClose}
           ></ha-icon-button>
           <span slot="title">${this._params.title || title}</span>
-          <ha-suggest-with-ai-button
-            slot="actionItems"
-            .hass=${this.hass}
-            .generateTask=${this._generateTask}
-            @suggestion=${this._handleSuggestion}
-          ></ha-suggest-with-ai-button>
+          ${this._params.hideInputs
+            ? nothing
+            : html` <ha-suggest-with-ai-button
+                slot="actionItems"
+                .hass=${this.hass}
+                .generateTask=${this._generateTask}
+                @suggestion=${this._handleSuggestion}
+              ></ha-suggest-with-ai-button>`}
         </ha-dialog-header>
         ${this._error
           ? html`<ha-alert alert-type="error"
