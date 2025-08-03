@@ -91,8 +91,7 @@ export class HuiDialogEditSection extends LitElement {
   protected firstUpdated(_changedProperties: PropertyValues) {
     super.firstUpdated(_changedProperties);
 
-    // Determine the background type based on the config
-    if (this.config.background) {
+    if (this.config.background_color) {
       this._selectorBackgroundType = "color";
     } else {
       this._selectorBackgroundType = "none";
@@ -103,7 +102,7 @@ export class HuiDialogEditSection extends LitElement {
     const data: SettingsData = {
       column_span: this.config.column_span || 1,
       background_type: this._selectorBackgroundType,
-      background_color: this.config.background || [],
+      background_color: this.config.background_color || [],
     };
 
     const schema = this._schema(
@@ -149,9 +148,9 @@ export class HuiDialogEditSection extends LitElement {
     };
 
     if (newData.background_type === "color") {
-      newConfig.background = newData.background_color;
+      newConfig.background_color = newData.background_color;
     } else {
-      newConfig.background = undefined;
+      newConfig.background_color = undefined;
     }
 
     fireEvent(this, "value-changed", { value: newConfig });

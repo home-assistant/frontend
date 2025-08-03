@@ -87,8 +87,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
       : CARD_SORTABLE_OPTIONS;
 
-    const background = this._config.background
-      ? rgb2hex(this._config.background as any)
+    const background = this._config.background_color
+      ? rgb2hex(this._config.background_color as any)
       : "";
 
     return html`
