@@ -20,6 +20,7 @@ import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
+import { rgb2hex } from "../../../common/color/convert-color";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -86,6 +87,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
       : CARD_SORTABLE_OPTIONS;
 
+    const background = this._config.background
+      ? rgb2hex(this._config.background as any)
+      : "";
+
     return html`
       <ha-sortable
         .disabled=${!editMode}
@@ -103,7 +108,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           class="container ${classMap({
             "edit-mode": editMode,
             "import-only": this.importOnly,
+            "has-background": Boolean(background),
           })}"
+          style="background: ${background};"
         >
           ${repeat(
             cardsConfig,
@@ -249,6 +256,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .container.import-only {
           border: none;
           padding: 0 !important;
+        }
+        .container.has-background {
+          padding: 0 8px 8px 8px;
+          border-radius: var(--ha-card-border-radius, 12px);
         }
 
         .card {

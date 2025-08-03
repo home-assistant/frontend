@@ -1,6 +1,8 @@
+import type { PropertyValues } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { mdiFormatColorFill } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type {
   HaFormSchema,
@@ -13,6 +15,8 @@ import type { HomeAssistant } from "../../../../types";
 
 interface SettingsData {
   column_span?: number;
+  background_type: "none" | "color";
+  background_color?: number[];
 }
 
 @customElement("hui-section-settings-editor")
@@ -23,8 +27,10 @@ export class HuiDialogEditSection extends LitElement {
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
 
+  @state() private _selectorBackgroundType: "none" | "color" = "none";
+
   private _schema = memoizeOne(
-    (maxColumns: number) =>
+    (maxColumns: number, enableBackground: boolean) =>
       [
         {
           name: "column_span",
@@ -36,15 +42,74 @@ export class HuiDialogEditSection extends LitElement {
             },
           },
         },
+        {
+          name: "styling",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiFormatColorFill,
+          schema: [
+            {
+              name: "background_settings",
+              flatten: true,
+              type: "grid",
+              schema: [
+                {
+                  name: "background_type",
+                  required: true,
+                  selector: {
+                    select: {
+                      mode: "dropdown",
+                      options: [
+                        {
+                          value: "none",
+                          label: this.hass.localize("ui.common.none"),
+                        },
+                        {
+                          value: "color",
+                          label: this.hass.localize(
+                            "ui.panel.lovelace.editor.edit_section.settings.background_type_color_option"
+                          ),
+                        },
+                      ],
+                    },
+                  },
+                },
+                {
+                  name: "background_color",
+                  selector: {
+                    color_rgb: {},
+                  },
+                  disabled: !enableBackground,
+                },
+              ],
+            },
+          ],
+        },
       ] as const satisfies HaFormSchema[]
   );
+
+  protected firstUpdated(_changedProperties: PropertyValues) {
+    super.firstUpdated(_changedProperties);
+
+    // Determine the background type based on the config
+    if (this.config.background) {
+      this._selectorBackgroundType = "color";
+    } else {
+      this._selectorBackgroundType = "none";
+    }
+  }
 
   render() {
     const data: SettingsData = {
       column_span: this.config.column_span || 1,
+      background_type: this._selectorBackgroundType,
+      background_color: this.config.background || [],
     };
 
-    const schema = this._schema(this.viewConfig.max_columns || 4);
+    const schema = this._schema(
+      this.viewConfig.max_columns || 4,
+      this._selectorBackgroundType === "color"
+    );
 
     return html`
       <ha-form
@@ -76,10 +141,18 @@ export class HuiDialogEditSection extends LitElement {
     ev.stopPropagation();
     const newData = ev.detail.value as SettingsData;
 
+    this._selectorBackgroundType = newData.background_type;
+
     const newConfig: LovelaceSectionRawConfig = {
       ...this.config,
       column_span: newData.column_span,
     };
+
+    if (newData.background_type === "color") {
+      newConfig.background = newData.background_color;
+    } else {
+      newConfig.background = undefined;
+    }
 
     fireEvent(this, "value-changed", { value: newConfig });
   }

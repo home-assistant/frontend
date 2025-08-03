@@ -436,7 +436,8 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "none": "None"
     },
 
     "components": {
@@ -7199,7 +7200,11 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "styling": "Styling",
+              "background_type": "Background type",
+              "background_type_color_option": "Color",
+              "background_color": "Background color"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
