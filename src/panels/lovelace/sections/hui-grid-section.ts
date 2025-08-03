@@ -110,7 +110,9 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
             "import-only": this.importOnly,
             "has-background": Boolean(background),
           })}"
-          style="background: ${background};"
+          style=${styleMap({
+            background: background,
+          })}
         >
           ${repeat(
             cardsConfig,
