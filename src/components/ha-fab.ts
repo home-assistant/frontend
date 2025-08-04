@@ -20,6 +20,18 @@ export class HaFab extends FabBase {
         --mdc-typography-button-font-family: var(--ha-font-family-body);
         --mdc-typography-button-font-weight: var(--ha-font-weight-medium);
       }
+      :host .mdc-fab--extended {
+        border-radius: var(
+          --ha-button-border-radius,
+          var(--border-radius-pill)
+        );
+      }
+      :host .mdc-fab.mdc-fab--extended .ripple {
+        border-radius: var(
+          --ha-button-border-radius,
+          var(--border-radius-pill)
+        );
+      }
       :host .mdc-fab--extended .mdc-fab__icon {
         margin-inline-start: -8px;
         margin-inline-end: 12px;
