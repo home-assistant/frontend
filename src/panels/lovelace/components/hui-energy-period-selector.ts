@@ -208,7 +208,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           ? html`<ha-button
               appearance="filled"
               size="small"
-              click=${this._pickNow}
+              @click=${this._pickNow}
             >
               ${this.hass.localize(
                 "ui.panel.lovelace.components.energy_period_selector.now"
