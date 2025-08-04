@@ -9,11 +9,12 @@ import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement } from "lit";
+import { css, ReactiveElement, html, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { getEntityContext } from "../common/entity/context/get_entity_context";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -328,12 +329,33 @@ export class HaCodeEditor extends ReactiveElement {
     if (!states) {
       return [];
     }
-    const options = Object.keys(states).map((key) => ({
-      type: "variable",
-      label: key,
-      detail: states[key].attributes.friendly_name,
-      info: `State: ${states[key].state}`,
-    }));
+
+    const options = Object.keys(states).map((key) => {
+      const context = getEntityContext(states[key], this.hass!);
+
+      return {
+        type: "variable",
+        label: key,
+        detail: states[key].attributes.friendly_name,
+        info: (_completion: Completion) => {
+          const containerElement = document.createElement("div");
+          containerElement.classList.add("completion-info");
+
+          render(
+            html`
+              <span><strong>State:</strong></span>
+              <span>${states[key].state}</span>
+
+              <span><strong>Area:</strong></span>
+              <span>${context.area?.name ?? "Not found"}</span>
+            `,
+            containerElement
+          );
+
+          return containerElement;
+        },
+      };
+    });
 
     return options;
   });
@@ -614,6 +636,13 @@ export class HaCodeEditor extends ReactiveElement {
     :host(.fullscreen) .fullscreen-button {
       top: calc(var(--safe-area-inset-top, 0px) + 8px);
       right: calc(var(--safe-area-inset-right, 0px) + 8px);
+    }
+
+    .completion-info {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 3px;
+      padding: 8px;
     }
   `;
 }
