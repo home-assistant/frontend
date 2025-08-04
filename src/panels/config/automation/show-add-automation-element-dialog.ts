@@ -17,19 +17,19 @@ export const VIRTUAL_ACTIONS: Record<
   },
   repeat_while: {
     repeat: {
-      while: "",
+      while: [],
       sequence: [],
     },
   },
   repeat_until: {
     repeat: {
-      until: "",
+      until: [],
       sequence: [],
     },
   },
   repeat_for_each: {
     repeat: {
-      for_each: "",
+      for_each: {},
       sequence: [],
     },
   },
