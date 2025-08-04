@@ -64,4 +64,4 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/butt
 **CSS Custom Properties**
 
 - `--ha-button-height` - Height of the button.
-- `--ha-button-radius` - Border radius of the button. Defaults to `var(--wa-border-radius-pill)`.
+- `--ha-button-border-radius` - Border radius of the button. Defaults to `var(--wa-border-radius-pill)`.

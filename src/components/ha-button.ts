@@ -27,7 +27,7 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @csspart spinner - The spinner that shows when the button is in the loading state.
  *
  * @cssprop --ha-button-height - The height of the button.
- * @cssprop --ha-button-radius - The border radius of the button. defaults to `var(--wa-border-radius-pill)`.
+ * @cssprop --ha-button-border-radius - The border radius of the button. defaults to `var(--wa-border-radius-pill)`.
  *
  * @attr {("small"|"medium")} size - Sets the button size.
  * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the button color variant. "primary" is default.
@@ -55,10 +55,9 @@ export class HaButton extends Button {
           /* set theme vars */
           --wa-form-control-padding-inline: 16px;
           --wa-font-weight-action: var(--ha-font-weight-medium);
-          --wa-border-radius-pill: 9999px;
           --wa-form-control-border-radius: var(
-            --ha-button-radius,
-            var(--wa-border-radius-pill)
+            --ha-button-border-radius,
+            var(--border-radius-pill)
           );
 
           --wa-form-control-height: var(
