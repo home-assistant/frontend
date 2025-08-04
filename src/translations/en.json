@@ -438,7 +438,6 @@
       "supports_markdown": "Supports {markdown_help_link}",
       "markdown": "Markdown"
     },
-
     "components": {
       "selectors": {
         "media": {
@@ -4401,6 +4400,34 @@
                     "while_count": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
                     "until_count": "until {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
                     "for_each": "for every item: {items}"
+                  }
+                },
+                "repeat_count": {
+                  "label": "Repeat multiple times",
+                  "description": {
+                    "picker": "Repeat a sequence of actions a fixed number of times.",
+                    "full": "Repeat an action {chosenAction} {count} {count, plural,\n one {time}\n other {times}\n}"
+                  }
+                },
+                "repeat_while": {
+                  "label": "Repeat while",
+                  "description": {
+                    "picker": "Repeat a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence.",
+                    "full": "Repeat an action {chosenAction} while {condition}"
+                  }
+                },
+                "repeat_until": {
+                  "label": "Repeat until",
+                  "description": {
+                    "picker": "Repeat a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence.",
+                    "full": "Repeat an action {chosenAction} until {condition}"
+                  }
+                },
+                "repeat_for_each": {
+                  "label": "Repeat for each",
+                  "description": {
+                    "picker": "Repeat a sequence for each element of a list.",
+                    "full": "Repeat an action {chosenAction} for each item in {items}"
                   }
                 },
                 "choose": {
