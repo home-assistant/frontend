@@ -4,7 +4,7 @@ import type {
   HassEntityBase,
   HassEvent,
 } from "home-assistant-js-websocket";
-import { BINARY_STATE_ON } from "../common/const";
+import { BINARY_STATE_ON, BINARY_STATE_OFF } from "../common/const";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -51,6 +51,15 @@ export const updateCanInstall = (
   (entity.state === BINARY_STATE_ON ||
     (showSkipped && Boolean(entity.attributes.skipped_version))) &&
   supportsFeature(entity, UpdateEntityFeature.INSTALL);
+
+export const latestVersionIsSkipped = (entity: UpdateEntity): boolean =>
+  !!(
+    entity.attributes.latest_version &&
+    entity.attributes.skipped_version === entity.attributes.latest_version
+  );
+
+export const updateButtonIsDisabled = (entity: UpdateEntity): boolean =>
+  entity.state === BINARY_STATE_OFF && !latestVersionIsSkipped(entity);
 
 export const updateIsInstalling = (entity: UpdateEntity): boolean =>
   !!entity.attributes.in_progress;
