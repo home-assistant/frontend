@@ -106,8 +106,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     return (
-      (this.stateObj.state === BINARY_STATE_OFF && !this._isVersionSkipped()) ||
-      updateIsInstalling(this.stateObj)
+      this.stateObj.state === BINARY_STATE_OFF && !this._isVersionSkipped()
     );
   }
 
@@ -342,15 +341,15 @@ class MoreInfoUpdate extends LitElement {
               `}
           ${supportsFeature(this.stateObj, UpdateEntityFeature.INSTALL)
             ? html`
-                <ha-progress-button
+                <ha-button
                   @click=${this._handleInstall}
-                  .progress=${updateIsInstalling(this.stateObj)}
+                  .loading=${updateIsInstalling(this.stateObj)}
                   .disabled=${this._isUpdateButtonDisabled()}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
                   )}
-                </ha-progress-button>
+                </ha-button>
               `
             : nothing}
         </div>
@@ -412,10 +411,6 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _handleInstall(): void {
-    if (this._isUpdateButtonDisabled()) {
-      return;
-    }
-
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
