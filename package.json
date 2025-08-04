@@ -88,7 +88,7 @@
     "@shoelace-style/shoelace": "2.20.1",
     "@swc/helpers": "0.5.17",
     "@thomasloven/round-slider": "0.6.0",
-    "@tsparticles/engine": "3.8.1",
+    "@tsparticles/engine": "3.9.0",
     "@tsparticles/preset-links": "3.2.0",
     "@vaadin/combo-box": "24.7.9",
     "@vaadin/vaadin-themable-mixin": "24.7.9",

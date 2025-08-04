@@ -4278,10 +4278,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsparticles/engine@npm:3.8.1, @tsparticles/engine@npm:^3.7.1":
+"@tsparticles/engine@npm:3.8.1":
   version: 3.8.1
   resolution: "@tsparticles/engine@npm:3.8.1"
   checksum: 10/041a541c9f9f54ee9af8d17d735b765529e89b4587a455fc1b824efdfc79b1e51a602ad87ca2b5a7b84c399774c96afce2c6d6cbe3cddfd15daa532dea986452
+  languageName: node
+  linkType: hard
+
+"@tsparticles/engine@npm:3.9.0, @tsparticles/engine@npm:^3.7.1":
+  version: 3.9.0
+  resolution: "@tsparticles/engine@npm:3.9.0"
+  checksum: 10/b8774d8cd62a370332b1ff1258c328ba9ae3dd8e96f57ccd70124bc5812963d537cf0ac3394bb41f4616485041f089ebbbc25a6750151ed5eab0a005e669b83c
   languageName: node
   linkType: hard
 
@@ -9414,7 +9421,7 @@ __metadata:
     "@shoelace-style/shoelace": "npm:2.20.1"
     "@swc/helpers": "npm:0.5.17"
     "@thomasloven/round-slider": "npm:0.6.0"
-    "@tsparticles/engine": "npm:3.8.1"
+    "@tsparticles/engine": "npm:3.9.0"
     "@tsparticles/preset-links": "npm:3.2.0"
     "@types/babel__plugin-transform-runtime": "npm:7.9.5"
     "@types/chromecast-caf-receiver": "npm:6.0.22"
