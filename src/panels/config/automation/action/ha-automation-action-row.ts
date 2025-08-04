@@ -245,15 +245,17 @@ export default class HaAutomationActionRow extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
         </ha-md-menu-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._renameAction}
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.rename"
-          )}
-          <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-        </ha-md-menu-item>
+        ${!this.optionsInSidebar
+          ? html` <ha-md-menu-item
+              .clickAction=${this._renameAction}
+              .disabled=${this.disabled}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.rename"
+              )}
+              <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+            </ha-md-menu-item>`
+          : nothing}
 
         <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
@@ -303,15 +305,17 @@ export default class HaAutomationActionRow extends LitElement {
           <ha-svg-icon slot="start" .path=${mdiArrowDown}></ha-svg-icon
         ></ha-md-menu-item>
 
-        <ha-md-menu-item
-          .clickAction=${this._toggleYamlMode}
-          .disabled=${!this._uiModeAvailable}
-        >
-          ${this.hass.localize(
-            `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
-          )}
-          <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
-        </ha-md-menu-item>
+        ${!this.optionsInSidebar
+          ? html` <ha-md-menu-item
+              .clickAction=${this._toggleYamlMode}
+              .disabled=${!this._uiModeAvailable}
+            >
+              ${this.hass.localize(
+                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+              )}
+              <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+            </ha-md-menu-item>`
+          : nothing}
 
         <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
@@ -350,7 +354,7 @@ export default class HaAutomationActionRow extends LitElement {
       </ha-md-button-menu>
 
       ${!this.optionsInSidebar
-        ? html` <ha-automation-action-editor
+        ? html`<ha-automation-action-editor
             .hass=${this.hass}
             .action=${this.action}
             .disabled=${this.disabled}
