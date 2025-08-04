@@ -1,6 +1,13 @@
 import { css } from "lit";
 import { extractVars } from "../../../common/style/derived-css-vars";
 
+/*
+ * Core color tokens are the foundational color values used throughout the design system.
+ * These tokens represent raw, brand-independent colors such as grayscale shades, base hues, and accent tones.
+ * Core tokens shouldn't be tied to any specific UI purpose or role. Instead, they serve as building blocks from which semantic tokens are derived.
+ * Changes to core tokens will cascade into semantic tokens that reference them, enabling flexible theming and consistent design language.
+ * Please note that these core tokens are not intended to be used directly in components or styles.
+ */
 export const coreColorStyles = css`
   html {
     --white: #ffffff;
@@ -21,17 +28,17 @@ export const coreColorStyles = css`
     --color-primary-95: #eff9fe;
 
     /* neutral */
-    --color-neutral-05: #101219;
-    --color-neutral-10: #1b1d26;
-    --color-neutral-20: #2f323f;
-    --color-neutral-30: #424554;
-    --color-neutral-40: #545868;
-    --color-neutral-50: #717584;
-    --color-neutral-60: #9194a2;
-    --color-neutral-70: #abaeb9;
-    --color-neutral-80: #c7c9d0;
-    --color-neutral-90: #e4e5e9;
-    --color-neutral-95: #f1f2f3;
+    --color-neutral-05: #141414;
+    --color-neutral-10: #202020;
+    --color-neutral-20: #363636;
+    --color-neutral-30: #4a4a4a;
+    --color-neutral-40: #5e5e5e;
+    --color-neutral-50: #7a7a7a;
+    --color-neutral-60: #989898;
+    --color-neutral-70: #b1b1b1;
+    --color-neutral-80: #b1b1b1;
+    --color-neutral-90: #e6e6e6;
+    --color-neutral-95: #f3f3f3;
 
     /* orange */
     --color-orange-05: #280700;
