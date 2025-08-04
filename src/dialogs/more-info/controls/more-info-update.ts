@@ -27,6 +27,8 @@ import {
   UpdateEntityFeature,
   updateIsInstalling,
   updateReleaseNotes,
+  latestVersionIsSkipped,
+  updateButtonIsDisabled,
 } from "../../../data/update";
 import type { HomeAssistant } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
@@ -86,28 +88,6 @@ class MoreInfoUpdate extends LitElement {
 
   private _isHaOrOsUpdate(type: UpdateType): boolean {
     return ["home_assistant", "home_assistant_os"].includes(type);
-  }
-
-  private _isVersionSkipped(): boolean {
-    if (!this.stateObj) {
-      return false;
-    }
-
-    return !!(
-      this.stateObj.attributes.latest_version &&
-      this.stateObj.attributes.skipped_version ===
-        this.stateObj.attributes.latest_version
-    );
-  }
-
-  private _isUpdateButtonDisabled(): boolean {
-    if (!this.stateObj) {
-      return true;
-    }
-
-    return (
-      this.stateObj.state === BINARY_STATE_OFF && !this._isVersionSkipped()
-    );
   }
 
   private _computeCreateBackupTexts():
@@ -330,7 +310,7 @@ class MoreInfoUpdate extends LitElement {
                 <ha-button
                   appearance="plain"
                   @click=${this._handleSkip}
-                  .disabled=${this._isVersionSkipped() ||
+                  .disabled=${latestVersionIsSkipped(this.stateObj) ||
                   this.stateObj.state === BINARY_STATE_OFF ||
                   updateIsInstalling(this.stateObj)}
                 >
@@ -344,7 +324,7 @@ class MoreInfoUpdate extends LitElement {
                 <ha-button
                   @click=${this._handleInstall}
                   .loading=${updateIsInstalling(this.stateObj)}
-                  .disabled=${this._isUpdateButtonDisabled()}
+                  .disabled=${updateButtonIsDisabled(this.stateObj)}
                 >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.update"
