@@ -24,6 +24,8 @@ import {
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
+export const CONDITION_BUILDING_BLOCKS = ["and", "or", "not"];
+
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -99,7 +101,11 @@ export default class HaAutomationCondition extends LitElement {
         "ha-automation-condition-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        if (this.optionsInSidebar) {
+        // on new condition open the settings in the sidebar, except for building blocks
+        if (
+          this.optionsInSidebar &&
+          !CONDITION_BUILDING_BLOCKS.includes(row.condition.condition)
+        ) {
           row.openSidebar();
         } else {
           row.expand();
@@ -351,9 +357,6 @@ export default class HaAutomationCondition extends LitElement {
       display: block;
       scroll-margin-top: 48px;
     }
-    .buttons {
-      order: 1;
-    }
     ha-svg-icon {
       height: 20px;
     }
@@ -370,6 +373,7 @@ export default class HaAutomationCondition extends LitElement {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      order: 1;
     }
   `;
 }

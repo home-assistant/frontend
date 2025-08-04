@@ -22,6 +22,7 @@ import "../../../components/ha-md-menu-item";
 import type { Condition, Trigger } from "../../../data/automation";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
+import { CONDITION_BUILDING_BLOCKS } from "./condition/ha-automation-condition";
 import "./condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
 import "./trigger/ha-automation-trigger-content";
@@ -79,7 +80,7 @@ export default class HaAutomationSidebar extends LitElement {
       : this.config.config[this.config.type];
 
     const title = this.hass.localize(
-      `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type !== "condition" || !["and", "or", "not"].includes(type) ? "edit" : "condition"}` as LocalizeKeys
+      `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type !== "condition" || !CONDITION_BUILDING_BLOCKS.includes(type) ? "edit" : "condition"}` as LocalizeKeys
     );
     const subtitle =
       this.hass.localize(
@@ -87,7 +88,8 @@ export default class HaAutomationSidebar extends LitElement {
       ) || type;
 
     const description =
-      this.config.type === "condition" && ["and", "or", "not"].includes(type)
+      this.config.type === "condition" &&
+      CONDITION_BUILDING_BLOCKS.includes(type)
         ? this.hass.localize(
             `ui.panel.config.automation.editor.conditions.type.${type}.description.picker` as LocalizeKeys
           )
@@ -194,7 +196,7 @@ export default class HaAutomationSidebar extends LitElement {
               .yamlMode=${this._yamlMode}
             ></ha-automation-trigger-content>`
           : this.config.type === "condition" &&
-              !["and", "or", "not"].includes(type)
+              !CONDITION_BUILDING_BLOCKS.includes(type)
             ? html`
                 <ha-automation-condition-editor
                   class="sidebar-editor"

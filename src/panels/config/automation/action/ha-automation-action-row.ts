@@ -26,12 +26,12 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-alert";
-import "../../../../components/ha-md-button-menu";
-import "../../../../components/ha-md-menu-item";
-import "../../../../components/ha-md-divider";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-md-button-menu";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-service-icon";
 import "../../../../components/ha-tooltip";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -61,6 +61,7 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
+import { CONDITION_BUILDING_BLOCKS } from "../condition/ha-automation-condition";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -84,7 +85,7 @@ export const getType = (action: Action | undefined) => {
   if ("action" in action) {
     return getActionType(action) as "action" | "play_media";
   }
-  if (["and", "or", "not"].some((key) => key in action)) {
+  if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
     return "condition" as const;
   }
   return Object.keys(ACTION_ICONS).find(

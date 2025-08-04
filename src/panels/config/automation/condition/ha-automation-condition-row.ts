@@ -47,6 +47,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { CONDITION_BUILDING_BLOCKS } from "./ha-automation-condition";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";
@@ -328,7 +329,7 @@ export default class HaAutomationConditionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      ["and", "or", "not"].includes(this.condition.condition)
+      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
         ? html`<ha-automation-condition-editor
             .hass=${this.hass}
             .condition=${this.condition}
