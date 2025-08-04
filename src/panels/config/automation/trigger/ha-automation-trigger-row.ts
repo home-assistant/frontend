@@ -21,6 +21,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { debounce } from "../../../../common/util/debounce";
@@ -156,7 +157,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
       <ha-md-button-menu
         slot="icons"
-        @click=${this._openOverflowMenu}
+        @click=${preventDefaultStopPropagation}
         @keydown=${stopPropagation}
         @closed=${stopPropagation}
         positioning="fixed"
@@ -594,11 +595,6 @@ export default class HaAutomationTriggerRow extends LitElement {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
-  }
-
-  private _openOverflowMenu(ev: MouseEvent) {
-    ev.stopPropagation();
-    ev.preventDefault();
   }
 
   private _getType = memoizeOne((trigger: Trigger) =>

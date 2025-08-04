@@ -21,6 +21,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-card";
@@ -63,8 +64,6 @@ import "./types/ha-automation-condition-zone";
 export interface ConditionElement extends LitElement {
   condition: Condition;
 }
-
-const preventDefault = (ev) => ev.preventDefault();
 
 export const handleChangeEvent = (
   element: ConditionElement,
@@ -146,7 +145,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
       <ha-md-button-menu
         slot="icons"
-        @click=${preventDefault}
+        @click=${preventDefaultStopPropagation}
         @keydown=${stopPropagation}
         @closed=${stopPropagation}
         positioning="fixed"
@@ -337,6 +336,7 @@ export default class HaAutomationConditionRow extends LitElement {
             .yamlMode=${this._yamlMode}
             .uiSupported=${this._uiSupported(this.condition.condition)}
             indent
+            .selected=${this._selected}
           ></ha-automation-condition-editor>`
         : nothing}
     `;
