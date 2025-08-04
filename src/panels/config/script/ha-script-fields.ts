@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -47,14 +46,13 @@ export default class HaScriptFields extends LitElement {
           </div> `
         : nothing}
       <ha-button
-        outlined
+        appearance="filled"
+        size="small"
         @click=${this._addField}
         .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.script.editor.field.add_field"
-        )}
       >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+        ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}
       </ha-button>
     `;
   }

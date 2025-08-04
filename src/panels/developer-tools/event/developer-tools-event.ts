@@ -79,7 +79,7 @@ class HaPanelDevEvent extends LitElement {
             <div class="card-actions">
               <ha-button
                 @click=${this._fireEvent}
-                raised
+                appearance="filled"
                 .disabled=${!this._isValid}
                 >${this.hass.localize(
                   "ui.panel.developer-tools.tabs.events.fire_event"
@@ -171,7 +171,7 @@ class HaPanelDevEvent extends LitElement {
           max-width: 400px;
         }
 
-        mwc-button {
+        ha-button {
           margin-top: 8px;
         }
 

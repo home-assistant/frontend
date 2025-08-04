@@ -318,7 +318,10 @@ class MoreInfoUpdate extends LitElement {
           ${this.stateObj.state === BINARY_STATE_OFF &&
           this.stateObj.attributes.skipped_version
             ? html`
-                <ha-button @click=${this._handleClearSkipped}>
+                <ha-button
+                  appearance="plain"
+                  @click=${this._handleClearSkipped}
+                >
                   ${this.hass.localize(
                     "ui.dialogs.more_info_control.update.clear_skipped"
                   )}
@@ -326,6 +329,7 @@ class MoreInfoUpdate extends LitElement {
               `
             : html`
                 <ha-button
+                  appearance="plain"
                   @click=${this._handleSkip}
                   .disabled=${this._isVersionSkipped() ||
                   this.stateObj.state === BINARY_STATE_OFF ||
@@ -526,7 +530,7 @@ class MoreInfoUpdate extends LitElement {
       flex-wrap: wrap;
       justify-content: flex-end;
       box-sizing: border-box;
-      padding: 12px;
+      padding: 16px;
       z-index: 1;
       gap: 8px;
     }

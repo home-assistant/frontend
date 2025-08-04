@@ -94,7 +94,7 @@ class DownloadLogsDialog extends LitElement {
           </ha-md-select>
         </div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button @click=${this._downloadLogs}>

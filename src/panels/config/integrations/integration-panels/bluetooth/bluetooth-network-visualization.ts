@@ -1,18 +1,20 @@
-import { html, LitElement, css } from "lit";
-import type { CSSResultGroup } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HomeAssistant, Route } from "../../../../../types";
+import { relativeTime } from "../../../../../common/datetime/relative_time";
+import { navigate } from "../../../../../common/navigate";
+import { throttle } from "../../../../../common/util/throttle";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
-  NetworkNode,
   NetworkLink,
+  NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import type {
   BluetoothDeviceData,
@@ -24,11 +26,9 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-subpage";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import { navigate } from "../../../../../common/navigate";
+import { colorVariables } from "../../../../../resources/theme/color/color.globals";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
-import { relativeTime } from "../../../../../common/datetime/relative_time";
-import { throttle } from "../../../../../common/util/throttle";
 
 const UPDATE_THROTTLE_TIME = 10000;
 

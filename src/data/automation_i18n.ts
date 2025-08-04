@@ -400,8 +400,23 @@ const tryDescribeTrigger = (
       return `${entityStr}${offsetStr}`;
     });
 
+    // Handle weekday information if present
+    let weekdays: string[] = [];
+    if (trigger.weekday) {
+      const weekdayArray = ensureArray(trigger.weekday);
+      if (weekdayArray.length > 0) {
+        weekdays = weekdayArray.map((day) =>
+          hass.localize(
+            `ui.panel.config.automation.editor.triggers.type.time.weekdays.${day}` as any
+          )
+        );
+      }
+    }
+
     return hass.localize(`${triggerTranslationBaseKey}.time.description.full`, {
       time: formatListWithOrs(hass.locale, result),
+      hasWeekdays: weekdays.length > 0 ? "true" : "false",
+      weekdays: formatListWithOrs(hass.locale, weekdays),
     });
   }
 

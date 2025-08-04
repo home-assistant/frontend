@@ -8,6 +8,7 @@ import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-spinner";
+import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
 import "../../../../components/ha-icon-button";
@@ -223,39 +224,38 @@ export class HuiDialogEditCard
         </div>
         ${this._cardConfig !== undefined
           ? html`
-              <mwc-button
+              <ha-button
                 slot="secondaryAction"
                 @click=${this._toggleMode}
                 .disabled=${!this._guiModeAvailable}
                 class="gui-mode-button"
+                appearance="plain"
               >
                 ${this.hass!.localize(
                   !this._cardEditorEl || this._GUImode
                     ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
                     : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         <div slot="primaryAction" @click=${this._save}>
-          <mwc-button @click=${this._cancel} dialogInitialFocus>
+          <ha-button
+            appearance="plain"
+            @click=${this._cancel}
+            dialogInitialFocus
+          >
             ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
+          </ha-button>
           ${this._cardConfig !== undefined && this._dirty
             ? html`
-                <mwc-button
-                  ?disabled=${!this._canSave || this._saving}
+                <ha-button
+                  ?disabled=${!this._canSave}
                   @click=${this._save}
+                  .loading=${this._saving}
                 >
-                  ${this._saving
-                    ? html`
-                        <ha-spinner
-                          aria-label="Saving"
-                          size="small"
-                        ></ha-spinner>
-                      `
-                    : this.hass!.localize("ui.common.save")}
-                </mwc-button>
+                  ${this.hass!.localize("ui.common.save")}
+                </ha-button>
               `
             : ``}
         </div>
@@ -501,6 +501,11 @@ export class HuiDialogEditCard
         ha-dialog-header a {
           color: inherit;
           text-decoration: none;
+        }
+
+        [slot="primaryAction"] {
+          gap: 8px;
+          display: flex;
         }
       `,
     ];

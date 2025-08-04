@@ -99,7 +99,8 @@ class HassioAddonNetwork extends LitElement {
           : nothing}
         <div class="card-actions">
           <ha-progress-button
-            class="warning"
+            variant="danger"
+            appearance="plain"
             .disabled=${this.disabled}
             @click=${this._resetTapped}
           >
