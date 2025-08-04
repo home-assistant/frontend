@@ -196,7 +196,7 @@ export default class HaAutomationSidebar extends LitElement {
               .yamlMode=${this._yamlMode}
             ></ha-automation-trigger-content>`
           : this.config.type === "condition" &&
-              !CONDITION_BUILDING_BLOCKS.includes(type)
+              (this._yamlMode || !CONDITION_BUILDING_BLOCKS.includes(type))
             ? html`
                 <ha-automation-condition-editor
                   class="sidebar-editor"
@@ -245,6 +245,7 @@ export default class HaAutomationSidebar extends LitElement {
   static styles = css`
     :host {
       height: 100%;
+      z-index: 1;
     }
 
     ha-card {

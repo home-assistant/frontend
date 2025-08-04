@@ -334,7 +334,6 @@ export default class HaAutomationConditionRow extends LitElement {
             .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
-            .yamlMode=${this._yamlMode}
             .uiSupported=${this._uiSupported(this.condition.condition)}
             indent
             .selected=${this._selected}
