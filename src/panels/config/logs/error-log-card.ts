@@ -825,6 +825,7 @@ class ErrorLogCard extends LitElement {
       overflow: hidden;
       position: absolute;
       bottom: 4px;
+      left: 4px;
       height: 0;
       transition: height 0.4s ease-out;
     }
