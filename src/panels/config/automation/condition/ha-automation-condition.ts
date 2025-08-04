@@ -107,7 +107,7 @@ export default class HaAutomationCondition extends LitElement {
           !CONDITION_BUILDING_BLOCKS.includes(row.condition.condition)
         ) {
           row.openSidebar();
-        } else {
+        } else if (!this.optionsInSidebar) {
           row.expand();
         }
         row.scrollIntoView();

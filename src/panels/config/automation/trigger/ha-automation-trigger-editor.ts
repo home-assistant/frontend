@@ -15,7 +15,7 @@ import { isTriggerList } from "../../../../data/trigger";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 
-@customElement("ha-automation-trigger-content")
+@customElement("ha-automation-trigger-editor")
 export default class HaAutomationTriggerContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -195,6 +195,6 @@ export default class HaAutomationTriggerContent extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trigger-content": HaAutomationTriggerContent;
+    "ha-automation-trigger-editor": HaAutomationTriggerContent;
   }
 }

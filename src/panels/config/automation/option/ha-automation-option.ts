@@ -101,6 +101,7 @@ export default class HaAutomationOption extends LitElement {
           <div class="buttons">
             <ha-button
               appearance="filled"
+              size="small"
               .disabled=${this.disabled}
               @click=${this._addOption}
             >

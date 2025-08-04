@@ -75,6 +75,7 @@ export type Selector =
 
 export interface ActionSelector {
   action: {} | null;
+  optionsInSidebar?: boolean;
 }
 
 export interface AddonSelector {
@@ -131,6 +132,7 @@ export interface ColorTempSelector {
 
 export interface ConditionSelector {
   condition: {} | null;
+  optionsInSidebar?: boolean;
 }
 
 export interface ConversationAgentSelector {

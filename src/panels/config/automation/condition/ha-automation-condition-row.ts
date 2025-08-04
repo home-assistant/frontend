@@ -24,6 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
@@ -522,6 +523,8 @@ export default class HaAutomationConditionRow extends LitElement {
   public openSidebar(ev?: CustomEvent, condition?: Condition): void {
     ev?.stopPropagation();
     // TODO on click it's called twice, should be just once
+
+    const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -539,9 +542,9 @@ export default class HaAutomationConditionRow extends LitElement {
       },
       disable: this._onDisable,
       delete: this._onDelete,
-      config: condition || this.condition,
+      config: sidebarCondition,
       type: "condition",
-      uiSupported: this._uiSupported((condition || this.condition).condition),
+      uiSupported: this._uiSupported(sidebarCondition.condition),
       yamlMode: this._yamlMode,
     });
     this._selected = true;

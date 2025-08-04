@@ -4277,6 +4277,8 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "edit": "Edit action",
+              "action": "Action",
               "groups": {
                 "helpers": {
                   "label": "Helpers"

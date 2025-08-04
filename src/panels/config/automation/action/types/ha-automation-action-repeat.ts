@@ -30,12 +30,16 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: RepeatAction;
 
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public indent = false;
+
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, template: boolean) =>
+    (type: string, localize: LocalizeFunc, template: boolean) =>
       [
         {
           name: "type",
@@ -90,12 +94,82 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       ] as const satisfies readonly HaFormSchema[]
   );
 
+  private _sequenceSchema = memoizeOne(
+    (type: string) =>
+      [
+        ...(type === "until" || type === "while"
+          ? ([
+              {
+                name: type,
+                selector: {
+                  condition: {},
+                  optionsInSidebar: true,
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        {
+          name: "sequence",
+          selector: {
+            action: {},
+            optionsInSidebar: true,
+          },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
+  private _settingsSchema = memoizeOne(
+    (type: string, localize: LocalizeFunc, template: boolean) =>
+      [
+        {
+          name: "type",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: OPTIONS.map((opt) => ({
+                value: opt,
+                label: localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
+                ),
+              })),
+            },
+          },
+        },
+        ...(type === "count"
+          ? ([
+              {
+                name: "count",
+                required: true,
+                selector: template
+                  ? { template: {} }
+                  : { number: { mode: "box", min: 1 } },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        ...(type === "for_each"
+          ? ([
+              {
+                name: "for_each",
+                required: true,
+                selector: { object: {} },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+      ] as const satisfies readonly HaFormSchema[]
+  );
+
   protected render() {
+    const schemaGenerator = this.inSidebar
+      ? this._settingsSchema
+      : this.indent
+        ? this._sequenceSchema
+        : this._schema;
+
     const action = this.action.repeat;
     const type = getType(action);
-    const schema = this._schema(
-      this.hass.localize,
+    const schema = schemaGenerator(
       type ?? "count",
+      this.hass.localize,
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
         : false

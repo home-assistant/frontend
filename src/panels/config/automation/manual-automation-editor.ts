@@ -278,10 +278,13 @@ export class HaManualAutomationEditor extends LitElement {
         .highlightedActions=${this._pastedConfig?.actions || []}
         .path=${["actions"]}
         @value-changed=${this._actionChanged}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._closeSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
         root
+        sidebar
       ></ha-automation-action>
     `;
   }
@@ -299,6 +302,7 @@ export class HaManualAutomationEditor extends LitElement {
           .isWide=${this.isWide}
           .hass=${this.hass}
           .config=${this._sidebarConfig}
+          @value-changed=${this._sidebarConfigChanged}
         ></ha-automation-sidebar>
       </div>
     `;
@@ -308,6 +312,18 @@ export class HaManualAutomationEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+  }
+
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: OpenSidebarConfig }>) {
+    ev.stopPropagation();
+    if (!this._sidebarConfig) {
+      return;
+    }
+
+    this._sidebarConfig = {
+      ...this._sidebarConfig,
+      ...ev.detail.value,
+    };
   }
 
   private _closeSidebar() {

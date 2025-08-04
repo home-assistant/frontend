@@ -47,8 +47,8 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "./ha-automation-trigger-content";
-import type HaAutomationTriggerContent from "./ha-automation-trigger-content";
+import "./ha-automation-trigger-editor";
+import type HaAutomationTriggerContent from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -119,7 +119,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _requestShowId = false;
 
-  @query("ha-automation-trigger-content")
+  @query("ha-automation-trigger-editor")
   public triggerContent?: HaAutomationTriggerContent;
 
   @storage({
@@ -292,14 +292,14 @@ export default class HaAutomationTriggerRow extends LitElement {
       </ha-md-button-menu>
 
       ${!this.optionsInSidebar
-        ? html`<ha-automation-trigger-content
+        ? html`<ha-automation-trigger-editor
             .hass=${this.hass}
             .trigger=${this.trigger}
             .disabled=${this.disabled}
             .yamlMode=${this._yamlMode}
             .showId=${this._requestShowId}
             .uiSupported=${supported}
-          ></ha-automation-trigger-content>`
+          ></ha-automation-trigger-editor>`
         : nothing}
     `;
   }
