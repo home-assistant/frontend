@@ -15,6 +15,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -325,57 +326,55 @@ export class HaCodeEditor extends ReactiveElement {
     }
   };
 
-  private _getStates = memoizeOne((states: HassEntities): Completion[] => {
-    if (!states) {
-      return [];
+  private _getStates = memoizeOne(
+    (states: HassEntities, localize: LocalizeFunc): Completion[] => {
+      if (!states) {
+        return [];
+      }
+
+      const options = Object.keys(states).map((key) => {
+        const context = getEntityContext(states[key], this.hass!);
+
+        return {
+          type: "variable",
+          label: key,
+          detail: states[key].attributes.friendly_name,
+          info: (_completion: Completion) => {
+            const completionInfo = document.createElement("div");
+            completionInfo.classList.add("completion-info");
+
+            render(
+              html`
+                <span
+                  ><strong
+                    >${localize(
+                      "ui.components.entity.entity-state-picker.state"
+                    )}:</strong
+                  ></span
+                >
+                <span>${states[key].state}</span>
+
+                <span
+                  ><strong
+                    >${localize("ui.components.area-picker.area")}:</strong
+                  ></span
+                >
+                <span
+                  >${context.area?.name ??
+                  localize("ui.components.device-picker.no_area")}</span
+                >
+              `,
+              completionInfo
+            );
+
+            return completionInfo;
+          },
+        };
+      });
+
+      return options;
     }
-
-    const options = Object.keys(states).map((key) => {
-      const context = getEntityContext(states[key], this.hass!);
-
-      return {
-        type: "variable",
-        label: key,
-        detail: states[key].attributes.friendly_name,
-        info: (_completion: Completion) => {
-          const completionInfo = document.createElement("div");
-          completionInfo.classList.add("completion-info");
-
-          render(
-            html`
-              <span
-                ><strong
-                  >${this.hass!.localize(
-                    "ui.panel.config.automation.picker.state"
-                  )}:</strong
-                ></span
-              >
-              <span>${states[key].state}</span>
-
-              <span
-                ><strong
-                  >${this.hass!.localize(
-                    "ui.panel.config.integrations.config_entry.area"
-                  )}:</strong
-                ></span
-              >
-              <span
-                >${context.area?.name ??
-                this.hass!.localize(
-                  "ui.panel.config.integrations.config_entry.no_area"
-                )}</span
-              >
-            `,
-            completionInfo
-          );
-
-          return completionInfo;
-        },
-      };
-    });
-
-    return options;
-  });
+  );
 
   private _entityCompletions(
     context: CompletionContext
@@ -416,7 +415,10 @@ export class HaCodeEditor extends ReactiveElement {
 
         // If cursor is after the entity field, show all entities
         if (context.pos >= afterField) {
-          const states = this._getStates(this.hass!.states);
+          const states = this._getStates(
+            this.hass!.states,
+            this.hass!.localize
+          );
 
           if (!states || !states.length) {
             return null;
@@ -467,7 +469,10 @@ export class HaCodeEditor extends ReactiveElement {
             const afterListMarker = currentLine.from + listItemMatch[0].length;
 
             if (context.pos >= afterListMarker) {
-              const states = this._getStates(this.hass!.states);
+              const states = this._getStates(
+                this.hass!.states,
+                this.hass!.localize
+              );
 
               if (!states || !states.length) {
                 return null;
@@ -509,7 +514,7 @@ export class HaCodeEditor extends ReactiveElement {
       return null;
     }
 
-    const states = this._getStates(this.hass!.states);
+    const states = this._getStates(this.hass!.states, this.hass!.localize);
 
     if (!states || !states.length) {
       return null;
