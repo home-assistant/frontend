@@ -24,6 +24,8 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public indent = false;
 
+  @property({ type: Boolean, reflect: true }) public selected = false;
+
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
@@ -153,10 +155,17 @@ export default class HaAutomationConditionEditor extends LitElement {
         border-bottom: 1px solid var(--divider-color);
       }
       .card-content.indent {
-        margin-top: 12px;
-        padding: 16px;
-        border-left: 1px solid var(--color-border-neutral-normal);
+        margin-top: 0;
+        margin-right: 8px;
+        margin-left: 12px;
+        padding: 12px 16px 16px;
+        border-left: 2px solid var(--color-border-neutral-normal);
         background: transparent;
+        border-bottom-right-radius: 12px;
+      }
+      :host([selected]) .card-content.indent {
+        background-color: var(--color-fill-neutral-normal-resting);
+        border-color: var(--primary-color);
       }
     `,
   ];
