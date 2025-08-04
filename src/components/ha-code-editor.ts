@@ -338,8 +338,8 @@ export class HaCodeEditor extends ReactiveElement {
         label: key,
         detail: states[key].attributes.friendly_name,
         info: (_completion: Completion) => {
-          const containerElement = document.createElement("div");
-          containerElement.classList.add("completion-info");
+          const completionInfo = document.createElement("div");
+          completionInfo.classList.add("completion-info");
 
           render(
             html`
@@ -366,10 +366,10 @@ export class HaCodeEditor extends ReactiveElement {
                 )}</span
               >
             `,
-            containerElement
+            completionInfo
           );
 
-          return containerElement;
+          return completionInfo;
         },
       };
     });
