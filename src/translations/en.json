@@ -4405,29 +4405,25 @@
                 "repeat_count": {
                   "label": "Repeat multiple times",
                   "description": {
-                    "picker": "Repeat a sequence of actions a fixed number of times.",
-                    "full": "Repeat an action {chosenAction} {count} {count, plural,\n one {time}\n other {times}\n}"
+                    "picker": "Repeat a sequence of actions a fixed number of times."
                   }
                 },
                 "repeat_while": {
                   "label": "Repeat while",
                   "description": {
-                    "picker": "Repeat a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence.",
-                    "full": "Repeat an action {chosenAction} while {condition}"
+                    "picker": "Repeat a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence."
                   }
                 },
                 "repeat_until": {
                   "label": "Repeat until",
                   "description": {
-                    "picker": "Repeat a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence.",
-                    "full": "Repeat an action {chosenAction} until {condition}"
+                    "picker": "Repeat a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence."
                   }
                 },
                 "repeat_for_each": {
                   "label": "Repeat for each",
                   "description": {
-                    "picker": "Repeat a sequence for each element of a list.",
-                    "full": "Repeat an action {chosenAction} for each item in {items}"
+                    "picker": "Repeat a sequence for each element of a list."
                   }
                 },
                 "choose": {
