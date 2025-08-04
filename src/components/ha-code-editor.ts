@@ -343,11 +343,28 @@ export class HaCodeEditor extends ReactiveElement {
 
           render(
             html`
-              <span><strong>State:</strong></span>
+              <span
+                ><strong
+                  >${this.hass!.localize(
+                    "ui.panel.config.automation.picker.state"
+                  )}:</strong
+                ></span
+              >
               <span>${states[key].state}</span>
 
-              <span><strong>Area:</strong></span>
-              <span>${context.area?.name ?? "Not found"}</span>
+              <span
+                ><strong
+                  >${this.hass!.localize(
+                    "ui.panel.config.integrations.config_entry.area"
+                  )}:</strong
+                ></span
+              >
+              <span
+                >${context.area?.name ??
+                this.hass!.localize(
+                  "ui.panel.config.integrations.config_entry.no_area"
+                )}</span
+              >
             `,
             containerElement
           );
