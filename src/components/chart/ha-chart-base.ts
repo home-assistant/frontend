@@ -168,14 +168,16 @@ export class HaChartBase extends LitElement {
   }
 
   protected firstUpdated() {
-    this._setupChart();
+    if (this.isConnected) {
+      this._setupChart();
+    }
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     if (!this.chart) {
       return;
     }
-    if (changedProps.has("_themes")) {
+    if (changedProps.has("_themes") && this.hasUpdated) {
       this._setupChart();
       return;
     }
@@ -802,6 +804,7 @@ export class HaChartBase extends LitElement {
         };
       }
     }
+
     const replaceMerge = options.series ? ["series"] : [];
     this.chart.setOption(options, { replaceMerge });
   }
