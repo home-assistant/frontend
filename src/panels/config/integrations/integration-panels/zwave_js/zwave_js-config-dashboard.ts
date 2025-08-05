@@ -452,13 +452,15 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <p>
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.dashboard.data_collection.description",
-                              {"documentation_link": html`<a
-                                          target="_blank"
-                                          href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                                  >${this.hass.localize(
-                                          "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
-                                  )}</a
-                                  >`}
+                        {
+                          documentation_link: html`<a
+                            target="_blank"
+                            href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
+                            >${this.hass.localize(
+                              "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
+                            )}</a
+                          >`,
+                        }
                       )}
                     </p>
                   </div>
