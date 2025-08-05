@@ -1,4 +1,4 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -25,6 +25,7 @@ import {
 } from "../../../common/url/search-params";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
@@ -79,6 +80,8 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public saving = false;
 
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
@@ -190,7 +193,7 @@ export class HaManualAutomationEditor extends LitElement {
         .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._closeSidebar}
@@ -237,7 +240,7 @@ export class HaManualAutomationEditor extends LitElement {
         .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._closeSidebar}
@@ -285,7 +288,7 @@ export class HaManualAutomationEditor extends LitElement {
         @close-sidebar=${this._closeSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
         root
         sidebar
       ></ha-automation-action>
@@ -295,7 +298,21 @@ export class HaManualAutomationEditor extends LitElement {
   protected render() {
     return html`
       <div class="split-view">
-        <div class="content">${this._renderContent()}</div>
+        <div class="content-wrapper">
+          <div class="content">${this._renderContent()}</div>
+          <ha-fab
+            slot="fab"
+            class=${this.dirty ? "dirty" : ""}
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.save"
+            )}
+            .disabled=${this.saving}
+            extended
+            @click=${this._saveAutomation}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
+          </ha-fab>
+        </div>
         <ha-automation-sidebar
           class=${classMap({
             sidebar: true,
@@ -371,6 +388,11 @@ export class HaManualAutomationEditor extends LitElement {
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
     });
+  }
+
+  private _saveAutomation() {
+    this._closeSidebar();
+    fireEvent(this, "save-automation");
   }
 
   private _handlePaste = async (ev: ClipboardEvent) => {
@@ -599,16 +621,16 @@ export class HaManualAutomationEditor extends LitElement {
           gap: 16px;
         }
 
-        .content.full {
-          flex: 10;
+        .content-wrapper {
+          position: relative;
+          flex: 6;
         }
 
         .content {
-          padding: 32px 16px 32px 0;
-          height: calc(100vh - 121px);
+          padding: 32px 16px 64px 0;
+          height: calc(100vh - 153px);
           overflow-y: auto;
           overflow-x: hidden;
-          flex: 6;
         }
 
         .sidebar {
@@ -680,6 +702,16 @@ export class HaManualAutomationEditor extends LitElement {
           font-size: small;
           font-weight: var(--ha-font-weight-normal);
           line-height: 0;
+        }
+
+        ha-fab {
+          position: absolute;
+          right: 16px;
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
+          transition: bottom 0.3s;
+        }
+        ha-fab.dirty {
+          bottom: 16px;
         }
       `,
     ];

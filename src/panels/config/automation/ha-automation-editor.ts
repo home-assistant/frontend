@@ -2,7 +2,6 @@ import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiContentDuplicate,
-  mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
@@ -28,9 +27,8 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-fab";
 import "../../../components/ha-button";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -97,6 +95,7 @@ declare global {
     "move-down": undefined;
     "move-up": undefined;
     duplicate: undefined;
+    "save-automation": undefined;
   }
 }
 
@@ -403,10 +402,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           </ha-list-item>
         </ha-button-menu>
         <div
-          class=${classMap({
-            content: useBlueprint,
-            "yaml-mode": this._mode === "yaml",
-          })}
+          class=${this._mode === "yaml" ? "yaml-mode" : ""}
           @subscribe-automation-config=${this._subscribeAutomationConfig}
         >
           ${this._errors || stateObj?.state === UNAVAILABLE
@@ -475,7 +471,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .stateObj=${stateObj}
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
+                          .saving=${this._saving}
+                          .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @save-automation=${this._handleSaveAutomation}
                         ></blueprint-automation-editor>
                       `
                     : html`
@@ -487,7 +486,9 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .config=${this._config}
                           .disabled=${Boolean(this._readOnly)}
                           .dirty=${this._dirty}
+                          .saving=${this._saving}
                           @value-changed=${this._valueChanged}
+                          @save-automation=${this._handleSaveAutomation}
                         ></manual-automation-editor>
                       `}
                 </div>
@@ -523,18 +524,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   ></ha-yaml-editor>`
               : nothing}
         </div>
-        <ha-fab
-          slot="fab"
-          class=${classMap({
-            dirty: !this._readOnly && this._dirty,
-          })}
-          .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
-          .disabled=${this._saving}
-          extended
-          @click=${this._handleSaveAutomation}
-        >
-          <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
-        </ha-fab>
       </hass-subpage>
     `;
   }
@@ -1101,9 +1090,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           align-items: center;
           height: 100%;
         }
-        .content {
-          padding-bottom: 20px;
-        }
         .yaml-mode {
           height: 100%;
           display: flex;
@@ -1139,14 +1125,6 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           margin-right: 8px;
           margin-inline-end: 8px;
           margin-inline-start: initial;
-        }
-        ha-fab {
-          position: relative;
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: 0;
         }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

@@ -155,7 +155,6 @@ export default class HaAutomationAction extends LitElement {
       )!;
       row.updateComplete.then(() => {
         // on new condition open the settings in the sidebar, except for building blocks
-        // TODO building blocks
         const type = getAutomationActionType(row.action);
         if (
           type &&
