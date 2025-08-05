@@ -64,7 +64,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     super.connectedCallback();
     this.addEventListener(
       "visibility-changed",
-      this._updateRowVisibility.bind(this)
+      this._updateRowVisibility
     );
   }
 
