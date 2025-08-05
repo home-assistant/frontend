@@ -62,16 +62,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   connectedCallback(): void {
     super.connectedCallback();
-    this.addEventListener(
-      "visibility-changed",
-      this._updateRowVisibility
-    );
+    this.addEventListener("row-visibility-changed", this._updateRowVisibility);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener(
-      "visibility-changed",
+      "row-visibility-changed",
       this._updateRowVisibility
     );
   }
@@ -321,7 +318,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
           (element as LovelaceRow).parentElement!.style.display = "";
         }
       });
-  }
+  };
 }
 
 declare global {
