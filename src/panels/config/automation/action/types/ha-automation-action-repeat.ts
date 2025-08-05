@@ -35,21 +35,11 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, template: boolean) =>
+    (_localize: LocalizeFunc, type: string, template: boolean) =>
       [
         {
           name: "type",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: OPTIONS.map((opt) => ({
-                value: opt,
-                label: localize(
-                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
-                ),
-              })),
-            },
-          },
+          selector: {},
         },
         ...(type === "count"
           ? ([
