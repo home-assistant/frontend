@@ -250,6 +250,21 @@ export class HaConfigLogs extends LitElement {
         .content {
           direction: ltr;
         }
+        @media all and (max-width: 870px) {
+          ha-button-menu {
+            max-width: 50%;
+          }
+          ha-button {
+            max-width: 100%;
+          }
+          ha-button::part(label) {
+            overflow: hidden;
+            white-space: nowrap;
+          }
+        }
+        ha-list-item[selected] {
+          color: var(--primary-color);
+        }
       `,
     ];
   }
