@@ -250,7 +250,7 @@ class DialogSystemInformation extends LitElement {
                   rel="noreferrer"
                 >
                   ${this.hass.localize(
-                    `ui.dialogs.unsupported.reason.${reason}`
+                    `ui.dialogs.unsupported.reasons.${reason}`
                   ) || reason}
                 </a>
               </li>
@@ -279,7 +279,7 @@ class DialogSystemInformation extends LitElement {
                   rel="noreferrer"
                 >
                   ${this.hass.localize(
-                    `ui.dialogs.unhealthy.reason.${reason}`
+                    `ui.dialogs.unhealthy.reasons.${reason}`
                   ) || reason}
                 </a>
               </li>
