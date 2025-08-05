@@ -113,11 +113,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       }
     });
 
-    this._config = {
-      tap_action: { action: "more-info" },
-      hold_action: { action: "more-info" },
-      ...config,
-    };
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -212,23 +208,31 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       this.layout === "grid" &&
       typeof this._config.grid_options?.rows === "number";
 
+    const hasTapAction =
+      hasAction(this._config.tap_action) ||
+      Boolean(
+        !this._config.tap_action &&
+          (this._config.camera_image ||
+            this._config.image_entity ||
+            this._config.entity)
+      );
+
     return html`
       <ha-card>
         <hui-image
           class=${classMap({
             clickable:
-              hasAction(this._config.tap_action) ||
+              hasTapAction ||
               hasAction(this._config.hold_action) ||
               hasAction(this._config.double_tap_action),
           })}
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
-            hasHold: hasAction(this._config!.hold_action),
-            hasDoubleClick: hasAction(this._config!.double_tap_action),
+            hasTap: hasTapAction,
+            hasHold: hasAction(this._config.hold_action),
+            hasDoubleClick: hasAction(this._config.double_tap_action),
           })}
-          tabindex=${ifDefined(
-            hasAction(this._config.tap_action) ? "0" : undefined
-          )}
+          tabindex=${ifDefined(hasTapAction ? "0" : undefined)}
           .config=${this._config}
           .hass=${this.hass}
           .image=${image}
