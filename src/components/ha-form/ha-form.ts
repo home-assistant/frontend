@@ -1,5 +1,5 @@
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, ReactiveElement } from "lit";
+import { css, html, LitElement, nothing, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -133,36 +133,38 @@ export class HaForm extends LitElement implements HaFormElement {
                     </ha-alert>
                   `
                 : ""}
-            ${"selector" in item
-              ? html`<ha-selector
-                  .schema=${item}
-                  .hass=${this.hass}
-                  .narrow=${this.narrow}
-                  .name=${item.name}
-                  .selector=${item.selector}
-                  .value=${getValue(this.data, item)}
-                  .label=${this._computeLabel(item, this.data)}
-                  .disabled=${item.disabled || this.disabled || false}
-                  .placeholder=${item.required ? "" : item.default}
-                  .helper=${this._computeHelper(item)}
-                  .localizeValue=${this.localizeValue}
-                  .required=${item.required || false}
-                  .context=${this._generateContext(item)}
-                ></ha-selector>`
-              : dynamicElement(this.fieldElementName(item.type), {
-                  schema: item,
-                  data: getValue(this.data, item),
-                  label: this._computeLabel(item, this.data),
-                  helper: this._computeHelper(item),
-                  disabled: this.disabled || item.disabled || false,
-                  hass: this.hass,
-                  localize: this.hass?.localize,
-                  computeLabel: this.computeLabel,
-                  computeHelper: this.computeHelper,
-                  localizeValue: this.localizeValue,
-                  context: this._generateContext(item),
-                  ...this.getFormProperties(),
-                })}
+            ${"hidden" in item && item.hidden
+              ? nothing
+              : "selector" in item
+                ? html`<ha-selector
+                    .schema=${item}
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .name=${item.name}
+                    .selector=${item.selector}
+                    .value=${getValue(this.data, item)}
+                    .label=${this._computeLabel(item, this.data)}
+                    .disabled=${item.disabled || this.disabled || false}
+                    .placeholder=${item.required ? "" : item.default}
+                    .helper=${this._computeHelper(item)}
+                    .localizeValue=${this.localizeValue}
+                    .required=${item.required || false}
+                    .context=${this._generateContext(item)}
+                  ></ha-selector>`
+                : dynamicElement(this.fieldElementName(item.type), {
+                    schema: item,
+                    data: getValue(this.data, item),
+                    label: this._computeLabel(item, this.data),
+                    helper: this._computeHelper(item),
+                    disabled: this.disabled || item.disabled || false,
+                    hass: this.hass,
+                    localize: this.hass?.localize,
+                    computeLabel: this.computeLabel,
+                    computeHelper: this.computeHelper,
+                    localizeValue: this.localizeValue,
+                    context: this._generateContext(item),
+                    ...this.getFormProperties(),
+                  })}
           `;
         })}
       </div>

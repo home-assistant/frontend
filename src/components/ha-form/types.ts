@@ -57,6 +57,7 @@ export interface HaFormOptionalActionsSchema extends HaFormBaseSchema {
 export interface HaFormSelector extends HaFormBaseSchema {
   type?: never;
   selector: Selector;
+  hidden?: boolean;
 }
 
 export interface HaFormConstantSchema extends HaFormBaseSchema {
