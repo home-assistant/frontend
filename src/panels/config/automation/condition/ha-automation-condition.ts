@@ -36,6 +36,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean }) public root = false;
 
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
@@ -153,6 +155,7 @@ export default class HaAutomationCondition extends LitElement {
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
                 .disabled=${this.disabled}
+                .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
@@ -340,7 +343,7 @@ export default class HaAutomationCondition extends LitElement {
 
   static styles = css`
     .conditions {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;

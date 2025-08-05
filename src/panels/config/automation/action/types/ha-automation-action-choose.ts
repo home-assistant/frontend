@@ -40,6 +40,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         @value-changed=${this._optionsChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-option>
 
       ${this._showDefault || action.default

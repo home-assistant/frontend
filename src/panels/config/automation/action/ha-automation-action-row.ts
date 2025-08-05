@@ -18,6 +18,7 @@ import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -166,6 +167,8 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _yamlMode = false;
 
   @state() private _selected = false;
+
+  @state() private _collapsed = false;
 
   @query("ha-automation-action-editor")
   private actionEditor?: HaAutomationActionEditor;
@@ -372,7 +375,18 @@ export default class HaAutomationActionRow extends LitElement {
     const type = getAutomationActionType(this.action);
 
     return html`
-      <ha-card outlined class=${this._selected ? "selected" : ""}>
+      <ha-card
+        outlined
+        class=${classMap({
+          selected: this._selected,
+          "building-block":
+            this.optionsInSidebar &&
+            [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
+              type!
+            ) &&
+            !this._collapsed,
+        })}
+      >
         ${this.action.enabled === false
           ? html`
               <div class="disabled-bar">
@@ -383,7 +397,14 @@ export default class HaAutomationActionRow extends LitElement {
             `
           : nothing}
         ${this.optionsInSidebar
-          ? html`<ha-automation-row @click=${this.openSidebar}
+          ? html`<ha-automation-row
+              @click=${this.openSidebar}
+              .leftChevron=${this.optionsInSidebar &&
+              [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
+                type!
+              )}
+              .collapsed=${this._collapsed}
+              @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -394,7 +415,8 @@ export default class HaAutomationActionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(type!)
+      [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(type!) &&
+      !this._collapsed
         ? html`<ha-automation-action-editor
             .hass=${this.hass}
             .action=${this.action}
@@ -521,7 +543,7 @@ export default class HaAutomationActionRow extends LitElement {
       });
 
       if (this._yamlMode) {
-        if (this.openSidebar) {
+        if (this.optionsInSidebar) {
           this.openSidebar(undefined, value); // refresh sidebar
         } else {
           this.actionEditor?.yamlEditor?.setValue(value);
@@ -566,10 +588,13 @@ export default class HaAutomationActionRow extends LitElement {
 
   public openSidebar(ev?: CustomEvent, action?: Action): void {
     ev?.stopPropagation();
+
+    if (this.narrow) {
+      this.scrollIntoView();
+    }
     const sidebarAction = action ?? this.action;
     const actionType = getAutomationActionType(sidebarAction);
 
-    // TODO on click it's called twice, should be just once
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -606,6 +631,10 @@ export default class HaAutomationActionRow extends LitElement {
       customElements.get(`ha-automation-action-${type}`) !== undefined
   );
 
+  private _toggleCollapse() {
+    this._collapsed = !this._collapsed;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -618,19 +647,8 @@ export default class HaAutomationActionRow extends LitElement {
           --expansion-panel-content-padding: 0;
         }
         h3 {
-          margin: 0;
           font-size: inherit;
           font-weight: inherit;
-        }
-        .action-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .action-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-          }
         }
 
         ha-card {
@@ -642,6 +660,9 @@ export default class HaAutomationActionRow extends LitElement {
           outline-color: var(--primary-color);
           outline-offset: -2px;
           outline-width: 2px;
+        }
+        ha-card.selected.building-block {
+          border-bottom-right-radius: 0;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);

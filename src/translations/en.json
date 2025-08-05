@@ -4422,6 +4422,8 @@
                   "conditions": "Conditions",
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
+                  "option_label": "Option",
+                  "option_description": "Choose actions based on conditions",
                   "description": {
                     "picker": "Choose what to do based on conditions (Similar to If-Then, but more powerful).",
                     "full": "Choose {number, plural,\n one {an action}\n other{between {number} actions}\n}",

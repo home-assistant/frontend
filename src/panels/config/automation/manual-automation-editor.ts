@@ -191,6 +191,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._closeSidebar}
         root
@@ -237,6 +238,7 @@ export class HaManualAutomationEditor extends LitElement {
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled}
+        .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._closeSidebar}
         root
@@ -328,8 +330,11 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _closeSidebar() {
-    this._sidebarConfig?.close?.();
-    this._sidebarConfig = undefined;
+    if (this._sidebarConfig) {
+      const closeRow = this._sidebarConfig?.close;
+      this._sidebarConfig = undefined;
+      closeRow?.();
+    }
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -608,9 +613,6 @@ export class HaManualAutomationEditor extends LitElement {
 
         .sidebar {
           padding: 32px 0;
-          transition:
-            height 0.3s ease-out,
-            flex 0.3s ease-out;
           flex: 4;
           height: calc(100vh - 121px);
         }
@@ -632,7 +634,8 @@ export class HaManualAutomationEditor extends LitElement {
 
         @media all and (max-width: 870px) {
           .sidebar.overlay {
-            height: 80vh;
+            max-height: 80vh;
+            height: auto;
             width: 100%;
           }
         }
@@ -688,7 +691,6 @@ declare global {
     "manual-automation-editor": HaManualAutomationEditor;
   }
 
-  // custom event open-sidebar
   interface HASSDomEvents {
     "open-sidebar": OpenSidebarConfig;
     "close-sidebar": undefined;

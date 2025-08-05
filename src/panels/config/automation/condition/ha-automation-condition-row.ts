@@ -104,6 +104,10 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public last?: boolean;
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @state() private _collapsed = false;
+
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
 
@@ -293,7 +297,16 @@ export default class HaAutomationConditionRow extends LitElement {
     }
 
     return html`
-      <ha-card outlined class=${this._selected ? "selected" : ""}>
+      <ha-card
+        outlined
+        class=${classMap({
+          selected: this._selected,
+          "building-block":
+            this.optionsInSidebar &&
+            CONDITION_BUILDING_BLOCKS.includes(this.condition.condition) &&
+            !this._collapsed,
+        })}
+      >
         ${this.condition.enabled === false
           ? html`
               <div class="disabled-bar">
@@ -304,7 +317,12 @@ export default class HaAutomationConditionRow extends LitElement {
             `
           : nothing}
         ${this.optionsInSidebar
-          ? html`<ha-automation-row @click=${this.openSidebar}
+          ? html`<ha-automation-row
+              .leftChevron=${this.optionsInSidebar &&
+              CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)}
+              .collapsed=${this._collapsed}
+              @click=${this.openSidebar}
+              @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -330,7 +348,8 @@ export default class HaAutomationConditionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
+      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition) &&
+      !this._collapsed
         ? html`<ha-automation-condition-editor
             .hass=${this.hass}
             .condition=${this.condition}
@@ -471,7 +490,7 @@ export default class HaAutomationConditionRow extends LitElement {
       });
 
       if (this._yamlMode) {
-        if (this.openSidebar) {
+        if (this.optionsInSidebar) {
           this.openSidebar(undefined, value); // refresh sidebar
         } else {
           this.conditionEditor?.yamlEditor?.setValue(value);
@@ -522,7 +541,9 @@ export default class HaAutomationConditionRow extends LitElement {
 
   public openSidebar(ev?: CustomEvent, condition?: Condition): void {
     ev?.stopPropagation();
-    // TODO on click it's called twice, should be just once
+    if (this.narrow) {
+      this.scrollIntoView();
+    }
 
     const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
@@ -555,6 +576,10 @@ export default class HaAutomationConditionRow extends LitElement {
       customElements.get(`ha-automation-condition-${type}`) !== undefined
   );
 
+  private _toggleCollapse() {
+    this._collapsed = !this._collapsed;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -564,19 +589,8 @@ export default class HaAutomationConditionRow extends LitElement {
           --expansion-panel-content-padding: 0;
         }
         h3 {
-          margin: 0;
           font-size: inherit;
           font-weight: inherit;
-        }
-        .condition-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .condition-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-          }
         }
 
         ha-card {
@@ -588,6 +602,9 @@ export default class HaAutomationConditionRow extends LitElement {
           outline-color: var(--primary-color);
           outline-offset: -2px;
           outline-width: 2px;
+        }
+        ha-card.selected.building-block {
+          border-bottom-right-radius: 0;
         }
         .disabled-bar {
           background: var(--divider-color, #e0e0e0);

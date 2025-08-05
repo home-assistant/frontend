@@ -1,38 +1,52 @@
+import { mdiChevronUp } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-svg-icon";
+import { fireEvent } from "../common/dom/fire_event";
+import "./ha-icon-button";
 
 @customElement("ha-automation-row")
 export class HaAutomationRow extends LitElement {
-  @property() header?: string;
+  @property({ attribute: "left-chevron", type: Boolean })
+  public leftChevron = false;
 
-  @property() secondary?: string;
+  @property({ type: Boolean, reflect: true })
+  public collapsed = false;
 
-  // TODO keyboard selection whole row
   protected render(): TemplateResult {
     return html`
-      <div class="top">
-        <div
-          id="summary"
-          @click=${this._toggleContainer}
-          @keydown=${this._toggleContainer}
-          role="button"
-        >
-          <slot name="leading-icon"></slot>
-          <slot name="header">
-            <div class="header">
-              ${this.header}
-              <slot class="secondary" name="secondary">${this.secondary}</slot>
-            </div>
-          </slot>
-          <slot name="icons"></slot>
-        </div>
+      <div class="row" tabindex="0" role="button" @keydown=${this._click}>
+        ${this.leftChevron
+          ? html`
+              <ha-icon-button
+                class="expand-button"
+                .path=${mdiChevronUp}
+                @click=${this._handleExpand}
+                @keydown=${this._handleExpand}
+              ></ha-icon-button>
+            `
+          : nothing}
+        <slot name="leading-icon"></slot>
+        <slot class="header" name="header"></slot>
+        <slot name="icons"></slot>
       </div>
     `;
   }
 
-  private async _toggleContainer(ev): Promise<void> {
+  private async _handleExpand(ev) {
+    if (ev.defaultPrevented) {
+      return;
+    }
+    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+      return;
+    }
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    fireEvent(this, "toggle-collapsed");
+  }
+
+  private async _click(ev): Promise<void> {
     if (ev.defaultPrevented) {
       return;
     }
@@ -40,6 +54,7 @@ export class HaAutomationRow extends LitElement {
       return;
     }
     ev.preventDefault();
+    ev.stopPropagation();
 
     this.click();
   }
@@ -48,74 +63,35 @@ export class HaAutomationRow extends LitElement {
     :host {
       display: block;
     }
-    .top {
+    .row {
       display: flex;
-      align-items: center;
-      border-radius: var(--ha-card-border-radius, 12px);
-    }
-    .top.expanded {
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-    }
-    .top.focused {
-      background: var(--input-fill-color);
-    }
-    :host([outlined]) {
-      box-shadow: none;
-      border-width: 1px;
-      border-style: solid;
-      border-color: var(--outline-color);
-      border-radius: var(--ha-card-border-radius, 12px);
-    }
-    .summary-icon {
-      transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-      direction: var(--direction);
-      margin-left: 8px;
-      margin-inline-start: 8px;
-      margin-inline-end: initial;
-    }
-    :host([left-chevron]) .summary-icon,
-    ::slotted([slot="leading-icon"]) {
-      margin-left: 0;
-      margin-right: 8px;
-      margin-inline-start: 0;
-      margin-inline-end: 8px;
-    }
-    #summary {
-      flex: 1;
-      display: flex;
-      padding: var(--expansion-panel-summary-padding, 0 8px);
+      padding: 0 8px;
       min-height: 48px;
       align-items: center;
       cursor: pointer;
       overflow: hidden;
       font-weight: var(--ha-font-weight-medium);
       outline: none;
+      border-radius: var(--ha-card-border-radius, 12px);
     }
-    #summary.noCollapse {
-      cursor: default;
+    .row:focus {
+      outline: var(--wa-focus-ring);
+      outline-offset: -2px;
     }
-    .summary-icon.expanded {
+    .expand-button {
+      transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      color: var(--color-on-neutral-quiet);
+    }
+    ::slotted([slot="leading-icon"]) {
+      color: var(--color-on-neutral-quiet);
+    }
+    :host([collapsed]) .expand-button {
       transform: rotate(180deg);
     }
-    .header,
     ::slotted([slot="header"]) {
       flex: 1;
       overflow-wrap: anywhere;
-    }
-    .container {
-      padding: var(--expansion-panel-content-padding, 0 8px);
-      overflow: hidden;
-      transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
-      height: 0px;
-    }
-    .container.expanded {
-      height: auto;
-    }
-    .secondary {
-      display: block;
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
+      margin: 0 12px;
     }
   `;
 }
@@ -123,5 +99,9 @@ export class HaAutomationRow extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-row": HaAutomationRow;
+  }
+
+  interface HASSDomEvents {
+    "toggle-collapsed": undefined;
   }
 }

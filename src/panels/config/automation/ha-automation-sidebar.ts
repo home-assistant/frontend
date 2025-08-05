@@ -10,6 +10,7 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import type { LocalizeKeys } from "../../../common/translations/localize";
@@ -42,7 +43,7 @@ export interface OpenSidebarConfig {
   disable: () => void;
   delete: () => void;
   config: Trigger | Condition | Action;
-  type: "trigger" | "condition" | "action";
+  type: "trigger" | "condition" | "action" | "option";
   uiSupported: boolean;
   yamlMode: boolean;
 }
@@ -93,21 +94,34 @@ export default class HaAutomationSidebar extends LitElement {
     ].includes(type);
 
     const title = this.hass.localize(
-      `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type !== "condition" || !isBuildingBlock ? "edit" : "condition"}` as LocalizeKeys
+      (this.config.type === "option"
+        ? "ui.panel.config.automation.editor.actions.type.choose.label"
+        : `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type === "trigger" || !isBuildingBlock ? "edit" : this.config.type === "condition" ? "condition" : "action"}`) as LocalizeKeys
     );
     const subtitle =
       this.hass.localize(
-        `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label` as LocalizeKeys
+        (this.config.type === "option"
+          ? "ui.panel.config.automation.editor.actions.type.choose.option_label"
+          : `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label`) as LocalizeKeys
       ) || type;
 
-    const description = isBuildingBlock
-      ? this.hass.localize(
-          `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.description.picker` as LocalizeKeys
-        )
-      : nothing;
+    const description =
+      isBuildingBlock || this.config.type === "option"
+        ? this.hass.localize(
+            (this.config.type === "option"
+              ? "ui.panel.config.automation.editor.actions.type.choose.option_description"
+              : `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.description.picker`) as LocalizeKeys
+          )
+        : "";
 
     return html`
-      <ha-card outlined class=${!this.isWide ? "mobile" : ""}>
+      <ha-card
+        outlined
+        class=${classMap({
+          mobile: !this.isWide,
+          yaml: this._yamlMode,
+        })}
+      >
         <ha-dialog-header>
           <ha-icon-button
             slot="navigationIcon"
@@ -281,7 +295,7 @@ export default class HaAutomationSidebar extends LitElement {
   static styles = css`
     :host {
       height: 100%;
-      z-index: 1;
+      z-index: 5;
     }
 
     ha-card {
@@ -297,8 +311,16 @@ export default class HaAutomationSidebar extends LitElement {
     }
     ha-card.mobile {
       border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0
-      outline: none;
+      border-bottom-left-radius: 0;
+    }
+
+    @media all and (max-width: 870px) {
+      ha-card.mobile {
+        max-height: 80vh;
+      }
+      ha-card.mobile.yaml {
+        height: 80vh;
+      }
     }
 
     ha-dialog-header {
@@ -310,16 +332,12 @@ export default class HaAutomationSidebar extends LitElement {
       margin-right: 2px;
       border-radius: 12px;
     }
-
-    ha-card.mobile ha-dialog-header {
-      top: 0;
-      margin-left: 0;
-      margin-right: 0;
-    }
-
-    .card-content,
     .sidebar-editor {
       padding-top: 64px;
+    }
+
+    .card-content {
+      padding: 16px;
     }
   `;
 }

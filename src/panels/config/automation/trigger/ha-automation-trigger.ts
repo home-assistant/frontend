@@ -36,6 +36,8 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
@@ -100,6 +102,7 @@ export default class HaAutomationTrigger extends LitElement {
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
+                .narrow=${this.narrow}
                 ?highlight=${this.highlightedTriggers?.includes(trg)}
                 .optionsInSidebar=${this.optionsInSidebar}
               >
@@ -291,7 +294,7 @@ export default class HaAutomationTrigger extends LitElement {
 
   static styles = css`
     .triggers {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;

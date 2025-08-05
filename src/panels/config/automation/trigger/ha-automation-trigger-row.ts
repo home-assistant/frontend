@@ -119,6 +119,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @state() private _requestShowId = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @query("ha-automation-trigger-editor")
   public triggerContent?: HaAutomationTriggerContent;
 
@@ -424,7 +426,9 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   public openSidebar(ev?: CustomEvent, trigger?: Trigger): void {
     ev?.stopPropagation();
-    // TODO on click it's called twice, should be just once
+    if (this.narrow) {
+      this.scrollIntoView();
+    }
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -615,19 +619,8 @@ export default class HaAutomationTriggerRow extends LitElement {
           --expansion-panel-content-padding: 0;
         }
         h3 {
-          margin: 0;
           font-size: inherit;
           font-weight: inherit;
-        }
-        .trigger-icon {
-          display: none;
-        }
-        @media (min-width: 870px) {
-          .trigger-icon {
-            display: inline-block;
-            color: var(--secondary-text-color);
-            opacity: 0.9;
-          }
         }
 
         ha-card {

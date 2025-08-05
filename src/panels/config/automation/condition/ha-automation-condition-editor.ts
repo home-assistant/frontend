@@ -156,7 +156,6 @@ export default class HaAutomationConditionEditor extends LitElement {
       }
       .card-content.indent {
         margin-top: 0;
-        margin-right: 8px;
         margin-left: 12px;
         padding: 12px 16px 16px;
         border-left: 2px solid var(--color-border-neutral-normal);
@@ -166,6 +165,7 @@ export default class HaAutomationConditionEditor extends LitElement {
       :host([selected]) .card-content.indent {
         background-color: var(--color-fill-neutral-normal-resting);
         border-color: var(--primary-color);
+        margin-right: 8px;
       }
     `,
   ];

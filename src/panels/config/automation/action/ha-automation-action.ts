@@ -319,7 +319,7 @@ export default class HaAutomationAction extends LitElement {
 
   static styles = css`
     .actions {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;
