@@ -25,7 +25,6 @@ import {
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
-import { colorVariables } from "../../../../../resources/theme/color/color.globals";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { configTabs } from "./zwave_js-config-router";
 
@@ -147,8 +146,10 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
       nodeStatuses: Record<number, ZWaveJSNodeStatus>,
       nodeStatistics: Record<number, ZWaveJSNodeStatisticsUpdatedMessage>
     ): NetworkData => {
+      const style = getComputedStyle(this);
       const nodes: NetworkNode[] = [];
       const links: NetworkLink[] = [];
+
       const categories = [
         {
           name: this.hass.localize(
@@ -156,7 +157,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           ),
           symbol: "roundRect",
           itemStyle: {
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         },
         {
@@ -165,7 +166,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           ),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["cyan-color"],
+            color: style.getPropertyValue("--cyan-color"),
           },
         },
         {
@@ -174,7 +175,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           ),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["disabled-color"],
+            color: style.getPropertyValue("--disabled-color"),
           },
         },
         {
@@ -183,7 +184,7 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           ),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["error-color"],
+            color: style.getPropertyValue("--error-color"),
           },
         },
       ];
@@ -214,12 +215,12 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
           itemStyle: {
             color:
               node.status === NodeStatus.Dead
-                ? colorVariables["error-color"]
+                ? style.getPropertyValue("--error-color")
                 : node.status === NodeStatus.Asleep
-                  ? colorVariables["disabled-color"]
+                  ? style.getPropertyValue("--disabled-color")
                   : node.is_controller_node
-                    ? colorVariables["primary-color"]
-                    : colorVariables["cyan-color"],
+                    ? style.getPropertyValue("--primary-color")
+                    : style.getPropertyValue("--cyan-color"),
           },
           polarDistance: node.is_controller_node
             ? 0
@@ -269,8 +270,8 @@ export class ZWaveJSNetworkVisualization extends SubscribeMixin(LitElement) {
                   width,
                   color:
                     repeater === controllerNode
-                      ? colorVariables["primary-color"]
-                      : colorVariables["disabled-color"],
+                      ? style.getPropertyValue("--primary-color")
+                      : style.getPropertyValue("--disabled-color"),
                   type: route.protocol_data_rate > 1 ? "solid" : "dotted",
                 },
                 symbolSize: width * 3,
