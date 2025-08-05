@@ -17,6 +17,8 @@ export class HaSequenceAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: SequenceAction;
 
+  @property({ type: Boolean }) public indent = false;
+
   public static get defaultConfig(): SequenceAction {
     return {
       sequence: [],
@@ -32,6 +34,7 @@ export class HaSequenceAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-action>
     `;
   }

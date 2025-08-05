@@ -193,6 +193,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._closeSidebar}
+        root
         sidebar
       ></ha-automation-trigger>
 
@@ -327,6 +328,7 @@ export class HaManualAutomationEditor extends LitElement {
   }
 
   private _closeSidebar() {
+    this._sidebarConfig?.close?.();
     this._sidebarConfig = undefined;
   }
 

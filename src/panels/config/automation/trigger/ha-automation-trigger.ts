@@ -39,6 +39,8 @@ export default class HaAutomationTrigger extends LitElement {
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
+  @property({ type: Boolean }) public root = false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -115,6 +117,8 @@ export default class HaAutomationTrigger extends LitElement {
             <ha-button
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
             >
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.triggers.add"
