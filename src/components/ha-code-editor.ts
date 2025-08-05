@@ -10,7 +10,7 @@ import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement, html, render } from "lit";
+import { css, ReactiveElement, html, render, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -332,26 +332,41 @@ export class HaCodeEditor extends ReactiveElement {
     const completionInfo = document.createElement("div");
     completionInfo.classList.add("completion-info");
 
+    const renderItem = (label: string, value: string) => html`
+      <span><strong>${label}:</strong></span>
+      <span>${value}</span>
+    `;
+
     render(
       html`
-        <span
-          ><strong
-            >${this.hass!.localize(
-              "ui.components.entity.entity-state-picker.state"
-            )}:</strong
-          ></span
-        >
-        <span>${this.hass!.states[key].state}</span>
-
-        <span
-          ><strong
-            >${this.hass!.localize("ui.components.area-picker.area")}:</strong
-          ></span
-        >
-        <span
-          >${context.area?.name ??
-          this.hass!.localize("ui.components.device-picker.no_area")}</span
-        >
+        ${renderItem(
+          this.hass!.localize("ui.components.entity.entity-state-picker.state"),
+          this.hass!.states[key].state
+        )}
+        ${context.device?.name
+          ? html`
+              ${renderItem(
+                this.hass!.localize("ui.components.device-picker.device"),
+                context.device.name
+              )}
+            `
+          : nothing}
+        ${context.floor?.name
+          ? html`
+              ${renderItem(
+                this.hass!.localize("ui.components.floor-picker.floor"),
+                context.floor.name
+              )}
+            `
+          : nothing}
+        ${context.area?.name
+          ? html`
+              ${renderItem(
+                this.hass!.localize("ui.components.area-picker.area"),
+                context.area.name
+              )}
+            `
+          : nothing}
       `,
       completionInfo
     );
