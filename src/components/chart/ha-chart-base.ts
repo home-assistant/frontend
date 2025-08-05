@@ -29,7 +29,6 @@ import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../chips/ha-assist-chip";
 import { downSampleLineData } from "./down-sample";
-import { colorVariables } from "../../resources/theme/color/color.globals";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -342,7 +341,8 @@ export class HaChartBase extends LitElement {
         echarts.use(this.extraComponents);
       }
 
-      echarts.registerTheme("custom", this._createTheme());
+      const style = getComputedStyle(this);
+      echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(container, "custom");
       this.chart.on("datazoom", (e: any) => {
@@ -394,7 +394,7 @@ export class HaChartBase extends LitElement {
                         ...axis.axisPointer,
                         status: "show",
                         handle: {
-                          color: colorVariables["primary-color"],
+                          color: style.getPropertyValue("primary-color"),
                           margin: 0,
                           size: 20,
                           ...axis.axisPointer?.handle,
@@ -568,8 +568,7 @@ export class HaChartBase extends LitElement {
     return options;
   }
 
-  private _createTheme() {
-    const style = getComputedStyle(this);
+  private _createTheme(style: CSSStyleDeclaration) {
     return {
       color: getAllGraphColors(style),
       backgroundColor: "transparent",

@@ -26,7 +26,6 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-subpage";
-import { colorVariables } from "../../../../../resources/theme/color/color.globals";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
 
@@ -131,33 +130,34 @@ export class BluetoothNetworkVisualization extends LitElement {
       data: BluetoothDeviceData[],
       scanners: BluetoothScannersDetails
     ): NetworkData => {
+      const style = getComputedStyle(this);
       const categories = [
         {
           name: CORE_SOURCE_LABEL,
           symbol: "roundRect",
           itemStyle: {
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.scanners"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["cyan-color"],
+            color: style.getPropertyValue("--cyan-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.known_devices"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["teal-color"],
+            color: style.getPropertyValue("--teal-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.unknown_devices"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["disabled-color"],
+            color: style.getPropertyValue("--disabled-color"),
           },
         },
       ];
@@ -192,7 +192,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           symbol: "none",
           lineStyle: {
             width: 3,
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         });
       });
@@ -206,7 +206,7 @@ export class BluetoothNetworkVisualization extends LitElement {
             symbol: "none",
             lineStyle: {
               width: this._getLineWidth(node.rssi),
-              color: colorVariables["primary-color"],
+              color: style.getPropertyValue("--primary-color"),
             },
           });
           return;
@@ -227,8 +227,8 @@ export class BluetoothNetworkVisualization extends LitElement {
           lineStyle: {
             width: this._getLineWidth(node.rssi),
             color: device
-              ? colorVariables["primary-color"]
-              : colorVariables["disabled-color"],
+              ? style.getPropertyValue("--primary-color")
+              : style.getPropertyValue("--disabled-color"),
           },
         });
       });
