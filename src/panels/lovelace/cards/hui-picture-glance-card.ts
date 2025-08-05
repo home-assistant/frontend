@@ -216,12 +216,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       <ha-card>
         <hui-image
           class=${classMap({
-            clickable: Boolean(
-              this._config.tap_action ||
-                this._config.hold_action ||
-                this._config.camera_image ||
-                this._config.image_entity
-            ),
+            clickable:
+              hasAction(this._config.tap_action) ||
+              hasAction(this._config.hold_action) ||
+              hasAction(this._config.double_tap_action),
           })}
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
