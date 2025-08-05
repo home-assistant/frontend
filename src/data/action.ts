@@ -29,6 +29,7 @@ export const ACTION_ICONS = {
   service: mdiRoomService,
   wait_template: mdiCodeBraces,
   wait_for_trigger: mdiTrafficLight,
+  repeat: mdiRefresh,
   repeat_count: mdiRefresh,
   repeat_while: mdiRefresh,
   repeat_until: mdiRefresh,
