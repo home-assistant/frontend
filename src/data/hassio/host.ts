@@ -8,7 +8,7 @@ export interface HassioHostInfo {
   chassis: string;
   cpe: string;
   deployment: string;
-  disk_life_time: number | "";
+  disk_life_time: number | null;
   disk_free: number;
   disk_total: number;
   disk_used: number;

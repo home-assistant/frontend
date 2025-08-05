@@ -6614,7 +6614,8 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used space",
           "detailed_description": "{used} used of {total} total, {free_space} remaining",
-          "emmc_lifetime_used": "eMMC lifetime used",
+          "lifetime_used": "Lifetime used",
+          "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
@@ -9428,7 +9429,7 @@
         "operating_system": "Operating system",
         "docker_version": "Docker version",
         "deployment": "Deployment",
-        "emmc_lifetime_used": "eMMC lifetime used",
+        "lifetime_used": "Lifetime used",
         "reboot_host": "Reboot host",
         "confirm_reboot": "Are you sure you want to reboot the host?",
         "confirm_shutdown": "Are you sure you want to shut down the host?",
