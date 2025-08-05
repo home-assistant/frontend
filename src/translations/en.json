@@ -5921,6 +5921,11 @@
               "restoring": "Restoring backup",
               "migrate": "Migrate adapter"
             },
+            "data_collection": {
+              "title": "Third-party data reporting",
+              "description": "Enable the reporting of anonymized telemetry and statistics to the Z-Wave JS organization. This data will be used to focus development efforts and improve the user experience. Information about the data that is collected and how it is used, including an example of the data collected, can be found in the {documentation_link}.",
+              "documentation_link": "Z-Wave JS data collection documentation"
+            },
             "statistics": {
               "title": "Adapter statistics",
               "messages_tx": {
