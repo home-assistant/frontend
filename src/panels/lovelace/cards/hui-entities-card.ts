@@ -311,7 +311,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return html`<div ?hidden=${element.hidden}>${element}</div>`;
   }
 
-  private _updateRowVisibility() {
+  private _updateRowVisibility = () => {
     this.shadowRoot
       ?.querySelectorAll("#states > div > *")
       .forEach((element: unknown) => {
