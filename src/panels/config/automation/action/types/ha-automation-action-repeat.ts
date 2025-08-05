@@ -35,8 +35,22 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (_localize: LocalizeFunc, type: string, template: boolean) =>
+    (localize: LocalizeFunc, type: string, template: boolean) =>
       [
+        {
+          name: "type",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: OPTIONS.map((opt) => ({
+                value: opt,
+                label: localize(
+                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
+                ),
+              })),
+            },
+          },
+        },
         ...(type === "count"
           ? ([
               {
@@ -102,6 +116,37 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     ev.stopPropagation();
     const newVal = ev.detail.value;
 
+    const newType = newVal.type;
+    delete newVal.type;
+    const oldType = getType(this.action.repeat);
+
+    if (newType !== oldType) {
+      if (newType === "count") {
+        newVal.count = 2;
+        delete newVal.while;
+        delete newVal.until;
+        delete newVal.for_each;
+      }
+      if (newType === "while") {
+        newVal.while = newVal.until ?? [];
+        delete newVal.count;
+        delete newVal.until;
+        delete newVal.for_each;
+      }
+      if (newType === "until") {
+        newVal.until = newVal.while ?? [];
+        delete newVal.count;
+        delete newVal.while;
+        delete newVal.for_each;
+      }
+      if (newType === "for_each") {
+        newVal.for_each = {};
+        delete newVal.count;
+        delete newVal.while;
+        delete newVal.until;
+      }
+    }
+
     fireEvent(this, "value-changed", {
       value: {
         ...this.action,
@@ -125,6 +170,10 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
+      case "type":
+        return this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.repeat.type_select"
+        );
       case "count":
         return this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
