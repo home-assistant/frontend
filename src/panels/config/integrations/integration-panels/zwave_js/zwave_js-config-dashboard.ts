@@ -434,7 +434,11 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                 </ha-card>
                 <ha-card>
                   <div class="card-header">
-                    <h1>Third-party data reporting</h1>
+                    <h1>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.data_collection.title"
+                      )}
+                    </h1>
                     ${this._dataCollectionOptIn !== undefined
                       ? html`
                           <ha-switch
@@ -446,17 +450,16 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   </div>
                   <div class="card-content">
                     <p>
-                      Enable the reporting of anonymized telemetry and
-                      statistics to the <em>Z-Wave JS organization</em>. This
-                      data will be used to focus development efforts and improve
-                      the user experience. Information about the data that is
-                      collected and how it is used, including an example of the
-                      data collected, can be found in the
-                      <a
-                        target="_blank"
-                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
-                        >Z-Wave JS data collection documentation</a
-                      >.
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.dashboard.data_collection.description",
+                              {"documentation_link": html`<a
+                                          target="_blank"
+                                          href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection"
+                                  >${this.hass.localize(
+                                          "ui.panel.config.zwave_js.dashboard.data_collection.documentation_link"
+                                  )}</a
+                                  >`}
+                      )}
                     </p>
                   </div>
                 </ha-card>
