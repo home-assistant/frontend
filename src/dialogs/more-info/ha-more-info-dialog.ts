@@ -300,7 +300,8 @@ export class MoreInfoDialog extends LitElement {
     this._setView("related");
   }
 
-  private _goToAddEntityTo(): void {
+  private _goToAddEntityTo(ev): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) return;
     this.hass.auth.external!.fireMessage({
       type: "entity/add_to",
       payload: {
