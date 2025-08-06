@@ -78,58 +78,78 @@ export class HaButton extends Button {
         }
 
         :host([variant="brand"]) {
-          --ha-color-fill-normal-active: var(
+          --button-color-fill-normal-active: var(
             --ha-color-fill-primary-normal-active
           );
-          --ha-color-fill-normal-hover: var(
+          --button-color-fill-normal-hover: var(
             --ha-color-fill-primary-normal-hover
           );
-          --ha-color-fill-loud-active: var(--ha-color-fill-primary-loud-active);
-          --ha-color-fill-loud-hover: var(--ha-color-fill-primary-loud-hover);
+          --button-color-fill-loud-active: var(
+            --ha-color-fill-primary-loud-active
+          );
+          --button-color-fill-loud-hover: var(
+            --ha-color-fill-primary-loud-hover
+          );
         }
 
         :host([variant="neutral"]) {
-          --ha-color-fill-normal-active: var(
+          --button-color-fill-normal-active: var(
             --ha-color-fill-neutral-normal-active
           );
-          --ha-color-fill-normal-hover: var(
+          --button-color-fill-normal-hover: var(
             --ha-color-fill-neutral-normal-hover
           );
-          --ha-color-fill-loud-active: var(--ha-color-fill-neutral-loud-active);
-          --ha-color-fill-loud-hover: var(--ha-color-fill-neutral-loud-hover);
+          --button-color-fill-loud-active: var(
+            --ha-color-fill-neutral-loud-active
+          );
+          --button-color-fill-loud-hover: var(
+            --ha-color-fill-neutral-loud-hover
+          );
         }
 
         :host([variant="success"]) {
-          --ha-color-fill-normal-active: var(
+          --button-color-fill-normal-active: var(
             --ha-color-fill-success-normal-active
           );
-          --ha-color-fill-normal-hover: var(
+          --button-color-fill-normal-hover: var(
             --ha-color-fill-success-normal-hover
           );
-          --ha-color-fill-loud-active: var(--ha-color-fill-success-loud-active);
-          --ha-color-fill-loud-hover: var(--ha-color-fill-success-loud-hover);
+          --button-color-fill-loud-active: var(
+            --ha-color-fill-success-loud-active
+          );
+          --button-color-fill-loud-hover: var(
+            --ha-color-fill-success-loud-hover
+          );
         }
 
         :host([variant="warning"]) {
-          --ha-color-fill-normal-active: var(
+          --button-color-fill-normal-active: var(
             --ha-color-fill-warning-normal-active
           );
-          --ha-color-fill-normal-hover: var(
+          --button-color-fill-normal-hover: var(
             --ha-color-fill-warning-normal-hover
           );
-          --ha-color-fill-loud-active: var(--ha-color-fill-warning-loud-active);
-          --ha-color-fill-loud-hover: var(--ha-color-fill-warning-loud-hover);
+          --button-color-fill-loud-active: var(
+            --ha-color-fill-warning-loud-active
+          );
+          --button-color-fill-loud-hover: var(
+            --ha-color-fill-warning-loud-hover
+          );
         }
 
         :host([variant="danger"]) {
-          --ha-color-fill-normal-active: var(
+          --button-color-fill-normal-active: var(
             --ha-color-fill-danger-normal-active
           );
-          --ha-color-fill-normal-hover: var(
+          --button-color-fill-normal-hover: var(
             --ha-color-fill-danger-normal-hover
           );
-          --ha-color-fill-loud-active: var(--ha-color-fill-danger-loud-active);
-          --ha-color-fill-loud-hover: var(--ha-color-fill-danger-loud-hover);
+          --button-color-fill-loud-active: var(
+            --ha-color-fill-danger-loud-active
+          );
+          --button-color-fill-loud-hover: var(
+            --ha-color-fill-danger-loud-hover
+          );
         }
 
         :host([appearance~="plain"]) .button {
@@ -148,11 +168,11 @@ export class HaButton extends Button {
         @media (hover: hover) {
           :host([appearance~="filled"])
             .button:not(.disabled):not(.loading):hover {
-            background-color: var(--ha-color-fill-normal-hover);
+            background-color: var(--button-color-fill-normal-hover);
           }
           :host([appearance~="accent"])
             .button:not(.disabled):not(.loading):hover {
-            background-color: var(--ha-color-fill-loud-hover);
+            background-color: var(--button-color-fill-loud-hover);
           }
           :host([appearance~="plain"])
             .button:not(.disabled):not(.loading):hover {
@@ -161,7 +181,7 @@ export class HaButton extends Button {
         }
         :host([appearance~="filled"])
           .button:not(.disabled):not(.loading):active {
-          background-color: var(--ha-color-fill-normal-active);
+          background-color: var(--button-color-fill-normal-active);
         }
         :host([appearance~="filled"]) .button.disabled {
           background-color: var(--ha-color-fill-disabled-normal-resting);
@@ -176,7 +196,7 @@ export class HaButton extends Button {
         }
         :host([appearance~="accent"])
           .button:not(.disabled):not(.loading):active {
-          background-color: var(--ha-color-fill-loud-active);
+          background-color: var(--button-color-fill-loud-active);
         }
         :host([appearance~="accent"]) .button.disabled {
           background-color: var(--ha-color-fill-disabled-loud-resting);
