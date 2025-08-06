@@ -1123,7 +1123,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
         :not(.yaml-mode) > .error-wrapper ha-alert {
           background-color: var(--white-color);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-          border-radius: var(--border-radius-sm);
+          border-radius: var(--ha-border-radius-sm);
         }
 
         manual-automation-editor {

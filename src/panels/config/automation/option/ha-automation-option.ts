@@ -253,7 +253,7 @@ export default class HaAutomationOption extends LitElement {
     }
     .sortable-ghost {
       background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sortable-drag {
       background: none;

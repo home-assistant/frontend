@@ -19,11 +19,13 @@ export const rowStyles = css`
   .disabled-bar {
     background: var(--divider-color, #e0e0e0);
     text-align: center;
-    border-top-right-radius: calc(
-      var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+    border-top-right-radius: var(
+      --ha-card-border-radius,
+      var(--ha-border-radius-lg)
     );
-    border-top-left-radius: calc(
-      var(--ha-card-border-radius, 12px) - var(--ha-card-border-width, 1px)
+    border-top-left-radius: var(
+      --ha-card-border-radius,
+      var(--ha-border-radius-lg)
     );
   }
   .warning ul {
@@ -67,8 +69,8 @@ export const editorStyles = css`
   :host([selected]) .card-content.indent {
     border-color: var(--primary-color);
     background-color: var(--ha-color-fill-neutral-quiet-active);
-    border-top-right-radius: 16px;
-    border-bottom-right-radius: 16px;
+    border-top-right-radius: var(--ha-border-radius-xl);
+    border-bottom-right-radius: var(--ha-border-radius-xl);
   }
 `;
 

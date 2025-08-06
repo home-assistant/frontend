@@ -78,7 +78,7 @@ export class HaAutomationRow extends LitElement {
       overflow: hidden;
       font-weight: var(--ha-font-weight-medium);
       outline: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .row:focus {
       outline: var(--wa-focus-ring);
@@ -102,8 +102,8 @@ export class HaAutomationRow extends LitElement {
       outline-width: 2px;
     }
     :host([disabled]) .row {
-      border-top-right-radius: 0;
-      border-top-left-radius: 0;
+      border-top-right-radius: var(--ha-border-radius-square);
+      border-top-left-radius: var(--ha-border-radius-square);
     }
     ::slotted([slot="header"]) {
       flex: 1;

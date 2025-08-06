@@ -318,7 +318,7 @@ export default class HaAutomationSidebar extends LitElement {
   static styles = css`
     :host {
       height: 100%;
-      border-radius: 12px;
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
 
     ha-card {
@@ -333,8 +333,8 @@ export default class HaAutomationSidebar extends LitElement {
       overflow-x: hidden;
     }
     ha-card.mobile {
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
+      border-bottom-right-radius: var(--ha-border-radius-square);
+      border-bottom-left-radius: var(--ha-border-radius-square);
     }
 
     @media all and (max-width: 870px) {
@@ -353,7 +353,7 @@ export default class HaAutomationSidebar extends LitElement {
       top: 2px;
       margin-left: 2px;
       margin-right: 2px;
-      border-radius: 12px;
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sidebar-editor {
       padding-top: 64px;
