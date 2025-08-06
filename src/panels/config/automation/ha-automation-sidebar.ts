@@ -325,7 +325,7 @@ export default class HaAutomationSidebar extends LitElement {
       height: 100%;
       width: 100%;
       outline: solid;
-      outline-color: var(--ha-color-border-quiet);
+      outline-color: var(--ha-color-border-normal);
       outline-offset: -2px;
       outline-width: 2px;
       display: block;

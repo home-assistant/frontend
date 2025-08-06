@@ -68,7 +68,7 @@ export const editorStyles = css`
   .card-content.indent.selected,
   :host([selected]) .card-content.indent {
     border-color: var(--primary-color);
-    background-color: var(--ha-color-fill-neutral-quiet-active);
+    background-color: var(--ha-color-fill-neutral-quiet-hover);
     border-top-right-radius: var(--ha-border-radius-xl);
     border-bottom-right-radius: var(--ha-border-radius-xl);
   }
