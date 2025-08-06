@@ -335,13 +335,19 @@ export class HaCodeEditor extends ReactiveElement {
     const completionInfo = document.createElement("div");
     completionInfo.classList.add("completion-info");
 
+    const formattedState = this.hass!.formatEntityState(this.hass!.states[key]);
+
     const completionItems: CompletionItem[] = [
       {
         label: this.hass!.localize(
           "ui.components.entity.entity-state-picker.state"
         ),
-        value: this.hass!.formatEntityState(this.hass!.states[key]),
-        subValue: this.hass!.states[key].state,
+        value: formattedState,
+        subValue:
+          // If the state exactly matches the formatted state, don't show the raw state
+          this.hass!.states[key].state === formattedState
+            ? undefined
+            : this.hass!.states[key].state,
       },
     ];
 
