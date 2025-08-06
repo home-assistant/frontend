@@ -10,16 +10,17 @@ import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement, html, render, nothing } from "lit";
+import { css, ReactiveElement, html, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import type { HomeAssistant } from "../types";
-import type { LocalizeKeys } from "../common/translations/localize";
+import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-code-editor-completion-items";
 
 declare global {
   interface HASSDomEvents {
@@ -40,29 +41,6 @@ const renderIcon = (completion: Completion) => {
   icon.icon = completion.label;
   return icon;
 };
-
-const renderItem = (label: string, value: string) => html`
-  <span><strong>${label}:</strong></span>
-  <span>${value}</span>
-`;
-
-const CONTEXT_ITEMS: {
-  itemKey: "device" | "area" | "floor";
-  translationKey: LocalizeKeys;
-}[] = [
-  {
-    itemKey: "device",
-    translationKey: "ui.components.device-picker.device",
-  },
-  {
-    itemKey: "area",
-    translationKey: "ui.components.area-picker.area",
-  },
-  {
-    itemKey: "floor",
-    translationKey: "ui.components.floor-picker.floor",
-  },
-] as const;
 
 @customElement("ha-code-editor")
 export class HaCodeEditor extends ReactiveElement {
@@ -357,22 +335,42 @@ export class HaCodeEditor extends ReactiveElement {
     const completionInfo = document.createElement("div");
     completionInfo.classList.add("completion-info");
 
+    const completionItems: CompletionItem[] = [
+      {
+        label: this.hass!.localize(
+          "ui.components.entity.entity-state-picker.state"
+        ),
+        value: this.hass!.formatEntityState(this.hass!.states[key]),
+        subValue: this.hass!.states[key].state,
+      },
+    ];
+
+    if (context.device && context.device.name) {
+      completionItems.push({
+        label: this.hass!.localize("ui.components.device-picker.device"),
+        value: context.device.name,
+      });
+    }
+
+    if (context.area && context.area.name) {
+      completionItems.push({
+        label: this.hass!.localize("ui.components.area-picker.area"),
+        value: context.area.name,
+      });
+    }
+
+    if (context.floor && context.floor.name) {
+      completionItems.push({
+        label: this.hass!.localize("ui.components.floor-picker.floor"),
+        value: context.floor.name,
+      });
+    }
+
     render(
       html`
-        ${renderItem(
-          this.hass!.localize("ui.components.entity.entity-state-picker.state"),
-          this.hass!.states[key].state
-        )}
-        ${CONTEXT_ITEMS.map(({ itemKey, translationKey }) =>
-          context[itemKey]?.name
-            ? html`
-                ${renderItem(
-                  this.hass!.localize(translationKey),
-                  context[itemKey].name
-                )}
-              `
-            : nothing
-        )}
+        <ha-code-editor-completion-items
+          .items=${completionItems}
+        ></ha-code-editor-completion-items>
       `,
       completionInfo
     );
@@ -675,7 +673,6 @@ export class HaCodeEditor extends ReactiveElement {
 
     .completion-info {
       display: grid;
-      grid-template-columns: auto 1fr;
       gap: 3px;
       padding: 8px;
     }
