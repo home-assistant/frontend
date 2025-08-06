@@ -156,10 +156,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
-      case "type":
-        return this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.repeat.type_select"
-        );
       case "count":
         return this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
