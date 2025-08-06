@@ -15,6 +15,8 @@ export class HaSequenceAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public action!: SequenceAction;
 
   @property({ type: Boolean }) public indent = false;
@@ -31,6 +33,7 @@ export class HaSequenceAction extends LitElement implements ActionElement {
     return html`
       <ha-automation-action
         .actions=${action.sequence}
+        .narrow=${this.narrow}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}

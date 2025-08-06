@@ -30,8 +30,8 @@ import { bytesToString } from "../../../util/bytes-to-string";
 import type { MoveDatadiskDialogParams } from "./show-dialog-move-datadisk";
 
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
-  const speed = hostInfo.disk_life_time !== "" ? 30 : 10;
-  const moveTime = (hostInfo.disk_used * 1000) / 60 / speed;
+  // Assume a speed of 30 MB/s.
+  const moveTime = (hostInfo.disk_used * 1000) / 60 / 30;
   const rebootTime = (hostInfo.startup_time * 4) / 60;
   return Math.ceil((moveTime + rebootTime) / 10) * 10;
 });

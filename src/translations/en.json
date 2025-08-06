@@ -5928,6 +5928,11 @@
               "restoring": "Restoring backup",
               "migrate": "Migrate adapter"
             },
+            "data_collection": {
+              "title": "Third-party data reporting",
+              "description": "Enable the reporting of anonymized telemetry and statistics to the Z-Wave JS organization. This data will be used to focus development efforts and improve the user experience. Information about the data that is collected and how it is used, including an example of the data collected, can be found in the {documentation_link}.",
+              "documentation_link": "Z-Wave JS data collection documentation"
+            },
             "statistics": {
               "title": "Adapter statistics",
               "messages_tx": {
@@ -6621,7 +6626,8 @@
           "description": "{percent_used} used - {free_space} free",
           "used_space": "Used space",
           "detailed_description": "{used} used of {total} total, {free_space} remaining",
-          "emmc_lifetime_used": "eMMC lifetime used",
+          "lifetime_used": "Lifetime used",
+          "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
           "datadisk": {
             "title": "Move data disk",
@@ -9435,7 +9441,7 @@
         "operating_system": "Operating system",
         "docker_version": "Docker version",
         "deployment": "Deployment",
-        "emmc_lifetime_used": "eMMC lifetime used",
+        "lifetime_used": "Lifetime used",
         "reboot_host": "Reboot host",
         "confirm_reboot": "Are you sure you want to reboot the host?",
         "confirm_shutdown": "Are you sure you want to shut down the host?",

@@ -49,8 +49,9 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.state === "on"
           ? html`<ha-button
-              appearance="filled"
+              appearance="plain"
               size="small"
+              variant="danger"
               @click=${this._cancelScript}
             >
               ${stateObj.attributes.mode !== "single" &&
@@ -61,10 +62,10 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
                   })
                 : this.hass.localize("ui.card.script.cancel")}
             </ha-button>`
-          : ""}
+          : nothing}
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<ha-button
-              appearance="filled"
+              appearance="plain"
               size="small"
               @click=${this._runScript}
               .disabled=${isUnavailableState(stateObj.state) ||
@@ -73,7 +74,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
               ${this._config.action_name ||
               this.hass!.localize("ui.card.script.run")}
             </ha-button>`
-          : ""}
+          : nothing}
       </hui-generic-entity-row>
     `;
   }

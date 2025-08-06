@@ -1,5 +1,10 @@
 import { css } from "lit";
 
+/*
+ * Semantic color tokens are abstractions built on top of core color tokens to represent colors based on their usage or purpose.
+ * These tokens are named according to their semantic role in the UI (e.g., "primary," "success," "error"), making it easier to maintain consistency and scalability in design.
+ * Semantic tokens use core tokens to reference the actual color values. This separation allows for adjustments in color schemes without affecting the semantic meaning or intent.
+ */
 export const semanticColorStyles = css`
   html {
     --color-overlay-modal: rgba(0, 0, 0, 0.25);
@@ -153,9 +158,6 @@ export const semanticColorStyles = css`
     --color-on-success-quiet: var(--color-green-50);
     --color-on-success-normal: var(--color-green-40);
     --color-on-success-loud: var(--white);
-
-    /* logo */
-    --color-logo-primary: var(--color-primary-50);
   }
 `;
 

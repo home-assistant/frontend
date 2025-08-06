@@ -260,15 +260,15 @@ export class HassioNetwork extends LitElement {
           : nothing}
       </div>
       <div class="card-actions">
-        <ha-button appearance="plain" @click=${this._clear}>
-          ${this.hass.localize("ui.panel.config.network.supervisor.reset")}
-        </ha-button>
         <ha-button
           .loading=${this._processing}
           @click=${this._updateNetwork}
           .disabled=${!this._dirty}
         >
           ${this.hass.localize("ui.common.save")}
+        </ha-button>
+        <ha-button variant="danger" appearance="plain" @click=${this._clear}>
+          ${this.hass.localize("ui.panel.config.network.supervisor.reset")}
         </ha-button>
       </div>`;
   }

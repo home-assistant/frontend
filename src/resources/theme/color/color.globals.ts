@@ -1,8 +1,5 @@
 import { css } from "lit";
-import {
-  extractVar,
-  extractVars,
-} from "../../../common/style/derived-css-vars";
+import { extractVar } from "../../../common/style/derived-css-vars";
 import { coreColorVariables } from "./core.globals";
 
 export const colorStyles = css`
@@ -365,7 +362,6 @@ export const darkColorStyles = css`
     --ha-button-neutral-light-color: #6a7081;
   }
 `;
-export const colorVariables = extractVars(colorStyles);
 
 export const DefaultPrimaryColor = extractVar(
   colorStyles,

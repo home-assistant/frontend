@@ -1442,10 +1442,9 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _signUrl(ev) {
-    const anchor = ev.currentTarget.closest("a");
     const signedUrl = await getSignedPath(
       this.hass,
-      anchor.getAttribute("href")
+      ev.currentTarget.getAttribute("href")
     );
     fileDownload(signedUrl.path);
   }
