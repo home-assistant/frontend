@@ -13,6 +13,9 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public collapsed = false;
 
+  @property({ type: Boolean, reflect: true })
+  public selected = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="row" tabindex="0" role="button" @keydown=${this._click}>
@@ -87,6 +90,13 @@ export class HaAutomationRow extends LitElement {
     }
     :host([collapsed]) .expand-button {
       transform: rotate(180deg);
+    }
+    :host([selected]) .row,
+    :host([selected]) .row:focus {
+      outline: solid;
+      outline-color: var(--primary-color);
+      outline-offset: -2px;
+      outline-width: 2px;
     }
     ::slotted([slot="header"]) {
       flex: 1;

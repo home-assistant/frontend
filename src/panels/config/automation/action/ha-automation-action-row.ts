@@ -15,10 +15,9 @@ import {
   mdiStopCircleOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import type { PropertyValues } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -55,10 +54,10 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { CONDITION_BUILDING_BLOCKS } from "../condition/ha-automation-condition";
+import { rowStyles } from "../styles";
 import "./ha-automation-action-editor";
 import type HaAutomationActionEditor from "./ha-automation-action-editor";
 import "./types/ha-automation-action-choose";
@@ -375,18 +374,7 @@ export default class HaAutomationActionRow extends LitElement {
     const type = getAutomationActionType(this.action);
 
     return html`
-      <ha-card
-        outlined
-        class=${classMap({
-          selected: this._selected,
-          "building-block":
-            this.optionsInSidebar &&
-            [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
-              type!
-            ) &&
-            !this._collapsed,
-        })}
-      >
+      <ha-card outlined>
         ${this.action.enabled === false
           ? html`
               <div class="disabled-bar">
@@ -404,6 +392,7 @@ export default class HaAutomationActionRow extends LitElement {
                 type!
               )}
               .collapsed=${this._collapsed}
+              .selected=${this._selected}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
             >`
@@ -635,69 +624,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._collapsed = !this._collapsed;
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        ha-icon-button {
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-        }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
-        }
-        h3 {
-          font-size: inherit;
-          font-weight: inherit;
-        }
-
-        ha-card {
-          transition: outline 0.2s;
-        }
-
-        ha-card.selected {
-          outline: solid;
-          outline-color: var(--primary-color);
-          outline-offset: -2px;
-          outline-width: 2px;
-        }
-        ha-card.selected.building-block {
-          border-bottom-right-radius: 0;
-        }
-        .disabled-bar {
-          background: var(--divider-color, #e0e0e0);
-          text-align: center;
-          border-top-right-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-          border-top-left-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-        }
-        .warning ul {
-          margin: 4px 0;
-        }
-        ha-md-menu-item > ha-svg-icon {
-          --mdc-icon-size: 24px;
-        }
-        ha-tooltip {
-          cursor: default;
-        }
-        :host([highlight]) ha-card {
-          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-          border-color: var(--state-inactive-color);
-          box-shadow: var(--shadow-default), var(--shadow-focus);
-        }
-      `,
-    ];
-  }
+  static styles = rowStyles;
 }
 
 declare global {

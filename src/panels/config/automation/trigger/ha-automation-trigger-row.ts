@@ -45,8 +45,8 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { rowStyles } from "../styles";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerContent from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
@@ -321,7 +321,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             `
           : nothing}
         ${this.optionsInSidebar
-          ? html`<ha-automation-row @click=${this.openSidebar}
+          ? html`<ha-automation-row
+              @click=${this.openSidebar}
+              .selected=${this._selected}
               >${this._selected
                 ? "selected"
                 : nothing}${this._renderRow()}</ha-automation-row
@@ -612,43 +614,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      rowStyles,
       css`
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
-        }
-        h3 {
-          font-size: inherit;
-          font-weight: inherit;
-        }
-
-        ha-card {
-          transition: outline 0.2s;
-        }
-
-        ha-card.selected {
-          outline: solid;
-          outline-color: var(--primary-color);
-          outline-offset: -2px;
-          outline-width: 2px;
-        }
-        .disabled-bar {
-          background: var(--divider-color, #e0e0e0);
-          text-align: center;
-          border-top-right-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-          border-top-left-radius: calc(
-            var(--ha-card-border-radius, 12px) - var(
-                --ha-card-border-width,
-                1px
-              )
-          );
-        }
         .triggered {
           cursor: pointer;
           position: absolute;
@@ -686,15 +653,6 @@ export default class HaAutomationTriggerRow extends LitElement {
         .triggered.accent {
           background-color: var(--accent-color);
           color: var(--text-accent-color, var(--text-primary-color));
-        }
-        ha-md-menu-item > ha-svg-icon {
-          --mdc-icon-size: 24px;
-        }
-        :host([highlight]) ha-card {
-          --shadow-default: var(--ha-card-box-shadow, 0 0 0 0 transparent);
-          --shadow-focus: 0 0 0 1px var(--state-inactive-color);
-          border-color: var(--state-inactive-color);
-          box-shadow: var(--shadow-default), var(--shadow-focus);
         }
       `,
     ];

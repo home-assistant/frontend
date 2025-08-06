@@ -33,10 +33,10 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
+import { editorStyles, rowStyles } from "../styles";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -231,6 +231,7 @@ export default class HaAutomationOptionRow extends LitElement {
           ? html`<ha-automation-row
               left-chevron
               .collapsed=${this._collapsed}
+              .selected=${this._selected}
               @click=${this.openSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
@@ -370,54 +371,9 @@ export default class HaAutomationOptionRow extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      rowStyles,
+      editorStyles,
       css`
-        ha-button-menu,
-        ha-icon-button {
-          --mdc-theme-text-primary-on-background: var(--primary-text-color);
-        }
-        .disabled {
-          opacity: 0.5;
-          pointer-events: none;
-        }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
-        }
-
-        ha-card {
-          transition: outline 0.2s;
-        }
-
-        ha-card.selected {
-          outline: solid;
-          outline-color: var(--primary-color);
-          outline-offset: -2px;
-          outline-width: 2px;
-        }
-        h3 {
-          font-size: inherit;
-          font-weight: inherit;
-        }
-        .card-content {
-          padding: 16px;
-        }
-        .card-content.indent {
-          margin-top: 0;
-          margin-right: 8px;
-          margin-left: 12px;
-          padding: 12px 16px 16px;
-          border-left: 2px solid var(--color-border-neutral-normal);
-          background: transparent;
-          border-bottom-right-radius: 12px;
-        }
-        .card-content.indent.selected {
-          background-color: var(--color-fill-neutral-quiet-resting);
-          border-color: var(--primary-color);
-        }
-        .warning ul {
-          margin: 4px 0;
-        }
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
         }

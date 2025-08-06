@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
@@ -7,8 +7,8 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { migrateAutomationAction, type Action } from "../../../../data/script";
-import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import { editorStyles } from "../styles";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action-editor")
@@ -137,36 +137,7 @@ export default class HaAutomationActionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = [
-    haStyle,
-    css`
-      .disabled {
-        opacity: 0.5;
-        pointer-events: none;
-      }
-
-      .card-content {
-        padding: 16px;
-      }
-      .card-content.yaml {
-        padding: 0 1px;
-        border-top: 1px solid var(--divider-color);
-        border-bottom: 1px solid var(--divider-color);
-      }
-      .card-content.indent {
-        margin-top: 0;
-        margin-left: 12px;
-        padding: 12px 16px 16px;
-        border-left: 2px solid var(--color-border-neutral-normal);
-        background: transparent;
-        border-bottom-right-radius: 12px;
-      }
-      :host([selected]) .card-content.indent {
-        background-color: var(--color-fill-neutral-quiet-resting);
-        border-color: var(--primary-color);
-      }
-    `,
-  ];
+  static styles = editorStyles;
 }
 
 declare global {
