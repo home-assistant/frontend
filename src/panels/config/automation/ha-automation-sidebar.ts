@@ -170,37 +170,50 @@ export default class HaAutomationSidebar extends LitElement {
                   ></ha-svg-icon>
                 </ha-md-menu-item>`
               : nothing}
-            <ha-md-menu-item
-              .clickAction=${this._toggleYamlMode}
-              .disabled=${!this.config.uiSupported}
-            >
-              ${this.hass.localize(
-                `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
-              )}
-              <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
-            </ha-md-menu-item>
+            ${this.config.type !== "option"
+              ? html`
+                  <ha-md-menu-item
+                    .clickAction=${this._toggleYamlMode}
+                    .disabled=${!this.config.uiSupported}
+                  >
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
+                    )}
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${mdiPlaylistEdit}
+                    ></ha-svg-icon>
+                  </ha-md-menu-item>
+                `
+              : nothing}
 
             <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-            <ha-md-menu-item
-              .clickAction=${this.config.disable}
-              .disabled=${type === "list"}
-            >
-              ${disabled
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.enable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.disable"
-                  )}
-              <ha-svg-icon
-                slot="start"
-                .path=${disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
-              ></ha-svg-icon>
-            </ha-md-menu-item>
+            ${this.config.type !== "option"
+              ? html`
+                  <ha-md-menu-item
+                    .clickAction=${this.config.disable}
+                    .disabled=${type === "list"}
+                  >
+                    ${disabled
+                      ? this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.enable"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.automation.editor.actions.disable"
+                        )}
+                    <ha-svg-icon
+                      slot="start"
+                      .path=${disabled
+                        ? mdiPlayCircleOutline
+                        : mdiStopCircleOutline}
+                    ></ha-svg-icon>
+                  </ha-md-menu-item>
+                `
+              : nothing}
             <ha-md-menu-item .clickAction=${this.config.delete} class="warning">
               ${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.delete"
+                `ui.panel.config.automation.editor.actions.${this.config.type !== "option" ? "delete" : "type.choose.remove_option"}`
               )}
               <ha-svg-icon
                 class="warning"
