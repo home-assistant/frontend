@@ -5,14 +5,14 @@ import { coreColorVariables } from "./core.globals";
 export const colorStyles = css`
   html {
     /* text */
-    --primary-text-color: var(--color-text-primary);
-    --secondary-text-color: var(--color-text-secondary);
+    --primary-text-color: var(--ha-color-text-primary);
+    --secondary-text-color: var(--ha-color-text-secondary);
     --text-primary-color: #ffffff;
     --text-light-primary-color: #212121;
     --disabled-text-color: #bdbdbd;
 
     /* main interface colors */
-    --primary-color: var(--color-primary-40);
+    --primary-color: var(--ha-color-primary-40);
     --dark-primary-color: #0288d1;
     --darker-primary-color: #016194;
     --light-primary-color: #b3e5fc;
