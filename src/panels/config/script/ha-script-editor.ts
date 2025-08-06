@@ -438,6 +438,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @editor-save=${this._handleSave}
                         ></manual-script-editor>
                       `}
                 </div>
@@ -450,6 +451,7 @@ export class HaScriptEditor extends SubscribeMixin(
                   .readOnly=${this._readOnly}
                   disable-fullscreen
                   @value-changed=${this._yamlChanged}
+                  @editor-save=${this._handleSave}
                   .showErrors=${false}
                 ></ha-yaml-editor>`
               : nothing}
