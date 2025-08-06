@@ -61,7 +61,7 @@ export const editorStyles = css`
     margin-left: 12px;
     margin-right: -4px;
     padding: 12px 20px 16px 16px;
-    border-left: 2px solid var(--color-border-neutral-normal);
+    border-left: 2px solid var(--ha-color-border-neutral-normal);
   }
   .card-content.indent.selected,
   :host([selected]) .card-content.indent {

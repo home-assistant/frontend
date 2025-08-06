@@ -83,10 +83,10 @@ export class HaAutomationRow extends LitElement {
     }
     .expand-button {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
-      color: var(--color-on-neutral-quiet);
+      color: var(--ha-color-on-neutral-quiet);
     }
     ::slotted([slot="leading-icon"]) {
-      color: var(--color-on-neutral-quiet);
+      color: var(--ha-color-on-neutral-quiet);
     }
     :host([collapsed]) .expand-button {
       transform: rotate(180deg);
