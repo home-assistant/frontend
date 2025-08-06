@@ -487,6 +487,7 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                           .disabled=${Boolean(this._readOnly)}
                           .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @editor-save=${this._handleSaveAutomation}
                         ></manual-automation-editor>
                       `}
                 </div>
