@@ -438,6 +438,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @editor-save=${this._handleSave}
                         ></manual-script-editor>
                       `}
                 </div>
