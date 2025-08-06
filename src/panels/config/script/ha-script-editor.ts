@@ -450,6 +450,7 @@ export class HaScriptEditor extends SubscribeMixin(
                   .readOnly=${this._readOnly}
                   disable-fullscreen
                   @value-changed=${this._yamlChanged}
+                  @editor-save=${this._handleSave}
                   .showErrors=${false}
                 ></ha-yaml-editor>`
               : nothing}
