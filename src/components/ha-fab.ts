@@ -23,13 +23,13 @@ export class HaFab extends FabBase {
       :host .mdc-fab--extended {
         border-radius: var(
           --ha-button-border-radius,
-          var(--border-radius-pill)
+          var(--ha-border-radius-pill)
         );
       }
       :host .mdc-fab.mdc-fab--extended .ripple {
         border-radius: var(
           --ha-button-border-radius,
-          var(--border-radius-pill)
+          var(--ha-border-radius-pill)
         );
       }
       :host .mdc-fab--extended .mdc-fab__icon {
