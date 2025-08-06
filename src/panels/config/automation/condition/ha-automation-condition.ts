@@ -349,6 +349,9 @@ export default class HaAutomationCondition extends LitElement {
       flex-direction: column;
       gap: 16px;
     }
+    :host([root]) .conditions {
+      padding-right: 8px;
+    }
     .sortable-ghost {
       background: none;
       border-radius: var(--ha-card-border-radius, 12px);

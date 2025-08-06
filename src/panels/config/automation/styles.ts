@@ -60,12 +60,15 @@ export const editorStyles = css`
   .card-content.indent {
     margin-left: 12px;
     margin-right: -4px;
-    padding: 12px 20px 16px 16px;
+    padding: 12px 24px 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-normal);
   }
   .card-content.indent.selected,
   :host([selected]) .card-content.indent {
     border-color: var(--primary-color);
+    background-color: var(--ha-color-fill-neutral-quiet-active);
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
   }
 `;
 
