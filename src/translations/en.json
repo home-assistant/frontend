@@ -4419,8 +4419,8 @@
                   "sequence": "Actions",
                   "description": {
                     "picker": "Choose what to do based on conditions (Similar to If-Then, but more powerful).",
-                    "full": "Choose {number, plural,\n one {an action}\n other{between {number} actions}\n}",
-                    "no_action": "Choose an action"
+                    "full": "Choose {number, plural,\n one {an option}\n other{between {number} options}\n}",
+                    "no_action": "Choose an option"
                   }
                 },
                 "if": {
