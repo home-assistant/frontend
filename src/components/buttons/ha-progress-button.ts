@@ -117,7 +117,7 @@ export class HaProgressButton extends LitElement {
     }
 
     ha-svg-icon {
-      color: var(--white);
+      color: var(--white-color);
     }
   `;
 }

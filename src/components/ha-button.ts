@@ -78,61 +78,81 @@ export class HaButton extends Button {
         }
 
         :host([variant="brand"]) {
-          --color-fill-normal-active: var(--color-fill-primary-normal-active);
-          --color-fill-normal-hover: var(--color-fill-primary-normal-hover);
-          --color-fill-loud-active: var(--color-fill-primary-loud-active);
-          --color-fill-loud-hover: var(--color-fill-primary-loud-hover);
+          --ha-color-fill-normal-active: var(
+            --ha-color-fill-primary-normal-active
+          );
+          --ha-color-fill-normal-hover: var(
+            --ha-color-fill-primary-normal-hover
+          );
+          --ha-color-fill-loud-active: var(--ha-color-fill-primary-loud-active);
+          --ha-color-fill-loud-hover: var(--ha-color-fill-primary-loud-hover);
         }
 
         :host([variant="neutral"]) {
-          --color-fill-normal-active: var(--color-fill-neutral-normal-active);
-          --color-fill-normal-hover: var(--color-fill-neutral-normal-hover);
-          --color-fill-loud-active: var(--color-fill-neutral-loud-active);
-          --color-fill-loud-hover: var(--color-fill-neutral-loud-hover);
+          --ha-color-fill-normal-active: var(
+            --ha-color-fill-neutral-normal-active
+          );
+          --ha-color-fill-normal-hover: var(
+            --ha-color-fill-neutral-normal-hover
+          );
+          --ha-color-fill-loud-active: var(--ha-color-fill-neutral-loud-active);
+          --ha-color-fill-loud-hover: var(--ha-color-fill-neutral-loud-hover);
         }
 
         :host([variant="success"]) {
-          --color-fill-normal-active: var(--color-fill-success-normal-active);
-          --color-fill-normal-hover: var(--color-fill-success-normal-hover);
-          --color-fill-loud-active: var(--color-fill-success-loud-active);
-          --color-fill-loud-hover: var(--color-fill-success-loud-hover);
+          --ha-color-fill-normal-active: var(
+            --ha-color-fill-success-normal-active
+          );
+          --ha-color-fill-normal-hover: var(
+            --ha-color-fill-success-normal-hover
+          );
+          --ha-color-fill-loud-active: var(--ha-color-fill-success-loud-active);
+          --ha-color-fill-loud-hover: var(--ha-color-fill-success-loud-hover);
         }
 
         :host([variant="warning"]) {
-          --color-fill-normal-active: var(--color-fill-warning-normal-active);
-          --color-fill-normal-hover: var(--color-fill-warning-normal-hover);
-          --color-fill-loud-active: var(--color-fill-warning-loud-active);
-          --color-fill-loud-hover: var(--color-fill-warning-loud-hover);
+          --ha-color-fill-normal-active: var(
+            --ha-color-fill-warning-normal-active
+          );
+          --ha-color-fill-normal-hover: var(
+            --ha-color-fill-warning-normal-hover
+          );
+          --ha-color-fill-loud-active: var(--ha-color-fill-warning-loud-active);
+          --ha-color-fill-loud-hover: var(--ha-color-fill-warning-loud-hover);
         }
 
         :host([variant="danger"]) {
-          --color-fill-normal-active: var(--color-fill-danger-normal-active);
-          --color-fill-normal-hover: var(--color-fill-danger-normal-hover);
-          --color-fill-loud-active: var(--color-fill-danger-loud-active);
-          --color-fill-loud-hover: var(--color-fill-danger-loud-hover);
+          --ha-color-fill-normal-active: var(
+            --ha-color-fill-danger-normal-active
+          );
+          --ha-color-fill-normal-hover: var(
+            --ha-color-fill-danger-normal-hover
+          );
+          --ha-color-fill-loud-active: var(--ha-color-fill-danger-loud-active);
+          --ha-color-fill-loud-hover: var(--ha-color-fill-danger-loud-hover);
         }
 
         :host([appearance~="plain"]) .button {
           color: var(--wa-color-on-normal);
         }
         :host([appearance~="plain"]) .button.disabled {
-          background-color: var(--transparent-none);
-          color: var(--color-on-disabled-quiet);
+          background-color: transparent;
+          color: var(--ha-color-on-disabled-quiet);
         }
 
         :host([appearance~="outlined"]) .button.disabled {
-          background-color: var(--transparent-none);
-          color: var(--color-on-disabled-quiet);
+          background-color: transparent;
+          color: var(--ha-color-on-disabled-quiet);
         }
 
         @media (hover: hover) {
           :host([appearance~="filled"])
             .button:not(.disabled):not(.loading):hover {
-            background-color: var(--color-fill-normal-hover);
+            background-color: var(--ha-color-fill-normal-hover);
           }
           :host([appearance~="accent"])
             .button:not(.disabled):not(.loading):hover {
-            background-color: var(--color-fill-loud-hover);
+            background-color: var(--ha-color-fill-loud-hover);
           }
           :host([appearance~="plain"])
             .button:not(.disabled):not(.loading):hover {
@@ -141,11 +161,11 @@ export class HaButton extends Button {
         }
         :host([appearance~="filled"])
           .button:not(.disabled):not(.loading):active {
-          background-color: var(--color-fill-normal-active);
+          background-color: var(--ha-color-fill-normal-active);
         }
         :host([appearance~="filled"]) .button.disabled {
-          background-color: var(--color-fill-disabled-normal-resting);
-          color: var(--color-on-disabled-normal);
+          background-color: var(--ha-color-fill-disabled-normal-resting);
+          color: var(--ha-color-on-disabled-normal);
         }
 
         :host([appearance~="accent"]) .button {
@@ -156,11 +176,11 @@ export class HaButton extends Button {
         }
         :host([appearance~="accent"])
           .button:not(.disabled):not(.loading):active {
-          background-color: var(--color-fill-loud-active);
+          background-color: var(--ha-color-fill-loud-active);
         }
         :host([appearance~="accent"]) .button.disabled {
-          background-color: var(--color-fill-disabled-loud-resting);
-          color: var(--color-on-disabled-loud);
+          background-color: var(--ha-color-fill-disabled-loud-resting);
+          color: var(--ha-color-on-disabled-loud);
         }
 
         :host([loading]) {
