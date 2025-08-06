@@ -230,6 +230,19 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                           )}
                         </ha-button>`
                       : nothing}
+                    <ha-button
+                      class="remove-node-button"
+                      @click=${this._removeNodeClicked}
+                      .disabled=${this._status !== "connected" ||
+                      (this._network?.controller.inclusion_state !==
+                        InclusionState.Idle &&
+                        this._network?.controller.inclusion_state !==
+                          InclusionState.SmartStart)}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.remove_a_node"
+                      )}
+                    </ha-button>
                   </div>
                 </ha-card>
                 <ha-card header="Diagnostics">
@@ -410,19 +423,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                   <div class="card-actions">
                     <ha-button
                       appearance="plain"
-                      @click=${this._removeNodeClicked}
-                      .disabled=${this._status !== "connected" ||
-                      (this._network?.controller.inclusion_state !==
-                        InclusionState.Idle &&
-                        this._network?.controller.inclusion_state !==
-                          InclusionState.SmartStart)}
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.remove_a_node"
-                      )}
-                    </ha-button>
-                    <ha-button
-                      appearance="plain"
                       @click=${this._rebuildNetworkRoutesClicked}
                       .disabled=${this._status === "disconnected"}
                     >
@@ -504,35 +504,35 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                                 "ui.panel.config.zwave_js.dashboard.nvm_backup.download_backup"
                               )}
                             </ha-button>
-                            <div class="upload-button">
+                            <div class="right-buttons">
+                              <div class="upload-button">
+                                <ha-button
+                                  appearance="filled"
+                                  @click=${this._restoreButtonClick}
+                                >
+                                  <span class="button-content">
+                                    ${this.hass.localize(
+                                      "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
+                                    )}
+                                  </span>
+                                </ha-button>
+                                <input
+                                  type="file"
+                                  id="nvm-restore-file"
+                                  accept=".bin"
+                                  @change=${this._handleRestoreFileSelected}
+                                  style="display: none"
+                                />
+                              </div>
                               <ha-button
-                                appearance="plain"
-                                @click=${this._restoreButtonClick}
-                                variant="danger"
+                                appearance="filled"
+                                @click=${this._openConfigFlow}
                               >
-                                <span class="button-content">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.zwave_js.dashboard.nvm_backup.restore_backup"
-                                  )}
-                                </span>
+                                ${this.hass.localize(
+                                  "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
+                                )}
                               </ha-button>
-                              <input
-                                type="file"
-                                id="nvm-restore-file"
-                                accept=".bin"
-                                @change=${this._handleRestoreFileSelected}
-                                style="display: none"
-                              />
-                            </div>
-                            <ha-button
-                              variant="danger"
-                              @click=${this._openConfigFlow}
-                              class="migrate-button"
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.zwave_js.dashboard.nvm_backup.migrate"
-                              )}
-                            </ha-button>`}
+                            </div>`}
                   </div>
                 </ha-card>
               `
@@ -989,7 +989,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
           pointer-events: none;
         }
 
-        .migrate-button {
+        .remove-node-button {
+          margin-left: auto;
+        }
+
+        .right-buttons {
+          display: flex;
+          gap: 8px;
           margin-left: auto;
         }
 
