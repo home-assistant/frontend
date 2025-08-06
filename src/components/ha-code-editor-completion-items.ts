@@ -31,10 +31,14 @@ export class HaCodeEditorCompletionItems extends LitElement {
       grid-template-columns: auto 1fr;
       gap: 6px;
       white-space: pre-wrap;
+      flex-wrap: nowrap;
     }
 
     span {
       display: flex;
+      align-items: center;
+      flex-flow: wrap;
+      word-wrap: break-word;
     }
 
     pre {
