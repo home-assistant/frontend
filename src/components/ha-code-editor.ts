@@ -17,6 +17,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
 import type { HomeAssistant } from "../types";
+import type { LocalizeKeys } from "../common/translations/localize";
 import "./ha-icon";
 import "./ha-icon-button";
 
@@ -39,6 +40,30 @@ const renderIcon = (completion: Completion) => {
   icon.icon = completion.label;
   return icon;
 };
+
+const renderItem = (label: string, value: string) => html`
+  <span><strong>${label}:</strong></span>
+  <span>${value}</span>
+`;
+
+const CONTEXT_ITEMS: {
+  itemKey: "device" | "area" | "floor";
+  translationKey: LocalizeKeys;
+}[] = [
+  {
+    itemKey: "device",
+    translationKey: "ui.components.device-picker.device",
+  },
+  {
+    itemKey: "area",
+    translationKey: "ui.components.area-picker.area",
+  },
+  {
+    itemKey: "floor",
+    translationKey: "ui.components.floor-picker.floor",
+  },
+] as const;
+
 @customElement("ha-code-editor")
 export class HaCodeEditor extends ReactiveElement {
   public codemirror?: EditorView;
@@ -332,41 +357,22 @@ export class HaCodeEditor extends ReactiveElement {
     const completionInfo = document.createElement("div");
     completionInfo.classList.add("completion-info");
 
-    const renderItem = (label: string, value: string) => html`
-      <span><strong>${label}:</strong></span>
-      <span>${value}</span>
-    `;
-
     render(
       html`
         ${renderItem(
           this.hass!.localize("ui.components.entity.entity-state-picker.state"),
           this.hass!.states[key].state
         )}
-        ${context.device?.name
-          ? html`
-              ${renderItem(
-                this.hass!.localize("ui.components.device-picker.device"),
-                context.device.name
-              )}
-            `
-          : nothing}
-        ${context.floor?.name
-          ? html`
-              ${renderItem(
-                this.hass!.localize("ui.components.floor-picker.floor"),
-                context.floor.name
-              )}
-            `
-          : nothing}
-        ${context.area?.name
-          ? html`
-              ${renderItem(
-                this.hass!.localize("ui.components.area-picker.area"),
-                context.area.name
-              )}
-            `
-          : nothing}
+        ${CONTEXT_ITEMS.map(({ itemKey, translationKey }) =>
+          context[itemKey]?.name
+            ? html`
+                ${renderItem(
+                  this.hass!.localize(translationKey),
+                  context[itemKey].name
+                )}
+              `
+            : nothing
+        )}
       `,
       completionInfo
     );
