@@ -28,6 +28,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public action!: RepeatAction;
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
@@ -183,6 +185,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       .disabled=${this.disabled}
       @value-changed=${this._valueChanged}
       .computeLabel=${this._computeLabelCallback}
+      .narrow=${this.narrow}
     ></ha-form>`;
   }
 

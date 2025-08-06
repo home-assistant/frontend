@@ -16,6 +16,9 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public selected = false;
 
+  @property({ type: Boolean, reflect: true })
+  public disabled = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="row" tabindex="0" role="button" @keydown=${this._click}>
@@ -97,6 +100,10 @@ export class HaAutomationRow extends LitElement {
       outline-color: var(--primary-color);
       outline-offset: -2px;
       outline-width: 2px;
+    }
+    :host([disabled]) .row {
+      border-top-right-radius: 0;
+      border-top-left-radius: 0;
     }
     ::slotted([slot="header"]) {
       flex: 1;

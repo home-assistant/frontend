@@ -17,6 +17,8 @@ export abstract class HaLogicalCondition
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
     false;
 
@@ -28,6 +30,7 @@ export abstract class HaLogicalCondition
         .hass=${this.hass}
         .disabled=${this.disabled}
         .optionsInSidebar=${this.optionsInSidebar}
+        .narrow=${this.narrow}
       ></ha-automation-condition>
     `;
   }

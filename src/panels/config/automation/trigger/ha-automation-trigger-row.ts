@@ -322,6 +322,8 @@ export default class HaAutomationTriggerRow extends LitElement {
           : nothing}
         ${this.optionsInSidebar
           ? html`<ha-automation-row
+              .disabled=${"enabled" in this.trigger &&
+              this.trigger.enabled === false}
               @click=${this.openSidebar}
               .selected=${this._selected}
               >${this._selected

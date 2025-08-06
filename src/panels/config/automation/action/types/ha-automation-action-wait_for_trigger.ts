@@ -24,6 +24,8 @@ export class HaWaitForTriggerAction
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
   @property({ type: Boolean, attribute: "sidebar" }) public indent = false;
@@ -70,6 +72,7 @@ export class HaWaitForTriggerAction
             .name=${"wait_for_trigger"}
             @value-changed=${this._valueChanged}
             .optionsInSidebar=${this.indent}
+            .narrow=${this.narrow}
           ></ha-automation-trigger>`
         : nothing}
     `;

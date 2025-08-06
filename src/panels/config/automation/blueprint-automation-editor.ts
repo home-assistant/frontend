@@ -9,6 +9,7 @@ import "../../../components/ha-markdown";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
+import { saveFabStyles } from "./styles";
 
 @customElement("blueprint-automation-editor")
 export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
@@ -87,21 +88,15 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
   static get styles(): CSSResultGroup {
     return [
       HaBlueprintGenericEditor.styles,
+      saveFabStyles,
       css`
         :host {
           position: relative;
-          overflow: hidden;
           height: 100%;
           min-height: calc(100vh - 85px);
         }
         ha-fab {
           position: fixed;
-          right: 16px;
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: 16px;
         }
       `,
     ];

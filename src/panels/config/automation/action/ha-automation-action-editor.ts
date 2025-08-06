@@ -51,7 +51,8 @@ export default class HaAutomationActionEditor extends LitElement {
       <div
         class=${classMap({
           "card-content": true,
-          disabled: this.action.enabled === false && !this.yamlMode,
+          disabled:
+            this.disabled || (this.action.enabled === false && !this.yamlMode),
           yaml: yamlMode,
           indent: this.indent,
         })}

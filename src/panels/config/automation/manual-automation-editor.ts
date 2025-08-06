@@ -24,7 +24,6 @@ import {
   removeSearchParam,
 } from "../../../common/url/search-params";
 import "../../../components/ha-button";
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -40,7 +39,6 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
@@ -51,6 +49,7 @@ import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import type { OpenSidebarConfig } from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
+import { saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
 import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
 
@@ -138,12 +137,7 @@ export class HaManualAutomationEditor extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.disabled"
               )}
-              <ha-button
-                size="small"
-                appearance="filled"
-                slot="action"
-                @click=${this._enable}
-              >
+              <ha-button size="small" slot="action" @click=${this._enable}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
                 )}
@@ -323,6 +317,7 @@ export class HaManualAutomationEditor extends LitElement {
           .hass=${this.hass}
           .config=${this._sidebarConfig}
           @value-changed=${this._sidebarConfigChanged}
+          .disabled=${this.disabled}
         ></ha-automation-sidebar>
       </div>
     `;
@@ -607,7 +602,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      saveFabStyles,
       css`
         :host {
           display: block;
@@ -651,7 +646,8 @@ export class HaManualAutomationEditor extends LitElement {
           right: 0;
           height: calc(100% - 64px);
           width: 40%;
-          padding: 32px 0 0;
+          padding: 0;
+          z-index: 5;
         }
 
         @media all and (max-width: 870px) {
@@ -659,6 +655,7 @@ export class HaManualAutomationEditor extends LitElement {
             max-height: 80vh;
             height: auto;
             width: 100%;
+            box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
           }
         }
 
@@ -672,9 +669,6 @@ export class HaManualAutomationEditor extends LitElement {
           width: 0;
         }
 
-        ha-card {
-          overflow: hidden;
-        }
         .description {
           margin: 0;
         }
@@ -704,14 +698,9 @@ export class HaManualAutomationEditor extends LitElement {
           line-height: 0;
         }
 
-        ha-fab {
-          position: absolute;
-          right: 16px;
-          bottom: calc(-80px - var(--safe-area-inset-bottom));
-          transition: bottom 0.3s;
-        }
-        ha-fab.dirty {
-          bottom: 16px;
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
         }
       `,
     ];

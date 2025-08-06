@@ -286,6 +286,7 @@ export default class HaAutomationConditionRow extends LitElement {
             .disabled=${this.disabled}
             .yamlMode=${this._yamlMode}
             .uiSupported=${this._uiSupported(this.condition.condition)}
+            .narrow=${this.narrow}
           ></ha-automation-condition-editor>`
         : nothing}
     `;
@@ -318,6 +319,7 @@ export default class HaAutomationConditionRow extends LitElement {
           : nothing}
         ${this.optionsInSidebar
           ? html`<ha-automation-row
+              .disabled=${this.condition.enabled === false}
               .leftChevron=${this.optionsInSidebar &&
               CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)}
               .collapsed=${this._collapsed}
@@ -358,6 +360,7 @@ export default class HaAutomationConditionRow extends LitElement {
             .uiSupported=${this._uiSupported(this.condition.condition)}
             indent
             .selected=${this._selected}
+            .narrow=${this.narrow}
           ></ha-automation-condition-editor>`
         : nothing}
     `;

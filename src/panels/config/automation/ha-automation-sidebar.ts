@@ -56,6 +56,8 @@ export default class HaAutomationSidebar extends LitElement {
 
   @property({ type: Boolean, attribute: "wide" }) public isWide = false;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _yamlMode = false;
 
   @state() private _requestShowId = false;
@@ -81,7 +83,8 @@ export default class HaAutomationSidebar extends LitElement {
     }
 
     const disabled =
-      "enabled" in this.config.config && this.config.config.enabled === false;
+      this.disabled ||
+      ("enabled" in this.config.config && this.config.config.enabled === false);
     const type = isTriggerList(this.config.config as Trigger)
       ? "list"
       : this.config.type === "action"
@@ -193,7 +196,7 @@ export default class HaAutomationSidebar extends LitElement {
               ? html`
                   <ha-md-menu-item
                     .clickAction=${this.config.disable}
-                    .disabled=${type === "list"}
+                    .disabled=${this.disabled || type === "list"}
                   >
                     ${disabled
                       ? this.hass.localize(
@@ -211,7 +214,11 @@ export default class HaAutomationSidebar extends LitElement {
                   </ha-md-menu-item>
                 `
               : nothing}
-            <ha-md-menu-item .clickAction=${this.config.delete} class="warning">
+            <ha-md-menu-item
+              .clickAction=${this.config.delete}
+              class="warning"
+              .disabled=${this.disabled}
+            >
               ${this.hass.localize(
                 `ui.panel.config.automation.editor.actions.${this.config.type !== "option" ? "delete" : "type.choose.remove_option"}`
               )}
@@ -232,6 +239,7 @@ export default class HaAutomationSidebar extends LitElement {
               .uiSupported=${this.config.uiSupported}
               .showId=${this._requestShowId}
               .yamlMode=${this._yamlMode}
+              .disabled=${this.disabled}
             ></ha-automation-trigger-editor>`
           : this.config.type === "condition" &&
               (this._yamlMode || !CONDITION_BUILDING_BLOCKS.includes(type))
@@ -243,6 +251,7 @@ export default class HaAutomationSidebar extends LitElement {
                   .yamlMode=${this._yamlMode}
                   .uiSupported=${this.config.uiSupported}
                   @value-changed=${this._valueChangedSidebar}
+                  .disabled=${this.disabled}
                 ></ha-automation-condition-editor>
               `
             : this.config.type === "action" &&
@@ -257,6 +266,7 @@ export default class HaAutomationSidebar extends LitElement {
                     @value-changed=${this._valueChangedSidebar}
                     sidebar
                     narrow
+                    .disabled=${this.disabled}
                   ></ha-automation-action-editor>
                 `
               : description
@@ -308,7 +318,7 @@ export default class HaAutomationSidebar extends LitElement {
   static styles = css`
     :host {
       height: 100%;
-      z-index: 5;
+      border-radius: 12px;
     }
 
     ha-card {

@@ -386,6 +386,7 @@ export default class HaAutomationActionRow extends LitElement {
           : nothing}
         ${this.optionsInSidebar
           ? html`<ha-automation-row
+              .disabled=${this.action.enabled === false}
               @click=${this.openSidebar}
               .leftChevron=${this.optionsInSidebar &&
               [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(

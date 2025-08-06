@@ -21,6 +21,8 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: Condition;
 
+  @property({ type: Boolean }) public narrow = false;
+
   public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
     return { condition: "state" };
   }
@@ -50,6 +52,7 @@ export class HaConditionAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         .hass=${this.hass}
         @value-changed=${this._conditionChanged}
+        .narrow=${this.narrow}
       ></ha-automation-condition-editor>
     `;
   }

@@ -52,9 +52,10 @@ export default class HaAutomationTriggerContent extends LitElement {
         class=${classMap({
           "card-content": true,
           disabled:
-            "enabled" in this.trigger &&
-            this.trigger.enabled === false &&
-            !this.yamlMode,
+            this.disabled ||
+            ("enabled" in this.trigger &&
+              this.trigger.enabled === false &&
+              !this.yamlMode),
           yaml: yamlMode,
         })}
       >

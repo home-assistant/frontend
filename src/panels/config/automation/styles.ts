@@ -68,3 +68,18 @@ export const editorStyles = css`
     border-color: var(--primary-color);
   }
 `;
+
+export const saveFabStyles = css`
+  :host {
+    overflow: hidden;
+  }
+  ha-fab {
+    position: absolute;
+    right: 16px;
+    bottom: calc(-80px - var(--safe-area-inset-bottom));
+    transition: bottom 0.3s;
+  }
+  ha-fab.dirty {
+    bottom: 16px;
+  }
+`;
