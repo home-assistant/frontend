@@ -233,6 +233,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
                     <ha-button
                       class="remove-node-button"
                       @click=${this._removeNodeClicked}
+                      appearance="filled"
                       .disabled=${this._status !== "connected" ||
                       (this._network?.controller.inclusion_state !==
                         InclusionState.Idle &&
