@@ -154,6 +154,7 @@ export class HaButton extends Button {
 
         :host([appearance~="plain"]) .button {
           color: var(--wa-color-on-normal);
+          background-color: transparent;
         }
         :host([appearance~="plain"]) .button.disabled {
           background-color: transparent;
