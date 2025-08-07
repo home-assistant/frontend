@@ -634,6 +634,7 @@ export class HaManualAutomationEditor extends LitElement {
           flex: 4;
           height: calc(100vh - 121px);
           height: calc(100dvh - 121px);
+          width: 40%;
         }
         .sidebar.hidden {
           border-color: transparent;
@@ -648,7 +649,6 @@ export class HaManualAutomationEditor extends LitElement {
           bottom: 0;
           right: 0;
           height: calc(100% - 64px);
-          width: 40%;
           padding: 0;
           z-index: 5;
         }

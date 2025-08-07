@@ -324,10 +324,8 @@ export default class HaAutomationSidebar extends LitElement {
     ha-card {
       height: 100%;
       width: 100%;
-      outline: solid;
-      outline-color: var(--ha-color-border-normal);
-      outline-offset: -2px;
-      outline-width: 2px;
+      border-color: var(--ha-color-border-normal);
+      border-width: 2px;
       display: block;
       overflow-y: auto;
       overflow-x: hidden;
@@ -350,12 +348,9 @@ export default class HaAutomationSidebar extends LitElement {
 
     ha-dialog-header {
       background-color: var(--card-background-color);
-      z-index: 1;
+      z-index: 2;
+      top: 0;
       position: sticky;
-      top: 2px;
-      margin-left: 2px;
-      margin-right: 2px;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sidebar-editor {
       padding-top: 64px;
