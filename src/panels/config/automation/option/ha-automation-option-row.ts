@@ -6,7 +6,6 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiRenameBox,
-  mdiSelection,
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -98,7 +97,6 @@ export default class HaAutomationOptionRow extends LitElement {
 
   private _renderRow() {
     return html`
-      <ha-svg-icon slot="leading-icon" .path=${mdiSelection}></ha-svg-icon>
       <h3 slot="header">
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.option",
