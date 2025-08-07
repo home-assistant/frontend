@@ -186,14 +186,16 @@ export class HaSankeyChart extends LitElement {
               ""
             );
           const wordWidth = measureTextWidth(longestWord, FONT_SIZE);
+          const availableWidth = params.rect.width + 6;
           const fontSize = Math.min(
             FONT_SIZE,
-            (params.rect.width / wordWidth) * FONT_SIZE
+            (availableWidth / wordWidth) * FONT_SIZE
           );
           return {
             fontSize: fontSize > 1 ? fontSize : 0,
-            width: params.rect.width,
+            width: availableWidth,
             align: "center",
+            dy: -2, // shift up or the lowest row labels may be cut off
           };
         }
 

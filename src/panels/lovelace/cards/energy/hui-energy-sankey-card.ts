@@ -23,6 +23,7 @@ import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
 import { formatNumber } from "../../../../common/number/format_number";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
+import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 
 const DEFAULT_CONFIG: Partial<EnergySankeyCardConfig> = {
   group_by_floor: true,
@@ -31,7 +32,7 @@ const DEFAULT_CONFIG: Partial<EnergySankeyCardConfig> = {
 
 @customElement("hui-energy-sankey-card")
 class HuiEnergySankeyCard
-  extends SubscribeMixin(LitElement)
+  extends SubscribeMixin(MobileAwareMixin(LitElement))
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -70,7 +71,11 @@ class HuiEnergySankeyCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return changedProps.has("_config") || changedProps.has("_data");
+    return (
+      changedProps.has("_config") ||
+      changedProps.has("_data") ||
+      changedProps.has("_isMobileSize")
+    );
   }
 
   protected render() {
@@ -373,13 +378,17 @@ class HuiEnergySankeyCard
 
     const hasData = nodes.some((node) => node.value > 0);
 
+    const vertical =
+      this._config.layout === "vertical" ||
+      (this._config.layout !== "horizontal" && this._isMobileSize);
+
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
           ${hasData
             ? html`<ha-sankey-chart
                 .data=${{ nodes, links }}
-                .vertical=${this._config.layout === "vertical"}
+                .vertical=${vertical}
                 .valueFormatter=${this._valueFormatter}
               ></ha-sankey-chart>`
             : html`${this.hass.localize(
