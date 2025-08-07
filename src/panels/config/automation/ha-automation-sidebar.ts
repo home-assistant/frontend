@@ -324,7 +324,7 @@ export default class HaAutomationSidebar extends LitElement {
     ha-card {
       height: 100%;
       width: 100%;
-      border-color: var(--ha-color-border-normal);
+      border-color: var(--ha-color-border-primary-normal);
       border-width: 2px;
       display: block;
       overflow-y: auto;
