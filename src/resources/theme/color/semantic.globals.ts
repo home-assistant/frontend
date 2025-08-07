@@ -15,9 +15,9 @@ export const semanticColorStyles = css`
     --ha-color-text-disabled: var(--ha-color-neutral-60);
     --ha-color-text-link: var(--ha-color-primary-40);
     /* border primary */
-    --ha-color-border-quiet: var(--ha-color-primary-80);
-    --ha-color-border-normal: var(--ha-color-primary-70);
-    --ha-color-border-loud: var(--ha-color-primary-40);
+    --ha-color-border-primary-quiet: var(--ha-color-primary-80);
+    --ha-color-border-primary-normal: var(--ha-color-primary-70);
+    --ha-color-border-primary-loud: var(--ha-color-primary-40);
 
     /* border neutral */
     --ha-color-border-neutral-quiet: var(--ha-color-neutral-80);
