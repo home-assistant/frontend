@@ -4374,7 +4374,6 @@
                 },
                 "repeat": {
                   "label": "Repeat",
-                  "type_select": "Repeat type",
                   "type": {
                     "count": {
                       "label": "Count"
