@@ -103,6 +103,7 @@ export default class HaAutomationOption extends LitElement {
               appearance="filled"
               .disabled=${this.disabled}
               @click=${this._addOption}
+              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -254,9 +255,6 @@ export default class HaAutomationOption extends LitElement {
     ha-automation-option-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

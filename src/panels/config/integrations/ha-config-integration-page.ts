@@ -17,6 +17,10 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import {
+  PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -64,10 +68,6 @@ import "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
 import { showAddIntegrationDialog } from "./show-add-integration-dialog";
 import { showPickConfigEntryDialog } from "./show-pick-config-entry-dialog";
-import {
-  PROTOCOL_INTEGRATIONS,
-  protocolIntegrationPicked,
-} from "../../../common/integrations/protocolIntegrationPicked";
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -549,6 +549,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     @click=${this._addSubEntry}
                     .flowType=${flowType}
                     .disabled=${!normalEntries.length}
+                    reduce-left-padding
                   >
                     <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(

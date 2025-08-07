@@ -7,10 +7,14 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button";
-import "../../../../src/components/ha-tooltip";
-import "../../../../src/components/ha-svg-icon";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-md-list";
+import "../../../../src/components/ha-md-list-item";
+import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-textfield";
+import type { HaTextField } from "../../../../src/components/ha-textfield";
+import "../../../../src/components/ha-tooltip";
 import type {
   HassioAddonInfo,
   HassioAddonRepository,
@@ -24,10 +28,6 @@ import {
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import type { HassioRepositoryDialogParams } from "./show-dialog-repositories";
-import type { HaTextField } from "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-textfield";
-import "../../../../src/components/ha-md-list";
-import "../../../../src/components/ha-md-list-item";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {
@@ -164,6 +164,7 @@ class HassioRepositoriesDialog extends LitElement {
               @click=${this._addRepository}
               appearance="filled"
               size="small"
+              reduce-left-padding
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this._dialogParams!.supervisor.localize(

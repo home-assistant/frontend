@@ -34,6 +34,8 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @attr {("accent"|"filled"|"plain")} appearance - Sets the button appearance.
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
  * @attr {boolean} disabled - Disables the button and prevents user interaction.
+ * @attr {boolean} reduce-left-padding - Reduces the left padding of the button to 12px for icons with internal padding.
+ * @attr {boolean} reduce-right-padding - Reduces the right padding of the button to 12px for icons with internal padding.
  */
 @customElement("ha-button")
 export class HaButton extends Button {
@@ -209,6 +211,21 @@ export class HaButton extends Button {
 
         .button.disabled {
           opacity: 1;
+        }
+
+        slot[name="start"]::slotted(*) {
+          margin-inline-end: 4px;
+        }
+        slot[name="end"]::slotted(*) {
+          margin-inline-start: 4px;
+        }
+
+        :host([reduce-left-padding]) .button {
+          padding-left: 12px;
+        }
+
+        :host([reduce-right-padding]) .button {
+          padding-right: 12px;
         }
       `,
     ];

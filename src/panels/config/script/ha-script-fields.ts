@@ -50,6 +50,7 @@ export default class HaScriptFields extends LitElement {
         size="small"
         @click=${this._addField}
         .disabled=${this.disabled}
+        reduce-left-padding
       >
         <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
         ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}

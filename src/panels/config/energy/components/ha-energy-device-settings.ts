@@ -121,6 +121,7 @@ export class EnergyDeviceSettings extends LitElement {
               @click=${this._addDevice}
               appearance="filled"
               size="small"
+              reduce-left-padding
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
               >${this.hass.localize(
