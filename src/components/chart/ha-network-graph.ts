@@ -105,12 +105,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   }
 
   protected render() {
-    if (!GraphChart) {
+    if (!GraphChart || !this.data.nodes?.length) {
       return nothing;
     }
+
     const isMobile = window.matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
+
     return html`<ha-chart-base
       .hass=${this.hass}
       .data=${this._getSeries(
@@ -243,6 +245,7 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
   ) {
     const containerWidth = this.clientWidth;
     const containerHeight = this.clientHeight;
+
     const positionedNodes: NetworkNode[] = nodes.map((node) => ({ ...node }));
     positionedNodes.forEach((node) => {
       if (nodePositions[node.id]) {

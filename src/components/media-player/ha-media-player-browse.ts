@@ -18,9 +18,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity";
 import type {
-  MediaPlayerItem,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
+  MediaPlayerItem,
   MediaPlayerLayoutType,
 } from "../../data/media-player";
 import {
@@ -32,6 +32,7 @@ import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import {
   brandsUrl,
@@ -44,16 +45,15 @@ import "../ha-alert";
 import "../ha-button";
 import "../ha-button-menu";
 import "../ha-card";
-import "../ha-spinner";
 import "../ha-fab";
 import "../ha-icon-button";
-import "../ha-svg-icon";
-import "../ha-tooltip";
 import "../ha-list";
 import "../ha-list-item";
+import "../ha-spinner";
+import "../ha-svg-icon";
+import "../ha-tooltip";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
-import { loadVirtualizer } from "../../resources/virtualizer";
 
 declare global {
   interface HASSDomEvents {

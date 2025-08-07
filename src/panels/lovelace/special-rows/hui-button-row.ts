@@ -101,11 +101,6 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    ha-button {
-      margin-right: -0.57em;
-      margin-inline-end: -0.57em;
-      margin-inline-start: initial;
-    }
   `;
 
   private _handleAction(ev: ActionHandlerEvent) {

@@ -7,8 +7,8 @@ import { haStyle } from "../resources/styles";
 import type { HomeAssistant } from "../types";
 import "./ha-button";
 import "./ha-icon-button";
-import "./ha-textfield";
 import "./ha-input-helper-text";
+import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 
 @customElement("ha-multi-textfield")
@@ -79,6 +79,7 @@ class HaMultiTextField extends LitElement {
           @click=${this._addItem}
           .disabled=${this.disabled}
         >
+          <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.addLabel ??
           (this.label
             ? this.hass?.localize("ui.components.multi-textfield.add_item", {
@@ -86,7 +87,6 @@ class HaMultiTextField extends LitElement {
               })
             : this.hass?.localize("ui.common.add")) ??
           "Add"}
-          <ha-svg-icon slot="end" .path=${mdiPlus}></ha-svg-icon>
         </ha-button>
       </div>
       ${this.helper

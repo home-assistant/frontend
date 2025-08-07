@@ -7540,13 +7540,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"echarts@npm:5.6.0":
-  version: 5.6.0
-  resolution: "echarts@npm:5.6.0"
+"echarts@npm:6.0.0":
+  version: 6.0.0
+  resolution: "echarts@npm:6.0.0"
   dependencies:
     tslib: "npm:2.3.0"
-    zrender: "npm:5.6.1"
-  checksum: 10/e73344abb777fd8401c0b89a5d83b65c7a81a11540e2047d51f4aae9419baf4dc2524a5d9561f9ca0fe8d6b432c58b7a1d518f2a4338041046506db8257a1332
+    zrender: "npm:6.0.0"
+  checksum: 10/8dbb160cf22e99a2bce04174db756b73e52ba5c00048901c5dbda0c10e6e7b514e5344daa49aa2cdd9c620c9dcc2f4eb15c0614bb2d8a97d9d33e17552ae3655
   languageName: node
   linkType: hard
 
@@ -9457,7 +9457,7 @@ __metadata:
     deep-freeze: "npm:0.0.1"
     del: "npm:8.0.0"
     dialog-polyfill: "npm:0.5.6"
-    echarts: "npm:5.6.0"
+    echarts: "npm:6.0.0"
     element-internals-polyfill: "npm:3.0.2"
     eslint: "npm:9.32.0"
     eslint-config-airbnb-base: "npm:15.0.0"
@@ -9490,7 +9490,7 @@ __metadata:
     leaflet: "npm:1.9.4"
     leaflet-draw: "patch:leaflet-draw@npm%3A1.0.4#./.yarn/patches/leaflet-draw-npm-1.0.4-0ca0ebcf65.patch"
     leaflet.markercluster: "npm:1.5.3"
-    lint-staged: "npm:16.1.2"
+    lint-staged: "npm:16.1.4"
     lit: "npm:3.3.1"
     lit-analyzer: "npm:2.0.3"
     lit-html: "npm:3.3.1"
@@ -9498,7 +9498,7 @@ __metadata:
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.7.1"
     map-stream: "npm:0.0.7"
-    marked: "npm:16.1.1"
+    marked: "npm:16.1.2"
     memoize-one: "npm:6.0.0"
     node-vibrant: "npm:4.0.3"
     object-hash: "npm:3.0.0"
@@ -10869,15 +10869,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:16.1.2":
-  version: 16.1.2
-  resolution: "lint-staged@npm:16.1.2"
+"lint-staged@npm:16.1.4":
+  version: 16.1.4
+  resolution: "lint-staged@npm:16.1.4"
   dependencies:
     chalk: "npm:^5.4.1"
     commander: "npm:^14.0.0"
     debug: "npm:^4.4.1"
     lilconfig: "npm:^3.1.3"
-    listr2: "npm:^8.3.3"
+    listr2: "npm:^9.0.1"
     micromatch: "npm:^4.0.8"
     nano-spawn: "npm:^1.0.2"
     pidtree: "npm:^0.6.0"
@@ -10885,13 +10885,13 @@ __metadata:
     yaml: "npm:^2.8.0"
   bin:
     lint-staged: bin/lint-staged.js
-  checksum: 10/90df77c2f59cdc5ebeb8a60767f07025a8aed9161f604fea6cf1ca895ff3b56995a00145a3e0b5c0bf22e8f667a6182256b68e001e5f3118e46a3c5150bede82
+  checksum: 10/71330be72e1ca37715f4098eefdc634c6cb4948323ba1e88717b11376f18d8add9b851e5289f0814f10d25aa379aa77efba73ef0b717931632b8f6aae6c3f61d
   languageName: node
   linkType: hard
 
-"listr2@npm:^8.3.3":
-  version: 8.3.3
-  resolution: "listr2@npm:8.3.3"
+"listr2@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "listr2@npm:9.0.1"
   dependencies:
     cli-truncate: "npm:^4.0.0"
     colorette: "npm:^2.0.20"
@@ -10899,7 +10899,7 @@ __metadata:
     log-update: "npm:^6.1.0"
     rfdc: "npm:^1.4.1"
     wrap-ansi: "npm:^9.0.0"
-  checksum: 10/92f1bb60e9a0f4fed9bff89fbab49d80fc889d29cf47c0a612f5a62a036dead49d3f697d3a79e36984768529bd3bfacb3343859eafceba179a8e66c034d99300
+  checksum: 10/ac5f98317fe17588d304bb4dce47ea22892f223511948656f588c5ab47b99d5d97ca4b812b4fb1237db8ec8d86a504875d8d6a0bb24c877553537eab44941983
   languageName: node
   linkType: hard
 
@@ -11187,12 +11187,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:16.1.1":
-  version: 16.1.1
-  resolution: "marked@npm:16.1.1"
+"marked@npm:16.1.2":
+  version: 16.1.2
+  resolution: "marked@npm:16.1.2"
   bin:
     marked: bin/marked.js
-  checksum: 10/9f4d2d8f862e1d874f03f1b8614fbf859ae788b4a1b4174be83a65c8ea5ecabf0c991c455dcb6b650e7106fb5b65a94865b9de45667bb2471ca2272e1798971d
+  checksum: 10/190d9b206f05d87a7acac3b50ab19505878297971a0c5652a9d4fa2b022407f22d2b79e1aa1e9f23a32c0158b1f5852ad33da2e83cc12100116a8fc0afc2b17e
   languageName: node
   linkType: hard
 
@@ -16135,12 +16135,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zrender@npm:5.6.1":
-  version: 5.6.1
-  resolution: "zrender@npm:5.6.1"
+"zrender@npm:6.0.0":
+  version: 6.0.0
+  resolution: "zrender@npm:6.0.0"
   dependencies:
     tslib: "npm:2.3.0"
-  checksum: 10/25dfd476be243f051614f131675855d184eb05e8b9a39dc41146a3a553a17aad5ceba77e166d525be9c4adc2bb237c56dfdfb3456667940bbeddb05eef3deac7
+  checksum: 10/d7b6572ebe400d40d9dc6e066a3a5841d4da1fdea3a9c1fd605239e116ffe05553002a351cbb236bcfbf516a41d3bd67f85ef39a43ccc7ffdc5b70a0ceec6aa8
   languageName: node
   linkType: hard
 

@@ -3,6 +3,7 @@ import {
   mdiAmpersand,
   mdiGateOr,
   mdiMapMarker,
+  mdiNotEqualVariant,
   mdiNumeric,
   mdiResponsive,
   mdiStateMachine,
@@ -16,5 +17,6 @@ export const ICON_CONDITION: Record<Condition["condition"], string> = {
   screen: mdiResponsive,
   user: mdiAccount,
   and: mdiAmpersand,
+  not: mdiNotEqualVariant,
   or: mdiGateOr,
 };

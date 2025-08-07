@@ -345,9 +345,6 @@ export default class HaAutomationCondition extends LitElement {
     .buttons {
       order: 1;
     }
-    ha-svg-icon {
-      height: 20px;
-    }
     .handle {
       padding: 12px;
       cursor: move; /* fallback if grab cursor is unsupported */
