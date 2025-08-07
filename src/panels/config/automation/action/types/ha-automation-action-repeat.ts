@@ -35,7 +35,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (_localize: LocalizeFunc, type: string, template: boolean) =>
+    (type: string, template: boolean) =>
       [
         ...(type === "count"
           ? ([
