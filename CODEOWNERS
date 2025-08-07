@@ -6,3 +6,6 @@
 # Part of the frontend that mobile developper should review
 src/external_app/ @bgoncal @TimoPtr
 test/external_app/ @bgoncal @TimoPtr
+
+# Part of the frontend that mobile developper and designer should review
+src/resources/theme/color/ @bgoncal @marcinbauer85 @TimoPtr
