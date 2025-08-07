@@ -211,6 +211,13 @@ export class HaButton extends Button {
         .button.disabled {
           opacity: 1;
         }
+
+        slot[name="start"]::slotted(*) {
+          margin-inline-end: 4px;
+        }
+        slot[name="end"]::slotted(*) {
+          margin-inline-start: 4px;
+        }
       `,
     ];
   }
