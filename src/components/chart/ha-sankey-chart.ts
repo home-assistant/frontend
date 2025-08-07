@@ -197,12 +197,9 @@ export class HaSankeyChart extends LitElement {
           };
         }
 
-        // estimate the number of lines after the label is wrapped
-        // this is a very rough estimate, but it works for now
-        const lineCount = Math.ceil(params.labelRect.width / labelSpace);
-        // `overflow: "break"` allows the label to overflow outside its height, so we need to account for that
+        const availableHeight = params.rect.height + 8; // account for the margin
         const fontSize = Math.min(
-          (params.rect.height / lineCount) * FONT_SIZE,
+          (availableHeight / params.labelRect.height) * FONT_SIZE,
           FONT_SIZE
         );
         return {
