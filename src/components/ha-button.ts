@@ -217,14 +217,6 @@ export class HaButton extends Button {
         slot[name="end"]::slotted(*) {
           margin-inline-start: 4px;
         }
-
-        .button.has-start {
-          padding-left: 10px;
-        }
-
-        .button.has-end {
-          padding-right: 10px;
-        }
       `,
     ];
   }
