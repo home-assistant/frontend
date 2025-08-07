@@ -94,6 +94,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
           position: relative;
           height: 100%;
           min-height: calc(100vh - 85px);
+          min-height: calc(100dvh - 85px);
         }
         ha-fab {
           position: fixed;

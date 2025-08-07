@@ -340,9 +340,11 @@ export default class HaAutomationSidebar extends LitElement {
     @media all and (max-width: 870px) {
       ha-card.mobile {
         max-height: 80vh;
+        max-height: 80dvh;
       }
       ha-card.mobile.yaml {
         height: 80vh;
+        height: 80dvh;
       }
     }
 

@@ -624,6 +624,7 @@ export class HaManualAutomationEditor extends LitElement {
         .content {
           padding: 32px 16px 64px 0;
           height: calc(100vh - 153px);
+          height: calc(100dvh - 153px);
           overflow-y: auto;
           overflow-x: hidden;
         }
@@ -632,12 +633,14 @@ export class HaManualAutomationEditor extends LitElement {
           padding: 32px 0;
           flex: 4;
           height: calc(100vh - 121px);
+          height: calc(100dvh - 121px);
         }
         .sidebar.hidden {
           border-color: transparent;
           border-width: 0;
           overflow: hidden;
           flex: 0;
+          visibility: hidden;
         }
 
         .sidebar.overlay {
@@ -653,6 +656,7 @@ export class HaManualAutomationEditor extends LitElement {
         @media all and (max-width: 870px) {
           .sidebar.overlay {
             max-height: 80vh;
+            max-height: 80dvh;
             height: auto;
             width: 100%;
             box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
