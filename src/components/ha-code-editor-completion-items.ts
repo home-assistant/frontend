@@ -42,10 +42,10 @@ export class HaCodeEditorCompletionItems extends LitElement {
     }
 
     pre {
-      margin: 0 0.2em;
-      padding: 0.2em 0.2em;
+      margin: 0 3px;
+      padding: 3px;
       background-color: var(--markdown-code-background-color, none);
-      border-radius: 3px;
+      border-radius: var(--ha-border-radius-sm, 4px);
       line-height: var(--ha-line-height-condensed);
     }
   `;
