@@ -72,14 +72,16 @@ export const describeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  ignoreAlias = false
+  ignoreAlias = false,
+  includeTags = false
 ): string => {
   try {
     const description = tryDescribeTrigger(
       trigger,
       hass,
       entityRegistry,
-      ignoreAlias
+      ignoreAlias,
+      includeTags
     );
     if (typeof description !== "string") {
       throw new Error(String(description));
@@ -101,7 +103,8 @@ const tryDescribeTrigger = (
   trigger: Trigger,
   hass: HomeAssistant,
   entityRegistry: EntityRegistryEntry[],
-  ignoreAlias = false
+  ignoreAlias = false,
+  includeTags = false
 ) => {
   if (isTriggerList(trigger)) {
     const triggers = ensureArray(trigger.triggers);
@@ -151,7 +154,9 @@ const tryDescribeTrigger = (
 
   // Numeric State Trigger
   if (trigger.trigger === "numeric_state" && trigger.entity_id) {
-    const entities: string[] = [];
+    let entities: string[] = [];
+    let above: string | undefined = trigger.above?.toString();
+    let below: string | undefined = trigger.below?.toString();
     const states = hass.states;
 
     const stateObj = Array.isArray(trigger.entity_id)
@@ -187,39 +192,49 @@ const tryDescribeTrigger = (
       ? describeDuration(hass.locale, trigger.for)
       : undefined;
 
-    if (trigger.above !== undefined && trigger.below !== undefined) {
+    if (includeTags) {
+      entities = entities.map((entity) => "<e>" + entity + "</e>");
+      if (above !== undefined) {
+        above = "<s>" + above + "</s>";
+      }
+      if (below !== undefined) {
+        below = "<s>" + below + "</s>";
+      }
+    }
+
+    if (above !== undefined && below !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above-below`,
         {
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          above: trigger.above,
-          below: trigger.below,
+          above: above,
+          below: below,
           duration: duration,
         }
       );
     }
-    if (trigger.above !== undefined) {
+    if (above !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.above`,
         {
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          above: trigger.above,
+          above: above,
           duration: duration,
         }
       );
     }
-    if (trigger.below !== undefined) {
+    if (below !== undefined) {
       return hass.localize(
         `${triggerTranslationBaseKey}.numeric_state.description.below`,
         {
           attribute: attribute,
           entity: formatListWithOrs(hass.locale, entities),
           numberOfEntities: entities.length,
-          below: trigger.below,
+          below: below,
           duration: duration,
         }
       );
