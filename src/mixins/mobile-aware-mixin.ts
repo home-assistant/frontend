@@ -6,7 +6,7 @@ import { listenMediaQuery } from "../common/dom/media_query";
 
 export const MobileAwareMixin = <T extends Constructor<LitElement>>(
   superClass: T
-) =>
+) => {
   class MobileAwareClass extends superClass {
     @state() protected _isMobileSize = false;
 
@@ -29,4 +29,6 @@ export const MobileAwareMixin = <T extends Constructor<LitElement>>(
       this._unsubMql?.();
       this._unsubMql = undefined;
     }
-  };
+  }
+  return MobileAwareClass;
+};
