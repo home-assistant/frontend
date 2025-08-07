@@ -2,13 +2,13 @@ import { mdiDelete, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../src/components/ha-button";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-icon-button";
-import "../../../../src/components/ha-button";
-import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-settings-row";
+import "../../../../src/components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   addHassioDockerRegistry,

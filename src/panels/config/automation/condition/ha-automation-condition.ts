@@ -363,9 +363,6 @@ export default class HaAutomationCondition extends LitElement {
       display: block;
       scroll-margin-top: 48px;
     }
-    ha-svg-icon {
-      height: 20px;
-    }
     .handle {
       padding: 12px;
       cursor: move; /* fallback if grab cursor is unsupported */

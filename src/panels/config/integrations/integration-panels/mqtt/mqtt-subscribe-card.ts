@@ -105,7 +105,6 @@ class MqttSubscribeCard extends LitElement {
               size="small"
               .disabled=${this._topic === ""}
               @click=${this._handleSubmit}
-              type="submit"
             >
               ${this._subscribed
                 ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
