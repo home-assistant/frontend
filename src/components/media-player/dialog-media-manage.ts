@@ -116,7 +116,7 @@ class DialogMediaManage extends LitElement {
               `
             : html`
                 <ha-button
-                  class="danger"
+                  variant="danger"
                   slot="navigationIcon"
                   .disabled=${this._deleting}
                   @click=${this._handleDelete}
@@ -325,10 +325,6 @@ class DialogMediaManage extends LitElement {
           --mdc-theme-primary: var(--primary-text-color);
           margin: 6px;
           display: block;
-        }
-
-        .danger {
-          --mdc-theme-primary: var(--error-color);
         }
 
         ha-tip {
