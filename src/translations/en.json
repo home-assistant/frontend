@@ -5633,8 +5633,6 @@
           "description_publish": "Publish a packet",
           "topic": "Topic",
           "payload": "Payload (template allowed)",
-          "payload_no_template": "Payload",
-          "allow_template": "Allow template",
           "publish": "Publish",
           "description_listen": "Listen to a topic",
           "json_formatting": "Format JSON content",
