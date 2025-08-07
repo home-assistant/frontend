@@ -114,7 +114,6 @@ export default class HaAutomationAction extends LitElement {
               @click=${this._addActionDialog}
               .appearance=${this.root ? "accent" : "filled"}
               .size=${this.root ? "medium" : "small"}
-              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -126,7 +125,6 @@ export default class HaAutomationAction extends LitElement {
               @click=${this._addActionBuildingBlockDialog}
               appearance="plain"
               .size=${this.root ? "medium" : "small"}
-              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(

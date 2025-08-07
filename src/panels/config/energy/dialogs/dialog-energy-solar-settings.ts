@@ -184,7 +184,6 @@ export class DialogEnergySolarSettings
                 appearance="filled"
                 size="small"
                 @click=${this._addForecast}
-              reduce-left-padding
               >
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.hass.localize(

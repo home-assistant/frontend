@@ -609,7 +609,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                       @click=${this._createFlow}
                       appearance="filled"
                       size="small"
-                      reduce-left-padding
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${this.hass.localize(
@@ -642,7 +641,6 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                           @click=${this._createFlow}
                           appearance="filled"
                           size="small"
-                          reduce-left-padding
                         >
                           <ha-svg-icon
                             slot="start"

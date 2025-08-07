@@ -53,15 +53,13 @@ Check the [webawesome documentation](https://webawesome.com/docs/components/butt
 
 **Properties/Attributes**
 
-| Name                 | Type                                           | Default  | Description                                                                       |
-| -------------------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
-| appearance           | "accent"/"filled"/"plain"                      | "accent" | Sets the button appearance.                                                       |
-| variants             | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                |
-| size                 | "small"/"medium"                               | "medium" | Sets the button size.                                                             |
-| loading              | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click. |
-| disabled             | Boolean                                        | false    | Disables the button and prevents user interaction.                                |
-| reduce-left-padding  | Boolean                                        | false    | Reduces the left padding of the button to 12px for icons with internal padding.   |
-| reduce-right-padding | Boolean                                        | false    | Reduces the right padding of the button to 12px for icons with internal padding.  |
+| Name       | Type                                           | Default  | Description                                                                       |
+| ---------- | ---------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| appearance | "accent"/"filled"/"plain"                      | "accent" | Sets the button appearance.                                                       |
+| variants   | "brand"/"danger"/"neutral"/"warning"/"success" | "brand"  | Sets the button color variant. "brand" is default.                                |
+| size       | "small"/"medium"                               | "medium" | Sets the button size.                                                             |
+| loading    | Boolean                                        | false    | Shows a loading indicator instead of the buttons label and disable buttons click. |
+| disabled   | Boolean                                        | false    | Disables the button and prevents user interaction.                                |
 
 **CSS Custom Properties**
 

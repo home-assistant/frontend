@@ -137,7 +137,6 @@ export class EnergyBatterySettings extends LitElement {
               @click=${this._addSource}
               appearance="filled"
               size="small"
-              reduce-left-padding
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this.hass.localize(

@@ -163,7 +163,6 @@ export default class HaAutomationCondition extends LitElement {
               @click=${this._addConditionDialog}
               .appearance=${this.root ? "accent" : "filled"}
               .size=${this.root ? "medium" : "small"}
-              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -175,7 +174,6 @@ export default class HaAutomationCondition extends LitElement {
               appearance="plain"
               .size=${this.root ? "medium" : "small"}
               @click=${this._addConditionBuildingBlockDialog}
-              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(

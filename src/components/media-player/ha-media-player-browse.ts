@@ -443,7 +443,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                                   <ha-button
                                     .item=${currentItem}
                                     @click=${this._actionClicked}
-                                    reduce-left-padding
                                   >
                                     <ha-svg-icon
                                       .label=${this.hass.localize(

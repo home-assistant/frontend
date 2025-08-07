@@ -78,7 +78,6 @@ class HaMultiTextField extends LitElement {
           appearance="filled"
           @click=${this._addItem}
           .disabled=${this.disabled}
-          reduce-left-padding
         >
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.addLabel ??

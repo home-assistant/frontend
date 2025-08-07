@@ -450,7 +450,6 @@ export class HassioNetwork extends LitElement {
                       class="add-address"
                       appearance="filled"
                       size="small"
-                      reduce-left-padding
                     >
                       ${this.hass.localize(
                         "ui.panel.config.network.supervisor.add_address"
@@ -508,12 +507,7 @@ export class HassioNetwork extends LitElement {
                 appearance="filled"
                 size="small"
               >
-                <ha-button
-                  appearance="filled"
-                  size="small"
-                  slot="trigger"
-                  reduce-left-padding
-                >
+                <ha-button appearance="filled" size="small" slot="trigger">
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.add_dns_server"
                   )}

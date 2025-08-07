@@ -121,7 +121,6 @@ export class HaConfigPerson extends LitElement {
                       @click=${this._createPerson}
                       appearance="filled"
                       size="small"
-                      reduce-left-padding
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                       ${hass.localize(

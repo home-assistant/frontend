@@ -372,12 +372,7 @@ export class HuiCardFeaturesEditor extends LitElement {
               @action=${this._addFeature}
               @closed=${stopPropagation}
             >
-              <ha-button
-                slot="trigger"
-                appearance="filled"
-                size="small"
-                reduce-left-padding
-              >
+              <ha-button slot="trigger" appearance="filled" size="small">
                 <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                 ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
               </ha-button>

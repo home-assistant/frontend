@@ -549,7 +549,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     @click=${this._addSubEntry}
                     .flowType=${flowType}
                     .disabled=${!normalEntries.length}
-                    reduce-left-padding
                   >
                     <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(

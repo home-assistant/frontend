@@ -164,7 +164,6 @@ class HassioRepositoriesDialog extends LitElement {
               @click=${this._addRepository}
               appearance="filled"
               size="small"
-              reduce-left-padding
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
               ${this._dialogParams!.supervisor.localize(

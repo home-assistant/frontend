@@ -166,7 +166,6 @@ export class EnergyGridSettings extends LitElement {
               appearance="filled"
               size="small"
               @click=${this._addFromSource}
-              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -219,7 +218,6 @@ export class EnergyGridSettings extends LitElement {
               @click=${this._addToSource}
               appearance="filled"
               size="small"
-              reduce-left-padding
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon
               >${this.hass.localize(
@@ -275,7 +273,6 @@ export class EnergyGridSettings extends LitElement {
                     @click=${this._addCO2Sensor}
                     appearance="filled"
                     size="small"
-                    reduce-left-padding
                   >
                     <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                     ${this.hass.localize(
