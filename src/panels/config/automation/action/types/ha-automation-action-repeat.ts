@@ -11,7 +11,6 @@ import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 import { isTemplate } from "../../../../../common/string/has-template";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -80,7 +79,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const action = this.action.repeat;
     const type = getType(action);
     const schema = this._schema(
-      this.hass.localize,
       type ?? "count",
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
