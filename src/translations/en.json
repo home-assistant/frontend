@@ -7795,6 +7795,9 @@
             "edit": "Edit feature",
             "remove": "Remove feature",
             "types": {
+              "button": {
+                "label": "Button"
+              },
               "cover-open-close": {
                 "label": "Cover open/close"
               },
