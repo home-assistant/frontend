@@ -30,6 +30,8 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @property({ attribute: false }) public actions!: Action[];
 
   @property({ attribute: false }) public highlightedActions?: Action[];
@@ -108,23 +110,26 @@ export default class HaAutomationAction extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addActionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add"
               )}
-              @click=${this._addActionDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             <ha-button
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addActionBuildingBlockDialog}
+              appearance="plain"
+              .size=${this.root ? "medium" : "small"}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.add_building_block"
               )}
-              @click=${this._addActionBuildingBlockDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
           </div>
         </div>
@@ -311,9 +316,6 @@ export default class HaAutomationAction extends LitElement {
     ha-automation-action-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

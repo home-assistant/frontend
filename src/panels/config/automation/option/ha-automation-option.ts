@@ -100,14 +100,14 @@ export default class HaAutomationOption extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
+              appearance="filled"
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.add_option"
-              )}
               @click=${this._addOption}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.add_option"
+              )}
             </ha-button>
           </div>
         </div>
@@ -254,9 +254,6 @@ export default class HaAutomationOption extends LitElement {
     ha-automation-option-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -197,6 +196,7 @@ export class HaManualScriptEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        root
       ></ha-automation-action>
     `;
   }

@@ -118,7 +118,7 @@ export class HaStateControlLockToggle extends LitElement {
         reversed
         .checked=${this._isOn}
         @change=${this._valueChanged}
-        .ariaLabel=${this._isOn
+        .label=${this._isOn
           ? this.hass.localize("ui.card.lock.unlock")
           : this.hass.localize("ui.card.lock.lock")}
         style=${styleMap({

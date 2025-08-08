@@ -110,7 +110,11 @@ export class DialogEnterCode
             pattern=${ifDefined(this._dialogParams.codePattern)}
             inputmode="text"
           ></ha-textfield>
-          <ha-button slot="secondaryAction" dialogAction="cancel">
+          <ha-button
+            appearance="plain"
+            slot="secondaryAction"
+            dialogAction="cancel"
+          >
             ${this._dialogParams.cancelText ??
             this.hass.localize("ui.common.cancel")}
           </ha-button>

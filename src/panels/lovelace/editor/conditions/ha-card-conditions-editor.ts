@@ -18,6 +18,7 @@ import "./ha-card-condition-editor";
 import type { HaCardConditionEditor } from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
+import "./types/ha-card-condition-not";
 import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
@@ -30,6 +31,7 @@ const UI_CONDITION = [
   "screen",
   "user",
   "and",
+  "not",
   "or",
 ] as const satisfies readonly Condition["condition"][];
 
@@ -93,14 +95,11 @@ export class HaCardConditionsEditor extends LitElement {
             fixed
             @closed=${stopPropagation}
           >
-            <ha-button
-              slot="trigger"
-              outlined
-              .label=${this.hass.localize(
+            <ha-button slot="trigger" appearance="filled">
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.lovelace.editor.condition-editor.add"
               )}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             ${UI_CONDITION.map(
               (condition) => html`

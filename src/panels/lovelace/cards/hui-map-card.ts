@@ -239,7 +239,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               )}
               .path=${mdiImageFilterCenterFocus}
               style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
-              @click=${this._fitMap}
+              @click=${this._resetFocus}
               tabindex="0"
             ></ha-icon-button>
           </div>
@@ -389,8 +389,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         : (root.style.paddingBottom = "100%");
   }
 
-  private _fitMap() {
-    this._map?.fitMap();
+  private _resetFocus() {
+    this._map?.fitMap({ unpause_autofit: true });
   }
 
   private _toggleClusterMarkers() {

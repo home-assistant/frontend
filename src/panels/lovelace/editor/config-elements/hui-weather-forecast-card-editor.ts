@@ -57,7 +57,7 @@ export class HuiWeatherForecastCardEditor
 
     if (
       /* cannot show forecast in case it is unavailable on the entity */
-      (config.show_forecast === true && this._hasForecast === false) ||
+      (config.show_forecast !== false && this._hasForecast === false) ||
       /* cannot hide both weather and forecast, need one of them */
       (config.show_current === false && config.show_forecast === false)
     ) {
@@ -65,6 +65,7 @@ export class HuiWeatherForecastCardEditor
       fireEvent(this, "config-changed", {
         config: { ...config, show_current: true, show_forecast: false },
       });
+      return;
     }
     if (
       !config.forecast_type ||

@@ -99,13 +99,11 @@ class HaBackupOverviewBackups extends LitElement {
           </ha-md-list>
         </div>
         <div class="card-actions">
-          <a href="/config/backup/backups?type=all">
-            <ha-button>
-              ${this.hass.localize(
-                "ui.panel.config.backup.overview.backups.show_all"
-              )}
-            </ha-button>
-          </a>
+          <ha-button appearance="filled" href="/config/backup/backups?type=all">
+            ${this.hass.localize(
+              "ui.panel.config.backup.overview.backups.show_all"
+            )}
+          </ha-button>
         </div>
       </ha-card>
     `;

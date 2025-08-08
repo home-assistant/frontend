@@ -17,6 +17,7 @@ import type { HaRadio } from "../../../components/ha-radio";
 import "../../../components/ha-spinner";
 import "../../../components/ha-textfield";
 import type { HaTextField } from "../../../components/ha-textfield";
+import "../../../components/sl-tab-group";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   type AccessPoint,
@@ -33,7 +34,6 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/sl-tab-group";
 
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
@@ -141,16 +141,16 @@ export class HassioNetwork extends LitElement {
                     </p>`
                   : nothing}
                 <ha-button
+                  appearance="plain"
                   class="scan"
                   @click=${this._scanForAP}
                   .disabled=${this._scanning}
+                  .loading=${this._scanning}
                 >
-                  ${this._scanning
-                    ? html`<ha-spinner size="small"> </ha-spinner>`
-                    : this.hass.localize(
-                        "ui.panel.config.network.supervisor.scan_ap"
-                      )}
-                  <ha-svg-icon slot="icon" .path=${mdiWifi}></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.network.supervisor.scan_ap"
+                  )}
+                  <ha-svg-icon slot="start" .path=${mdiWifi}></ha-svg-icon>
                 </ha-button>
                 ${this._accessPoints.length
                   ? html`
@@ -260,12 +260,14 @@ export class HassioNetwork extends LitElement {
           : nothing}
       </div>
       <div class="card-actions">
-        <ha-button @click=${this._updateNetwork} .disabled=${!this._dirty}>
-          ${this._processing
-            ? html`<ha-spinner size="small"></ha-spinner>`
-            : this.hass.localize("ui.common.save")}
+        <ha-button
+          .loading=${this._processing}
+          @click=${this._updateNetwork}
+          .disabled=${!this._dirty}
+        >
+          ${this.hass.localize("ui.common.save")}
         </ha-button>
-        <ha-button @click=${this._clear}>
+        <ha-button variant="danger" appearance="plain" @click=${this._clear}>
           ${this.hass.localize("ui.panel.config.network.supervisor.reset")}
         </ha-button>
       </div>`;
@@ -446,11 +448,13 @@ export class HassioNetwork extends LitElement {
                       @click=${this._addAddress}
                       .version=${version}
                       class="add-address"
+                      appearance="filled"
+                      size="small"
                     >
                       ${this.hass.localize(
                         "ui.panel.config.network.supervisor.add_address"
                       )}
-                      <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     </ha-button>
                   `
                 : nothing}
@@ -500,13 +504,15 @@ export class HassioNetwork extends LitElement {
                 @closed=${this._handleDNSMenuClosed}
                 .version=${version}
                 class="add-nameserver"
+                appearance="filled"
+                size="small"
               >
-                <ha-button slot="trigger">
+                <ha-button appearance="filled" size="small" slot="trigger">
                   ${this.hass.localize(
                     "ui.panel.config.network.supervisor.add_dns_server"
                   )}
                   <ha-svg-icon
-                    slot="icon"
+                    slot="start"
                     .path=${this._dnsMenuOpen ? mdiMenuDown : mdiPlus}
                   ></ha-svg-icon>
                 </ha-button>
@@ -778,10 +784,6 @@ export class HassioNetwork extends LitElement {
         .content {
           display: block;
           padding: 20px 24px;
-        }
-
-        ha-button.warning {
-          --mdc-theme-primary: var(--error-color);
         }
 
         ha-button.scan {

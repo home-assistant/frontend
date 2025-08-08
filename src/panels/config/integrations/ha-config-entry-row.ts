@@ -22,6 +22,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { isDevVersion } from "../../../common/config/version";
 import {
   deleteApplicationCredential,
@@ -205,7 +207,7 @@ class HaConfigEntryRow extends LitElement {
             : nothing}
         </div>
         ${item.disabled_by === "user"
-          ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
+          ? html`<ha-button slot="end" @click=${this._handleEnable}>
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel &&
@@ -491,18 +493,34 @@ class HaConfigEntryRow extends LitElement {
     );
 
   private _getDevices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries.includes(this.entry.entry_id) &&
-        device.entry_type !== "service"
-    );
+    Object.values(this.hass.devices)
+      .filter(
+        (device) =>
+          device.config_entries.includes(this.entry.entry_id) &&
+          device.entry_type !== "service"
+      )
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          computeDeviceNameDisplay(a, this.hass),
+          computeDeviceNameDisplay(b, this.hass),
+          this.hass.locale.language
+        )
+      );
 
   private _getServices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries.includes(this.entry.entry_id) &&
-        device.entry_type === "service"
-    );
+    Object.values(this.hass.devices)
+      .filter(
+        (device) =>
+          device.config_entries.includes(this.entry.entry_id) &&
+          device.entry_type === "service"
+      )
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          computeDeviceNameDisplay(a, this.hass),
+          computeDeviceNameDisplay(b, this.hass),
+          this.hass.locale.language
+        )
+      );
 
   private _toggleExpand() {
     this._expanded = !this._expanded;

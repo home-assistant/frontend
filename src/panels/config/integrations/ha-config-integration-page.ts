@@ -17,6 +17,10 @@ import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import {
+  PROTOCOL_INTEGRATIONS,
+  protocolIntegrationPicked,
+} from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
@@ -283,6 +287,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       (device) => device.entry_type !== "service"
     );
 
+    const canAddDevice = (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
+      this.domain
+    );
+
     return html`
       <hass-subpage .hass=${this.hass} .narrow=${this.narrow}>
         ${this._manifest
@@ -513,7 +521,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
             </div>
             <div class="actions">
-              <ha-button unelevated @click=${this._addIntegration}>
+              ${canAddDevice
+                ? html`
+                    <ha-button @click=${this._addDevice}>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.integration_page.add_device"
+                      )}
+                    </ha-button>
+                  `
+                : nothing}
+              <ha-button
+                .appearance=${canAddDevice ? "filled" : "accent"}
+                @click=${this._addIntegration}
+              >
                 ${this._manifest?.integration_type
                   ? this.hass.localize(
                       `ui.panel.config.integrations.integration_page.add_${this._manifest.integration_type}`
@@ -525,13 +545,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ${Array.from(supportedSubentryTypes).map(
                 (flowType) =>
                   html`<ha-button
-                    outlined
+                    appearance="filled"
                     @click=${this._addSubEntry}
                     .flowType=${flowType}
                     .disabled=${!normalEntries.length}
-                    graphic="icon"
                   >
-                    <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                     ${this.hass.localize(
                       `component.${this.domain}.config_subentries.${flowType}.initiate_flow.user`
                     )}</ha-button
@@ -548,6 +567,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                   )}
                   <ha-button
+                    size="small"
+                    variant="warning"
                     slot="action"
                     @click=${this._handleDisableDebugLogging}
                   >
@@ -571,11 +592,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           ${flow.localized_title}
                           <ha-button
                             slot="end"
-                            unelevated
+                            variant="success"
+                            size="small"
                             .flow=${flow}
                             @click=${this._continueFlow}
-                            .label=${this.hass.localize("ui.common.add")}
-                          ></ha-button>
+                          >
+                            ${this.hass.localize("ui.common.add")}
+                          </ha-button>
                         </ha-md-list-item>`
                     )}
                   </ha-md-list>
@@ -609,9 +632,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             >
                             <ha-button
                               slot="end"
-                              unelevated
                               .flow=${flow}
                               @click=${this._continueFlow}
+                              variant="warning"
                               >${this.hass.localize(
                                 `ui.panel.config.integrations.${
                                   attention ? "reconfigure" : "configure"
@@ -801,6 +824,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       );
     }
   );
+
+  private _addDevice() {
+    protocolIntegrationPicked(this, this.hass, this.domain);
+  }
 
   private async _addIntegration() {
     if (!this._manifest?.config_flow) {
@@ -1030,14 +1057,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .discovered {
           --md-list-container-color: rgba(var(--rgb-success-color), 0.2);
         }
-        .discovered ha-button {
-          --mdc-theme-primary: var(--success-color);
-        }
         .attention {
           --md-list-container-color: rgba(var(--rgb-warning-color), 0.2);
-        }
-        .attention ha-button {
-          --mdc-theme-primary: var(--warning-color);
         }
         ha-md-list-item {
           --md-list-item-top-space: 4px;

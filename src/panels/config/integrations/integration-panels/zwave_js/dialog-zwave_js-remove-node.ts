@@ -219,7 +219,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_removal") {
       return html`
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
@@ -234,7 +238,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_exclusion") {
       return html`
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
@@ -323,7 +331,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       this._subscribed.then((unsub) => unsub && unsub());
       this._subscribed = undefined;
     }
-    if (this._step === "exclusion") {
+    if (this._step === "exclusion" && this._entryId) {
       this._stopExclusion();
     }
     if (this._removeNodeTimeoutHandle) {
@@ -332,6 +340,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
   };
 
   public closeDialog(): void {
+    this._unsubscribe();
     this._entryId = undefined;
   }
 

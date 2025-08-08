@@ -34,6 +34,8 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -157,23 +159,26 @@ export default class HaAutomationCondition extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addConditionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add"
               )}
-              @click=${this._addConditionDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             <ha-button
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.add_building_block"
-              )}
+              appearance="plain"
+              .size=${this.root ? "medium" : "small"}
               @click=${this._addConditionBuildingBlockDialog}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add_building_block"
+              )}
             </ha-button>
           </div>
         </div>
@@ -339,9 +344,6 @@ export default class HaAutomationCondition extends LitElement {
     }
     .buttons {
       order: 1;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

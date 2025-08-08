@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import { mdiAlertOutline } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -12,6 +11,7 @@ import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-list";
+import "../../../components/ha-button";
 import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
@@ -161,22 +161,23 @@ export class DialogHelperDetail extends LitElement {
             new: true,
           })}
         </div>
-        <mwc-button
+        <ha-button
           slot="primaryAction"
           @click=${this._createItem}
           .disabled=${this._submitting}
         >
           ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
-        </mwc-button>
+        </ha-button>
         ${this._params?.domain
           ? nothing
-          : html`<mwc-button
+          : html`<ha-button
+              appearance="plain"
               slot="secondaryAction"
               @click=${this._goBack}
               .disabled=${this._submitting}
             >
               ${this.hass!.localize("ui.common.back")}
-            </mwc-button>`}
+            </ha-button>`}
       `;
     } else if (this._loading || this._helperFlows === undefined) {
       content = html`<ha-spinner></ha-spinner>`;

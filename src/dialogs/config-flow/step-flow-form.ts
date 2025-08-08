@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
+import "../../components/ha-button";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
 import "../../components/ha-form/ha-form";
@@ -37,7 +37,13 @@ class StepFlowForm extends LitElement {
 
   @state() private _stepData?: Record<string, any>;
 
+  @state() private _previewErrors?: Record<string, string>;
+
+  @state() private _submitErrors?: Record<string, string>;
+
   @state() private _errorMsg?: string;
+
+  private _errors?: Record<string, string>;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -72,7 +78,7 @@ class StepFlowForm extends LitElement {
           .schema=${autocompleteLoginFields(
             this.handleReadOnlyFields(step.data_schema)
           )}
-          .error=${step.errors}
+          .error=${this._errors}
           .computeLabel=${this._labelCallback}
           .computeHelper=${this._helperCallback}
           .computeError=${this._errorCallback}
@@ -98,28 +104,18 @@ class StepFlowForm extends LitElement {
           </div>`
         : nothing}
       <div class="buttons">
-        ${this._loading
-          ? html`
-              <div class="submit-spinner">
-                <ha-spinner size="small"></ha-spinner>
-              </div>
-            `
-          : html`
-              <div>
-                <mwc-button @click=${this._submitStep}>
-                  ${this.flowConfig.renderShowFormStepSubmitButton(
-                    this.hass,
-                    this.step
-                  )}
-                </mwc-button>
-              </div>
-            `}
+        <ha-button @click=${this._submitStep} .loading=${this._loading}>
+          ${this.flowConfig.renderShowFormStepSubmitButton(
+            this.hass,
+            this.step
+          )}
+        </ha-button>
       </div>
     `;
   }
 
   private _setError(ev: CustomEvent) {
-    this.step = { ...this.step, errors: ev.detail };
+    this._previewErrors = ev.detail;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -132,6 +128,21 @@ class StepFlowForm extends LitElement {
     super.willUpdate(changedProps);
     if (changedProps.has("step") && this.step?.preview) {
       import(`./previews/flow-preview-${previewModule(this.step.preview)}`);
+    }
+
+    if (
+      changedProps.has("step") ||
+      changedProps.has("_previewErrors") ||
+      changedProps.has("_submitErrors")
+    ) {
+      this._errors =
+        this.step.errors || this._previewErrors || this._submitErrors
+          ? {
+              ...this.step.errors,
+              ...this._previewErrors,
+              ...this._submitErrors,
+            }
+          : undefined;
     }
   }
 
@@ -189,6 +200,7 @@ class StepFlowForm extends LitElement {
 
     this._loading = true;
     this._errorMsg = undefined;
+    this._submitErrors = undefined;
 
     const flowId = this.step.flow_id;
 
@@ -217,6 +229,7 @@ class StepFlowForm extends LitElement {
         return;
       }
 
+      this._previewErrors = undefined;
       fireEvent(this, "flow-update", {
         step,
       });
@@ -226,7 +239,7 @@ class StepFlowForm extends LitElement {
           this._errorMsg = err.body.message;
         }
         if (err.body.errors) {
-          this.step = { ...this.step, errors: err.body.errors };
+          this._submitErrors = err.body.errors;
         }
         if (!err.body.message && !err.body.errors) {
           this._errorMsg = "Unknown error occurred";
@@ -281,19 +294,14 @@ class StepFlowForm extends LitElement {
           color: red;
         }
 
-        .submit-spinner {
-          height: 36px;
-          display: flex;
-          align-items: center;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-        }
-
         ha-alert,
         ha-form {
           margin-top: 24px;
           display: block;
+        }
+
+        .buttons {
+          padding: 16px;
         }
       `,
     ];

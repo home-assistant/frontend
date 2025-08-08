@@ -1,6 +1,5 @@
-import "@material/mwc-button";
 import { mdiFolderEdit } from "@mdi/js";
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { MediaPlayerItem } from "../../data/media-player";
@@ -10,6 +9,7 @@ import {
 } from "../../data/media_source";
 import type { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
+import "../ha-button";
 import { showMediaManageDialog } from "./show-media-manage-dialog";
 
 declare global {
@@ -38,14 +38,12 @@ class MediaManageButton extends LitElement {
       return nothing;
     }
     return html`
-      <mwc-button
-        .label=${this.hass.localize(
+      <ha-button appearance="plain" size="small" @click=${this._manage}>
+        <ha-svg-icon .path=${mdiFolderEdit} slot="start"></ha-svg-icon>
+        ${this.hass.localize(
           "ui.components.media-browser.file_management.manage"
         )}
-        @click=${this._manage}
-      >
-        <ha-svg-icon .path=${mdiFolderEdit} slot="icon"></ha-svg-icon>
-      </mwc-button>
+      </ha-button>
     `;
   }
 
@@ -55,23 +53,6 @@ class MediaManageButton extends LitElement {
       onClose: () => fireEvent(this, "media-refresh"),
     });
   }
-
-  static styles = css`
-    mwc-button {
-      /* We use icon + text to show disabled state */
-      --mdc-button-disabled-ink-color: --mdc-theme-primary;
-    }
-
-    ha-svg-icon[slot="icon"] {
-      vertical-align: middle;
-    }
-
-    ha-svg-icon[slot="icon"] {
-      margin-inline-start: 0px;
-      margin-inline-end: 8px;
-      direction: var(--direction);
-    }
-  `;
 }
 
 declare global {

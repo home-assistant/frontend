@@ -108,6 +108,8 @@ export interface StatisticsValidationResultMeanTypeChanged {
   };
 }
 
+export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF"] as const;
+
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
   power?: "W" | "kW";
@@ -122,7 +124,7 @@ export interface StatisticsUnitConfiguration {
     | "psi"
     | "mmHg";
   temperature?: "°C" | "°F" | "K";
-  volume?: "L" | "gal" | "ft³" | "m³";
+  volume?: (typeof VOLUME_UNITS)[number];
 }
 
 const _statisticTypes = [
