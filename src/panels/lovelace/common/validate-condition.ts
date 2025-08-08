@@ -11,10 +11,10 @@ export type Condition =
   | StateCondition
   | ScreenCondition
   | UserCondition
-  | BooleanCondition
   | OrCondition
   | AndCondition
-  | NotCondition;
+  | NotCondition
+  | BooleanCondition;
 
 // Legacy conditional card condition
 export interface LegacyCondition {
@@ -53,7 +53,7 @@ export interface UserCondition extends BaseCondition {
 
 export interface BooleanCondition extends BaseCondition {
   condition: "boolean";
-  values: boolean[];
+  values?: boolean[];
 }
 
 export interface OrCondition extends BaseCondition {

@@ -4,6 +4,7 @@ import {
   mdiGateOr,
   mdiNotEqualVariant,
   mdiNumeric,
+  mdiNumeric1BoxOutline,
   mdiResponsive,
   mdiStateMachine,
 } from "@mdi/js";
@@ -17,4 +18,5 @@ export const ICON_CONDITION: Record<Condition["condition"], string> = {
   and: mdiAmpersand,
   not: mdiNotEqualVariant,
   or: mdiGateOr,
+  boolean: mdiNumeric1BoxOutline,
 };
