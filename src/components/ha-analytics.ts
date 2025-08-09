@@ -67,20 +67,19 @@ export class HaAnalytics extends LitElement {
               )}
             </span>
             <span>
-              <ha-tooltip
-                content=${this.localize(
-                  `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
-                )}
-                placement="right"
+              <ha-switch
+                id="switch-${preference}"
+                @change=${this._handleRowClick}
+                .checked=${this.analytics?.preferences[preference]}
+                .preference=${preference}
+                name=${preference}
                 ?disabled=${baseEnabled}
               >
-                <ha-switch
-                  @change=${this._handleRowClick}
-                  .checked=${this.analytics?.preferences[preference]}
-                  .preference=${preference}
-                  name=${preference}
-                >
-                </ha-switch>
+              </ha-switch>
+              <ha-tooltip for="switch-${preference}" placement="right">
+                ${this.localize(
+                  `ui.panel.${this.translationKeyPanel}.analytics.need_base_enabled`
+                )}
               </ha-tooltip>
             </span>
           </ha-settings-row>
