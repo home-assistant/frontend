@@ -19,6 +19,7 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PictureCardConfig } from "./types";
 import type { PersonEntity } from "../../../data/person";
 import {
+  browseLocalMediaPlayer,
   isMediaSourceContentId,
   resolveMediaSource,
 } from "../../../data/media_source";
@@ -99,9 +100,30 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       isMediaSourceContentId(this._config.image)
     ) {
       this._resolvedImage = undefined;
-      resolveMediaSource(this.hass, this._config?.image).then((result) => {
-        this._resolvedImage = result.url;
-      });
+      if (this._config.image.endsWith("/")) {
+        browseLocalMediaPlayer(
+          this.hass,
+          this._config.image.substring(0, this._config.image.length - 1)
+        ).then((browseResult) => {
+          const eligible =
+            browseResult.children?.filter((c) => c.media_class === "image") ||
+            [];
+          if (eligible.length) {
+            const selected =
+              eligible[Math.floor(Math.random() * eligible.length)];
+
+            resolveMediaSource(this.hass!, selected.media_content_id).then(
+              (result) => {
+                this._resolvedImage = result.url;
+              }
+            );
+          }
+        });
+      } else {
+        resolveMediaSource(this.hass, this._config?.image).then((result) => {
+          this._resolvedImage = result.url;
+        });
+      }
     } else if (imageChanged) {
       this._resolvedImage = this._config?.image;
     }
