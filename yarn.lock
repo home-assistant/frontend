@@ -4259,24 +4259,6 @@ __metadata:
   checksum: 10/889c1f1e63ac7c92c0ea22d4a2861142f1b43c3d92eb70ec42aa9e9851fab2e9952211d50f541b287781280df2f979bf5600a9c1f91fbc61b7fcf9994e9376a5
   languageName: node
   linkType: hard
-"@tsparticles/basic@npm:^3.7.1":
-  version: 3.9.1
-  resolution: "@tsparticles/basic@npm:3.9.1"
-  dependencies:
-    "@tsparticles/engine": "npm:3.9.1"
-    "@tsparticles/move-base": "npm:3.9.1"
-    "@tsparticles/plugin-hex-color": "npm:3.9.1"
-    "@tsparticles/plugin-hsl-color": "npm:3.9.1"
-    "@tsparticles/plugin-rgb-color": "npm:3.9.1"
-    "@tsparticles/shape-circle": "npm:3.9.1"
-    "@tsparticles/updater-color": "npm:3.9.1"
-    "@tsparticles/updater-opacity": "npm:3.9.1"
-    "@tsparticles/updater-out-modes": "npm:3.9.1"
-    "@tsparticles/updater-size": "npm:3.9.1"
-  checksum: 10/a3d0c926e5822931df9762b2038955093ecfb558715807482f691d54efb848286a5d78a55a184885b2d4f46a005bf52c3c54e0013e29e71158ae1ccb5dce08d3
-  languageName: node
-  linkType: hard
-
 
 "@tsparticles/basic@npm:^3.7.1":
   version: 3.9.1
