@@ -112,24 +112,19 @@ class HuiFanDirectionCardFeature
     }
 
     const stateObj = this._stateObj;
+    const FAN_DIRECTION_MAP: FanDirection[] = ["forward", "reverse"];
 
-    const options = ["forward", "reverse"].map<ControlSelectOption>(
-      (direction) => ({
-        value: direction,
-        label: this.hass!.formatEntityAttributeValue(
-          this._stateObj!,
-          "direction",
-          direction
-        ),
-        icon: html`<ha-attribute-icon
-          slot="graphic"
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          attribute="direction"
-          .attributeValue=${direction}
-        ></ha-attribute-icon>`,
-      })
-    );
+    const options = FAN_DIRECTION_MAP.map<ControlSelectOption>((direction) => ({
+      value: direction,
+      label: this.hass!.localize(`ui.card.fan.${direction}`),
+      icon: html`<ha-attribute-icon
+        slot="graphic"
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        attribute="direction"
+        .attributeValue=${direction}
+      ></ha-attribute-icon>`,
+    }));
 
     return html`
       <ha-control-select
