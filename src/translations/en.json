@@ -7812,7 +7812,7 @@
                 "label": "Cover tilt position"
               },
               "fan-direction": {
-                "label": "Fan Direction"
+                "label": "Fan direction"
               },
               "fan-speed": {
                 "label": "Fan speed"
