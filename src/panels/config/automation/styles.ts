@@ -63,12 +63,12 @@ export const editorStyles = css`
     margin-left: 12px;
     margin-right: -4px;
     padding: 12px 24px 16px 16px;
-    border-left: 2px solid var(--ha-color-border-neutral-normal);
+    border-left: 2px solid var(--ha-color-border-neutral-quiet);
   }
   .card-content.indent.selected,
   :host([selected]) .card-content.indent {
     border-color: var(--primary-color);
-    background-color: var(--ha-color-fill-neutral-quiet-hover);
+    background-color: var(--ha-color-fill-primary-quiet-resting);
     border-top-right-radius: var(--ha-border-radius-xl);
     border-bottom-right-radius: var(--ha-border-radius-xl);
   }
