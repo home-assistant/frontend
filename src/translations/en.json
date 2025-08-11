@@ -3846,7 +3846,7 @@
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
-              "edit": "Edit trigger",
+              "trigger": "Trigger",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4107,7 +4107,6 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
-              "edit": "Edit condition",
               "condition": "Condition",
               "groups": {
                 "entity": {
@@ -4277,7 +4276,6 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
-              "edit": "Edit action",
               "action": "Action",
               "groups": {
                 "helpers": {

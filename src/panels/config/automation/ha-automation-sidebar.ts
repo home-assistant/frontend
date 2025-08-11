@@ -101,12 +101,12 @@ export default class HaAutomationSidebar extends LitElement {
       ...ACTION_BUILDING_BLOCKS,
     ].includes(type);
 
-    const title = this.hass.localize(
+    const subtitle = this.hass.localize(
       (this.config.type === "option"
         ? "ui.panel.config.automation.editor.actions.type.choose.label"
-        : `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type === "trigger" || !isBuildingBlock ? "edit" : this.config.type === "condition" ? "condition" : "action"}`) as LocalizeKeys
+        : `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type}`) as LocalizeKeys
     );
-    const subtitle =
+    const title =
       this.hass.localize(
         (this.config.type === "option"
           ? "ui.panel.config.automation.editor.actions.type.choose.option_label"
@@ -346,7 +346,7 @@ export default class HaAutomationSidebar extends LitElement {
     ha-card {
       height: 100%;
       width: 100%;
-      border-color: var(--ha-color-border-primary-normal);
+      border-color: var(--primary-color);
       border-width: 2px;
       display: block;
       overflow-y: auto;
