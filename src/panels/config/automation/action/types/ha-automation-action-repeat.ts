@@ -11,7 +11,6 @@ import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 import { isTemplate } from "../../../../../common/string/has-template";
-import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -35,22 +34,8 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, type: string, template: boolean) =>
+    (type: string, template: boolean) =>
       [
-        {
-          name: "type",
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: OPTIONS.map((opt) => ({
-                value: opt,
-                label: localize(
-                  `ui.panel.config.automation.editor.actions.type.repeat.type.${opt}.label`
-                ),
-              })),
-            },
-          },
-        },
         ...(type === "count"
           ? ([
               {
@@ -94,7 +79,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     const action = this.action.repeat;
     const type = getType(action);
     const schema = this._schema(
-      this.hass.localize,
       type ?? "count",
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
@@ -170,10 +154,6 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ): string => {
     switch (schema.name) {
-      case "type":
-        return this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.repeat.type_select"
-        );
       case "count":
         return this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.repeat.type.count.label"
