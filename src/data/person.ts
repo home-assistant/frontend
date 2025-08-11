@@ -3,7 +3,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { computeDomain } from "../common/entity/compute_domain";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
 
 import type { HomeAssistant } from "../types";
 
@@ -88,11 +88,10 @@ export const getUserPerson = (hass: HomeAssistant): undefined | HassEntity => {
   const result = Object.values(hass.states).find(
     (state) =>
       state.attributes.user_id === hass.user!.id &&
-      computeDomain(state.entity_id) === "person"
+      computeStateDomain(state) === "person"
   );
   if (result) {
-    cachedUserPerson[hass.user.id] = result[0];
-    return result[1];
+    cachedUserPerson[hass.user.id] = result.entity_id;
   }
-  return undefined;
+  return result;
 };

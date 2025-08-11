@@ -21,6 +21,7 @@ const SCHEMA = [
       state: {
         entity_id: "person.whomever",
         hide_states: ["unavailable", "unknown"],
+        multiple: true,
       },
     },
   },
@@ -46,7 +47,7 @@ export class HaCardConditionLocation extends LitElement {
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${{ locations: this.condition?.locations?.[0] }}
+        .data=${this.condition}
         .schema=${SCHEMA}
         .disabled=${this.disabled}
         @value-changed=${this._valueChanged}
@@ -59,9 +60,7 @@ export class HaCardConditionLocation extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
 
-    const locations = ev.detail.value.locations
-      ? [ev.detail.value.locations]
-      : [];
+    const locations = ev.detail.value.locations;
     const condition: LocationCondition = {
       ...this.condition,
       locations,

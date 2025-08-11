@@ -7304,7 +7304,7 @@
               "location": {
                 "label": "Location",
                 "locations": "Locations",
-                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard is in the selected zone."
+                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones."
               },
               "user": {
                 "label": "User"
