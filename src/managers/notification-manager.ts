@@ -68,7 +68,7 @@ class NotificationManager extends LitElement {
       <ha-toast
         leading
         .labelText=${typeof this._parameters.message !== "string"
-          ? this.hass.localize(this._parameters.message.translationKey)
+          ? this.hass.localize(this._parameters.message.translationKey, this._parameters.message.args)
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
         @MDCSnackbar:closed=${this._toastClosed}
