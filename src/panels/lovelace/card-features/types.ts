@@ -149,6 +149,10 @@ export interface VacuumCommandsCardFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export interface ValveOpenCloseCardFeatureConfig {
+  type: "valve-open-close";
+}
+
 export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
@@ -218,6 +222,7 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
+  | ValveOpenCloseCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | AreaControlsCardFeatureConfig;
 
