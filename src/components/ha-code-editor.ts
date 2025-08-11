@@ -682,6 +682,14 @@ export class HaCodeEditor extends ReactiveElement {
       gap: 3px;
       padding: 8px;
     }
+
+    /* Hide completion info on narrow screens */
+    @media (max-width: 600px) {
+      .cm-completionInfo,
+      .completion-info {
+        display: none;
+      }
+    }
   `;
 }
 
