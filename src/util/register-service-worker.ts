@@ -40,13 +40,15 @@ export const registerServiceWorker = async (
 
       // Notify users a new frontend is available.
       showToast(rootEl, {
-        message: "A new version of the frontend is available.",
+        message: {
+          translationKey: "ui.notification_toast.new_version_available",
+        },
         action: {
           // We tell the service worker to call skipWaiting, which activates
           // the new service worker. Above we listen for `controllerchange`
           // so we reload the page once a new service worker activates.
           action: () => installingWorker.postMessage({ type: "skipWaiting" }),
-          text: "Reload",
+          text: { translationKey: "ui.notification_toast.reload" },
         },
         duration: -1,
         dismissable: false,
