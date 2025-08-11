@@ -230,7 +230,7 @@ export default class HaAutomationOptionRow extends LitElement {
               left-chevron
               .collapsed=${this._collapsed}
               .selected=${this._selected}
-              @click=${this.openSidebar}
+              @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
             >`
@@ -278,7 +278,9 @@ export default class HaAutomationOptionRow extends LitElement {
         fireEvent(this, "value-changed", {
           value: null,
         });
-        fireEvent(this, "close-sidebar");
+        if (this._selected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
   };
@@ -327,8 +329,18 @@ export default class HaAutomationOptionRow extends LitElement {
     });
   }
 
-  public openSidebar(ev?: CustomEvent): void {
+  private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
+
+    if (this._selected) {
+      this._selected = false;
+      fireEvent(this, "close-sidebar");
+      return;
+    }
+    this.openSidebar();
+  }
+
+  public openSidebar(): void {
     if (this.narrow) {
       this.scrollIntoView();
     }

@@ -401,7 +401,7 @@ export default class HaAutomationActionRow extends LitElement {
         ${this.optionsInSidebar
           ? html`<ha-automation-row
               .disabled=${this.action.enabled === false}
-              @click=${this.openSidebar}
+              @click=${this._toggleSidebar}
               .leftChevron=${this.optionsInSidebar &&
               [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
                 type!
@@ -445,7 +445,7 @@ export default class HaAutomationActionRow extends LitElement {
     const enabled = !(this.action.enabled ?? true);
     const value = { ...this.action, enabled };
     fireEvent(this, "value-changed", { value });
-    this.openSidebar(undefined, value); // refresh sidebar
+    this.openSidebar(value); // refresh sidebar
 
     if (this._yamlMode && !this.optionsInSidebar) {
       this.actionEditor?.yamlEditor?.setValue(value);
@@ -499,7 +499,9 @@ export default class HaAutomationActionRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
-        fireEvent(this, "close-sidebar");
+        if (this._selected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
   };
@@ -548,7 +550,7 @@ export default class HaAutomationActionRow extends LitElement {
 
       if (this._yamlMode) {
         if (this.optionsInSidebar) {
-          this.openSidebar(undefined, value); // refresh sidebar
+          this.openSidebar(value); // refresh sidebar
         } else {
           this.actionEditor?.yamlEditor?.setValue(value);
         }
@@ -567,7 +569,9 @@ export default class HaAutomationActionRow extends LitElement {
   private _cutAction = () => {
     this._setClipboard();
     fireEvent(this, "value-changed", { value: null });
-    fireEvent(this, "close-sidebar");
+    if (this._selected) {
+      fireEvent(this, "close-sidebar");
+    }
   };
 
   private _moveUp = () => {
@@ -597,9 +601,18 @@ export default class HaAutomationActionRow extends LitElement {
     }
   }
 
-  public openSidebar(ev?: CustomEvent, action?: Action): void {
+  private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
 
+    if (this._selected) {
+      this._selected = false;
+      fireEvent(this, "close-sidebar");
+      return;
+    }
+    this.openSidebar();
+  }
+
+  public openSidebar(action?: Action): void {
     if (this.narrow) {
       this.scrollIntoView();
     }

@@ -337,7 +337,7 @@ export default class HaAutomationConditionRow extends LitElement {
               CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
-              @click=${this.openSidebar}
+              @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
               >${this._renderRow()}</ha-automation-row
             >`
@@ -397,7 +397,7 @@ export default class HaAutomationConditionRow extends LitElement {
     const enabled = !(this.condition.enabled ?? true);
     const value = { ...this.condition, enabled };
     fireEvent(this, "value-changed", { value });
-    this.openSidebar(undefined, value); // refresh sidebar
+    this.openSidebar(value); // refresh sidebar
 
     if (this._yamlMode && !this.optionsInSidebar) {
       this.conditionEditor?.yamlEditor?.setValue(value);
@@ -417,7 +417,9 @@ export default class HaAutomationConditionRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
-        fireEvent(this, "close-sidebar");
+        if (this._selected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
   };
@@ -515,7 +517,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
       if (this._yamlMode) {
         if (this.optionsInSidebar) {
-          this.openSidebar(undefined, value); // refresh sidebar
+          this.openSidebar(value); // refresh sidebar
         } else {
           this.conditionEditor?.yamlEditor?.setValue(value);
         }
@@ -534,7 +536,9 @@ export default class HaAutomationConditionRow extends LitElement {
   private _cutCondition = () => {
     this._setClipboard();
     fireEvent(this, "value-changed", { value: null });
-    fireEvent(this, "close-sidebar");
+    if (this._selected) {
+      fireEvent(this, "close-sidebar");
+    }
   };
 
   private _moveUp = () => {
@@ -570,8 +574,18 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   }
 
-  public openSidebar(ev?: CustomEvent, condition?: Condition): void {
+  private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
+
+    if (this._selected) {
+      this._selected = false;
+      fireEvent(this, "close-sidebar");
+      return;
+    }
+    this.openSidebar();
+  }
+
+  public openSidebar(condition?: Condition): void {
     if (this.narrow) {
       this.scrollIntoView();
     }

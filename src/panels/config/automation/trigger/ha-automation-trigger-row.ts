@@ -335,7 +335,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ? html`<ha-automation-row
               .disabled=${"enabled" in this.trigger &&
               this.trigger.enabled === false}
-              @click=${this.openSidebar}
+              @click=${this._toggleSidebar}
               .selected=${this._selected}
               >${this._selected
                 ? "selected"
@@ -453,8 +453,18 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   }
 
-  public openSidebar(ev?: CustomEvent, trigger?: Trigger): void {
+  private _toggleSidebar(ev: Event) {
     ev?.stopPropagation();
+
+    if (this._selected) {
+      this._selected = false;
+      fireEvent(this, "close-sidebar");
+      return;
+    }
+    this.openSidebar();
+  }
+
+  public openSidebar(trigger?: Trigger): void {
     if (this.narrow) {
       this.scrollIntoView();
     }
@@ -503,7 +513,10 @@ export default class HaAutomationTriggerRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
-        fireEvent(this, "close-sidebar");
+
+        if (this._selected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
   };
@@ -513,7 +526,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     const enabled = !(this.trigger.enabled ?? true);
     const value = { ...this.trigger, enabled };
     fireEvent(this, "value-changed", { value });
-    this.openSidebar(undefined, value); // refresh sidebar
+    this.openSidebar(value); // refresh sidebar
 
     if (this._yamlMode && !this.optionsInSidebar) {
       this.triggerContent?.yamlEditor?.setValue(value);
@@ -574,7 +587,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
       if (this._yamlMode) {
         if (this.openSidebar) {
-          this.openSidebar(undefined, value); // refresh sidebar
+          this.openSidebar(value); // refresh sidebar
         } else {
           this.triggerContent?.yamlEditor?.setValue(value);
         }
@@ -601,7 +614,9 @@ export default class HaAutomationTriggerRow extends LitElement {
   private _cutTrigger = () => {
     this._setClipboard();
     fireEvent(this, "value-changed", { value: null });
-    fireEvent(this, "close-sidebar");
+    if (this._selected) {
+      fireEvent(this, "close-sidebar");
+    }
   };
 
   private _moveUp = () => {
