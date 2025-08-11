@@ -85,10 +85,10 @@ export const getUserPerson = (hass: HomeAssistant): undefined | HassEntity => {
     }
   }
 
-  const result = Object.entries(hass.states).find(
-    ([entityId, state]) =>
+  const result = Object.values(hass.states).find(
+    (state) =>
       state.attributes.user_id === hass.user!.id &&
-      computeDomain(entityId) === "person"
+      computeDomain(state.entity_id) === "person"
   );
   if (result) {
     cachedUserPerson[hass.user.id] = result[0];
