@@ -46,7 +46,7 @@ export const registerServiceWorker = async (
           // the new service worker. Above we listen for `controllerchange`
           // so we reload the page once a new service worker activates.
           action: () => installingWorker.postMessage({ type: "skipWaiting" }),
-          text: "reload",
+          text: "Reload",
         },
         duration: -1,
         dismissable: false,
