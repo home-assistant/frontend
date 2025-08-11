@@ -2101,7 +2101,9 @@
       "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
-      "no_matching_link_found": "No matching My link found for {path}"
+      "no_matching_link_found": "No matching My link found for {path}",
+      "new_version_available": "A new version of the frontend is available.",
+      "reload": "Reload"
     },
     "sidebar": {
       "external_app_configuration": "App settings",
