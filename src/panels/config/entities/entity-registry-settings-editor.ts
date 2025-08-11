@@ -755,7 +755,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
         iconTrailing
         autocapitalize="none"
         autocomplete="off"
-        autocorrect="off"
+        .autocorrect=${false}
         input-spellcheck="false"
       >
         <div class="layout horizontal" slot="trailingIcon">

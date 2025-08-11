@@ -188,7 +188,7 @@ export class HaComboBox extends LitElement {
           class="input"
           autocapitalize="none"
           autocomplete="off"
-          autocorrect="off"
+          .autocorrect=${false}
           input-spellcheck="false"
           .suffix=${html`<div
             style="width: 28px;"
