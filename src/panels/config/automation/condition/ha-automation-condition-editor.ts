@@ -1,15 +1,15 @@
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Condition } from "../../../../data/automation";
 import { expandConditionWithShorthand } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
+import "../ha-automation-editor-warning";
 import { editorStyles } from "../styles";
 
 @customElement("ha-automation-condition-editor")
@@ -31,20 +31,11 @@ export default class HaAutomationConditionEditor extends LitElement {
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
-  @state() private _warnings?: string[];
-
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
   );
-
-  protected willUpdate(changedProperties) {
-    // on yaml toggle --> clear warnings
-    if (changedProperties.has("yamlMode")) {
-      this._warnings = undefined;
-    }
-  }
 
   protected render() {
     const condition = this._processedCondition(this.condition);
@@ -61,33 +52,19 @@ export default class HaAutomationConditionEditor extends LitElement {
           indent: this.indent,
         })}
       >
-        ${this._warnings
-          ? html`<ha-alert
-              alert-type="warning"
-              .title=${this.hass.localize(
-                "ui.errors.config.editor_not_supported"
-              )}
-            >
-              ${this._warnings!.length > 0 && this._warnings![0] !== undefined
-                ? html` <ul>
-                    ${this._warnings!.map(
-                      (warning) => html`<li>${warning}</li>`
-                    )}
-                  </ul>`
-                : ""}
-              ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-            </ha-alert>`
-          : nothing}
         ${yamlMode
           ? html`
               ${!this.uiSupported
                 ? html`
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                      { condition: condition.condition }
-                    )}
+                    <ha-automation-editor-warning
+                      .alertTitle=${this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                        { condition: condition.condition }
+                      )}
+                      .localize=${this.hass.localize}
+                    ></ha-automation-editor-warning>
                   `
-                : ""}
+                : nothing}
               <ha-yaml-editor
                 .hass=${this.hass}
                 .defaultValue=${this.condition}
@@ -96,10 +73,7 @@ export default class HaAutomationConditionEditor extends LitElement {
               ></ha-yaml-editor>
             `
           : html`
-              <div
-                @ui-mode-not-available=${this._handleUiModeNotAvailable}
-                @value-changed=${this._onUiChanged}
-              >
+              <div @value-changed=${this._onUiChanged}>
                 ${dynamicElement(
                   `ha-automation-condition-${condition.condition}`,
                   {
@@ -114,15 +88,6 @@ export default class HaAutomationConditionEditor extends LitElement {
             `}
       </div>
     `;
-  }
-
-  private _handleUiModeNotAvailable(ev: CustomEvent) {
-    // Prevent possible parent action-row from switching to yamlMode
-    ev.stopPropagation();
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
-    if (!this.yamlMode) {
-      this.yamlMode = true;
-    }
   }
 
   private _onYamlChange(ev: CustomEvent) {

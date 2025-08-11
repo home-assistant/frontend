@@ -24,7 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
-import "../../../../components/ha-alert";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
@@ -57,6 +57,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
 import { CONDITION_BUILDING_BLOCKS } from "../condition/ha-automation-condition";
+import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-action-editor";
 import type HaAutomationActionEditor from "./ha-automation-action-editor";
@@ -169,10 +170,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   @state() private _collapsed = false;
 
+  @state() private _warnings?: string[];
+
   @query("ha-automation-action-editor")
   private actionEditor?: HaAutomationActionEditor;
 
   protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("yamlMode")) {
+      this._warnings = undefined;
+    }
     if (!changedProperties.has("action")) {
       return;
     }
@@ -310,7 +316,7 @@ export default class HaAutomationActionRow extends LitElement {
         ${!this.optionsInSidebar
           ? html` <ha-md-menu-item
               .clickAction=${this._toggleYamlMode}
-              .disabled=${!this._uiModeAvailable}
+              .disabled=${!this._uiModeAvailable || !!this._warnings}
             >
               ${this.hass.localize(
                 `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
@@ -356,14 +362,22 @@ export default class HaAutomationActionRow extends LitElement {
       </ha-md-button-menu>
 
       ${!this.optionsInSidebar
-        ? html`<ha-automation-action-editor
-            .hass=${this.hass}
-            .action=${this.action}
-            .disabled=${this.disabled}
-            .yamlMode=${this._yamlMode}
-            .narrow=${this.narrow}
-            .uiSupported=${this._uiSupported(type!)}
-          ></ha-automation-action-editor>`
+        ? html`${this._warnings
+              ? html`<ha-automation-editor-warning
+                  .localize=${this.hass.localize}
+                  .warnings=${this._warnings}
+                >
+                </ha-automation-editor-warning>`
+              : nothing}
+            <ha-automation-action-editor
+              .hass=${this.hass}
+              .action=${this.action}
+              .disabled=${this.disabled}
+              .yamlMode=${this._yamlMode}
+              .narrow=${this.narrow}
+              .uiSupported=${this._uiSupported(type!)}
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            ></ha-automation-action-editor>`
         : nothing}
     `;
   }
@@ -575,6 +589,13 @@ export default class HaAutomationActionRow extends LitElement {
       this.expand();
     }
   };
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
 
   public openSidebar(ev?: CustomEvent, action?: Action): void {
     ev?.stopPropagation();

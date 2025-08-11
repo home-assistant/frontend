@@ -24,6 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-automation-row";
@@ -46,6 +47,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-trigger-editor";
 import type HaAutomationTriggerContent from "./ha-automation-trigger-editor";
@@ -118,6 +120,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   @state() private _selected = false;
 
   @state() private _requestShowId = false;
+
+  @state() private _warnings?: string[];
 
   @property({ type: Boolean }) public narrow = false;
 
@@ -244,7 +248,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           ? html`
               <ha-md-menu-item
                 .clickAction=${this._toggleYamlMode}
-                .disabled=${!supported}
+                .disabled=${!supported || !!this._warnings}
               >
                 ${this.hass.localize(
                   `ui.panel.config.automation.editor.edit_${!yamlMode ? "yaml" : "ui"}`
@@ -292,16 +296,23 @@ export default class HaAutomationTriggerRow extends LitElement {
           ></ha-svg-icon>
         </ha-md-menu-item>
       </ha-md-button-menu>
-
       ${!this.optionsInSidebar
-        ? html`<ha-automation-trigger-editor
-            .hass=${this.hass}
-            .trigger=${this.trigger}
-            .disabled=${this.disabled}
-            .yamlMode=${this._yamlMode}
-            .showId=${this._requestShowId}
-            .uiSupported=${supported}
-          ></ha-automation-trigger-editor>`
+        ? html`${this._warnings
+              ? html`<ha-automation-editor-warning
+                  .localize=${this.hass.localize}
+                  .warnings=${this._warnings}
+                >
+                </ha-automation-editor-warning>`
+              : nothing}
+            <ha-automation-trigger-editor
+              .hass=${this.hass}
+              .trigger=${this.trigger}
+              .disabled=${this.disabled}
+              .yamlMode=${this._yamlMode}
+              .showId=${this._requestShowId}
+              .uiSupported=${supported}
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            ></ha-automation-trigger-editor>`
         : nothing}
     `;
   }
@@ -348,6 +359,13 @@ export default class HaAutomationTriggerRow extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  protected willUpdate(changedProperties) {
+    // on yaml toggle --> clear warnings
+    if (changedProperties.has("yamlMode")) {
+      this._warnings = undefined;
+    }
   }
 
   protected override updated(changedProps: PropertyValues<this>): void {
@@ -427,6 +445,13 @@ export default class HaAutomationTriggerRow extends LitElement {
     });
     this._triggerUnsub = triggerUnsub;
   }, 5000);
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
+  }
 
   public openSidebar(ev?: CustomEvent, trigger?: Trigger): void {
     ev?.stopPropagation();

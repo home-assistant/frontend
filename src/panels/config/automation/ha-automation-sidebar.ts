@@ -13,6 +13,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { handleStructError } from "../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/ha-dialog-header";
@@ -32,6 +33,7 @@ import {
 import { CONDITION_BUILDING_BLOCKS } from "./condition/ha-automation-condition";
 import "./condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
+import "./ha-automation-editor-warning";
 import "./trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-editor";
 
@@ -62,12 +64,15 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _requestShowId = false;
 
+  @state() private _warnings?: string[];
+
   @query(".sidebar-editor")
   public editor?: HaAutomationTriggerContent | HaAutomationConditionEditor;
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("config")) {
       this._requestShowId = false;
+      this._warnings = undefined;
       if (this.config) {
         this._yamlMode = this.config.yamlMode;
         if (this._yamlMode) {
@@ -177,7 +182,7 @@ export default class HaAutomationSidebar extends LitElement {
               ? html`
                   <ha-md-menu-item
                     .clickAction=${this._toggleYamlMode}
-                    .disabled=${!this.config.uiSupported}
+                    .disabled=${!this.config.uiSupported || !!this._warnings}
                   >
                     ${this.hass.localize(
                       `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
@@ -230,6 +235,13 @@ export default class HaAutomationSidebar extends LitElement {
             </ha-md-menu-item>
           </ha-md-button-menu>
         </ha-dialog-header>
+        ${this._warnings
+          ? html`<ha-automation-editor-warning
+              .localize=${this.hass.localize}
+              .warnings=${this._warnings}
+            >
+            </ha-automation-editor-warning>`
+          : nothing}
         ${this.config.type === "trigger"
           ? html`<ha-automation-trigger-editor
               class="sidebar-editor"
@@ -240,6 +252,7 @@ export default class HaAutomationSidebar extends LitElement {
               .showId=${this._requestShowId}
               .yamlMode=${this._yamlMode}
               .disabled=${this.disabled}
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
             ></ha-automation-trigger-editor>`
           : this.config.type === "condition" &&
               (this._yamlMode || !CONDITION_BUILDING_BLOCKS.includes(type))
@@ -252,6 +265,7 @@ export default class HaAutomationSidebar extends LitElement {
                   .uiSupported=${this.config.uiSupported}
                   @value-changed=${this._valueChangedSidebar}
                   .disabled=${this.disabled}
+                  @ui-mode-not-available=${this._handleUiModeNotAvailable}
                 ></ha-automation-condition-editor>
               `
             : this.config.type === "action" &&
@@ -267,6 +281,7 @@ export default class HaAutomationSidebar extends LitElement {
                     sidebar
                     narrow
                     .disabled=${this.disabled}
+                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
                   ></ha-automation-action-editor>
                 `
               : description
@@ -274,6 +289,13 @@ export default class HaAutomationSidebar extends LitElement {
                 : nothing}
       </ha-card>
     `;
+  }
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
   }
 
   private _valueChangedSidebar(ev: CustomEvent) {

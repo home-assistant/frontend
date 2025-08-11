@@ -24,6 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-automation-row";
 import "../../../../components/ha-card";
 import "../../../../components/ha-expansion-panel";
@@ -47,6 +48,7 @@ import {
   showPromptDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import { CONDITION_BUILDING_BLOCKS } from "./ha-automation-condition";
 import "./ha-automation-condition-editor";
@@ -107,6 +109,8 @@ export default class HaAutomationConditionRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @state() private _collapsed = false;
+
+  @state() private _warnings?: string[];
 
   @property({ type: Boolean, attribute: "sidebar" })
   public optionsInSidebar = false;
@@ -234,7 +238,8 @@ export default class HaAutomationConditionRow extends LitElement {
         ${!this.optionsInSidebar
           ? html`<ha-md-menu-item
               .clickAction=${this._toggleYamlMode}
-              .disabled=${this._uiSupported(this.condition.condition)}
+              .disabled=${this._uiSupported(this.condition.condition) ||
+              !!this._warnings}
             >
               ${this.hass.localize(
                 `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
@@ -280,14 +285,22 @@ export default class HaAutomationConditionRow extends LitElement {
       </ha-md-button-menu>
 
       ${!this.optionsInSidebar
-        ? html`<ha-automation-condition-editor
-            .hass=${this.hass}
-            .condition=${this.condition}
-            .disabled=${this.disabled}
-            .yamlMode=${this._yamlMode}
-            .uiSupported=${this._uiSupported(this.condition.condition)}
-            .narrow=${this.narrow}
-          ></ha-automation-condition-editor>`
+        ? html`${this._warnings
+              ? html`<ha-automation-editor-warning
+                  .localize=${this.hass.localize}
+                  .warnings=${this._warnings}
+                >
+                </ha-automation-editor-warning>`
+              : nothing}
+            <ha-automation-condition-editor
+              .hass=${this.hass}
+              .condition=${this.condition}
+              .disabled=${this.disabled}
+              .yamlMode=${this._yamlMode}
+              .uiSupported=${this._uiSupported(this.condition.condition)}
+              .narrow=${this.narrow}
+              @ui-mode-not-available=${this._handleUiModeNotAvailable}
+            ></ha-automation-condition-editor>`
         : nothing}
     `;
   }
@@ -364,6 +377,13 @@ export default class HaAutomationConditionRow extends LitElement {
           ></ha-automation-condition-editor>`
         : nothing}
     `;
+  }
+
+  protected willUpdate(changedProperties) {
+    // on yaml toggle --> clear warnings
+    if (changedProperties.has("yamlMode")) {
+      this._warnings = undefined;
+    }
   }
 
   private _setClipboard() {
@@ -541,6 +561,13 @@ export default class HaAutomationConditionRow extends LitElement {
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
+  }
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
   }
 
   public openSidebar(ev?: CustomEvent, condition?: Condition): void {
