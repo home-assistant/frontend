@@ -13,7 +13,7 @@ export interface ShowToastParams {
   id?: string;
   message:
     | string
-    | { translationKey: LocalizeKeys; args?: Record<string, unknown> };
+    | { translationKey: LocalizeKeys; args?: Record<string, string> };
   action?: ToastActionParams;
   duration?: number;
   dismissable?: boolean;
@@ -23,7 +23,7 @@ export interface ToastActionParams {
   action: () => void;
   text:
     | string
-    | { translationKey: LocalizeKeys; args?: Record<string, unknown> };
+    | { translationKey: LocalizeKeys; args?: Record<string, string> };
 }
 
 class NotificationManager extends LitElement {
@@ -68,7 +68,10 @@ class NotificationManager extends LitElement {
       <ha-toast
         leading
         .labelText=${typeof this._parameters.message !== "string"
-          ? this.hass.localize(this._parameters.message.translationKey, this._parameters.message.args)
+          ? this.hass.localize(
+              this._parameters.message.translationKey,
+              this._parameters.message.args
+            )
           : this._parameters.message}
         .timeoutMs=${this._parameters.duration!}
         @MDCSnackbar:closed=${this._toastClosed}
@@ -83,7 +86,8 @@ class NotificationManager extends LitElement {
               >
                 ${typeof this._parameters?.action.text !== "string"
                   ? this.hass.localize(
-                      this._parameters?.action.text.translationKey, this._parameters.message.args
+                      this._parameters?.action.text.translationKey,
+                      this._parameters?.action.text.args
                     )
                   : this._parameters?.action.text}
               </ha-button>
