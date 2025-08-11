@@ -325,7 +325,7 @@ export default class HaAutomationAction extends LitElement {
       gap: 16px;
     }
     :host([root]) .actions {
-      padding-right: 16px;
+      padding-right: 8px;
     }
     .sortable-ghost {
       background: none;

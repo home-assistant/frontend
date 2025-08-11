@@ -630,10 +630,10 @@ export class HaManualAutomationEditor extends LitElement {
         }
 
         .sidebar {
-          padding: 32px 0;
+          padding: 12px 0;
           flex: 4;
-          height: calc(100vh - 121px);
-          height: calc(100dvh - 121px);
+          height: calc(100vh - 81px);
+          height: calc(100dvh - 81px);
           width: 40%;
         }
         .sidebar.hidden {
