@@ -7924,9 +7924,6 @@
                 "customize_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::customize_modes%]",
                 "preset_modes": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::preset_modes%]"
               },
-              "fan-directions": {
-                "label": "Fan direction"
-              },
               "humidifier-toggle": {
                 "label": "Humidifier toggle"
               },
