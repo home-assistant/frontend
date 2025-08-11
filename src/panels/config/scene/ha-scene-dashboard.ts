@@ -318,16 +318,15 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           template: (scene) =>
             !scene.attributes.id
               ? html`
-                  <ha-tooltip
-                    placement="left"
-                    .content=${this.hass.localize(
+                  <ha-svg-icon
+                    id="svg-icon"
+                    .path=${mdiPencilOff}
+                    style="color: var(--secondary-text-color)"
+                  ></ha-svg-icon>
+                  <ha-tooltip for="svg-icon" placement="left">
+                    ${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiPencilOff}
-                      style="color: var(--secondary-text-color)"
-                    ></ha-svg-icon>
                   </ha-tooltip>
                 `
               : nothing,

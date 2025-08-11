@@ -555,16 +555,21 @@ export class HaConfigDevicePage extends LitElement {
                               </a>
                             `
                           : html`
+                              <ha-list-item
+                                id="scene-${entityState.entity_id}"
+                                hasMeta
+                                .scene=${entityState}
+                              >
+                                ${computeStateName(entityState)}
+                                <ha-icon-next slot="meta"></ha-icon-next>
+                              </ha-list-item>
                               <ha-tooltip
+                                for="scene-${entityState.entity_id}"
                                 placement="left"
-                                .content=${this.hass.localize(
+                              >
+                                ${this.hass.localize(
                                   "ui.panel.config.devices.cant_edit"
                                 )}
-                              >
-                                <ha-list-item hasMeta .scene=${entityState}>
-                                  ${computeStateName(entityState)}
-                                  <ha-icon-next slot="meta"></ha-icon-next>
-                                </ha-list-item>
                               </ha-tooltip>
                             `;
                       })}

@@ -607,34 +607,32 @@ export class VoiceAssistantsExpose extends LitElement {
                       >
                     `
                   : html`
-                      <ha-tooltip
-                        .content=${this.hass.localize(
+                      <ha-icon-button
+                        id="expose-button"
+                        @click=${this._exposeSelected}
+                        .path=${mdiPlusBoxMultiple}
+                        .label=${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.expose"
                         )}
-                        placement="left"
-                      >
-                        <ha-icon-button
-                          @click=${this._exposeSelected}
-                          .path=${mdiPlusBoxMultiple}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.voice_assistants.expose.expose"
-                          )}
-                        ></ha-icon-button>
+                      ></ha-icon-button>
+                      <ha-tooltip for="expose-button" placement="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.voice_assistants.expose.expose"
+                        )}
                       </ha-tooltip>
-                      <ha-tooltip
-                        content=${this.hass.localize(
+                      <ha-tooltip for="expose-button" placement="left">
+                        ${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
                         )}
-                        placement="left"
-                      >
-                        <ha-icon-button
-                          @click=${this._unexposeSelected}
-                          .path=${mdiCloseBoxMultiple}
-                          .label=${this.hass.localize(
-                            "ui.panel.config.voice_assistants.expose.unexpose"
-                          )}
-                        ></ha-icon-button>
                       </ha-tooltip>
+                      <ha-icon-button
+                        id="unexpose-button"
+                        @click=${this._unexposeSelected}
+                        .path=${mdiCloseBoxMultiple}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.voice_assistants.expose.unexpose"
+                        )}
+                      ></ha-icon-button>
                     `}
               </div>
             `

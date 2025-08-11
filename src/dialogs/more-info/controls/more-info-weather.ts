@@ -163,37 +163,36 @@ class MoreInfoWeather extends LitElement {
               ${this.hass.formatEntityState(this.stateObj)}
             </div>
             <div class="time-ago">
-              <ha-tooltip>
-                <ha-relative-time
-                  .hass=${this.hass}
-                  .datetime=${this.stateObj.last_changed}
-                  capitalize
-                ></ha-relative-time>
-                <div slot="content">
-                  <div class="row">
-                    <span class="column-name">
-                      ${this.hass.localize(
-                        "ui.dialogs.more_info_control.last_changed"
-                      )}:
-                    </span>
-                    <ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${this.stateObj.last_changed}
-                      capitalize
-                    ></ha-relative-time>
-                  </div>
-                  <div class="row">
-                    <span>
-                      ${this.hass.localize(
-                        "ui.dialogs.more_info_control.last_updated"
-                      )}:
-                    </span>
-                    <ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${this.stateObj.last_updated}
-                      capitalize
-                    ></ha-relative-time>
-                  </div>
+              <ha-relative-time
+                id="relative-time"
+                .hass=${this.hass}
+                .datetime=${this.stateObj.last_changed}
+                capitalize
+              ></ha-relative-time>
+              <ha-tooltip for="relative-time">
+                <div class="row">
+                  <span class="column-name">
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.last_changed"
+                    )}:
+                  </span>
+                  <ha-relative-time
+                    .hass=${this.hass}
+                    .datetime=${this.stateObj.last_changed}
+                    capitalize
+                  ></ha-relative-time>
+                </div>
+                <div class="row">
+                  <span>
+                    ${this.hass.localize(
+                      "ui.dialogs.more_info_control.last_updated"
+                    )}:
+                  </span>
+                  <ha-relative-time
+                    .hass=${this.hass}
+                    .datetime=${this.stateObj.last_updated}
+                    capitalize
+                  ></ha-relative-time>
                 </div>
               </ha-tooltip>
             </div>

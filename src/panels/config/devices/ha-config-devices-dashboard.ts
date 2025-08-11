@@ -646,13 +646,11 @@ export class HaConfigDeviceDashboard extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
-                  <ha-tooltip
-                    placement="left"
-                    .content=${this.hass.localize(
+                  <ha-svg-icon id="svg-icon" .path=${mdiCancel}></ha-svg-icon>
+                  <ha-tooltip for="svg-icon" placement="left">
+                    ${this.hass.localize(
                       "ui.panel.config.entities.picker.status.disabled"
                     )}
-                  >
-                    <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
                   </ha-tooltip>
                 </div>
               `

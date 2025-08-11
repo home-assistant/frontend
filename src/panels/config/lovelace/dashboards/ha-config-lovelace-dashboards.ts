@@ -156,16 +156,15 @@ export class HaConfigLovelaceDashboards extends LitElement {
                 ${dashboard.title}
                 ${dashboard.default
                   ? html`
-                      <ha-tooltip
-                        .content=${this.hass.localize(
+                      <ha-svg-icon
+                        id="default-icon"
+                        style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
+                        .path=${mdiCheckCircleOutline}
+                      ></ha-svg-icon>
+                      <ha-tooltip for="default-icon" placement="right">
+                        ${this.hass.localize(
                           `ui.panel.config.lovelace.dashboards.default_dashboard`
                         )}
-                        placement="right"
-                      >
-                        <ha-svg-icon
-                          style="padding-left: 10px; padding-inline-start: 10px; padding-inline-end: initial; direction: var(--direction);"
-                          .path=${mdiCheckCircleOutline}
-                        ></ha-svg-icon>
                       </ha-tooltip>
                     `
                   : nothing}

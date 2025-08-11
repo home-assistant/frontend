@@ -392,9 +392,27 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   tabindex="0"
                   style="display:inline-block; position: relative;"
                 >
+                  <ha-svg-icon
+                    id="status-icon-${entry.entity_id}"
+                    style=${styleMap({
+                      color: entry.unavailable ? "var(--error-color)" : "",
+                    })}
+                    .path=${entry.restored
+                      ? mdiRestoreAlert
+                      : entry.unavailable
+                        ? mdiAlertCircle
+                        : entry.disabled_by
+                          ? mdiCancel
+                          : entry.hidden_by
+                            ? mdiEyeOff
+                            : mdiPencilOff}
+                  ></ha-svg-icon>
+
                   <ha-tooltip
+                    for="status-icon-${entry.entity_id}"
                     placement="left"
-                    .content=${entry.restored
+                  >
+                    ${entry.restored
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.not_provided"
                         )
@@ -413,21 +431,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                             : this.hass.localize(
                                 "ui.panel.config.entities.picker.status.unmanageable"
                               )}
-                  >
-                    <ha-svg-icon
-                      style=${styleMap({
-                        color: entry.unavailable ? "var(--error-color)" : "",
-                      })}
-                      .path=${entry.restored
-                        ? mdiRestoreAlert
-                        : entry.unavailable
-                          ? mdiAlertCircle
-                          : entry.disabled_by
-                            ? mdiCancel
-                            : entry.hidden_by
-                              ? mdiEyeOff
-                              : mdiPencilOff}
-                    ></ha-svg-icon>
                   </ha-tooltip>
                 </div>
               `
