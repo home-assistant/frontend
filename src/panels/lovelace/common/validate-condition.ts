@@ -3,6 +3,7 @@ import type { MediaQueriesListener } from "../../../common/dom/media_query";
 import { listenMediaQuery } from "../../../common/dom/media_query";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { UNKNOWN } from "../../../data/entity";
+import { BINARY_STATE_ON, STATES_OFF } from "../../../common/const";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
@@ -12,7 +13,8 @@ export type Condition =
   | UserCondition
   | OrCondition
   | AndCondition
-  | NotCondition;
+  | NotCondition
+  | BooleanCondition;
 
 // Legacy conditional card condition
 export interface LegacyCondition {
@@ -47,6 +49,11 @@ export interface ScreenCondition extends BaseCondition {
 export interface UserCondition extends BaseCondition {
   condition: "user";
   users?: string[];
+}
+
+export interface BooleanCondition extends BaseCondition {
+  condition: "boolean";
+  values?: boolean[];
 }
 
 export interface OrCondition extends BaseCondition {
@@ -150,6 +157,23 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
     : false;
 }
 
+function checkBooleanCondition(condition: BooleanCondition, _: HomeAssistant) {
+  return condition.values
+    ? condition.values.every((value) => {
+        if (typeof value === "boolean") {
+          return value;
+        }
+        if (typeof value === "string") {
+          const valueLowerCase = (value as string)?.toLowerCase();
+          return STATES_OFF.includes(valueLowerCase)
+            ? false
+            : valueLowerCase === BINARY_STATE_ON;
+        }
+        return false;
+      })
+    : false;
+}
+
 function checkAndCondition(condition: AndCondition, hass: HomeAssistant) {
   if (!condition.conditions) return true;
   return checkConditionsMet(condition.conditions, hass);
@@ -190,6 +214,8 @@ export function checkConditionsMet(
           return checkNotCondition(c, hass);
         case "or":
           return checkOrCondition(c, hass);
+        case "boolean":
+          return checkBooleanCondition(c, hass);
         default:
           return checkStateCondition(c, hass);
       }
@@ -256,6 +282,10 @@ function validateUserCondition(condition: UserCondition) {
   return condition.users != null;
 }
 
+function validateBooleanCondition(condition: BooleanCondition) {
+  return condition.values != null;
+}
+
 function validateAndCondition(condition: AndCondition) {
   return condition.conditions != null;
 }
@@ -297,6 +327,8 @@ export function validateConditionalConfig(
           return validateNotCondition(c);
         case "or":
           return validateOrCondition(c);
+        case "boolean":
+          return validateBooleanCondition(c);
         default:
           return validateStateCondition(c);
       }
