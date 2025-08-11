@@ -2,6 +2,7 @@ import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiContentDuplicate,
+  mdiContentSave,
   mdiDebugStepOver,
   mdiDelete,
   mdiDotsVertical,
@@ -29,6 +30,7 @@ import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-fab";
 import "../../../components/ha-fade-in";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
@@ -529,7 +531,22 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                     @editor-save=${this._handleSaveAutomation}
                     .showErrors=${false}
                     disable-fullscreen
-                  ></ha-yaml-editor>`
+                  ></ha-yaml-editor>
+                  <ha-fab
+                    slot="fab"
+                    class=${this._dirty ? "dirty" : ""}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.editor.save"
+                    )}
+                    .disabled=${this._saving}
+                    extended
+                    @click=${this._saveAutomation}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiContentSave}
+                    ></ha-svg-icon>
+                  </ha-fab>`
               : nothing}
         </div>
       </hass-subpage>
@@ -1165,6 +1182,15 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
           margin: 0 auto;
           max-width: 1040px;
           padding: 28px 20px 0;
+        }
+        ha-fab {
+          position: fixed;
+          right: 16px;
+          bottom: calc(-80px - var(--safe-area-inset-bottom));
+          transition: bottom 0.3s;
+        }
+        ha-fab.dirty {
+          bottom: 16px;
         }
       `,
     ];
