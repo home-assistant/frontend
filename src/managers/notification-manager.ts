@@ -83,7 +83,7 @@ class NotificationManager extends LitElement {
               >
                 ${typeof this._parameters?.action.text !== "string"
                   ? this.hass.localize(
-                      this._parameters?.action.text.translationKey
+                      this._parameters?.action.text.translationKey, this._parameters.message.args
                     )
                   : this._parameters?.action.text}
               </ha-button>
