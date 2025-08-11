@@ -340,7 +340,11 @@ export default class HaAutomationSidebar extends LitElement {
   static styles = css`
     :host {
       height: 100%;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+      --ha-card-border-radius: var(
+        --ha-dialog-border-radius,
+        var(--ha-border-radius-2xl)
+      );
+      border-radius: var(--ha-card-border-radius);
     }
 
     ha-card {
@@ -348,10 +352,6 @@ export default class HaAutomationSidebar extends LitElement {
       width: 100%;
       border-color: var(--primary-color);
       border-width: 2px;
-      --ha-card-border-radius: var(
-        --ha-dialog-border-radius,
-        var(--ha-border-radius-2xl)
-      );
       display: block;
       overflow-y: auto;
       overflow-x: hidden;
@@ -363,12 +363,12 @@ export default class HaAutomationSidebar extends LitElement {
 
     @media all and (max-width: 870px) {
       ha-card.mobile {
-        max-height: 80vh;
-        max-height: 80dvh;
+        max-height: 70vh;
+        max-height: 70dvh;
       }
       ha-card.mobile.yaml {
-        height: 80vh;
-        height: 80dvh;
+        height: 70vh;
+        height: 70dvh;
       }
     }
 

@@ -655,8 +655,8 @@ export class HaManualAutomationEditor extends LitElement {
 
         @media all and (max-width: 870px) {
           .sidebar.overlay {
-            max-height: 80vh;
-            max-height: 80dvh;
+            max-height: 70vh;
+            max-height: 70dvh;
             height: auto;
             width: 100%;
             box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
