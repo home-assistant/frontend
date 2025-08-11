@@ -402,13 +402,17 @@ export default class HaAutomationActionRow extends LitElement {
           ? html`<ha-automation-row
               .disabled=${this.action.enabled === false}
               @click=${this._toggleSidebar}
-              .leftChevron=${this.optionsInSidebar &&
-              [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
-                type!
-              )}
+              .leftChevron=${[
+                ...ACTION_BUILDING_BLOCKS,
+                ...ACTION_COMBINED_BLOCKS,
+              ].includes(type!)}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
               @toggle-collapsed=${this._toggleCollapse}
+              .buildingBlock=${[
+                ...ACTION_BUILDING_BLOCKS,
+                ...ACTION_COMBINED_BLOCKS,
+              ].includes(type!)}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`

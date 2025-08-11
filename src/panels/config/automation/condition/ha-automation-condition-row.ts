@@ -333,12 +333,16 @@ export default class HaAutomationConditionRow extends LitElement {
         ${this.optionsInSidebar
           ? html`<ha-automation-row
               .disabled=${this.condition.enabled === false}
-              .leftChevron=${this.optionsInSidebar &&
-              CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)}
+              .leftChevron=${CONDITION_BUILDING_BLOCKS.includes(
+                this.condition.condition
+              )}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
               @click=${this._toggleSidebar}
               @toggle-collapsed=${this._toggleCollapse}
+              .buildingBlock=${CONDITION_BUILDING_BLOCKS.includes(
+                this.condition.condition
+              )}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`

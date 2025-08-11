@@ -19,6 +19,9 @@ export class HaAutomationRow extends LitElement {
   @property({ type: Boolean, reflect: true })
   public disabled = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "building-block" })
+  public buildingBlock = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="row" tabindex="0" role="button" @keydown=${this._click}>
@@ -32,7 +35,9 @@ export class HaAutomationRow extends LitElement {
               ></ha-icon-button>
             `
           : nothing}
-        <slot name="leading-icon"></slot>
+        <div class="leading-icon-wrapper">
+          <slot name="leading-icon"></slot>
+        </div>
         <slot class="header" name="header"></slot>
         <slot name="icons"></slot>
       </div>
@@ -88,8 +93,21 @@ export class HaAutomationRow extends LitElement {
       transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
       color: var(--ha-color-on-neutral-quiet);
     }
+    :host([building-block]) .leading-icon-wrapper {
+      background-color: var(--ha-color-fill-neutral-loud-resting);
+      border-radius: var(--ha-border-radius-sm);
+      padding: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: rotate(45deg);
+    }
     ::slotted([slot="leading-icon"]) {
       color: var(--ha-color-on-neutral-quiet);
+    }
+    :host([building-block]) ::slotted([slot="leading-icon"]) {
+      color: var(--white-color);
+      transform: rotate(-45deg);
     }
     :host([collapsed]) .expand-button {
       transform: rotate(180deg);
