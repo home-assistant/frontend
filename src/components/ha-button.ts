@@ -216,6 +216,11 @@ export class HaButton extends Button {
             color: var(--wa-color-on-normal);
           }
         }
+        :host([appearance~="filled"]) .button {
+          color: var(--wa-color-on-normal);
+          background-color: var(--wa-color-fill-normal);
+          border-color: transparent;
+        }
         :host([appearance~="filled"])
           .button:not(.disabled):not(.loading):active {
           background-color: var(--button-color-fill-normal-active);
