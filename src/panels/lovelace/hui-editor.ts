@@ -150,6 +150,10 @@ class LovelaceFullConfigEditor extends LitElement {
           font-size: var(--ha-font-size-l);
         }
 
+        ha-code-editor {
+          height: 100%;
+        }
+
         .save-button {
           opacity: 0;
           font-size: var(--ha-font-size-m);
