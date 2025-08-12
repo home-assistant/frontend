@@ -25,6 +25,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
+import "../../../components/ha-fade-in";
 
 interface Domain {
   id: string;
@@ -82,7 +83,7 @@ export class DialogAddApplicationCredential extends LitElement {
   }
 
   protected render() {
-    if (!this._params || !this._domains) {
+    if (!this._params) {
       return nothing;
     }
     const selectedDomainName = this._params.selectedDomain
@@ -101,144 +102,159 @@ export class DialogAddApplicationCredential extends LitElement {
           )
         )}
       >
-        <div>
-          ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert> `
-            : ""}
-          ${this._params.selectedDomain && !this._description
-            ? html`<p>
-                ${this.hass.localize(
-                  "ui.panel.config.application_credentials.editor.missing_credentials",
-                  {
-                    integration: selectedDomainName,
-                  }
-                )}
-                ${this._manifest?.is_built_in || this._manifest?.documentation
-                  ? html`<a
-                      href=${this._manifest.is_built_in
-                        ? documentationUrl(
-                            this.hass,
-                            `/integrations/${this._domain}`
-                          )
-                        : this._manifest.documentation}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+        ${!this._config
+          ? html`<ha-fade-in .delay=${500}>
+              <ha-spinner size="large"></ha-spinner>
+            </ha-fade-in>`
+          : html`<div>
+                ${this._error
+                  ? html`<ha-alert alert-type="error"
+                      >${this._error}</ha-alert
+                    > `
+                  : nothing}
+                ${this._params.selectedDomain && !this._description
+                  ? html`<p>
                       ${this.hass.localize(
-                        "ui.panel.config.application_credentials.editor.missing_credentials_domain_link",
+                        "ui.panel.config.application_credentials.editor.missing_credentials",
                         {
                           integration: selectedDomainName,
                         }
                       )}
-                      <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-                    </a>`
-                  : ""}
-              </p>`
-            : ""}
-          ${!this._params.selectedDomain || !this._description
-            ? html`<p>
-                ${this.hass.localize(
-                  "ui.panel.config.application_credentials.editor.description"
-                )}
-                <a
-                  href=${documentationUrl(
-                    this.hass!,
-                    "/integrations/application_credentials"
+                      ${this._manifest?.is_built_in ||
+                      this._manifest?.documentation
+                        ? html`<a
+                            href=${this._manifest.is_built_in
+                              ? documentationUrl(
+                                  this.hass,
+                                  `/integrations/${this._domain}`
+                                )
+                              : this._manifest.documentation}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            ${this.hass.localize(
+                              "ui.panel.config.application_credentials.editor.missing_credentials_domain_link",
+                              {
+                                integration: selectedDomainName,
+                              }
+                            )}
+                            <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                          </a>`
+                        : nothing}
+                    </p>`
+                  : nothing}
+                ${!this._params.selectedDomain || !this._description
+                  ? html`<p>
+                      ${this.hass.localize(
+                        "ui.panel.config.application_credentials.editor.description"
+                      )}
+                      <a
+                        href=${documentationUrl(
+                          this.hass!,
+                          "/integrations/application_credentials"
+                        )}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.application_credentials.editor.view_documentation"
+                        )}
+                        <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+                      </a>
+                    </p>`
+                  : nothing}
+                ${this._params.selectedDomain
+                  ? nothing
+                  : html`<ha-combo-box
+                      name="domain"
+                      .hass=${this.hass}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.application_credentials.editor.domain"
+                      )}
+                      .value=${this._domain}
+                      .items=${this._domains}
+                      item-id-path="id"
+                      item-value-path="id"
+                      item-label-path="name"
+                      required
+                      @value-changed=${this._handleDomainPicked}
+                    ></ha-combo-box>`}
+                ${this._description
+                  ? html`<ha-markdown
+                      breaks
+                      .content=${this._description}
+                    ></ha-markdown>`
+                  : nothing}
+                <ha-textfield
+                  class="name"
+                  name="name"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.name"
                   )}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  ${this.hass!.localize(
-                    "ui.panel.config.application_credentials.editor.view_documentation"
+                  .value=${this._name}
+                  required
+                  @input=${this._handleValueChanged}
+                  .validationMessage=${this.hass.localize(
+                    "ui.common.error_required"
                   )}
-                  <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-                </a>
-              </p>`
-            : ""}
-          ${this._params.selectedDomain
-            ? ""
-            : html`<ha-combo-box
-                name="domain"
-                .hass=${this.hass}
-                .label=${this.hass.localize(
-                  "ui.panel.config.application_credentials.editor.domain"
-                )}
-                .value=${this._domain}
-                .items=${this._domains}
-                item-id-path="id"
-                item-value-path="id"
-                item-label-path="name"
-                required
-                @value-changed=${this._handleDomainPicked}
-              ></ha-combo-box>`}
-          ${this._description
-            ? html`<ha-markdown
-                breaks
-                .content=${this._description}
-              ></ha-markdown>`
-            : ""}
-          <ha-textfield
-            class="name"
-            name="name"
-            .label=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.name"
-            )}
-            .value=${this._name}
-            required
-            @input=${this._handleValueChanged}
-            .validationMessage=${this.hass.localize("ui.common.error_required")}
-            dialogInitialFocus
-          ></ha-textfield>
-          <ha-textfield
-            class="clientId"
-            name="clientId"
-            .label=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.client_id"
-            )}
-            .value=${this._clientId}
-            required
-            @input=${this._handleValueChanged}
-            .validationMessage=${this.hass.localize("ui.common.error_required")}
-            dialogInitialFocus
-            .helper=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.client_id_helper"
-            )}
-            helperPersistent
-          ></ha-textfield>
-          <ha-password-field
-            .label=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.client_secret"
-            )}
-            name="clientSecret"
-            .value=${this._clientSecret}
-            required
-            @input=${this._handleValueChanged}
-            .validationMessage=${this.hass.localize("ui.common.error_required")}
-            .helper=${this.hass.localize(
-              "ui.panel.config.application_credentials.editor.client_secret_helper"
-            )}
-            helperPersistent
-          ></ha-password-field>
-        </div>
+                  dialogInitialFocus
+                ></ha-textfield>
+                <ha-textfield
+                  class="clientId"
+                  name="clientId"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.client_id"
+                  )}
+                  .value=${this._clientId}
+                  required
+                  @input=${this._handleValueChanged}
+                  .validationMessage=${this.hass.localize(
+                    "ui.common.error_required"
+                  )}
+                  dialogInitialFocus
+                  .helper=${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.client_id_helper"
+                  )}
+                  helperPersistent
+                ></ha-textfield>
+                <ha-password-field
+                  .label=${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.client_secret"
+                  )}
+                  name="clientSecret"
+                  .value=${this._clientSecret}
+                  required
+                  @input=${this._handleValueChanged}
+                  .validationMessage=${this.hass.localize(
+                    "ui.common.error_required"
+                  )}
+                  .helper=${this.hass.localize(
+                    "ui.panel.config.application_credentials.editor.client_secret_helper"
+                  )}
+                  helperPersistent
+                ></ha-password-field>
+              </div>
 
-        <ha-button
-          appearance="plain"
-          slot="secondaryAction"
-          @click=${this._abortDialog}
-          .disabled=${this._loading}
-        >
-          ${this.hass.localize("ui.common.cancel")}
-        </ha-button>
-        <ha-button
-          slot="primaryAction"
-          .disabled=${!this._domain || !this._clientId || !this._clientSecret}
-          @click=${this._addApplicationCredential}
-          .loading=${this._loading}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.application_credentials.editor.add"
-          )}
-        </ha-button>
+              <ha-button
+                appearance="plain"
+                slot="secondaryAction"
+                @click=${this._abortDialog}
+                .disabled=${this._loading}
+              >
+                ${this.hass.localize("ui.common.cancel")}
+              </ha-button>
+              <ha-button
+                slot="primaryAction"
+                .disabled=${!this._domain ||
+                !this._clientId ||
+                !this._clientSecret}
+                @click=${this._addApplicationCredential}
+                .loading=${this._loading}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.application_credentials.editor.add"
+                )}
+              </ha-button>`}
       </ha-dialog>
     `;
   }
