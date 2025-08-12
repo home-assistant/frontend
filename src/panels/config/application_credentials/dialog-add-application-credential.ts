@@ -357,6 +357,11 @@ export class DialogAddApplicationCredential extends LitElement {
         ha-markdown {
           margin-bottom: 16px;
         }
+        ha-fade-in {
+          display: flex;
+          width: 100%;
+          justify-content: center;
+        }
       `,
     ];
   }
