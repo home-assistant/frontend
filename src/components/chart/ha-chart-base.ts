@@ -387,24 +387,25 @@ export class HaChartBase extends LitElement {
           lastTipX = e.x;
           lastTipY = e.y;
           this.chart?.setOption({
-            xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-              (axis: XAXisOption) =>
-                axis.show
-                  ? {
-                      ...axis,
-                      axisPointer: {
-                        ...axis.axisPointer,
-                        status: "show",
-                        handle: {
-                          color: style.getPropertyValue("primary-color"),
-                          margin: 0,
-                          size: 20,
-                          ...axis.axisPointer?.handle,
-                          show: true,
-                        },
+            xAxis: ensureArray(
+              (this.chart?.getOption().xAxis as any) ?? []
+            ).map((axis: XAXisOption) =>
+              axis.show
+                ? {
+                    ...axis,
+                    axisPointer: {
+                      ...axis.axisPointer,
+                      status: "show",
+                      handle: {
+                        color: style.getPropertyValue("primary-color"),
+                        margin: 0,
+                        size: 20,
+                        ...axis.axisPointer?.handle,
+                        show: true,
                       },
-                    }
-                  : axis
+                    },
+                  }
+                : axis
             ),
           });
         });
@@ -417,21 +418,22 @@ export class HaChartBase extends LitElement {
               return;
             }
             this.chart?.setOption({
-              xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-                (axis: XAXisOption) =>
-                  axis.show
-                    ? {
-                        ...axis,
-                        axisPointer: {
-                          ...axis.axisPointer,
-                          handle: {
-                            ...axis.axisPointer?.handle,
-                            show: false,
-                          },
-                          status: "hide",
+              xAxis: ensureArray(
+                (this.chart?.getOption().xAxis as any) ?? []
+              ).map((axis: XAXisOption) =>
+                axis.show
+                  ? {
+                      ...axis,
+                      axisPointer: {
+                        ...axis.axisPointer,
+                        handle: {
+                          ...axis.axisPointer?.handle,
+                          show: false,
                         },
-                      }
-                    : axis
+                        status: "hide",
+                      },
+                    }
+                  : axis
               ),
             });
             this.chart?.dispatchAction({
@@ -592,6 +594,13 @@ export class HaChartBase extends LitElement {
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
       graph: {
+        label: {
+          color: style.getPropertyValue("--primary-text-color"),
+          textBorderColor: style.getPropertyValue("--primary-background-color"),
+          textBorderWidth: 2,
+        },
+      },
+      sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
           textBorderColor: style.getPropertyValue("--primary-background-color"),

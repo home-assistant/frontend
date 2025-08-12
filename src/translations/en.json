@@ -256,10 +256,10 @@
       },
       "timer": {
         "actions": {
-          "start": "start",
-          "pause": "pause",
-          "cancel": "cancel",
-          "finish": "finish"
+          "start": "Start",
+          "pause": "Pause",
+          "cancel": "Cancel",
+          "finish": "Finish"
         }
       },
       "vacuum": {
@@ -438,7 +438,6 @@
       "supports_markdown": "Supports {markdown_help_link}",
       "markdown": "Markdown"
     },
-
     "components": {
       "selectors": {
         "media": {
@@ -2101,7 +2100,9 @@
       "integration_starting": "Starting {integration}. Not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss",
-      "no_matching_link_found": "No matching My link found for {path}"
+      "no_matching_link_found": "No matching My link found for {path}",
+      "new_version_available": "A new version of the frontend is available.",
+      "reload": "Reload"
     },
     "sidebar": {
       "external_app_configuration": "App settings",
@@ -4378,7 +4379,6 @@
                 },
                 "repeat": {
                   "label": "Repeat",
-                  "type_select": "Repeat type",
                   "type": {
                     "count": {
                       "label": "Count"
@@ -4404,6 +4404,30 @@
                     "while_count": "while {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
                     "until_count": "until {count} {count, plural,\n one {condition matches}\n other {conditions match}\n} ",
                     "for_each": "for every item: {items}"
+                  }
+                },
+                "repeat_count": {
+                  "label": "Repeat multiple times",
+                  "description": {
+                    "picker": "Repeat a sequence of actions a fixed number of times."
+                  }
+                },
+                "repeat_while": {
+                  "label": "Repeat while",
+                  "description": {
+                    "picker": "Repeat a sequence of actions as long as a condition is satisfied. The condition is checked before each run of the sequence."
+                  }
+                },
+                "repeat_until": {
+                  "label": "Repeat until",
+                  "description": {
+                    "picker": "Repeat a sequence of actions until a condition is satisfied. The condition is checked after each run of the sequence."
+                  }
+                },
+                "repeat_for_each": {
+                  "label": "Repeat for each",
+                  "description": {
+                    "picker": "Repeat a sequence for each element of a list."
                   }
                 },
                 "choose": {
@@ -7282,11 +7306,19 @@
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
+              "location": {
+                "label": "Location",
+                "locations": "Locations",
+                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones."
+              },
               "user": {
                 "label": "User"
               },
               "or": {
                 "label": "Or"
+              },
+              "not": {
+                "label": "Not"
               },
               "and": {
                 "label": "And"
@@ -7798,6 +7830,9 @@
             "edit": "Edit feature",
             "remove": "Remove feature",
             "types": {
+              "button": {
+                "label": "Button"
+              },
               "cover-open-close": {
                 "label": "Cover open/close"
               },
@@ -7809,6 +7844,9 @@
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
+              },
+              "fan-direction": {
+                "label": "Fan direction"
               },
               "fan-speed": {
                 "label": "Fan speed"

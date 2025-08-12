@@ -132,15 +132,13 @@ export const shiftDateRange = (
     end = calcDate(endDate, addDays, locale, config, difference);
   } else {
     const difference =
-      ((calcDateDifferenceProperty(
+      (calcDateDifferenceProperty(
         endDate,
         startDate,
         differenceInMilliseconds,
         locale,
         config
-      ) as number) +
-        1) *
-      (forward ? 1 : -1);
+      ) as number) * (forward ? 1 : -1);
     start = calcDate(startDate, addMilliseconds, locale, config, difference);
     end = calcDate(endDate, addMilliseconds, locale, config, difference);
   }

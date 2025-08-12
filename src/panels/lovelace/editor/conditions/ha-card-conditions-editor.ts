@@ -18,6 +18,8 @@ import "./ha-card-condition-editor";
 import type { HaCardConditionEditor } from "./ha-card-condition-editor";
 import type { LovelaceConditionEditorConstructor } from "./types";
 import "./types/ha-card-condition-and";
+import "./types/ha-card-condition-location";
+import "./types/ha-card-condition-not";
 import "./types/ha-card-condition-numeric_state";
 import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
@@ -25,11 +27,13 @@ import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-user";
 
 const UI_CONDITION = [
+  "location",
   "numeric_state",
   "state",
   "screen",
   "user",
   "and",
+  "not",
   "or",
 ] as const satisfies readonly Condition["condition"][];
 

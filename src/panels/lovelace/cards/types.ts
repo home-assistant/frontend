@@ -213,7 +213,7 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
 export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
   title?: string;
-  layout?: "vertical" | "horizontal";
+  layout?: "vertical" | "horizontal" | "auto";
   group_by_floor?: boolean;
   group_by_area?: boolean;
 }

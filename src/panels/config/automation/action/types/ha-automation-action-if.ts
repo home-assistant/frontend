@@ -41,7 +41,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-condition
-        .conditions=${action.if}
+        .conditions=${action.if ?? []}
         .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
         .hass=${this.hass}
@@ -55,7 +55,7 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-action
-        .actions=${action.then}
+        .actions=${action.then ?? []}
         .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
         .hass=${this.hass}

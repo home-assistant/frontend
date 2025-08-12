@@ -17,6 +17,7 @@ import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
+  VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
 import type HaAutomationActionRow from "./ha-automation-action-row";
@@ -201,6 +202,8 @@ export default class HaAutomationAction extends LitElement {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
+    } else if (action in VIRTUAL_ACTIONS) {
+      actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
     } else if (isService(action)) {
       actions = this.actions.concat({
         action: getService(action),
