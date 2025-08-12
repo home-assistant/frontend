@@ -95,7 +95,7 @@ export class HaAutomationRow extends LitElement {
     }
     :host([building-block]) .leading-icon-wrapper {
       background-color: var(--ha-color-fill-neutral-loud-resting);
-      border-radius: var(--ha-border-radius-sm);
+      border-radius: var(--ha-border-radius-md);
       padding: 4px;
       display: flex;
       justify-content: center;
