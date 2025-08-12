@@ -45,7 +45,11 @@ import {
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
 import type { FloorRegistryEntry } from "../../../../data/floor_registry";
 import type { LabelRegistryEntry } from "../../../../data/label_registry";
-import type { Action, NonConditionAction } from "../../../../data/script";
+import type {
+  Action,
+  NonConditionAction,
+  RepeatAction,
+} from "../../../../data/script";
 import { getActionType } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
 import { callExecuteScript } from "../../../../data/service";
@@ -69,7 +73,7 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
 import "./types/ha-automation-action-parallel";
 import "./types/ha-automation-action-play_media";
-import "./types/ha-automation-action-repeat";
+import { getRepeatType } from "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-set_conversation_response";
@@ -77,10 +81,21 @@ import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 
-export const ACTION_BUILDING_BLOCKS = ["choose", "if", "parallel", "sequence"];
+export const ACTION_BUILDING_BLOCKS = [
+  "choose",
+  "if",
+  "parallel",
+  "sequence",
+  "repeat_while",
+  "repeat_until",
+];
 
 // Building blocks that have options in the sidebar
-export const ACTION_COMBINED_BLOCKS = ["repeat", "wait_for_trigger"];
+export const ACTION_COMBINED_BLOCKS = [
+  "repeat_count",
+  "repeat_for_each",
+  "wait_for_trigger",
+];
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -387,6 +402,11 @@ export default class HaAutomationActionRow extends LitElement {
 
     const type = getAutomationActionType(this.action);
 
+    const blockType =
+      type === "repeat"
+        ? `repeat_${getRepeatType((this.action as RepeatAction).repeat)}`
+        : type;
+
     return html`
       <ha-card outlined>
         ${this.action.enabled === false
@@ -405,14 +425,14 @@ export default class HaAutomationActionRow extends LitElement {
               .leftChevron=${[
                 ...ACTION_BUILDING_BLOCKS,
                 ...ACTION_COMBINED_BLOCKS,
-              ].includes(type!)}
+              ].includes(blockType!)}
               .collapsed=${this._collapsed}
               .selected=${this._selected}
               @toggle-collapsed=${this._toggleCollapse}
               .buildingBlock=${[
                 ...ACTION_BUILDING_BLOCKS,
                 ...ACTION_COMBINED_BLOCKS,
-              ].includes(type!)}
+              ].includes(blockType!)}
               >${this._renderRow()}</ha-automation-row
             >`
           : html`
@@ -423,7 +443,9 @@ export default class HaAutomationActionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(type!) &&
+      [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
+        blockType!
+      ) &&
       !this._collapsed
         ? html`<ha-automation-action-editor
             .hass=${this.hass}

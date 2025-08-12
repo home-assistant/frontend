@@ -22,7 +22,7 @@ import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
 import type { Condition, Trigger } from "../../../data/automation";
-import type { Action } from "../../../data/script";
+import type { Action, RepeatAction } from "../../../data/script";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "./action/ha-automation-action-editor";
@@ -36,6 +36,7 @@ import type HaAutomationConditionEditor from "./condition/ha-automation-conditio
 import "./ha-automation-editor-warning";
 import "./trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-editor";
+import { getRepeatType } from "./action/types/ha-automation-action-repeat";
 
 export interface OpenSidebarConfig {
   save: (config: Trigger | Condition | Action) => void;
@@ -90,11 +91,15 @@ export default class HaAutomationSidebar extends LitElement {
     const disabled =
       this.disabled ||
       ("enabled" in this.config.config && this.config.config.enabled === false);
-    const type = isTriggerList(this.config.config as Trigger)
+    let type = isTriggerList(this.config.config as Trigger)
       ? "list"
       : this.config.type === "action"
         ? getAutomationActionType(this.config.config as Action)
         : this.config.config[this.config.type];
+
+    if (this.config.type === "action" && type === "repeat") {
+      type = `repeat_${getRepeatType((this.config.config as RepeatAction).repeat)}`;
+    }
 
     const isBuildingBlock = [
       ...CONDITION_BUILDING_BLOCKS,
