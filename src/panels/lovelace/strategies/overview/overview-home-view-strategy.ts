@@ -19,6 +19,7 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -155,6 +156,35 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       );
     }
 
+    const personSection: LovelaceSectionConfig = {
+      type: "grid",
+      column_span: maxColumns,
+      cards: [],
+    };
+
+    const personFilter = generateEntityFilter(hass, {
+      domain: "person",
+    });
+
+    const personEntities = Object.keys(hass.states).filter(personFilter);
+
+    if (personEntities.length > 0) {
+      personSection.cards!.push(
+        {
+          type: "heading",
+          heading: "People",
+        },
+        ...personEntities.map(
+          (entityId) =>
+            ({
+              type: "tile",
+              entity: entityId,
+              show_entity_picture: true,
+            }) as TileCardConfig
+        )
+      );
+    }
+
     const categorySection: LovelaceSectionConfig = {
       type: "grid",
       column_span: maxColumns,
@@ -207,6 +237,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
 
     const sections = [
       ...(favoriteSection.cards ? [favoriteSection] : []),
+      ...(personSection.cards ? [personSection] : []),
       categorySection,
       ...floorSections,
     ];
