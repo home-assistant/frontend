@@ -1,6 +1,7 @@
 import ButtonGroup from "@awesome.me/webawesome/dist/components/button-group/button-group";
 import { customElement } from "lit/decorators";
 import type { HaButton } from "./ha-button";
+import { StateSet } from "../resources/polyfills/stateset";
 
 export type Appearance = "accent" | "filled" | "outlined" | "plain";
 
@@ -24,6 +25,14 @@ function findButton(el: HTMLElement) {
  */
 @customElement("ha-button-group") // @ts-expect-error Intentionally overriding private methods
 export class HaButtonGroup extends ButtonGroup {
+  attachInternals() {
+    const internals = super.attachInternals();
+    Object.defineProperty(internals, "states", {
+      value: new StateSet(this, internals.states),
+    });
+    return internals;
+  }
+
   // @ts-expect-error updateClassNames is used in super class
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private override updateClassNames() {
