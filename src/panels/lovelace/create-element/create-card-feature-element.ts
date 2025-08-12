@@ -28,6 +28,7 @@ import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-toggle-card-feature";
 import "../card-features/hui-update-actions-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
+import "../card-features/hui-valve-open-close-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
 
@@ -69,6 +70,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "valve-open-close",
   "water-heater-operation-modes",
 ]);
 
