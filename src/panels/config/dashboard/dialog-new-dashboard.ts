@@ -47,6 +47,16 @@ const STRATEGIES = [
       "ui.panel.config.lovelace.dashboards.dialog_new.strategy.areas.description",
   },
   {
+    type: "overview",
+    images: {
+      light: "/static/images/dashboard-options/light/icon-dashboard-areas.svg",
+      dark: "/static/images/dashboard-options/dark/icon-dashboard-areas.svg",
+    },
+    name: "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.title",
+    description:
+      "ui.panel.config.lovelace.dashboards.dialog_new.strategy.overview.description",
+  },
+  {
     type: "map",
     images: {
       light: "/static/images/dashboard-options/light/icon-dashboard-map.svg",
