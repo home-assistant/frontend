@@ -61,7 +61,6 @@
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
     "@material/mwc-base": "0.27.0",
-    "@material/mwc-button": "0.27.0",
     "@material/mwc-checkbox": "0.27.0",
     "@material/mwc-dialog": "0.27.0",
     "@material/mwc-drawer": "0.27.0",
@@ -227,7 +226,6 @@
     "workbox-build": "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
   },
   "resolutions": {
-    "@material/mwc-button@^0.25.3": "^0.27.0",
     "lit": "3.3.1",
     "lit-html": "3.3.1",
     "clean-css": "5.3.3",

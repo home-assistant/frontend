@@ -1168,6 +1168,12 @@
           },
           "summary": "Summary",
           "description": "Description"
+        },
+        "views": {
+          "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
+          "dayGridWeek": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridWeek%]",
+          "dayGridDay": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridDay%]",
+          "listWeek": "[%key:ui::panel::lovelace::editor::card::calendar::views::listWeek%]"
         }
       },
       "attributes": {

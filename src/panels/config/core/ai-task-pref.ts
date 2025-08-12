@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiHelpCircle, mdiStarFourPoints } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
