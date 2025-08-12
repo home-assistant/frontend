@@ -7301,6 +7301,11 @@
                 "state_equal": "State is equal to",
                 "state_not_equal": "State is not equal to"
               },
+              "location": {
+                "label": "Location",
+                "locations": "Locations",
+                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones."
+              },
               "user": {
                 "label": "User"
               },

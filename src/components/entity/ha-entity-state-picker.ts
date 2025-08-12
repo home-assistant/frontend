@@ -63,10 +63,10 @@ class HaEntityStatePicker extends LitElement {
       const entityIds = this.entityId ? ensureArray(this.entityId) : [];
 
       const entitiesOptions = entityIds.map<StateOption[]>((entityId) => {
-        const stateObj = this.hass.states[entityId];
-        if (!stateObj) {
-          return [];
-        }
+        const stateObj = this.hass.states[entityId] || {
+          entity_id: entityId,
+          attributes: {},
+        };
 
         const states = getStates(this.hass, stateObj, this.attribute).filter(
           (s) => !this.hideStates?.includes(s)
