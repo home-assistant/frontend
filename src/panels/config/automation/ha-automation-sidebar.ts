@@ -30,13 +30,13 @@ import {
   ACTION_BUILDING_BLOCKS,
   getAutomationActionType,
 } from "./action/ha-automation-action-row";
+import { getRepeatType } from "./action/types/ha-automation-action-repeat";
 import { CONDITION_BUILDING_BLOCKS } from "./condition/ha-automation-condition";
 import "./condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
 import "./ha-automation-editor-warning";
 import "./trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-editor";
-import { getRepeatType } from "./action/types/ha-automation-action-repeat";
 
 export interface OpenSidebarConfig {
   save: (config: Trigger | Condition | Action) => void;
@@ -370,6 +370,7 @@ export default class HaAutomationSidebar extends LitElement {
       ha-card.mobile {
         max-height: 70vh;
         max-height: 70dvh;
+        border-width: 2px 2px 0;
       }
       ha-card.mobile.yaml {
         height: 70vh;
