@@ -47,6 +47,7 @@ export class HaButton extends Button {
     return internals;
   }
 
+  // @ts-expect-error handleLabelSlotChange is used in super class
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private override handleLabelSlotChange() {
     const nodes = this.labelSlot.assignedNodes({ flatten: true });
@@ -62,7 +63,7 @@ export class HaButton extends Button {
       ) {
         hasIcon = true;
         if (!hasIconLabel)
-          hasIconLabel = (node as HTMLElement).hasAttribute("label");
+          hasIconLabel = (node as HTMLElement).hasAttribute("aria-label");
       }
 
       // Concatenate text nodes

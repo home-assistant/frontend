@@ -226,6 +226,7 @@
     "workbox-build": "patch:workbox-build@npm%3A7.1.1#~/.yarn/patches/workbox-build-npm-7.1.1-a854f3faae.patch"
   },
   "resolutions": {
+    "@material/mwc-button@^0.25.3": "^0.27.0",
     "lit": "3.3.1",
     "lit-html": "3.3.1",
     "clean-css": "5.3.3",

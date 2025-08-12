@@ -37,20 +37,19 @@ export class HaButtonToggleGroup extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-button-group .variant=${this.variant}>
+      <ha-button-group .variant=${this.variant} .size=${this.size}>
         ${this.buttons.map(
           (button) =>
             html`<ha-button
               class="icon"
-              size=${this.size}
               .value=${button.value}
               @click=${this._handleClick}
               .title=${button.label}
               .appearance=${this.active === button.value ? "accent" : "filled"}
             >
               ${button.iconPath
-                ? html` <ha-svg-icon
-                    label=${button.label}
+                ? html`<ha-svg-icon
+                    aria-label=${button.label}
                     .path=${button.iconPath}
                   ></ha-svg-icon>`
                 : button.label}

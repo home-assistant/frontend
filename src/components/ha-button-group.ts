@@ -24,6 +24,7 @@ function findButton(el: HTMLElement) {
  */
 @customElement("ha-button-group") // @ts-expect-error Intentionally overriding private methods
 export class HaButtonGroup extends ButtonGroup {
+  // @ts-expect-error updateClassNames is used in super class
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private override updateClassNames() {
     const slottedElements = [
