@@ -11,6 +11,7 @@ import type {
   AreaCardConfig,
   ButtonCardConfig,
   HeadingCardConfig,
+  MarkdownCardConfig,
   TileCardConfig,
 } from "../../cards/types";
 import {
@@ -213,6 +214,14 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       type: "sections",
       max_columns: maxColumns,
       sections: sections,
+      header: {
+        layout: "responsive",
+        card: {
+          type: "markdown",
+          text_only: true,
+          content: "## Welcome {{user}} !",
+        } satisfies MarkdownCardConfig,
+      },
     };
   }
 }
