@@ -7,6 +7,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-combo-box";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-fade-in";
 import "../../../components/ha-markdown";
 import "../../../components/ha-password-field";
 import "../../../components/ha-spinner";
@@ -25,7 +26,6 @@ import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import type { AddApplicationCredentialDialogParams } from "./show-dialog-add-application-credential";
-import "../../../components/ha-fade-in";
 
 interface Domain {
   id: string;
