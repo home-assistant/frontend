@@ -8,10 +8,11 @@ import {
   AREA_STRATEGY_GROUP_ICONS,
   getAreas,
 } from "../areas/helpers/areas-strategy-helper";
+import type { LovelaceStrategyEditor } from "../types";
 import type { OverviewAreaViewStrategyConfig } from "./overview-area-view-strategy";
 import type { OverviewHomeViewStrategyConfig } from "./overview-home-view-strategy";
 
-export interface AreasDashboardStrategyConfig {
+export interface OverviewDashboardStrategyConfig {
   type: "overview";
   favorite_entities?: string[];
 }
@@ -19,7 +20,7 @@ export interface AreasDashboardStrategyConfig {
 @customElement("overview-dashboard-strategy")
 export class OverviewDashboardStrategy extends ReactiveElement {
   static async generate(
-    config: AreasDashboardStrategyConfig,
+    config: OverviewDashboardStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceConfig> {
     if (hass.config.state === STATE_NOT_RUNNING) {
@@ -95,6 +96,11 @@ export class OverviewDashboardStrategy extends ReactiveElement {
         coversView,
       ],
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
+    await import("./editor/hui-overview-dashboard-strategy-editor");
+    return document.createElement("hui-overview-dashboard-strategy-editor");
   }
 }
 
