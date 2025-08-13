@@ -44,7 +44,7 @@ class HuiFanOscillateCardFeature
 
   @state() private _config?: FanOscillateCardFeatureConfig;
 
-  @state() _oscillating?: boolean;
+  @state() _oscillate?: boolean;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -74,30 +74,30 @@ class HuiFanOscillateCardFeature
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
       const oldStateObj = oldHass?.states[this.context!.entity_id!];
       if (oldStateObj !== this._stateObj) {
-        this._oscillating = this._stateObj.attributes.oscillating as boolean;
+        this._oscillate = this._stateObj.attributes.oscillating as boolean;
       }
     }
   }
 
   private async _valueChanged(ev: CustomEvent) {
-    const newState = (ev.detail as any).value as boolean;
+    const shouldOscillate = (ev.detail as any).value as boolean;
 
-    if (newState === this._stateObj!.attributes.oscillating) return;
+    if (shouldOscillate === this._stateObj!.attributes.oscillating) return;
 
-    const oldState = this._stateObj!.attributes.oscillating as boolean;
-    this._oscillating = newState;
+    const wadOscillating = this._stateObj!.attributes.oscillating as boolean;
+    this._oscillate = shouldOscillate;
 
     try {
-      await this._updateOscillate(newState);
+      await this._updateOscillate(shouldOscillate);
     } catch (_err) {
-      this._oscillating = oldState;
+      this._oscillate = wadOscillating;
     }
   }
 
-  private async _updateOscillate(val: boolean) {
+  private async _updateOscillate(oscillate: boolean) {
     await this.hass!.callService("fan", "oscillate", {
       entity_id: this._stateObj!.entity_id,
-      oscillating: val,
+      oscillating: oscillate,
     });
   }
 
@@ -124,7 +124,7 @@ class HuiFanOscillateCardFeature
     return html`
       <ha-control-select
         .options=${options}
-        .value=${this._oscillating ? "yes" : "no"}
+        .value=${this._oscillate ? "yes" : "no"}
         @value-changed=${this._valueChanged}
         hide-option-label
         .label=${this.hass.localize("ui.card.fan.oscillate")}
