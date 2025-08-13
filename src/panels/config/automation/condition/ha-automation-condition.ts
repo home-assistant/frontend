@@ -23,8 +23,7 @@ import {
 } from "../show-add-automation-element-dialog";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
-
-export const CONDITION_BUILDING_BLOCKS = ["and", "or", "not"];
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {

@@ -34,7 +34,12 @@ import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-service-icon";
 import "../../../../components/ha-tooltip";
-import { ACTION_ICONS, YAML_ONLY_ACTION_TYPES } from "../../../../data/action";
+import {
+  ACTION_BUILDING_BLOCKS,
+  ACTION_COMBINED_BLOCKS,
+  ACTION_ICONS,
+  YAML_ONLY_ACTION_TYPES,
+} from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
@@ -80,22 +85,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-
-export const ACTION_BUILDING_BLOCKS = [
-  "choose",
-  "if",
-  "parallel",
-  "sequence",
-  "repeat_while",
-  "repeat_until",
-];
-
-// Building blocks that have options in the sidebar
-export const ACTION_COMBINED_BLOCKS = [
-  "repeat_count",
-  "repeat_for_each",
-  "wait_for_trigger",
-];
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {

@@ -38,7 +38,10 @@ import type {
 } from "../../../../data/automation";
 import { testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
-import { CONDITION_ICONS } from "../../../../data/condition";
+import {
+  CONDITION_BUILDING_BLOCKS,
+  CONDITION_ICONS,
+} from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
@@ -50,7 +53,6 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
-import { CONDITION_BUILDING_BLOCKS } from "./ha-automation-condition";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./types/ha-automation-condition-and";

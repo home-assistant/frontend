@@ -11,7 +11,11 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import { getService, isService } from "../../../../data/action";
+import {
+  ACTION_BUILDING_BLOCKS,
+  getService,
+  isService,
+} from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
@@ -21,10 +25,7 @@ import {
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
 import type HaAutomationActionRow from "./ha-automation-action-row";
-import {
-  ACTION_BUILDING_BLOCKS,
-  getAutomationActionType,
-} from "./ha-automation-action-row";
+import { getAutomationActionType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {

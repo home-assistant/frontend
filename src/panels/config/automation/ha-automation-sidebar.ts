@@ -26,10 +26,7 @@ import type { Action, RepeatAction } from "../../../data/script";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "./action/ha-automation-action-editor";
-import {
-  ACTION_BUILDING_BLOCKS,
-  getAutomationActionType,
-} from "./action/ha-automation-action-row";
+import { getAutomationActionType } from "./action/ha-automation-action-row";
 import { getRepeatType } from "./action/types/ha-automation-action-repeat";
 import { CONDITION_BUILDING_BLOCKS } from "./condition/ha-automation-condition";
 import "./condition/ha-automation-condition-editor";
@@ -37,6 +34,7 @@ import type HaAutomationConditionEditor from "./condition/ha-automation-conditio
 import "./ha-automation-editor-warning";
 import "./trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-editor";
+import { ACTION_BUILDING_BLOCKS } from "../../../data/action";
 
 export interface OpenSidebarConfig {
   save: (config: Trigger | Condition | Action) => void;
