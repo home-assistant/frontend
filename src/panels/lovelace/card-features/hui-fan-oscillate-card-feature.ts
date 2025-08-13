@@ -18,7 +18,7 @@ import type {
   LovelaceCardFeatureContext,
 } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-
+import type { LocalizeKeys } from "../../../common/translations/localize";
 export const supportsFanOscilatteCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -114,9 +114,16 @@ class HuiFanOscillateCardFeature
 
     const color = stateColorCss(this._stateObj);
 
-    const options = ["no", "yes"].map<ControlSelectOption>((oscillating) => ({
+    const yesNo = ["no", "yes"] as const;
+    type YesNo = (typeof yesNo)[number];
+    const options = yesNo.map<ControlSelectOption>((oscillating) => ({
       value: oscillating,
-      label: this.hass!.localize(`ui.common.${oscillating}`),
+      label: this.hass!.localize(
+        `ui.common.${oscillating}` as Extract<
+          LocalizeKeys,
+          `ui.common.${YesNo}`
+        >
+      ),
       path:
         oscillating === "yes" ? mdiArrowOscillating : mdiArrowOscillatingOff,
     }));
