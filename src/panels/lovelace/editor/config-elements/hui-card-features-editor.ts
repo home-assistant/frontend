@@ -49,6 +49,7 @@ import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-f
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
+import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
@@ -96,6 +97,7 @@ const UI_FEATURE_TYPES = [
   "update-actions",
   "vacuum-commands",
   "valve-open-close",
+  "valve-position",
   "water-heater-operation-modes",
 ] as const satisfies readonly FeatureType[];
 
@@ -158,6 +160,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
   "valve-open-close": supportsValveOpenCloseCardFeature,
+  "valve-position": supportsValvePositionCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
 };
 

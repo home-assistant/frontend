@@ -7888,6 +7888,9 @@
               "valve-open-close": {
                 "label": "Valve open/close"
               },
+              "valve-position": {
+                "label": "Valve position"
+              },
               "climate-fan-modes": {
                 "label": "Climate fan modes",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::climate-preset-modes::style%]",
