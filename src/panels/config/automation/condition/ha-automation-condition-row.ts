@@ -380,6 +380,7 @@ export default class HaAutomationConditionRow extends LitElement {
             indent
             .selected=${this._selected}
             .narrow=${this.narrow}
+            @value-changed=${this._onValueChange}
           ></ha-automation-condition-editor>`
         : nothing}
     `;
@@ -389,6 +390,13 @@ export default class HaAutomationConditionRow extends LitElement {
     // on yaml toggle --> clear warnings
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
+    }
+  }
+
+  private _onValueChange(event: CustomEvent) {
+    // reload sidebar if sort, deleted,... happend
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(event.detail.value);
     }
   }
 

@@ -444,9 +444,17 @@ export default class HaAutomationActionRow extends LitElement {
             .uiSupported=${this._uiSupported(type!)}
             indent
             .selected=${this._selected}
+            @value-changed=${this._onValueChange}
           ></ha-automation-action-editor>`
         : nothing}
     `;
+  }
+
+  private _onValueChange(event: CustomEvent) {
+    // reload sidebar if sort, deleted,... happend
+    if (this._selected && this.optionsInSidebar) {
+      this.openSidebar(event.detail.value);
+    }
   }
 
   private _setClipboard() {
