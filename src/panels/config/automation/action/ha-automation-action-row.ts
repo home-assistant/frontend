@@ -318,7 +318,7 @@ export default class HaAutomationActionRow extends LitElement {
         ></ha-md-menu-item>
 
         ${!this.optionsInSidebar
-          ? html` <ha-md-menu-item
+          ? html`<ha-md-menu-item
               .clickAction=${this._toggleYamlMode}
               .disabled=${!this._uiModeAvailable || !!this._warnings}
             >

@@ -69,7 +69,7 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
         .actions=${this._actions(this.value)}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .optionsInSidebar=${!!this.selector.optionsInSidebar}
+        .optionsInSidebar=${!!this.selector.action?.optionsInSidebar}
       ></ha-automation-action>
     `;
   }

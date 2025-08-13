@@ -61,12 +61,14 @@ export class HaRepeatAction extends LitElement implements ActionElement {
             ] as const satisfies readonly HaFormSchema[])
           : []),
         ...((type === "until" || type === "while") &&
-        (inSidebar || (!inSidebar && !indent))
+        (indent || (!inSidebar && !indent))
           ? ([
               {
                 name: type,
                 selector: {
-                  condition: {},
+                  condition: {
+                    optionsInSidebar: indent,
+                  },
                 },
               },
             ] as const satisfies readonly HaFormSchema[])
@@ -85,7 +87,9 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               {
                 name: "sequence",
                 selector: {
-                  action: {},
+                  action: {
+                    optionsInSidebar: indent,
+                  },
                 },
               },
             ] as const satisfies readonly HaFormSchema[])
