@@ -65,7 +65,6 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import { CONDITION_BUILDING_BLOCKS } from "../condition/ha-automation-condition";
 import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-action-editor";
@@ -85,6 +84,7 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {

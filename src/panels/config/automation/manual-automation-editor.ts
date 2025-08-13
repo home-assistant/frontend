@@ -190,7 +190,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
-        @close-sidebar=${this._closeSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
       ></ha-automation-trigger>
@@ -237,7 +237,7 @@ export class HaManualAutomationEditor extends LitElement {
         .disabled=${this.disabled || this.saving}
         .narrow=${this.narrow}
         @open-sidebar=${this._openSidebar}
-        @close-sidebar=${this._closeSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
         root
         sidebar
       ></ha-automation-condition>
@@ -279,7 +279,7 @@ export class HaManualAutomationEditor extends LitElement {
         .path=${["actions"]}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
-        @close-sidebar=${this._closeSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled || this.saving}
@@ -347,6 +347,10 @@ export class HaManualAutomationEditor extends LitElement {
       this._sidebarConfig = undefined;
       closeRow?.();
     }
+  }
+
+  private _handleCloseSidebar() {
+    this._sidebarConfig = undefined;
   }
 
   private _triggerChanged(ev: CustomEvent): void {

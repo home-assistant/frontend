@@ -5,12 +5,12 @@ import type {
 import { ensureArray } from "../common/array/ensure-array";
 import { navigate } from "../common/navigate";
 import { createSearchParam } from "../common/url/search-params";
-import { CONDITION_BUILDING_BLOCKS } from "../panels/config/automation/condition/ha-automation-condition";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import type { Action, MODES } from "./script";
 import { migrateAutomationAction } from "./script";
+import { CONDITION_BUILDING_BLOCKS } from "./condition";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
