@@ -19,6 +19,7 @@ import type {
 } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeKeys } from "../../../common/translations/localize";
+
 export const supportsFanOscilatteCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
