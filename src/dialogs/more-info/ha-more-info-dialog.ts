@@ -529,29 +529,30 @@ export class MoreInfoDialog extends LitElement {
                 `
               : nothing}
         </ha-dialog-header>
-        <div
-          class="content"
-          tabindex="-1"
-          dialogInitialFocus
-          @show-child-view=${this._showChildView}
-          @entity-entry-updated=${this._entryUpdated}
-          @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
-          @hass-more-info=${this._handleMoreInfoEvent}
-        >
-          ${cache(
-            this._childView
-              ? html`
-                  <div class="child-view">
-                    ${dynamicElement(this._childView.viewTag, {
-                      hass: this.hass,
-                      entry: this._entry,
-                      params: this._childView.viewParams,
-                    })}
-                  </div>
-                `
-              : keyed(
-                  this._entityId,
-                  this._currView === "info"
+        ${keyed(
+          this._entityId,
+          html`
+            <div
+              class="content"
+              tabindex="-1"
+              dialogInitialFocus
+              @show-child-view=${this._showChildView}
+              @entity-entry-updated=${this._entryUpdated}
+              @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
+              @hass-more-info=${this._handleMoreInfoEvent}
+            >
+              ${cache(
+                this._childView
+                  ? html`
+                      <div class="child-view">
+                        ${dynamicElement(this._childView.viewTag, {
+                          hass: this.hass,
+                          entry: this._entry,
+                          params: this._childView.viewParams,
+                        })}
+                      </div>
+                    `
+                  : this._currView === "info"
                     ? html`
                         <ha-more-info-info
                           dialogInitialFocus
@@ -587,9 +588,10 @@ export class MoreInfoDialog extends LitElement {
                               ></ha-related-items>
                             `
                           : nothing
-                )
-          )}
-        </div>
+              )}
+            </div>
+          `
+        )}
       </ha-dialog>
     `;
   }
