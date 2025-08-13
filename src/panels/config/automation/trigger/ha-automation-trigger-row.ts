@@ -52,6 +52,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
+import "../ha-automation-colored-description";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -165,7 +166,15 @@ export default class HaAutomationTriggerRow extends LitElement {
             .path=${TRIGGER_ICONS[type]}
           ></ha-svg-icon>
           <h3 slot="header">
-            ${describeTrigger(this.trigger, this.hass, this._entityReg)}
+            <ha-automation-colored-description
+              text=${describeTrigger(
+                this.trigger,
+                this.hass,
+                this._entityReg,
+                false,
+                true
+              )}
+            ></ha-automation-colored-description>
           </h3>
 
           <slot name="icons" slot="icons"></slot>
