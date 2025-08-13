@@ -213,10 +213,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               ? hass.localize("ui.panel.config.zone.edit_home")
                               : hass.localize("ui.panel.config.zone.edit_zone")}
                             @click=${this._editHomeZone}
+                            slot="meta"
                           ></ha-icon-button>
                           <ha-tooltip
                             for=${!this.narrow ? stateObject.entity_id : ""}
-                            slot="meta"
                             placement="left"
                             .disabled=${stateObject.entity_id === "zone.home"}
                             hoist

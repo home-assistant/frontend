@@ -343,7 +343,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html`<span role="gridcell">
-              <ha-tooltip for=${id}
+              <ha-tooltip for="expand-${id}"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
                 )}
@@ -355,13 +355,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 )}
                 .path=${mdiUnfoldMoreVertical}
                 hide-title
-                .id=${id}
+                .id="expand-${id}"
                 .type=${type}
                 @click=${this._handleExpand}
               ></ha-icon-button>
             </span>`}
         <span role="gridcell">
-          <ha-tooltip for=${id}>
+          <ha-tooltip for="remove-${id}">
             ${this.hass.localize(`ui.components.target-picker.remove_${type}`)}
           </ha-tooltip>
           <ha-icon-button
@@ -369,7 +369,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             .label=${this.hass.localize("ui.components.target-picker.remove")}
             .path=${mdiClose}
             hide-title
-            .id=${id}
+            .id="remove-${id}"
             .type=${type}
             @click=${this._handleRemove}
           ></ha-icon-button>
