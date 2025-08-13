@@ -144,10 +144,12 @@ export class MoreInfoDialog extends LitElement {
 
   public closeDialog() {
     this._entityId = undefined;
+    this._parentEntityIds = [];
     this._entry = undefined;
-    this._childView = undefined;
     this._infoEditMode = false;
     this._initialView = DEFAULT_VIEW;
+    this._currView = DEFAULT_VIEW;
+    this._childView = undefined;
     this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("show-dialog", this._disableEscapeKeyClose);
@@ -536,56 +538,56 @@ export class MoreInfoDialog extends LitElement {
           @toggle-edit-mode=${this._handleToggleInfoEditModeEvent}
           @hass-more-info=${this._handleMoreInfoEvent}
         >
-          ${keyed(
-            this._entityId,
-            cache(
-              this._childView
-                ? html`
-                    <div class="child-view">
-                      ${dynamicElement(this._childView.viewTag, {
-                        hass: this.hass,
-                        entry: this._entry,
-                        params: this._childView.viewParams,
-                      })}
-                    </div>
-                  `
-                : this._currView === "info"
-                  ? html`
-                      <ha-more-info-info
-                        dialogInitialFocus
-                        .hass=${this.hass}
-                        .entityId=${this._entityId}
-                        .entry=${this._entry}
-                        .editMode=${this._infoEditMode}
-                      ></ha-more-info-info>
-                    `
-                  : this._currView === "history"
+          ${cache(
+            this._childView
+              ? html`
+                  <div class="child-view">
+                    ${dynamicElement(this._childView.viewTag, {
+                      hass: this.hass,
+                      entry: this._entry,
+                      params: this._childView.viewParams,
+                    })}
+                  </div>
+                `
+              : keyed(
+                  this._entityId,
+                  this._currView === "info"
                     ? html`
-                        <ha-more-info-history-and-logbook
+                        <ha-more-info-info
+                          dialogInitialFocus
                           .hass=${this.hass}
                           .entityId=${this._entityId}
-                        ></ha-more-info-history-and-logbook>
+                          .entry=${this._entry}
+                          .editMode=${this._infoEditMode}
+                        ></ha-more-info-info>
                       `
-                    : this._currView === "settings"
+                    : this._currView === "history"
                       ? html`
-                          <ha-more-info-settings
+                          <ha-more-info-history-and-logbook
                             .hass=${this.hass}
                             .entityId=${this._entityId}
-                            .entry=${this._entry}
-                          ></ha-more-info-settings>
+                          ></ha-more-info-history-and-logbook>
                         `
-                      : this._currView === "related"
+                      : this._currView === "settings"
                         ? html`
-                            <ha-related-items
+                            <ha-more-info-settings
                               .hass=${this.hass}
-                              .itemId=${entityId}
-                              .itemType=${SearchableDomains.has(domain)
-                                ? (domain as ItemType)
-                                : "entity"}
-                            ></ha-related-items>
+                              .entityId=${this._entityId}
+                              .entry=${this._entry}
+                            ></ha-more-info-settings>
                           `
-                        : nothing
-            )
+                        : this._currView === "related"
+                          ? html`
+                              <ha-related-items
+                                .hass=${this.hass}
+                                .itemId=${entityId}
+                                .itemType=${SearchableDomains.has(domain)
+                                  ? (domain as ItemType)
+                                  : "entity"}
+                              ></ha-related-items>
+                            `
+                          : nothing
+                )
           )}
         </div>
       </ha-dialog>
