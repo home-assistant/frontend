@@ -620,7 +620,7 @@ export class VoiceAssistantsExpose extends LitElement {
                           "ui.panel.config.voice_assistants.expose.expose"
                         )}
                       </ha-tooltip>
-                      <ha-tooltip for="expose-button" placement="left">
+                      <ha-tooltip for="unexpose-button" placement="left">
                         ${this.hass.localize(
                           "ui.panel.config.voice_assistants.expose.unexpose"
                         )}

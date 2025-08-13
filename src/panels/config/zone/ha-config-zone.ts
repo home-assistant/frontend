@@ -200,16 +200,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     stateObject.entity_id === "zone.home" &&
                     !this._canEditCore
                       ? nothing
-                      : html`<ha-tooltip
-                          slot="meta"
-                          placement="left"
-                          .content=${hass.localize(
-                            "ui.panel.config.zone.configured_in_yaml"
-                          )}
-                          .disabled=${stateObject.entity_id === "zone.home"}
-                          hoist
-                        >
-                          <ha-icon-button
+                      : html` <ha-icon-button
                             .id=${!this.narrow ? stateObject.entity_id : ""}
                             .entityId=${stateObject.entity_id}
                             .noEdit=${stateObject.entity_id !== "zone.home" ||
@@ -223,7 +214,17 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               : hass.localize("ui.panel.config.zone.edit_zone")}
                             @click=${this._editHomeZone}
                           ></ha-icon-button>
-                        </ha-tooltip>`}
+                          <ha-tooltip
+                            for=${!this.narrow ? stateObject.entity_id : ""}
+                            slot="meta"
+                            placement="left"
+                            .disabled=${stateObject.entity_id === "zone.home"}
+                            hoist
+                          >
+                            ${hass.localize(
+                              "ui.panel.config.zone.configured_in_yaml"
+                            )}
+                          </ha-tooltip>`}
                   </ha-list-item>
                 `
               )}

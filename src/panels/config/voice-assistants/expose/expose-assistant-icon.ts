@@ -25,48 +25,47 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
     if (!this.assistant || !voiceAssistants[this.assistant]) return nothing;
 
     return html`
+      <div class="container" id="container">
+        <img
+          class="logo"
+          style=${styleMap({
+            filter: this.manual ? "grayscale(100%)" : undefined,
+          })}
+          alt=${voiceAssistants[this.assistant].name}
+          src=${brandsUrl({
+            domain: voiceAssistants[this.assistant].domain,
+            type: "icon",
+            darkOptimized: this.hass.themes?.darkMode,
+          })}
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+          slot="prefix"
+        />
+        ${this.unsupported
+          ? html`
+              <ha-svg-icon
+                .path=${mdiAlertCircle}
+                class="unsupported"
+              ></ha-svg-icon>
+            `
+          : nothing}
+      </div>
       <ha-tooltip
+        for="container"
         .disabled=${!this.unsupported && !this.manual}
         placement="left"
       >
-        <div class="container">
-          <img
-            class="logo"
-            style=${styleMap({
-              filter: this.manual ? "grayscale(100%)" : undefined,
-            })}
-            alt=${voiceAssistants[this.assistant].name}
-            src=${brandsUrl({
-              domain: voiceAssistants[this.assistant].domain,
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            })}
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-            slot="prefix"
-          />
-          ${this.unsupported
-            ? html`
-                <ha-svg-icon
-                  .path=${mdiAlertCircle}
-                  class="unsupported"
-                ></ha-svg-icon>
-              `
-            : nothing}
-        </div>
-        <span slot="content">
-          ${this.unsupported
-            ? this.hass.localize(
-                "ui.panel.config.voice_assistants.expose.not_supported"
-              )
-            : ""}
-          ${this.unsupported && this.manual ? html`<br />` : nothing}
-          ${this.manual
-            ? this.hass.localize(
-                "ui.panel.config.voice_assistants.expose.manually_configured"
-              )
-            : nothing}
-        </span>
+        ${this.unsupported
+          ? this.hass.localize(
+              "ui.panel.config.voice_assistants.expose.not_supported"
+            )
+          : ""}
+        ${this.unsupported && this.manual ? html`<br />` : nothing}
+        ${this.manual
+          ? this.hass.localize(
+              "ui.panel.config.voice_assistants.expose.manually_configured"
+            )
+          : nothing}
       </ha-tooltip>
     `;
   }
