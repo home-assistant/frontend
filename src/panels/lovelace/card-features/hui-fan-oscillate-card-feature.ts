@@ -114,16 +114,17 @@ class HuiFanOscillateCardFeature
 
     const color = stateColorCss(this._stateObj);
 
-    const options = ["off", "on"].map<ControlSelectOption>((entityState) => ({
-      value: entityState,
-      label: this.hass!.formatEntityState(this._stateObj!, entityState),
-      path: entityState === "on" ? mdiArrowOscillating : mdiArrowOscillatingOff,
+    const options = ["no", "yes"].map<ControlSelectOption>((oscillating) => ({
+      value: oscillating,
+      label: this.hass!.localize(`ui.common.${oscillating}`),
+      path:
+        oscillating === "yes" ? mdiArrowOscillating : mdiArrowOscillatingOff,
     }));
 
     return html`
       <ha-control-select
         .options=${options}
-        .value=${this._oscillating ? "on" : "off"}
+        .value=${this._oscillating ? "yes" : "no"}
         @value-changed=${this._valueChanged}
         hide-option-label
         .label=${this.hass.localize("ui.card.fan.oscillate")}
