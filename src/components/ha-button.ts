@@ -75,6 +75,7 @@ export class HaButton extends Button {
             var(--button-height, 32px)
           );
           font-size: var(--wa-font-size-s, var(--ha-font-size-m));
+          --wa-form-control-padding-inline: 12px;
         }
 
         :host([variant="brand"]) {
@@ -217,6 +218,13 @@ export class HaButton extends Button {
         }
         slot[name="end"]::slotted(*) {
           margin-inline-start: 4px;
+        }
+
+        .button.has-start {
+          padding-left: 8px;
+        }
+        .button.has-end {
+          padding-right: 8px;
         }
       `,
     ];
