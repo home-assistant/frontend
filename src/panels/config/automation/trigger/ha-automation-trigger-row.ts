@@ -50,7 +50,7 @@ import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { rowStyles } from "../styles";
 import "./ha-automation-trigger-editor";
-import type HaAutomationTriggerContent from "./ha-automation-trigger-editor";
+import type HaAutomationTriggerEditor from "./ha-automation-trigger-editor";
 import "./types/ha-automation-trigger-calendar";
 import "./types/ha-automation-trigger-conversation";
 import "./types/ha-automation-trigger-device";
@@ -126,7 +126,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @query("ha-automation-trigger-editor")
-  public triggerContent?: HaAutomationTriggerContent;
+  public triggerEditor?: HaAutomationTriggerEditor;
 
   @storage({
     key: "automationClipboard",
@@ -529,7 +529,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     this.openSidebar(value); // refresh sidebar
 
     if (this._yamlMode && !this.optionsInSidebar) {
-      this.triggerContent?.yamlEditor?.setValue(value);
+      this.triggerEditor?.yamlEditor?.setValue(value);
     }
   };
 
@@ -585,12 +585,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         value,
       });
 
-      if (this._yamlMode) {
-        if (this.openSidebar) {
-          this.openSidebar(value); // refresh sidebar
-        } else {
-          this.triggerContent?.yamlEditor?.setValue(value);
-        }
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.triggerEditor?.yamlEditor?.setValue(value);
       }
     }
   };

@@ -571,12 +571,10 @@ export default class HaAutomationActionRow extends LitElement {
         value,
       });
 
-      if (this._yamlMode) {
-        if (this.optionsInSidebar) {
-          this.openSidebar(value); // refresh sidebar
-        } else {
-          this.actionEditor?.yamlEditor?.setValue(value);
-        }
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.actionEditor?.yamlEditor?.setValue(value);
       }
     }
   };

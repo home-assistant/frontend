@@ -529,12 +529,10 @@ export default class HaAutomationConditionRow extends LitElement {
         value,
       });
 
-      if (this._yamlMode) {
-        if (this.optionsInSidebar) {
-          this.openSidebar(value); // refresh sidebar
-        } else {
-          this.conditionEditor?.yamlEditor?.setValue(value);
-        }
+      if (this._selected && this.optionsInSidebar) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this.conditionEditor?.yamlEditor?.setValue(value);
       }
     }
   };

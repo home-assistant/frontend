@@ -32,7 +32,7 @@ import "./condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
 import "./ha-automation-editor-warning";
 import "./trigger/ha-automation-trigger-editor";
-import type HaAutomationTriggerContent from "./trigger/ha-automation-trigger-editor";
+import type HaAutomationTriggerEditor from "./trigger/ha-automation-trigger-editor";
 import { ACTION_BUILDING_BLOCKS } from "../../../data/action";
 import { CONDITION_BUILDING_BLOCKS } from "../../../data/condition";
 
@@ -66,7 +66,7 @@ export default class HaAutomationSidebar extends LitElement {
   @state() private _warnings?: string[];
 
   @query(".sidebar-editor")
-  public editor?: HaAutomationTriggerContent | HaAutomationConditionEditor;
+  public editor?: HaAutomationTriggerEditor | HaAutomationConditionEditor;
 
   protected willUpdate(changedProperties) {
     if (changedProperties.has("config")) {
