@@ -1,4 +1,4 @@
-import { html, LitElement, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -108,7 +108,20 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = editorStyles;
+  static styles = [
+    editorStyles,
+    css`
+      :host([action]) .card-content {
+        padding: 0;
+      }
+      :host([action]) .card-content.indent {
+        margin-left: 0;
+        margin-right: 0;
+        padding: 0;
+        border-left: none;
+      }
+    `,
+  ];
 }
 
 declare global {

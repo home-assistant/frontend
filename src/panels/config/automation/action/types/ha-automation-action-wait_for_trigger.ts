@@ -28,7 +28,7 @@ export class HaWaitForTriggerAction
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
-  @property({ type: Boolean, attribute: "sidebar" }) public indent = false;
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
   public static get defaultConfig(): WaitForTriggerAction {
     return { wait_for_trigger: [] };

@@ -40,7 +40,10 @@ import {
   ACTION_ICONS,
   YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
-import type { AutomationClipboard } from "../../../../data/automation";
+import type {
+  AutomationClipboard,
+  Condition,
+} from "../../../../data/automation";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
@@ -432,9 +435,13 @@ export default class HaAutomationActionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
+      ([...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(
         blockType!
-      ) &&
+      ) ||
+        (blockType === "condition" &&
+          CONDITION_BUILDING_BLOCKS.includes(
+            (this.action as Condition).condition
+          ))) &&
       !this._collapsed
         ? html`<ha-automation-action-editor
             .hass=${this.hass}

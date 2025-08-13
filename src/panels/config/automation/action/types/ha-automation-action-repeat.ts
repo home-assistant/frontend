@@ -35,7 +35,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
-  @property({ type: Boolean, attribute: "sidebar" }) public indent = false;
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };

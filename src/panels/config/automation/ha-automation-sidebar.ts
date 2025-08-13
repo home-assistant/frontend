@@ -245,51 +245,51 @@ export default class HaAutomationSidebar extends LitElement {
             >
             </ha-automation-editor-warning>`
           : nothing}
-        ${this.config.type === "trigger"
-          ? html`<ha-automation-trigger-editor
-              class="sidebar-editor"
-              .hass=${this.hass}
-              .trigger=${this.config.config as Trigger}
-              @value-changed=${this._valueChangedSidebar}
-              .uiSupported=${this.config.uiSupported}
-              .showId=${this._requestShowId}
-              .yamlMode=${this._yamlMode}
-              .disabled=${this.disabled}
-              @ui-mode-not-available=${this._handleUiModeNotAvailable}
-            ></ha-automation-trigger-editor>`
-          : this.config.type === "condition" &&
-              (this._yamlMode || !CONDITION_BUILDING_BLOCKS.includes(type))
-            ? html`
-                <ha-automation-condition-editor
-                  class="sidebar-editor"
-                  .hass=${this.hass}
-                  .condition=${this.config.config as Condition}
-                  .yamlMode=${this._yamlMode}
-                  .uiSupported=${this.config.uiSupported}
-                  @value-changed=${this._valueChangedSidebar}
-                  .disabled=${this.disabled}
-                  @ui-mode-not-available=${this._handleUiModeNotAvailable}
-                ></ha-automation-condition-editor>
-              `
-            : this.config.type === "action" &&
-                (this._yamlMode || !ACTION_BUILDING_BLOCKS.includes(type))
+        <div class="card-content">
+          ${this.config.type === "trigger"
+            ? html`<ha-automation-trigger-editor
+                class="sidebar-editor"
+                .hass=${this.hass}
+                .trigger=${this.config.config as Trigger}
+                @value-changed=${this._valueChangedSidebar}
+                .uiSupported=${this.config.uiSupported}
+                .showId=${this._requestShowId}
+                .yamlMode=${this._yamlMode}
+                .disabled=${this.disabled}
+                @ui-mode-not-available=${this._handleUiModeNotAvailable}
+              ></ha-automation-trigger-editor>`
+            : this.config.type === "condition" &&
+                (this._yamlMode || !CONDITION_BUILDING_BLOCKS.includes(type))
               ? html`
-                  <ha-automation-action-editor
+                  <ha-automation-condition-editor
                     class="sidebar-editor"
                     .hass=${this.hass}
-                    .action=${this.config.config as Action}
+                    .condition=${this.config.config as Condition}
                     .yamlMode=${this._yamlMode}
                     .uiSupported=${this.config.uiSupported}
                     @value-changed=${this._valueChangedSidebar}
-                    sidebar
-                    narrow
                     .disabled=${this.disabled}
                     @ui-mode-not-available=${this._handleUiModeNotAvailable}
-                  ></ha-automation-action-editor>
+                  ></ha-automation-condition-editor>
                 `
-              : description
-                ? html`<div class="card-content">${description}</div>`
-                : nothing}
+              : this.config.type === "action" &&
+                  (this._yamlMode || !ACTION_BUILDING_BLOCKS.includes(type))
+                ? html`
+                    <ha-automation-action-editor
+                      class="sidebar-editor"
+                      .hass=${this.hass}
+                      .action=${this.config.config as Action}
+                      .yamlMode=${this._yamlMode}
+                      .uiSupported=${this.config.uiSupported}
+                      @value-changed=${this._valueChangedSidebar}
+                      sidebar
+                      narrow
+                      .disabled=${this.disabled}
+                      @ui-mode-not-available=${this._handleUiModeNotAvailable}
+                    ></ha-automation-action-editor>
+                  `
+                : description || nothing}
+        </div>
       </ha-card>
     `;
   }
@@ -355,8 +355,6 @@ export default class HaAutomationSidebar extends LitElement {
       border-color: var(--primary-color);
       border-width: 2px;
       display: block;
-      overflow-y: auto;
-      overflow-x: hidden;
     }
     ha-card.mobile {
       border-bottom-right-radius: var(--ha-border-radius-square);
@@ -376,17 +374,33 @@ export default class HaAutomationSidebar extends LitElement {
     }
 
     ha-dialog-header {
-      background-color: var(--card-background-color);
-      z-index: 2;
-      top: 0;
-      position: sticky;
+      border-radius: var(--ha-card-border-radius);
     }
     .sidebar-editor {
       padding-top: 64px;
     }
 
     .card-content {
-      padding: 16px;
+      max-height: calc(100% - 80px);
+      overflow: auto;
+    }
+
+    @media (min-width: 450px) and (min-height: 500px) {
+      .card-content {
+        max-height: calc(100% - 104px);
+        overflow: auto;
+      }
+    }
+
+    @media all and (max-width: 870px) {
+      ha-card.mobile .card-content {
+        max-height: calc(
+          70vh - 88px - max(var(--safe-area-inset-bottom), 16px)
+        );
+        max-height: calc(
+          70dvh - 88px - max(var(--safe-area-inset-bottom), 16px)
+        );
+      }
     }
   `;
 }
