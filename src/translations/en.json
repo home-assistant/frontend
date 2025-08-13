@@ -7840,6 +7840,9 @@
               "cover-tilt-position": {
                 "label": "Cover tilt position"
               },
+              "fan-oscillate": {
+                "label": "Fan oscillation"
+              },
               "fan-direction": {
                 "label": "Fan direction"
               },
