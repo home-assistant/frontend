@@ -249,15 +249,17 @@ class MoreInfoUpdate extends LitElement {
                 <hr />
                 ${this._markdownLoading ? this._renderLoader() : nothing}
               `
-            : html`
-                <hr />
-                <ha-markdown
-                  @content-resize=${this._markdownLoaded}
-                  .content=${this._releaseNotes}
-                  class=${this._markdownLoading ? "hidden" : ""}
-                ></ha-markdown>
-                ${this._markdownLoading ? this._renderLoader() : nothing}
-              `
+            : this._releaseNotes
+              ? html`
+                  <hr />
+                  <ha-markdown
+                    @content-resize=${this._markdownLoaded}
+                    .content=${this._releaseNotes}
+                    class=${this._markdownLoading ? "hidden" : ""}
+                  ></ha-markdown>
+                  ${this._markdownLoading ? this._renderLoader() : nothing}
+                `
+              : nothing
           : this.stateObj.attributes.release_summary
             ? html`
                 <hr />
