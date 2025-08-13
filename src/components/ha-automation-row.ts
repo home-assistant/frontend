@@ -24,7 +24,12 @@ export class HaAutomationRow extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="row" tabindex="0" role="button" @keydown=${this._click}>
+      <div
+        class="row"
+        tabindex="0"
+        role="button"
+        @keydown=${this._handleKeydown}
+      >
         ${this.leftChevron
           ? html`
               <ha-icon-button
@@ -57,11 +62,11 @@ export class HaAutomationRow extends LitElement {
     fireEvent(this, "toggle-collapsed");
   }
 
-  private async _click(ev): Promise<void> {
+  private async _handleKeydown(ev: KeyboardEvent): Promise<void> {
     if (ev.defaultPrevented) {
       return;
     }
-    if (ev.type === "keydown" && ev.key !== "Enter" && ev.key !== " ") {
+    if (ev.key !== "Enter" && ev.key !== " ") {
       return;
     }
     ev.preventDefault();
