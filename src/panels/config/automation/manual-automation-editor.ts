@@ -184,7 +184,6 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
         .highlightedTriggers=${this._pastedConfig?.triggers || []}
-        .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
         .disabled=${this.disabled || this.saving}
@@ -231,7 +230,6 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
         .highlightedConditions=${this._pastedConfig?.conditions || []}
-        .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
         .disabled=${this.disabled || this.saving}
@@ -276,7 +274,6 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
         .highlightedActions=${this._pastedConfig?.actions || []}
-        .path=${["actions"]}
         @value-changed=${this._actionChanged}
         @open-sidebar=${this._openSidebar}
         @close-sidebar=${this._handleCloseSidebar}
