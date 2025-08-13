@@ -29,8 +29,8 @@ export class HuiOverviewDashboardStrategyEditor
       <ha-entities-picker
         .hass=${this.hass}
         .value=${this._config.favorite_entities || []}
-        .label=${"Favorites entities"}
-        .placeholder=${"Add favorite entity"}
+        label="Favorite entities"
+        placeholder="Add favorite entity"
         reorder
         allow-custom-entity
         @value-changed=${this._valueChanged}
