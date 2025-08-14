@@ -152,8 +152,6 @@ export class HaCardConditionsEditor extends LitElement {
       const condition = this._clipboard;
       conditions.push(condition);
       fireEvent(this, "value-changed", { value: conditions });
-
-      this._clipboard = undefined;
       return;
     }
 
