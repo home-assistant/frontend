@@ -106,6 +106,7 @@ import { showAssignCategoryDialog } from "../category/show-dialog-assign-categor
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { slugify } from "../../../common/string/slugify";
 
 type SceneItem = SceneEntity & {
   name: string;

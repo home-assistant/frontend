@@ -114,6 +114,7 @@ import { isHelperDomain } from "../helpers/const";
 import "../integrations/ha-integration-overflow-menu";
 import { showAddIntegrationDialog } from "../integrations/show-add-integration-dialog";
 import { showLabelDetailDialog } from "../labels/show-dialog-label-detail";
+import { slugify } from "../../../common/string/slugify";
 
 export interface StateEntity
   extends Omit<EntityRegistryEntry, "id" | "unique_id"> {
@@ -393,7 +394,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-svg-icon
-                    id="status-icon-${entry.entity_id}"
+                    id="status-icon-${slugify(entry.entity_id)}"
                     style=${styleMap({
                       color: entry.unavailable ? "var(--error-color)" : "",
                     })}
@@ -409,7 +410,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   ></ha-svg-icon>
 
                   <ha-tooltip
-                    for="status-icon-${entry.entity_id}"
+                    for="status-icon-${slugify(entry.entity_id)}"
                     placement="left"
                   >
                     ${entry.restored
