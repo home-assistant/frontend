@@ -42,6 +42,7 @@ import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/sl-tab-group";
+import "../../components/ha-tooltip";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
@@ -247,16 +248,16 @@ class HUIRoot extends LitElement {
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
 
-    buttonItems.forEach((i) => {
+    buttonItems.forEach((button, index) => {
       result.push(
         html`<ha-icon-button
             slot="actionItems"
-            id="button-${i.key}"
-            .path=${i.icon}
-            @click=${i.buttonAction}
+            id="button-${index}"
+            .path=${button.icon}
+            @click=${button.buttonAction}
           ></ha-icon-button>
-          <ha-tooltip placement="bottom" for="button-${i.key}">
-            ${[this.hass!.localize(i.key), i.suffix].join(" ")}
+          <ha-tooltip placement="bottom" for="button-${index}">
+            ${[this.hass!.localize(button.key), button.suffix].join(" ")}
           </ha-tooltip>`
       );
     });

@@ -52,8 +52,8 @@ export class VoiceAssistantExposeAssistantIcon extends LitElement {
       </div>
       <ha-tooltip
         for="container"
-        .disabled=${!this.unsupported && !this.manual}
         placement="left"
+        .disabled=${!this.unsupported && !this.manual}
       >
         ${this.unsupported
           ? this.hass.localize(

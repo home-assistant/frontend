@@ -319,11 +319,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             !scene.attributes.id
               ? html`
                   <ha-svg-icon
-                    id="svg-icon"
+                    id="svg-icon-${slugify(scene.entity_id)}"
                     .path=${mdiPencilOff}
                     style="color: var(--secondary-text-color)"
                   ></ha-svg-icon>
-                  <ha-tooltip for="svg-icon" placement="left">
+                  <ha-tooltip
+                    for="svg-icon-${slugify(scene.entity_id)}"
+                    placement="left"
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.scene.picker.only_editable"
                     )}

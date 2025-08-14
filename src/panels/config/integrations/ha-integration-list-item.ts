@@ -74,8 +74,8 @@ export class HaIntegrationListItem extends ListItemBase {
     }
     return html`<span class="mdc-deprecated-list-item__meta material-icons">
       ${this.integration.cloud
-        ? html` <ha-svg-icon id="svg-icon" .path=${mdiWeb}></ha-svg-icon>
-            <ha-tooltip for="svg-icon" placement="left"
+        ? html` <ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+            <ha-tooltip for="icon-cloud" placement="left"
               >${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.depends_on_cloud"
               )}
@@ -87,8 +87,11 @@ export class HaIntegrationListItem extends ListItemBase {
               ? "overwrites"
               : "custom"}
           >
-            <ha-svg-icon id="svg-icon" .path=${mdiPackageVariant}></ha-svg-icon>
-            <ha-tooltip for="svg-icon" placement="left"
+            <ha-svg-icon
+              id="icon-custom"
+              .path=${mdiPackageVariant}
+            ></ha-svg-icon>
+            <ha-tooltip for="icon-custom" placement="left"
               >${this.hass.localize(
                 this.integration.overwrites_built_in
                   ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
@@ -101,11 +104,11 @@ export class HaIntegrationListItem extends ListItemBase {
       !this.integration.integrations &&
       !this.integration.iot_standards
         ? html` <ha-svg-icon
-              id="svg-icon"
+              id="icon-yaml"
               .path=${mdiFileCodeOutline}
               class="open-in-new"
             ></ha-svg-icon>
-            <ha-tooltip for="svg-icon" placement="left">
+            <ha-tooltip for="icon-yaml" placement="left">
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.yaml_only"
               )}

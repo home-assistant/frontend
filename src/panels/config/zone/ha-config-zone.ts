@@ -46,6 +46,7 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showHomeZoneDetailDialog } from "./show-dialog-home-zone-detail";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import { slugify } from "../../../common/string/slugify";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -201,7 +202,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     !this._canEditCore
                       ? nothing
                       : html` <ha-icon-button
-                            .id=${!this.narrow ? stateObject.entity_id : ""}
+                            .id="zone-${slugify(stateObject.entity_id)}"
                             .entityId=${stateObject.entity_id}
                             .noEdit=${stateObject.entity_id !== "zone.home" ||
                             !this._canEditCore}
@@ -216,7 +217,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             slot="meta"
                           ></ha-icon-button>
                           <ha-tooltip
-                            for=${!this.narrow ? stateObject.entity_id : ""}
+                            for="zone-${slugify(stateObject.entity_id)}"
                             placement="left"
                             .disabled=${stateObject.entity_id === "zone.home"}
                             hoist

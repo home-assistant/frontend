@@ -50,6 +50,7 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { slugify } from "../../../common/string/slugify";
 
 declare interface NameAndEntity<EntityType extends HassEntity> {
   name: string;
@@ -548,14 +549,14 @@ class HaConfigAreaPage extends LitElement {
 
   private _renderScene(name: string, entityState: SceneEntity) {
     return html`<ha-tooltip
-        for="scene-${entityState.entity_id}"
+        for="scene-${slugify(entityState.entity_id)}"
         .distance=${-4}
         .disabled=${!!entityState.attributes.id}
       >
         ${this.hass.localize("ui.panel.config.devices.cant_edit")}
       </ha-tooltip>
       <a
-        id="scene-${entityState.entity_id}"
+        id="scene-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/scene/edit/${entityState.attributes.id}`
@@ -571,7 +572,7 @@ class HaConfigAreaPage extends LitElement {
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
     return html` <a
-        id="automation-${entityState.entity_id}"
+        id="automation-${slugify(entityState.entity_id)}"
         href=${ifDefined(
           entityState.attributes.id
             ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
@@ -584,7 +585,7 @@ class HaConfigAreaPage extends LitElement {
         </ha-list-item>
       </a>
       <ha-tooltip
-        for="automation-${entityState.entity_id}"
+        for="automation-${slugify(entityState.entity_id)}"
         .disabled=${!!entityState.attributes.id}
         .distance=${-4}
         >${this.hass.localize("ui.panel.config.devices.cant_edit")}

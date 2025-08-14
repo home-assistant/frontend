@@ -362,10 +362,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                   style="display:inline-block; position: relative;"
                 >
                   <ha-svg-icon
-                    id="icon-edit"
+                    id="icon-edit-${slugify(helper.entity_id)}"
                     .path=${mdiPencilOff}
                   ></ha-svg-icon>
-                  <ha-tooltip for="icon-edit" placement="left"
+                  <ha-tooltip
+                    for="icon-edit-${slugify(helper.entity_id)}"
+                    placement="left"
                     >${this.hass.localize(
                       "ui.panel.config.entities.picker.status.unmanageable"
                     )}

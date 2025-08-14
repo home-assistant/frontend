@@ -238,9 +238,10 @@ export default class HaAutomationActionRow extends LitElement {
           (this.action as NonConditionAction).continue_on_error === true
             ? html` <ha-svg-icon
                   id="svg-icon"
+                  slot="icons"
                   .path=${mdiAlertCircleCheck}
                 ></ha-svg-icon>
-                <ha-tooltip for="svg-icon" slot="icons">
+                <ha-tooltip for="svg-icon">
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.actions.continue_on_error"
                   )}
