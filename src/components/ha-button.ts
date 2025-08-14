@@ -77,7 +77,7 @@ export class HaButton extends Button {
     if (this.isIconButton && !hasIconLabel) {
       // eslint-disable-next-line no-console
       console.warn(
-        'Icon buttons must have a label for screen readers. Add <ha-svg-icon label="..."> to remove this warning.',
+        'Icon buttons must have a label for screen readers. Add <ha-svg-icon aria-label="..."> to remove this warning.',
         this
       );
     }
