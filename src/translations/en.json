@@ -5600,7 +5600,7 @@
             "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
             "system_generated_read_only_users": "System users can not be updated.",
-            "unnamed_user": "Unnamed User",
+            "unnamed_user": "Unnamed user",
             "confirm_user_deletion_title": "Delete {name}?",
             "confirm_user_deletion_text": "This user will be permanently deleted."
           },
@@ -7493,7 +7493,7 @@
                 "day": "Day",
                 "month": "Month",
                 "week": "Week",
-                "5minute": "5 Minutes"
+                "5minute": "5 minutes"
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
@@ -9301,7 +9301,7 @@
           "rebuild": "Failed to rebuild add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
-          "go_to_config": "Edit Config",
+          "go_to_config": "Edit config",
           "start_invalid_config": "Go to configuration",
           "validate_config": "Failed to validate add-on configuration",
           "get_changelog": "Failed to get add-on changelog"
