@@ -50,3 +50,5 @@ export const CONDITION_GROUPS: AutomationElementGroup = {
     },
   },
 } as const;
+
+export const CONDITION_BUILDING_BLOCKS = ["and", "or", "not"];

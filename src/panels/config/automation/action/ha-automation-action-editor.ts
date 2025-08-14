@@ -1,22 +1,21 @@
-import { css, html, LitElement, nothing } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
-import type { Condition } from "../../../../data/automation";
-import { expandConditionWithShorthand } from "../../../../data/automation";
+import { migrateAutomationAction, type Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles } from "../styles";
+import { getAutomationActionType } from "./ha-automation-action-row";
 
-@customElement("ha-automation-condition-editor")
-export default class HaAutomationConditionEditor extends LitElement {
+@customElement("ha-automation-action-editor")
+export default class HaAutomationActionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) condition!: Condition;
+  @property({ attribute: false }) action!: Action;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -24,30 +23,27 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean }) public indent = false;
 
+  @property({ type: Boolean, reflect: true }) public selected = false;
+
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean, reflect: true }) public selected = false;
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
-  private _processedCondition = memoizeOne((condition) =>
-    expandConditionWithShorthand(condition)
-  );
-
   protected render() {
-    const condition = this._processedCondition(this.condition);
     const yamlMode = this.yamlMode || !this.uiSupported;
+    const type = getAutomationActionType(this.action);
 
     return html`
       <div
         class=${classMap({
           "card-content": true,
           disabled:
-            this.disabled ||
-            (this.condition.enabled === false && !this.yamlMode),
+            this.disabled || (this.action.enabled === false && !this.yamlMode),
           yaml: yamlMode,
           indent: this.indent,
         })}
@@ -58,8 +54,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                 ? html`
                     <ha-automation-editor-warning
                       .alertTitle=${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.unsupported_condition",
-                        { condition: condition.condition }
+                        "ui.panel.config.automation.editor.actions.unsupported_action"
                       )}
                       .localize=${this.hass.localize}
                     ></ha-automation-editor-warning>
@@ -67,23 +62,22 @@ export default class HaAutomationConditionEditor extends LitElement {
                 : nothing}
               <ha-yaml-editor
                 .hass=${this.hass}
-                .defaultValue=${this.condition}
+                .defaultValue=${this.action}
                 @value-changed=${this._onYamlChange}
                 .readOnly=${this.disabled}
               ></ha-yaml-editor>
             `
           : html`
               <div @value-changed=${this._onUiChanged}>
-                ${dynamicElement(
-                  `ha-automation-condition-${condition.condition}`,
-                  {
-                    hass: this.hass,
-                    condition: condition,
-                    disabled: this.disabled,
-                    optionsInSidebar: this.indent,
-                    narrow: this.narrow,
-                  }
-                )}
+                ${dynamicElement(`ha-automation-action-${type}`, {
+                  hass: this.hass,
+                  action: this.action,
+                  disabled: this.disabled,
+                  narrow: this.narrow,
+                  optionsInSidebar: this.indent,
+                  indent: this.indent,
+                  inSidebar: this.inSidebar,
+                })}
               </div>
             `}
       </div>
@@ -95,37 +89,25 @@ export default class HaAutomationConditionEditor extends LitElement {
     if (!ev.detail.isValid) {
       return;
     }
-    // @ts-ignore
-    fireEvent(this, "value-changed", { value: ev.detail.value, yaml: true });
+    fireEvent(this, "value-changed", {
+      value: migrateAutomationAction(ev.detail.value),
+    });
   }
 
   private _onUiChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const value = {
-      ...(this.condition.alias ? { alias: this.condition.alias } : {}),
+      ...(this.action.alias ? { alias: this.action.alias } : {}),
       ...ev.detail.value,
     };
     fireEvent(this, "value-changed", { value });
   }
 
-  static styles = [
-    editorStyles,
-    css`
-      :host([action]) .card-content {
-        padding: 0;
-      }
-      :host([action]) .card-content.indent {
-        margin-left: 0;
-        margin-right: 0;
-        padding: 0;
-        border-left: none;
-      }
-    `,
-  ];
+  static styles = editorStyles;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-condition-editor": HaAutomationConditionEditor;
+    "ha-automation-action-editor": HaAutomationActionEditor;
   }
 }

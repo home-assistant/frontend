@@ -3847,6 +3847,7 @@
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
+              "trigger": "Trigger",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4107,6 +4108,7 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "condition": "Condition",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4275,6 +4277,7 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "action": "Action",
               "groups": {
                 "helpers": {
                   "label": "Helpers"
@@ -4441,6 +4444,8 @@
                   "conditions": "Conditions",
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
+                  "option_label": "Option",
+                  "option_description": "Choose actions based on conditions",
                   "description": {
                     "picker": "Choose what to do based on conditions (Similar to If-then, but more powerful).",
                     "full": "Choose {number, plural,\n one {an option}\n other{between {number} options}\n}",
