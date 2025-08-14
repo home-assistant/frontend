@@ -30,6 +30,7 @@ import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsDateCardFeature } from "../../card-features/hui-date-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
@@ -78,6 +79,7 @@ const UI_FEATURE_TYPES = [
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "date",
   "fan-direction",
   "fan-preset-modes",
   "fan-speed",
@@ -141,6 +143,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  date: supportsDateCardFeature,
   "fan-direction": supportsFanDirectionCardFeature,
   "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,

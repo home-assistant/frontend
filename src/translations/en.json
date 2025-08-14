@@ -147,6 +147,9 @@
         "close_tilt_cover": "Close cover tilt",
         "stop_cover": "Stop cover"
       },
+      "date": {
+        "set_date": "Set date"
+      },
       "fan": {
         "preset_mode": "Preset mode",
         "oscillate": "Oscillate",
@@ -7839,6 +7842,9 @@
               },
               "cover-tilt-position": {
                 "label": "Cover tilt position"
+              },
+              "date": {
+                "label": "Date"
               },
               "fan-direction": {
                 "label": "Fan direction"
