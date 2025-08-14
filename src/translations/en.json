@@ -8042,6 +8042,9 @@
                   "cover-window": "Windows"
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
+              },
+              "sensor-graph-line": {
+                "label": "History chart"
               }
             }
           },

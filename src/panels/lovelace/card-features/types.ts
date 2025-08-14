@@ -175,6 +175,11 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
+export interface SensorGraphLineCardFeatureConfig {
+  type: "sensor-graph-line";
+  hours_to_show: number;
+}
+
 export const AREA_CONTROLS = [
   "light",
   "fan",
@@ -226,6 +231,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
+  | SensorGraphLineCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | ToggleCardFeatureConfig
