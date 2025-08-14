@@ -61,7 +61,6 @@
     "@material/chips": "=14.0.0-canary.53b3cad2f.0",
     "@material/data-table": "=14.0.0-canary.53b3cad2f.0",
     "@material/mwc-base": "0.27.0",
-    "@material/mwc-button": "0.27.0",
     "@material/mwc-checkbox": "0.27.0",
     "@material/mwc-dialog": "0.27.0",
     "@material/mwc-drawer": "0.27.0",

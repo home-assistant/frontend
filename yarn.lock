@@ -2666,7 +2666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-button@npm:0.27.0, @material/mwc-button@npm:^0.27.0":
+"@material/mwc-button@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-button@npm:0.27.0"
   dependencies:
@@ -9383,7 +9383,6 @@ __metadata:
     "@material/chips": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/data-table": "npm:=14.0.0-canary.53b3cad2f.0"
     "@material/mwc-base": "npm:0.27.0"
-    "@material/mwc-button": "npm:0.27.0"
     "@material/mwc-checkbox": "npm:0.27.0"
     "@material/mwc-dialog": "npm:0.27.0"
     "@material/mwc-drawer": "npm:0.27.0"
