@@ -21,6 +21,8 @@ export default class HaScriptFields extends LitElement {
 
   @property({ attribute: false }) public highlightedFields?: Fields;
 
+  @property({ type: Boolean }) public narrow = false;
+
   private _focusLastActionOnChange = false;
 
   protected render() {
@@ -39,6 +41,7 @@ export default class HaScriptFields extends LitElement {
                   @value-changed=${this._fieldChanged}
                   .hass=${this.hass}
                   ?highlight=${this.highlightedFields?.[key] !== undefined}
+                  .narrow=${this.narrow}
                 >
                 </ha-script-field-row>
               `
@@ -71,7 +74,7 @@ export default class HaScriptFields extends LitElement {
       "ha-script-field-row:last-of-type"
     )!;
     row.updateComplete.then(() => {
-      row.expand();
+      row.openSidebar();
       row.scrollIntoView();
       row.focus();
     });

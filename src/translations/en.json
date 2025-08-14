@@ -4727,7 +4727,8 @@
               "link_help_fields": "Learn more about fields.",
               "add_fields": "Add fields",
               "add_field": "Add field",
-              "field": "field"
+              "field": "field",
+              "label": "Field"
             },
             "field_delete_confirm_title": "Delete field?",
             "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",

@@ -21,10 +21,13 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-divider";
 import "../../../components/ha-md-menu-item";
+import { ACTION_BUILDING_BLOCKS } from "../../../data/action";
 import type { Condition, Trigger } from "../../../data/automation";
-import type { Action, RepeatAction } from "../../../data/script";
+import { CONDITION_BUILDING_BLOCKS } from "../../../data/condition";
+import type { Action, Field, RepeatAction } from "../../../data/script";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
+import "../script/ha-script-field-editor";
 import "./action/ha-automation-action-editor";
 import { getAutomationActionType } from "./action/ha-automation-action-row";
 import { getRepeatType } from "./action/types/ha-automation-action-repeat";
@@ -33,8 +36,12 @@ import type HaAutomationConditionEditor from "./condition/ha-automation-conditio
 import "./ha-automation-editor-warning";
 import "./trigger/ha-automation-trigger-editor";
 import type HaAutomationTriggerEditor from "./trigger/ha-automation-trigger-editor";
-import { ACTION_BUILDING_BLOCKS } from "../../../data/action";
-import { CONDITION_BUILDING_BLOCKS } from "../../../data/condition";
+
+interface FieldSidebarConfig {
+  field: Field;
+  key: string;
+  excludeKeys: string[];
+}
 
 export interface OpenSidebarConfig {
   save: (config: Trigger | Condition | Action) => void;
@@ -43,8 +50,8 @@ export interface OpenSidebarConfig {
   toggleYamlMode: () => boolean;
   disable: () => void;
   delete: () => void;
-  config: Trigger | Condition | Action;
-  type: "trigger" | "condition" | "action" | "option";
+  config: Trigger | Condition | Action | FieldSidebarConfig;
+  type: "trigger" | "condition" | "action" | "option" | "script_field";
   uiSupported: boolean;
   yamlMode: boolean;
 }
@@ -107,13 +114,18 @@ export default class HaAutomationSidebar extends LitElement {
     const subtitle = this.hass.localize(
       (this.config.type === "option"
         ? "ui.panel.config.automation.editor.actions.type.choose.label"
-        : `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type}`) as LocalizeKeys
+        : this.config.type === "script_field"
+          ? "ui.panel.config.script.editor.field.label"
+          : `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type}`) as LocalizeKeys
     );
+
     const title =
       this.hass.localize(
         (this.config.type === "option"
           ? "ui.panel.config.automation.editor.actions.type.choose.option_label"
-          : `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label`) as LocalizeKeys
+          : this.config.type === "script_field"
+            ? `ui.components.selectors.selector.types.${Object.keys((this.config.config as FieldSidebarConfig).field.selector)[0]}`
+            : `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label`) as LocalizeKeys
       ) || type;
 
     const description =
@@ -288,7 +300,18 @@ export default class HaAutomationSidebar extends LitElement {
                       @ui-mode-not-available=${this._handleUiModeNotAvailable}
                     ></ha-automation-action-editor>
                   `
-                : description || nothing}
+                : this.config.type === "script_field"
+                  ? html`<ha-script-field-editor
+                      class="sidebar-editor"
+                      .hass=${this.hass}
+                      .field=${(this.config.config as FieldSidebarConfig).field}
+                      .key=${(this.config.config as FieldSidebarConfig).key}
+                      .excludeKeys=${(this.config.config as FieldSidebarConfig)
+                        .excludeKeys}
+                      .disabled=${this.disabled}
+                      @value-changed=${this._valueChangedSidebar}
+                    ></ha-script-field-editor>`
+                  : description || nothing}
         </div>
       </ha-card>
     `;
@@ -310,7 +333,17 @@ export default class HaAutomationSidebar extends LitElement {
       fireEvent(this, "value-changed", {
         value: {
           ...this.config,
-          config: ev.detail.value,
+          config:
+            this.config.type === "script_field"
+              ? {
+                  field: ev.detail.value,
+                  key:
+                    ev.detail.value.key ??
+                    (this.config.config as FieldSidebarConfig).key,
+                  excludeKeys: (this.config.config as FieldSidebarConfig)
+                    .excludeKeys,
+                }
+              : ev.detail.value,
         },
       });
     }
