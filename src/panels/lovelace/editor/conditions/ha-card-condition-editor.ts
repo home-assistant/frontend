@@ -1,5 +1,12 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiDelete, mdiDotsVertical, mdiFlask, mdiPlaylistEdit } from "@mdi/js";
+import {
+  mdiContentCopy,
+  mdiDelete,
+  mdiDotsVertical,
+  mdiFlask,
+  mdiPlaylistEdit,
+} from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -30,12 +37,21 @@ import {
   validateConditionalConfig,
 } from "../../common/validate-condition";
 import type { LovelaceConditionEditorConstructor } from "./types";
+import { storage } from "../../../../common/decorators/storage";
 
 @customElement("ha-card-condition-editor")
 export class HaCardConditionEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) condition!: Condition | LegacyCondition;
+
+  @storage({
+    key: "dashboardConditionClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: Condition | LegacyCondition;
 
   @state() public _yamlMode = false;
 
@@ -131,6 +147,11 @@ export class HaCardConditionEditor extends LitElement {
               <ha-svg-icon slot="graphic" .path=${mdiFlask}></ha-svg-icon>
             </ha-list-item>
 
+            <ha-list-item graphic="icon">
+              ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
+              <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
+            </ha-list-item>
+
             <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
               ${this.hass.localize(
                 `ui.panel.lovelace.editor.edit_view.edit_${!this._yamlMode ? "yaml" : "ui"}`
@@ -220,9 +241,12 @@ export class HaCardConditionEditor extends LitElement {
         await this._testCondition();
         break;
       case 1:
-        this._yamlMode = !this._yamlMode;
+        this._copyCondition();
         break;
       case 2:
+        this._yamlMode = !this._yamlMode;
+        break;
+      case 3:
         this._delete();
         break;
     }
@@ -257,6 +281,10 @@ export class HaCardConditionEditor extends LitElement {
     this._timeout = window.setTimeout(() => {
       this._testingResult = undefined;
     }, 2500);
+  }
+
+  private _copyCondition() {
+    this._clipboard = deepClone(this.condition);
   }
 
   private _delete() {
