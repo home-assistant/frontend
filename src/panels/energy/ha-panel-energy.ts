@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -49,6 +50,8 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -65,15 +68,29 @@ class PanelEnergy extends LitElement {
     }
   }
 
+  private _back(ev) {
+    ev.stopPropagation();
+    history.back();
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="header">
         <div class="toolbar">
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+          ${this._searchParms.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           ${!this.narrow
             ? html`<div class="main-title">
                 ${this.hass.localize("panel.energy")}

@@ -3344,6 +3344,10 @@
                 "default": {
                   "title": "Default dashboard",
                   "description": "Display your devices grouped by area"
+                },
+                "overview": {
+                  "title": "Overview (experimental)",
+                  "description": "Global overview of your home"
                 }
               },
               "search_dashboards": "Search dashboards",
