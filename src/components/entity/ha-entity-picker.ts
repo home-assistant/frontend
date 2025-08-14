@@ -5,12 +5,8 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
@@ -148,11 +144,9 @@ export class HaEntityPicker extends LitElement {
       `;
     }
 
-    const { area, device } = getEntityContext(stateObj, this.hass);
-
-    const entityName = computeEntityName(stateObj, this.hass);
-    const deviceName = device ? computeDeviceName(device) : undefined;
-    const areaName = area ? computeAreaName(area) : undefined;
+    const entityName = this.hass.formatEntityName(stateObj, "entity");
+    const deviceName = this.hass.formatEntityName(stateObj, "device");
+    const areaName = this.hass.formatEntityName(stateObj, "area");
 
     const isRTL = computeRTL(this.hass);
 
@@ -311,12 +305,10 @@ export class HaEntityPicker extends LitElement {
       items = entityIds.map<EntityComboBoxItem>((entityId) => {
         const stateObj = hass!.states[entityId];
 
-        const { area, device } = getEntityContext(stateObj, hass);
-
         const friendlyName = computeStateName(stateObj); // Keep this for search
-        const entityName = computeEntityName(stateObj, hass);
-        const deviceName = device ? computeDeviceName(device) : undefined;
-        const areaName = area ? computeAreaName(area) : undefined;
+        const entityName = this.hass.formatEntityName(stateObj, "entity");
+        const deviceName = this.hass.formatEntityName(stateObj, "device");
+        const areaName = this.hass.formatEntityName(stateObj, "area");
 
         const domainName = domainToName(
           this.hass.localize,
