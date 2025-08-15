@@ -30,6 +30,7 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     title: optional(string()),
+    clock_style: optional(union([literal("digital"), literal("analog")])),
     clock_size: optional(
       union([literal("small"), literal("medium"), literal("large")])
     ),
