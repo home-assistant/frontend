@@ -54,6 +54,20 @@ export class HuiClockCardEditor
       [
         { name: "title", selector: { text: {} } },
         {
+          name: "clock_style",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["digital", "analog"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.clock_styles.${value}`
+                ),
+              })),
+            },
+          },
+        },
+        {
           name: "clock_size",
           selector: {
             select: {
@@ -107,6 +121,7 @@ export class HuiClockCardEditor
   );
 
   private _data = memoizeOne((config) => ({
+    clock_style: "digital",
     clock_size: "small",
     time_zone: "auto",
     time_format: "auto",
@@ -153,6 +168,10 @@ export class HuiClockCardEditor
       case "title":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.title"
+        );
+      case "clock_style":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.clock_style`
         );
       case "clock_size":
         return this.hass!.localize(
