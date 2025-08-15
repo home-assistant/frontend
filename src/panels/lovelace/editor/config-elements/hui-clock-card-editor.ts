@@ -36,6 +36,7 @@ const cardConfigStruct = assign(
     time_format: optional(enums(Object.values(TimeFormat))),
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
+    no_background: optional(boolean()),
   })
 );
 
@@ -52,6 +53,20 @@ export class HuiClockCardEditor
     (localize: LocalizeFunc) =>
       [
         { name: "title", selector: { text: {} } },
+        {
+          name: "clock_style",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: ["digital", "analog"].map((value) => ({
+                value,
+                label: localize(
+                  `ui.panel.lovelace.editor.card.clock.clock_styles.${value}`
+                ),
+              })),
+            },
+          },
+        },
         {
           name: "clock_size",
           selector: {
@@ -105,6 +120,7 @@ export class HuiClockCardEditor
   );
 
   private _data = memoizeOne((config) => ({
+    clock_style: "digital",
     clock_size: "small",
     time_zone: "auto",
     time_format: "auto",
@@ -151,6 +167,10 @@ export class HuiClockCardEditor
       case "title":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.title"
+        );
+      case "clock_style":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.clock_style`
         );
       case "clock_size":
         return this.hass!.localize(
