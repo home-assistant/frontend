@@ -69,7 +69,7 @@ export class HuiClockCardEditor
   @state() private _config?: ClockCardConfig;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, clockStyle: "digital" | "analog") =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -136,50 +136,54 @@ export class HuiClockCardEditor
             },
           },
         },
-        {
-          name: "analog_options",
-          type: "expandable",
-          iconPath: mdiClockOutline,
-          schema: [
-            {
-              name: "border",
-              description: {
-                suffix: localize(
-                  `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
-                ),
-              },
-              default: false,
-              selector: {
-                boolean: {},
-              },
-            },
-            {
-              name: "ticks",
-              description: {
-                suffix: localize(
-                  `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
-                ),
-              },
-              default: "hour",
-              selector: {
-                select: {
-                  mode: "dropdown",
-                  options: ["none", "quarter", "hour", "minute"].map(
-                    (value) => ({
-                      value,
-                      label: localize(
-                        `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.label`
+        ...(clockStyle === "analog"
+          ? ([
+              {
+                name: "analog_options",
+                type: "expandable",
+                iconPath: mdiClockOutline,
+                schema: [
+                  {
+                    name: "border",
+                    description: {
+                      suffix: localize(
+                        `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
                       ),
-                      description: localize(
-                        `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.description`
+                    },
+                    default: false,
+                    selector: {
+                      boolean: {},
+                    },
+                  },
+                  {
+                    name: "ticks",
+                    description: {
+                      suffix: localize(
+                        `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
                       ),
-                    })
-                  ),
-                },
+                    },
+                    default: "hour",
+                    selector: {
+                      select: {
+                        mode: "dropdown",
+                        options: ["none", "quarter", "hour", "minute"].map(
+                          (value) => ({
+                            value,
+                            label: localize(
+                              `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.label`
+                            ),
+                            description: localize(
+                              `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.description`
+                            ),
+                          })
+                        ),
+                      },
+                    },
+                  },
+                ],
               },
-            },
-          ],
-        },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -206,7 +210,11 @@ export class HuiClockCardEditor
       <ha-form
         .hass=${this.hass}
         .data=${this._data(this._config)}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${this._schema(
+          this.hass.localize,
+          (this._data(this._config).clock_style as "digital" | "analog") ??
+            "digital"
+        )}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -220,6 +228,15 @@ export class HuiClockCardEditor
     }
     if (ev.detail.value.time_format === "auto") {
       delete ev.detail.value.time_format;
+    }
+
+    if (ev.detail.value.clock_style === "analog") {
+      ev.detail.value.analog_options = {
+        border: ev.detail.value.analog_options?.border ?? false,
+        ticks: ev.detail.value.analog_options?.ticks ?? "hour",
+      };
+    } else {
+      delete ev.detail.value.analog_options;
     }
 
     fireEvent(this, "config-changed", { config: ev.detail.value });
