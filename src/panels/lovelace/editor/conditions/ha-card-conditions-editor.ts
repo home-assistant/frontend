@@ -1,6 +1,7 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiContentPaste, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -25,6 +26,7 @@ import "./types/ha-card-condition-or";
 import "./types/ha-card-condition-screen";
 import "./types/ha-card-condition-state";
 import "./types/ha-card-condition-user";
+import { storage } from "../../../../common/decorators/storage";
 
 const UI_CONDITION = [
   "location",
@@ -37,9 +39,19 @@ const UI_CONDITION = [
   "or",
 ] as const satisfies readonly Condition["condition"][];
 
+export const PASTE_VALUE = "__paste__" as const;
+
 @customElement("ha-card-conditions-editor")
 export class HaCardConditionsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @storage({
+    key: "dashboardConditionClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _clipboard?: Condition | LegacyCondition;
 
   @property({ attribute: false }) public conditions!: (
     | Condition
@@ -85,6 +97,7 @@ export class HaCardConditionsEditor extends LitElement {
           (cond, idx) => html`
             <ha-card-condition-editor
               .index=${idx}
+              @duplicate-condition=${this._duplicateCondition}
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}
@@ -103,6 +116,19 @@ export class HaCardConditionsEditor extends LitElement {
                 "ui.panel.lovelace.editor.condition-editor.add"
               )}
             </ha-button>
+            ${this._clipboard
+              ? html`
+                  <ha-list-item .value=${PASTE_VALUE} graphic="icon">
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.editor.edit_card.paste_condition"
+                    )}
+                    <ha-svg-icon
+                      slot="graphic"
+                      .path=${mdiContentPaste}
+                    ></ha-svg-icon>
+                  </ha-list-item>
+                `
+              : nothing}
             ${UI_CONDITION.map(
               (condition) => html`
                 <ha-list-item .value=${condition} graphic="icon">
@@ -123,9 +149,18 @@ export class HaCardConditionsEditor extends LitElement {
   }
 
   private _addCondition(ev: CustomEvent): void {
-    const condition = (ev.currentTarget as HaSelect).items[ev.detail.index]
-      .value as Condition["condition"];
     const conditions = [...this.conditions];
+
+    const item = (ev.currentTarget as HaSelect).items[ev.detail.index];
+
+    if (item.value === PASTE_VALUE && this._clipboard) {
+      const condition = deepClone(this._clipboard);
+      conditions.push(condition);
+      fireEvent(this, "value-changed", { value: conditions });
+      return;
+    }
+
+    const condition = item.value as Condition["condition"];
 
     const elClass = customElements.get(`ha-card-condition-${condition}`) as
       | LovelaceConditionEditorConstructor
@@ -137,6 +172,12 @@ export class HaCardConditionsEditor extends LitElement {
         : { condition: condition }
     );
     this._focusLastConditionOnChange = true;
+    fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _duplicateCondition(ev: CustomEvent) {
+    const conditions = [...this.conditions];
+    conditions.push(ev.detail.value);
     fireEvent(this, "value-changed", { value: conditions });
   }
 
