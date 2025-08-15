@@ -410,8 +410,4 @@ declare global {
   interface HTMLElementTagNameMap {
     "ha-card-condition-editor": HaCardConditionEditor;
   }
-
-  interface HASSDomEvents {
-    duplicate: { value: Condition | LegacyCondition };
-  }
 }
