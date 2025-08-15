@@ -7718,6 +7718,11 @@
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
               "display_order": "Display order",
+              "item_tap_action": "Item tap behavior",
+              "actions": {
+                "edit": "Edit item (default)",
+                "toggle": "Toggle item"
+              },
               "sort_modes": {
                 "none": "Default",
                 "manual": "Manual",
