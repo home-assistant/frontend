@@ -101,8 +101,8 @@ export interface CounterActionsCardFeatureConfig {
   actions?: CounterActions[];
 }
 
-export interface DateCardFeatureConfig {
-  type: "date";
+export interface DateSetCardFeatureConfig {
+  type: "date-set";
 }
 
 export interface SelectOptionsCardFeatureConfig {

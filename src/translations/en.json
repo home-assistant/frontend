@@ -7843,8 +7843,8 @@
               "cover-tilt-position": {
                 "label": "Cover tilt position"
               },
-              "date": {
-                "label": "Date"
+              "date-set": {
+                "label": "Date set"
               },
               "fan-direction": {
                 "label": "Fan direction"

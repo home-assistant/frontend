@@ -18,7 +18,7 @@ import "../../../components/ha-control-button-group";
 const loadDatePickerDialog = () =>
   import("../../../components/ha-dialog-date-picker");
 
-export const supportsDateCardFeature = (
+export const supportsDateSetCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) => {
@@ -33,8 +33,8 @@ export const supportsDateCardFeature = (
   );
 };
 
-@customElement("hui-date-card-feature")
-class HuiDateCardFeature extends LitElement implements LovelaceCardFeature {
+@customElement("hui-date-set-card-feature")
+class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
@@ -94,7 +94,7 @@ class HuiDateCardFeature extends LitElement implements LovelaceCardFeature {
 
   static getStubConfig(): DateCardFeatureConfig {
     return {
-      type: "date",
+      type: "date-set",
     };
   }
 
@@ -111,7 +111,7 @@ class HuiDateCardFeature extends LitElement implements LovelaceCardFeature {
       !this.hass ||
       !this.context ||
       !this._stateObj ||
-      !supportsDateCardFeature(this.hass, this.context)
+      !supportsDateSetCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
@@ -134,6 +134,6 @@ class HuiDateCardFeature extends LitElement implements LovelaceCardFeature {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-date-card-feature": HuiDateCardFeature;
+    "hui-date-set-card-feature": HuiDateSetCardFeature;
   }
 }
