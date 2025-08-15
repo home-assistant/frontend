@@ -8043,7 +8043,7 @@
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               },
-              "sensor-graph-line": {
+              "history-chart": {
                 "label": "History chart"
               }
             }

@@ -14,7 +14,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import type {
   LovelaceCardFeatureContext,
-  SensorGraphLineCardFeatureConfig,
+  HistoryChartCardFeatureConfig,
 } from "./types";
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -24,7 +24,7 @@ import { computeTimelineColor } from "../../../components/chart/timeline-color";
 import { downSampleLineData } from "../../../components/chart/down-sample";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-export const supportsSensorGraphLineCardFeature = (
+export const supportsHistoryChartCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) => {
@@ -36,8 +36,8 @@ export const supportsSensorGraphLineCardFeature = (
   return ["sensor", "binary_sensor"].includes(domain);
 };
 
-@customElement("hui-sensor-graph-line-card-feature")
-class HuiSensorGraphLineCardFeature
+@customElement("hui-history-chart-card-feature")
+class HuiHistoryChartCardFeature
   extends SubscribeMixin(LitElement)
   implements LovelaceCardFeature
 {
@@ -46,20 +46,20 @@ class HuiSensorGraphLineCardFeature
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
-  @state() private _config?: SensorGraphLineCardFeatureConfig;
+  @state() private _config?: HistoryChartCardFeatureConfig;
 
   @state() private _stateHistory?: HistoryResult;
 
   private _interval?: number;
 
-  static getStubConfig(): SensorGraphLineCardFeatureConfig {
+  static getStubConfig(): HistoryChartCardFeatureConfig {
     return {
-      type: "sensor-graph-line",
+      type: "history-chart",
       hours_to_show: 24,
     };
   }
 
-  public setConfig(config: SensorGraphLineCardFeatureConfig): void {
+  public setConfig(config: HistoryChartCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -88,7 +88,7 @@ class HuiSensorGraphLineCardFeature
       !this.hass ||
       !this.context ||
       !this._stateHistory ||
-      !supportsSensorGraphLineCardFeature(this.hass, this.context)
+      !supportsHistoryChartCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
@@ -301,6 +301,6 @@ class HuiSensorGraphLineCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-sensor-graph-line-card-feature": HuiSensorGraphLineCardFeature;
+    "hui-history-chart-card-feature": HuiHistoryChartCardFeature;
   }
 }

@@ -175,8 +175,8 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
-export interface SensorGraphLineCardFeatureConfig {
-  type: "sensor-graph-line";
+export interface HistoryChartCardFeatureConfig {
+  type: "history-chart";
   hours_to_show: number;
 }
 
