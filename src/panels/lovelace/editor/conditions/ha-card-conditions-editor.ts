@@ -97,6 +97,7 @@ export class HaCardConditionsEditor extends LitElement {
           (cond, idx) => html`
             <ha-card-condition-editor
               .index=${idx}
+              @duplicate=${this._duplicateCondition}
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}
@@ -115,10 +116,9 @@ export class HaCardConditionsEditor extends LitElement {
                 "ui.panel.lovelace.editor.condition-editor.add"
               )}
             </ha-button>
-
             ${this._clipboard
               ? html`
-                  <ha-list-item graphic="icon">
+                  <ha-list-item .value=${PASTE_VALUE} graphic="icon">
                     ${this.hass.localize(
                       "ui.panel.lovelace.editor.edit_card.paste_condition"
                     )}
@@ -172,6 +172,12 @@ export class HaCardConditionsEditor extends LitElement {
         : { condition: condition }
     );
     this._focusLastConditionOnChange = true;
+    fireEvent(this, "value-changed", { value: conditions });
+  }
+
+  private _duplicateCondition(ev: CustomEvent) {
+    const conditions = [...this.conditions];
+    conditions.push(ev.detail.value);
     fireEvent(this, "value-changed", { value: conditions });
   }
 

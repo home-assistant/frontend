@@ -1,6 +1,8 @@
 import type { ActionDetail } from "@material/mwc-list";
 import {
   mdiContentCopy,
+  mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiFlask,
@@ -148,8 +150,23 @@ export class HaCardConditionEditor extends LitElement {
             </ha-list-item>
 
             <ha-list-item graphic="icon">
+              ${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.duplicate"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiContentDuplicate}
+              ></ha-svg-icon>
+            </ha-list-item>
+
+            <ha-list-item graphic="icon">
               ${this.hass.localize("ui.panel.lovelace.editor.edit_card.copy")}
               <ha-svg-icon slot="graphic" .path=${mdiContentCopy}></ha-svg-icon>
+            </ha-list-item>
+
+            <ha-list-item graphic="icon">
+              ${this.hass.localize("ui.panel.lovelace.editor.edit_card.cut")}
+              <ha-svg-icon slot="graphic" .path=${mdiContentCut}></ha-svg-icon>
             </ha-list-item>
 
             <ha-list-item graphic="icon" .disabled=${!this._uiAvailable}>
@@ -241,12 +258,18 @@ export class HaCardConditionEditor extends LitElement {
         await this._testCondition();
         break;
       case 1:
-        this._copyCondition();
+        this._duplicateCondition();
         break;
       case 2:
-        this._yamlMode = !this._yamlMode;
+        this._copyCondition();
         break;
       case 3:
+        this._cutCondition();
+        break;
+      case 4:
+        this._yamlMode = !this._yamlMode;
+        break;
+      case 5:
         this._delete();
         break;
     }
@@ -283,8 +306,17 @@ export class HaCardConditionEditor extends LitElement {
     }, 2500);
   }
 
+  private _duplicateCondition() {
+    fireEvent(this, "duplicate", { value: deepClone(this.condition) });
+  }
+
   private _copyCondition() {
     this._clipboard = deepClone(this.condition);
+  }
+
+  private _cutCondition() {
+    this._copyCondition();
+    this._delete();
   }
 
   private _delete() {
@@ -377,5 +409,9 @@ export class HaCardConditionEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-card-condition-editor": HaCardConditionEditor;
+  }
+
+  interface HASSDomEvents {
+    duplicate: { value: Condition | LegacyCondition };
   }
 }
