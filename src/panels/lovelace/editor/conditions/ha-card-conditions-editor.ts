@@ -1,4 +1,5 @@
 import { mdiContentPaste, mdiPlus } from "@mdi/js";
+import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -37,6 +38,8 @@ const UI_CONDITION = [
   "not",
   "or",
 ] as const satisfies readonly Condition["condition"][];
+
+export const PASTE_VALUE = "__paste__" as const;
 
 @customElement("ha-card-conditions-editor")
 export class HaCardConditionsEditor extends LitElement {
@@ -148,15 +151,16 @@ export class HaCardConditionsEditor extends LitElement {
   private _addCondition(ev: CustomEvent): void {
     const conditions = [...this.conditions];
 
-    if (this._clipboard) {
-      const condition = this._clipboard;
+    const item = (ev.currentTarget as HaSelect).items[ev.detail.index];
+
+    if (item.value === PASTE_VALUE && this._clipboard) {
+      const condition = deepClone(this._clipboard);
       conditions.push(condition);
       fireEvent(this, "value-changed", { value: conditions });
       return;
     }
 
-    const condition = (ev.currentTarget as HaSelect).items[ev.detail.index]
-      .value as Condition["condition"];
+    const condition = item.value as Condition["condition"];
 
     const elClass = customElements.get(`ha-card-condition-${condition}`) as
       | LovelaceConditionEditorConstructor
