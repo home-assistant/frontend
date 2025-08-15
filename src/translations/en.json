@@ -2122,7 +2122,7 @@
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
-        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
+        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant OS or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
         "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
         "url_error": "The provided URL is invalid.",
         "documentation": "documentation",
@@ -6683,7 +6683,7 @@
             "not_supported": {
               "title": "The operating system does not support network storage",
               "supervised": "Network storage is not supported on this host",
-              "os": "To use network storage you need to run at least Home Assistant Operating System {version}",
+              "os": "To use network storage you need to run at least Home Assistant OS {version}",
               "navigate_to_updates": "Go to updates"
             },
             "mount_usage": {
@@ -8927,7 +8927,7 @@
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "addons_unsupported": "Your installation method doesn’t support add-ons. If you want to restore these, you have to install Home Assistant Operating System",
+            "addons_unsupported": "Your installation method doesn’t support add-ons. If you want to restore these, you have to install Home Assistant OS",
             "summary": {
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
               "content": "Content"
