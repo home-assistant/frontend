@@ -6604,12 +6604,16 @@
           "used_space": "Storage",
           "detailed_description": "{used} of {total} used",
           "segments": {
-            "addons": "Add-ons",
+            "used": "Used space",
+            "free": "Free space",
+            "system": "System",
+            "addons_data": "Add-on data",
+            "addons_config": "Add-on configuration",
             "media": "Media",
             "share": "Share",
             "backup": "Backups",
-            "tmp": "Temporary files",
-            "config": "Configuration"
+            "homeassistant": "Home Assistant",
+            "ssl": "SSL"
           },
           "emmc_lifetime_used": "eMMC lifetime used",
           "disk_metrics": "Disk metrics",

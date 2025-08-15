@@ -108,7 +108,7 @@ class HaConfigSectionStorage extends LitElement {
                   <div class="card-content">
                     ${this._renderStorageMetrics(
                       this._hostInfo,
-                      this._storageInfo && Object.values(this._storageInfo)[0]
+                      this._storageInfo
                     )}
                     ${this._hostInfo.disk_life_time !== "" &&
                     this._hostInfo.disk_life_time >= 10
@@ -238,59 +238,56 @@ class HaConfigSectionStorage extends LitElement {
   private _renderStorageMetrics = memoizeOne(
     (
       hostInfo?: HassioHostInfo,
-      storageInfo?: SupervisorStorageInfo[string]
+      storageInfo?: SupervisorStorageInfo
     ) => {
       if (!hostInfo || !storageInfo) {
         return nothing;
       }
       const computedStyles = getComputedStyle(this);
+      let totalSpaceGB = hostInfo.disk_total;
+      let usedSpaceGB = hostInfo.disk_used;
       // hostInfo.disk_free is sometimes 0, so we may need to calculate it
-      const freeSpace =
-        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+      let freeSpaceGB = hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
       const segments: Segment[] = [];
-      if (Object.keys(storageInfo).length > 0) {
-        let otherUsedSpace = hostInfo.disk_used;
-        Object.keys(storageInfo).forEach((key, index) => {
-          if (storageInfo[key].size) {
-            const space = storageInfo[key].size / 1024 / 1024 / 1024;
-            otherUsedSpace -= space;
-            segments.push({
-              value: space,
-              color: getGraphColorByIndex(index, computedStyles),
-              label: html`${this.hass.localize(
-                  `ui.panel.config.storage.segments.${key}`
-                ) || key}
-                <span style="color: var(--secondary-text-color)"
-                  >${roundWithOneDecimal(space)} GB</span
-                >`,
-            });
+      if (storageInfo) {
+        const totalSpace = storageInfo.total_space ?? hostInfo.disk_total * 1024 * 1024 * 1024;
+        totalSpaceGB = totalSpace / 1024 / 1024 / 1024;
+        usedSpaceGB = storageInfo.used_space / 1024 / 1024 / 1024;
+        freeSpaceGB = (totalSpace - storageInfo.used_space) / 1024 / 1024 / 1024;
+        Object.keys(storageInfo.children || {}).forEach((key, index) => {
+          if (storageInfo.children?.[key]?.used_space) {
+            const space = storageInfo.children![key].used_space / 1024 / 1024 / 1024;
+            if (space > 0) {
+              segments.push({
+                value: space,
+                color: getGraphColorByIndex(index, computedStyles),
+                label: html`${this.hass.localize(
+                    `ui.panel.config.storage.segments.${key}`
+                  ) || key}
+                  <span style="color: var(--secondary-text-color)"
+                    >${roundWithOneDecimal(space)} GB</span
+                  >`,
+              });
+            }
           }
-        });
-        segments.push({
-          value: otherUsedSpace,
-          color: getGraphColorByIndex(segments.length, computedStyles),
-          label: html`Other
-            <span style="color: var(--secondary-text-color)"
-              >${roundWithOneDecimal(otherUsedSpace)} GB</span
-            >`,
         });
       } else {
         segments.push({
-          value: hostInfo.disk_used,
+          value: usedSpaceGB,
           color: "var(--primary-color)",
-          label: html`Used space
+          label: html`${this.hass.localize("ui.panel.config.storage.segments.used")}
             <span style="color: var(--secondary-text-color)"
-              >${roundWithOneDecimal(hostInfo.disk_used)} GB</span
+              >${roundWithOneDecimal(usedSpaceGB)} GB</span
             >`,
         });
       }
       segments.push({
-        value: freeSpace,
+        value: freeSpaceGB,
         color:
           "var(--ha-bar-background-color, var(--secondary-background-color))",
-        label: html`Free space
+        label: html`${this.hass.localize("ui.panel.config.storage.segments.free")}
           <span style="color: var(--secondary-text-color)"
-            >${roundWithOneDecimal(freeSpace)} GB</span
+            >${roundWithOneDecimal(freeSpaceGB)} GB</span
           >`,
       });
       return html`
@@ -299,8 +296,8 @@ class HaConfigSectionStorage extends LitElement {
           .description=${this.hass.localize(
             "ui.panel.config.storage.detailed_description",
             {
-              used: `${hostInfo?.disk_used} GB`,
-              total: `${hostInfo?.disk_total} GB`,
+              used: `${roundWithOneDecimal(usedSpaceGB)} GB`,
+              total: `${roundWithOneDecimal(totalSpaceGB)} GB`,
             }
           )}
           .segments=${segments}
