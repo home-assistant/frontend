@@ -1,6 +1,7 @@
 import { css, html, LitElement, nothing } from "lit";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import type { ClockCardConfig } from "../types";
 import type { HomeAssistant } from "../../../../types";
 import { INTERVAL } from "../hui-clock-card";
@@ -109,20 +110,69 @@ export class HuiClockCardAnalog extends LitElement {
         role="img"
         aria-label="Analog clock"
       >
-        <div class="dial">
+        <div
+          class=${classMap({
+            dial: true,
+            "dial-border": this.config.analog_options?.border ?? false,
+          })}
+        >
+          ${this.config.analog_options?.ticks === "quarter"
+            ? Array.from({ length: 4 }, (_, i) => i).map(
+                (i) =>
+                  // 4 ticks
+                  html`
+                    <div
+                      aria-hidden
+                      class="tick hour"
+                      style=${`--tick-rotation: ${i * 90}deg;`}
+                    >
+                      <div class="line"></div>
+                    </div>
+                  `
+              )
+            : !this.config.analog_options?.ticks || // Default to hour ticks
+                this.config.analog_options?.ticks === "hour"
+              ? Array.from({ length: 12 }, (_, i) => i).map(
+                  (i) =>
+                    // 12 ticks
+                    html`
+                      <div
+                        aria-hidden
+                        class="tick hour"
+                        style=${`--tick-rotation: ${i * 30}deg;`}
+                      >
+                        <div class="line"></div>
+                      </div>
+                    `
+                )
+              : this.config.analog_options?.ticks === "minute"
+                ? Array.from({ length: 60 }, (_, i) => i).map(
+                    (i) =>
+                      // 60 ticks
+                      html`
+                        <div
+                          aria-hidden
+                          class="tick ${i % 5 === 0 ? "hour" : "minute"}"
+                          style=${`--tick-rotation: ${i * 6}deg;`}
+                        >
+                          <div class="line"></div>
+                        </div>
+                      `
+                  )
+                : nothing}
           <div class="center-dot"></div>
           <div
             class="hand hour"
-            style=${`--rotation: ${this._hourDeg ?? 0}deg;`}
+            style=${`--hand-rotation: ${this._hourDeg ?? 0}deg;`}
           ></div>
           <div
             class="hand minute"
-            style=${`--rotation: ${this._minuteDeg ?? 0}deg;`}
+            style=${`--hand-rotation: ${this._minuteDeg ?? 0}deg;`}
           ></div>
           ${this.config.show_seconds
             ? html`<div
                 class="hand second"
-                style=${`--rotation: ${this._secondDeg ?? 0}deg;`}
+                style=${`--hand-rotation: ${this._secondDeg ?? 0}deg;`}
               ></div>`
             : nothing}
         </div>
@@ -158,10 +208,42 @@ export class HuiClockCardAnalog extends LitElement {
       position: relative;
       width: 100%;
       height: 100%;
-      border-radius: 50%;
-      border: 2px solid var(--divider-color);
       background: var(--card-background-color);
       box-sizing: border-box;
+    }
+
+    .dial-border {
+      border: 2px solid var(--divider-color);
+      border-radius: 50%;
+    }
+
+    .tick {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(var(--tick-rotation));
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .tick .line {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: calc(var(--clock-size) * 0.04);
+      background: var(--primary-text-color);
+      opacity: 0.5;
+      border-radius: 1px;
+    }
+
+    .tick.hour .line {
+      width: 2px;
+      height: calc(var(--clock-size) * 0.07);
+      opacity: 0.8;
     }
 
     .center-dot {
@@ -181,7 +263,7 @@ export class HuiClockCardAnalog extends LitElement {
       left: 50%;
       bottom: 50%;
       transform-origin: 50% 100%;
-      transform: translate(-50%, 0) rotate(var(--rotation, 0deg));
+      transform: translate(-50%, 0) rotate(var(--hand-rotation, 0deg));
       background: var(--primary-text-color);
       border-radius: 2px;
       will-change: transform;

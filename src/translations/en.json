@@ -7724,7 +7724,34 @@
               "time_zones": {
                 "auto": "Use user settings"
               },
-              "no_background": "No background"
+              "no_background": "No background",
+              "analog_options": {
+                "label": "Analog options",
+                "border": {
+                  "label": "Border",
+                  "description": "Show a border around the clock"
+                },
+                "ticks": {
+                  "label": "Ticks",
+                  "description": "Show ticks (indices) on the outside of the clock",
+                  "none": {
+                    "label": "None",
+                    "description": "No ticks (Hands only)"
+                  },
+                  "quarter": {
+                    "label": "Quarter",
+                    "description": "4 ticks (Every 15 minutes)"
+                  },
+                  "hour": {
+                    "label": "Hour",
+                    "description": "12 ticks (Every hour)"
+                  },
+                  "minute": {
+                    "label": "Minute",
+                    "description": "60 ticks (Every minute)"
+                  }
+                }
+              }
             },
             "media-control": {
               "name": "Media control",

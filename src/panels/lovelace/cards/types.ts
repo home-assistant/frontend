@@ -377,6 +377,10 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
+  analog_options?: {
+    border?: boolean;
+    ticks?: "none" | "quarter" | "hour" | "minute";
+  };
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
