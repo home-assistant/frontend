@@ -10,6 +10,7 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { ClockCardConfig } from "./types";
+import "./clock/hui-clock-card-analog";
 import "./clock/hui-clock-card-digital";
 
 export const INTERVAL = 1000;
@@ -41,33 +42,62 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   }
 
   public getGridOptions(): LovelaceGridOptions {
-    if (this._config?.clock_size === "medium") {
-      return {
-        min_rows: this._config?.title ? 2 : 1,
-        rows: 2,
-        max_rows: 4,
-        min_columns: 4,
-        columns: 6,
-      };
+    switch (this._config?.clock_style) {
+      case "analog":
+        switch (this._config?.clock_size) {
+          case "medium":
+            return {
+              min_rows: this._config?.title ? 4 : 3,
+              rows: 3,
+              max_rows: 4,
+              min_columns: 4,
+              columns: 6,
+            };
+          case "large":
+            return {
+              min_rows: this._config?.title ? 5 : 4,
+              rows: 4,
+              max_rows: 4,
+              min_columns: 6,
+              columns: 6,
+            };
+          default:
+            return {
+              min_rows: this._config?.title ? 3 : 2,
+              rows: 2,
+              max_rows: 4,
+              min_columns: 4,
+              columns: 6,
+            };
+        }
+      default:
+        switch (this._config?.clock_size) {
+          case "medium":
+            return {
+              min_rows: this._config?.title ? 2 : 1,
+              rows: 2,
+              max_rows: 4,
+              min_columns: 4,
+              columns: 6,
+            };
+          case "large":
+            return {
+              min_rows: 2,
+              rows: 2,
+              max_rows: 4,
+              min_columns: 6,
+              columns: 6,
+            };
+          default:
+            return {
+              min_rows: 1,
+              rows: 1,
+              max_rows: 4,
+              min_columns: 3,
+              columns: 6,
+            };
+        }
     }
-
-    if (this._config?.clock_size === "large") {
-      return {
-        min_rows: 2,
-        rows: 2,
-        max_rows: 4,
-        min_columns: 6,
-        columns: 6,
-      };
-    }
-
-    return {
-      min_rows: 1,
-      rows: 1,
-      max_rows: 4,
-      min_columns: 3,
-      columns: 6,
-    };
   }
 
   protected render() {
@@ -87,10 +117,19 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
           ${this._config.title !== undefined
             ? html`<div class="time-title">${this._config.title}</div>`
             : nothing}
-          <hui-clock-card-digital
-            .hass=${this.hass}
-            .config=${this._config}
-          ></hui-clock-card-digital>
+          ${this._config.clock_style === "analog"
+            ? html`
+                <hui-clock-card-analog
+                  .hass=${this.hass}
+                  .config=${this._config}
+                ></hui-clock-card-analog>
+              `
+            : html`
+                <hui-clock-card-digital
+                  .hass=${this.hass}
+                  .config=${this._config}
+                ></hui-clock-card-digital>
+              `}
         </div>
       </ha-card>
     `;
