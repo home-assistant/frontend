@@ -1246,6 +1246,7 @@
             "person": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::person%]",
             "zone": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::zone%]",
             "input_boolean": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
+            "input_button": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_button%]",
             "input_text": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_text%]",
             "input_number": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_number%]",
             "input_datetime": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
