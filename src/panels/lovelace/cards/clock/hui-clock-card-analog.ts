@@ -113,16 +113,16 @@ export class HuiClockCardAnalog extends LitElement {
           <div class="center-dot"></div>
           <div
             class="hand hour"
-            style=${`transform: translate(-50%, -100%) rotate(${this._hourDeg ?? 0}deg);`}
+            style=${`transform: translate(-50%, 0) rotate(${this._hourDeg ?? 0}deg);`}
           ></div>
           <div
             class="hand minute"
-            style=${`transform: translate(-50%, -100%) rotate(${this._minuteDeg ?? 0}deg);`}
+            style=${`transform: translate(-50%, 0) rotate(${this._minuteDeg ?? 0}deg);`}
           ></div>
           ${this.config.show_seconds
             ? html`<div
                 class="hand second"
-                style=${`transform: translate(-50%, -100%) rotate(${this._secondDeg ?? 0}deg);`}
+                style=${`transform: translate(-50%, 0) rotate(${this._secondDeg ?? 0}deg);`}
               ></div>`
             : nothing}
         </div>
