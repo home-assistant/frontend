@@ -217,7 +217,7 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
-  | DateCardFeatureConfig
+  | DateSetCardFeatureConfig
   | FanDirectionCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig

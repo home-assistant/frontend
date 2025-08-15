@@ -7,7 +7,7 @@ import type { LovelaceCardFeature } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
-  DateCardFeatureConfig,
+  DateSetCardFeatureConfig,
 } from "./types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { DatePickerDialogParams } from "../../../components/ha-date-input";
@@ -41,7 +41,7 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
 
   @property({ attribute: false }) public color?: string;
 
-  @state() private _config?: DateCardFeatureConfig;
+  @state() private _config?: DateSetCardFeatureConfig;
 
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
@@ -92,13 +92,13 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
     }
   }
 
-  static getStubConfig(): DateCardFeatureConfig {
+  static getStubConfig(): DateSetCardFeatureConfig {
     return {
       type: "date-set",
     };
   }
 
-  public setConfig(config: DateCardFeatureConfig): void {
+  public setConfig(config: DateSetCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
