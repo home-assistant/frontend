@@ -97,7 +97,7 @@ export class HaCardConditionsEditor extends LitElement {
           (cond, idx) => html`
             <ha-card-condition-editor
               .index=${idx}
-              @duplicate=${this._duplicateCondition}
+              @duplicate-condition=${this._duplicateCondition}
               @value-changed=${this._conditionChanged}
               .hass=${this.hass}
               .condition=${cond}

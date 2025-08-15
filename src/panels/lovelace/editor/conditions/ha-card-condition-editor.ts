@@ -307,7 +307,9 @@ export class HaCardConditionEditor extends LitElement {
   }
 
   private _duplicateCondition() {
-    fireEvent(this, "duplicate", { value: deepClone(this.condition) });
+    fireEvent(this, "duplicate-condition", {
+      value: deepClone(this.condition),
+    });
   }
 
   private _copyCondition() {
@@ -409,5 +411,9 @@ export class HaCardConditionEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-card-condition-editor": HaCardConditionEditor;
+  }
+
+  interface HASSDomEvents {
+    "duplicate-condition": { value: Condition | LegacyCondition };
   }
 }
