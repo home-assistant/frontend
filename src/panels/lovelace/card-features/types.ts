@@ -231,7 +231,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
-  | SensorGraphLineCardFeatureConfig
+  | HistoryChartCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | ToggleCardFeatureConfig
