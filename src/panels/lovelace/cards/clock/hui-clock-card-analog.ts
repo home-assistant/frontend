@@ -191,6 +191,7 @@ export class HuiClockCardAnalog extends LitElement {
       width: 4px;
       height: calc(var(--clock-size) * 0.25); /* 25% of the clock size */
       background: var(--primary-text-color);
+      box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
       z-index: 1;
     }
 
@@ -198,6 +199,7 @@ export class HuiClockCardAnalog extends LitElement {
       width: 3px;
       height: calc(var(--clock-size) * 0.35); /* 35% of the clock size */
       background: var(--primary-text-color);
+      box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
       opacity: 0.9;
       z-index: 3;
     }
@@ -206,6 +208,7 @@ export class HuiClockCardAnalog extends LitElement {
       width: 2px;
       height: calc(var(--clock-size) * 0.42); /* 42% of the clock size */
       background: var(--ha-color-border-danger-normal);
+      box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
       opacity: 0.8;
       z-index: 2;
     }
