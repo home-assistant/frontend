@@ -49,15 +49,13 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
             return {
               min_rows: this._config?.title ? 4 : 3,
               rows: 3,
-              max_rows: 4,
-              min_columns: 4,
+              min_columns: 5,
               columns: 6,
             };
           case "large":
             return {
               min_rows: this._config?.title ? 5 : 4,
               rows: 4,
-              max_rows: 4,
               min_columns: 6,
               columns: 6,
             };
@@ -65,8 +63,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
             return {
               min_rows: this._config?.title ? 3 : 2,
               rows: 2,
-              max_rows: 4,
-              min_columns: 4,
+              min_columns: 2,
               columns: 6,
             };
         }
