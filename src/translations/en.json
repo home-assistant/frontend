@@ -1565,7 +1565,7 @@
           },
           "unavailable": "This entity is unavailable.",
           "entity_status": "Entity status",
-          "change_area": "Change Area",
+          "change_area": "Change area",
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
           "enabled_cause": "Cannot change status. Disabled by {cause}.",
