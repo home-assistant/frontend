@@ -1,4 +1,4 @@
-import "@shoelace-style/shoelace/dist/components/animation/animation";
+import "@awesome.me/webawesome/dist/components/animation/animation";
 import { mdiRestart } from "@mdi/js";
 
 import { customElement, property } from "lit/decorators";
@@ -48,9 +48,9 @@ export class ZWaveJsAddNodeSearchingDevices extends WakeLockMixin(LitElement) {
           <div class="spinner">
             <ha-spinner></ha-spinner>
           </div>
-          <sl-animation name="pulse" easing="linear" .duration=${2000} play>
+          <wa-animation name="pulse" easing="linear" .duration=${2000} play>
             <div class="circle"></div>
-          </sl-animation>
+          </wa-animation>
         </div>
         ${this.smartStart
           ? html`<ha-alert
