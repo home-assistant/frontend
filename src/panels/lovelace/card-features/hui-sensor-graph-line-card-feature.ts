@@ -19,10 +19,10 @@ import type {
 import { getSensorNumericDeviceClasses } from "../../../data/sensor";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { getPath } from "../common/graph/get-path";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import { computeTimelineColor } from "../../../components/chart/timeline-color";
 import { downSampleLineData } from "../../../components/chart/down-sample";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 export const supportsSensorGraphLineCardFeature = (
   hass: HomeAssistant,
@@ -99,17 +99,20 @@ class HuiSensorGraphLineCardFeature
     const height = this.clientHeight;
     if (line) {
       const points = this._generateLinePoints(line);
-      // smooth the points
-      const path = getPath(points.map((p) => [p.x, p.y]));
+      const { paths, filledPaths } = this._getLinePaths(points);
       const color = getGraphColorByIndex(0, this.style);
 
       return html`
-        <div class="line">
+        <div class="line" @click=${this._handleClick}>
           ${svg`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-              <g>
-                  <path d="${path} L ${width} ${height} L 0 ${height} Z" stroke="none" stroke-linecap="round" fill="${color}" fill-opacity="0.2" />
-                  <path d="${path}" stroke="${color}" stroke-width="1" stroke-linecap="round" fill="none" />
-              </g>
+            ${paths.map(
+              (path) =>
+                svg`<path d="${path}" stroke="${color}" stroke-width="1" stroke-linecap="round" fill="none" />`
+            )}
+            ${filledPaths.map(
+              (path) =>
+                svg`<path d="${path}" stroke="none" stroke-linecap="round" fill="${color}" fill-opacity="0.2" />`
+            )}
               </svg>`}
         </div>
       `;
@@ -117,7 +120,7 @@ class HuiSensorGraphLineCardFeature
     if (timeline) {
       const ranges = this._generateTimelineRanges(timeline);
       return html`
-        <div class="timeline">
+        <div class="timeline" @click=${this._handleClick}>
           ${svg`<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
             <g>
                 ${ranges.map((r) => svg`<rect x="${r.startX}" y="0" width="${r.endX - r.startX}" height="${height}" fill="${r.color}" />`)}
@@ -127,6 +130,11 @@ class HuiSensorGraphLineCardFeature
       `;
     }
     return nothing;
+  }
+
+  private _handleClick() {
+    // open more info dialog to show more detailed history
+    fireEvent(this, "hass-more-info", { entityId: this.context!.entity_id! });
   }
 
   private async _subscribeHistory(): Promise<() => Promise<void>> {
@@ -163,7 +171,6 @@ class HuiSensorGraphLineCardFeature
     const height = this.clientHeight;
     let minY = Number(line.data[0].states[0].state);
     let maxY = Number(line.data[0].states[0].state);
-    const rangeY = maxY - minY || minY * 0.1;
     const minX = line.data[0].states[0].last_changed;
     const maxX = Date.now();
     line.data[0].states.forEach((stateData) => {
@@ -175,6 +182,7 @@ class HuiSensorGraphLineCardFeature
         maxY = stateValue;
       }
     });
+    const rangeY = maxY - minY || minY * 0.1;
     const sampledData = downSampleLineData(
       line.data[0].states.map((stateData) => [
         stateData.last_changed,
@@ -231,16 +239,58 @@ class HuiSensorGraphLineCardFeature
     return ranges;
   }
 
+  private _getLinePaths(points: { x: number; y: number }[]) {
+    const paths: string[] = [];
+    const filledPaths: string[] = [];
+    if (!points.length) {
+      return { paths, filledPaths };
+    }
+    // path can interupted by missing data, so we need to split the path into segments
+    const pathSegments: { x: number; y: number }[][] = [[]];
+    points.forEach((point) => {
+      if (!isNaN(point.y)) {
+        pathSegments[pathSegments.length - 1].push(point);
+      } else if (pathSegments[pathSegments.length - 1].length > 0) {
+        pathSegments.push([]);
+      }
+    });
+
+    pathSegments.forEach((pathPoints) => {
+      // create a smoothed path
+      let next: { x: number; y: number };
+      let path = "";
+      let last = pathPoints[0];
+
+      path += `M ${last.x},${last.y}`;
+
+      pathPoints.forEach((coord) => {
+        next = coord;
+        path += ` ${(next.x + last.x) / 2},${(next.y + last.y) / 2}`;
+        path += ` Q${next.x},${next.y}`;
+        last = next;
+      });
+
+      path += ` ${next!.x},${next!.y}`;
+      paths.push(path);
+      filledPaths.push(
+        path +
+          ` L ${next!.x},${this.clientHeight} L ${pathPoints[0].x},${this.clientHeight} Z`
+      );
+    });
+
+    return { paths, filledPaths };
+  }
+
   static styles = css`
     :host {
       display: block;
       width: 100%;
       height: var(--feature-height);
-      pointer-events: unset !important;
     }
     :host > div {
       width: 100%;
       height: 100%;
+      cursor: pointer;
     }
     .timeline {
       border-radius: 4px;
