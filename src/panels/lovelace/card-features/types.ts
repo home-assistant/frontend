@@ -175,6 +175,11 @@ export interface UpdateActionsCardFeatureConfig {
   backup?: "yes" | "no" | "ask";
 }
 
+export interface HistoryChartCardFeatureConfig {
+  type: "history-chart";
+  hours_to_show: number;
+}
+
 export const AREA_CONTROLS = [
   "light",
   "fan",
@@ -226,6 +231,7 @@ export type LovelaceCardFeatureConfig =
   | MediaPlayerVolumeSliderCardFeatureConfig
   | NumericInputCardFeatureConfig
   | SelectOptionsCardFeatureConfig
+  | HistoryChartCardFeatureConfig
   | TargetHumidityCardFeatureConfig
   | TargetTemperatureCardFeatureConfig
   | ToggleCardFeatureConfig
