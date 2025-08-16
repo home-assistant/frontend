@@ -21,7 +21,7 @@ export const supportsButtonCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return ["button", "input_button", "script"].includes(domain);
+  return ["button", "input_button", "scene", "script"].includes(domain);
 };
 
 @customElement("hui-button-card-feature")
@@ -38,14 +38,18 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
-
+  
   private _pressButton() {
     if (!this.hass || !this._stateObj) return;
-
+    
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
-      domain === "button" || domain === "input_button" ? "press" : "turn_on";
-
+      domain === "scene"
+        ? "activate"
+        : domain === "button" || domain === "input_button"
+          ? "press"
+          : "turn_on";
+    
     this.hass.callService(domain, service, {
       entity_id: this._stateObj.entity_id,
     });
