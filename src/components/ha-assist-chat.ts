@@ -19,6 +19,7 @@ import "./ha-textfield";
 import type { HaTextField } from "./ha-textfield";
 import { documentationUrl } from "../util/documentation-url";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
+import "./ha-markdown";
 
 interface AssistMessage {
   who: string;
@@ -127,7 +128,7 @@ export class HaAssistChat extends LitElement {
           // New lines matter for messages
           // prettier-ignore
           (message) => html`
-                <div class="message ${classMap({ error: !!message.error, [message.who]: true })}">${message.text}</div>
+                <div class="message ${classMap({ error: !!message.error, [message.who]: true })}"><ha-markdown breaks .content=${message.text}></ha-markdown></div>
               `
         )}
       </div>
@@ -586,12 +587,23 @@ export class HaAssistChat extends LitElement {
       flex: 1;
     }
     .message {
-      white-space: pre-line;
       font-size: var(--ha-font-size-l);
       clear: both;
       margin: 8px 0;
       padding: 8px;
       border-radius: 15px;
+    }
+    .message code {
+      background-color: none;
+    }
+    .message img {
+      border-radius: 8px;
+    }
+    .message th {
+      text-align: left;
+    }
+    .message p {
+      margin: 0;
     }
     .message:last-child {
       margin-bottom: 0;
@@ -601,13 +613,6 @@ export class HaAssistChat extends LitElement {
       .message {
         font-size: var(--ha-font-size-l);
       }
-    }
-
-    .message p {
-      margin: 0;
-    }
-    .message p:not(:last-child) {
-      margin-bottom: 8px;
     }
 
     .message.user {
