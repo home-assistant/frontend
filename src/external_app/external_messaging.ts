@@ -36,6 +36,13 @@ interface EMOutgoingMessageConfigGet extends EMMessage {
   type: "config/get";
 }
 
+interface EMOutgoingMessageEntityAddToGetActions extends EMMessage {
+  type: "entity/add_to/get_actions";
+  payload: {
+    entity_id: string;
+  };
+}
+
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
   type: "bar_code/scan";
   payload: {
@@ -74,6 +81,13 @@ interface EMOutgoingMessageWithAnswer {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
     response: ExternalConfig;
+  };
+}
+
+interface EMOutgoingMessageWithAnswer {
+  "entity/add_to/get_actions": {
+    request: EMOutgoingMessageEntityAddToGetActions;
+    response: ExternalEntityAddToActions;
   };
 }
 
@@ -157,6 +171,14 @@ interface EMOutgoingMessageThreadStoreInPlatformKeychain extends EMMessage {
   };
 }
 
+interface EMOutgoingMessageAddEntityTo extends EMMessage {
+  type: "entity/add_to";
+  payload: {
+    entity_id: string;
+    action_id: string; // The ID of the action to perform from the external app
+  };
+}
+
 type EMOutgoingMessageWithoutAnswer =
   | EMMessageResultError
   | EMMessageResultSuccess
@@ -177,7 +199,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageThemeUpdate
   | EMOutgoingMessageThreadStoreInPlatformKeychain
   | EMOutgoingMessageImprovScan
-  | EMOutgoingMessageImprovConfigureDevice;
+  | EMOutgoingMessageImprovConfigureDevice
+  | EMOutgoingMessageAddEntityTo;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -304,6 +327,17 @@ export interface ExternalConfig {
   hasBarCodeScanner: number;
   canSetupImprov: boolean;
   downloadFileSupported: boolean;
+  canAddEntityToApp: boolean;
+}
+
+export interface ExternalEntityAddToAction {
+  id: string; // Unique identifier for the action given by the external app itself
+  name: string; // Translated name of the action to be displayed in the UI
+  icon: string; // TODO MDI icon name?
+}
+
+export interface ExternalEntityAddToActions {
+  actions: ExternalEntityAddToAction[];
 }
 
 export class ExternalMessaging {
