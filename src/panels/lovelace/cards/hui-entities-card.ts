@@ -24,6 +24,29 @@ import type {
 } from "../types";
 import type { EntitiesCardConfig } from "./types";
 
+export const computeShowHeaderToggle = <
+  T extends EntityConfig | LovelaceRowConfig,
+>(
+  config: EntitiesCardConfig,
+  entities: T[]
+): boolean => {
+  if (config.title !== undefined && config.show_header_toggle === undefined) {
+    // Default value is show toggle if we can at least toggle 2 entities.
+    let toggleable = 0;
+    for (const rowConf of entities) {
+      if (!("entity" in rowConf)) {
+        continue;
+      }
+      toggleable += Number(DOMAINS_TOGGLE.has(computeDomain(rowConf.entity)));
+      if (toggleable === 2) {
+        break;
+      }
+    }
+    return toggleable === 2;
+  }
+  return !!config.show_header_toggle;
+};
+
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -110,23 +133,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     this._config = config;
     this._configEntities = entities;
-    if (config.title !== undefined && config.show_header_toggle === undefined) {
-      // Default value is show toggle if we can at least toggle 2 entities.
-      let toggleable = 0;
-      for (const rowConf of entities) {
-        if (!("entity" in rowConf)) {
-          continue;
-        }
-        toggleable += Number(DOMAINS_TOGGLE.has(computeDomain(rowConf.entity)));
-        if (toggleable === 2) {
-          break;
-        }
-      }
-      this._showHeaderToggle = toggleable === 2;
-    } else {
-      this._showHeaderToggle = config.show_header_toggle;
-    }
-
+    this._showHeaderToggle = computeShowHeaderToggle(config, entities);
     if (this._config.header) {
       this._headerElement = createHeaderFooterElement(
         this._config.header
