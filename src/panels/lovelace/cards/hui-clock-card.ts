@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import type { HomeAssistant } from "../../../types";
@@ -156,7 +157,11 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     if (!this._config) return nothing;
 
     return html`
-      <ha-card>
+      <ha-card
+        class=${classMap({
+          "no-background": this._config.no_background ?? false,
+        })}
+      >
         <div
           class="time-wrapper ${this._config.clock_size
             ? `size-${this._config.clock_size}`
@@ -183,6 +188,12 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
   static styles = css`
     ha-card {
       height: 100%;
+    }
+
+    .no-background {
+      background: none;
+      box-shadow: none;
+      border: none;
     }
 
     .time-wrapper {
