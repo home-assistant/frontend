@@ -447,7 +447,9 @@
           "browse_media": "Browse media",
           "manual": "Manually enter media ID",
           "media_content_id": "Media content ID",
-          "media_content_type": "Media content type"
+          "media_content_type": "Media content type",
+          "media_content_id_detail": "The ID of the content to play. Platform dependent.",
+          "media_content_type_detail": "The type of the content to play, such as image, music, tv show, video, episode, channel, or playlist."
         },
         "file": {
           "upload_failed": "Upload failed",

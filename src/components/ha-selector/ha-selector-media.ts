@@ -18,6 +18,7 @@ import "../ha-alert";
 import "../ha-form/ha-form";
 import type { SchemaUnion } from "../ha-form/types";
 import { showMediaBrowserDialog } from "../media-player/show-media-browser-dialog";
+import { ensureArray } from "../../common/array/ensure-array";
 
 const MANUAL_SCHEMA = [
   { name: "media_content_id", required: false, selector: { text: {} } },
@@ -43,6 +44,10 @@ export class HaMediaSelector extends LitElement {
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean, reflect: true }) public required = true;
+
+  @property({ attribute: false }) public context?: {
+    filter_entity?: string | string[];
+  };
 
   @state() private _thumbnailUrl?: string | null;
 
@@ -79,19 +84,22 @@ export class HaMediaSelector extends LitElement {
   }
 
   protected render() {
-    const stateObj = this.value?.entity_id
-      ? this.hass.states[this.value.entity_id]
-      : undefined;
+    const entityId =
+      this.value?.entity_id || ensureArray(this.context?.filter_entity)?.[0];
+
+    const stateObj = entityId ? this.hass.states[entityId] : undefined;
 
     const supportsBrowse =
-      !this.value?.entity_id ||
+      !entityId ||
       (stateObj &&
         supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA));
 
     const hasAccept = this.selector?.media?.accept?.length;
 
+    const hasContext = !!this.context?.filter_entity;
+
     return html`
-      ${hasAccept
+      ${hasAccept || hasContext
         ? nothing
         : html`
             <ha-entity-picker
@@ -121,6 +129,7 @@ export class HaMediaSelector extends LitElement {
               .data=${this.value || EMPTY_FORM}
               .schema=${MANUAL_SCHEMA}
               .computeLabel=${this._computeLabelCallback}
+              .computeHelper=${this._computeHelperCallback}
             ></ha-form>
           `
         : html`
@@ -133,7 +142,7 @@ export class HaMediaSelector extends LitElement {
                 : this.value.metadata?.title || this.value.media_content_id}
               @click=${this._pickMedia}
               @keydown=${this._handleKeyDown}
-              class=${this.disabled || (!this.value?.entity_id && !hasAccept)
+              class=${this.disabled || (!entityId && !hasAccept)
                 ? "disabled"
                 : ""}
             >
@@ -193,6 +202,11 @@ export class HaMediaSelector extends LitElement {
   ): string =>
     this.hass.localize(`ui.components.selectors.media.${schema.name}`);
 
+  private _computeHelperCallback = (
+    schema: SchemaUnion<typeof MANUAL_SCHEMA>
+  ): string =>
+    this.hass.localize(`ui.components.selectors.media.${schema.name}_detail`);
+
   private _entityChanged(ev: CustomEvent) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
@@ -207,7 +221,8 @@ export class HaMediaSelector extends LitElement {
   private _pickMedia() {
     showMediaBrowserDialog(this, {
       action: "pick",
-      entityId: this.value?.entity_id,
+      entityId:
+        this.value?.entity_id || ensureArray(this.context?.filter_entity)?.[0],
       navigateIds: this.value?.metadata?.navigateIds,
       accept: this.selector.media?.accept,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) => {

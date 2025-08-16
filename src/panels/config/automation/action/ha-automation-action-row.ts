@@ -79,7 +79,6 @@ import "./types/ha-automation-action-device_id";
 import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-if";
 import "./types/ha-automation-action-parallel";
-import "./types/ha-automation-action-play_media";
 import { getRepeatType } from "./types/ha-automation-action-repeat";
 import "./types/ha-automation-action-sequence";
 import "./types/ha-automation-action-service";
@@ -95,7 +94,7 @@ export const getAutomationActionType = memoizeOne(
       return undefined;
     }
     if ("action" in action) {
-      return getActionType(action) as "action" | "play_media";
+      return getActionType(action) as "action";
     }
     if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
       return "condition" as const;
