@@ -189,6 +189,7 @@ export const AREA_CONTROLS = [
   "cover-window",
   "cover-damper",
   "switch",
+  "media-player",
 ] as const;
 
 export type AreaControl = (typeof AREA_CONTROLS)[number];
