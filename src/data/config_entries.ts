@@ -46,13 +46,13 @@ export const renameSubEntry = (
   hass: HomeAssistant,
   entry_id: string,
   subentry_id: string,
-  newTitle: string
+  new_title: string
 ) =>
   hass.callWS({
     type: "config_entries/subentries/rename",
     entry_id,
     subentry_id,
-    newTitle,
+    new_title,
   });
 
 export const deleteSubEntry = (

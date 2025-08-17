@@ -227,7 +227,7 @@ class HaConfigSubEntryRow extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.integrations.rename_subentry_dialog"
       ),
-      defaultValue: this.entry.title,
+      defaultValue: this.subEntry.title,
       inputLabel: this.hass.localize(
         "ui.panel.config.integrations.rename_input_label"
       ),
