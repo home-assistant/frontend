@@ -75,17 +75,17 @@ class HuiFanOscillateCardFeature
       const oldHass = changedProp.get("hass") as HomeAssistant | undefined;
       const oldStateObj = oldHass?.states[this.context!.entity_id!];
       if (oldStateObj !== this._stateObj) {
-        this._oscillate = this._stateObj.attributes.oscillating as boolean;
+        this._oscillate = this._stateObj.attributes.oscillating;
       }
     }
   }
 
   private async _valueChanged(ev: CustomEvent) {
-    const shouldOscillate = (ev.detail as any).value as boolean;
+    const shouldOscillate = (ev.detail as any).value === "yes";
 
     if (shouldOscillate === this._stateObj!.attributes.oscillating) return;
 
-    const wasOscillating = this._stateObj!.attributes.oscillating as boolean;
+    const wasOscillating = this._stateObj!.attributes.oscillating;
     this._oscillate = shouldOscillate;
 
     try {
