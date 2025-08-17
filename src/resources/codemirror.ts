@@ -89,6 +89,7 @@ export const haTheme = EditorView.theme({
     caretColor: "var(--secondary-text-color)",
     paddingTop: "16px",
     paddingBottom: "16px",
+    paddingRight: "44px",
   },
 
   ".cm-panels": {
