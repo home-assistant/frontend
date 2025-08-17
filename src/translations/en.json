@@ -5382,6 +5382,7 @@
           "integration_not_found": "Integration not found.",
           "details": "Integration details",
           "rename_dialog": "Edit the name of this config entry",
+          "rename_subentry_dialog": "Edit the name of this config subentry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
           "search_brand": "Search for a brand name",

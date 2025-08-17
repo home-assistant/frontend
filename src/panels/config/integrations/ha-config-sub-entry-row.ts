@@ -5,20 +5,24 @@ import {
   mdiDevices,
   mdiDotsVertical,
   mdiHandExtendedOutline,
+  mdiRenameBox,
   mdiShapeOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
-import { deleteSubEntry } from "../../../data/config_entries";
+import { deleteSubEntry, renameSubEntry } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import type { HomeAssistant } from "../../../types";
-import { showConfirmationDialog } from "../../lovelace/custom-card-helpers";
+import {
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../lovelace/custom-card-helpers";
 import "./ha-config-entry-device-row";
 
 @customElement("ha-config-sub-entry-row")
@@ -141,6 +145,12 @@ class HaConfigSubEntryRow extends LitElement {
                 </ha-md-menu-item>
               `
             : nothing}
+          <ha-md-menu-item @click=${this._handleRenameSub}>
+            <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </ha-md-menu-item>
           <ha-md-menu-item class="warning" @click=${this._handleDeleteSub}>
             <ha-svg-icon
               slot="start"
@@ -210,6 +220,27 @@ class HaConfigSubEntryRow extends LitElement {
       startFlowHandler: this.entry.entry_id,
       subEntryId: this.subEntry.subentry_id,
     });
+  }
+
+  private async _handleRenameSub(): Promise<void> {
+    const newName = await showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.rename_subentry_dialog"
+      ),
+      defaultValue: this.entry.title,
+      inputLabel: this.hass.localize(
+        "ui.panel.config.integrations.rename_input_label"
+      ),
+    });
+    if (newName === null) {
+      return;
+    }
+    await renameSubEntry(
+      this.hass,
+      this.entry.entry_id,
+      this.subEntry.subentry_id,
+      newName
+    );
   }
 
   private async _handleDeleteSub(): Promise<void> {
