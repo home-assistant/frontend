@@ -85,13 +85,13 @@ class HuiFanOscillateCardFeature
 
     if (shouldOscillate === this._stateObj!.attributes.oscillating) return;
 
-    const wadOscillating = this._stateObj!.attributes.oscillating as boolean;
+    const wasOscillating = this._stateObj!.attributes.oscillating as boolean;
     this._oscillate = shouldOscillate;
 
     try {
       await this._updateOscillate(shouldOscillate);
     } catch (_err) {
-      this._oscillate = wadOscillating;
+      this._oscillate = wasOscillating;
     }
   }
 
