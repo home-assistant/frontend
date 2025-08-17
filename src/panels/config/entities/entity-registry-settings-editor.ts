@@ -332,7 +332,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("_entityId")) {
       const domain = computeDomain(this.entry.entity_id);
       if (domain === "switch") {
-        this._fetchSwitchAsTranslations();
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
       }
 
       if (domain === "weather") {
@@ -345,20 +345,11 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (changedProps.has("helperConfigEntry")) {
       if (this.helperConfigEntry?.domain === "switch_as_x") {
         this._switchAsDomain = computeDomain(this.entry.entity_id);
-        this._fetchSwitchAsTranslations();
+        this.hass.loadBackendTranslation("title", SWITCH_AS_DOMAINS, false);
       } else {
         this._switchAsDomain = "switch";
         this._switchAsInvert = false;
       }
-    }
-  }
-
-  private _fetchSwitchAsTranslations() {
-    const fetchIntegrations = SWITCH_AS_DOMAINS.filter(
-      (d) => domainToName(this.hass.localize, d) === d
-    );
-    if (fetchIntegrations.length) {
-      this.hass.loadBackendTranslation("title", fetchIntegrations, false);
     }
   }
 
