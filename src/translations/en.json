@@ -8060,7 +8060,7 @@
                 "no_compatible_controls": "No compatible controls available for this area"
               },
               "sensor-bar": {
-                "label": "Sensor bar"
+                "label": "Bar graph"
               }
             }
           },
