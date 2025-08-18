@@ -57,7 +57,7 @@ export const OVERVIEW_CATEGORIES_FILTERS: Record<
     },
     {
       domain: "cover",
-      device_class: ["door", "garage_door", "gate"],
+      device_class: ["door", "garage", "gate"],
     },
     {
       domain: "binary_sensor",
