@@ -101,6 +101,10 @@ export interface CounterActionsCardFeatureConfig {
   actions?: CounterActions[];
 }
 
+export interface DateSetCardFeatureConfig {
+  type: "date-set";
+}
+
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
@@ -213,6 +217,7 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | DateSetCardFeatureConfig
   | FanDirectionCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
