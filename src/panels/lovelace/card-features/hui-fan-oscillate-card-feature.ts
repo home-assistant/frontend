@@ -116,15 +116,9 @@ class HuiFanOscillateCardFeature
     const color = stateColorCss(this._stateObj);
 
     const yesNo = ["no", "yes"] as const;
-    type YesNo = (typeof yesNo)[number];
     const options = yesNo.map<ControlSelectOption>((oscillating) => ({
       value: oscillating,
-      label: this.hass!.localize(
-        `ui.common.${oscillating}` as Extract<
-          LocalizeKeys,
-          `ui.common.${YesNo}`
-        >
-      ),
+      label: this.hass!.localize(`ui.common.${oscillating}`),
       path:
         oscillating === "yes" ? mdiArrowOscillating : mdiArrowOscillatingOff,
     }));
