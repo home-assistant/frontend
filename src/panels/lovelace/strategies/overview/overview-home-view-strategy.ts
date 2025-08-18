@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
@@ -14,12 +15,8 @@ import type {
   MarkdownCardConfig,
   TileCardConfig,
 } from "../../cards/types";
-import {
-  AREA_STRATEGY_GROUP_ICONS,
-  getAreas,
-  getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
+import { OVERVIEW_CATEGORIES_ICONS } from "./helpers/overview-categories";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -195,7 +192,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         },
         {
           type: "button",
-          icon: AREA_STRATEGY_GROUP_ICONS.lights,
+          icon: OVERVIEW_CATEGORIES_ICONS.lights,
           name: "Lights",
           grid_options: {
             rows: 2,
@@ -208,15 +205,28 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: AREA_STRATEGY_GROUP_ICONS.covers,
-          name: "Covers",
+          icon: OVERVIEW_CATEGORIES_ICONS.climate,
+          name: "Climate",
           grid_options: {
             rows: 2,
             columns: 4,
           },
           tap_action: {
             action: "navigate",
-            navigation_path: "covers",
+            navigation_path: "climate",
+          },
+        } satisfies ButtonCardConfig,
+        {
+          type: "button",
+          icon: OVERVIEW_CATEGORIES_ICONS.security,
+          name: "Security",
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+          tap_action: {
+            action: "navigate",
+            navigation_path: "security",
           },
         } satisfies ButtonCardConfig,
         {

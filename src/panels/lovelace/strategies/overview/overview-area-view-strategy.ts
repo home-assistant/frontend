@@ -1,5 +1,6 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -7,11 +8,14 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
+import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
-  AREA_STRATEGY_GROUP_ICONS,
-  computeAreaTileCardConfig,
-  getAreaGroupedEntities,
-} from "../areas/helpers/areas-strategy-helper";
+  findEntities,
+  OVERVIEW_CATEGORIES,
+  OVERVIEW_CATEGORIES_FILTERS,
+  OVERVIEW_CATEGORIES_ICONS,
+  type OverviewCategory,
+} from "./helpers/overview-categories";
 
 export interface OverviewAreaViewStrategyConfig {
   type: "overview-area";
@@ -71,19 +75,26 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
       });
     }
 
-    const groupedEntities = getAreaGroupedEntities(config.area, hass);
-
     const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
-    const {
-      lights,
-      climate,
-      covers,
-      media_players,
-      security,
-      actions,
-      others,
-    } = groupedEntities;
+    const areaFilter = generateEntityFilter(hass, { area: config.area });
+
+    const allEntities = Object.keys(hass.states);
+    const areaEntities = allEntities.filter(areaFilter);
+
+    const entitiesByCategory = OVERVIEW_CATEGORIES.reduce(
+      (acc, category) => {
+        const categoryFilters = OVERVIEW_CATEGORIES_FILTERS[category];
+        const filterFunctions = categoryFilters.map((filter) =>
+          generateEntityFilter(hass, filter)
+        );
+        acc[category] = findEntities(areaEntities, filterFunctions);
+        return acc;
+      },
+      {} as Record<OverviewCategory, string[]>
+    );
+
+    const { lights, climate, security } = entitiesByCategory;
 
     if (lights.length > 0) {
       sections.push({
@@ -91,24 +102,10 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.areas.groups.lights"),
-            AREA_STRATEGY_GROUP_ICONS.lights,
+            OVERVIEW_CATEGORIES_ICONS.lights,
             "lights"
           ),
           ...lights.map(computeTileCard),
-        ],
-      });
-    }
-
-    if (covers.length > 0) {
-      sections.push({
-        type: "grid",
-        cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.covers"),
-            AREA_STRATEGY_GROUP_ICONS.covers,
-            "covers"
-          ),
-          ...covers.map(computeTileCard),
         ],
       });
     }
@@ -119,24 +116,10 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.areas.groups.climate"),
-            AREA_STRATEGY_GROUP_ICONS.climate
+            OVERVIEW_CATEGORIES_ICONS.climate,
+            "climate"
           ),
           ...climate.map(computeTileCard),
-        ],
-      });
-    }
-
-    if (media_players.length > 0) {
-      sections.push({
-        type: "grid",
-        cards: [
-          computeHeadingCard(
-            hass.localize(
-              "ui.panel.lovelace.strategy.areas.groups.media_players"
-            ),
-            AREA_STRATEGY_GROUP_ICONS.media_players
-          ),
-          ...media_players.map(computeTileCard),
         ],
       });
     }
@@ -147,35 +130,10 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.areas.groups.security"),
-            AREA_STRATEGY_GROUP_ICONS.security
+            OVERVIEW_CATEGORIES_ICONS.security,
+            "security"
           ),
           ...security.map(computeTileCard),
-        ],
-      });
-    }
-
-    if (actions.length > 0) {
-      sections.push({
-        type: "grid",
-        cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.actions"),
-            AREA_STRATEGY_GROUP_ICONS.actions
-          ),
-          ...actions.map(computeTileCard),
-        ],
-      });
-    }
-
-    if (others.length > 0) {
-      sections.push({
-        type: "grid",
-        cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.others"),
-            AREA_STRATEGY_GROUP_ICONS.others
-          ),
-          ...others.map(computeTileCard),
         ],
       });
     }
