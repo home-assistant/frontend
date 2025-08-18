@@ -8059,8 +8059,8 @@
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               },
-              "sensor-bar": {
-                "label": "Bar graph"
+              "progress-bar": {
+                "label": "Progress bar"
               }
             }
           },

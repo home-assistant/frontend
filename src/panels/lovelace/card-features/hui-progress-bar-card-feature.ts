@@ -5,11 +5,10 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import type {
   LovelaceCardFeatureContext,
-  SensorBarCardFeatureConfig,
+  ProgressBarCardFeatureConfig,
 } from "./types";
-import { stateColorCss } from "../../../common/entity/state_color";
 
-export const supportsSensorBarCardFeature = (
+export const supportsProgressBarCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) => {
@@ -21,8 +20,8 @@ export const supportsSensorBarCardFeature = (
   return domain === "sensor" && stateObj.attributes.unit_of_measurement === "%";
 };
 
-@customElement("hui-sensor-bar-card-feature")
-class HuiSensorBarCardFeature
+@customElement("hui-progress-bar-card-feature")
+class HuiProgressBarCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
@@ -30,15 +29,15 @@ class HuiSensorBarCardFeature
 
   @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
-  @state() private _config?: SensorBarCardFeatureConfig;
+  @state() private _config?: ProgressBarCardFeatureConfig;
 
-  static getStubConfig(): SensorBarCardFeatureConfig {
+  static getStubConfig(): ProgressBarCardFeatureConfig {
     return {
-      type: "sensor-bar",
+      type: "progress-bar",
     };
   }
 
-  public setConfig(config: SensorBarCardFeatureConfig): void {
+  public setConfig(config: ProgressBarCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -52,37 +51,37 @@ class HuiSensorBarCardFeature
       !this.context ||
       !this.context.entity_id ||
       !this.hass.states[this.context.entity_id] ||
-      !supportsSensorBarCardFeature(this.hass, this.context)
+      !supportsProgressBarCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
     const stateObj = this.hass.states[this.context.entity_id];
-    const color = stateColorCss(stateObj);
     const value = stateObj.state;
-    return html`<div
-      class="sensor-bar-fill"
-      style="width: ${value}%; background-color: ${color}"
-    ></div>`;
+    return html`<div style="width: ${value}%"></div>
+      <div class="progress-bar-background"></div>`;
   }
 
   static styles = css`
     :host {
-      display: block;
+      display: flex;
       width: 100%;
       height: var(--feature-height);
-      border-radius: 4px;
+      border-radius: var(--feature-border-radius);
       overflow: hidden;
-      background-color: var(--secondary-background-color);
     }
-    .sensor-bar-fill {
+    :host > div {
       height: 100%;
-      background-color: var(--primary-color);
+      background-color: var(--feature-color);
+    }
+    .progress-bar-background {
+      flex: 1;
+      opacity: 0.2;
     }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-sensor-bar-card-feature": HuiSensorBarCardFeature;
+    "hui-progress-bar-card-feature": HuiProgressBarCardFeature;
   }
 }
