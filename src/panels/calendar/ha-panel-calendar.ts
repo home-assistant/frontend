@@ -135,10 +135,7 @@ class PanelCalendar extends LitElement {
             >
               <ha-button slot="trigger">
                 ${this.hass.localize("ui.components.calendar.my_calendars")}
-                <ha-svg-icon
-                  slot="trailingIcon"
-                  .path=${mdiChevronDown}
-                ></ha-svg-icon>
+                <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
               </ha-button>
               ${calendarItems}
               ${this.hass.user?.is_admin
@@ -303,25 +300,7 @@ class PanelCalendar extends LitElement {
           --calendar-border-width: 1px 0;
         }
         ha-button-menu ha-button {
-          --mdc-theme-primary: currentColor;
-          --mdc-typography-button-text-transform: none;
-          --mdc-typography-button-font-size: var(
-            --mdc-typography-headline6-font-size,
-            var(--ha-font-size-l)
-          );
-          --mdc-typography-button-font-weight: var(
-            --mdc-typography-headline6-font-weight,
-            var(--ha-font-weight-medium)
-          );
-          --mdc-typography-button-letter-spacing: var(
-            --mdc-typography-headline6-letter-spacing,
-            0.0125em
-          );
-          --mdc-typography-button-line-height: var(
-            --mdc-typography-headline6-line-height,
-            var(--ha-line-height-expanded)
-          );
-          --button-height: 40px;
+          --ha-font-size-m: var(--ha-font-size-l);
         }
         :host([mobile]) .lists {
           --mdc-menu-min-width: 100vw;

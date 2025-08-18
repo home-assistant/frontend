@@ -12,6 +12,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
@@ -107,16 +108,17 @@ class HaConfigSectionStorage extends LitElement {
                       this._hostInfo,
                       this._storageInfo
                     )}
-                    ${this._hostInfo.disk_life_time !== "" &&
-                    this._hostInfo.disk_life_time >= 10
+                    ${this._hostInfo.disk_life_time !== null
                       ? // prettier-ignore
                         html`
                           <ha-metric
                             .heading=${this.hass.localize(
-                              "ui.panel.config.storage.emmc_lifetime_used"
+                              "ui.panel.config.storage.lifetime_used"
                             )}
                             .value=${this._hostInfo.disk_life_time}
-                            .tooltip=${`${this._hostInfo.disk_life_time - 10}% - ${this._hostInfo.disk_life_time}%`}
+                            .tooltip=${this.hass.localize(
+                              "ui.panel.config.storage.lifetime_used_description"
+                            )}
                             class="emmc"
                           ></ha-metric>
                         `
@@ -124,11 +126,14 @@ class HaConfigSectionStorage extends LitElement {
                   </div>
                   ${this._hostInfo
                     ? html`<div class="card-actions">
-                        <mwc-button @click=${this._moveDatadisk}>
+                        <ha-button
+                          appearance="plain"
+                          @click=${this._moveDatadisk}
+                        >
                           ${this.hass.localize(
                             "ui.panel.config.storage.datadisk.title"
                           )}
-                        </mwc-button>
+                        </ha-button>
                       </div>`
                     : nothing}
                 </ha-card>
@@ -154,14 +159,15 @@ class HaConfigSectionStorage extends LitElement {
                           "ui.panel.config.storage.network_mounts.not_supported.os",
                           { version: "10.2" }
                         )}
-                        <mwc-button
+                        <ha-button
+                          appearance="plain"
                           slot="action"
                           @click=${this._navigateToUpdates}
                         >
                           ${this.hass.localize(
                             "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
                           )}
-                        </mwc-button>`
+                        </ha-button>`
                     : this.hass.localize(
                         "ui.panel.config.storage.network_mounts.not_supported.supervised"
                       )}
@@ -219,11 +225,11 @@ class HaConfigSectionStorage extends LitElement {
                   </div>`}
             ${this._mountsInfo !== null
               ? html`<div class="card-actions">
-                  <mwc-button @click=${this._addMount}>
+                  <ha-button appearance="plain" @click=${this._addMount}>
                     ${this.hass.localize(
                       "ui.panel.config.storage.network_mounts.add_title"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </div>`
               : nothing}
           </ha-card>
@@ -379,6 +385,10 @@ class HaConfigSectionStorage extends LitElement {
       padding: 28px 20px 0;
       max-width: 1040px;
       margin: 0 auto;
+    }
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
     }
     ha-card {
       max-width: 600px;

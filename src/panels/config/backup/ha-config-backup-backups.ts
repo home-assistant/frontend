@@ -417,7 +417,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         <div slot="selection-bar">
           ${!this.narrow
             ? html`
-                <ha-button @click=${this._deleteSelected} class="warning">
+                <ha-button
+                  appearance="plain"
+                  @click=${this._deleteSelected}
+                  variant="danger"
+                >
                   ${this.hass.localize(
                     "ui.panel.config.backup.backups.delete_selected"
                   )}

@@ -69,6 +69,7 @@ class HassTabsSubpage extends LitElement {
       activeTab: PageNavigation | undefined,
       _components,
       _language,
+      _userData,
       _narrow,
       localizeFunc
     ) => {
@@ -123,6 +124,7 @@ class HassTabsSubpage extends LitElement {
       this._activeTab,
       this.hass.config.components,
       this.hass.language,
+      this.hass.userData,
       this.narrow,
       this.localizeFunc || this.hass.localize
     );

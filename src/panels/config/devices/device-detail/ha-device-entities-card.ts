@@ -5,10 +5,11 @@ import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
 import { computeEntityName } from "../../../../common/entity/compute_entity_name";
 import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
+import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-list";
+import "../../../../components/ha-list-item";
 import type { ExtEntityRegistryEntry } from "../../../../data/entity_registry";
 import { getExtendedEntityRegistryEntry } from "../../../../data/entity_registry";
 import { entryIcon } from "../../../../data/icons";
@@ -125,11 +126,11 @@ export class HaDeviceEntitiesCard extends LitElement {
             </div>`
           : nothing}
         <div class="card-actions">
-          <mwc-button @click=${this._addToLovelaceView}>
+          <ha-button appearance="plain" @click=${this._addToLovelaceView}>
             ${this.hass.localize(
               "ui.panel.config.devices.entities.add_entities_lovelace"
             )}
-          </mwc-button>
+          </ha-button>
         </div>
       </ha-card>
     `;
@@ -299,6 +300,9 @@ export class HaDeviceEntitiesCard extends LitElement {
     ha-list-item {
       height: 40px;
       --mdc-ripple-color: transparent;
+    }
+    .card-actions {
+      padding: 4px 16px 4px 4px;
     }
   `;
 }

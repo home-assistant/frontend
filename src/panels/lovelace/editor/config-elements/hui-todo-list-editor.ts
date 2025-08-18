@@ -3,6 +3,11 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
+import { mdiGestureTap } from "@mdi/js";
+import {
+  ITEM_TAP_ACTION_EDIT,
+  ITEM_TAP_ACTION_TOGGLE,
+} from "../../cards/hui-todo-list-card";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
@@ -17,6 +22,8 @@ import { configElementStyle } from "./config-elements-style";
 import { TodoListEntityFeature, TodoSortMode } from "../../../../data/todo";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 
+const ITEM_TAP_ACTIONS = [ITEM_TAP_ACTION_EDIT, ITEM_TAP_ACTION_TOGGLE];
+
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
@@ -26,6 +33,7 @@ const cardConfigStruct = assign(
     hide_completed: optional(boolean()),
     hide_create: optional(boolean()),
     display_order: optional(string()),
+    item_tap_action: optional(string()),
   })
 );
 
@@ -64,11 +72,35 @@ export class HuiTodoListEditor
             },
           },
         },
+        {
+          name: "interactions",
+          type: "expandable",
+          flatten: true,
+          iconPath: mdiGestureTap,
+          schema: [
+            {
+              name: "item_tap_action",
+              required: true,
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: Object.values(ITEM_TAP_ACTIONS).map((action) => ({
+                    value: action,
+                    label: localize(
+                      `ui.panel.lovelace.editor.card.todo-list.actions.${action}`
+                    ),
+                  })),
+                },
+              },
+            },
+          ],
+        },
       ] as const
   );
 
   private _data = memoizeOne((config) => ({
     display_order: "none",
+    item_tap_action: "edit",
     ...config,
   }));
 
@@ -106,7 +138,10 @@ export class HuiTodoListEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
+    const config = { ...ev.detail.value };
+    if (config.item_tap_action === ITEM_TAP_ACTION_EDIT) {
+      delete config.item_tap_action;
+    }
     fireEvent(this, "config-changed", { config });
   }
 
@@ -130,6 +165,7 @@ export class HuiTodoListEditor
       case "hide_completed":
       case "hide_create":
       case "display_order":
+      case "item_tap_action":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.todo-list.${schema.name}`
         );

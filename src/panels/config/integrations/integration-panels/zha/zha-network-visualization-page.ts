@@ -1,17 +1,17 @@
-import "@material/mwc-button";
-import type { CSSResultGroup, PropertyValues } from "lit";
-import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { mdiRefresh } from "@mdi/js";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
-import { mdiRefresh } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
-  NetworkNode,
   NetworkLink,
+  NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
@@ -19,8 +19,6 @@ import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
 import { zhaTabs } from "./zha-config-dashboard";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -157,10 +155,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
   }
 
   private _createChartData(devices: ZHADevice[]): NetworkData {
-    const primaryColor = colorVariables["primary-color"];
-    const routerColor = colorVariables["cyan-color"];
-    const endDeviceColor = colorVariables["teal-color"];
-    const offlineColor = colorVariables["error-color"];
+    const style = getComputedStyle(this);
+
+    const primaryColor = style.getPropertyValue("--primary-color");
+    const routerColor = style.getPropertyValue("--cyan-color");
+    const endDeviceColor = style.getPropertyValue("--teal-color");
+    const offlineColor = style.getPropertyValue("--error-color");
     const nodes: NetworkNode[] = [];
     const links: NetworkLink[] = [];
     const categories = [
@@ -283,7 +283,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
                 color:
                   route.route_status === "Active"
                     ? primaryColor
-                    : colorVariables["disabled-color"],
+                    : style.getPropertyValue("--disabled-color"),
                 type: ["Child", "Parent"].includes(neighbor.relationship)
                   ? "solid"
                   : "dotted",
@@ -323,7 +323,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             symbolSize: 5,
             lineStyle: {
               width: 1,
-              color: colorVariables["disabled-color"],
+              color: style.getPropertyValue("--disabled-color"),
               type: "dotted",
             },
             ignoreForceLayout: true,

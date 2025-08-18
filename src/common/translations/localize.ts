@@ -22,8 +22,8 @@ export type LocalizeKeys =
   | `ui.dialogs.more_info_control.lawn_mower.${string}`
   | `ui.dialogs.more_info_control.vacuum.${string}`
   | `ui.dialogs.quick-bar.commands.${string}`
-  | `ui.dialogs.unhealthy.reason.${string}`
-  | `ui.dialogs.unsupported.reason.${string}`
+  | `ui.dialogs.unhealthy.reasons.${string}`
+  | `ui.dialogs.unsupported.reasons.${string}`
   | `ui.panel.config.${string}.${"caption" | "description"}`
   | `ui.panel.config.dashboard.${string}`
   | `ui.panel.config.zha.${string}`

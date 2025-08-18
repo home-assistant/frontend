@@ -19,6 +19,7 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { supportsAlarmModesCardFeature } from "../../card-features/hui-alarm-modes-card-feature";
 import { supportsAreaControlsCardFeature } from "../../card-features/hui-area-controls-card-feature";
+import { supportsButtonCardFeature } from "../../card-features/hui-button-card-feature";
 import { supportsClimateFanModesCardFeature } from "../../card-features/hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "../../card-features/hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "../../card-features/hui-climate-preset-modes-card-feature";
@@ -29,6 +30,7 @@ import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
@@ -46,6 +48,8 @@ import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-ta
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
 import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update-actions-card-feature";
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
+import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
+import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
@@ -63,6 +67,7 @@ type SupportsFeature = (
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "area-controls",
+  "button",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -73,6 +78,7 @@ const UI_FEATURE_TYPES = [
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "fan-direction",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -90,6 +96,8 @@ const UI_FEATURE_TYPES = [
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "valve-open-close",
+  "valve-position",
   "water-heater-operation-modes",
 ] as const satisfies readonly FeatureType[];
 
@@ -98,6 +106,7 @@ type UiFeatureTypes = (typeof UI_FEATURE_TYPES)[number];
 const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "alarm-modes",
   "area-controls",
+  "button",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -120,6 +129,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "area-controls": supportsAreaControlsCardFeature,
+  button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
   "climate-swing-horizontal-modes":
@@ -131,6 +141,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "fan-direction": supportsFanDirectionCardFeature,
   "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
@@ -148,6 +159,8 @@ const SUPPORTS_FEATURE_TYPES: Record<
   toggle: supportsToggleCardFeature,
   "update-actions": supportsUpdateActionsCardFeature,
   "vacuum-commands": supportsVacuumCommandsCardFeature,
+  "valve-open-close": supportsValveOpenCloseCardFeature,
+  "valve-position": supportsValvePositionCardFeature,
   "water-heater-operation-modes": supportsWaterHeaterOperationModesCardFeature,
 };
 
@@ -368,14 +381,9 @@ export class HuiCardFeaturesEditor extends LitElement {
               @action=${this._addFeature}
               @closed=${stopPropagation}
             >
-              <ha-button
-                slot="trigger"
-                outlined
-                .label=${this.hass!.localize(
-                  `ui.panel.lovelace.editor.features.add`
-                )}
-              >
-                <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-button slot="trigger" appearance="filled" size="small">
+                <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+                ${this.hass!.localize(`ui.panel.lovelace.editor.features.add`)}
               </ha-button>
               ${types.map(
                 (type) => html`

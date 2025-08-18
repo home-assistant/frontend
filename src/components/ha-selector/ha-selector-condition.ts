@@ -27,6 +27,7 @@ export class HaConditionSelector extends LitElement {
         .conditions=${this.value || []}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .optionsInSidebar=${!!this.selector.condition?.optionsInSidebar}
       ></ha-automation-condition>
     `;
   }

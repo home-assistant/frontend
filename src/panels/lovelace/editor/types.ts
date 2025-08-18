@@ -25,6 +25,7 @@ export interface GUIModeChangedEvent {
 export interface ViewEditEvent extends Event {
   detail: {
     config: LovelaceViewConfig;
+    valid?: boolean;
   };
 }
 

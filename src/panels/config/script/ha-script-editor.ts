@@ -1,5 +1,4 @@
 import { consume } from "@lit/context";
-import "@material/mwc-button";
 import {
   mdiCog,
   mdiContentDuplicate,
@@ -27,6 +26,7 @@ import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-fab";
 
@@ -45,12 +45,12 @@ import {
 } from "../../../data/entity_registry";
 import type { BlueprintScriptConfig, ScriptConfig } from "../../../data/script";
 import {
-  normalizeScriptConfig,
   deleteScript,
   fetchScriptFileConfig,
   getScriptEditorInitData,
   getScriptStateConfig,
   hasScriptFields,
+  normalizeScriptConfig,
   showScriptEditor,
   triggerScript,
 } from "../../../data/script";
@@ -172,11 +172,15 @@ export class HaScriptEditor extends SubscribeMixin(
       >
         ${this.scriptId && !this.narrow
           ? html`
-              <mwc-button @click=${this._showTrace} slot="toolbar-icon">
+              <ha-button
+                appearance="plain"
+                @click=${this._showTrace}
+                slot="toolbar-icon"
+              >
                 ${this.hass.localize(
                   "ui.panel.config.script.editor.show_trace"
                 )}
-              </mwc-button>
+              </ha-button>
             `
           : ""}
         <ha-button-menu slot="toolbar-icon">
@@ -383,11 +387,11 @@ export class HaScriptEditor extends SubscribeMixin(
                   "ui.panel.config.script.editor.confirm_take_control"
                 )}
                 <div slot="action" style="display: flex;">
-                  <mwc-button @click=${this._takeControlSave}
-                    >${this.hass.localize("ui.common.yes")}</mwc-button
+                  <ha-button appearance="plain" @click=${this._takeControlSave}
+                    >${this.hass.localize("ui.common.yes")}</ha-button
                   >
-                  <mwc-button @click=${this._revertBlueprint}
-                    >${this.hass.localize("ui.common.no")}</mwc-button
+                  <ha-button appearance="plain" @click=${this._revertBlueprint}
+                    >${this.hass.localize("ui.common.no")}</ha-button
                   >
                 </div>
               </ha-alert>`
@@ -396,11 +400,15 @@ export class HaScriptEditor extends SubscribeMixin(
                   >${this.hass.localize(
                     "ui.panel.config.script.editor.read_only"
                   )}
-                  <mwc-button slot="action" @click=${this._duplicate}>
+                  <ha-button
+                    appearance="plain"
+                    slot="action"
+                    @click=${this._duplicate}
+                  >
                     ${this.hass.localize(
                       "ui.panel.config.script.editor.migrate"
                     )}
-                  </mwc-button>
+                  </ha-button>
                 </ha-alert>`
               : nothing}
           ${this._mode === "gui"
@@ -430,6 +438,7 @@ export class HaScriptEditor extends SubscribeMixin(
                           .disabled=${this._readOnly}
                           .dirty=${this._dirty}
                           @value-changed=${this._valueChanged}
+                          @editor-save=${this._handleSave}
                         ></manual-script-editor>
                       `}
                 </div>
@@ -442,6 +451,7 @@ export class HaScriptEditor extends SubscribeMixin(
                   .readOnly=${this._readOnly}
                   disable-fullscreen
                   @value-changed=${this._yamlChanged}
+                  @editor-save=${this._handleSave}
                   .showErrors=${false}
                 ></ha-yaml-editor>`
               : nothing}

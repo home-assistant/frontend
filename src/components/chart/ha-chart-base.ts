@@ -29,7 +29,6 @@ import { formatTimeLabel } from "./axis-label";
 import { ensureArray } from "../../common/array/ensure-array";
 import "../chips/ha-assist-chip";
 import { downSampleLineData } from "./down-sample";
-import { colorVariables } from "../../resources/theme/color.globals";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
 const LEGEND_OVERFLOW_LIMIT = 10;
@@ -168,14 +167,16 @@ export class HaChartBase extends LitElement {
   }
 
   protected firstUpdated() {
-    this._setupChart();
+    if (this.isConnected) {
+      this._setupChart();
+    }
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     if (!this.chart) {
       return;
     }
-    if (changedProps.has("_themes")) {
+    if (changedProps.has("_themes") && this.hasUpdated) {
       this._setupChart();
       return;
     }
@@ -342,7 +343,8 @@ export class HaChartBase extends LitElement {
         echarts.use(this.extraComponents);
       }
 
-      echarts.registerTheme("custom", this._createTheme());
+      const style = getComputedStyle(this);
+      echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(container, "custom");
       this.chart.on("datazoom", (e: any) => {
@@ -385,24 +387,25 @@ export class HaChartBase extends LitElement {
           lastTipX = e.x;
           lastTipY = e.y;
           this.chart?.setOption({
-            xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-              (axis: XAXisOption) =>
-                axis.show
-                  ? {
-                      ...axis,
-                      axisPointer: {
-                        ...axis.axisPointer,
-                        status: "show",
-                        handle: {
-                          color: colorVariables["primary-color"],
-                          margin: 0,
-                          size: 20,
-                          ...axis.axisPointer?.handle,
-                          show: true,
-                        },
+            xAxis: ensureArray(
+              (this.chart?.getOption().xAxis as any) ?? []
+            ).map((axis: XAXisOption) =>
+              axis.show
+                ? {
+                    ...axis,
+                    axisPointer: {
+                      ...axis.axisPointer,
+                      status: "show",
+                      handle: {
+                        color: style.getPropertyValue("--primary-color"),
+                        margin: 0,
+                        size: 20,
+                        ...axis.axisPointer?.handle,
+                        show: true,
                       },
-                    }
-                  : axis
+                    },
+                  }
+                : axis
             ),
           });
         });
@@ -415,21 +418,22 @@ export class HaChartBase extends LitElement {
               return;
             }
             this.chart?.setOption({
-              xAxis: ensureArray(this.chart?.getOption().xAxis as any).map(
-                (axis: XAXisOption) =>
-                  axis.show
-                    ? {
-                        ...axis,
-                        axisPointer: {
-                          ...axis.axisPointer,
-                          handle: {
-                            ...axis.axisPointer?.handle,
-                            show: false,
-                          },
-                          status: "hide",
+              xAxis: ensureArray(
+                (this.chart?.getOption().xAxis as any) ?? []
+              ).map((axis: XAXisOption) =>
+                axis.show
+                  ? {
+                      ...axis,
+                      axisPointer: {
+                        ...axis.axisPointer,
+                        handle: {
+                          ...axis.axisPointer?.handle,
+                          show: false,
                         },
-                      }
-                    : axis
+                        status: "hide",
+                      },
+                    }
+                  : axis
               ),
             });
             this.chart?.dispatchAction({
@@ -568,8 +572,7 @@ export class HaChartBase extends LitElement {
     return options;
   }
 
-  private _createTheme() {
-    const style = getComputedStyle(this);
+  private _createTheme(style: CSSStyleDeclaration) {
     return {
       color: getAllGraphColors(style),
       backgroundColor: "transparent",
@@ -591,6 +594,13 @@ export class HaChartBase extends LitElement {
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
       graph: {
+        label: {
+          color: style.getPropertyValue("--primary-text-color"),
+          textBorderColor: style.getPropertyValue("--primary-background-color"),
+          textBorderWidth: 2,
+        },
+      },
+      sankey: {
         label: {
           color: style.getPropertyValue("--primary-text-color"),
           textBorderColor: style.getPropertyValue("--primary-background-color"),
@@ -802,6 +812,7 @@ export class HaChartBase extends LitElement {
         };
       }
     }
+
     const replaceMerge = options.series ? ["series"] : [];
     this.chart.setOption(options, { replaceMerge });
   }

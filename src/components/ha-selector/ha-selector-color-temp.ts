@@ -95,6 +95,7 @@ export class HaColorTempSelector extends LitElement {
   );
 
   private _valueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: Number((ev.detail as any).value),
     });

@@ -81,31 +81,33 @@ export class CloudDiscover extends LitElement {
             </div>
           </div>
           <div class="more">
-            <a href="https://www.nabucasa.com" target="_blank" rel="noreferrer">
+            <ha-button
+              appearance="plain"
+              size="small"
+              href="https://www.nabucasa.com"
+              target="_blank"
+              rel="noreferrer"
+            >
               ${this.hass.localize(
                 "ui.panel.config.voice_assistants.assistants.cloud.and_more"
               )}
-              <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
-            </a>
+              <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+            </ha-button>
           </div>
         </div>
         ${isComponentLoaded(this.hass, "cloud")
           ? html`
               <div class="card-actions">
-                <a href="/config/cloud/login">
-                  <ha-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
-                    )}
-                  </ha-button>
-                </a>
-                <a href="/config/cloud/register">
-                  <ha-button unelevated>
-                    ${this.hass.localize(
-                      "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
-                    )}
-                  </ha-button>
-                </a>
+                <ha-button appearance="plain" href="/config/cloud/login">
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.cloud.sign_in"
+                  )}
+                </ha-button>
+                <ha-button href="/config/cloud/register" appearance="filled">
+                  ${this.hass.localize(
+                    "ui.panel.config.voice_assistants.assistants.cloud.try_one_month"
+                  )}
+                </ha-button>
               </div>
             `
           : nothing}

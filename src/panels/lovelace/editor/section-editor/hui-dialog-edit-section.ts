@@ -187,7 +187,11 @@ export class HuiDialogEditSection
             : nothing}
         </ha-dialog-header>
         ${content}
-        <ha-button slot="secondaryAction" @click=${this._cancel}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this._cancel}
+        >
           ${this.hass!.localize("ui.common.cancel")}
         </ha-button>
 
