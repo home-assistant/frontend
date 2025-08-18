@@ -261,9 +261,7 @@ export class HaManualAutomationEditor extends LitElement {
           <ha-fab
             slot="fab"
             class=${this.dirty ? "dirty" : ""}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.save"
-            )}
+            .label=${this.hass.localize("ui.common.save")}
             .disabled=${this.saving}
             extended
             @click=${this._saveAutomation}

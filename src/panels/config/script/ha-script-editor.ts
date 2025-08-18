@@ -464,12 +464,10 @@ export class HaScriptEditor extends SubscribeMixin(
                   <ha-fab
                     slot="fab"
                     class=${!this._readOnly && this._dirty ? "dirty" : ""}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.script.editor.save_script"
-                    )}
+                    .label=${this.hass.localize("ui.common.save")}
                     .disabled=${this._saving}
                     extended
-                    @click=${this._saveScript}
+                    @click=${this._handleSaveScript}
                   >
                     <ha-svg-icon
                       slot="icon"

@@ -193,9 +193,7 @@ export class HaManualScriptEditor extends LitElement {
           <ha-fab
             slot="fab"
             class=${this.dirty ? "dirty" : ""}
-            .label=${this.hass.localize(
-              "ui.panel.config.script.editor.save_script"
-            )}
+            .label=${this.hass.localize("ui.common.save")}
             .disabled=${this.saving}
             extended
             @click=${this._saveScript}
