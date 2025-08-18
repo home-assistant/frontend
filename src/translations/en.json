@@ -7902,6 +7902,9 @@
               "lock-open-door": {
                 "label": "Lock open door"
               },
+              "media-player-playback": {
+                "label": "Media player playback controls"
+              },
               "media-player-volume-slider": {
                 "label": "Media player volume slider"
               },
