@@ -50,6 +50,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
   @property({ attribute: false }) public isStrategy = false;
 
+  @property({ attribute: false }) public allowEdit = false;
+
   @property({ attribute: false }) public cards: HuiCard[] = [];
 
   @property({ attribute: "import-only", type: Boolean })
@@ -80,7 +82,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
 
     const cardsConfig = this._config?.cards ?? [];
 
-    const editMode = Boolean(this.lovelace?.editMode && !this.isStrategy);
+    const editMode = Boolean(this.allowEdit && this.lovelace?.editMode);
 
     const sortableOptions = this.importOnly
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS

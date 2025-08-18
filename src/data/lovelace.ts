@@ -23,6 +23,7 @@ export interface LovelaceViewElement extends HTMLElement {
   badges?: HuiBadge[];
   sections?: HuiSection[];
   isStrategy: boolean;
+  allowEdit: boolean;
   setConfig(config: LovelaceViewConfig): void;
 }
 
@@ -35,6 +36,7 @@ export interface LovelaceSectionElement extends HTMLElement {
   cards?: HuiCard[];
   isStrategy: boolean;
   importOnly?: boolean;
+  allowEdit: boolean;
   setConfig(config: LovelaceSectionConfig): void;
 }
 

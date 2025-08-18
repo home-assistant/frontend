@@ -25,7 +25,6 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
-import "./hui-view-header";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
 import {
@@ -44,6 +43,7 @@ import {
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
 import type { Lovelace } from "../types";
+import "./hui-view-header";
 
 export const DEFAULT_MAX_COLUMNS = 4;
 
@@ -58,6 +58,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   @property({ type: Number }) public index?: number;
 
   @property({ attribute: false }) public isStrategy = false;
+
+  @property({ attribute: false }) public allowEdit = false;
 
   @property({ attribute: false }) public sections: HuiSection[] = [];
 
@@ -149,7 +151,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const sections = this.sections;
     const totalSectionCount =
       this._sectionColumnCount + (this.lovelace?.editMode ? 1 : 0);
-    const editMode = this.lovelace.editMode;
+
+    const editMode = Boolean(this.allowEdit && this.lovelace.editMode);
 
     const maxColumnCount = this._columnsController.value ?? 1;
 
@@ -163,6 +166,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .hass=${this.hass}
           .badges=${this.badges}
           .lovelace=${this.lovelace}
+          .editMode=${editMode}
           .viewIndex=${this.index}
           .config=${this._config?.header}
           style=${styleMap({
@@ -205,7 +209,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   })}
                 >
                     ${
-                      this.lovelace?.editMode
+                      editMode
                         ? html`
                             <div class="section-header">
                               ${editMode

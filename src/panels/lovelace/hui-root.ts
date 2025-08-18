@@ -983,6 +983,7 @@ class HUIRoot extends LitElement {
     } else {
       view = document.createElement("hui-view");
       view.index = viewIndex;
+      view.allowEdit = !isStrategyDashboard(this.lovelace!.rawConfig);
       this._viewCache![viewIndex] = view;
     }
 

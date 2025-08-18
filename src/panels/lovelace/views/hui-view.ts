@@ -80,6 +80,8 @@ export class HUIView extends ReactiveElement {
 
   @property({ type: Number }) public index!: number;
 
+  @property({ attribute: false }) public allowEdit = false;
+
   @state() private _cards: HuiCard[] = [];
 
   @state() private _badges: HuiBadge[] = [];
@@ -105,7 +107,7 @@ export class HUIView extends ReactiveElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = this.allowEdit && this.lovelace.editMode;
     element.config = cardConfig;
     element.addEventListener("card-updated", (ev: Event) => {
       ev.stopPropagation();
@@ -118,7 +120,7 @@ export class HUIView extends ReactiveElement {
   public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
     const element = document.createElement("hui-badge");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = this.allowEdit && this.lovelace.editMode;
     element.config = badgeConfig;
     element.addEventListener("badge-updated", (ev: Event) => {
       ev.stopPropagation();
@@ -130,12 +132,13 @@ export class HUIView extends ReactiveElement {
 
   // Public to make demo happy
   public createSectionElement(sectionConfig: LovelaceSectionConfig) {
+    const viewConfig = this.lovelace.config.views[this.index];
     const element = document.createElement("hui-section");
     element.hass = this.hass;
     element.lovelace = this.lovelace;
     element.config = sectionConfig;
     element.viewIndex = this.index;
-    element.preview = this.lovelace.editMode;
+    element.allowEdit = this.allowEdit && !isStrategyView(viewConfig);
     element.addEventListener(
       "ll-rebuild",
       (ev: Event) => {
@@ -276,20 +279,26 @@ export class HUIView extends ReactiveElement {
       }
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
+      }
+      if (
+        changedProperties.has("lovelace") ||
+        changedProperties.has("allowEdit")
+      ) {
+        const preview = this.allowEdit && this.lovelace.editMode;
         this._sections.forEach((element) => {
           try {
             element.hass = this.hass;
             element.lovelace = this.lovelace;
-            element.preview = this.lovelace.editMode;
+            element.preview = preview;
           } catch (e: any) {
             this._rebuildSection(element, createErrorSectionConfig(e.message));
           }
         });
         this._cards.forEach((element) => {
-          element.preview = this.lovelace.editMode;
+          element.preview = preview;
         });
         this._badges.forEach((element) => {
-          element.preview = this.lovelace.editMode;
+          element.preview = preview;
         });
       }
       if (changedProperties.has("_cards")) {
@@ -337,6 +346,7 @@ export class HUIView extends ReactiveElement {
     this._createCards(viewConfig);
     this._createSections(viewConfig);
     this._layoutElement!.isStrategy = isStrategy;
+    this._layoutElement!.allowEdit = this.allowEdit && !isStrategy;
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.narrow = this.narrow;
     this._layoutElement!.lovelace = this.lovelace;
@@ -357,7 +367,7 @@ export class HUIView extends ReactiveElement {
     const rawConfig = this.lovelace.config.views[this.index];
 
     const viewConfig = await this._generateConfig(rawConfig);
-    const isStrategy = isStrategyView(viewConfig);
+    const isStrategy = isStrategyView(rawConfig);
 
     this._setConfig(viewConfig, isStrategy);
   }

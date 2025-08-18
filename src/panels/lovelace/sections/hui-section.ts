@@ -44,7 +44,8 @@ export class HuiSection extends ReactiveElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Boolean, reflect: true }) public preview = false;
+  @property({ type: Boolean, attribute: "force-preview" })
+  public forcePreview = false;
 
   @property({ type: Boolean, attribute: "import-only" })
   public importOnly = false;
@@ -52,6 +53,8 @@ export class HuiSection extends ReactiveElement {
   @property({ type: Number }) public index!: number;
 
   @property({ attribute: false, type: Number }) public viewIndex!: number;
+
+  @property({ attribute: false }) public allowEdit = false;
 
   @state() private _cards: HuiCard[] = [];
 
@@ -136,10 +139,17 @@ export class HuiSection extends ReactiveElement {
       if (changedProperties.has("lovelace")) {
         this._layoutElement.lovelace = this.lovelace;
       }
-      if (changedProperties.has("preview")) {
-        this._layoutElement.preview = this.preview;
+      if (
+        changedProperties.has("forcePreview") ||
+        changedProperties.has("lovelace") ||
+        changedProperties.has("allowEdit")
+      ) {
+        const preview =
+          this.forcePreview ||
+          (this.allowEdit && Boolean(this.lovelace?.editMode));
+        this._layoutElement.preview = preview;
         this._cards.forEach((element) => {
-          element.preview = this.preview;
+          element.preview = preview;
         });
       }
       if (changedProperties.has("importOnly")) {
@@ -208,6 +218,7 @@ export class HuiSection extends ReactiveElement {
 
     this._createCards(sectionConfig);
     this._layoutElement!.isStrategy = isStrategy;
+    this._layoutElement!.allowEdit = this.allowEdit && !isStrategy;
     this._layoutElement!.hass = this.hass;
     this._layoutElement!.lovelace = this.lovelace;
     this._layoutElement!.index = this.index;

@@ -3,6 +3,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 import "../../../components/ha-ripple";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
@@ -16,11 +17,10 @@ import type { HuiBadge } from "../badges/hui-badge";
 import "../badges/hui-view-badges";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-badge-edit-mode";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { replaceView } from "../editor/config-util";
 import { showEditViewHeaderDialog } from "../editor/view-header/show-edit-view-header-dialog";
 import type { Lovelace } from "../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { DragScrollController } from "../../../common/controllers/drag-scroll-controller";
 
 export const DEFAULT_VIEW_HEADER_LAYOUT = "center";
 export const DEFAULT_VIEW_HEADER_BADGES_POSITION = "bottom";
@@ -31,6 +31,8 @@ export class HuiViewHeader extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
+
+  @property({ attribute: false }) public editMode = false;
 
   @property({ attribute: false }) public card?: HuiCard;
 
@@ -43,7 +45,7 @@ export class HuiViewHeader extends LitElement {
   private _checkHidden() {
     const allHidden =
       !this.card &&
-      !this.lovelace.editMode &&
+      !this.editMode &&
       this.badges.every((badges) => badges.hidden);
     this.toggleAttribute("hidden", allHidden);
   }
@@ -76,15 +78,15 @@ export class HuiViewHeader extends LitElement {
   willUpdate(changedProperties: PropertyValues<typeof this>): void {
     if (
       changedProperties.has("badges") ||
-      changedProperties.has("lovelace") ||
+      changedProperties.has("editMode") ||
       changedProperties.has("card")
     ) {
       this._checkHidden();
     }
 
-    if (changedProperties.has("config") || changedProperties.has("lovelace")) {
+    if (changedProperties.has("config") || changedProperties.has("editMode")) {
       this._dragScrollController.enabled =
-        !this.lovelace.editMode && this.config?.badges_wrap === "scroll";
+        !this.editMode && this.config?.badges_wrap === "scroll";
     }
 
     if (changedProperties.has("config")) {
@@ -101,8 +103,8 @@ export class HuiViewHeader extends LitElement {
       if (changedProperties.has("hass")) {
         this.card.hass = this.hass;
       }
-      if (changedProperties.has("lovelace")) {
-        this.card.preview = this.lovelace.editMode;
+      if (changedProperties.has("editMode")) {
+        this.card.preview = this.editMode;
       }
     }
   }
@@ -110,7 +112,7 @@ export class HuiViewHeader extends LitElement {
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = document.createElement("hui-card");
     element.hass = this.hass;
-    element.preview = this.lovelace.editMode;
+    element.preview = this.editMode;
     element.config = cardConfig;
     element.load();
     return element;
@@ -193,7 +195,7 @@ export class HuiViewHeader extends LitElement {
   render() {
     if (!this.lovelace) return nothing;
 
-    const editMode = Boolean(this.lovelace?.editMode);
+    const editMode = this.editMode;
 
     const card = this.card;
 
