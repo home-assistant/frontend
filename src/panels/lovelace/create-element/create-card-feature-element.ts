@@ -32,7 +32,7 @@ import "../card-features/hui-valve-open-close-card-feature";
 import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
-
+import "../card-features/hui-sensor-bar-card-feature";
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import {
   createLovelaceElement,
@@ -66,6 +66,7 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "sensor-bar",
   "target-humidity",
   "target-temperature",
   "toggle",

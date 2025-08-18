@@ -198,6 +198,10 @@ export interface AreaControlsCardFeatureConfig {
   controls?: AreaControl[];
 }
 
+export interface SensorBarCardFeatureConfig {
+  type: "sensor-bar";
+}
+
 export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
@@ -234,7 +238,8 @@ export type LovelaceCardFeatureConfig =
   | ValveOpenCloseCardFeatureConfig
   | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
-  | AreaControlsCardFeatureConfig;
+  | AreaControlsCardFeatureConfig
+  | SensorBarCardFeatureConfig;
 
 export interface LovelaceCardFeatureContext {
   entity_id?: string;
