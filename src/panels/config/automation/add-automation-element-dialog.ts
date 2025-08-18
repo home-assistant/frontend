@@ -652,6 +652,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         ha-dialog {
           --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
+          --mdc-dialog-max-height: 60dvh;
         }
         @media all and (min-width: 550px) {
           ha-dialog {

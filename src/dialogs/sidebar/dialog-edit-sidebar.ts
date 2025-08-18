@@ -160,7 +160,7 @@ class DialogEditSidebar extends LitElement {
         </ha-dialog-header>
         <div slot="content" class="content">${this._renderContent()}</div>
         <div slot="actions">
-          <ha-button @click=${this.closeDialog}>
+          <ha-button appearance="plain" @click=${this.closeDialog}>
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
@@ -208,6 +208,7 @@ class DialogEditSidebar extends LitElement {
     ha-md-dialog {
       min-width: 600px;
       max-height: 90%;
+      --dialog-content-padding: 8px 24px;
     }
 
     @media all and (max-width: 600px), all and (max-height: 500px) {

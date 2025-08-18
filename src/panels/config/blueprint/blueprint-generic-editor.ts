@@ -1,4 +1,3 @@
-import "@material/mwc-button/mwc-button";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -173,6 +172,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .content=${value?.description}
       ></ha-markdown>
       ${html`<ha-selector
+        narrow
         .hass=${this.hass}
         .selector=${selector}
         .key=${key}

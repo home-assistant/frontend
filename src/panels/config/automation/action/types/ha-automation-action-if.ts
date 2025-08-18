@@ -20,6 +20,8 @@ export class HaIfAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean }) public indent = false;
+
   @state() private _showElse = false;
 
   public static get defaultConfig(): IfAction {
@@ -39,11 +41,12 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-condition
-        .conditions=${action.if}
+        .conditions=${action.if ?? []}
         .disabled=${this.disabled}
         @value-changed=${this._ifChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-condition>
 
       <h3>
@@ -52,11 +55,12 @@ export class HaIfAction extends LitElement implements ActionElement {
         )}*:
       </h3>
       <ha-automation-action
-        .actions=${action.then}
+        .actions=${action.then ?? []}
         .disabled=${this.disabled}
         @value-changed=${this._thenChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-action>
       ${this._showElse || action.else
         ? html`
@@ -71,9 +75,10 @@ export class HaIfAction extends LitElement implements ActionElement {
               @value-changed=${this._elseChanged}
               .hass=${this.hass}
               .narrow=${this.narrow}
+              .optionsInSidebar=${this.indent}
             ></ha-automation-action>
           `
-        : html` <div class="link-button-row">
+        : html`<div class="link-button-row">
             <button
               class="link"
               @click=${this._addElse}

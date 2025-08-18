@@ -1,6 +1,7 @@
 name: Translations
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
@@ -13,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
 
       - name: Upload Translations
         run: |

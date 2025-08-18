@@ -22,6 +22,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { isDevVersion } from "../../../common/config/version";
 import {
   deleteApplicationCredential,
@@ -154,7 +156,10 @@ class HaConfigEntryRow extends LitElement {
       statusLine.push(
         html`<a
           href=${`/config/entities/?historyBack=1&config_entry=${item.entry_id}`}
-          >${entities.length} entities</a
+          >${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.entities",
+            { count: entities.length }
+          )}</a
         >`
       );
     }
@@ -202,7 +207,7 @@ class HaConfigEntryRow extends LitElement {
             : nothing}
         </div>
         ${item.disabled_by === "user"
-          ? html`<ha-button unelevated slot="end" @click=${this._handleEnable}>
+          ? html`<ha-button slot="end" @click=${this._handleEnable}>
               ${this.hass.localize("ui.common.enable")}
             </ha-button>`
           : configPanel &&
@@ -471,7 +476,13 @@ class HaConfigEntryRow extends LitElement {
 
   private async _fetchSubEntries() {
     this._subEntries = this.entry.num_subentries
-      ? await getSubEntries(this.hass, this.entry.entry_id)
+      ? (await getSubEntries(this.hass, this.entry.entry_id)).sort((a, b) =>
+          caseInsensitiveStringCompare(
+            a.title,
+            b.title,
+            this.hass.locale.language
+          )
+        )
       : undefined;
   }
 
@@ -488,18 +499,34 @@ class HaConfigEntryRow extends LitElement {
     );
 
   private _getDevices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries.includes(this.entry.entry_id) &&
-        device.entry_type !== "service"
-    );
+    Object.values(this.hass.devices)
+      .filter(
+        (device) =>
+          device.config_entries.includes(this.entry.entry_id) &&
+          device.entry_type !== "service"
+      )
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          computeDeviceNameDisplay(a, this.hass),
+          computeDeviceNameDisplay(b, this.hass),
+          this.hass.locale.language
+        )
+      );
 
   private _getServices = (): DeviceRegistryEntry[] =>
-    Object.values(this.hass.devices).filter(
-      (device) =>
-        device.config_entries.includes(this.entry.entry_id) &&
-        device.entry_type === "service"
-    );
+    Object.values(this.hass.devices)
+      .filter(
+        (device) =>
+          device.config_entries.includes(this.entry.entry_id) &&
+          device.entry_type === "service"
+      )
+      .sort((a, b) =>
+        caseInsensitiveStringCompare(
+          computeDeviceNameDisplay(a, this.hass),
+          computeDeviceNameDisplay(b, this.hass),
+          this.hass.locale.language
+        )
+      );
 
   private _toggleExpand() {
     this._expanded = !this._expanded;

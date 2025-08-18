@@ -1,6 +1,6 @@
 import { mdiCheckCircleOutline } from "@mdi/js";
 import { customElement, property } from "lit/decorators";
-import "@shoelace-style/shoelace/dist/components/animation/animation";
+import "@awesome.me/webawesome/dist/components/animation/animation";
 import { css, html, LitElement } from "lit";
 import type { HomeAssistant } from "../../../../../../types";
 
@@ -17,9 +17,9 @@ export class ZWaveJsAddNodeFinished extends LitElement {
 
   render() {
     return html`
-      <sl-animation name="zoomIn" .iterations=${1} play>
+      <wa-animation name="zoomIn" .iterations=${1} play>
         <ha-svg-icon .path=${mdiCheckCircleOutline}></ha-svg-icon>
-      </sl-animation>
+      </wa-animation>
       <ha-alert alert-type="warning">
         ${this.reason
           ? this.hass.localize(

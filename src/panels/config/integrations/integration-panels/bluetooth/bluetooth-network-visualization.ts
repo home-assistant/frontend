@@ -1,18 +1,20 @@
-import { html, LitElement, css } from "lit";
-import type { CSSResultGroup } from "lit";
-import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type {
   CallbackDataParams,
   TopLevelFormatterParams,
 } from "echarts/types/dist/shared";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { CSSResultGroup } from "lit";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HomeAssistant, Route } from "../../../../../types";
+import { relativeTime } from "../../../../../common/datetime/relative_time";
+import { navigate } from "../../../../../common/navigate";
+import { throttle } from "../../../../../common/util/throttle";
 import "../../../../../components/chart/ha-network-graph";
 import type {
   NetworkData,
-  NetworkNode,
   NetworkLink,
+  NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
 import type {
   BluetoothDeviceData,
@@ -24,11 +26,8 @@ import {
 } from "../../../../../data/bluetooth";
 import type { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../layouts/hass-subpage";
-import { colorVariables } from "../../../../../resources/theme/color.globals";
-import { navigate } from "../../../../../common/navigate";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { bluetoothAdvertisementMonitorTabs } from "./bluetooth-advertisement-monitor";
-import { relativeTime } from "../../../../../common/datetime/relative_time";
-import { throttle } from "../../../../../common/util/throttle";
 
 const UPDATE_THROTTLE_TIME = 10000;
 
@@ -131,33 +130,34 @@ export class BluetoothNetworkVisualization extends LitElement {
       data: BluetoothDeviceData[],
       scanners: BluetoothScannersDetails
     ): NetworkData => {
+      const style = getComputedStyle(this);
       const categories = [
         {
           name: CORE_SOURCE_LABEL,
           symbol: "roundRect",
           itemStyle: {
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.scanners"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["cyan-color"],
+            color: style.getPropertyValue("--cyan-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.known_devices"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["teal-color"],
+            color: style.getPropertyValue("--teal-color"),
           },
         },
         {
           name: this.hass.localize("ui.panel.config.bluetooth.unknown_devices"),
           symbol: "circle",
           itemStyle: {
-            color: colorVariables["disabled-color"],
+            color: style.getPropertyValue("--disabled-color"),
           },
         },
       ];
@@ -192,7 +192,7 @@ export class BluetoothNetworkVisualization extends LitElement {
           symbol: "none",
           lineStyle: {
             width: 3,
-            color: colorVariables["primary-color"],
+            color: style.getPropertyValue("--primary-color"),
           },
         });
       });
@@ -206,7 +206,7 @@ export class BluetoothNetworkVisualization extends LitElement {
             symbol: "none",
             lineStyle: {
               width: this._getLineWidth(node.rssi),
-              color: colorVariables["primary-color"],
+              color: style.getPropertyValue("--primary-color"),
             },
           });
           return;
@@ -227,8 +227,8 @@ export class BluetoothNetworkVisualization extends LitElement {
           lineStyle: {
             width: this._getLineWidth(node.rssi),
             color: device
-              ? colorVariables["primary-color"]
-              : colorVariables["disabled-color"],
+              ? style.getPropertyValue("--primary-color")
+              : style.getPropertyValue("--disabled-color"),
           },
         });
       });

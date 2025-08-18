@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-
 import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -79,7 +77,9 @@ export class DialogSupportPackage extends LitElement {
           </ha-alert>
           <hr />
           <div class="actions">
-            <ha-button @click=${this.closeDialog}>Close</ha-button>
+            <ha-button appearance="plain" @click=${this.closeDialog}
+              >Close</ha-button
+            >
             <ha-button @click=${this._download}>Download</ha-button>
           </div>
         </div>

@@ -11,7 +11,7 @@ body:
 
         **Please do not report issues for custom cards.**
 
-        [fr]: https://github.com/home-assistant/frontend/discussions
+        [fr]: https://github.com/orgs/home-assistant/discussions
         [releases]: https://github.com/home-assistant/home-assistant/releases
   - type: checkboxes
     attributes:

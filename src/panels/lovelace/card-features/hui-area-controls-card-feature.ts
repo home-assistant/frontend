@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
@@ -13,6 +14,7 @@ import { stateActive } from "../../../common/entity/state_active";
 import { domainColorProperties } from "../../../common/entity/state_color";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-svg-icon";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { forwardHaptic } from "../../../data/haptics";
@@ -30,8 +32,6 @@ import type {
 import { AREA_CONTROLS } from "./types";
 
 interface AreaControlsButton {
-  offIcon?: string;
-  onIcon?: string;
   filter: {
     domain: string;
     device_class?: string;
@@ -47,9 +47,6 @@ const coverButton = (deviceClass: string) => ({
 
 export const AREA_CONTROLS_BUTTONS: Record<AreaControl, AreaControlsButton> = {
   light: {
-    // Overrides the icons for lights
-    offIcon: "mdi:lightbulb-off",
-    onIcon: "mdi:lightbulb",
     filter: {
       domain: "light",
     },
@@ -229,7 +226,11 @@ class HuiAreaControlsCardFeature
     }
 
     return html`
-      <ha-control-button-group ?no-stretch=${this.position === "inline"}>
+      <ha-control-button-group
+        class=${classMap({
+          "no-stretch": this.position === "inline",
+        })}
+      >
         ${displayControls.map((control) => {
           const button = AREA_CONTROLS_BUTTONS[control];
 
@@ -251,8 +252,6 @@ class HuiAreaControlsCardFeature
           const label = this.hass!.localize(
             `ui.card_features.area_controls.${control}.${active ? "off" : "on"}`
           );
-
-          const icon = active ? button.onIcon : button.offIcon;
 
           const domain = button.filter.domain;
           const deviceClass = button.filter.device_class
@@ -276,7 +275,6 @@ class HuiAreaControlsCardFeature
             >
               <ha-domain-icon
                 .hass=${this.hass}
-                .icon=${icon}
                 .domain=${domain}
                 .deviceClass=${deviceClass}
                 .state=${groupState}
@@ -292,8 +290,22 @@ class HuiAreaControlsCardFeature
     return [
       cardFeatureStyles,
       css`
+        :host {
+          pointer-events: none !important;
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-end;
+        }
         ha-control-button-group {
-          --control-button-group-alignment: flex-end;
+          pointer-events: auto;
+          width: 100%;
+        }
+        ha-control-button-group.no-stretch {
+          width: auto;
+          max-width: 100%;
+        }
+        ha-control-button-group.no-stretch > ha-control-button {
+          width: 48px;
         }
         ha-control-button {
           --active-color: var(--state-active-color);

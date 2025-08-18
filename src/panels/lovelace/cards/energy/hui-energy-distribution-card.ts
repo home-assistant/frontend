@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowLeft,
@@ -18,13 +17,12 @@ import { css, html, LitElement, svg, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
+import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
   getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
   formatConsumptionShort,
   getSummedData,
   computeConsumptionData,
@@ -255,6 +253,20 @@ class HuiEnergyDistrubutionCard
       (batteryFromGrid || 0) +
       (batteryToGrid || 0);
 
+    // Coerce all energy numbers to the same unit (the biggest)
+    const maxEnergy = Math.max(
+      lowCarbonEnergy || 0,
+      totalSolarProduction || 0,
+      returnedToGrid || 0,
+      totalFromGrid || 0,
+      totalHomeConsumption,
+      totalBatteryIn || 0,
+      totalBatteryOut || 0
+    );
+    const targetEnergyUnit = formatConsumptionShort(this.hass, maxEnergy, "kWh")
+      .split(" ")
+      .pop();
+
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
@@ -281,7 +293,8 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           lowCarbonEnergy,
-                          "kWh"
+                          "kWh",
+                          targetEnergyUnit
                         )}
                       </a>
                       <svg width="80" height="30">
@@ -300,7 +313,8 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           totalSolarProduction,
-                          "kWh"
+                          "kWh",
+                          targetEnergyUnit
                         )}
                       </div>
                     </div>`
@@ -319,11 +333,7 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           gasUsage,
-                          getEnergyGasUnit(
-                            this.hass,
-                            prefs,
-                            this._data.statsMetadata
-                          )
+                          this._data.gasUnit
                         )}
                       </div>
                       <svg width="80" height="30">
@@ -357,7 +367,7 @@ class HuiEnergyDistrubutionCard
                           ${formatConsumptionShort(
                             this.hass,
                             waterUsage,
-                            getEnergyWaterUnit(this.hass)
+                            this._data.waterUnit
                           )}
                         </div>
                         <svg width="80" height="30">
@@ -396,7 +406,8 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             returnedToGrid,
-                            "kWh"
+                            "kWh",
+                            targetEnergyUnit
                           )}
                         </span>`
                       : ""}
@@ -409,7 +420,8 @@ class HuiEnergyDistrubutionCard
                         : ""}${formatConsumptionShort(
                         this.hass,
                         totalFromGrid,
-                        "kWh"
+                        "kWh",
+                        targetEnergyUnit
                       )}
                     </span>
                   </div>
@@ -432,7 +444,8 @@ class HuiEnergyDistrubutionCard
                 ${formatConsumptionShort(
                   this.hass,
                   totalHomeConsumption,
-                  "kWh"
+                  "kWh",
+                  targetEnergyUnit
                 )}
                 ${homeSolarCircumference !== undefined ||
                 homeLowCarbonCircumference !== undefined
@@ -535,7 +548,8 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             totalBatteryIn,
-                            "kWh"
+                            "kWh",
+                            targetEnergyUnit
                           )}
                         </span>
                         <span class="battery-out">
@@ -546,7 +560,8 @@ class HuiEnergyDistrubutionCard
                           >${formatConsumptionShort(
                             this.hass,
                             totalBatteryOut,
-                            "kWh"
+                            "kWh",
+                            targetEnergyUnit
                           )}
                         </span>
                       </div>
@@ -582,7 +597,7 @@ class HuiEnergyDistrubutionCard
                         ${formatConsumptionShort(
                           this.hass,
                           waterUsage,
-                          getEnergyWaterUnit(this.hass)
+                          this._data.waterUnit
                         )}
                       </div>
                       <span class="label"
@@ -774,13 +789,11 @@ class HuiEnergyDistrubutionCard
         ${this._config.link_dashboard
           ? html`
               <div class="card-actions">
-                <a href="/energy"
-                  ><mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
-                    )}
-                  </mwc-button></a
-                >
+                <ha-button appearance="plain" size="small" href="/energy">
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
+                  )}
+                </ha-button>
               </div>
             `
           : ""}

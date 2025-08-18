@@ -31,6 +31,7 @@ import {
 } from "../../data/recorder";
 import type { ECOption } from "../../resources/echarts";
 import type { HomeAssistant } from "../../types";
+import type { CustomLegendOption } from "./ha-chart-base";
 import "./ha-chart-base";
 
 export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
@@ -96,7 +97,7 @@ export class StatisticsChart extends LitElement {
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
-  @state() private _legendData: string[] = [];
+  @state() private _legendData: CustomLegendOption["data"];
 
   @state() private _statisticIds: string[] = [];
 
@@ -105,6 +106,8 @@ export class StatisticsChart extends LitElement {
   @state() private _hiddenStats = new Set<string>();
 
   private _computedStyle?: CSSStyleDeclaration;
+
+  private _previousYAxisLabelValue = 0;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return changedProps.size > 1 || !changedProps.has("hass");
@@ -181,12 +184,18 @@ export class StatisticsChart extends LitElement {
   }
 
   private _datasetHidden(ev: CustomEvent) {
-    this._hiddenStats.add(ev.detail.name);
+    if (!this._legendData) {
+      return;
+    }
+    this._hiddenStats.add(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
   private _datasetUnhidden(ev: CustomEvent) {
-    this._hiddenStats.delete(ev.detail.name);
+    if (!this._legendData) {
+      return;
+    }
+    this._hiddenStats.delete(ev.detail.id);
     this.requestUpdate("_hiddenStats");
   }
 
@@ -197,8 +206,8 @@ export class StatisticsChart extends LitElement {
       : "";
     return params
       .map((param, index: number) => {
-        if (rendered[param.seriesName]) return "";
-        rendered[param.seriesName] = true;
+        if (rendered[param.seriesIndex]) return "";
+        rendered[param.seriesIndex] = true;
 
         const statisticId = this._statisticIds[param.seriesIndex];
         const stateObj = this.hass.states[statisticId];
@@ -314,6 +323,9 @@ export class StatisticsChart extends LitElement {
         splitLine: {
           show: true,
         },
+        axisLabel: {
+          formatter: this._formatYAxisLabel,
+        } as any,
       },
       legend: {
         type: "custom",
@@ -362,6 +374,7 @@ export class StatisticsChart extends LitElement {
     const statisticsData = Object.entries(this.statisticsData);
     const totalDataSets: typeof this._chartData = [];
     const legendData: {
+      id: string;
       name: string;
       color?: ZRColor;
       borderColor?: ZRColor;
@@ -465,6 +478,8 @@ export class StatisticsChart extends LitElement {
         this.statTypes.includes("min") && statisticsHaveType(stats, "min");
       const drawBands = [hasMean, hasMax, hasMin].filter(Boolean).length > 1;
 
+      const hasState = this.statTypes.includes("state");
+
       const bandTop = hasMax ? "max" : "mean";
       const bandBottom = hasMin ? "min" : "mean";
 
@@ -486,7 +501,8 @@ export class StatisticsChart extends LitElement {
           const band = drawBands && (type === bandTop || type === bandBottom);
           statTypes.push(type);
           const borderColor =
-            band && hasMin && hasMax && hasMean
+            (band && hasMin && hasMax && hasMean) ||
+            (hasState && ["change", "sum"].includes(type))
               ? color + (this.hideLegend ? "00" : "7F")
               : color;
           const backgroundColor = band ? color + "3F" : color + "7F";
@@ -535,6 +551,7 @@ export class StatisticsChart extends LitElement {
               : displayedLegend === false;
             if (showLegend) {
               statLegendData.push({
+                id: statistic_id,
                 name,
                 color: series.color as ZRColor,
                 borderColor: series.itemStyle?.borderColor,
@@ -579,7 +596,7 @@ export class StatisticsChart extends LitElement {
           }
           dataValues.push(val);
         });
-        if (!this._hiddenStats.has(name)) {
+        if (!this._hiddenStats.has(statistic_id)) {
           pushData(startDate, new Date(stat.end), dataValues);
         }
       });
@@ -593,10 +610,10 @@ export class StatisticsChart extends LitElement {
       this.unit = unit;
     }
 
-    legendData.forEach(({ name, color, borderColor }) => {
+    legendData.forEach(({ id, name, color, borderColor }) => {
       // Add an empty series for the legend
       totalDataSets.push({
-        id: name + "-legend",
+        id: id,
         name: name,
         color,
         itemStyle: {
@@ -609,9 +626,13 @@ export class StatisticsChart extends LitElement {
     });
 
     this._chartData = totalDataSets;
-    if (legendData.length !== this._legendData.length) {
+    if (legendData.length !== this._legendData?.length) {
       // only update the legend if it has changed or it will trigger options update
-      this._legendData = legendData.map(({ name }) => name);
+      this._legendData =
+        legendData.length > 1
+          ? legendData.map(({ id, name }) => ({ id, name }))
+          : // if there is only one entity, let the base chart handle the legend
+            undefined;
     }
     this._statisticIds = statisticIds;
   }
@@ -639,6 +660,22 @@ export class StatisticsChart extends LitElement {
   private _roundYAxis(value: number, roundingFn: (value: number) => number) {
     return Math.abs(value) < 1 ? value : roundingFn(value);
   }
+
+  private _formatYAxisLabel = (value: number) => {
+    // show the first significant digit for tiny values
+    const maximumFractionDigits = Math.max(
+      1,
+      // use the difference to the previous value to determine the number of significant digits #25526
+      -Math.floor(
+        Math.log10(Math.abs(value - this._previousYAxisLabelValue || 1))
+      )
+    );
+    const label = formatNumber(value, this.hass.locale, {
+      maximumFractionDigits,
+    });
+    this._previousYAxisLabelValue = value;
+    return label;
+  };
 
   static styles = css`
     :host {

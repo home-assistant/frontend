@@ -7,8 +7,8 @@ import type { Action, ChooseAction, Option } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../../option/ha-automation-option";
-import type { ActionElement } from "../ha-automation-action-row";
 import "../ha-automation-action";
+import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-choose")
 export class HaChooseAction extends LitElement implements ActionElement {
@@ -19,6 +19,8 @@ export class HaChooseAction extends LitElement implements ActionElement {
   @property({ attribute: false }) public action!: ChooseAction;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean }) public indent = false;
 
   @state() private _showDefault = false;
 
@@ -38,6 +40,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
         @value-changed=${this._optionsChanged}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-option>
 
       ${this._showDefault || action.default
@@ -53,6 +56,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               @value-changed=${this._defaultChanged}
               .hass=${this.hass}
               .narrow=${this.narrow}
+              .optionsInSidebar=${this.indent}
             ></ha-automation-action>
           `
         : html`

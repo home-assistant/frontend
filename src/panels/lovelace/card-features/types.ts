@@ -2,6 +2,11 @@ import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
 import type { OperationMode } from "../../../data/water_heater";
 
+export interface ButtonCardFeatureConfig {
+  type: "button";
+  action_name?: string;
+}
+
 export interface CoverOpenCloseCardFeatureConfig {
   type: "cover-open-close";
 }
@@ -36,6 +41,14 @@ export interface LockOpenDoorCardFeatureConfig {
 
 export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
+}
+
+export interface FanDirectionCardFeatureConfig {
+  type: "fan-direction";
+}
+
+export interface FanOscillateCardFeatureConfig {
+  type: "fan-oscillate";
 }
 
 export interface FanPresetModesCardFeatureConfig {
@@ -92,6 +105,10 @@ export interface CounterActionsCardFeatureConfig {
   actions?: CounterActions[];
 }
 
+export interface DateSetCardFeatureConfig {
+  type: "date-set";
+}
+
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
@@ -144,6 +161,14 @@ export interface VacuumCommandsCardFeatureConfig {
   commands?: VacuumCommand[];
 }
 
+export interface ValveOpenCloseCardFeatureConfig {
+  type: "valve-open-close";
+}
+
+export interface ValvePositionCardFeatureConfig {
+  type: "valve-position";
+}
+
 export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
@@ -185,6 +210,7 @@ export type LovelaceCardFeaturePosition = "bottom" | "inline";
 
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
+  | ButtonCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
   | ClimateSwingHorizontalModesCardFeatureConfig
@@ -195,6 +221,9 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | DateSetCardFeatureConfig
+  | FanDirectionCardFeatureConfig
+  | FanOscillateCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
@@ -212,6 +241,8 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
+  | ValveOpenCloseCardFeatureConfig
+  | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | AreaControlsCardFeatureConfig;
 

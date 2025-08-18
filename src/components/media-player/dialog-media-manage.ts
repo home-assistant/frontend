@@ -116,18 +116,18 @@ class DialogMediaManage extends LitElement {
               `
             : html`
                 <ha-button
-                  class="danger"
+                  variant="danger"
                   slot="navigationIcon"
                   .disabled=${this._deleting}
-                  .label=${this.hass.localize(
+                  @click=${this._handleDelete}
+                >
+                  <ha-svg-icon .path=${mdiDelete} slot="start"></ha-svg-icon>
+                  ${this.hass.localize(
                     `ui.components.media-browser.file_management.${
                       this._deleting ? "deleting" : "delete"
                     }`,
                     { count: this._selected.size }
                   )}
-                  @click=${this._handleDelete}
-                >
-                  <ha-svg-icon .path=${mdiDelete} slot="icon"></ha-svg-icon>
                 </ha-button>
 
                 ${this._deleting
@@ -135,15 +135,15 @@ class DialogMediaManage extends LitElement {
                   : html`
                       <ha-button
                         slot="actionItems"
-                        .label=${this.hass.localize(
-                          `ui.components.media-browser.file_management.deselect_all`
-                        )}
                         @click=${this._handleDeselectAll}
                       >
                         <ha-svg-icon
                           .path=${mdiClose}
-                          slot="icon"
+                          slot="start"
                         ></ha-svg-icon>
+                        ${this.hass.localize(
+                          `ui.components.media-browser.file_management.deselect_all`
+                        )}
                       </ha-button>
                     `}
               `}
@@ -327,22 +327,8 @@ class DialogMediaManage extends LitElement {
           display: block;
         }
 
-        .danger {
-          --mdc-theme-primary: var(--error-color);
-        }
-
-        ha-svg-icon[slot="icon"] {
-          vertical-align: middle;
-        }
-
         ha-tip {
           margin: 16px;
-        }
-
-        ha-svg-icon[slot="icon"] {
-          margin-inline-start: 0px !important;
-          margin-inline-end: 8px !important;
-          direction: var(--direction);
         }
 
         .refresh {

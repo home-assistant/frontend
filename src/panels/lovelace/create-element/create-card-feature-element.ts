@@ -1,4 +1,5 @@
 import "../card-features/hui-alarm-modes-card-feature";
+import "../card-features/hui-button-card-feature";
 import "../card-features/hui-climate-fan-modes-card-feature";
 import "../card-features/hui-climate-hvac-modes-card-feature";
 import "../card-features/hui-climate-preset-modes-card-feature";
@@ -9,6 +10,9 @@ import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
+import "../card-features/hui-date-set-card-feature";
+import "../card-features/hui-fan-direction-card-feature";
+import "../card-features/hui-fan-oscillate-card-feature";
 import "../card-features/hui-fan-preset-modes-card-feature";
 import "../card-features/hui-fan-speed-card-feature";
 import "../card-features/hui-humidifier-modes-card-feature";
@@ -26,6 +30,8 @@ import "../card-features/hui-target-temperature-card-feature";
 import "../card-features/hui-toggle-card-feature";
 import "../card-features/hui-update-actions-card-feature";
 import "../card-features/hui-vacuum-commands-card-feature";
+import "../card-features/hui-valve-open-close-card-feature";
+import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
 
@@ -37,6 +43,7 @@ import {
 
 const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "alarm-modes",
+  "button",
   "area-controls",
   "climate-fan-modes",
   "climate-swing-modes",
@@ -48,6 +55,9 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "date-set",
+  "fan-direction",
+  "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -65,6 +75,8 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "toggle",
   "update-actions",
   "vacuum-commands",
+  "valve-open-close",
+  "valve-position",
   "water-heater-operation-modes",
 ]);
 

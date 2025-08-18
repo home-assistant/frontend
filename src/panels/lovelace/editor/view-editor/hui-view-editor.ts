@@ -23,9 +23,13 @@ declare global {
   interface HASSDomEvents {
     "view-config-changed": {
       config: LovelaceViewConfig;
+      valid?: boolean;
     };
   }
 }
+
+const VALID_PATH_REGEX = /^[a-zA-Z0-9_-]+$/;
+const INTEGER_REGEX = /^[0-9]+$/;
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
@@ -34,6 +38,8 @@ export class HuiViewEditor extends LitElement {
   @property({ attribute: false }) public isNew = false;
 
   @state() private _config!: LovelaceViewConfig;
+
+  @state() private _error: Record<string, string> | undefined;
 
   private _suggestedPath = false;
 
@@ -144,6 +150,8 @@ export class HuiViewEditor extends LitElement {
         .schema=${schema}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
+        .computeError=${this._computeError}
+        .error=${this._error}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -158,18 +166,39 @@ export class HuiViewEditor extends LitElement {
       delete config.top_margin;
     }
 
+    const slugifyTitle = (title: string | undefined) => {
+      const slug = slugify(title || "", "-");
+      if (INTEGER_REGEX.test(slug)) {
+        return `view-${slug}`;
+      }
+      return slug;
+    };
+
     if (
       this.isNew &&
       !this._suggestedPath &&
       this._config.path === config.path &&
-      (!this._config.path ||
-        config.path === slugify(this._config.title || "", "-"))
+      (!this._config.path || config.path === slugifyTitle(this._config.title))
     ) {
-      config.path = slugify(config.title || "", "-");
+      config.path = slugifyTitle(config.title);
     }
 
-    fireEvent(this, "view-config-changed", { config });
+    let valid = true;
+    this._error = undefined;
+    if (config.path && !VALID_PATH_REGEX.test(config.path)) {
+      valid = false;
+      this._error = { path: "error_invalid_path" };
+    } else if (config.path && INTEGER_REGEX.test(config.path)) {
+      valid = false;
+      this._error = { path: "error_number" };
+    }
+
+    fireEvent(this, "view-config-changed", { valid, config });
   }
+
+  private _computeError = (error: string) =>
+    this.hass.localize(`ui.panel.lovelace.editor.edit_view.${error}` as any) ||
+    error;
 
   private _computeLabel = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
@@ -197,6 +226,7 @@ export class HuiViewEditor extends LitElement {
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) => {
     switch (schema.name) {
+      case "path":
       case "subview":
       case "dense_section_placement":
       case "top_margin":

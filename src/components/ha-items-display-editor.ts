@@ -9,6 +9,7 @@ import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
@@ -141,13 +142,18 @@ export class HaItemDisplayEditor extends LitElement {
                             ></ha-svg-icon>
                           `
                         : nothing}
-                  ${this.actionsRenderer
+                  ${this.showNavigationButton
                     ? html`
-                        <span slot="end"> ${this.actionsRenderer(item)} </span>
+                        <ha-icon-next slot="end"></ha-icon-next>
+                        <div slot="end" class="separator"></div>
                       `
                     : nothing}
-                  ${this.showNavigationButton
-                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  ${this.actionsRenderer
+                    ? html`
+                        <div slot="end" @click=${stopPropagation}>
+                          ${this.actionsRenderer(item)}
+                        </div>
+                      `
                     : nothing}
                   <ha-icon-button
                     .path=${isVisible ? mdiEye : mdiEyeOff}
@@ -368,6 +374,12 @@ export class HaItemDisplayEditor extends LitElement {
       cursor: move;
       padding: 8px;
       margin: -8px;
+    }
+    .separator {
+      width: 1px;
+      background-color: var(--divider-color);
+      height: 21px;
+      margin: 0 -4px;
     }
     ha-md-list {
       padding: 0;
