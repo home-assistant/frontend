@@ -1,5 +1,8 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -77,7 +80,10 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
 
     const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
 
-    const areaFilter = generateEntityFilter(hass, { area: config.area });
+    const areaFilter = generateEntityFilter(hass, {
+      area: config.area,
+      entity_category: "none",
+    });
 
     const allEntities = Object.keys(hass.states);
     const areaEntities = allEntities.filter(areaFilter);
@@ -134,6 +140,86 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
             "security"
           ),
           ...security.map(computeTileCard),
+        ],
+      });
+    }
+
+    // Rest of entities grouped by device
+    const otherEntities = areaEntities.filter(
+      (entityId) => ![...lights, ...climate, ...security].includes(entityId)
+    );
+
+    const entitiesByDevice: Record<string, string[]> = {};
+    for (const entityId of otherEntities) {
+      const stateObj = hass.states[entityId];
+      if (!stateObj) continue;
+      const { device } = getEntityContext(stateObj, hass);
+      if (!device) continue;
+      if (!(device.id in entitiesByDevice)) {
+        entitiesByDevice[device.id] = [];
+      }
+      entitiesByDevice[device.id].push(entityId);
+    }
+
+    const otherDeviceEntities = Object.entries(entitiesByDevice).map(
+      ([deviceId, entities]) => ({
+        device_id: deviceId,
+        entities: entities.map((entityId) => hass.states[entityId]),
+      })
+    );
+
+    if (otherDeviceEntities.length > 0) {
+      sections.push({
+        type: "grid",
+        column_span: 3,
+        cards: [
+          {
+            type: "heading",
+            icon: "mdi:devices",
+            heading: "Devices",
+          } satisfies HeadingCardConfig,
+        ],
+      });
+    }
+
+    const batteryFilter = generateEntityFilter(hass, {
+      domain: "sensor",
+      device_class: "battery",
+    });
+
+    for (const deviceEntities of otherDeviceEntities) {
+      if (deviceEntities.entities.length === 0) continue;
+      const device = hass.devices[deviceEntities.device_id];
+
+      const batteryEntities = deviceEntities.entities.filter((e) =>
+        batteryFilter(e.entity_id)
+      );
+      const entities = deviceEntities.entities.filter(
+        (entity) => !batteryFilter(entity.entity_id)
+      );
+
+      sections.push({
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: computeDeviceName(device),
+            heading_style: "subtitle",
+            tap_action: {
+              action: "navigate",
+              navigation_path: `/config/devices/device/${deviceEntities.device_id}`,
+            },
+            badges: [
+              ...batteryEntities.slice(0, 1).map((entity) => ({
+                entity: entity.entity_id,
+                type: "entity",
+              })),
+            ],
+          } satisfies HeadingCardConfig,
+          ...entities.map((entity) => ({
+            ...computeTileCard(entity.entity_id),
+            name: computeEntityName(entity, hass) || computeDeviceName(device),
+          })),
         ],
       });
     }
