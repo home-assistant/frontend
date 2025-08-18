@@ -192,10 +192,12 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
-    if (!(themeName in this.hass.themes.themes)) {
+    const theme = this.hass.themes.themes[themeName];
+    if (!theme) {
       return false; // User's theme no longer exists
     }
-    return "modes" in this.hass.themes.themes[themeName];
+
+    return !!(theme.modes && "light" in theme.modes && "dark" in theme.modes);
   }
 
   private _handleDarkMode(ev: CustomEvent) {
