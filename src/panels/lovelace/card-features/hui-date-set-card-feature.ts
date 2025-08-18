@@ -77,8 +77,12 @@ class HuiDateSetCardFeature extends LitElement implements LovelaceCardFeature {
     // datetime requires a full datetime string
     if (domain === "datetime") {
       const dateObj = new Date(this._stateObj.state);
-      const newDate = value.split("-").map(Number);
-      dateObj.setFullYear(newDate[0], newDate[1] - 1, newDate[2]);
+      const selectedDate = new Date(`${value}T00:00:00`);
+      dateObj.setFullYear(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      );
 
       this.hass.callService(domain, service, {
         entity_id: this._stateObj.entity_id,
