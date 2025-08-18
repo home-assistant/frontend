@@ -125,11 +125,16 @@ export class HaAssistChat extends LitElement {
             `}
         <div class="spacer"></div>
         ${this._conversation!.map(
-          // New lines matter for messages
-          // prettier-ignore
           (message) => html`
-                <div class="message ${classMap({ error: !!message.error, [message.who]: true })}"><ha-markdown breaks .content=${message.text}></ha-markdown></div>
-              `
+            <div
+              class="message ${classMap({
+                error: !!message.error,
+                [message.who]: true,
+              })}"
+            >
+              <ha-markdown breaks .content=${message.text}></ha-markdown>
+            </div>
+          `
         )}
       </div>
       <div class="input" slot="primaryAction">
@@ -190,7 +195,10 @@ export class HaAssistChat extends LitElement {
     `;
   }
 
-  private _scrollMessagesBottom() {
+  private async _scrollMessagesBottom() {
+    const markdownElements =
+      this.shadowRoot?.querySelectorAll("ha-markdown") ?? [];
+    await markdownElements[markdownElements.length - 1].updateComplete;
     const scrollContainer = this._scrollContainer;
     if (!scrollContainer) {
       return;
