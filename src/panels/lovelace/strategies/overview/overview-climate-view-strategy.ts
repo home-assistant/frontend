@@ -13,8 +13,8 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
-  OVERVIEW_CATEGORIES_FILTERS,
-} from "./helpers/overview-categories";
+  OVERVIEW_SUMMARIES_FILTERS,
+} from "./helpers/overview-summaries";
 
 export interface OverviewClimateViewStrategyConfig {
   type: "overview-climate";
@@ -36,7 +36,7 @@ export class OverviewClimateViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = OVERVIEW_CATEGORIES_FILTERS.climate.map((filter) =>
+    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.climate.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 

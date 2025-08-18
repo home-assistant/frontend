@@ -3,18 +3,18 @@ import type {
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
 
-export const OVERVIEW_CATEGORIES = ["lights", "climate", "security"] as const;
+export const OVERVIEW_SUMMARIES = ["lights", "climate", "security"] as const;
 
-export type OverviewCategory = (typeof OVERVIEW_CATEGORIES)[number];
+export type OverviewSummaries = (typeof OVERVIEW_SUMMARIES)[number];
 
-export const OVERVIEW_CATEGORIES_ICONS: Record<OverviewCategory, string> = {
+export const OVERVIEW_SUMMARIES_ICONS: Record<OverviewSummaries, string> = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
 };
 
-export const OVERVIEW_CATEGORIES_FILTERS: Record<
-  OverviewCategory,
+export const OVERVIEW_SUMMARIES_FILTERS: Record<
+  OverviewSummaries,
   EntityFilter[]
 > = {
   lights: [{ domain: "light", entity_category: "none" }],

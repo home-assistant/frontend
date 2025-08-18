@@ -16,7 +16,7 @@ import type {
   TileCardConfig,
 } from "../../cards/types";
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
-import { OVERVIEW_CATEGORIES_ICONS } from "./helpers/overview-categories";
+import { OVERVIEW_SUMMARIES_ICONS } from "./helpers/overview-summaries";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -182,17 +182,17 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       );
     }
 
-    const categorySection: LovelaceSectionConfig = {
+    const summarySection: LovelaceSectionConfig = {
       type: "grid",
       column_span: maxColumns,
       cards: [
         {
           type: "heading",
-          heading: "Categories",
+          heading: "Summaries",
         },
         {
           type: "button",
-          icon: OVERVIEW_CATEGORIES_ICONS.lights,
+          icon: OVERVIEW_SUMMARIES_ICONS.lights,
           name: "Lights",
           grid_options: {
             rows: 2,
@@ -205,7 +205,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: OVERVIEW_CATEGORIES_ICONS.climate,
+          icon: OVERVIEW_SUMMARIES_ICONS.climate,
           name: "Climate",
           grid_options: {
             rows: 2,
@@ -218,7 +218,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: OVERVIEW_CATEGORIES_ICONS.security,
+          icon: OVERVIEW_SUMMARIES_ICONS.security,
           name: "Security",
           grid_options: {
             rows: 2,
@@ -248,7 +248,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
     const sections = [
       ...(favoriteSection.cards ? [favoriteSection] : []),
       ...(personSection.cards ? [personSection] : []),
-      categorySection,
+      summarySection,
       ...floorSections,
     ];
     return {

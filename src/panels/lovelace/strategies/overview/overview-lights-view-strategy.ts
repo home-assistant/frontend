@@ -13,8 +13,8 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
-  OVERVIEW_CATEGORIES_FILTERS,
-} from "./helpers/overview-categories";
+  OVERVIEW_SUMMARIES_FILTERS,
+} from "./helpers/overview-summaries";
 
 export interface OverviewLightsViewStrategyConfig {
   type: "overview-lights";
@@ -36,7 +36,7 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const lightsFilters = OVERVIEW_CATEGORIES_FILTERS.lights.map((filter) =>
+    const lightsFilters = OVERVIEW_SUMMARIES_FILTERS.lights.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 

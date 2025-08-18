@@ -13,8 +13,8 @@ import {
 } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
-  OVERVIEW_CATEGORIES_FILTERS,
-} from "./helpers/overview-categories";
+  OVERVIEW_SUMMARIES_FILTERS,
+} from "./helpers/overview-summaries";
 
 export interface OverviewSecurityViewStrategyConfig {
   type: "overview-security";
@@ -36,7 +36,7 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = OVERVIEW_CATEGORIES_FILTERS.security.map((filter) =>
+    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.security.map((filter) =>
       generateEntityFilter(hass, filter)
     );
 

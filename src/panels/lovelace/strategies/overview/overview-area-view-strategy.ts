@@ -14,11 +14,11 @@ import type { HeadingCardConfig } from "../../cards/types";
 import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
-  OVERVIEW_CATEGORIES,
-  OVERVIEW_CATEGORIES_FILTERS,
-  OVERVIEW_CATEGORIES_ICONS,
-  type OverviewCategory,
-} from "./helpers/overview-categories";
+  OVERVIEW_SUMMARIES,
+  OVERVIEW_SUMMARIES_FILTERS,
+  OVERVIEW_SUMMARIES_ICONS,
+  type OverviewSummaries,
+} from "./helpers/overview-summaries";
 
 export interface OverviewAreaViewStrategyConfig {
   type: "overview-area";
@@ -88,19 +88,19 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
     const areaEntities = allEntities.filter(areaFilter);
 
-    const entitiesByCategory = OVERVIEW_CATEGORIES.reduce(
-      (acc, category) => {
-        const categoryFilters = OVERVIEW_CATEGORIES_FILTERS[category];
-        const filterFunctions = categoryFilters.map((filter) =>
+    const entitiesBySummary = OVERVIEW_SUMMARIES.reduce(
+      (acc, summary) => {
+        const summariesFilters = OVERVIEW_SUMMARIES_FILTERS[summary];
+        const filterFunctions = summariesFilters.map((filter) =>
           generateEntityFilter(hass, filter)
         );
-        acc[category] = findEntities(areaEntities, filterFunctions);
+        acc[summary] = findEntities(areaEntities, filterFunctions);
         return acc;
       },
-      {} as Record<OverviewCategory, string[]>
+      {} as Record<OverviewSummaries, string[]>
     );
 
-    const { lights, climate, security } = entitiesByCategory;
+    const { lights, climate, security } = entitiesBySummary;
 
     if (lights.length > 0) {
       sections.push({
@@ -108,7 +108,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.areas.groups.lights"),
-            OVERVIEW_CATEGORIES_ICONS.lights,
+            OVERVIEW_SUMMARIES_ICONS.lights,
             "lights"
           ),
           ...lights.map(computeTileCard),
@@ -122,7 +122,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.areas.groups.climate"),
-            OVERVIEW_CATEGORIES_ICONS.climate,
+            OVERVIEW_SUMMARIES_ICONS.climate,
             "climate"
           ),
           ...climate.map(computeTileCard),
@@ -136,7 +136,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           computeHeadingCard(
             hass.localize("ui.panel.lovelace.strategy.areas.groups.security"),
-            OVERVIEW_CATEGORIES_ICONS.security,
+            OVERVIEW_SUMMARIES_ICONS.security,
             "security"
           ),
           ...security.map(computeTileCard),

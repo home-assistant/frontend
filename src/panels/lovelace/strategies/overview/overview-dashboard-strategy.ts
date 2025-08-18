@@ -6,7 +6,7 @@ import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/vie
 import type { HomeAssistant } from "../../../../types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../types";
-import { OVERVIEW_CATEGORIES_ICONS } from "./helpers/overview-categories";
+import { OVERVIEW_SUMMARIES_ICONS } from "./helpers/overview-summaries";
 import type { OverviewAreaViewStrategyConfig } from "./overview-area-view-strategy";
 import type { OverviewHomeViewStrategyConfig } from "./overview-home-view-strategy";
 
@@ -66,7 +66,7 @@ export class OverviewDashboardStrategy extends ReactiveElement {
       strategy: {
         type: "overview-lights",
       },
-      icon: OVERVIEW_CATEGORIES_ICONS.lights,
+      icon: OVERVIEW_SUMMARIES_ICONS.lights,
     } satisfies LovelaceViewRawConfig;
 
     const climateView = {
@@ -76,7 +76,7 @@ export class OverviewDashboardStrategy extends ReactiveElement {
       strategy: {
         type: "overview-climate",
       },
-      icon: OVERVIEW_CATEGORIES_ICONS.climate,
+      icon: OVERVIEW_SUMMARIES_ICONS.climate,
     } satisfies LovelaceViewRawConfig;
 
     const securityView = {
@@ -86,7 +86,7 @@ export class OverviewDashboardStrategy extends ReactiveElement {
       strategy: {
         type: "overview-security",
       },
-      icon: OVERVIEW_CATEGORIES_ICONS.security,
+      icon: OVERVIEW_SUMMARIES_ICONS.security,
     } satisfies LovelaceViewRawConfig;
 
     return {
