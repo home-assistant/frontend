@@ -37,10 +37,7 @@ import {
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
-import {
-  getValueInPercentage,
-  roundWithOneDecimal,
-} from "../../../util/calculate";
+import { roundWithOneDecimal } from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
@@ -236,10 +233,7 @@ class HaConfigSectionStorage extends LitElement {
   }
 
   private _renderStorageMetrics = memoizeOne(
-    (
-      hostInfo?: HassioHostInfo,
-      storageInfo?: SupervisorStorageInfo
-    ) => {
+    (hostInfo?: HassioHostInfo, storageInfo?: SupervisorStorageInfo) => {
       if (!hostInfo || !storageInfo) {
         return nothing;
       }
@@ -247,23 +241,28 @@ class HaConfigSectionStorage extends LitElement {
       let totalSpaceGB = hostInfo.disk_total;
       let usedSpaceGB = hostInfo.disk_used;
       // hostInfo.disk_free is sometimes 0, so we may need to calculate it
-      let freeSpaceGB = hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
+      let freeSpaceGB =
+        hostInfo.disk_free || hostInfo.disk_total - hostInfo.disk_used;
       const segments: Segment[] = [];
       if (storageInfo) {
-        const totalSpace = storageInfo.total_space ?? hostInfo.disk_total * 1024 * 1024 * 1024;
+        const totalSpace =
+          storageInfo.total_bytes ?? hostInfo.disk_total * 1024 * 1024 * 1024;
         totalSpaceGB = totalSpace / 1024 / 1024 / 1024;
-        usedSpaceGB = storageInfo.used_space / 1024 / 1024 / 1024;
-        freeSpaceGB = (totalSpace - storageInfo.used_space) / 1024 / 1024 / 1024;
-        Object.keys(storageInfo.children || {}).forEach((key, index) => {
-          if (storageInfo.children?.[key]?.used_space) {
-            const space = storageInfo.children![key].used_space / 1024 / 1024 / 1024;
-            if (space > 0) {
+        usedSpaceGB = storageInfo.used_bytes / 1024 / 1024 / 1024;
+        freeSpaceGB =
+          (totalSpace - storageInfo.used_bytes) / 1024 / 1024 / 1024;
+        storageInfo.children?.forEach((child, index) => {
+          if (child.used_bytes) {
+            if (child.used_bytes > 0) {
+              const space = child.used_bytes / 1024 / 1024 / 1024;
               segments.push({
                 value: space,
                 color: getGraphColorByIndex(index, computedStyles),
                 label: html`${this.hass.localize(
-                    `ui.panel.config.storage.segments.${key}`
-                  ) || key}
+                    `ui.panel.config.storage.segments.${child.id}`
+                  ) ||
+                  child.label ||
+                  child.id}
                   <span style="color: var(--secondary-text-color)"
                     >${roundWithOneDecimal(space)} GB</span
                   >`,
@@ -275,7 +274,9 @@ class HaConfigSectionStorage extends LitElement {
         segments.push({
           value: usedSpaceGB,
           color: "var(--primary-color)",
-          label: html`${this.hass.localize("ui.panel.config.storage.segments.used")}
+          label: html`${this.hass.localize(
+              "ui.panel.config.storage.segments.used"
+            )}
             <span style="color: var(--secondary-text-color)"
               >${roundWithOneDecimal(usedSpaceGB)} GB</span
             >`,
@@ -285,7 +286,9 @@ class HaConfigSectionStorage extends LitElement {
         value: freeSpaceGB,
         color:
           "var(--ha-bar-background-color, var(--secondary-background-color))",
-        label: html`${this.hass.localize("ui.panel.config.storage.segments.free")}
+        label: html`${this.hass.localize(
+            "ui.panel.config.storage.segments.free"
+          )}
           <span style="color: var(--secondary-text-color)"
             >${roundWithOneDecimal(freeSpaceGB)} GB</span
           >`,
@@ -370,9 +373,6 @@ class HaConfigSectionStorage extends LitElement {
       this._mountsInfo = null;
     }
   }
-
-  private _getUsedSpace = (used: number, total: number) =>
-    roundWithOneDecimal(getValueInPercentage(used, 0, total));
 
   static styles = css`
     .content {
