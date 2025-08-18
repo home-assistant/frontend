@@ -47,6 +47,10 @@ export interface FanDirectionCardFeatureConfig {
   type: "fan-direction";
 }
 
+export interface FanOscillateCardFeatureConfig {
+  type: "fan-oscillate";
+}
+
 export interface FanPresetModesCardFeatureConfig {
   type: "fan-preset-modes";
   style?: "dropdown" | "icons";
@@ -219,6 +223,7 @@ export type LovelaceCardFeatureConfig =
   | CoverTiltCardFeatureConfig
   | DateSetCardFeatureConfig
   | FanDirectionCardFeatureConfig
+  | FanOscillateCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
