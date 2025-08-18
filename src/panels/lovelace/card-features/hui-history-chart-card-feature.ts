@@ -28,7 +28,7 @@ export const supportsHistoryChartCardFeature = (
   _hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) =>
-  context.entity_id &&
+  !!context.entity_id &&
   ["sensor", "binary_sensor"].includes(computeDomain(context.entity_id));
 
 @customElement("hui-history-chart-card-feature")
