@@ -133,7 +133,6 @@ class HuiHistoryChartCardFeature
   }
 
   private async _subscribeHistory(): Promise<() => Promise<void>> {
-    console.log("subscribeHistory");
     if (
       !isComponentLoaded(this.hass!, "history") ||
       !this.context?.entity_id ||
