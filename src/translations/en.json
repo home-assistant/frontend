@@ -7868,6 +7868,9 @@
               "date-set": {
                 "label": "Set date"
               },
+              "fan-oscillate": {
+                "label": "Fan oscillation"
+              },
               "fan-direction": {
                 "label": "Fan direction"
               },
