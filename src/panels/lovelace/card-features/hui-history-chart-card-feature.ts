@@ -25,16 +25,11 @@ import { downSampleLineData } from "../../../components/chart/down-sample";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 export const supportsHistoryChartCardFeature = (
-  hass: HomeAssistant,
+  _hass: HomeAssistant,
   context: LovelaceCardFeatureContext
-) => {
-  const stateObj = context.entity_id
-    ? hass.states[context.entity_id]
-    : undefined;
-  if (!stateObj) return false;
-  const domain = computeDomain(stateObj.entity_id);
-  return ["sensor", "binary_sensor"].includes(domain);
-};
+) =>
+  context.entity_id &&
+  ["sensor", "binary_sensor"].includes(computeDomain(context.entity_id));
 
 @customElement("hui-history-chart-card-feature")
 class HuiHistoryChartCardFeature
@@ -138,6 +133,7 @@ class HuiHistoryChartCardFeature
   }
 
   private async _subscribeHistory(): Promise<() => Promise<void>> {
+    console.log("subscribeHistory");
     if (
       !isComponentLoaded(this.hass!, "history") ||
       !this.context?.entity_id ||
