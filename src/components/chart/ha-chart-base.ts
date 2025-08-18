@@ -397,7 +397,7 @@ export class HaChartBase extends LitElement {
                       ...axis.axisPointer,
                       status: "show",
                       handle: {
-                        color: style.getPropertyValue("primary-color"),
+                        color: style.getPropertyValue("--primary-color"),
                         margin: 0,
                         size: 20,
                         ...axis.axisPointer?.handle,

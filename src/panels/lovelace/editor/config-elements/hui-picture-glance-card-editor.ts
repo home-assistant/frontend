@@ -19,7 +19,6 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import type { ActionConfig } from "../../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../../types";
 import type { PictureGlanceCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
@@ -125,18 +124,18 @@ export class HuiPictureGlanceCardEditor
               },
             },
             {
-              name: "hold_action",
-              selector: {
-                ui_action: {
-                  default_action: "more-info",
-                },
-              },
-            },
-            {
               name: "",
               type: "optional_actions",
               flatten: true,
               schema: [
+                {
+                  name: "hold_action",
+                  selector: {
+                    ui_action: {
+                      default_action: "none",
+                    },
+                  },
+                },
                 {
                   name: "double_tap_action",
                   selector: {
@@ -156,14 +155,6 @@ export class HuiPictureGlanceCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
-  }
-
-  get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "toggle" };
-  }
-
-  get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "more-info" };
   }
 
   protected render() {

@@ -117,7 +117,7 @@ export class HaComboBox extends LitElement {
 
   @query("ha-combo-box-textfield", true) private _inputElement!: HaTextField;
 
-  @state({ type: Boolean }) private _disableSetValue = false;
+  @state({ type: Boolean }) private _forceBlankValue = false;
 
   private _overlayMutationObserver?: MutationObserver;
 
@@ -196,7 +196,7 @@ export class HaComboBox extends LitElement {
           ></div>`}
           .icon=${this.icon}
           .invalid=${this.invalid}
-          .disableSetValue=${this._disableSetValue}
+          .forceBlankValue=${this._forceBlankValue}
         >
           <slot name="icon" slot="leadingIcon"></slot>
         </ha-combo-box-textfield>
@@ -270,10 +270,10 @@ export class HaComboBox extends LitElement {
       if (opened) {
         // Wait 100ms to be sure vaddin-combo-box-light already tried to set the value
         setTimeout(() => {
-          this._disableSetValue = false;
+          this._forceBlankValue = false;
         }, 100);
       } else {
-        this._disableSetValue = true;
+        this._forceBlankValue = true;
       }
     }
 

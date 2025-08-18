@@ -19,6 +19,8 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ attribute: false }) public action!: ParallelAction;
 
+  @property({ type: Boolean }) public indent = false;
+
   public static get defaultConfig(): ParallelAction {
     return {
       parallel: [],
@@ -35,6 +37,7 @@ export class HaParallelAction extends LitElement implements ActionElement {
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-action>
     `;
   }

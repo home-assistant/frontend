@@ -147,6 +147,9 @@
         "close_tilt_cover": "Close cover tilt",
         "stop_cover": "Stop cover"
       },
+      "date": {
+        "set_date": "Set date"
+      },
       "fan": {
         "preset_mode": "Preset mode",
         "oscillate": "Oscillate",
@@ -1168,6 +1171,12 @@
           },
           "summary": "Summary",
           "description": "Description"
+        },
+        "views": {
+          "dayGridMonth": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridMonth%]",
+          "dayGridWeek": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridWeek%]",
+          "dayGridDay": "[%key:ui::panel::lovelace::editor::card::calendar::views::dayGridDay%]",
+          "listWeek": "[%key:ui::panel::lovelace::editor::card::calendar::views::listWeek%]"
         }
       },
       "attributes": {
@@ -1245,6 +1254,7 @@
             "person": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::person%]",
             "zone": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::zone%]",
             "input_boolean": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_boolean%]",
+            "input_button": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_button%]",
             "input_text": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_text%]",
             "input_number": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_number%]",
             "input_datetime": "[%key:ui::panel::developer-tools::tabs::yaml::section::reloading::input_datetime%]",
@@ -1559,7 +1569,7 @@
           },
           "unavailable": "This entity is unavailable.",
           "entity_status": "Entity status",
-          "change_area": "Change Area",
+          "change_area": "Change area",
           "enabled_label": "Enabled",
           "disabled_label": "Disabled",
           "enabled_cause": "Cannot change status. Disabled by {cause}.",
@@ -2115,7 +2125,7 @@
       "my": {
         "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced.",
         "component_not_loaded": "This redirect is not supported by your Home Assistant instance. You need the integration {integration} to use this redirect.",
-        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant Operating System or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
+        "no_supervisor": "This redirect is not supported by your Home Assistant installation. It needs either the Home Assistant OS or Home Assistant Supervised installation method. For more information, see the {docs_link}.",
         "not_app": "This redirect only works from a mobile device that has the Home Assistant Companion app installed. {link}.",
         "url_error": "The provided URL is invalid.",
         "documentation": "documentation",
@@ -3344,6 +3354,10 @@
                 "default": {
                   "title": "Default dashboard",
                   "description": "Display your devices grouped by area"
+                },
+                "overview": {
+                  "title": "Overview (experimental)",
+                  "description": "Global overview of your home"
                 }
               },
               "search_dashboards": "Search dashboards",
@@ -3847,6 +3861,7 @@
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
               "triggering_event_detail": "Triggering event detail",
+              "trigger": "Trigger",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4042,7 +4057,7 @@
                   "description": {
                     "picker": "Periodically, at a defined interval.",
                     "initial": "When a time pattern matches",
-                    "invalid": "Invalid Time Pattern for {parts}",
+                    "invalid": "Invalid time pattern for {parts}",
                     "full": "Trigger {secondsChoice, select, \n every {every second of }\n every_interval {every {seconds} seconds of }\n on_the_xth {on the {secondsWithOrdinal} second of }\n other {}\n} {minutesChoice, select, \n every {every minute of }\n every_interval {every {minutes} minutes of }\n has_seconds {the {minutesWithOrdinal} minute of }\n on_the_xth {on the {minutesWithOrdinal} minute of }\n other {}\n} {hoursChoice, select, \n every {every hour}\n every_interval {every {hours} hours}\n has_seconds_or_minutes {the {hoursWithOrdinal} hour}\n on_the_xth {on the {hoursWithOrdinal} hour}\n other {}\n}",
                     "ordinal": "{part, selectordinal, \none {#st}\ntwo {#nd}\nfew {#rd}\nother {#th}\n}"
                   }
@@ -4107,6 +4122,7 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "condition": "Condition",
               "groups": {
                 "entity": {
                   "label": "Entity",
@@ -4275,6 +4291,7 @@
               "unsupported_action": "No visual editor support for this action",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
+              "action": "Action",
               "groups": {
                 "helpers": {
                   "label": "Helpers"
@@ -4441,6 +4458,8 @@
                   "conditions": "Conditions",
                   "no_conditions": "[%key:ui::panel::config::devices::automation::conditions::no_conditions%]",
                   "sequence": "Actions",
+                  "option_label": "Option",
+                  "option_description": "Choose actions based on conditions",
                   "description": {
                     "picker": "Choose what to do based on conditions (Similar to If-then, but more powerful).",
                     "full": "Choose {number, plural,\n one {an option}\n other{between {number} options}\n}",
@@ -5286,10 +5305,10 @@
             "new_person": "New person",
             "name": "Name",
             "name_error_msg": "Name is required",
-            "linked_user": "Linked User",
+            "linked_user": "Linked user",
             "device_tracker_intro": "Select the devices that belong to this person",
-            "no_device_tracker_available_intro": "When you have devices that indicate the presence of a person, you will be able to assign them to a person here. You can add your first device by adding a presence-detection integration from the integrations page.",
-            "link_presence_detection_integrations": "Presence Detection Integrations",
+            "no_device_tracker_available_intro": "When you have devices that indicate the presence of a person, you will be able to assign them to a person here. You can add your first device by adding a presence detection integration from the integrations page.",
+            "link_presence_detection_integrations": "Presence detection integrations",
             "link_integrations_page": "Integrations page",
             "device_tracker_picked": "Track device",
             "device_tracker_pick": "Pick device to track",
@@ -5585,7 +5604,7 @@
             "local_access_only_description": "Can only log in from the local network",
             "system_generated": "System user",
             "system_generated_read_only_users": "System users can not be updated.",
-            "unnamed_user": "Unnamed User",
+            "unnamed_user": "Unnamed user",
             "confirm_user_deletion_title": "Delete {name}?",
             "confirm_user_deletion_text": "This user will be permanently deleted."
           },
@@ -6667,7 +6686,7 @@
             "not_supported": {
               "title": "The operating system does not support network storage",
               "supervised": "Network storage is not supported on this host",
-              "os": "To use network storage you need to run at least Home Assistant Operating System {version}",
+              "os": "To use network storage you need to run at least Home Assistant OS {version}",
               "navigate_to_updates": "Go to updates"
             },
             "mount_usage": {
@@ -7140,6 +7159,7 @@
             "tab_config": "Config",
             "tab_visibility": "Visibility",
             "tab_layout": "Layout",
+            "paste_condition": "Paste condition",
             "visibility": {
               "explanation": "The card will be shown when ALL conditions below are fulfilled. If no conditions are set, the card will always be shown."
             },
@@ -7478,7 +7498,7 @@
                 "day": "Day",
                 "month": "Month",
                 "week": "Week",
-                "5minute": "5 Minutes"
+                "5minute": "5 minutes"
               },
               "pick_statistic": "Add a statistic",
               "picked_statistic": "Statistic",
@@ -7718,6 +7738,11 @@
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
               "display_order": "Display order",
+              "item_tap_action": "Item tap behavior",
+              "actions": {
+                "edit": "Default (edit item)",
+                "toggle": "Toggle item"
+              },
               "sort_modes": {
                 "none": "Default",
                 "manual": "Manual",
@@ -7840,6 +7865,9 @@
               "cover-tilt-position": {
                 "label": "Cover tilt position"
               },
+              "date-set": {
+                "label": "Set date"
+              },
               "fan-oscillate": {
                 "label": "Fan oscillation"
               },
@@ -7887,6 +7915,12 @@
                   "locate": "[%key:ui::dialogs::more_info_control::vacuum::locate%]",
                   "return_home": "[%key:ui::dialogs::more_info_control::vacuum::return_home%]"
                 }
+              },
+              "valve-open-close": {
+                "label": "Valve open/close"
+              },
+              "valve-position": {
+                "label": "Valve position"
               },
               "climate-fan-modes": {
                 "label": "Climate fan modes",
@@ -8908,7 +8942,7 @@
           "uploading": "[%key:ui::components::file-upload::uploading%]",
           "details": {
             "home_assistant_missing": "This backup does not include your Home Assistant configuration, you cannot use it to restore your instance.",
-            "addons_unsupported": "Your installation method doesn’t support add-ons. If you want to restore these, you have to install Home Assistant Operating System",
+            "addons_unsupported": "Your installation method doesn’t support add-ons. If you want to restore these, you have to install Home Assistant OS",
             "summary": {
               "created": "[%key:ui::panel::config::backup::details::summary::created%]",
               "content": "Content"
@@ -9283,7 +9317,7 @@
           "rebuild": "Failed to rebuild add-on",
           "restart": "Failed to restart add-on",
           "start": "Failed to start add-on",
-          "go_to_config": "Edit Config",
+          "go_to_config": "Edit config",
           "start_invalid_config": "Go to configuration",
           "validate_config": "Failed to validate add-on configuration",
           "get_changelog": "Failed to get add-on changelog"

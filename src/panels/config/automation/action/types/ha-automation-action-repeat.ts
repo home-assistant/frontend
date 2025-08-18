@@ -18,8 +18,10 @@ import type {
 } from "../../../../../components/ha-form/types";
 
 const OPTIONS = ["count", "while", "until", "for_each"] as const;
+type RepeatType = (typeof OPTIONS)[number];
 
-const getType = (action) => OPTIONS.find((option) => option in action);
+export const getRepeatType = (action: RepeatAction["repeat"]) =>
+  OPTIONS.find((option) => option in action);
 
 @customElement("ha-automation-action-repeat")
 export class HaRepeatAction extends LitElement implements ActionElement {
@@ -27,16 +29,27 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public action!: RepeatAction;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
+
+  @property({ type: Boolean, attribute: "indent" }) public indent = false;
 
   public static get defaultConfig(): RepeatAction {
     return { repeat: { count: 2, sequence: [] } };
   }
 
   private _schema = memoizeOne(
-    (type: string, template: boolean) =>
+    (
+      type: RepeatType,
+      template: boolean,
+      inSidebar: boolean,
+      indent: boolean
+    ) =>
       [
-        ...(type === "count"
+        ...(type === "count" && (inSidebar || (!inSidebar && !indent))
           ? ([
               {
                 name: "count",
@@ -47,17 +60,20 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        ...(type === "until" || type === "while"
+        ...((type === "until" || type === "while") &&
+        (indent || (!inSidebar && !indent))
           ? ([
               {
                 name: type,
                 selector: {
-                  condition: {},
+                  condition: {
+                    optionsInSidebar: indent,
+                  },
                 },
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        ...(type === "for_each"
+        ...(type === "for_each" && (inSidebar || (!inSidebar && !indent))
           ? ([
               {
                 name: "for_each",
@@ -66,23 +82,31 @@ export class HaRepeatAction extends LitElement implements ActionElement {
               },
             ] as const satisfies readonly HaFormSchema[])
           : []),
-        {
-          name: "sequence",
-          selector: {
-            action: {},
-          },
-        },
+        ...(indent || (!inSidebar && !indent)
+          ? ([
+              {
+                name: "sequence",
+                selector: {
+                  action: {
+                    optionsInSidebar: indent,
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
   protected render() {
     const action = this.action.repeat;
-    const type = getType(action);
+    const type = getRepeatType(action);
     const schema = this._schema(
       type ?? "count",
       "count" in action && typeof action.count === "string"
         ? isTemplate(action.count)
-        : false
+        : false,
+      this.inSidebar,
+      this.indent
     );
 
     const data = { ...action, type };
@@ -93,6 +117,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
       .disabled=${this.disabled}
       @value-changed=${this._valueChanged}
       .computeLabel=${this._computeLabelCallback}
+      .narrow=${this.narrow}
     ></ha-form>`;
   }
 
@@ -102,7 +127,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
 
     const newType = newVal.type;
     delete newVal.type;
-    const oldType = getType(this.action.repeat);
+    const oldType = getRepeatType(this.action.repeat);
 
     if (newType !== oldType) {
       if (newType === "count") {

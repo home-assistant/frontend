@@ -90,3 +90,19 @@ export const isService = (key: string | undefined): boolean | undefined =>
 
 export const getService = (key: string): string =>
   key.substring(SERVICE_PREFIX.length);
+
+export const ACTION_BUILDING_BLOCKS = [
+  "choose",
+  "if",
+  "parallel",
+  "sequence",
+  "repeat_while",
+  "repeat_until",
+];
+
+// Building blocks that have options in the sidebar
+export const ACTION_COMBINED_BLOCKS = [
+  "repeat_count", // virtual repeat variant
+  "repeat_for_each", // virtual repeat variant
+  "wait_for_trigger",
+];
