@@ -6737,11 +6737,11 @@
               },
               "username": {
                 "title": "Username",
-                "description": "This is your username for the samba share"
+                "description": "This is your username for the Samba share"
               },
               "password": {
                 "title": "Password",
-                "description": "This is your password for the samba share"
+                "description": "This is your password for the Samba share"
               }
             },
             "connect": "Connect",
