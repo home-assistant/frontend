@@ -7,6 +7,7 @@ import type {
   LovelaceCardFeatureContext,
   SensorBarCardFeatureConfig,
 } from "./types";
+import { stateColorCss } from "../../../common/entity/state_color";
 
 export const supportsSensorBarCardFeature = (
   hass: HomeAssistant,
@@ -55,8 +56,13 @@ class HuiSensorBarCardFeature
     ) {
       return nothing;
     }
-    const value = this.hass.states[this.context.entity_id].state;
-    return html`<div class="sensor-bar-fill" style="width: ${value}%"></div>`;
+    const stateObj = this.hass.states[this.context.entity_id];
+    const color = stateColorCss(stateObj);
+    const value = stateObj.state;
+    return html`<div
+      class="sensor-bar-fill"
+      style="width: ${value}%; background-color: ${color}"
+    ></div>`;
   }
 
   static styles = css`
