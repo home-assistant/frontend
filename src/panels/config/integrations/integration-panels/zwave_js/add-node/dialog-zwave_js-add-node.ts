@@ -1,5 +1,4 @@
 import { mdiChevronLeft, mdiClose } from "@mdi/js";
-import "@shoelace-style/shoelace/dist/components/animation/animation";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
