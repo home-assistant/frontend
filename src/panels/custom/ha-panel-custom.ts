@@ -45,10 +45,18 @@ export class HaPanelCustom extends ReactiveElement {
   public navigate = (path: string, options?: NavigateOptions) =>
     navigate(path, options);
 
-  // The automation editor reads its init data from the module-scoped
-  // `initialAutomationEditorData` in the main app. Expose this method so
-  // custom panels can set that data in the main context and open the editor
-  // prefilled.
+  /**
+   * Open the automation editor in the main window and optionally prefill it.
+   *
+   * The automation editor reads its initial data from a module-scoped
+   * variable in the main application. Custom panels can call this method
+   * on `window.customPanel` to set the editor's initial data and open the
+   * editor prefilled.
+   *
+   * @param data Partial automation configuration to prefill the editor with.
+   * @param expanded If true, open the editor in expanded mode.
+   * @public
+   */
   public showAutomationEditor = (
     data?: Partial<AutomationConfig>,
     expanded?: boolean
