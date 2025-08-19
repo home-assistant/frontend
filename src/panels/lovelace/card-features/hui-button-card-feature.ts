@@ -1,15 +1,15 @@
-import { html, LitElement, nothing } from "lit";
 import type { HassEntity } from "home-assistant-js-websocket";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
-  LovelaceCardFeatureContext,
   ButtonCardFeatureConfig,
+  LovelaceCardFeatureContext,
 } from "./types";
 
 export const supportsButtonCardFeature = (
@@ -21,7 +21,7 @@ export const supportsButtonCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return ["button", "script"].includes(domain);
+  return ["button", "input_button", "script"].includes(domain);
 };
 
 @customElement("hui-button-card-feature")
@@ -43,7 +43,8 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     if (!this.hass || !this._stateObj) return;
 
     const domain = computeDomain(this._stateObj.entity_id);
-    const service = domain === "button" ? "press" : "turn_on";
+    const service =
+      domain === "button" || domain === "input_button" ? "press" : "turn_on";
 
     this.hass.callService(domain, service, {
       entity_id: this._stateObj.entity_id,
@@ -89,6 +90,11 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
   }
 
   static styles = cardFeatureStyles;
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-button-card-feature-editor");
+    return document.createElement("hui-button-card-feature-editor");
+  }
 }
 
 declare global {

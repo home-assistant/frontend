@@ -191,10 +191,7 @@ class PanelTodo extends LitElement {
                         : this._entityId
                       : ""}
                   </div>
-                  <ha-svg-icon
-                    slot="trailingIcon"
-                    .path=${mdiChevronDown}
-                  ></ha-svg-icon>
+                  <ha-svg-icon slot="end" .path=${mdiChevronDown}></ha-svg-icon>
                 </ha-button>
                 ${listItems}
                 ${this.hass.user?.is_admin
@@ -395,27 +392,7 @@ class PanelTodo extends LitElement {
           max-width: 100%;
         }
         ha-button-menu ha-button {
-          --button-slot-container-overflow: hidden;
-          max-width: 100%;
-          --mdc-theme-primary: currentColor;
-          --mdc-typography-button-text-transform: none;
-          --mdc-typography-button-font-size: var(
-            --mdc-typography-headline6-font-size,
-            var(--ha-font-size-l)
-          );
-          --mdc-typography-button-font-weight: var(
-            --mdc-typography-headline6-font-weight,
-            500
-          );
-          --mdc-typography-button-letter-spacing: var(
-            --mdc-typography-headline6-letter-spacing,
-            0.0125em
-          );
-          --mdc-typography-button-line-height: var(
-            --mdc-typography-headline6-line-height,
-            var(--ha-line-height-expanded)
-          );
-          --button-height: 40px;
+          --ha-font-size-m: var(--ha-font-size-l);
         }
         ha-button-menu ha-button div {
           text-overflow: ellipsis;

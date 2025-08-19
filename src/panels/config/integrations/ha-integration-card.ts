@@ -112,7 +112,8 @@ export class HaIntegrationCard extends LitElement {
     return html`
       <div class="card-actions">
         ${devices.length > 0
-          ? html`<a
+          ? html`<ha-button
+              appearance="plain"
               href=${devices.length === 1 &&
               // Always link to device page for protocol integrations to show Add Device button
               // @ts-expect-error
@@ -120,40 +121,36 @@ export class HaIntegrationCard extends LitElement {
                 ? `/config/devices/device/${devices[0].id}`
                 : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
-              <ha-button appearance="plain">
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.${
-                    services ? "services" : "devices"
-                  }`,
-                  { count: devices.length }
-                )}
-              </ha-button>
-            </a>`
+              ${this.hass.localize(
+                `ui.panel.config.integrations.config_entry.${
+                  services ? "services" : "devices"
+                }`,
+                { count: devices.length }
+              )}
+            </ha-button>`
           : entitiesCount > 0
-            ? html`<a
+            ? html`<ha-button
+                appearance="plain"
                 href=${`/config/entities?historyBack=1&domain=${this.domain}`}
               >
-                <ha-button appearance="plain">
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entities`,
-                    { count: entitiesCount }
-                  )}
-                </ha-button>
-              </a>`
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.entities`,
+                  { count: entitiesCount }
+                )}
+              </ha-button>`
             : this.items.find((itm) => itm.source !== "yaml")
-              ? html`<a
+              ? html`<ha-button
+                  appearance="plain"
                   href=${`/config/integrations/integration/${this.domain}`}
                 >
-                  <ha-button appearance="plain">
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.entries`,
-                      {
-                        count: this.items.filter((itm) => itm.source !== "yaml")
-                          .length,
-                      }
-                    )}
-                  </ha-button>
-                </a>`
+                  ${this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.entries`,
+                    {
+                      count: this.items.filter((itm) => itm.source !== "yaml")
+                        .length,
+                    }
+                  )}
+                </ha-button>`
               : html`<div class="spacer"></div>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in

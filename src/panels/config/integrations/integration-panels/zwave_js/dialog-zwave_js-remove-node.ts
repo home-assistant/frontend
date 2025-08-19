@@ -219,7 +219,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_removal") {
       return html`
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button
@@ -234,7 +238,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
 
     if (this._step === "start_exclusion") {
       return html`
-        <ha-button slot="secondaryAction" @click=${this.closeDialog}>
+        <ha-button
+          appearance="plain"
+          slot="secondaryAction"
+          @click=${this.closeDialog}
+        >
           ${this.hass.localize("ui.common.cancel")}
         </ha-button>
         <ha-button

@@ -10,8 +10,8 @@ import {
 } from "../../data/device_automation";
 import type { EntityRegistryEntry } from "../../data/entity_registry";
 import type { HomeAssistant } from "../../types";
-import "../ha-list-item";
-import "../ha-select";
+import "../ha-md-select-option";
+import "../ha-md-select";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
@@ -100,35 +100,35 @@ export abstract class HaDeviceAutomationPicker<
     }
     const value = this._value;
     return html`
-      <ha-select
+      <ha-md-select
         .label=${this.label}
         .value=${value}
-        @selected=${this._automationChanged}
+        @change=${this._automationChanged}
         @closed=${stopPropagation}
         .disabled=${this._automations.length === 0}
       >
         ${value === NO_AUTOMATION_KEY
-          ? html`<ha-list-item .value=${NO_AUTOMATION_KEY}>
+          ? html`<ha-md-select-option .value=${NO_AUTOMATION_KEY}>
               ${this.NO_AUTOMATION_TEXT}
-            </ha-list-item>`
-          : ""}
+            </ha-md-select-option>`
+          : nothing}
         ${value === UNKNOWN_AUTOMATION_KEY
-          ? html`<ha-list-item .value=${UNKNOWN_AUTOMATION_KEY}>
+          ? html`<ha-md-select-option .value=${UNKNOWN_AUTOMATION_KEY}>
               ${this.UNKNOWN_AUTOMATION_TEXT}
-            </ha-list-item>`
-          : ""}
+            </ha-md-select-option>`
+          : nothing}
         ${this._automations.map(
           (automation, idx) => html`
-            <ha-list-item .value=${`${automation.device_id}_${idx}`}>
+            <ha-md-select-option .value=${`${automation.device_id}_${idx}`}>
               ${this._localizeDeviceAutomation(
                 this.hass,
                 this._entityReg,
                 automation
               )}
-            </ha-list-item>
+            </ha-md-select-option>
           `
         )}
-      </ha-select>
+      </ha-md-select>
     `;
   }
 

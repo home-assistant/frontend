@@ -305,7 +305,7 @@ export class ZHAGroupPage extends LitElement {
         }
         .buttons {
           align-items: flex-end;
-          padding: 8px;
+          padding: 16px;
         }
         .buttons .warning {
           --mdc-theme-primary: var(--error-color);

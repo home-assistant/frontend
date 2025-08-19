@@ -385,30 +385,22 @@ export class HAFullCalendar extends LitElement {
     if (!this._viewButtons) {
       this._viewButtons = [
         {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.dayGridMonth"
-          ),
+          label: localize("ui.components.calendar.views.dayGridMonth"),
           value: "dayGridMonth",
           iconPath: mdiViewModule,
         },
         {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.dayGridWeek"
-          ),
+          label: localize("ui.components.calendar.views.dayGridWeek"),
           value: "dayGridWeek",
           iconPath: mdiViewWeek,
         },
         {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.dayGridDay"
-          ),
+          label: localize("ui.components.calendar.views.dayGridDay"),
           value: "dayGridDay",
           iconPath: mdiViewDay,
         },
         {
-          label: localize(
-            "ui.panel.lovelace.editor.card.calendar.views.listWeek"
-          ),
+          label: localize("ui.components.calendar.views.listWeek"),
           value: "listWeek",
           iconPath: mdiViewAgenda,
         },
@@ -491,10 +483,6 @@ export class HAFullCalendar extends LitElement {
         .prev,
         .next {
           --mdc-icon-button-size: 32px;
-        }
-
-        ha-button-toggle-group {
-          color: var(--primary-color);
         }
 
         ha-fab {

@@ -1,9 +1,10 @@
-import { mdiHelpCircle } from "@mdi/js";
+import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import {
   any,
   array,
@@ -23,7 +24,7 @@ import {
   removeSearchParam,
 } from "../../../common/url/search-params";
 import "../../../components/ha-button";
-import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type {
@@ -38,7 +39,6 @@ import {
   normalizeAutomationConfig,
 } from "../../../data/automation";
 import { getActionType, type Action } from "../../../data/script";
-import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
@@ -46,7 +46,10 @@ import "./action/ha-automation-action";
 import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
+import "./ha-automation-sidebar";
+import type { OpenSidebarConfig } from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
+import { saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
 import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
 
@@ -77,6 +80,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public saving = false;
+
   @property({ attribute: false }) public config!: ManualAutomationConfig;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
@@ -84,6 +89,8 @@ export class HaManualAutomationEditor extends LitElement {
   @property({ attribute: false }) public dirty = false;
 
   @state() private _pastedConfig?: ManualAutomationConfig;
+
+  @state() private _sidebarConfig?: OpenSidebarConfig;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -122,7 +129,7 @@ export class HaManualAutomationEditor extends LitElement {
     );
   }
 
-  protected render() {
+  private _renderContent() {
     return html`
       ${this.stateObj?.state === "off"
         ? html`
@@ -130,12 +137,7 @@ export class HaManualAutomationEditor extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.disabled"
               )}
-              <ha-button
-                size="small"
-                appearance="filled"
-                slot="action"
-                @click=${this._enable}
-              >
+              <ha-button size="small" slot="action" @click=${this._enable}>
                 ${this.hass.localize(
                   "ui.panel.config.automation.editor.enable"
                 )}
@@ -182,10 +184,14 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
         .highlightedTriggers=${this._pastedConfig?.triggers || []}
-        .path=${["triggers"]}
         @value-changed=${this._triggerChanged}
         .hass=${this.hass}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
+        .narrow=${this.narrow}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
+        root
+        sidebar
       ></ha-automation-trigger>
 
       <div class="header">
@@ -224,10 +230,14 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
         .highlightedConditions=${this._pastedConfig?.conditions || []}
-        .path=${["conditions"]}
         @value-changed=${this._conditionChanged}
         .hass=${this.hass}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
+        .narrow=${this.narrow}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
+        root
+        sidebar
       ></ha-automation-condition>
 
       <div class="header">
@@ -264,13 +274,80 @@ export class HaManualAutomationEditor extends LitElement {
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
         .highlightedActions=${this._pastedConfig?.actions || []}
-        .path=${["actions"]}
         @value-changed=${this._actionChanged}
+        @open-sidebar=${this._openSidebar}
+        @close-sidebar=${this._handleCloseSidebar}
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .disabled=${this.disabled}
+        .disabled=${this.disabled || this.saving}
+        root
+        sidebar
       ></ha-automation-action>
     `;
+  }
+
+  protected render() {
+    return html`
+      <div class="split-view">
+        <div class="content-wrapper">
+          <div class="content">${this._renderContent()}</div>
+          <ha-fab
+            slot="fab"
+            class=${this.dirty ? "dirty" : ""}
+            .label=${this.hass.localize(
+              "ui.panel.config.automation.editor.save"
+            )}
+            .disabled=${this.saving}
+            extended
+            @click=${this._saveAutomation}
+          >
+            <ha-svg-icon slot="icon" .path=${mdiContentSave}></ha-svg-icon>
+          </ha-fab>
+        </div>
+        <ha-automation-sidebar
+          class=${classMap({
+            sidebar: true,
+            hidden: !this._sidebarConfig,
+            overlay: !this.isWide,
+          })}
+          .isWide=${this.isWide}
+          .hass=${this.hass}
+          .config=${this._sidebarConfig}
+          @value-changed=${this._sidebarConfigChanged}
+          .disabled=${this.disabled}
+        ></ha-automation-sidebar>
+      </div>
+    `;
+  }
+
+  private _openSidebar(ev: CustomEvent<OpenSidebarConfig>) {
+    // deselect previous selected row
+    this._sidebarConfig?.close?.();
+    this._sidebarConfig = ev.detail;
+  }
+
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: OpenSidebarConfig }>) {
+    ev.stopPropagation();
+    if (!this._sidebarConfig) {
+      return;
+    }
+
+    this._sidebarConfig = {
+      ...this._sidebarConfig,
+      ...ev.detail.value,
+    };
+  }
+
+  private _closeSidebar() {
+    if (this._sidebarConfig) {
+      const closeRow = this._sidebarConfig?.close;
+      this._sidebarConfig = undefined;
+      closeRow?.();
+    }
+  }
+
+  private _handleCloseSidebar() {
+    this._sidebarConfig = undefined;
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -307,6 +384,11 @@ export class HaManualAutomationEditor extends LitElement {
     await this.hass.callService("automation", "turn_on", {
       entity_id: this.stateObj.entity_id,
     });
+  }
+
+  private _saveAutomation() {
+    this._closeSidebar();
+    fireEvent(this, "save-automation");
   }
 
   private _handlePaste = async (ev: ClipboardEvent) => {
@@ -521,14 +603,77 @@ export class HaManualAutomationEditor extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
+      saveFabStyles,
       css`
         :host {
           display: block;
         }
-        ha-card {
-          overflow: hidden;
+
+        .split-view {
+          display: flex;
+          flex-direction: row;
+          height: 100%;
+          position: relative;
+          gap: 16px;
         }
+
+        .content-wrapper {
+          position: relative;
+          flex: 6;
+        }
+
+        .content {
+          padding: 32px 16px 64px 0;
+          height: calc(100vh - 153px);
+          height: calc(100dvh - 153px);
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        .sidebar {
+          padding: 12px 0;
+          flex: 4;
+          height: calc(100vh - 81px);
+          height: calc(100dvh - 81px);
+          width: 40%;
+        }
+        .sidebar.hidden {
+          border-color: transparent;
+          border-width: 0;
+          overflow: hidden;
+          flex: 0;
+          visibility: hidden;
+        }
+
+        .sidebar.overlay {
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          height: calc(100% - 64px);
+          padding: 0;
+          z-index: 5;
+        }
+
+        @media all and (max-width: 870px) {
+          .sidebar.overlay {
+            max-height: 70vh;
+            max-height: 70dvh;
+            height: auto;
+            width: 100%;
+            box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
+          }
+        }
+
+        @media all and (max-width: 870px) {
+          .sidebar.overlay.hidden {
+            height: 0;
+          }
+        }
+
+        .sidebar.overlay.hidden {
+          width: 0;
+        }
+
         .description {
           margin: 0;
         }
@@ -557,6 +702,11 @@ export class HaManualAutomationEditor extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           line-height: 0;
         }
+
+        ha-alert {
+          display: block;
+          margin-bottom: 16px;
+        }
       `,
     ];
   }
@@ -565,5 +715,10 @@ export class HaManualAutomationEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "manual-automation-editor": HaManualAutomationEditor;
+  }
+
+  interface HASSDomEvents {
+    "open-sidebar": OpenSidebarConfig;
+    "close-sidebar": undefined;
   }
 }

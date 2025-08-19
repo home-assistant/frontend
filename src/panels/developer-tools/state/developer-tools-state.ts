@@ -168,7 +168,7 @@ class HaPanelDevState extends LitElement {
               required
               autocapitalize="none"
               autocomplete="off"
-              autocorrect="off"
+              .autocorrect=${false}
               input-spellcheck="false"
               .value=${this._state}
               @change=${this._stateChanged}

@@ -196,6 +196,7 @@ export class HaManualScriptEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .disabled=${this.disabled}
+        root
       ></ha-automation-action>
     `;
   }

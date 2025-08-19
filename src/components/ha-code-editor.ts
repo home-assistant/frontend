@@ -1,6 +1,7 @@
 import type {
   Completion,
   CompletionContext,
+  CompletionInfo,
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
@@ -9,14 +10,17 @@ import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, ReactiveElement } from "lit";
+import { css, ReactiveElement, html, render } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { getEntityContext } from "../common/entity/context/get_entity_context";
 import type { HomeAssistant } from "../types";
+import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-code-editor-completion-items";
 
 declare global {
   interface HASSDomEvents {
@@ -324,15 +328,72 @@ export class HaCodeEditor extends ReactiveElement {
     }
   };
 
+  private _renderInfo = (completion: Completion): CompletionInfo => {
+    const key = completion.label;
+    const context = getEntityContext(this.hass!.states[key], this.hass!);
+
+    const completionInfo = document.createElement("div");
+    completionInfo.classList.add("completion-info");
+
+    const formattedState = this.hass!.formatEntityState(this.hass!.states[key]);
+
+    const completionItems: CompletionItem[] = [
+      {
+        label: this.hass!.localize(
+          "ui.components.entity.entity-state-picker.state"
+        ),
+        value: formattedState,
+        subValue:
+          // If the state exactly matches the formatted state, don't show the raw state
+          this.hass!.states[key].state === formattedState
+            ? undefined
+            : this.hass!.states[key].state,
+      },
+    ];
+
+    if (context.device && context.device.name) {
+      completionItems.push({
+        label: this.hass!.localize("ui.components.device-picker.device"),
+        value: context.device.name,
+      });
+    }
+
+    if (context.area && context.area.name) {
+      completionItems.push({
+        label: this.hass!.localize("ui.components.area-picker.area"),
+        value: context.area.name,
+      });
+    }
+
+    if (context.floor && context.floor.name) {
+      completionItems.push({
+        label: this.hass!.localize("ui.components.floor-picker.floor"),
+        value: context.floor.name,
+      });
+    }
+
+    render(
+      html`
+        <ha-code-editor-completion-items
+          .items=${completionItems}
+        ></ha-code-editor-completion-items>
+      `,
+      completionInfo
+    );
+
+    return completionInfo;
+  };
+
   private _getStates = memoizeOne((states: HassEntities): Completion[] => {
     if (!states) {
       return [];
     }
+
     const options = Object.keys(states).map((key) => ({
       type: "variable",
       label: key,
       detail: states[key].attributes.friendly_name,
-      info: `State: ${states[key].state}`,
+      info: this._renderInfo,
     }));
 
     return options;
@@ -614,6 +675,20 @@ export class HaCodeEditor extends ReactiveElement {
     :host(.fullscreen) .fullscreen-button {
       top: calc(var(--safe-area-inset-top, 0px) + 8px);
       right: calc(var(--safe-area-inset-right, 0px) + 8px);
+    }
+
+    .completion-info {
+      display: grid;
+      gap: 3px;
+      padding: 8px;
+    }
+
+    /* Hide completion info on narrow screens */
+    @media (max-width: 600px) {
+      .cm-completionInfo,
+      .completion-info {
+        display: none;
+      }
     }
   `;
 }

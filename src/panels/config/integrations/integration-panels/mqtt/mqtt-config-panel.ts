@@ -14,6 +14,9 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
+import type { Action } from "../../../../../data/script";
+import { callExecuteScript } from "../../../../../data/service";
+import { showToast } from "../../../../../util/toast";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -54,14 +57,6 @@ export class MQTTConfigPanel extends LitElement {
     subscribe: false,
   })
   private _retain = false;
-
-  @state()
-  @storage({
-    key: "panel-dev-mqtt-allow-template-ls",
-    state: true,
-    subscribe: false,
-  })
-  private _allowTemplate = false;
 
   protected render(): TemplateResult {
     return html`
@@ -108,25 +103,7 @@ export class MQTTConfigPanel extends LitElement {
                   ></ha-switch>
                 </ha-formfield>
               </div>
-              <p>
-                <ha-formfield
-                  .label=${this.hass!.localize(
-                    "ui.panel.config.mqtt.allow_template"
-                  )}
-                >
-                  <ha-switch
-                    @change=${this._handleAllowTemplate}
-                    .checked=${this._allowTemplate}
-                  ></ha-switch>
-                </ha-formfield>
-              </p>
-              <p>
-                ${this._allowTemplate
-                  ? this.hass.localize("ui.panel.config.mqtt.payload")
-                  : this.hass.localize(
-                      "ui.panel.config.mqtt.payload_no_template"
-                    )}
-              </p>
+              <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
                 autocomplete-entities
@@ -171,21 +148,28 @@ export class MQTTConfigPanel extends LitElement {
     this._retain = (ev.target! as any).checked;
   }
 
-  private _handleAllowTemplate(ev: CustomEvent) {
-    this._allowTemplate = (ev.target! as any).checked;
-  }
-
   private _publish(): void {
     if (!this.hass) {
       return;
     }
-    this.hass.callService("mqtt", "publish", {
-      topic: this._topic,
-      payload: !this._allowTemplate ? this._payload : undefined,
-      payload_template: this._allowTemplate ? this._payload : undefined,
-      qos: parseInt(this._qos),
-      retain: this._retain,
-    });
+
+    const script: Action[] = [
+      {
+        action: "mqtt.publish",
+        data: {
+          topic: this._topic,
+          payload: this._payload,
+          qos: parseInt(this._qos),
+          retain: this._retain,
+        },
+      },
+    ];
+
+    callExecuteScript(this.hass, script).catch((err) =>
+      showToast(this, {
+        message: err.message,
+      })
+    );
   }
 
   private async _openOptionFlow() {

@@ -1,4 +1,3 @@
-import { formatInTimeZone, toDate } from "date-fns-tz";
 import {
   addDays,
   addHours,
@@ -6,6 +5,7 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -18,11 +18,11 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
-import "../../components/ha-button";
 import "../../components/ha-textarea";
 import "../../components/ha-textfield";
 import "../../components/ha-time-input";
@@ -282,6 +282,7 @@ class DialogCalendarEventEditor extends LitElement {
                 ? html`
                     <ha-button
                       slot="secondaryAction"
+                      appearance="plain"
                       variant="danger"
                       @click=${this._deleteEvent}
                       .disabled=${this._submitting}

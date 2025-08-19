@@ -11,16 +11,21 @@ import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import { getService, isService } from "../../../../data/action";
+import {
+  ACTION_BUILDING_BLOCKS,
+  getService,
+  isService,
+} from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
+  VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
 import type HaAutomationActionRow from "./ha-automation-action-row";
-import { getType } from "./ha-automation-action-row";
+import { getAutomationActionType } from "./ha-automation-action-row";
 
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
@@ -30,9 +35,14 @@ export default class HaAutomationAction extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public root = false;
+
   @property({ attribute: false }) public actions!: Action[];
 
   @property({ attribute: false }) public highlightedActions?: Action[];
+
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
 
   @state() private _showReorder = false;
 
@@ -95,6 +105,7 @@ export default class HaAutomationAction extends LitElement {
                 @value-changed=${this._actionChanged}
                 .hass=${this.hass}
                 ?highlight=${this.highlightedActions?.includes(action)}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -110,6 +121,8 @@ export default class HaAutomationAction extends LitElement {
             <ha-button
               .disabled=${this.disabled}
               @click=${this._addActionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -117,9 +130,10 @@ export default class HaAutomationAction extends LitElement {
               )}
             </ha-button>
             <ha-button
-              appearance="plain"
               .disabled=${this.disabled}
               @click=${this._addActionBuildingBlockDialog}
+              appearance="plain"
+              .size=${this.root ? "medium" : "small"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
               ${this.hass.localize(
@@ -142,7 +156,17 @@ export default class HaAutomationAction extends LitElement {
         "ha-automation-action-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
+        // on new condition open the settings in the sidebar, except for building blocks
+        const type = getAutomationActionType(row.action);
+        if (
+          type &&
+          this.optionsInSidebar &&
+          !ACTION_BUILDING_BLOCKS.includes(type)
+        ) {
+          row.openSidebar();
+        } else if (!this.optionsInSidebar) {
+          row.expand();
+        }
         row.scrollIntoView();
         row.focus();
       });
@@ -162,7 +186,7 @@ export default class HaAutomationAction extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "action",
       add: this._addAction,
-      clipboardItem: getType(this._clipboard?.action),
+      clipboardItem: getAutomationActionType(this._clipboard?.action),
     });
   }
 
@@ -170,7 +194,7 @@ export default class HaAutomationAction extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "action",
       add: this._addAction,
-      clipboardItem: getType(this._clipboard?.action),
+      clipboardItem: getAutomationActionType(this._clipboard?.action),
       group: "building_blocks",
     });
   }
@@ -179,6 +203,8 @@ export default class HaAutomationAction extends LitElement {
     let actions: Action[];
     if (action === PASTE_VALUE) {
       actions = this.actions.concat(deepClone(this._clipboard!.action));
+    } else if (action in VIRTUAL_ACTIONS) {
+      actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
     } else if (isService(action)) {
       actions = this.actions.concat({
         action: getService(action),
@@ -264,6 +290,7 @@ export default class HaAutomationAction extends LitElement {
     // Ensure action is removed even after update
     const actions = this.actions.filter((a) => a !== action);
     fireEvent(this, "value-changed", { value: actions });
+    fireEvent(this, "close-sidebar");
   }
 
   private _actionChanged(ev: CustomEvent) {
@@ -295,15 +322,18 @@ export default class HaAutomationAction extends LitElement {
 
   static styles = css`
     .actions {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
+    :host([root]) .actions {
+      padding-right: 8px;
+    }
     .sortable-ghost {
       background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sortable-drag {
       background: none;
@@ -311,9 +341,6 @@ export default class HaAutomationAction extends LitElement {
     ha-automation-action-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

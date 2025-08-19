@@ -3,26 +3,26 @@ import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 // eslint-disable-next-line import/extensions
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
-import { classMap } from "lit/directives/class-map";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import type {
   LandingPageKeys,
   LocalizeFunc,
 } from "../../../src/common/translations/localize";
+import { waitForSeconds } from "../../../src/common/util/wait";
+import "../../../src/components/ha-alert";
+import "../../../src/components/ha-ansi-to-html";
+import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
 import "../../../src/components/ha-button";
 import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
-import "../../../src/components/ha-ansi-to-html";
-import "../../../src/components/ha-alert";
-import type { HaAnsiToHtml } from "../../../src/components/ha-ansi-to-html";
+import { fileDownload } from "../../../src/util/file_download";
 import {
   getObserverLogs,
   downloadUrl as observerLogsDownloadUrl,
 } from "../data/observer";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import { fileDownload } from "../../../src/util/file_download";
 import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
-import { waitForSeconds } from "../../../src/common/util/wait";
 import { ASSUME_CORE_START_SECONDS } from "../ha-landing-page";
 
 const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
@@ -108,14 +108,13 @@ class LandingPageLogs extends LitElement {
               !this._scrolledToBottomController.value) ||
             false,
         })}"
+        size="small"
+        appearance="filled"
         @click=${this._scrollToBottom}
       >
-        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="icon"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="start"></ha-svg-icon>
         ${this.localize("logs.scroll_down_button")}
-        <ha-svg-icon
-          .path=${mdiArrowCollapseDown}
-          slot="trailingIcon"
-        ></ha-svg-icon>
+        <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
       </ha-button>
     `;
   }
@@ -312,21 +311,14 @@ class LandingPageLogs extends LitElement {
       }
 
       .new-logs-indicator {
-        --mdc-theme-primary: var(--text-primary-color);
-
         overflow: hidden;
         position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        bottom: 4px;
+        left: 4px;
         height: 0;
-        background-color: var(--primary-color);
-        border-radius: 8px;
 
         transition: height 0.4s ease-out;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
       }
 
       .new-logs-indicator.visible {

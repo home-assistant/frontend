@@ -111,7 +111,7 @@ class ZWaveJSCapabilityMultiLevelSwitch extends LitElement {
     ).checked;
 
     const startLevel = Number(
-      (this.shadowRoot!.getElementById("start_level") as HaTextField).value
+      (this.shadowRoot!.getElementById("start_level")! as HaTextField).value
     );
 
     const options = {
