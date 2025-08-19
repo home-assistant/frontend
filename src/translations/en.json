@@ -1228,7 +1228,7 @@
         "no_match": "No matching items found"
       },
       "suggest_with_ai": {
-        "label": "Suggest with AI",
+        "label": "Suggest",
         "suggesting_1": "Analyzing…",
         "suggesting_2": "Suggesting…",
         "suggesting_3": "Enchanting…",
