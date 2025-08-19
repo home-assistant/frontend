@@ -27,7 +27,7 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stateActive } from "../../../common/entity/state_active";
 import { isUnavailableState } from "../../../data/entity";
 import { debounce } from "../../../common/util/debounce";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { hasConfigChanged } from "../common/has-changed";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-button";
 import "../../../components/ha-icon-button";
@@ -105,10 +105,14 @@ class HuiMediaPlayerPlaybackCardFeature
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const entityId = this.context?.entity_id;
     return (
-      hasConfigOrEntityChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
+      hasConfigChanged(this, changedProps) ||
+      (changedProps.has("hass") &&
+        (!oldHass ||
+          !entityId ||
+          oldHass.states[entityId] !== this.hass!.states[entityId]))
     );
   }
 
