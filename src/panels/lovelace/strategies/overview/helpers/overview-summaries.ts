@@ -81,7 +81,7 @@ export const findEntities = (
 ): string[] => {
   const seen = new Set<string>();
   const results: string[] = [];
-  
+
   for (const filter of filters) {
     for (const entity of entities) {
       if (filter(entity) && !seen.has(entity)) {
@@ -90,6 +90,6 @@ export const findEntities = (
       }
     }
   }
-  
+
   return results;
 };
