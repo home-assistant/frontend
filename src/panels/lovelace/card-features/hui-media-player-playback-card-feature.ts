@@ -182,7 +182,7 @@ class HuiMediaPlayerPlaybackCardFeature
     }
 
     if (
-      (assumedState || stateObj.state === "playing") &&
+      (stateObj.state === "playing" || assumedState) &&
       supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
     ) {
       controls.push({ icon: mdiSkipNext, action: "media_next_track" });
