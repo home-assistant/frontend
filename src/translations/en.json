@@ -470,6 +470,8 @@
         },
         "selector": {
           "options": "Selector options",
+          "type": "Type",
+          "multiple": "Multiple",
           "types": {
             "action": "Action",
             "area": "Area",
@@ -4727,7 +4729,8 @@
               "add_fields": "Add fields",
               "add_field": "Add field",
               "field": "field",
-              "label": "Field"
+              "label": "Field",
+              "field_selector": "Field selector"
             },
             "field_delete_confirm_title": "Delete field?",
             "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",

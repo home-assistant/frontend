@@ -44,6 +44,7 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
@@ -87,7 +88,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {

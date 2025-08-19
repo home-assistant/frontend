@@ -28,6 +28,7 @@ import type { Action, Field, RepeatAction } from "../../../data/script";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "../script/ha-script-field-editor";
+import "../script/ha-script-field-selector-editor";
 import "./action/ha-automation-action-editor";
 import { getAutomationActionType } from "./action/ha-automation-action-row";
 import { getRepeatType } from "./action/types/ha-automation-action-repeat";
@@ -51,7 +52,13 @@ export interface OpenSidebarConfig {
   disable: () => void;
   delete: () => void;
   config: Trigger | Condition | Action | FieldSidebarConfig;
-  type: "trigger" | "condition" | "action" | "option" | "script_field";
+  type:
+    | "trigger"
+    | "condition"
+    | "action"
+    | "option"
+    | "script_field"
+    | "script_field_selector";
   uiSupported: boolean;
   yamlMode: boolean;
 }
@@ -114,8 +121,8 @@ export default class HaAutomationSidebar extends LitElement {
     const subtitle = this.hass.localize(
       (this.config.type === "option"
         ? "ui.panel.config.automation.editor.actions.type.choose.label"
-        : this.config.type === "script_field"
-          ? "ui.panel.config.script.editor.field.label"
+        : this.config.type === "script_field_selector"
+          ? "ui.panel.config.script.editor.field.field_selector"
           : `ui.panel.config.automation.editor.${this.config.type}s.${this.config.type}`) as LocalizeKeys
     );
 
@@ -124,8 +131,10 @@ export default class HaAutomationSidebar extends LitElement {
         (this.config.type === "option"
           ? "ui.panel.config.automation.editor.actions.type.choose.option_label"
           : this.config.type === "script_field"
-            ? `ui.components.selectors.selector.types.${Object.keys((this.config.config as FieldSidebarConfig).field.selector)[0]}`
-            : `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label`) as LocalizeKeys
+            ? "ui.panel.config.script.editor.field.label"
+            : this.config.type === "script_field_selector"
+              ? `ui.components.selectors.selector.types.${Object.keys((this.config.config as FieldSidebarConfig).field.selector)[0]}`
+              : `ui.panel.config.automation.editor.${this.config.type}s.type.${type}.label`) as LocalizeKeys
       ) || type;
 
     const description =
@@ -309,9 +318,20 @@ export default class HaAutomationSidebar extends LitElement {
                       .excludeKeys=${(this.config.config as FieldSidebarConfig)
                         .excludeKeys}
                       .disabled=${this.disabled}
+                      .yamlMode=${this._yamlMode}
                       @value-changed=${this._valueChangedSidebar}
                     ></ha-script-field-editor>`
-                  : description || nothing}
+                  : this.config.type === "script_field_selector"
+                    ? html`<ha-script-field-selector-editor
+                        class="sidebar-editor"
+                        .hass=${this.hass}
+                        .field=${(this.config.config as FieldSidebarConfig)
+                          .field}
+                        .disabled=${this.disabled}
+                        @value-changed=${this._valueChangedSidebar}
+                        .yamlMode=${this._yamlMode}
+                      ></ha-script-field-selector-editor>`
+                    : description || nothing}
         </div>
       </ha-card>
     `;
@@ -326,24 +346,32 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _valueChangedSidebar(ev: CustomEvent) {
     ev.stopPropagation();
+    let value = ev.detail.value;
 
-    this.config?.save(ev.detail.value);
+    if (this.config?.type.startsWith("script_field")) {
+      value = {
+        ...(this.config.config as FieldSidebarConfig).field,
+        key:
+          ev.detail.value.key ?? (this.config.config as FieldSidebarConfig).key,
+        ...ev.detail.value,
+      };
+    }
+
+    this.config?.save(value);
 
     if (this.config) {
+      if (this.config?.type.startsWith("script_field")) {
+        value = {
+          field: value,
+          key: value.key,
+          excludeKeys: (this.config.config as FieldSidebarConfig).excludeKeys,
+        };
+      }
+
       fireEvent(this, "value-changed", {
         value: {
           ...this.config,
-          config:
-            this.config.type === "script_field"
-              ? {
-                  field: ev.detail.value,
-                  key:
-                    ev.detail.value.key ??
-                    (this.config.config as FieldSidebarConfig).key,
-                  excludeKeys: (this.config.config as FieldSidebarConfig)
-                    .excludeKeys,
-                }
-              : ev.detail.value,
+          config: value,
         },
       });
     }

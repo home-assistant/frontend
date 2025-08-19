@@ -1,17 +1,11 @@
-import type { CSSResultGroup } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/ha-alert";
-import "../../../components/ha-automation-row";
-import "../../../components/ha-card";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-menu-item";
 import "../../../components/ha-yaml-editor";
 import type { Field } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
@@ -30,16 +24,16 @@ export default class HaScriptFieldEditor extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
+
   @state() private _uiError?: Record<string, string>;
 
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
 
-  @state() private _yamlMode = false;
-
   private _errorKey?: string;
 
   private _schema = memoizeOne(
-    (selector: any) =>
+    () =>
       [
         {
           name: "name",
@@ -54,14 +48,6 @@ export default class HaScriptFieldEditor extends LitElement {
           selector: { text: {} },
         },
         {
-          name: "selector",
-          selector: { selector: {} },
-        },
-        {
-          name: "default",
-          selector: selector && typeof selector === "object" ? selector : {},
-        },
-        {
           name: "required",
           selector: { boolean: {} },
         },
@@ -69,13 +55,13 @@ export default class HaScriptFieldEditor extends LitElement {
   );
 
   protected render() {
-    const schema = this._schema(this.field.selector);
+    const schema = this._schema();
     const data = { ...this.field, key: this._errorKey ?? this.key };
 
     const yamlValue = { [this.key]: this.field };
 
     return html`
-      ${this._yamlMode
+      ${this.yamlMode
         ? html`${this._yamlError
               ? html`<ha-alert alert-type="error">
                   ${this.hass.localize(
@@ -184,22 +170,14 @@ export default class HaScriptFieldEditor extends LitElement {
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (schema.name) {
-      default:
-        return this.hass.localize(
-          `ui.panel.config.script.editor.field.${schema.name}`
-        );
-    }
-  };
+  ): string =>
+    this.hass.localize(`ui.panel.config.script.editor.field.${schema.name}`);
 
   private _computeError = (error: string) =>
     this.hass.localize(`ui.panel.config.script.editor.field.${error}` as any) ||
     error;
 
-  static get styles(): CSSResultGroup {
-    return [haStyle, css``];
-  }
+  static styles = haStyle;
 }
 
 declare global {
