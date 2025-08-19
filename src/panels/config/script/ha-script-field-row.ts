@@ -200,15 +200,9 @@ export default class HaScriptFieldRow extends LitElement {
         }
         fireEvent(this, "close-sidebar");
       },
-      rename: () => {
-        // field cannot be renamed
-      },
       toggleYamlMode: () => {
         this._toggleYamlMode();
         return this._yamlMode;
-      },
-      disable: () => {
-        // field cannot be disabled
       },
       delete: this._onDelete,
       config: {
@@ -239,6 +233,9 @@ export default class HaScriptFieldRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
+        if (this._selected) {
+          fireEvent(this, "close-sidebar");
+        }
       },
     });
   };

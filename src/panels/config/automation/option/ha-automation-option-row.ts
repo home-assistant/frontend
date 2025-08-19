@@ -346,9 +346,6 @@ export default class HaAutomationOptionRow extends LitElement {
     }
 
     fireEvent(this, "open-sidebar", {
-      save: () => {
-        // nothing to save for an option in the sidebar
-      },
       close: () => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
@@ -357,9 +354,6 @@ export default class HaAutomationOptionRow extends LitElement {
         this._renameOption();
       },
       toggleYamlMode: () => false, // no yaml mode for options
-      disable: () => {
-        // option cannot be disabled
-      },
       delete: this._removeOption,
       config: {},
       type: "option",

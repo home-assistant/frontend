@@ -45,11 +45,11 @@ interface FieldSidebarConfig {
 }
 
 export interface OpenSidebarConfig {
-  save: (config: Trigger | Condition | Action) => void;
+  save?: (config: Trigger | Condition | Action) => void;
   close: () => void;
-  rename: () => void;
+  rename?: () => void;
   toggleYamlMode: () => boolean;
-  disable: () => void;
+  disable?: () => void;
   delete: () => void;
   config: Trigger | Condition | Action | FieldSidebarConfig;
   type:
@@ -175,16 +175,17 @@ export default class HaAutomationSidebar extends LitElement {
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
-            <ha-md-menu-item
-              .clickAction=${this.config.rename}
-              .disabled=${disabled || type === "list"}
-            >
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.rename"
-              )}
-              <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-            </ha-md-menu-item>
-
+            ${this.config.rename
+              ? html`<ha-md-menu-item
+                  .clickAction=${this.config.rename}
+                  .disabled=${disabled || type === "list"}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.rename"
+                  )}
+                  <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+                </ha-md-menu-item>`
+              : nothing}
             ${this.config.type === "trigger" &&
             !this._yamlMode &&
             !("id" in this.config.config) &&
@@ -221,7 +222,7 @@ export default class HaAutomationSidebar extends LitElement {
 
             <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
 
-            ${this.config.type !== "option"
+            ${this.config.disable
               ? html`
                   <ha-md-menu-item
                     .clickAction=${this.config.disable}
@@ -357,7 +358,7 @@ export default class HaAutomationSidebar extends LitElement {
       };
     }
 
-    this.config?.save(value);
+    this.config?.save?.(value);
 
     if (this.config) {
       if (this.config?.type.startsWith("script_field")) {
