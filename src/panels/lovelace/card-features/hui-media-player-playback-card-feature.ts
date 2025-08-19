@@ -260,7 +260,7 @@ class HuiMediaPlayerPlaybackCardFeature
   }
 
   private _action(e: Event): void {
-    const action = (e.target as HTMLElement).getAttribute("key");
+    const action = (e.currentTarget as HTMLElement).getAttribute("key");
     if (!action) return;
 
     switch (action) {
