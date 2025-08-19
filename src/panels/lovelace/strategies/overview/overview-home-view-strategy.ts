@@ -14,12 +14,8 @@ import type {
   MarkdownCardConfig,
   TileCardConfig,
 } from "../../cards/types";
-import {
-  AREA_STRATEGY_GROUP_ICONS,
-  getAreas,
-  getFloors,
-} from "../areas/helpers/areas-strategy-helper";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
+import { OVERVIEW_SUMMARIES_ICONS } from "./helpers/overview-summaries";
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
@@ -144,7 +140,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       favoriteSection.cards!.push(
         {
           type: "heading",
-          heading: "Favorites",
+          heading: "Quick actions",
         },
         ...favoriteEntities.map(
           (entityId) =>
@@ -156,46 +152,17 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       );
     }
 
-    const personSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [],
-    };
-
-    const personFilter = generateEntityFilter(hass, {
-      domain: "person",
-    });
-
-    const personEntities = Object.keys(hass.states).filter(personFilter);
-
-    if (personEntities.length > 0) {
-      personSection.cards!.push(
-        {
-          type: "heading",
-          heading: "People",
-        },
-        ...personEntities.map(
-          (entityId) =>
-            ({
-              type: "tile",
-              entity: entityId,
-              show_entity_picture: true,
-            }) as TileCardConfig
-        )
-      );
-    }
-
-    const categorySection: LovelaceSectionConfig = {
+    const summarySection: LovelaceSectionConfig = {
       type: "grid",
       column_span: maxColumns,
       cards: [
         {
           type: "heading",
-          heading: "Categories",
+          heading: "Summaries",
         },
         {
           type: "button",
-          icon: AREA_STRATEGY_GROUP_ICONS.lights,
+          icon: OVERVIEW_SUMMARIES_ICONS.lights,
           name: "Lights",
           grid_options: {
             rows: 2,
@@ -208,15 +175,41 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
-          icon: AREA_STRATEGY_GROUP_ICONS.covers,
-          name: "Covers",
+          icon: OVERVIEW_SUMMARIES_ICONS.climate,
+          name: "Climate",
           grid_options: {
             rows: 2,
             columns: 4,
           },
           tap_action: {
             action: "navigate",
-            navigation_path: "covers",
+            navigation_path: "climate",
+          },
+        } satisfies ButtonCardConfig,
+        {
+          type: "button",
+          icon: OVERVIEW_SUMMARIES_ICONS.security,
+          name: "Security",
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+          tap_action: {
+            action: "navigate",
+            navigation_path: "security",
+          },
+        } satisfies ButtonCardConfig,
+        {
+          type: "button",
+          icon: OVERVIEW_SUMMARIES_ICONS.media_players,
+          name: "Media Players",
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+          tap_action: {
+            action: "navigate",
+            navigation_path: "media-players",
           },
         } satisfies ButtonCardConfig,
         {
@@ -237,8 +230,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
 
     const sections = [
       ...(favoriteSection.cards ? [favoriteSection] : []),
-      ...(personSection.cards ? [personSection] : []),
-      categorySection,
+      summarySection,
       ...floorSections,
     ];
     return {

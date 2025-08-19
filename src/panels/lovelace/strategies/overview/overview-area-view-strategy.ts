@@ -1,5 +1,9 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeEntityName } from "../../../../common/entity/compute_entity_name";
+import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -7,11 +11,14 @@ import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { HeadingCardConfig } from "../../cards/types";
+import { computeAreaTileCardConfig } from "../areas/helpers/areas-strategy-helper";
 import {
-  AREA_STRATEGY_GROUP_ICONS,
-  computeAreaTileCardConfig,
-  getAreaGroupedEntities,
-} from "../areas/helpers/areas-strategy-helper";
+  findEntities,
+  OVERVIEW_SUMMARIES,
+  OVERVIEW_SUMMARIES_FILTERS,
+  OVERVIEW_SUMMARIES_ICONS,
+  type OverviewSummaries,
+} from "./helpers/overview-summaries";
 
 export interface OverviewAreaViewStrategyConfig {
   type: "overview-area";
@@ -71,44 +78,44 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
       });
     }
 
-    const groupedEntities = getAreaGroupedEntities(config.area, hass);
-
     const computeTileCard = computeAreaTileCardConfig(hass, area.name, true);
+
+    const areaFilter = generateEntityFilter(hass, {
+      area: config.area,
+    });
+
+    const allEntities = Object.keys(hass.states);
+    const areaEntities = allEntities.filter(areaFilter);
+
+    const entitiesBySummary = OVERVIEW_SUMMARIES.reduce(
+      (acc, summary) => {
+        const summariesFilters = OVERVIEW_SUMMARIES_FILTERS[summary];
+        const filterFunctions = summariesFilters.map((filter) =>
+          generateEntityFilter(hass, filter)
+        );
+        acc[summary] = findEntities(areaEntities, filterFunctions);
+        return acc;
+      },
+      {} as Record<OverviewSummaries, string[]>
+    );
 
     const {
       lights,
       climate,
-      covers,
-      media_players,
       security,
-      actions,
-      others,
-    } = groupedEntities;
+      media_players: mediaPlayers,
+    } = entitiesBySummary;
 
     if (lights.length > 0) {
       sections.push({
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.lights"),
-            AREA_STRATEGY_GROUP_ICONS.lights,
+            "Lights",
+            OVERVIEW_SUMMARIES_ICONS.lights,
             "lights"
           ),
           ...lights.map(computeTileCard),
-        ],
-      });
-    }
-
-    if (covers.length > 0) {
-      sections.push({
-        type: "grid",
-        cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.covers"),
-            AREA_STRATEGY_GROUP_ICONS.covers,
-            "covers"
-          ),
-          ...covers.map(computeTileCard),
         ],
       });
     }
@@ -118,25 +125,11 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.climate"),
-            AREA_STRATEGY_GROUP_ICONS.climate
+            "Climate",
+            OVERVIEW_SUMMARIES_ICONS.climate,
+            "climate"
           ),
           ...climate.map(computeTileCard),
-        ],
-      });
-    }
-
-    if (media_players.length > 0) {
-      sections.push({
-        type: "grid",
-        cards: [
-          computeHeadingCard(
-            hass.localize(
-              "ui.panel.lovelace.strategy.areas.groups.media_players"
-            ),
-            AREA_STRATEGY_GROUP_ICONS.media_players
-          ),
-          ...media_players.map(computeTileCard),
         ],
       });
     }
@@ -146,38 +139,153 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.security"),
-            AREA_STRATEGY_GROUP_ICONS.security
+            "Security",
+            OVERVIEW_SUMMARIES_ICONS.security,
+            "security"
           ),
           ...security.map(computeTileCard),
         ],
       });
     }
 
-    if (actions.length > 0) {
+    if (mediaPlayers.length > 0) {
       sections.push({
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.actions"),
-            AREA_STRATEGY_GROUP_ICONS.actions
+            "Media players",
+            OVERVIEW_SUMMARIES_ICONS.media_players,
+            "media-players"
           ),
-          ...actions.map(computeTileCard),
+          ...mediaPlayers.map(computeTileCard),
         ],
       });
     }
 
-    if (others.length > 0) {
-      sections.push({
+    const deviceSections: LovelaceSectionRawConfig[] = [];
+
+    const summaryEntities = Object.values(entitiesBySummary).flat();
+
+    // Rest of entities grouped by device
+    const otherEntities = areaEntities.filter(
+      (entityId) => !summaryEntities.includes(entityId)
+    );
+
+    const entitiesByDevice: Record<string, string[]> = {};
+    const unassignedEntities: string[] = [];
+    for (const entityId of otherEntities) {
+      const stateObj = hass.states[entityId];
+      if (!stateObj) continue;
+      const { device } = getEntityContext(stateObj, hass);
+      if (!device) {
+        unassignedEntities.push(entityId);
+        continue;
+      }
+      if (!(device.id in entitiesByDevice)) {
+        entitiesByDevice[device.id] = [];
+      }
+      entitiesByDevice[device.id].push(entityId);
+    }
+
+    const otherDeviceEntities = Object.entries(entitiesByDevice).map(
+      ([deviceId, entities]) => ({
+        device_id: deviceId,
+        entities: entities,
+      })
+    );
+
+    if (unassignedEntities.length > 0) {
+      otherDeviceEntities.push({
+        device_id: "unassigned",
+        entities: unassignedEntities,
+      });
+    }
+
+    const batteryFilter = generateEntityFilter(hass, {
+      domain: "sensor",
+      device_class: "battery",
+    });
+
+    const energyFilter = generateEntityFilter(hass, {
+      domain: "sensor",
+      device_class: ["energy", "power"],
+    });
+
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
+    });
+
+    for (const deviceEntities of otherDeviceEntities) {
+      if (deviceEntities.entities.length === 0) continue;
+
+      const batteryEntities = deviceEntities.entities.filter((e) =>
+        batteryFilter(e)
+      );
+      const entities = deviceEntities.entities.filter(
+        (e) => !batteryFilter(e) && !energyFilter(e) && primaryFilter(e)
+      );
+
+      if (entities.length === 0) {
+        continue;
+      }
+
+      const deviceId = deviceEntities.device_id;
+      const device = hass.devices[deviceId];
+      let heading = "";
+      if (device) {
+        heading = computeDeviceName(device) || "Unnamed device";
+      } else {
+        heading = "Others";
+      }
+
+      deviceSections.push({
         type: "grid",
         cards: [
-          computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.others"),
-            AREA_STRATEGY_GROUP_ICONS.others
-          ),
-          ...others.map(computeTileCard),
+          {
+            type: "heading",
+            heading: heading,
+            tap_action: device
+              ? {
+                  action: "navigate",
+                  navigation_path: `/config/devices/device/${device.id}`,
+                }
+              : undefined,
+            badges: [
+              ...batteryEntities.slice(0, 1).map((e) => ({
+                entity: e,
+                type: "entity",
+                tap_action: {
+                  action: "more-info",
+                },
+              })),
+            ],
+          } satisfies HeadingCardConfig,
+          ...entities.map((e) => {
+            const stateObj = hass.states[e];
+            return {
+              ...computeTileCard(e),
+              name:
+                computeEntityName(stateObj, hass) ||
+                (device ? computeDeviceName(device) : ""),
+            };
+          }),
         ],
       });
+    }
+
+    if (deviceSections.length > 0) {
+      sections.push({
+        type: "grid",
+        column_span: 3,
+        cards: [
+          {
+            type: "heading",
+            heading_style: "subtitle",
+            heading: "",
+          } satisfies HeadingCardConfig,
+        ],
+      } satisfies LovelaceSectionRawConfig);
+      sections.push(...deviceSections);
     }
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)

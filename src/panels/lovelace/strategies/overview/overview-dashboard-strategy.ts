@@ -4,11 +4,9 @@ import { customElement } from "lit/decorators";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import {
-  AREA_STRATEGY_GROUP_ICONS,
-  getAreas,
-} from "../areas/helpers/areas-strategy-helper";
+import { getAreas } from "../areas/helpers/areas-strategy-helper";
 import type { LovelaceStrategyEditor } from "../types";
+import { OVERVIEW_SUMMARIES_ICONS } from "./helpers/overview-summaries";
 import type { OverviewAreaViewStrategyConfig } from "./overview-area-view-strategy";
 import type { OverviewHomeViewStrategyConfig } from "./overview-home-view-strategy";
 
@@ -68,17 +66,37 @@ export class OverviewDashboardStrategy extends ReactiveElement {
       strategy: {
         type: "overview-lights",
       },
-      icon: AREA_STRATEGY_GROUP_ICONS.lights,
+      icon: OVERVIEW_SUMMARIES_ICONS.lights,
     } satisfies LovelaceViewRawConfig;
 
-    const coversView = {
-      title: "Covers",
-      path: "covers",
+    const climateView = {
+      title: "Climate",
+      path: "climate",
       subview: true,
       strategy: {
-        type: "overview-covers",
+        type: "overview-climate",
       },
-      icon: AREA_STRATEGY_GROUP_ICONS.covers,
+      icon: OVERVIEW_SUMMARIES_ICONS.climate,
+    } satisfies LovelaceViewRawConfig;
+
+    const securityView = {
+      title: "Security",
+      path: "security",
+      subview: true,
+      strategy: {
+        type: "overview-security",
+      },
+      icon: OVERVIEW_SUMMARIES_ICONS.security,
+    } satisfies LovelaceViewRawConfig;
+
+    const mediaPlayersView = {
+      title: "Media players",
+      path: "media-players",
+      subview: true,
+      strategy: {
+        type: "overview-media-players",
+      },
+      icon: OVERVIEW_SUMMARIES_ICONS.media_players,
     } satisfies LovelaceViewRawConfig;
 
     return {
@@ -93,7 +111,9 @@ export class OverviewDashboardStrategy extends ReactiveElement {
         },
         ...areaViews,
         lightView,
-        coversView,
+        climateView,
+        securityView,
+        mediaPlayersView,
       ],
     };
   }
