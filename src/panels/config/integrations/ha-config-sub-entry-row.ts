@@ -12,7 +12,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
-import { deleteSubEntry, renameSubEntry } from "../../../data/config_entries";
+import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -235,11 +235,11 @@ class HaConfigSubEntryRow extends LitElement {
     if (newName === null) {
       return;
     }
-    await renameSubEntry(
+    await updateSubEntry(
       this.hass,
       this.entry.entry_id,
       this.subEntry.subentry_id,
-      newName
+      { title: newName }
     );
   }
 

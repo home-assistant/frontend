@@ -42,17 +42,17 @@ export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>
     entry_id,
   });
 
-export const renameSubEntry = (
+export const updateSubEntry = (
   hass: HomeAssistant,
   entry_id: string,
   subentry_id: string,
-  new_title: string
+  updatedValues: SubEntryMutableParams
 ) =>
   hass.callWS({
-    type: "config_entries/subentries/rename",
+    type: "config_entries/subentries/update",
     entry_id,
     subentry_id,
-    new_title,
+    ...updatedValues,
   });
 
 export const deleteSubEntry = (
@@ -71,6 +71,10 @@ export type ConfigEntryMutableParams = Partial<
     ConfigEntry,
     "title" | "pref_disable_new_entities" | "pref_disable_polling"
   >
+>;
+
+export type SubEntryMutableParams = Partial<
+  Pick<SubEntry, "title" | "unique_id">
 >;
 
 // https://github.com/home-assistant/core/blob/2286dea636fda001f03433ba14d7adbda43979e5/homeassistant/config_entries.py#L81
