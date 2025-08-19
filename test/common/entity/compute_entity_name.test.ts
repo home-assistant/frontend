@@ -68,7 +68,7 @@ describe("computeEntityEntryName", () => {
       "Kitchen"
     );
     vi.spyOn(stripPrefixModule, "stripPrefixFromEntityName").mockImplementation(
-      (name, prefix) => name.replace(prefix + " ", "")
+      (name, prefix) => name?.replace(prefix + " ", "") ?? ""
     );
     const entry = {
       entity_id: "light.kitchen",
