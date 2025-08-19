@@ -68,7 +68,7 @@ describe("computeEntityEntryName", () => {
       "Kitchen"
     );
     vi.spyOn(stripPrefixModule, "stripPrefixFromEntityName").mockImplementation(
-      (name, prefix) => name?.replace(prefix + " ", "") ?? ""
+      (name, prefix) => name.replace(prefix + " ", "")
     );
     const entry = {
       entity_id: "light.kitchen",
@@ -152,11 +152,11 @@ describe("computeEntityEntryName", () => {
       states: {},
     };
 
-    // Should not throw an error and should return undefined (since numeric name is invalid)
+    // Should not throw an error and should return the stringified number
     expect(() =>
       computeEntityEntryName(entry as any, hass as any)
     ).not.toThrow();
-    expect(computeEntityEntryName(entry as any, hass as any)).toBeUndefined();
+    expect(computeEntityEntryName(entry as any, hass as any)).toBe("2");
     vi.restoreAllMocks();
   });
 });
