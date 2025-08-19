@@ -165,7 +165,9 @@ class HuiMediaPlayerPlaybackCardFeature
             supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
     ) {
       controls.push({ icon: controlButton.icon, action: controlButton.action });
-    } else if (assumedState) {
+    }
+
+    if (assumedState) {
       if (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) {
         controls.push({ icon: mdiPlay, action: "media_play" });
       }
