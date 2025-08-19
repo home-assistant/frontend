@@ -237,10 +237,11 @@ export class HaAuthFlow extends LitElement {
               @value-changed=${this._stepDataChanged}
             ></ha-auth-form>`
           )}
-          ${this.clientId === genClientId() &&
-          !["select_mfa_module", "mfa"].includes(step.step_id)
-            ? html`
-                <div class="space-between">
+
+          <div class="space-between">
+            ${this.clientId === genClientId() &&
+            !["select_mfa_module", "mfa"].includes(step.step_id)
+              ? html`
                   <ha-formfield
                     class="store-token"
                     .label=${this.localize(
@@ -252,18 +253,16 @@ export class HaAuthFlow extends LitElement {
                       @change=${this._storeTokenChanged}
                     ></ha-checkbox>
                   </ha-formfield>
-                  <a
-                    class="forgot-password"
-                    href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    >${this.localize(
-                      "ui.panel.page-authorize.forgot_password"
-                    )}</a
-                  >
-                </div>
-              `
-            : ""}
+                `
+              : ""}
+            <a
+              class="forgot-password"
+              href="https://www.home-assistant.io/docs/locked_out/#forgot-password"
+              target="_blank"
+              rel="noreferrer noopener"
+              >${this.localize("ui.panel.page-authorize.forgot_password")}</a
+            >
+          </div>
         `;
       default:
         return nothing;

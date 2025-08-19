@@ -54,6 +54,9 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { TodoListCardConfig } from "./types";
 
+export const ITEM_TAP_ACTION_EDIT = "edit";
+export const ITEM_TAP_ACTION_TOGGLE = "toggle";
+
 @customElement("hui-todo-list-card")
 export class HuiTodoListCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -482,7 +485,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               )}
               .itemId=${item.uid}
               @change=${this._completeItem}
-              @click=${this._openItem}
+              @click=${this._itemTap}
               @request-selected=${this._requestSelected}
               @keydown=${this._handleKeydown}
             >
@@ -575,7 +578,18 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       return;
     }
     if (ev.key === "Enter") {
+      this._itemTap(ev);
+    }
+  }
+
+  private _itemTap(ev): void {
+    if (
+      !this._config!.item_tap_action ||
+      this._config!.item_tap_action === ITEM_TAP_ACTION_EDIT
+    ) {
       this._openItem(ev);
+    } else if (this._config!.item_tap_action === ITEM_TAP_ACTION_TOGGLE) {
+      this._completeItem(ev);
     }
   }
 

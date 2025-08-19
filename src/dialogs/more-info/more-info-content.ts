@@ -72,31 +72,40 @@ class MoreInfoContent extends LitElement {
     return (
       stateObj.attributes &&
       stateObj.attributes.entity_id &&
-      Array.isArray(stateObj.attributes.entity_id)
+      Array.isArray(stateObj.attributes.entity_id) &&
+      stateObj.attributes.entity_id.some(
+        (entityId: string) => !this.hass!.entities[entityId]?.hidden
+      )
     );
   }
 
   private _entitiesSectionConfig = memoizeOne((entityIds: string[]) => {
-    const cards = entityIds.map((entityId) => {
-      const features: LovelaceCardFeatureConfig[] = [];
-      const context = { entity_id: entityId };
-      if (supportsCoverPositionCardFeature(this.hass!, context)) {
-        features.push({
-          type: "cover-position",
-        });
-      } else if (supportsLightBrightnessCardFeature(this.hass!, context)) {
-        features.push({
-          type: "light-brightness",
-        });
-      }
-      return {
-        type: "tile",
-        entity: entityId,
-        features_position: "inline",
-        features,
-        grid_options: { columns: 12 },
-      } as TileCardConfig;
-    });
+    const cards = entityIds
+      .map((entityId) => {
+        const entity = this.hass!.entities[entityId];
+        if (entity?.hidden) {
+          return null;
+        }
+        const features: LovelaceCardFeatureConfig[] = [];
+        const context = { entity_id: entityId };
+        if (supportsCoverPositionCardFeature(this.hass!, context)) {
+          features.push({
+            type: "cover-position",
+          });
+        } else if (supportsLightBrightnessCardFeature(this.hass!, context)) {
+          features.push({
+            type: "light-brightness",
+          });
+        }
+        return {
+          type: "tile",
+          entity: entityId,
+          features_position: "inline",
+          features,
+          grid_options: { columns: 12 },
+        } as TileCardConfig;
+      })
+      .filter(Boolean);
     return {
       type: "grid",
       cards,

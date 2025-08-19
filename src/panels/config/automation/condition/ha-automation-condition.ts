@@ -23,6 +23,7 @@ import {
 } from "../show-add-automation-element-dialog";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -34,7 +35,12 @@ export default class HaAutomationCondition extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
 
   @state() private _showReorder = false;
 
@@ -96,7 +102,15 @@ export default class HaAutomationCondition extends LitElement {
         "ha-automation-condition-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
+        // on new condition open the settings in the sidebar, except for building blocks
+        if (
+          this.optionsInSidebar &&
+          !CONDITION_BUILDING_BLOCKS.includes(row.condition.condition)
+        ) {
+          row.openSidebar();
+        } else if (!this.optionsInSidebar) {
+          row.expand();
+        }
         row.scrollIntoView();
         row.focus();
       });
@@ -140,12 +154,14 @@ export default class HaAutomationCondition extends LitElement {
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
                 .disabled=${this.disabled}
+                .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
                 ?highlight=${this.highlightedConditions?.includes(cond)}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -292,6 +308,7 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
+    fireEvent(this, "close-sidebar");
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -325,15 +342,18 @@ export default class HaAutomationCondition extends LitElement {
 
   static styles = css`
     .conditions {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
+    :host([root]) .conditions {
+      padding-right: 8px;
+    }
     .sortable-ghost {
       background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sortable-drag {
       background: none;
@@ -341,9 +361,6 @@ export default class HaAutomationCondition extends LitElement {
     ha-automation-condition-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    .buttons {
-      order: 1;
     }
     .handle {
       padding: 12px;
@@ -358,6 +375,7 @@ export default class HaAutomationCondition extends LitElement {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      order: 1;
     }
   `;
 }

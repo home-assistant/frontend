@@ -20,7 +20,7 @@ export class HaTextField extends TextFieldBase {
 
   @property() public autocomplete?: string;
 
-  @property() public autocorrect?: string;
+  @property({ type: Boolean }) public autocorrect = true;
 
   @property({ attribute: "input-spellcheck" })
   public inputSpellcheck?: string;
@@ -57,8 +57,8 @@ export class HaTextField extends TextFieldBase {
       }
     }
     if (changedProperties.has("autocorrect")) {
-      if (this.autocorrect) {
-        this.formElement.setAttribute("autocorrect", this.autocorrect);
+      if (this.autocorrect === false) {
+        this.formElement.setAttribute("autocorrect", "off");
       } else {
         this.formElement.removeAttribute("autocorrect");
       }

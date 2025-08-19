@@ -43,6 +43,14 @@ export interface MediaPlayerVolumeSliderCardFeatureConfig {
   type: "media-player-volume-slider";
 }
 
+export interface FanDirectionCardFeatureConfig {
+  type: "fan-direction";
+}
+
+export interface FanOscillateCardFeatureConfig {
+  type: "fan-oscillate";
+}
+
 export interface FanPresetModesCardFeatureConfig {
   type: "fan-preset-modes";
   style?: "dropdown" | "icons";
@@ -97,6 +105,10 @@ export interface CounterActionsCardFeatureConfig {
   actions?: CounterActions[];
 }
 
+export interface DateSetCardFeatureConfig {
+  type: "date-set";
+}
+
 export interface SelectOptionsCardFeatureConfig {
   type: "select-options";
   options?: string[];
@@ -147,6 +159,14 @@ export type VacuumCommand = (typeof VACUUM_COMMANDS)[number];
 export interface VacuumCommandsCardFeatureConfig {
   type: "vacuum-commands";
   commands?: VacuumCommand[];
+}
+
+export interface ValveOpenCloseCardFeatureConfig {
+  type: "valve-open-close";
+}
+
+export interface ValvePositionCardFeatureConfig {
+  type: "valve-position";
 }
 
 export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
@@ -201,6 +221,9 @@ export type LovelaceCardFeatureConfig =
   | CoverPositionCardFeatureConfig
   | CoverTiltPositionCardFeatureConfig
   | CoverTiltCardFeatureConfig
+  | DateSetCardFeatureConfig
+  | FanDirectionCardFeatureConfig
+  | FanOscillateCardFeatureConfig
   | FanPresetModesCardFeatureConfig
   | FanSpeedCardFeatureConfig
   | HumidifierToggleCardFeatureConfig
@@ -218,6 +241,8 @@ export type LovelaceCardFeatureConfig =
   | ToggleCardFeatureConfig
   | UpdateActionsCardFeatureConfig
   | VacuumCommandsCardFeatureConfig
+  | ValveOpenCloseCardFeatureConfig
+  | ValvePositionCardFeatureConfig
   | WaterHeaterOperationModesCardFeatureConfig
   | AreaControlsCardFeatureConfig;
 

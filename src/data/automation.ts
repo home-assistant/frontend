@@ -2,14 +2,15 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { navigate } from "../common/navigate";
 import { ensureArray } from "../common/array/ensure-array";
+import { navigate } from "../common/navigate";
+import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
 import type { DeviceCondition, DeviceTrigger } from "./device_automation";
 import type { Action, MODES } from "./script";
 import { migrateAutomationAction } from "./script";
-import { createSearchParam } from "../common/url/search-params";
+import { CONDITION_BUILDING_BLOCKS } from "./condition";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
@@ -325,7 +326,7 @@ export const expandConditionWithShorthand = (
     };
   }
 
-  for (const condition of ["and", "or", "not"]) {
+  for (const condition of CONDITION_BUILDING_BLOCKS) {
     if (condition in cond) {
       return {
         condition,

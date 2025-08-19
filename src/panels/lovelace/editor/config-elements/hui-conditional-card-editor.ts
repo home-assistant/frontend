@@ -261,6 +261,9 @@ export class HuiConditionalCardEditor
           justify-content: flex-end;
           width: 100%;
         }
+        .card-options {
+          align-items: center;
+        }
         .gui-mode-button {
           margin-right: auto;
           margin-inline-end: auto;
