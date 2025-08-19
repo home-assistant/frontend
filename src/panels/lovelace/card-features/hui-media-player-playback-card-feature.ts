@@ -178,7 +178,11 @@ class HuiMediaPlayerPlaybackCardFeature
     if (!this.isConnected) {
       return;
     }
-    this._narrow = (this.clientWidth || 0) < 300;
+    const host = (this.getRootNode() as ShadowRoot).host as
+      | HTMLElement
+      | undefined;
+    const width = host?.clientWidth ?? this.clientWidth ?? 0;
+    this._narrow = width < 300;
   }
 
   private _computeControlButton(stateObj: MediaPlayerEntity): ControlButton {
