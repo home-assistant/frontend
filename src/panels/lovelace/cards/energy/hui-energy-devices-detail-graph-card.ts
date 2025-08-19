@@ -148,13 +148,18 @@ export class HuiEnergyDevicesDetailGraphCard
       { num: formatNumber(total, this.hass.locale), unit: UNIT }
     );
 
+  // ha-chart-base will track hidden per ID (so it will have two entries for ID and compare-ID)
+  // But it will only fire the event for the primary ID, and we will convert and store a list of statistic ids only
   private _datasetHidden(ev) {
-    this._hiddenStats = [...this._hiddenStats, ev.detail.id];
+    this._hiddenStats = [
+      ...this._hiddenStats,
+      this._getStatIdFromId(ev.detail.id),
+    ];
   }
 
   private _datasetUnhidden(ev) {
     this._hiddenStats = this._hiddenStats.filter(
-      (stat) => stat !== ev.detail.id
+      (stat) => stat !== this._getStatIdFromId(ev.detail.id)
     );
   }
 
@@ -179,16 +184,25 @@ export class HuiEnergyDevicesDetailGraphCard
         this._formatTotal
       );
 
+      const selected = this._legendData
+        ? this._legendData
+            .filter(
+              (d) =>
+                d.id && this._hiddenStats.includes(this._getStatIdFromId(d.id))
+            )
+            .reduce((acc, d) => {
+              acc[d.id!] = false;
+              return acc;
+            }, {})
+        : {};
+
       return {
         ...commonOptions,
         legend: {
           show: true,
           type: "custom",
           data: this._legendData,
-          selected: this._hiddenStats.reduce((acc, stat) => {
-            acc[stat] = false;
-            return acc;
-          }, {}),
+          selected,
         },
         grid: {
           top: 15,
@@ -315,6 +329,7 @@ export class HuiEnergyDevicesDetailGraphCard
     datasets.push(...processedData);
     this._legendData = processedData.map((d) => ({
       id: d.id as string,
+      secondaryIds: [`compare-${d.id}`],
       name: d.name as string,
       itemStyle: {
         color: d.color as string,
@@ -332,6 +347,7 @@ export class HuiEnergyDevicesDetailGraphCard
       datasets.push(untrackedData);
       this._legendData.push({
         id: untrackedData.id as string,
+        secondaryIds: [`compare-${untrackedData.id}`],
         name: untrackedData.name as string,
         itemStyle: {
           color: untrackedData.color as string,
