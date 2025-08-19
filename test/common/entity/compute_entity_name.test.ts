@@ -134,4 +134,29 @@ describe("computeEntityEntryName", () => {
     };
     expect(computeEntityEntryName(entry as any, hass as any)).toBeUndefined();
   });
+
+  it("handles entities with numeric original_name (real bug from issue #25363)", () => {
+    vi.spyOn(computeDeviceNameModule, "computeDeviceName").mockReturnValue(
+      "Texas Instruments CC2652"
+    );
+
+    const entry = {
+      entity_id: "sensor.texas_instruments_cc2652_2",
+      name: null, // null name
+      original_name: 2, // Number instead of string! This caused the original crash
+      device_id: "dev1",
+      has_entity_name: true,
+    };
+    const hass = {
+      devices: { dev1: {} },
+      states: {},
+    };
+
+    // Should not throw an error and should return undefined (since numeric name is invalid)
+    expect(() =>
+      computeEntityEntryName(entry as any, hass as any)
+    ).not.toThrow();
+    expect(computeEntityEntryName(entry as any, hass as any)).toBeUndefined();
+    vi.restoreAllMocks();
+  });
 });

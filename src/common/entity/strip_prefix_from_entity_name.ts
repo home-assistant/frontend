@@ -2,14 +2,22 @@ const SUFFIXES = [" ", ": ", " - "];
 
 /**
  * Strips a device name from an entity name.
- * @param entityName the entity name
+ * @param entityName the entity name (can be undefined for entities without names)
  * @param prefix the prefix to strip
- * @returns
+ * @returns the entity name with prefix stripped, or undefined if no valid result
  */
 export const stripPrefixFromEntityName = (
-  entityName: string,
+  entityName: string | undefined,
   prefix: string
 ) => {
+  if (entityName == null) {
+    return undefined;
+  }
+
+  if (prefix == null || prefix === "") {
+    return entityName;
+  }
+
   const lowerCasedEntityName = entityName.toLowerCase();
   const lowerCasedPrefix = prefix.toLowerCase();
   for (const suffix of SUFFIXES) {
