@@ -6,11 +6,8 @@ import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../areas/helpers/areas-strategy-helper";
+import type { MediaControlCardConfig } from "../../cards/types";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
   OVERVIEW_SUMMARIES_FILTERS,
@@ -98,14 +95,11 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
             },
           });
 
-          const computeTileCard = computeAreaTileCardConfig(
-            hass,
-            area.name,
-            true
-          );
-
           for (const entityId of areaEntities) {
-            section.cards!.push(computeTileCard(entityId));
+            section.cards!.push({
+              type: "media-control",
+              entity: entityId,
+            } satisfies MediaControlCardConfig);
           }
         }
       }

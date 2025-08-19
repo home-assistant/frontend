@@ -155,7 +155,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
           computeHeadingCard(
             "Media players",
             OVERVIEW_SUMMARIES_ICONS.media_players,
-            "media_players"
+            "media-players"
           ),
           ...mediaPlayers.map(computeTileCard),
         ],
