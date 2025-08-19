@@ -49,6 +49,8 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
       import("./overview/overview-climate-view-strategy"),
     "overview-security": () =>
       import("./overview/overview-security-view-strategy"),
+    "overview-media-players": () =>
+      import("./overview/overview-media-players-view-strategy"),
     "overview-area": () => import("./overview/overview-area-view-strategy"),
   },
   section: {},

@@ -3,7 +3,12 @@ import type {
   EntityFilterFunc,
 } from "../../../../../common/entity/entity_filter";
 
-export const OVERVIEW_SUMMARIES = ["lights", "climate", "security"] as const;
+export const OVERVIEW_SUMMARIES = [
+  "lights",
+  "climate",
+  "security",
+  "media_players",
+] as const;
 
 export type OverviewSummaries = (typeof OVERVIEW_SUMMARIES)[number];
 
@@ -11,6 +16,7 @@ export const OVERVIEW_SUMMARIES_ICONS: Record<OverviewSummaries, string> = {
   lights: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
+  media_players: "mdi:multimedia",
 };
 
 export const OVERVIEW_SUMMARIES_FILTERS: Record<
@@ -65,6 +71,7 @@ export const OVERVIEW_SUMMARIES_FILTERS: Record<
       entity_category: "none",
     },
   ],
+  media_players: [{ domain: "media_player", entity_category: "none" }],
 };
 
 export const findEntities = (

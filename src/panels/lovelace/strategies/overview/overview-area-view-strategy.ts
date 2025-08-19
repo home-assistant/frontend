@@ -82,7 +82,6 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
 
     const areaFilter = generateEntityFilter(hass, {
       area: config.area,
-      entity_category: "none",
     });
 
     const allEntities = Object.keys(hass.states);
@@ -100,7 +99,12 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
       {} as Record<OverviewSummaries, string[]>
     );
 
-    const { lights, climate, security } = entitiesBySummary;
+    const {
+      lights,
+      climate,
+      security,
+      media_players: mediaPlayers,
+    } = entitiesBySummary;
 
     if (lights.length > 0) {
       sections.push({
@@ -144,9 +148,29 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
       });
     }
 
+    if (mediaPlayers.length > 0) {
+      sections.push({
+        type: "grid",
+        cards: [
+          computeHeadingCard(
+            hass.localize(
+              "ui.panel.lovelace.strategy.areas.groups.media_players"
+            ),
+            OVERVIEW_SUMMARIES_ICONS.media_players,
+            "media_players"
+          ),
+          ...mediaPlayers.map(computeTileCard),
+        ],
+      });
+    }
+
+    const deviceSections: LovelaceSectionRawConfig[] = [];
+
+    const summaryEntities = Object.values(entitiesBySummary).flat();
+
     // Rest of entities grouped by device
     const otherEntities = areaEntities.filter(
-      (entityId) => ![...lights, ...climate, ...security].includes(entityId)
+      (entityId) => !summaryEntities.includes(entityId)
     );
 
     const entitiesByDevice: Record<string, string[]> = {};
@@ -164,27 +188,22 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
     const otherDeviceEntities = Object.entries(entitiesByDevice).map(
       ([deviceId, entities]) => ({
         device_id: deviceId,
-        entities: entities.map((entityId) => hass.states[entityId]),
+        entities: entities,
       })
     );
-
-    if (otherDeviceEntities.length > 0) {
-      sections.push({
-        type: "grid",
-        column_span: 3,
-        cards: [
-          {
-            type: "heading",
-            icon: "mdi:devices",
-            heading: "Devices",
-          } satisfies HeadingCardConfig,
-        ],
-      });
-    }
 
     const batteryFilter = generateEntityFilter(hass, {
       domain: "sensor",
       device_class: "battery",
+    });
+
+    const energyFilter = generateEntityFilter(hass, {
+      domain: "sensor",
+      device_class: ["energy", "power"],
+    });
+
+    const primaryFilter = generateEntityFilter(hass, {
+      entity_category: "none",
     });
 
     for (const deviceEntities of otherDeviceEntities) {
@@ -192,36 +211,60 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
       const device = hass.devices[deviceEntities.device_id];
 
       const batteryEntities = deviceEntities.entities.filter((e) =>
-        batteryFilter(e.entity_id)
+        batteryFilter(e)
       );
       const entities = deviceEntities.entities.filter(
-        (entity) => !batteryFilter(entity.entity_id)
+        (e) => !batteryFilter(e) && !energyFilter(e) && primaryFilter(e)
       );
 
-      sections.push({
+      if (entities.length === 0) {
+        continue;
+      }
+
+      deviceSections.push({
         type: "grid",
         cards: [
           {
             type: "heading",
             heading: computeDeviceName(device),
-            heading_style: "subtitle",
             tap_action: {
               action: "navigate",
               navigation_path: `/config/devices/device/${deviceEntities.device_id}`,
             },
             badges: [
-              ...batteryEntities.slice(0, 1).map((entity) => ({
-                entity: entity.entity_id,
+              ...batteryEntities.slice(0, 1).map((e) => ({
+                entity: e,
                 type: "entity",
+                tap_action: {
+                  action: "more-info",
+                },
               })),
             ],
           } satisfies HeadingCardConfig,
-          ...entities.map((entity) => ({
-            ...computeTileCard(entity.entity_id),
-            name: computeEntityName(entity, hass) || computeDeviceName(device),
-          })),
+          ...entities.map((e) => {
+            const stateObj = hass.states[e];
+            return {
+              ...computeTileCard(e),
+              name:
+                computeEntityName(stateObj, hass) || computeDeviceName(device),
+            };
+          }),
         ],
       });
+    }
+
+    if (deviceSections.length > 0) {
+      sections.push({
+        type: "grid",
+        column_span: 3,
+        cards: [
+          {
+            type: "heading",
+            heading: "",
+          } satisfies HeadingCardConfig,
+        ],
+      } satisfies LovelaceSectionRawConfig);
+      sections.push(...deviceSections);
     }
 
     // Allow between 2 and 3 columns (the max should be set to define the width of the header)

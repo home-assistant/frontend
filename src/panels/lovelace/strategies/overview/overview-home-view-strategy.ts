@@ -231,6 +231,19 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         } satisfies ButtonCardConfig,
         {
           type: "button",
+          icon: OVERVIEW_SUMMARIES_ICONS.media_players,
+          name: "Media Players",
+          grid_options: {
+            rows: 2,
+            columns: 4,
+          },
+          tap_action: {
+            action: "navigate",
+            navigation_path: "media-players",
+          },
+        } satisfies ButtonCardConfig,
+        {
+          type: "button",
           icon: "mdi:lightning-bolt",
           name: "Energy",
           grid_options: {

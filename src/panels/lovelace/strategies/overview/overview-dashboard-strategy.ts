@@ -89,6 +89,16 @@ export class OverviewDashboardStrategy extends ReactiveElement {
       icon: OVERVIEW_SUMMARIES_ICONS.security,
     } satisfies LovelaceViewRawConfig;
 
+    const mediaPlayersView = {
+      title: "Media players",
+      path: "media-players",
+      subview: true,
+      strategy: {
+        type: "overview-media-players",
+      },
+      icon: OVERVIEW_SUMMARIES_ICONS.media_players,
+    } satisfies LovelaceViewRawConfig;
+
     return {
       views: [
         {
@@ -103,6 +113,7 @@ export class OverviewDashboardStrategy extends ReactiveElement {
         lightView,
         climateView,
         securityView,
+        mediaPlayersView,
       ],
     };
   }
