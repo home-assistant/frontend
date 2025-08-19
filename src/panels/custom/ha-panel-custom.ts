@@ -5,6 +5,8 @@ import type { NavigateOptions } from "../../common/navigate";
 import { navigate } from "../../common/navigate";
 import { deepEqual } from "../../common/util/deep-equal";
 import type { CustomPanelInfo } from "../../data/panel_custom";
+import type { AutomationConfig } from "../../data/automation";
+import { showAutomationEditor } from "../../data/automation";
 import type { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
 import {
@@ -43,6 +45,15 @@ export class HaPanelCustom extends ReactiveElement {
   public navigate = (path: string, options?: NavigateOptions) =>
     navigate(path, options);
 
+  // The automation editor reads its init data from the module-scoped
+  // `initialAutomationEditorData` in the main app. Expose this method so
+  // custom panels can set that data in the main context and open the editor
+  // prefilled.
+  public showAutomationEditor = (
+    data?: Partial<AutomationConfig>,
+    expanded?: boolean
+  ) => showAutomationEditor(data, expanded);
+
   public registerIframe(initialize, setProperties) {
     initialize(this.panel, {
       hass: this.hass,
@@ -50,6 +61,16 @@ export class HaPanelCustom extends ReactiveElement {
       route: this.route,
     });
     this._setProperties = setProperties;
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    // Listen for requests from embedded iframe to show the automation editor
+    this.addEventListener("ha-show-automation-editor", (ev: Event) => {
+      ev.stopPropagation();
+      const detail = (ev as CustomEvent).detail || {};
+      showAutomationEditor(detail.config, detail.expanded);
+    });
   }
 
   public disconnectedCallback() {
