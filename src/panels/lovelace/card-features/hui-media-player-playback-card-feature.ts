@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
@@ -23,11 +24,13 @@ import type {
 } from "../../../data/media-player";
 import { MediaPlayerEntityFeature } from "../../../data/media-player";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { stateActive } from "../../../common/entity/state_active";
+import { isUnavailableState } from "../../../data/entity";
+import { debounce } from "../../../common/util/debounce";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-button";
 import "../../../components/ha-icon-button";
-import { stateActive } from "../../../common/entity/state_active";
-import { isUnavailableState } from "../../../data/entity";
 import "../../../components/ha-icon";
 
 export const supportsMediaPlayerPlaybackCardFeature = (
@@ -55,6 +58,10 @@ class HuiMediaPlayerPlaybackCardFeature
 
   @state() private _config?: MediaPlayerPlaybackCardFeatureConfig;
 
+  @state() private _narrow?: boolean = false;
+
+  private _resizeObserver?: ResizeObserver;
+
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -75,6 +82,34 @@ class HuiMediaPlayerPlaybackCardFeature
       throw new Error("Invalid configuration");
     }
     this._config = config;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._attachObserver();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._resizeObserver?.unobserve(this);
+  }
+
+  public willUpdate(): void {
+    if (!this.hasUpdated) {
+      this._measureCard();
+    }
+  }
+
+  protected firstUpdated(): void {
+    this._attachObserver();
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return (
+      hasConfigOrEntityChanged(this, changedProps) ||
+      changedProps.size > 1 ||
+      !changedProps.has("hass")
+    );
   }
 
   protected render() {
@@ -130,6 +165,22 @@ class HuiMediaPlayerPlaybackCardFeature
     `;
   }
 
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this);
+  }
+
+  private _measureCard() {
+    if (!this.isConnected) {
+      return;
+    }
+    this._narrow = (this.clientWidth || 0) < 300;
+  }
+
   private _computeControlButton(stateObj: MediaPlayerEntity): ControlButton {
     return stateObj.state === "on"
       ? { icon: mdiPlayPause, action: "media_play_pause" }
@@ -147,6 +198,7 @@ class HuiMediaPlayerPlaybackCardFeature
     const controls: ControlButton[] = [];
 
     if (
+      !this._narrow &&
       (stateObj.state === "playing" || assumedState) &&
       supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
     ) {
