@@ -189,6 +189,7 @@ export default class HaAutomationOptionRow extends LitElement {
         "card-content": true,
         indent: this.optionsInSidebar,
         selected: this._selected,
+        hidden: this._collapsed,
       })}
     >
       <h4>
@@ -245,9 +246,7 @@ export default class HaAutomationOptionRow extends LitElement {
             `}
       </ha-card>
 
-      ${this.optionsInSidebar && !this._collapsed
-        ? this._renderContent()
-        : nothing}
+      ${this.optionsInSidebar ? this._renderContent() : nothing}
     `;
   }
 

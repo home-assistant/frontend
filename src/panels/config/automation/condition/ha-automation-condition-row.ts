@@ -370,9 +370,9 @@ export default class HaAutomationConditionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition) &&
-      !this._collapsed
+      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
         ? html`<ha-automation-condition-editor
+            class=${this._collapsed ? "hidden" : ""}
             .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
