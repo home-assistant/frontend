@@ -88,136 +88,7 @@ class HuiMediaPlayerPlaybackCardFeature
       return nothing;
     }
 
-    const entityState = this._stateObj.state;
-    const controlButton = this._computeControlButton(this._stateObj);
-    const assumedState = this._stateObj.attributes.assumed_state === true;
-
-    const buttons = html`${(entityState === "playing" || assumedState) &&
-    supportsFeature(this._stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
-      ? html`
-          <ha-control-button
-            .label=${this.hass.localize(
-              "ui.card.media_player.media_previous_track"
-            )}
-            @click=${this._previousTrack}
-          >
-            <ha-svg-icon .path=${mdiSkipPrevious}></ha-svg-icon>
-          </ha-control-button>
-        `
-      : ""}
-    ${!assumedState &&
-    ((entityState === "playing" &&
-      (supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE) ||
-        supportsFeature(this._stateObj, MediaPlayerEntityFeature.STOP))) ||
-      ((entityState === "paused" || entityState === "idle") &&
-        supportsFeature(this._stateObj, MediaPlayerEntityFeature.PLAY)) ||
-      (entityState === "on" &&
-        (supportsFeature(this._stateObj, MediaPlayerEntityFeature.PLAY) ||
-          supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE))))
-      ? html`
-          <ha-control-button
-            .label=${this.hass.localize(
-              `ui.card.media_player.${controlButton.action}`
-            )}
-            @click=${this._playPauseStop}
-          >
-            <ha-svg-icon .path=${controlButton.icon}></ha-svg-icon>
-          </ha-control-button>
-        `
-      : ""}
-    ${assumedState &&
-    supportsFeature(this._stateObj, MediaPlayerEntityFeature.PLAY)
-      ? html`
-          <ha-control-button
-            .label=${this.hass.localize(`ui.card.media_player.media_play`)}
-            @click=${this._play}
-          >
-            <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-          </ha-control-button>
-        `
-      : ""}
-    ${assumedState &&
-    supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE)
-      ? html`
-          <ha-control-button
-            .label=${this.hass.localize(`ui.card.media_player.media_pause`)}
-            @click=${this._pause}
-          >
-            <ha-svg-icon .path=${mdiPause}></ha-svg-icon>
-          </ha-control-button>
-        `
-      : ""}
-    ${assumedState &&
-    supportsFeature(this._stateObj, MediaPlayerEntityFeature.STOP) &&
-    !supportsFeature(this._stateObj, MediaPlayerEntityFeature.VOLUME_SET)
-      ? html`
-          <ha-control-button
-            .label=${this.hass.localize(`ui.card.media_player.media_stop`)}
-            @click=${this._stop}
-          >
-            <ha-svg-icon .path=${mdiStop}></ha-svg-icon>
-          </ha-control-button>
-        `
-      : ""}
-    ${(entityState === "playing" ||
-      (assumedState &&
-        !supportsFeature(
-          this._stateObj,
-          MediaPlayerEntityFeature.VOLUME_SET
-        ))) &&
-    supportsFeature(this._stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
-      ? html`
-          <ha-control-button
-            .label=${this.hass.localize(
-              "ui.card.media_player.media_next_track"
-            )}
-            @click=${this._nextTrack}
-          >
-            <ha-svg-icon .path=${mdiSkipNext}></ha-svg-icon>
-          </ha-control-button>
-        `
-      : ""}`;
-
-    console.log(this._stateObj.entity_id, {
-      state: this._stateObj,
-      assumed: assumedState,
-      playing: entityState === "playing",
-      supports: {
-        play: supportsFeature(this._stateObj, MediaPlayerEntityFeature.PLAY),
-        pause: supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE),
-        stop: supportsFeature(this._stateObj, MediaPlayerEntityFeature.STOP),
-        previousTrack: supportsFeature(
-          this._stateObj,
-          MediaPlayerEntityFeature.PREVIOUS_TRACK
-        ),
-        nextTrack: supportsFeature(
-          this._stateObj,
-          MediaPlayerEntityFeature.NEXT_TRACK
-        ),
-        turnOn: supportsFeature(
-          this._stateObj,
-          MediaPlayerEntityFeature.TURN_ON
-        ),
-        turnOff: supportsFeature(
-          this._stateObj,
-          MediaPlayerEntityFeature.TURN_OFF
-        ),
-      },
-      controlButton,
-      controlButtonChecks:
-        !assumedState &&
-        ((entityState === "playing" &&
-          (supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE) ||
-            supportsFeature(this._stateObj, MediaPlayerEntityFeature.STOP))) ||
-          ((entityState === "paused" || entityState === "idle") &&
-            supportsFeature(this._stateObj, MediaPlayerEntityFeature.PLAY)) ||
-          (entityState === "on" &&
-            (supportsFeature(this._stateObj, MediaPlayerEntityFeature.PLAY) ||
-              supportsFeature(
-                this._stateObj,
-                MediaPlayerEntityFeature.PAUSE
-              )))),
-    });
+    const buttons = this._computeButtons(this._stateObj);
 
     return html`
       <ha-control-button-group>
@@ -234,7 +105,7 @@ class HuiMediaPlayerPlaybackCardFeature
           : ""}
         ${supportsFeature(this._stateObj, MediaPlayerEntityFeature.TURN_ON) &&
         !stateActive(this._stateObj) &&
-        !isUnavailableState(entityState)
+        !isUnavailableState(this._stateObj.state)
           ? html`
               <ha-control-button
                 .label=${this.hass.localize("ui.card.media_player.turn_on")}
@@ -243,7 +114,18 @@ class HuiMediaPlayerPlaybackCardFeature
                 <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
               </ha-control-button>
             `
-          : buttons}
+          : buttons.map(
+              (button) => html`
+                <ha-control-button
+                  .label=${this.hass!.localize(
+                    `ui.card.media_player.${button.action}`
+                  )}
+                  @click=${this._action}
+                >
+                  <ha-svg-icon .path=${button.icon}></ha-svg-icon>
+                </ha-control-button>
+              `
+            )}
       </ha-control-button-group>
     `;
   }
@@ -258,6 +140,55 @@ class HuiMediaPlayerPlaybackCardFeature
           : { icon: mdiStop, action: "media_stop" };
   }
 
+  private _computeButtons(stateObj: MediaPlayerEntity): ControlButton[] {
+    const controlButton = this._computeControlButton(stateObj);
+    const assumedState = stateObj.attributes.assumed_state === true;
+
+    const controls: ControlButton[] = [];
+
+    if (
+      (stateObj.state === "playing" || assumedState) &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.PREVIOUS_TRACK)
+    ) {
+      controls.push({ icon: mdiSkipPrevious, action: "media_previous_track" });
+    }
+
+    if (
+      !assumedState &&
+      ((stateObj.state === "playing" &&
+        (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
+          supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
+        ((stateObj.state === "paused" || stateObj.state === "idle") &&
+          supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
+        (stateObj.state === "on" &&
+          (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+            supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
+    ) {
+      controls.push({ icon: controlButton.icon, action: controlButton.action });
+    } else if (assumedState) {
+      if (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) {
+        controls.push({ icon: mdiPlay, action: "media_play" });
+      }
+
+      if (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)) {
+        controls.push({ icon: mdiPause, action: "media_pause" });
+      }
+
+      if (supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)) {
+        controls.push({ icon: mdiStop, action: "media_stop" });
+      }
+    }
+
+    if (
+      (assumedState || stateObj.state === "playing") &&
+      supportsFeature(stateObj, MediaPlayerEntityFeature.NEXT_TRACK)
+    ) {
+      controls.push({ icon: mdiSkipNext, action: "media_next_track" });
+    }
+
+    return controls;
+  }
+
   private _togglePower(): void {
     if (!this._stateObj) return;
     this.hass!.callService(
@@ -267,6 +198,29 @@ class HuiMediaPlayerPlaybackCardFeature
         entity_id: this._stateObj.entity_id,
       }
     );
+  }
+
+  private _action(action: ControlButton["action"]): void {
+    switch (action) {
+      case "media_play_pause":
+        this._playPauseStop();
+        break;
+      case "media_play":
+        this._play();
+        break;
+      case "media_pause":
+        this._pause();
+        break;
+      case "media_stop":
+        this._stop();
+        break;
+      case "media_previous_track":
+        this._previousTrack();
+        break;
+      case "media_next_track":
+        this._nextTrack();
+        break;
+    }
   }
 
   private _playPauseStop(): void {
