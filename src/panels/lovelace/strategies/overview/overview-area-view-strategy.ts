@@ -172,11 +172,15 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
     );
 
     const entitiesByDevice: Record<string, string[]> = {};
+    const unassignedEntities: string[] = [];
     for (const entityId of otherEntities) {
       const stateObj = hass.states[entityId];
       if (!stateObj) continue;
       const { device } = getEntityContext(stateObj, hass);
-      if (!device) continue;
+      if (!device) {
+        unassignedEntities.push(entityId);
+        continue;
+      }
       if (!(device.id in entitiesByDevice)) {
         entitiesByDevice[device.id] = [];
       }
@@ -189,6 +193,13 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         entities: entities,
       })
     );
+
+    if (unassignedEntities.length > 0) {
+      otherDeviceEntities.push({
+        device_id: "unassigned",
+        entities: unassignedEntities,
+      });
+    }
 
     const batteryFilter = generateEntityFilter(hass, {
       domain: "sensor",
@@ -206,7 +217,6 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
 
     for (const deviceEntities of otherDeviceEntities) {
       if (deviceEntities.entities.length === 0) continue;
-      const device = hass.devices[deviceEntities.device_id];
 
       const batteryEntities = deviceEntities.entities.filter((e) =>
         batteryFilter(e)
@@ -219,16 +229,27 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         continue;
       }
 
+      const deviceId = deviceEntities.device_id;
+      const device = hass.devices[deviceId];
+      let heading = "";
+      if (device) {
+        heading = computeDeviceName(device) || "Unnamed device";
+      } else {
+        heading = "Others";
+      }
+
       deviceSections.push({
         type: "grid",
         cards: [
           {
             type: "heading",
-            heading: computeDeviceName(device),
-            tap_action: {
-              action: "navigate",
-              navigation_path: `/config/devices/device/${deviceEntities.device_id}`,
-            },
+            heading: heading,
+            tap_action: device
+              ? {
+                  action: "navigate",
+                  navigation_path: `/config/devices/device/${device.id}`,
+                }
+              : undefined,
             badges: [
               ...batteryEntities.slice(0, 1).map((e) => ({
                 entity: e,
@@ -244,7 +265,8 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
             return {
               ...computeTileCard(e),
               name:
-                computeEntityName(stateObj, hass) || computeDeviceName(device),
+                computeEntityName(stateObj, hass) ||
+                (device ? computeDeviceName(device) : ""),
             };
           }),
         ],
