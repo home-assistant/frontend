@@ -305,6 +305,7 @@ function validateUserCondition(condition: UserCondition) {
 
 function validateBooleanCondition(condition: BooleanCondition) {
   return condition.values != null;
+}
 
 function validateLocationCondition(condition: LocationCondition) {
   return condition.locations != null;
