@@ -6,26 +6,23 @@ import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import {
-  computeAreaTileCardConfig,
-  getAreas,
-  getFloors,
-} from "../areas/helpers/areas-strategy-helper";
+import type { MediaControlCardConfig } from "../../cards/types";
+import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
 import {
   findEntities,
   OVERVIEW_SUMMARIES_FILTERS,
 } from "./helpers/overview-summaries";
 
-export interface OverviewLightsViewStrategyConfig {
-  type: "overview-lights";
+export interface OvervieMediaPlayersViewStrategyConfig {
+  type: "overview-media-players";
 }
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
-@customElement("overview-lights-view-strategy")
-export class OverviewLightsViewStrategy extends ReactiveElement {
+@customElement("overview-media-players-view-strategy")
+export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OverviewLightsViewStrategyConfig,
+    _config: OvervieMediaPlayersViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -36,11 +33,11 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const lightsFilters = OVERVIEW_SUMMARIES_FILTERS.lights.map((filter) =>
-      generateEntityFilter(hass, filter)
+    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.media_players.map(
+      (filter) => generateEntityFilter(hass, filter)
     );
 
-    const entities = findEntities(allEntities, lightsFilters);
+    const entities = findEntities(allEntities, filterFunctions);
 
     const allFloors = [
       ...floors,
@@ -53,7 +50,7 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
     ];
 
     for (const floor of allFloors) {
-      let hasLight = false;
+      let hasEntities = false;
 
       const areasInFloor = areas.filter(
         (area) =>
@@ -83,10 +80,10 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
         const areaFilter = generateEntityFilter(hass, {
           area: area.area_id,
         });
-        const areaLights = entities.filter(areaFilter);
+        const areaEntities = entities.filter(areaFilter);
 
-        if (areaLights.length > 0) {
-          hasLight = true;
+        if (areaEntities.length > 0) {
+          hasEntities = true;
           section.cards!.push({
             heading_style: "subtitle",
             type: "heading",
@@ -98,19 +95,16 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
             },
           });
 
-          const computeTileCard = computeAreaTileCardConfig(
-            hass,
-            area.name,
-            true
-          );
-
-          for (const entityId of areaLights) {
-            section.cards!.push(computeTileCard(entityId));
+          for (const entityId of areaEntities) {
+            section.cards!.push({
+              type: "media-control",
+              entity: entityId,
+            } satisfies MediaControlCardConfig);
           }
         }
       }
 
-      if (hasLight) {
+      if (hasEntities) {
         sections.push(section);
       }
     }
@@ -133,6 +127,6 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-lights-view-strategy": OverviewLightsViewStrategy;
+    "overview-media-players-view-strategy": OverviewMediaPlayersViewStrategy;
   }
 }

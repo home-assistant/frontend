@@ -11,17 +11,21 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
+import {
+  findEntities,
+  OVERVIEW_SUMMARIES_FILTERS,
+} from "./helpers/overview-summaries";
 
-export interface OverviewCoversViewStrategyConfig {
-  type: "overview-covers";
+export interface OverviewClimateViewStrategyConfig {
+  type: "overview-climate";
 }
 
 const UNASSIGNED_FLOOR = "__unassigned__";
 
-@customElement("overview-covers-view-strategy")
-export class OverviewCoversViewStrategy extends ReactiveElement {
+@customElement("overview-climate-view-strategy")
+export class OverviewClimateViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OverviewCoversViewStrategyConfig,
+    _config: OverviewClimateViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -32,21 +36,11 @@ export class OverviewCoversViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const coverFilter = generateEntityFilter(hass, {
-      domain: "cover",
-      entity_category: "none",
-    });
+    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.climate.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
 
-    const binarySensorFilter = generateEntityFilter(hass, {
-      domain: "binary_sensor",
-      device_class: ["door", "garage_door", "window"],
-      entity_category: "none",
-    });
-
-    const coverEntities = allEntities.filter(coverFilter);
-    const binarySensorEntities = allEntities.filter(binarySensorFilter);
-
-    const entities = [...coverEntities, ...binarySensorEntities];
+    const entities = findEntities(allEntities, filterFunctions);
 
     const allFloors = [
       ...floors,
@@ -59,7 +53,7 @@ export class OverviewCoversViewStrategy extends ReactiveElement {
     ];
 
     for (const floor of allFloors) {
-      let hasCover = false;
+      let hasEntities = false;
 
       const areasInFloor = areas.filter(
         (area) =>
@@ -92,7 +86,7 @@ export class OverviewCoversViewStrategy extends ReactiveElement {
         const areaEntities = entities.filter(areaFilter);
 
         if (areaEntities.length > 0) {
-          hasCover = true;
+          hasEntities = true;
           section.cards!.push({
             heading_style: "subtitle",
             type: "heading",
@@ -116,7 +110,7 @@ export class OverviewCoversViewStrategy extends ReactiveElement {
         }
       }
 
-      if (hasCover) {
+      if (hasEntities) {
         sections.push(section);
       }
     }
@@ -139,6 +133,6 @@ export class OverviewCoversViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-covers-view-strategy": OverviewCoversViewStrategy;
+    "overview-climate-view-strategy": OverviewClimateViewStrategy;
   }
 }
