@@ -3,7 +3,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -47,6 +47,7 @@ import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
+import type HaAutomationSidebar from "./ha-automation-sidebar";
 import type { OpenSidebarConfig } from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "./styles";
@@ -91,6 +92,8 @@ export class HaManualAutomationEditor extends LitElement {
   @state() private _pastedConfig?: ManualAutomationConfig;
 
   @state() private _sidebarConfig?: OpenSidebarConfig;
+
+  @query("ha-automation-sidebar") private _sidebarElement?: HaAutomationSidebar;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -305,6 +308,7 @@ export class HaManualAutomationEditor extends LitElement {
           </ha-fab>
         </div>
         <ha-automation-sidebar
+          tabindex="-1"
           class=${classMap({
             sidebar: true,
             hidden: !this._sidebarConfig,
@@ -324,6 +328,9 @@ export class HaManualAutomationEditor extends LitElement {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
+    setTimeout(() => {
+      this._sidebarElement?.focus();
+    });
   }
 
   private _sidebarConfigChanged(ev: CustomEvent<{ value: OpenSidebarConfig }>) {
