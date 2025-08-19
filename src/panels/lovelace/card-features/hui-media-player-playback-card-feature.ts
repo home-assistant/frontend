@@ -262,6 +262,7 @@ class HuiMediaPlayerPlaybackCardFeature
   private _action(e: Event): void {
     const action = (e.target as HTMLElement).getAttribute("key");
     if (!action) return;
+
     switch (action) {
       case "media_play_pause":
         this._playPauseStop();
@@ -286,6 +287,7 @@ class HuiMediaPlayerPlaybackCardFeature
 
   private _playPauseStop(): void {
     if (!this._stateObj) return;
+
     const service =
       this._stateObj!.state !== "playing"
         ? "media_play"
