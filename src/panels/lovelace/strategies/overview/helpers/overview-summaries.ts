@@ -78,8 +78,18 @@ export const OVERVIEW_SUMMARIES_FILTERS: Record<
 export const findEntities = (
   entities: string[],
   filters: EntityFilterFunc[]
-): string[] =>
-  filters.reduce<string[]>(
-    (acc, filter) => [...acc, ...entities.filter((entity) => filter(entity))],
-    []
-  );
+): string[] => {
+  const seen = new Set<string>();
+  const results: string[] = [];
+  
+  for (const filter of filters) {
+    for (const entity of entities) {
+      if (filter(entity) && !seen.has(entity)) {
+        seen.add(entity);
+        results.push(entity);
+      }
+    }
+  }
+  
+  return results;
+};
