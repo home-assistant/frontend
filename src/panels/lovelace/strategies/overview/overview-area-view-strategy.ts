@@ -260,6 +260,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         cards: [
           {
             type: "heading",
+            heading_style: "subtitle",
             heading: "",
           } satisfies HeadingCardConfig,
         ],
