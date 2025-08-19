@@ -111,7 +111,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.lights"),
+            "Lights",
             OVERVIEW_SUMMARIES_ICONS.lights,
             "lights"
           ),
@@ -125,7 +125,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.climate"),
+            "Climate",
             OVERVIEW_SUMMARIES_ICONS.climate,
             "climate"
           ),
@@ -139,7 +139,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize("ui.panel.lovelace.strategy.areas.groups.security"),
+            "Security",
             OVERVIEW_SUMMARIES_ICONS.security,
             "security"
           ),
@@ -153,9 +153,7 @@ export class OverviewAreaViewStrategy extends ReactiveElement {
         type: "grid",
         cards: [
           computeHeadingCard(
-            hass.localize(
-              "ui.panel.lovelace.strategy.areas.groups.media_players"
-            ),
+            "Media players",
             OVERVIEW_SUMMARIES_ICONS.media_players,
             "media_players"
           ),
