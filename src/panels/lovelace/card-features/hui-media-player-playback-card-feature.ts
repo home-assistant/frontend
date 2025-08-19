@@ -152,6 +152,7 @@ class HuiMediaPlayerPlaybackCardFeature
           : buttons.map(
               (button) => html`
                 <ha-control-button
+                  key=${button.action}
                   .label=${this.hass!.localize(
                     `ui.card.media_player.${button.action}`
                   )}
@@ -258,7 +259,9 @@ class HuiMediaPlayerPlaybackCardFeature
     );
   }
 
-  private _action(action: ControlButton["action"]): void {
+  private _action(e: Event): void {
+    const action = (e.target as HTMLElement).getAttribute("key");
+    if (!action) return;
     switch (action) {
       case "media_play_pause":
         this._playPauseStop();
