@@ -1,6 +1,5 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
@@ -141,42 +140,13 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       favoriteSection.cards!.push(
         {
           type: "heading",
-          heading: "Favorites",
+          heading: "Quick actions",
         },
         ...favoriteEntities.map(
           (entityId) =>
             ({
               type: "tile",
               entity: entityId,
-            }) as TileCardConfig
-        )
-      );
-    }
-
-    const personSection: LovelaceSectionConfig = {
-      type: "grid",
-      column_span: maxColumns,
-      cards: [],
-    };
-
-    const personFilter = generateEntityFilter(hass, {
-      domain: "person",
-    });
-
-    const personEntities = Object.keys(hass.states).filter(personFilter);
-
-    if (personEntities.length > 0) {
-      personSection.cards!.push(
-        {
-          type: "heading",
-          heading: "People",
-        },
-        ...personEntities.map(
-          (entityId) =>
-            ({
-              type: "tile",
-              entity: entityId,
-              show_entity_picture: true,
             }) as TileCardConfig
         )
       );
@@ -260,7 +230,6 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
 
     const sections = [
       ...(favoriteSection.cards ? [favoriteSection] : []),
-      ...(personSection.cards ? [personSection] : []),
       summarySection,
       ...floorSections,
     ];
