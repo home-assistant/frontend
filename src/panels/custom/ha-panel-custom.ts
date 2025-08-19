@@ -63,16 +63,6 @@ export class HaPanelCustom extends ReactiveElement {
     this._setProperties = setProperties;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    // Listen for requests from embedded iframe to show the automation editor
-    this.addEventListener("ha-show-automation-editor", (ev: Event) => {
-      ev.stopPropagation();
-      const detail = (ev as CustomEvent).detail || {};
-      showAutomationEditor(detail.config, detail.expanded);
-    });
-  }
-
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._cleanupPanel();
