@@ -28,7 +28,10 @@ export const computeEntityEntryName = (
   hass: HomeAssistant
 ): string | undefined => {
   const name =
-    entry.name || ("original_name" in entry ? entry.original_name : undefined);
+    entry.name ||
+    ("original_name" in entry && entry.original_name != null
+      ? String(entry.original_name)
+      : "");
 
   const device = entry.device_id ? hass.devices[entry.device_id] : undefined;
 
