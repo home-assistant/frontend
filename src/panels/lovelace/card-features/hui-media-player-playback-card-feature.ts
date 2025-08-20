@@ -157,7 +157,7 @@ class HuiMediaPlayerPlaybackCardFeature
               (button) => html`
                 <ha-control-button
                   key=${button.action}
-                  .label=${this.hass.localize(
+                  .label=${this.hass?.localize(
                     `ui.card.media_player.${button.action}`
                   )}
                   @click=${this._action}
