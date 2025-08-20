@@ -512,7 +512,7 @@
         }
       },
       "logbook": {
-        "entries_not_found": "No activity events found.",
+        "entries_not_found": "No activity found.",
         "triggered_by": "triggered by",
         "triggered_by_automation": "triggered by automation",
         "triggered_by_script": "triggered by script",
@@ -4554,7 +4554,7 @@
             "tabs": {
               "details": "Step details",
               "timeline": "Trace timeline",
-              "logbook": "Related activity entries",
+              "logbook": "Related activity",
               "automation_config": "Automation config",
               "step_config": "Step config",
               "changed_variables": "Changed variables",
@@ -4571,7 +4571,7 @@
               "error": "Error: {error}",
               "result": "Result:",
               "step_not_executed": "This step was not executed.",
-              "no_logbook_entries": "No activity entries found for this step.",
+              "no_logbook_entries": "No activity found for this step.",
               "no_variables_changed": "No variables changed",
               "unable_to_find_config": "Unable to find config"
             },
@@ -4597,8 +4597,8 @@
               "disabled": "(disabled)",
               "triggered_by": "{triggeredBy, select, \n alias {{alias} triggered}\n other {Triggered} \n} {triggeredPath, select, \n trigger {by the {trigger}}\n other {manually} \n} at {time}",
               "path_error": "Unable to extract path {path}. Download trace and report as bug.",
-              "not_all_entries_are_related_automation_note": "Not all shown activity entries might be related to this automation.",
-              "not_all_entries_are_related_script_note": "Not all shown activity entries might be related to this script."
+              "not_all_entries_are_related_automation_note": "Not all shown activity might be related to this automation.",
+              "not_all_entries_are_related_script_note": "Not all shown activity might be related to this script."
             }
           }
         },
