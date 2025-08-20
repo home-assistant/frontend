@@ -105,7 +105,7 @@ export class HuiTileCardEditor
                 {
                   name: "name",
                   selector: { text: {} },
-                  disabled: useEntityAreaName,
+                  disabled: useEntityAreaName && entityHasArea,
                 },
                 {
                   name: "use_entity_area_name",
@@ -401,9 +401,6 @@ export class HuiTileCardEditor
           config.name = area.name;
         }
       }
-    } else if (config.use_entity_area_name === false) {
-      // When switching off, remove the name if it was set by the area
-      delete config.name;
     }
 
     fireEvent(this, "config-changed", { config });
