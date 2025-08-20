@@ -30,16 +30,18 @@ import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   findLovelaceContainer,
-  LovelaceContainerPath,
-  parseLovelaceContainerPath,
   updateLovelaceContainer,
 } from "../lovelace-path";
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { saveConfig } from "../../../../data/lovelace/config/types";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { addSection, deleteSection, moveSection } from "../config-util";
+import type { Lovelace } from "../../types";
+import { navigate } from "../../../../common/navigate";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -75,6 +77,8 @@ export class HuiDialogEditSection
 
   public async showDialog(params: EditSectionDialogParams): Promise<void> {
     this._params = params;
+
+    this.lovelace = params.lovelace;
 
     this._config = findLovelaceContainer(this._params.lovelaceConfig, [
       this._params.viewIndex,
@@ -260,7 +264,7 @@ export class HuiDialogEditSection
     showSelectViewDialog(this, {
       lovelaceConfig: this._params.lovelaceConfig,
       urlPath: this.lovelace.urlPath,
-      allowDashboardChange: true,
+      allowDashboardChange: false,
       header: this.hass!.localize(
         "ui.panel.lovelace.editor.move_section.header"
       ),
@@ -268,21 +272,16 @@ export class HuiDialogEditSection
     });
   }
 
-  private _moveSectionToView(
+  private _moveSectionToView = async (
     urlPath: string | null,
     selectedDashConfig: LovelaceConfig,
     viewIndex: number
-  ) {
+  ) => {
     if (!this._params || !this.lovelace) {
       return;
     }
 
     const toView = selectedDashConfig.views[viewIndex];
-    const newConfig = selectedDashConfig;
-
-    const undoAction = async () => {
-      this.lovelace.saveConfig(selectedDashConfig);
-    };
 
     if (isStrategyView(toView)) {
       showAlertDialog(this, {
@@ -297,18 +296,90 @@ export class HuiDialogEditSection
       return;
     }
 
-    const toPath: LovelaceContainerPath = [viewIndex];
+    const fromViewIndex = this._params.viewIndex;
+    const fromSectionIndex = this._params.sectionIndex;
 
+    // Same dashboard
+    if (urlPath === this.lovelace.urlPath) {
+      const oldConfig = this.lovelace.config;
+      const toIndex = toView.sections?.length ?? 0;
+      try {
+        await this.lovelace.saveConfig(
+          moveSection(
+            oldConfig,
+            [fromViewIndex, fromSectionIndex],
+            [viewIndex, toIndex]
+          )
+        );
+        this.lovelace.showToast({
+          message: this.hass!.localize(
+            "ui.panel.lovelace.editor.move_section.success"
+          ),
+          duration: 4000,
+          action: {
+            action: async () => {
+              await this.lovelace!.saveConfig(oldConfig);
+            },
+            text: this.hass!.localize("ui.common.undo"),
+          },
+        });
+      } catch (err: any) {
+        this.lovelace.showToast({
+          message: this.hass!.localize(
+            "ui.panel.lovelace.editor.move_section.error"
+          ),
+        });
+        // eslint-disable-next-line no-console
+        console.error(err);
+      }
+      return;
+    }
+
+    // Cross dashboard
+    const oldFromConfig = this.lovelace.config;
+    const oldToConfig = selectedDashConfig;
     try {
-      const { sectionIndex } = parseLovelaceContainerPath();
-    } catch (_err: any) {
+      const section = findLovelaceContainer(oldFromConfig, [
+        fromViewIndex,
+        fromSectionIndex,
+      ]) as LovelaceSectionRawConfig;
+
+      await saveConfig(
+        this.hass!,
+        urlPath,
+        addSection(oldToConfig, viewIndex, section)
+      );
+
+      await this.lovelace.saveConfig(
+        deleteSection(oldFromConfig, fromViewIndex, fromSectionIndex)
+      );
+
+      this.lovelace.showToast({
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.success"
+        ),
+        duration: 4000,
+        action: {
+          action: async () => {
+            await saveConfig(this.hass!, urlPath, oldToConfig);
+            await this.lovelace!.saveConfig(oldFromConfig);
+          },
+          text: this.hass!.localize("ui.common.undo"),
+        },
+      });
+
+      this.closeDialog();
+      navigate(`/${window.location.pathname.split("/")[1]}`);
+    } catch (err: any) {
       this.lovelace.showToast({
         message: this.hass!.localize(
           "ui.panel.lovelace.editor.move_section.error"
         ),
       });
+      // eslint-disable-next-line no-console
+      console.error(err);
     }
-  }
+  };
 
   private _viewYamlChanged(ev: CustomEvent) {
     ev.stopPropagation();
