@@ -132,8 +132,8 @@ export class HuiClockCardDigital extends LitElement {
       direction: ltr;
     }
 
-    .time-parts:not(.size-medium):not(.size-large) {
-      font-size: 2rem;
+    .time-title + .time-parts {
+      font-size: 1.5rem;
     }
 
     .time-parts.size-medium {
