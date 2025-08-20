@@ -39,7 +39,6 @@ const cardConfigStruct = assign(
     time_format: optional(enums(Object.values(TimeFormat))),
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
-    no_background: optional(boolean()),
     analog_options: optional(
       object({
         border: optional(defaulted(boolean(), false)),
