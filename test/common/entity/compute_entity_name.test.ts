@@ -159,4 +159,25 @@ describe("computeEntityEntryName", () => {
     expect(computeEntityEntryName(entry as any, hass as any)).toBe("2");
     vi.restoreAllMocks();
   });
+
+  it("returns undefined when entity has device but no name or original_name", () => {
+    vi.spyOn(computeDeviceNameModule, "computeDeviceName").mockReturnValue(
+      "Kitchen Device"
+    );
+
+    const entry = {
+      entity_id: "sensor.kitchen_sensor",
+      // No name property
+      // No original_name property
+      device_id: "dev1",
+    };
+    const hass = {
+      devices: { dev1: {} },
+      states: {},
+    };
+
+    // Should return undefined to maintain function contract
+    expect(computeEntityEntryName(entry as any, hass as any)).toBeUndefined();
+    vi.restoreAllMocks();
+  });
 });
