@@ -49,6 +49,7 @@ const cardConfigStruct = assign(
     color: optional(string()),
     show_entity_picture: optional(boolean()),
     vertical: optional(boolean()),
+    use_entity_area_name: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -84,7 +85,9 @@ export class HuiTileCardEditor
     (
       localize: LocalizeFunc,
       entityId: string | undefined,
-      hideState: boolean
+      hideState: boolean,
+      entityHasArea: boolean,
+      useEntityAreaName: boolean
     ) =>
       [
         { name: "entity", selector: { entity: {} } },
@@ -98,7 +101,16 @@ export class HuiTileCardEditor
               name: "",
               type: "grid",
               schema: [
-                { name: "name", selector: { text: {} } },
+                {
+                  name: "name",
+                  selector: { text: {} },
+                  disabled: useEntityAreaName,
+                },
+                {
+                  name: "use_entity_area_name",
+                  selector: { boolean: {} },
+                  disabled: !entityHasArea,
+                },
                 {
                   name: "icon",
                   selector: {
@@ -248,17 +260,66 @@ export class HuiTileCardEditor
       getSupportedFeaturesType(this.hass!, context).length > 0
   );
 
+  private _entityHasArea(entityId: string | undefined): boolean {
+    if (!entityId || !this.hass) {
+      return false;
+    }
+
+    const entityRegistry = this.hass.entities[entityId];
+
+    // Check if entity has direct area assignment
+    if (entityRegistry?.area_id) {
+      return true;
+    }
+
+    // Check if entity has a device and that device has an area
+    if (entityRegistry?.device_id) {
+      const device = this.hass.devices[entityRegistry.device_id];
+      if (device?.area_id) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private _getEntityAreaId(entityId: string): string | null {
+    if (!entityId || !this.hass) {
+      return null;
+    }
+
+    const entityRegistry = this.hass.entities[entityId];
+
+    // Check if entity has direct area assignment
+    if (entityRegistry?.area_id) {
+      return entityRegistry.area_id;
+    }
+
+    // Check if entity has a device and that device has an area
+    if (entityRegistry?.device_id) {
+      const device = this.hass.devices[entityRegistry.device_id];
+      if (device?.area_id) {
+        return device.area_id;
+      }
+    }
+
+    return null;
+  }
+
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
     const entityId = this._config!.entity;
+    const entityHasArea = this._entityHasArea(entityId);
 
     const schema = this._schema(
       this.hass.localize,
       entityId,
-      this._config.hide_state ?? false
+      this._config.hide_state ?? false,
+      entityHasArea,
+      this._config.use_entity_area_name ?? false
     );
 
     const featuresSchema = this._featuresSchema(
@@ -348,6 +409,20 @@ export class HuiTileCardEditor
       delete config.content_layout;
     }
 
+    // Handle use_entity_area_name functionality
+    if (config.use_entity_area_name && config.entity) {
+      const areaId = this._getEntityAreaId(config.entity);
+      if (areaId) {
+        const area = this.hass.areas[areaId];
+        if (area) {
+          config.name = area.name;
+        }
+      }
+    } else if (config.use_entity_area_name === false) {
+      // When switching off, remove the name if it was set by the area
+      delete config.name;
+    }
+
     fireEvent(this, "config-changed", { config });
   }
 
@@ -410,6 +485,7 @@ export class HuiTileCardEditor
       case "state_content":
       case "content_layout":
       case "features_position":
+      case "use_entity_area_name":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`
         );

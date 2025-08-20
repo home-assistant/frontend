@@ -7780,7 +7780,8 @@
               "content_layout_options": {
                 "horizontal": "Horizontal",
                 "vertical": "Vertical"
-              }
+              },
+              "use_entity_area_name": "Use entity area name"
             },
             "vertical-stack": {
               "name": "Vertical stack",
