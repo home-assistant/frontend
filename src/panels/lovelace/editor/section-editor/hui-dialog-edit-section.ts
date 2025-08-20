@@ -41,7 +41,6 @@ import { saveConfig } from "../../../../data/lovelace/config/types";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { addSection, deleteSection, moveSection } from "../config-util";
 import type { Lovelace } from "../../types";
-import { navigate } from "../../../../common/navigate";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -264,7 +263,7 @@ export class HuiDialogEditSection
     showSelectViewDialog(this, {
       lovelaceConfig: this._params.lovelaceConfig,
       urlPath: this.lovelace.urlPath,
-      allowDashboardChange: false,
+      allowDashboardChange: true,
       header: this.hass!.localize(
         "ui.panel.lovelace.editor.move_section.header"
       ),
@@ -323,6 +322,8 @@ export class HuiDialogEditSection
             text: this.hass!.localize("ui.common.undo"),
           },
         });
+
+        this.closeDialog();
       } catch (err: any) {
         this.lovelace.showToast({
           message: this.hass!.localize(
@@ -369,7 +370,6 @@ export class HuiDialogEditSection
       });
 
       this.closeDialog();
-      navigate(`/${window.location.pathname.split("/")[1]}`);
     } catch (err: any) {
       this.lovelace.showToast({
         message: this.hass!.localize(
