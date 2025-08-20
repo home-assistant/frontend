@@ -5,8 +5,6 @@ import type { NavigateOptions } from "../../common/navigate";
 import { navigate } from "../../common/navigate";
 import { deepEqual } from "../../common/util/deep-equal";
 import type { CustomPanelInfo } from "../../data/panel_custom";
-import type { AutomationConfig } from "../../data/automation";
-import { showAutomationEditor } from "../../data/automation";
 import type { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
 import {
@@ -44,23 +42,6 @@ export class HaPanelCustom extends ReactiveElement {
   // instead of their iframe window.
   public navigate = (path: string, options?: NavigateOptions) =>
     navigate(path, options);
-
-  /**
-   * Open the automation editor in the main window and optionally prefill it.
-   *
-   * The automation editor reads its initial data from a module-scoped
-   * variable in the main application. Custom panels can call this method
-   * on `window.customPanel` to set the editor's initial data and open the
-   * editor prefilled.
-   *
-   * @param data Partial automation configuration to prefill the editor with.
-   * @param expanded If true, open the editor in expanded mode.
-   * @public
-   */
-  public showAutomationEditor = (
-    data?: Partial<AutomationConfig>,
-    expanded?: boolean
-  ) => showAutomationEditor(data, expanded);
 
   public registerIframe(initialize, setProperties) {
     initialize(this.panel, {
