@@ -319,6 +319,7 @@ export class HuiClockCardEditor
       case "no_background":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.no_background`
+        );
       case "analog_options":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.analog_options.label`
