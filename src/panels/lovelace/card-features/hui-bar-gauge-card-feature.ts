@@ -5,10 +5,10 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature } from "../types";
 import type {
   LovelaceCardFeatureContext,
-  ProgressBarCardFeatureConfig,
+  BarGaugeCardFeatureConfig,
 } from "./types";
 
-export const supportsProgressBarCardFeature = (
+export const supportsBarGaugeCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
 ) => {
@@ -20,24 +20,21 @@ export const supportsProgressBarCardFeature = (
   return domain === "sensor" && stateObj.attributes.unit_of_measurement === "%";
 };
 
-@customElement("hui-progress-bar-card-feature")
-class HuiProgressBarCardFeature
-  extends LitElement
-  implements LovelaceCardFeature
-{
+@customElement("hui-bar-gauge-card-feature")
+class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
 
-  @state() private _config?: ProgressBarCardFeatureConfig;
+  @state() private _config?: BarGaugeCardFeatureConfig;
 
-  static getStubConfig(): ProgressBarCardFeatureConfig {
+  static getStubConfig(): BarGaugeCardFeatureConfig {
     return {
-      type: "progress-bar",
+      type: "bar-gauge",
     };
   }
 
-  public setConfig(config: ProgressBarCardFeatureConfig): void {
+  public setConfig(config: BarGaugeCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
     }
@@ -51,7 +48,7 @@ class HuiProgressBarCardFeature
       !this.context ||
       !this.context.entity_id ||
       !this.hass.states[this.context.entity_id] ||
-      !supportsProgressBarCardFeature(this.hass, this.context)
+      !supportsBarGaugeCardFeature(this.hass, this.context)
     ) {
       return nothing;
     }
@@ -83,6 +80,6 @@ class HuiProgressBarCardFeature
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-progress-bar-card-feature": HuiProgressBarCardFeature;
+    "hui-bar-gauge-card-feature": HuiBarGaugeCardFeature;
   }
 }

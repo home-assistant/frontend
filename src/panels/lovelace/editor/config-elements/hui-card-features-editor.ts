@@ -50,7 +50,7 @@ import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
-import { supportsProgressBarCardFeature } from "../../card-features/hui-progress-bar-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
@@ -68,6 +68,7 @@ type SupportsFeature = (
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "area-controls",
+  "bar-gauge",
   "button",
   "climate-fan-modes",
   "climate-hvac-modes",
@@ -92,7 +93,6 @@ const UI_FEATURE_TYPES = [
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
-  "progress-bar",
   "target-humidity",
   "target-temperature",
   "toggle",
@@ -131,6 +131,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "area-controls": supportsAreaControlsCardFeature,
+  "bar-gauge": supportsBarGaugeCardFeature,
   button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
@@ -156,7 +157,6 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
-  "progress-bar": supportsProgressBarCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   toggle: supportsToggleCardFeature,
