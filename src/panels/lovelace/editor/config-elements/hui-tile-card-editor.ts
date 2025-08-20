@@ -25,6 +25,7 @@ import type {
 } from "../../../../components/ha-form/types";
 import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
+import { getEntityEntryContext } from "../../../../common/entity/context/get_entity_context";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -266,21 +267,12 @@ export class HuiTileCardEditor
     }
 
     const entityRegistry = this.hass.entities[entityId];
-
-    // Check if entity has direct area assignment
-    if (entityRegistry?.area_id) {
-      return true;
+    if (!entityRegistry) {
+      return false;
     }
 
-    // Check if entity has a device and that device has an area
-    if (entityRegistry?.device_id) {
-      const device = this.hass.devices[entityRegistry.device_id];
-      if (device?.area_id) {
-        return true;
-      }
-    }
-
-    return false;
+    const context = getEntityEntryContext(entityRegistry, this.hass);
+    return context.area !== null;
   }
 
   private _getEntityAreaId(entityId: string): string | null {
@@ -289,21 +281,12 @@ export class HuiTileCardEditor
     }
 
     const entityRegistry = this.hass.entities[entityId];
-
-    // Check if entity has direct area assignment
-    if (entityRegistry?.area_id) {
-      return entityRegistry.area_id;
+    if (!entityRegistry) {
+      return null;
     }
 
-    // Check if entity has a device and that device has an area
-    if (entityRegistry?.device_id) {
-      const device = this.hass.devices[entityRegistry.device_id];
-      if (device?.area_id) {
-        return device.area_id;
-      }
-    }
-
-    return null;
+    const context = getEntityEntryContext(entityRegistry, this.hass);
+    return context.area?.area_id || null;
   }
 
   protected render() {
