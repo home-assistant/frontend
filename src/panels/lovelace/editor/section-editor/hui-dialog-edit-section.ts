@@ -1,5 +1,10 @@
 import type { ActionDetail } from "@material/mwc-list";
-import { mdiClose, mdiDotsVertical, mdiPlaylistEdit } from "@mdi/js";
+import {
+  mdiClose,
+  mdiDotsVertical,
+  mdiFileMoveOutline,
+  mdiPlaylistEdit,
+} from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -16,17 +21,25 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import "../../../../components/sl-tab-group";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import {
+  isStrategyView,
+  type LovelaceViewConfig,
+} from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import {
   findLovelaceContainer,
+  LovelaceContainerPath,
+  parseLovelaceContainerPath,
   updateLovelaceContainer,
 } from "../lovelace-path";
 import "./hui-section-settings-editor";
 import "./hui-section-visibility-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
+import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
+import { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 const TABS = ["tab-settings", "tab-visibility"] as const;
 
@@ -36,6 +49,8 @@ export class HuiDialogEditSection
   implements HassDialog<EditSectionDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public lovelace?: Lovelace;
 
   @state() private _params?: EditSectionDialogParams;
 
@@ -165,6 +180,15 @@ export class HuiDialogEditSection
                 .path=${mdiPlaylistEdit}
               ></ha-svg-icon>
             </ha-list-item>
+            <ha-list-item graphic="icon">
+              ${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_view.move_to_view"
+              )}
+              <ha-svg-icon
+                slot="graphic"
+                .path=${mdiFileMoveOutline}
+              ></ha-svg-icon>
+            </ha-list-item>
           </ha-button-menu>
           ${!this._yamlMode
             ? html`
@@ -222,6 +246,67 @@ export class HuiDialogEditSection
       case 0:
         this._yamlMode = !this._yamlMode;
         break;
+      case 1:
+        this._openSelectView();
+        break;
+    }
+  }
+
+  private _openSelectView(): void {
+    if (!this._params || !this.lovelace) {
+      return;
+    }
+
+    showSelectViewDialog(this, {
+      lovelaceConfig: this._params.lovelaceConfig,
+      urlPath: this.lovelace.urlPath,
+      allowDashboardChange: true,
+      header: this.hass!.localize(
+        "ui.panel.lovelace.editor.move_section.header"
+      ),
+      viewSelectedCallback: this._moveSectionToView,
+    });
+  }
+
+  private _moveSectionToView(
+    urlPath: string | null,
+    selectedDashConfig: LovelaceConfig,
+    viewIndex: number
+  ) {
+    if (!this._params || !this.lovelace) {
+      return;
+    }
+
+    const toView = selectedDashConfig.views[viewIndex];
+    const newConfig = selectedDashConfig;
+
+    const undoAction = async () => {
+      this.lovelace.saveConfig(selectedDashConfig);
+    };
+
+    if (isStrategyView(toView)) {
+      showAlertDialog(this, {
+        title: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.error_title"
+        ),
+        text: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.error_text_strategy"
+        ),
+        warning: true,
+      });
+      return;
+    }
+
+    const toPath: LovelaceContainerPath = [viewIndex];
+
+    try {
+      const { sectionIndex } = parseLovelaceContainerPath();
+    } catch (_err: any) {
+      this.lovelace.showToast({
+        message: this.hass!.localize(
+          "ui.panel.lovelace.editor.move_section.error"
+        ),
+      });
     }
   }
 
