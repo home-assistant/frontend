@@ -7675,7 +7675,8 @@
               "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]",
               "time_zones": {
                 "auto": "Use user settings"
-              }
+              },
+              "no_background": "No background"
             },
             "media-control": {
               "name": "Media control",
