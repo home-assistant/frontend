@@ -15,12 +15,49 @@ import {
   findEntities,
   OVERVIEW_SUMMARIES_FILTERS,
 } from "./helpers/overview-summaries";
+import { getHomeStructure } from "./helpers/overview-home-structure";
 
 export interface OverviewSecurityViewStrategyConfig {
   type: "overview-security";
 }
 
-const UNASSIGNED_FLOOR = "__unassigned__";
+const processAreasForSecurity = (
+  areaIds: string[],
+  hass: HomeAssistant,
+  entities: string[],
+  computeTileCard: (entityId: string) => any
+): any[] => {
+  const cards: any[] = [];
+
+  for (const areaId of areaIds) {
+    const area = hass.areas[areaId];
+    if (!area) continue;
+
+    const areaFilter = generateEntityFilter(hass, {
+      area: area.area_id,
+    });
+    const areaEntities = entities.filter(areaFilter);
+
+    if (areaEntities.length > 0) {
+      cards.push({
+        heading_style: "subtitle",
+        type: "heading",
+        heading: area.name,
+        icon: area.icon || "mdi:home",
+        tap_action: {
+          action: "navigate",
+          navigation_path: `areas-${area.area_id}`,
+        },
+      });
+
+      for (const entityId of areaEntities) {
+        cards.push(computeTileCard(entityId));
+      }
+    }
+  }
+
+  return cards;
+};
 
 @customElement("overview-security-view-strategy")
 export class OverviewSecurityViewStrategy extends ReactiveElement {
@@ -29,8 +66,8 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
-
     const floors = getFloors(hass.floors);
+    const home = getHomeStructure(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
@@ -42,75 +79,62 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
 
     const entities = findEntities(allEntities, filterFunctions);
 
-    const allFloors = [
-      ...floors,
-      {
-        floor_id: UNASSIGNED_FLOOR,
-        name: hass.localize("ui.panel.lovelace.strategy.areas.other_areas"),
-        level: null,
-        icon: null,
-      },
-    ];
+    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    for (const floor of allFloors) {
-      let hasEntities = false;
+    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
-      const areasInFloor = areas.filter(
-        (area) =>
-          area.floor_id === floor.floor_id ||
-          (!area.floor_id && floor.floor_id === UNASSIGNED_FLOOR)
-      );
-
-      const noFloors =
-        floors.length === 0 && floor.floor_id === UNASSIGNED_FLOOR;
-
-      const headingTitle = noFloors
-        ? hass.localize("ui.panel.lovelace.strategy.areas.areas")
-        : floor.name;
+    // Process floors
+    for (const floorStructure of home.floors) {
+      const floorId = floorStructure.id;
+      const areaIds = floorStructure.areas;
+      const floor = hass.floors[floorId];
 
       const section: LovelaceSectionRawConfig = {
         type: "grid",
         cards: [
           {
             type: "heading",
-            heading: headingTitle,
+            heading: floorCount > 1 ? floor.name : "Areas",
             icon: floor.icon || floorDefaultIcon(floor) || "mdi:home-floor",
           },
         ],
       };
 
-      for (const area of areasInFloor) {
-        const areaFilter = generateEntityFilter(hass, {
-          area: area.area_id,
-        });
-        const areaEntities = entities.filter(areaFilter);
+      const areaCards = processAreasForSecurity(
+        areaIds,
+        hass,
+        entities,
+        computeTileCard
+      );
 
-        if (areaEntities.length > 0) {
-          hasEntities = true;
-          section.cards!.push({
-            heading_style: "subtitle",
-            type: "heading",
-            heading: area.name,
-            icon: area.icon || "mdi:home",
-            tap_action: {
-              action: "navigate",
-              navigation_path: `areas-${area.area_id}`,
-            },
-          });
-
-          const computeTileCard = computeAreaTileCardConfig(
-            hass,
-            area.name,
-            true
-          );
-
-          for (const entityId of areaEntities) {
-            section.cards!.push(computeTileCard(entityId));
-          }
-        }
+      if (areaCards.length > 0) {
+        section.cards!.push(...areaCards);
+        sections.push(section);
       }
+    }
 
-      if (hasEntities) {
+    // Process unassigned areas
+    if (home.areas.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: floorCount > 1 ? "Other areas" : "Areas",
+            icon: "mdi:home",
+          },
+        ],
+      };
+
+      const areaCards = processAreasForSecurity(
+        home.areas,
+        hass,
+        entities,
+        computeTileCard
+      );
+
+      if (areaCards.length > 0) {
+        section.cards!.push(...areaCards);
         sections.push(section);
       }
     }
