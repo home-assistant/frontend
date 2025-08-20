@@ -8068,6 +8068,9 @@
                   "cover-window": "Windows"
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
+              },
+              "history-chart": {
+                "label": "History chart"
               }
             }
           },
