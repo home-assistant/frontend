@@ -293,8 +293,6 @@ class HuiMediaPlayerPlaybackCardFeature
     if (!this._stateObj) return;
 
     const service =
-      this._stateObj!.state !== "playing"
-        ? "media_play"
       this._stateObj.state !== "playing"
         ? "media_play"
         : supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE)
