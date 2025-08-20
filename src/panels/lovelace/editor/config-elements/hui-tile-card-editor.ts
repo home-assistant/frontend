@@ -261,18 +261,17 @@ export class HuiTileCardEditor
       this._config.hide_state ?? false
     );
 
-    const featuresSchema = this._featuresSchema(
-      this.hass.localize,
-      this._config.vertical ?? false
-    );
+    const vertical = this._config.vertical ?? false;
+
+    const featuresSchema = this._featuresSchema(this.hass.localize, vertical);
 
     const data = {
       ...this._config,
-      content_layout: this._config.vertical ? "vertical" : "horizontal",
+      content_layout: vertical ? "vertical" : "horizontal",
     };
 
     // Default features position to bottom and force it to bottom in vertical mode
-    if (!data.features_position || data.vertical) {
+    if (!data.features_position || vertical) {
       data.features_position = "bottom";
     }
 

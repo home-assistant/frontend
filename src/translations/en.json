@@ -7361,6 +7361,11 @@
               "sensor_classes": "Sensor classes",
               "description": "The Area card automatically displays entities of a specific area.",
               "display_type": "Display type",
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
+              "content_layout_options": {
+                "horizontal": "[%key:ui::panel::lovelace::editor::card::tile::content_layout_options::horizontal%]",
+                "vertical": "[%key:ui::panel::lovelace::editor::card::tile::content_layout_options::vertical%]"
+              },
               "display_type_options": {
                 "compact": "Compact",
                 "icon": "Area icon",
