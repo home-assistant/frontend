@@ -242,7 +242,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
         card: {
           type: "markdown",
           text_only: true,
-          content: "## Welcome {{user}} !",
+          content: "## Welcome {{user}}!",
         } satisfies MarkdownCardConfig,
       },
     };
