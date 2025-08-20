@@ -12,6 +12,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-md-button-menu";
 import "../../../components/ha-md-menu-item";
+import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -101,7 +102,9 @@ export default class HaScriptFieldRow extends LitElement {
             @click=${this._toggleSelectorSidebar}
             .collapsed=${this._selectorRowCollapsed}
             @toggle-collapsed=${this._toggleSelectorRowCollapse}
-            left-chevron
+            .leftChevron=${SELECTOR_SELECTOR_BUILDING_BLOCKS.includes(
+              Object.keys(this.field.selector)[0]
+            )}
           >
             <h3 slot="header">
               ${this.hass.localize(
@@ -207,13 +210,12 @@ export default class HaScriptFieldRow extends LitElement {
       delete: this._onDelete,
       config: {
         field: this.field,
+        selector: selectorEditor,
         key: this.key,
         excludeKeys: this.excludeKeys,
       },
-      type: selectorEditor ? "script_field_selector" : "script_field",
-      uiSupported: true,
       yamlMode: this._yamlMode,
-    });
+    } satisfies ScriptFieldSidebarConfig);
   }
 
   private _toggleYamlMode = () => {

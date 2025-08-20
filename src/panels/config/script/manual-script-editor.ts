@@ -19,6 +19,7 @@ import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-i
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
+import type { SidebarConfig } from "../../../data/automation";
 import type { Action, Fields, ScriptConfig } from "../../../data/script";
 import {
   getActionType,
@@ -30,7 +31,6 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
-import type { OpenSidebarConfig } from "../automation/ha-automation-sidebar";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "../automation/styles";
 import "./ha-script-fields";
@@ -69,7 +69,7 @@ export class HaManualScriptEditor extends LitElement {
 
   @state() private _pastedConfig?: ScriptConfig;
 
-  @state() private _sidebarConfig?: OpenSidebarConfig;
+  @state() private _sidebarConfig?: SidebarConfig;
 
   private _previousConfig?: ScriptConfig;
 
@@ -422,13 +422,13 @@ export class HaManualScriptEditor extends LitElement {
     });
   }
 
-  private _openSidebar(ev: CustomEvent<OpenSidebarConfig>) {
+  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
   }
 
-  private _sidebarConfigChanged(ev: CustomEvent<{ value: OpenSidebarConfig }>) {
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
     ev.stopPropagation();
     if (!this._sidebarConfig) {
       return;

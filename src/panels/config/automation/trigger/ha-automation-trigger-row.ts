@@ -34,7 +34,11 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-divider";
 import "../../../../components/ha-md-menu-item";
-import type { AutomationClipboard, Trigger } from "../../../../data/automation";
+import type {
+  AutomationClipboard,
+  Trigger,
+  TriggerSidebarConfig,
+} from "../../../../data/automation";
 import { subscribeTrigger } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
@@ -486,10 +490,9 @@ export default class HaAutomationTriggerRow extends LitElement {
       disable: this._onDisable,
       delete: this._onDelete,
       config: trigger || this.trigger,
-      type: "trigger",
       uiSupported: this._uiSupported(this._getType(trigger || this.trigger)),
       yamlMode: this._yamlMode,
-    });
+    } satisfies TriggerSidebarConfig);
     this._selected = true;
   }
 

@@ -41,6 +41,7 @@ import {
   YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
+  ActionSidebarConfig,
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
@@ -665,10 +666,9 @@ export default class HaAutomationActionRow extends LitElement {
       disable: this._onDisable,
       delete: this._onDelete,
       config: sidebarAction,
-      type: "action",
       uiSupported: actionType ? this._uiSupported(actionType) : false,
       yamlMode: this._yamlMode,
-    });
+    } satisfies ActionSidebarConfig);
     this._selected = true;
   }
 

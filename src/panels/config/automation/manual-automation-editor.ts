@@ -26,6 +26,7 @@ import type {
   AutomationConfig,
   Condition,
   ManualAutomationConfig,
+  SidebarConfig,
   Trigger,
 } from "../../../data/automation";
 import {
@@ -40,7 +41,6 @@ import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
-import type { OpenSidebarConfig } from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
@@ -82,7 +82,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _pastedConfig?: ManualAutomationConfig;
 
-  @state() private _sidebarConfig?: OpenSidebarConfig;
+  @state() private _sidebarConfig?: SidebarConfig;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -285,13 +285,13 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  private _openSidebar(ev: CustomEvent<OpenSidebarConfig>) {
+  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
   }
 
-  private _sidebarConfigChanged(ev: CustomEvent<{ value: OpenSidebarConfig }>) {
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
     ev.stopPropagation();
     if (!this._sidebarConfig) {
       return;
@@ -683,7 +683,7 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "open-sidebar": OpenSidebarConfig;
+    "open-sidebar": SidebarConfig;
     "close-sidebar": undefined;
   }
 }

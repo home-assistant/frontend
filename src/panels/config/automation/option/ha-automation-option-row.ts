@@ -23,7 +23,10 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-svg-icon";
-import type { Condition } from "../../../../data/automation";
+import type {
+  Condition,
+  OptionSidebarConfig,
+} from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
@@ -355,11 +358,7 @@ export default class HaAutomationOptionRow extends LitElement {
       },
       toggleYamlMode: () => false, // no yaml mode for options
       delete: this._removeOption,
-      config: {},
-      type: "option",
-      uiSupported: true,
-      yamlMode: false,
-    });
+    } satisfies OptionSidebarConfig);
     this._selected = true;
   }
 
