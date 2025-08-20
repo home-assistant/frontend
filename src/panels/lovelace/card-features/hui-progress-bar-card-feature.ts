@@ -72,6 +72,7 @@ class HuiProgressBarCardFeature
     :host > div {
       height: 100%;
       background-color: var(--feature-color);
+      transition: width 180ms ease-in-out;
     }
     .progress-bar-background {
       flex: 1;
