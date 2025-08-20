@@ -66,7 +66,7 @@ class HuiMediaPlayerPlaybackCardFeature
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
     }
-    return this.hass.states[this.context.entity_id!] as
+    return this.hass.states[this.context.entity_id] as
       | MediaPlayerEntity
       | undefined;
   }
@@ -157,7 +157,7 @@ class HuiMediaPlayerPlaybackCardFeature
               (button) => html`
                 <ha-control-button
                   key=${button.action}
-                  .label=${this.hass!.localize(
+                  .label=${this.hass.localize(
                     `ui.card.media_player.${button.action}`
                   )}
                   @click=${this._action}
@@ -295,7 +295,9 @@ class HuiMediaPlayerPlaybackCardFeature
     const service =
       this._stateObj!.state !== "playing"
         ? "media_play"
-        : supportsFeature(this._stateObj!, MediaPlayerEntityFeature.PAUSE)
+      this._stateObj.state !== "playing"
+        ? "media_play"
+        : supportsFeature(this._stateObj, MediaPlayerEntityFeature.PAUSE)
           ? "media_pause"
           : "media_stop";
 
