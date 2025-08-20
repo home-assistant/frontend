@@ -8069,6 +8069,9 @@
                 },
                 "no_compatible_controls": "No compatible controls available for this area"
               },
+              "bar-gauge": {
+                "label": "Bar gauge"
+              },
               "history-chart": {
                 "label": "History chart"
               }
