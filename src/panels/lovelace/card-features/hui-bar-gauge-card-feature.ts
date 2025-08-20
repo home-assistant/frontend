@@ -55,7 +55,7 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
     const stateObj = this.hass.states[this.context.entity_id];
     const value = stateObj.state;
     return html`<div style="width: ${value}%"></div>
-      <div class="progress-bar-background"></div>`;
+      <div class="bar-gauge-background"></div>`;
   }
 
   static styles = css`
@@ -71,7 +71,7 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
       background-color: var(--feature-color);
       transition: width 180ms ease-in-out;
     }
-    .progress-bar-background {
+    .bar-gauge-background {
       flex: 1;
       opacity: 0.2;
     }
