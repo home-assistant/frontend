@@ -44,11 +44,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
-      domain === "scene"
-        ? "activate"
-        : domain === "button" || domain === "input_button"
-          ? "press"
-          : "turn_on";
+      domain === "button" || domain === "input_button" ? "press" : "turn_on";
     
     this.hass.callService(domain, service, {
       entity_id: this._stateObj.entity_id,
