@@ -64,7 +64,7 @@ class DialogHomeZoneDetail extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.hass!.localize("ui.common.edit_item", {name: this._data.name})
+          this.hass!.localize("ui.common.edit_item", { name: this._data.name })
         )}
       >
         <div>

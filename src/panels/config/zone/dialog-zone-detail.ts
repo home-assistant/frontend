@@ -85,9 +85,9 @@ class DialogZoneDetail extends LitElement {
         .heading=${createCloseHeading(
           this.hass,
           this._params.entry
-            ? `${this.hass!.localize("ui.common.edit")} ${
-                this._params.entry.name
-              }`
+            ? this.hass!.localize("ui.common.edit_item", {
+                name: this._params.entry.name,
+              })
             : this.hass!.localize("ui.panel.config.zone.detail.new_zone")
         )}
       >
