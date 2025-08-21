@@ -73,7 +73,7 @@ class HaPanelDevStateRenderer extends LitElement {
                 )}
               </span>
             </div>
-            <div class = "header" role="columnheader">
+            <div class="header" role="columnheader">
               <span class="padded">
                 ${this.hass.localize(
                   "ui.panel.developer-tools.tabs.states.state"
