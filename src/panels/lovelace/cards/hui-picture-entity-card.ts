@@ -163,20 +163,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <hui-image
-          .hass=${this.hass}
-          .image=${image}
-          .stateImage=${this._config.state_image}
-          .stateFilter=${this._config.state_filter}
-          .cameraImage=${domain === "camera"
-            ? this._config.entity
-            : this._config.camera_image}
-          .cameraView=${this._config.camera_view}
-          .entity=${this._config.entity}
-          .aspectRatio=${ignoreAspectRatio
-            ? undefined
-            : this._config.aspect_ratio}
-          .fitMode=${this._config.fit_mode}
+        <div
+          class="image-container"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),
@@ -187,7 +175,28 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
               ? "0"
               : undefined
           )}
-        ></hui-image>
+          role=${ifDefined(
+            hasAction(this._config.tap_action) || this._config.entity
+              ? "0"
+              : undefined
+          )}
+        >
+          <hui-image
+            .hass=${this.hass}
+            .image=${image}
+            .stateImage=${this._config.state_image}
+            .stateFilter=${this._config.state_filter}
+            .cameraImage=${domain === "camera"
+              ? this._config.entity
+              : this._config.camera_image}
+            .cameraView=${this._config.camera_view}
+            .entity=${this._config.entity}
+            .aspectRatio=${ignoreAspectRatio
+              ? undefined
+              : this._config.aspect_ratio}
+            .fitMode=${this._config.fit_mode}
+          ></hui-image>
+        </div>
         ${footer}
       </ha-card>
     `;
@@ -202,8 +211,14 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       box-sizing: border-box;
     }
 
+    .image-container {
+      height: 100%;
+      cursor: pointer;
+    }
+
     hui-image {
       cursor: pointer;
+      pointer-events: none;
       height: 100%;
     }
 
