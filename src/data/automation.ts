@@ -623,6 +623,7 @@ export type SidebarConfig =
   | ActionSidebarConfig
   | OptionSidebarConfig
   | ScriptFieldSidebarConfig;
+
 export interface ShowAutomationEditorParams {
   data?: Partial<AutomationConfig>;
   expanded?: boolean;
