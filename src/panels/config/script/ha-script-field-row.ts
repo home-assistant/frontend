@@ -235,7 +235,7 @@ export default class HaScriptFieldRow extends LitElement {
       destructive: true,
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
-        if (this._selected) {
+        if (this._selected || this._selectorRowSelected) {
           fireEvent(this, "close-sidebar");
         }
       },

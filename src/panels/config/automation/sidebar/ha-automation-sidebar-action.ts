@@ -10,6 +10,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
+import "../../../../components/ha-md-divider";
+import "../../../../components/ha-md-menu-item";
 import { ACTION_BUILDING_BLOCKS } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
 import type { RepeatAction } from "../../../../data/script";
@@ -19,7 +21,6 @@ import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
 import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
-import type { SidebarOverflowMenu } from "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-action")
 export default class HaAutomationSidebarAction extends LitElement {
@@ -51,7 +52,9 @@ export default class HaAutomationSidebarAction extends LitElement {
   }
 
   protected render() {
-    const disabled = this.disabled || this.config.config.enabled;
+    const disabled =
+      this.disabled ||
+      ("enabled" in this.config.config && this.config.config.enabled === false);
 
     const actionType = getAutomationActionType(this.config.config);
 
@@ -77,52 +80,59 @@ export default class HaAutomationSidebarAction extends LitElement {
         )
       : "";
 
-    const menuEntries: SidebarOverflowMenu = [
-      {
-        clickAction: this.config.rename,
-        disabled: disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.rename"
-        ),
-        icon: mdiRenameBox,
-      },
-      {
-        clickAction: this._toggleYamlMode,
-        disabled: !this.config.uiSupported || !!this._warnings,
-        label: this.hass.localize(
-          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-        ),
-        icon: mdiPlaylistEdit,
-      },
-      "separator",
-      {
-        clickAction: this.config.disable,
-        disabled: disabled,
-        label: this.hass.localize(
-          `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
-        ),
-        icon: this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline,
-      },
-      {
-        clickAction: this.config.delete,
-        danger: true,
-        disabled: this.disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete"
-        ),
-        icon: mdiDelete,
-      },
-    ];
-
     return html`<ha-automation-sidebar-card
       .hass=${this.hass}
       .isWide=${this.isWide}
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
-      .menuEntries=${menuEntries}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.rename}
+        .disabled=${!!disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.rename"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this._toggleYamlMode}
+        .disabled=${!this.config.uiSupported || !!this._warnings}
+      >
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+        )}
+        <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-divider
+        slot="menu-items"
+        role="separator"
+        tabindex="-1"
+      ></ha-md-divider>
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.disable}>
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
+        )}
+        <ha-svg-icon
+          slot="start"
+          .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
+        ></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.delete}
+        .disabled=${this.disabled}
+        class="warning"
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.delete"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+      </ha-md-menu-item>
       ${description ||
       html`<ha-automation-action-editor
         class="sidebar-editor"

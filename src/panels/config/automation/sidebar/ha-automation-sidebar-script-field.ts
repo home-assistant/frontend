@@ -7,7 +7,6 @@ import type { HomeAssistant } from "../../../../types";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import "./ha-automation-sidebar-card";
-import type { SidebarOverflowMenu } from "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-script-field")
 export default class HaAutomationSidebarScriptField extends LitElement {
@@ -43,35 +42,34 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       "ui.panel.config.script.editor.field.label"
     );
 
-    const menuEntries: SidebarOverflowMenu = [
-      {
-        clickAction: this._toggleYamlMode,
-        disabled: !!this._warnings,
-        label: this.hass.localize(
-          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-        ),
-        icon: mdiPlaylistEdit,
-      },
-      "separator",
-      {
-        clickAction: this.config.delete,
-        danger: true,
-        disabled: this.disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete"
-        ),
-        icon: mdiDelete,
-      },
-    ];
-
     return html`<ha-automation-sidebar-card
       .hass=${this.hass}
       .isWide=${this.isWide}
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
-      .menuEntries=${menuEntries}
     >
       <span slot="title">${title}</span>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this._toggleYamlMode}
+        .disabled=${!!this._warnings}
+      >
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+        )}
+        <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.delete}
+        .disabled=${this.disabled}
+        class="warning"
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.delete"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+      </ha-md-menu-item>
       <ha-script-field-editor
         class="sidebar-editor"
         .hass=${this.hass}

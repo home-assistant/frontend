@@ -31,8 +31,6 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
-  @property({ attribute: false }) public menuEntries: SidebarOverflowMenu = [];
-
   @property({ attribute: false }) public warnings?: string[];
 
   protected render() {
@@ -53,47 +51,21 @@ export default class HaAutomationSidebarCard extends LitElement {
           ></ha-icon-button>
           <slot slot="title" name="title"></slot>
           <slot slot="subtitle" name="subtitle"></slot>
-          ${this.menuEntries.filter((entry) => entry !== "separator").length
-            ? html`
-                <ha-md-button-menu
-                  slot="actionItems"
-                  @click=${this._openOverflowMenu}
-                  @keydown=${stopPropagation}
-                  @closed=${stopPropagation}
-                  positioning="fixed"
-                >
-                  <ha-icon-button
-                    slot="trigger"
-                    .label=${this.hass.localize("ui.common.menu")}
-                    .path=${mdiDotsVertical}
-                  ></ha-icon-button>
-                  ${this.menuEntries.map((menuEntry) =>
-                    menuEntry !== "separator"
-                      ? html`
-                          <ha-md-menu-item
-                            .clickAction=${menuEntry.clickAction}
-                            .disabled=${!!menuEntry.disabled}
-                            class=${menuEntry.danger ? "warning" : ""}
-                          >
-                            ${menuEntry.label}
-                            ${menuEntry.icon
-                              ? html`<ha-svg-icon
-                                  slot="start"
-                                  .path=${menuEntry.icon}
-                                ></ha-svg-icon>`
-                              : nothing}
-                          </ha-md-menu-item>
-                        `
-                      : html`
-                          <ha-md-divider
-                            role="separator"
-                            tabindex="-1"
-                          ></ha-md-divider>
-                        `
-                  )}
-                </ha-md-button-menu>
-              `
-            : nothing}
+          <slot name="overflow-menu" slot="actionItems">
+            <ha-md-button-menu
+              @click=${this._openOverflowMenu}
+              @keydown=${stopPropagation}
+              @closed=${stopPropagation}
+              positioning="fixed"
+            >
+              <ha-icon-button
+                slot="trigger"
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
+              <slot name="menu-items"></slot>
+            </ha-md-button-menu>
+          </slot>
         </ha-dialog-header>
         ${this.warnings
           ? html`<ha-automation-editor-warning

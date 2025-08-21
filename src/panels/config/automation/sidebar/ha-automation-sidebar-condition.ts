@@ -15,7 +15,6 @@ import type { HomeAssistant } from "../../../../types";
 import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
 import "./ha-automation-sidebar-card";
-import type { SidebarOverflowMenu } from "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-condition")
 export default class HaAutomationSidebarCondition extends LitElement {
@@ -47,7 +46,9 @@ export default class HaAutomationSidebarCondition extends LitElement {
   }
 
   protected render() {
-    const disabled = this.disabled || this.config.config.enabled;
+    const disabled =
+      this.disabled ||
+      ("enabled" in this.config.config && this.config.config.enabled === false);
 
     const type = this.config.config.condition;
 
@@ -68,52 +69,59 @@ export default class HaAutomationSidebarCondition extends LitElement {
         )
       : "";
 
-    const menuEntries: SidebarOverflowMenu = [
-      {
-        clickAction: this.config.rename,
-        disabled: disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.rename"
-        ),
-        icon: mdiRenameBox,
-      },
-      {
-        clickAction: this._toggleYamlMode,
-        disabled: !this.config.uiSupported || !!this._warnings,
-        label: this.hass.localize(
-          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
-        ),
-        icon: mdiPlaylistEdit,
-      },
-      "separator",
-      {
-        clickAction: this.config.disable,
-        disabled: disabled,
-        label: this.hass.localize(
-          `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
-        ),
-        icon: this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline,
-      },
-      {
-        clickAction: this.config.delete,
-        danger: true,
-        disabled: this.disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete"
-        ),
-        icon: mdiDelete,
-      },
-    ];
-
     return html`<ha-automation-sidebar-card
       .hass=${this.hass}
       .isWide=${this.isWide}
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
-      .menuEntries=${menuEntries}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.rename}
+        .disabled=${!!disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.rename"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this._toggleYamlMode}
+        .disabled=${!this.config.uiSupported || !!this._warnings}
+      >
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+        )}
+        <ha-svg-icon slot="start" .path=${mdiPlaylistEdit}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-divider
+        slot="menu-items"
+        role="separator"
+        tabindex="-1"
+      ></ha-md-divider>
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.disable}>
+        ${this.hass.localize(
+          `ui.panel.config.automation.editor.actions.${disabled ? "enable" : "disable"}`
+        )}
+        <ha-svg-icon
+          slot="start"
+          .path=${this.disabled ? mdiPlayCircleOutline : mdiStopCircleOutline}
+        ></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.delete}
+        .disabled=${this.disabled}
+        class="warning"
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.delete"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+      </ha-md-menu-item>
       ${description ||
       html`<ha-automation-condition-editor
         class="sidebar-editor"

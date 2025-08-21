@@ -5,7 +5,6 @@ import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import "./ha-automation-sidebar-card";
-import type { SidebarOverflowMenu } from "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-option")
 export default class HaAutomationSidebarOption extends LitElement {
@@ -34,34 +33,39 @@ export default class HaAutomationSidebarOption extends LitElement {
     const description = this.hass.localize(
       "ui.panel.config.automation.editor.actions.type.choose.option_description"
     );
-    const menuEntries: SidebarOverflowMenu = [
-      {
-        clickAction: this.config.rename,
-        disabled: disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.rename"
-        ),
-        icon: mdiRenameBox,
-      },
-      "separator",
-      {
-        clickAction: this.config.delete,
-        danger: true,
-        disabled: this.disabled,
-        label: this.hass.localize(
-          "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-        ),
-        icon: mdiDelete,
-      },
-    ];
 
     return html`<ha-automation-sidebar-card
       .hass=${this.hass}
       .isWide=${this.isWide}
-      .menuEntries=${menuEntries}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.rename}
+        .disabled=${!!disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.triggers.rename"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-divider
+        slot="menu-items"
+        role="separator"
+        tabindex="-1"
+      ></ha-md-divider>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.delete}
+        .disabled=${this.disabled}
+        class="warning"
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
+      </ha-md-menu-item>
       ${description}
     </ha-automation-sidebar-card>`;
   }
