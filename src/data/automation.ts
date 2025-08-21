@@ -568,6 +568,7 @@ export interface AutomationClipboard {
 export interface BaseSidebarConfig {
   toggleYamlMode: () => boolean;
   delete: () => void;
+  scrollIntoView: () => void;
 }
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {

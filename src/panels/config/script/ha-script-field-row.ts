@@ -183,12 +183,16 @@ export default class HaScriptFieldRow extends LitElement {
     });
   }
 
+  private _scrollIntoView = () => {
+    this.scrollIntoView({
+      block: "start",
+      behavior: "smooth",
+    });
+  };
+
   public openSidebar(selectorEditor = false): void {
     if (!selectorEditor) {
       this._selected = true;
-    }
-    if (this.narrow) {
-      this.scrollIntoView();
     }
 
     fireEvent(this, "open-sidebar", {
@@ -215,6 +219,7 @@ export default class HaScriptFieldRow extends LitElement {
         excludeKeys: this.excludeKeys,
       },
       yamlMode: this._yamlMode,
+      scrollIntoView: this._scrollIntoView,
     } satisfies ScriptFieldSidebarConfig);
   }
 

@@ -180,9 +180,6 @@ export default class HaAutomationTrigger extends LitElement {
         } else {
           row.expand();
         }
-        if (this.narrow) {
-          row.scrollIntoView();
-        }
         row.focus();
       });
     }

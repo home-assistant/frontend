@@ -1,14 +1,14 @@
-import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
+import { css, html, LitElement } from "lit";
+import { customElement, query, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 const ANIMATION_DURATION_MS = 300;
 
-@customElement("ha-bottom-sheet")
-export class HaBottomSheet extends LitElement {
-  @query("dialog") private _dialog!: HTMLDialogElement;
+@customElement("ha-automation-sidebar-bottom-sheet")
+export class HaAutomationSidebarBottomSheet extends LitElement {
+  @state() private _size = 30;
 
-  @property({ attribute: false }) public contentHash?: string;
+  @query("dialog") private _dialog!: HTMLDialogElement;
 
   private _dragging = false;
 
@@ -16,16 +16,22 @@ export class HaBottomSheet extends LitElement {
 
   private _initialSize = 0;
 
-  private _open = false;
+  public showDialog(): void {
+    this._openSheet();
+  }
+
+  public closeDialog(): void {
+    this.closeSheet();
+  }
 
   render() {
-    return html`<dialog open>
-      <div class="handle-wrapper">
-        <div
-          @mousedown=${this._handleMouseDown}
-          @touchstart=${this._handleTouchStart}
-          class="handle"
-        ></div>
+    return html`<dialog open style=${`--size: ${this._size}vh;`}>
+      <div
+        class="handle-wrapper"
+        @mousedown=${this._handleMouseDown}
+        @touchstart=${this._handleTouchStart}
+      >
+        <div class="handle"></div>
       </div>
       <slot></slot>
     </dialog>`;
@@ -36,26 +42,9 @@ export class HaBottomSheet extends LitElement {
     this._openSheet();
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("contentHash") && this._open) {
-      // TODO doesn't work when switch to yaml
-      this._dialog.style.setProperty(
-        "height",
-        `${(this._dialog.offsetHeight / window.innerHeight) * 100}vh`
-      );
-
-      fireEvent(this, "bottom-sheet-opened");
-    }
-  }
-
   private _openSheet() {
-    requestAnimationFrame(async () => {
+    requestAnimationFrame(() => {
       this._dialog.classList.add("show");
-
-      setTimeout(() => {
-        this._open = true;
-        fireEvent(this, "bottom-sheet-opened");
-      }, ANIMATION_DURATION_MS);
     });
   }
 
@@ -64,7 +53,7 @@ export class HaBottomSheet extends LitElement {
       this._dialog.classList.remove("show");
       setTimeout(() => {
         this._dialog.close();
-        fireEvent(this, "bottom-sheet-closed");
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
       }, ANIMATION_DURATION_MS);
     });
   }
@@ -104,7 +93,7 @@ export class HaBottomSheet extends LitElement {
   private _startDrag(clientY: number) {
     this._dragging = true;
     this._dragStartY = clientY;
-    this._initialSize = (this._dialog.offsetHeight / window.innerHeight) * 100;
+    this._initialSize = this._size;
     document.body.style.cursor = "grabbing";
   }
 
@@ -128,13 +117,11 @@ export class HaBottomSheet extends LitElement {
     let newSize = this._initialSize + deltaVh;
     newSize = Math.max(10, Math.min(90, newSize));
 
-    // on drag down and below 20vh
-    if (newSize < 20 && deltaY < 0) {
-      this.closeSheet();
-      return;
-    }
+    this._size = newSize;
 
-    this._dialog.style.setProperty("height", `${newSize}vh`);
+    if (newSize < 20) {
+      this.closeSheet();
+    }
   }
 
   private _handleMouseUp = () => {
@@ -152,10 +139,14 @@ export class HaBottomSheet extends LitElement {
   }
 
   static styles = css`
+    :host {
+      --size: 30vh;
+      --size: 30dvh;
+      overscroll-behavior: contain;
+    }
     .handle-wrapper {
-      position: absolute;
-      top: 0;
       width: 100%;
+      height: 32px;
       padding-bottom: 2px;
       display: flex;
       justify-content: center;
@@ -163,28 +154,18 @@ export class HaBottomSheet extends LitElement {
       cursor: grab;
       touch-action: none;
     }
-    .handle-wrapper .handle {
-      height: 20px;
-      width: 200px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 20;
+    .handle-wrapper:active {
+      cursor: grabbing;
     }
-    .handle-wrapper .handle::after {
-      content: "";
+    .handle-wrapper .handle {
       border-radius: 8px;
       height: 4px;
       background: var(--divider-color, #e0e0e0);
       width: 80px;
-    }
-    .handle-wrapper .handle:active::after {
-      cursor: grabbing;
+      transition: background-color 0.2s ease;
+      pointer-events: none;
     }
     dialog {
-      height: auto;
-      max-height: 90vh;
-      min-height: 30vh;
       background-color: var(
         --ha-dialog-surface-background,
         var(--mdc-theme-surface, #fff)
@@ -194,8 +175,9 @@ export class HaBottomSheet extends LitElement {
       top: 0;
       inset-inline-start: 0;
       position: fixed;
-      width: calc(100% - 4px);
+      width: 100%;
       max-width: 100%;
+      max-height: 100%;
       overflow: hidden;
       border: none;
       box-shadow: var(--wa-shadow-l);
@@ -207,6 +189,7 @@ export class HaBottomSheet extends LitElement {
       inset-inline-end: auto;
       bottom: 0;
       inset-inline-start: 0;
+      height: var(--size);
       box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
       border-top-left-radius: var(
         --ha-dialog-border-radius,
@@ -218,12 +201,6 @@ export class HaBottomSheet extends LitElement {
       );
       transform: translateY(100%);
       transition: transform ${ANIMATION_DURATION_MS}ms ease;
-      border-top-width: var(--ha-bottom-sheet-border-width);
-      border-right-width: var(--ha-bottom-sheet-border-width);
-      border-left-width: var(--ha-bottom-sheet-border-width);
-      border-bottom-width: 0;
-      border-style: var(--ha-bottom-sheet-border-style);
-      border-color: var(--ha-bottom-sheet-border-color);
     }
 
     dialog.show {
@@ -234,11 +211,10 @@ export class HaBottomSheet extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-bottom-sheet": HaBottomSheet;
+    "ha-automation-sidebar-bottom-sheet": HaAutomationSidebarBottomSheet;
   }
 
   interface HASSDomEvents {
     "bottom-sheet-closed": undefined;
-    "bottom-sheet-opened": undefined;
   }
 }

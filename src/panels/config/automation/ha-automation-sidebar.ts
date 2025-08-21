@@ -1,6 +1,8 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-bottom-sheet";
+import type { HaBottomSheet } from "../../../components/ha-bottom-sheet";
 import {
   isCondition,
   isScriptField,
@@ -13,14 +15,12 @@ import {
 } from "../../../data/automation";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
-import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
 import "./sidebar/ha-automation-sidebar-action";
 import "./sidebar/ha-automation-sidebar-condition";
 import "./sidebar/ha-automation-sidebar-option";
 import "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
-import type HaAutomationTriggerEditor from "./trigger/ha-automation-trigger-editor";
 
 @customElement("ha-automation-sidebar")
 export default class HaAutomationSidebar extends LitElement {
@@ -36,95 +36,119 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _yamlMode = false;
 
-  @query(".sidebar-editor")
-  public editor?: HaAutomationTriggerEditor | HaAutomationConditionEditor;
+  @query("ha-bottom-sheet") private _bottomSheetElement?: HaBottomSheet;
 
-  protected render() {
-    if (!this.config) {
-      return nothing;
-    }
-
+  private _renderContent() {
     // get config type
     const type = this._getType();
 
     if (type === "trigger") {
       return html`
         <ha-automation-sidebar-trigger
+          class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._closeSidebar}
+          @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-trigger>
       `;
     }
     if (type === "condition") {
       return html`
         <ha-automation-sidebar-condition
+          class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._closeSidebar}
+          @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-condition>
       `;
     }
     if (type === "action") {
       return html`
         <ha-automation-sidebar-action
+          class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._closeSidebar}
+          @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-action>
       `;
     }
     if (type === "option") {
       return html`
         <ha-automation-sidebar-option
+          class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
           .disabled=${this.disabled}
-          @close-sidebar=${this._closeSidebar}
+          @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-option>
       `;
     }
     if (type === "script-field-selector") {
       return html`
         <ha-automation-sidebar-script-field-selector
+          class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._closeSidebar}
+          @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-script-field-selector>
       `;
     }
     if (type === "script-field") {
       return html`
         <ha-automation-sidebar-script-field
+          class="sidebar-content"
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
-          @close-sidebar=${this._closeSidebar}
+          @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-script-field>
       `;
     }
 
     return nothing;
+  }
+
+  protected render() {
+    if (!this.config) {
+      return nothing;
+    }
+
+    if (this.narrow) {
+      return html`
+        <ha-bottom-sheet
+          .contentHash=${JSON.stringify({
+            ...this.config,
+            yamlMode: this._yamlMode,
+          })}
+          @bottom-sheet-closed=${this._closeSidebar}
+          @bottom-sheet-opened=${this._scrollRowIntoView}
+        >
+          ${this._renderContent()}
+        </ha-bottom-sheet>
+      `;
+    }
+
+    return this._renderContent();
   }
 
   private _getType() {
@@ -159,8 +183,17 @@ export default class HaAutomationSidebar extends LitElement {
     return undefined;
   }
 
-  private _closeSidebar(ev: CustomEvent) {
+  private _handleCloseSidebar(ev: CustomEvent) {
     ev.stopPropagation();
+    if (this.narrow) {
+      this._bottomSheetElement?.closeSheet();
+      return;
+    }
+
+    this._closeSidebar();
+  }
+
+  private _closeSidebar() {
     this.config?.close();
   }
 
@@ -174,6 +207,10 @@ export default class HaAutomationSidebar extends LitElement {
     });
   };
 
+  private _scrollRowIntoView = () => {
+    this.config?.scrollIntoView();
+  };
+
   static styles = css`
     :host {
       height: 100%;
@@ -182,6 +219,15 @@ export default class HaAutomationSidebar extends LitElement {
         var(--ha-border-radius-2xl)
       );
       border-radius: var(--ha-card-border-radius);
+      --ha-bottom-sheet-border-width: 2px;
+      --ha-bottom-sheet-border-style: solid;
+      --ha-bottom-sheet-border-color: var(--primary-color);
+    }
+
+    @media all and (max-width: 870px) {
+      .sidebar-content {
+        max-height: 100%;
+      }
     }
   `;
 }

@@ -111,9 +111,6 @@ export default class HaAutomationCondition extends LitElement {
         } else if (!this.optionsInSidebar) {
           row.expand();
         }
-        if (this.narrow) {
-          row.scrollIntoView();
-        }
         row.focus();
       });
     }

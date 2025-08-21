@@ -613,12 +613,12 @@ export class HaManualAutomationEditor extends LitElement {
 
         .sidebar.overlay {
           position: fixed;
-          bottom: 0;
-          right: 0;
-          height: calc(100% - 64px);
+          bottom: 8px;
+          right: 8px;
+          height: calc(100% - 70px);
           padding: 0;
           z-index: 5;
-          box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
+          box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
         }
 
         @media all and (max-width: 870px) {
