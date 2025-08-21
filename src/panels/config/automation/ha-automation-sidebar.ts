@@ -136,10 +136,7 @@ export default class HaAutomationSidebar extends LitElement {
     if (this.narrow) {
       return html`
         <ha-bottom-sheet
-          .contentHash=${JSON.stringify({
-            ...this.config,
-            yamlMode: this._yamlMode,
-          })}
+          .contentHash=${JSON.stringify(this.config)}
           @bottom-sheet-closed=${this._closeSidebar}
           @bottom-sheet-opened=${this._scrollRowIntoView}
         >

@@ -38,12 +38,6 @@ export class HaBottomSheet extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has("contentHash") && this._open) {
-      // TODO doesn't work when switch to yaml
-      this._dialog.style.setProperty(
-        "height",
-        `${(this._dialog.offsetHeight / window.innerHeight) * 100}vh`
-      );
-
       fireEvent(this, "bottom-sheet-opened");
     }
   }
@@ -53,6 +47,11 @@ export class HaBottomSheet extends LitElement {
       this._dialog.classList.add("show");
 
       setTimeout(() => {
+        this._dialog.style.setProperty(
+          "height",
+          `${(this._dialog.offsetHeight / window.innerHeight) * 100}vh`
+        );
+        this._dialog.style.setProperty("max-height", "90vh");
         this._open = true;
         fireEvent(this, "bottom-sheet-opened");
       }, ANIMATION_DURATION_MS);
@@ -183,7 +182,7 @@ export class HaBottomSheet extends LitElement {
     }
     dialog {
       height: auto;
-      max-height: 90vh;
+      max-height: 70vh;
       min-height: 30vh;
       background-color: var(
         --ha-dialog-surface-background,
