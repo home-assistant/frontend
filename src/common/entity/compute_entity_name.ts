@@ -31,7 +31,7 @@ export const computeEntityEntryName = (
     entry.name ||
     ("original_name" in entry && entry.original_name != null
       ? String(entry.original_name)
-      : "");
+      : undefined);
 
   const device = entry.device_id ? hass.devices[entry.device_id] : undefined;
 
