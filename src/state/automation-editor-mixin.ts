@@ -7,11 +7,21 @@ import {
 import type { Constructor } from "../types";
 import type { HassBaseEl } from "./hass-base-mixin";
 
+declare global {
+  interface HASSDomEvents {
+    /**
+     * Dispatched to open the automation editor.
+     * Used by custom cards/panels to trigger the editor view.
+     */
+    "hass-automation-editor": ShowAutomationEditorParams;
+  }
+}
+
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
-      this.addEventListener("show-automation-editor", (ev) =>
+      this.addEventListener("hass-automation-editor", (ev) =>
         this._handleShowAutomationEditor(
           ev as HASSDomEvent<ShowAutomationEditorParams>
         )
