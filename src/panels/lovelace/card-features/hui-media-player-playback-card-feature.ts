@@ -26,7 +26,6 @@ import { MediaPlayerEntityFeature } from "../../../data/media-player";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stateActive } from "../../../common/entity/state_active";
 import { isUnavailableState } from "../../../data/entity";
-import { debounce } from "../../../common/util/debounce";
 import { hasConfigChanged } from "../common/has-changed";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-button";
@@ -60,8 +59,6 @@ class HuiMediaPlayerPlaybackCardFeature
 
   @state() private _narrow?: boolean = false;
 
-  private _resizeObserver?: ResizeObserver;
-
   private get _stateObj() {
     if (!this.hass || !this.context || !this.context.entity_id) {
       return undefined;
@@ -84,24 +81,10 @@ class HuiMediaPlayerPlaybackCardFeature
     this._config = config;
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._attachObserver();
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._resizeObserver?.unobserve(this);
-  }
-
   public willUpdate(): void {
     if (!this.hasUpdated) {
       this._measureCard();
     }
-  }
-
-  protected firstUpdated(): void {
-    this._attachObserver();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -168,15 +151,6 @@ class HuiMediaPlayerPlaybackCardFeature
             )}
       </ha-control-button-group>
     `;
-  }
-
-  private async _attachObserver(): Promise<void> {
-    if (!this._resizeObserver) {
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measureCard(), 250, false)
-      );
-    }
-    this._resizeObserver.observe(this);
   }
 
   private _measureCard() {
