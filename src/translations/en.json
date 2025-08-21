@@ -6968,7 +6968,10 @@
           "assist_tooltip": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
-          "close": "Close"
+          "close": "Close",
+          "add": "Add to Home Assistant",
+          "add_device": "Add device",
+          "add_automation": "Add automation"
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",
