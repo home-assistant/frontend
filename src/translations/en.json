@@ -473,6 +473,8 @@
         },
         "selector": {
           "options": "Selector options",
+          "type": "Type",
+          "multiple": "Multiple",
           "types": {
             "action": "Action",
             "area": "Area",
@@ -3780,7 +3782,6 @@
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_not_deletable": "Only automations in automations.yaml can be deleted.",
             "load_error_unknown": "Error loading automation ({err_no}).",
-            "save": "Save",
             "unsaved_confirm_title": "Leave editor?",
             "unsaved_confirm_text": "Unsaved changes will be lost.",
             "alias": "Name",
@@ -4741,7 +4742,9 @@
               "link_help_fields": "Learn more about fields.",
               "add_fields": "Add fields",
               "add_field": "Add field",
-              "field": "field"
+              "field": "field",
+              "label": "Field",
+              "field_selector": "Field selector"
             },
             "field_delete_confirm_title": "Delete field?",
             "field_delete_confirm_text": "[%key:ui::panel::config::automation::editor::triggers::delete_confirm_text%]",
@@ -4764,7 +4767,6 @@
             "load_error_unknown": "Error loading script ({err_no}).",
             "delete_confirm_title": "Delete script?",
             "delete_confirm_text": "{name} will be permanently deleted.",
-            "save_script": "Save script",
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions.",
