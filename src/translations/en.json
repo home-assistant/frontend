@@ -413,6 +413,7 @@
       "add": "Add",
       "create": "Create",
       "edit": "Edit",
+      "edit_item": "Edit {name}",
       "submit": "Submit",
       "rename": "Rename",
       "search": "[%key:ui::components::data-table::search%]",
@@ -6983,7 +6984,6 @@
           },
           "common": {
             "edit": "Edit",
-            "edit_item": "Edit {name}",
             "clear": "Clear",
             "add": "Add",
             "none": "None"
