@@ -8,8 +8,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "script/build_frontend",
-    "lint:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --max-warnings=0",
-    "format:eslint": "eslint --flag unstable_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
+    "lint:eslint": "eslint --flag v10_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --max-warnings=0",
+    "format:eslint": "eslint --flag v10_config_lookup_from_file \"**/src/**/*.{js,ts,html}\" --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --ignore-pattern=.gitignore --fix",
     "lint:prettier": "prettier . --cache --check",
     "format:prettier": "prettier . --cache --write",
     "lint:types": "tsc",

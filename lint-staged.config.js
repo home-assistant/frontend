@@ -1,6 +1,6 @@
 export default {
   "*.?(c|m){js,ts}": [
-    "eslint --flag unstable_config_lookup_from_file --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --fix",
+    "eslint --flag v10_config_lookup_from_file --cache --cache-strategy=content --cache-location=node_modules/.cache/eslint/.eslintcache --fix",
     "prettier --cache --write",
     "lit-analyzer --quiet",
   ],
