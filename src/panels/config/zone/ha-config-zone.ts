@@ -165,9 +165,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               .entry=${entry}
                               @click=${this._openEditEntry}
                               .path=${mdiPencil}
-                              .label=${`${hass.localize("ui.common.edit")} ${
-                                entry.name
-                              }`}
+                              .label=${hass.localize("ui.common.edit_item", {
+                                name: entry.name,
+                              })}
                             ></ha-icon-button>
                           </div>
                         `
