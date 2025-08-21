@@ -257,10 +257,6 @@ export default class HaScriptFieldRow extends LitElement {
         .hidden {
           display: none;
         }
-        ha-expansion-panel {
-          --expansion-panel-summary-padding: 0 0 0 8px;
-          --expansion-panel-content-padding: 0;
-        }
         h3 {
           margin: 0;
           font-size: inherit;
