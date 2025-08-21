@@ -74,7 +74,7 @@ export type ConfigEntryMutableParams = Partial<
 >;
 
 export type SubEntryMutableParams = Partial<
-  Pick<SubEntry, "title" | "unique_id">
+  Pick<SubEntry, "title">
 >;
 
 // https://github.com/home-assistant/core/blob/2286dea636fda001f03433ba14d7adbda43979e5/homeassistant/config_entries.py#L81
