@@ -218,9 +218,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             this._canEditCore
                               ? mdiPencil
                               : mdiPencilOff}
-                            .label=${`${hass.localize("ui.common.edit")} ${
-                              hass.config.location_name
-                            }`}
+                            .label=${hass.localize("ui.common.edit_item", {
+                              name: hass.config.location_name,
+                            })}
                             @click=${this._editHomeZone}
                           ></ha-icon-button>
                         </ha-tooltip>`}
