@@ -6983,6 +6983,7 @@
           },
           "common": {
             "edit": "Edit",
+            "edit_item": "Edit {name}",
             "clear": "Clear",
             "add": "Add",
             "none": "None"
