@@ -165,9 +165,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                               .entry=${entry}
                               @click=${this._openEditEntry}
                               .path=${mdiPencil}
-                              .label=${hass.localize(
-                                "ui.panel.config.zone.edit_zone"
-                              )}
+                              .label=${`${hass.localize("ui.common.edit")} ${
+                                entry.name
+                              }`}
                             ></ha-icon-button>
                           </div>
                         `
@@ -218,9 +218,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             this._canEditCore
                               ? mdiPencil
                               : mdiPencilOff}
-                            .label=${stateObject.entity_id === "zone.home"
-                              ? hass.localize("ui.panel.config.zone.edit_home")
-                              : hass.localize("ui.panel.config.zone.edit_zone")}
+                            .label=${`${hass.localize("ui.common.edit")} ${
+                              hass.config.location_name
+                            }`}
                             @click=${this._editHomeZone}
                           ></ha-icon-button>
                         </ha-tooltip>`}
