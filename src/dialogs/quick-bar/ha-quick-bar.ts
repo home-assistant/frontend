@@ -856,7 +856,9 @@ export class QuickBar extends LitElement {
 
   private _generateNavigationPanelCommands(): BaseNavigationCommand[] {
     return Object.keys(this.hass.panels)
-      .filter((panelKey) => panelKey !== "_my_redirect")
+      .filter(
+        (panelKey) => panelKey !== "_my_redirect" && panelKey !== "hassio"
+      )
       .map((panelKey) => {
         const panel = this.hass.panels[panelKey];
         const translationKey = getPanelNameTranslationKey(panel);
