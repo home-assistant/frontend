@@ -5337,8 +5337,6 @@
           "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create zone",
-          "edit_zone": "Edit zone",
-          "edit_home": "Edit home",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "can_not_edit": "Unable to edit zone",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
