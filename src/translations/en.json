@@ -6971,7 +6971,13 @@
           "close": "Close",
           "add": "Add to Home Assistant",
           "add_device": "Add device",
-          "add_automation": "Add automation"
+          "create_automation": "Create automation",
+          "add_area": "Add area",
+          "add_area_success": "Area added",
+          "add_area_action": "View area",
+          "add_person_success": "Person added",
+          "add_person_action": "View persons",
+          "invite_person": "Invite person"
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",

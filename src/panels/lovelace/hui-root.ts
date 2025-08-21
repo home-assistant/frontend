@@ -1,5 +1,6 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import {
+  mdiAccount,
   mdiCodeBraces,
   mdiCommentProcessingOutline,
   mdiDevices,
@@ -13,6 +14,7 @@ import {
   mdiRefresh,
   mdiRobot,
   mdiShape,
+  mdiSofa,
   mdiViewDashboard,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -54,6 +56,7 @@ import {
   updateDashboard,
 } from "../../data/lovelace/dashboard";
 import { getPanelTitle } from "../../data/panel";
+import { createPerson } from "../../data/person";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -68,7 +71,10 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
+import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
+import { showPersonDetailDialog } from "../config/person/show-dialog-person-detail";
 import { swapView } from "./editor/config-util";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
@@ -80,8 +86,9 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
-import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
+import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
+import { createAreaRegistryEntry } from "../../data/area_registry";
+import { showToast } from "../../util/toast";
 
 interface ActionItem {
   icon: string;
@@ -211,9 +218,21 @@ class HUIRoot extends LitElement {
           },
           {
             icon: mdiRobot,
-            key: "ui.panel.lovelace.menu.add_automation",
+            key: "ui.panel.lovelace.menu.create_automation",
             visible: true,
-            action: this._handleAddAutomation,
+            action: this._handleACreateAutomation,
+          },
+          {
+            icon: mdiSofa,
+            key: "ui.panel.lovelace.menu.add_area",
+            visible: true,
+            action: this._handleAddArea,
+          },
+          {
+            icon: mdiAccount,
+            key: "ui.panel.lovelace.menu.invite_person",
+            visible: true,
+            action: this._handleInvitePerson,
           },
         ],
       },
@@ -281,48 +300,48 @@ class HUIRoot extends LitElement {
       (i) => i.visible && (!i.overflow || overflowCanPromote)
     );
 
-    buttonItems.forEach((i) => {
-      if (i.subItems) {
-        result.push(html`
-          <ha-button-menu slot="actionItems">
-            <ha-icon-button
-              .label=${this.hass!.localize(i.key)}
-              .path=${i.icon}
-              slot="trigger"
-            ></ha-icon-button>
-            ${i.subItems
-              .filter((subItem) => subItem.visible)
-              .map(
-                (subItem) => html`
-                  <ha-list-item
-                    graphic="icon"
-                    .key=${subItem.key}
-                    @request-selected=${subItem.action}
-                  >
-                    ${this.hass!.localize(subItem.key)}
-                    <ha-svg-icon
-                      slot="graphic"
-                      .path=${subItem.icon}
-                    ></ha-svg-icon>
-                  </ha-list-item>
-                `
-              )}
-          </ha-button-menu>
-        `);
-      } else {
-        result.push(html`
-          <ha-tooltip
-            slot="actionItems"
-            placement="bottom"
-            .content=${[this.hass!.localize(i.key), i.suffix].join(" ")}
-          >
-            <ha-icon-button
-              .path=${i.icon}
-              @click=${i.buttonAction}
-            ></ha-icon-button>
-          </ha-tooltip>
-        `);
-      }
+    buttonItems.forEach((item) => {
+      const label = [this.hass!.localize(item.key), item.suffix].join(" ");
+      const button = item.subItems
+        ? html`
+            <ha-button-menu
+              slot="actionItems"
+              corner="BOTTOM_END"
+              menu-corner="END"
+            >
+              <ha-icon-button
+                .label=${label}
+                .path=${item.icon}
+                slot="trigger"
+              ></ha-icon-button>
+              ${item.subItems
+                .filter((subItem) => subItem.visible)
+                .map(
+                  (subItem) => html`
+                    <ha-list-item
+                      graphic="icon"
+                      .key=${subItem.key}
+                      @request-selected=${subItem.action}
+                    >
+                      ${this.hass!.localize(subItem.key)}
+                      <ha-svg-icon
+                        slot="graphic"
+                        .path=${subItem.icon}
+                      ></ha-svg-icon>
+                    </ha-list-item>
+                  `
+                )}
+            </ha-button-menu>
+          `
+        : html`
+            <ha-tooltip slot="actionItems" placement="bottom" .content=${label}>
+              <ha-icon-button
+                .path=${item.icon}
+                @click=${item.buttonAction}
+              ></ha-icon-button>
+            </ha-tooltip>
+          `;
+      result.push(button);
     });
 
     if (overflowItems.length && !overflowCanPromote) {
@@ -778,7 +797,7 @@ class HUIRoot extends LitElement {
     showAddIntegrationDialog(this);
   }
 
-  private async _handleAddAutomation(
+  private async _handleACreateAutomation(
     ev: CustomEvent<RequestSelectedDetail>
   ): Promise<void> {
     if (!shouldHandleRequestSelectedEvent(ev)) {
@@ -786,6 +805,59 @@ class HUIRoot extends LitElement {
     }
     await this.hass.loadFragmentTranslation("config");
     showNewAutomationDialog(this, { mode: "automation" });
+  }
+
+  private async _handleAddArea(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): Promise<void> {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    await this.hass.loadFragmentTranslation("config");
+    showAreaRegistryDetailDialog(this, {
+      createEntry: async (values) => {
+        const area = await createAreaRegistryEntry(this.hass, values);
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.lovelace.menu.add_area_success"
+          ),
+          action: {
+            action: () => {
+              navigate(`/config/areas/area/${area.area_id}`);
+            },
+            text: this.hass.localize("ui.panel.lovelace.menu.add_area_action"),
+          },
+        });
+      },
+    });
+  }
+
+  private async _handleInvitePerson(
+    ev: CustomEvent<RequestSelectedDetail>
+  ): Promise<void> {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    await this.hass.loadFragmentTranslation("config");
+    showPersonDetailDialog(this, {
+      users: [],
+      createEntry: async (values) => {
+        await createPerson(this.hass!, values);
+        showToast(this, {
+          message: this.hass.localize(
+            "ui.panel.lovelace.menu.add_person_success"
+          ),
+          action: {
+            action: () => {
+              navigate(`/config/person`);
+            },
+            text: this.hass.localize(
+              "ui.panel.lovelace.menu.add_person_action"
+            ),
+          },
+        });
+      },
+    });
   }
 
   private _handleRawEditor(ev: CustomEvent<RequestSelectedDetail>): void {
