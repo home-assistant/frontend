@@ -12,6 +12,7 @@ import "../../../../components/ha-form/ha-form";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
+import { hex2rgb, rgb2hex } from "../../../../common/color/convert-color";
 
 interface SettingsData {
   column_span?: number;
@@ -102,7 +103,9 @@ export class HuiDialogEditSection extends LitElement {
     const data: SettingsData = {
       column_span: this.config.column_span || 1,
       background_type: this._selectorBackgroundType,
-      background_color: this.config.style?.background_color || [],
+      background_color: this.config.style?.background_color
+        ? hex2rgb(this.config.style?.background_color as any)
+        : [],
     };
 
     const schema = this._schema(
@@ -150,7 +153,7 @@ export class HuiDialogEditSection extends LitElement {
     if (newData.background_type === "color") {
       newConfig.style = {
         ...newConfig.style,
-        background_color: newData.background_color,
+        background_color: rgb2hex(newData.background_color as any),
       };
     } else {
       newConfig.style = {

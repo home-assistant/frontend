@@ -20,7 +20,6 @@ import "../components/hui-card-edit-mode";
 import { moveCard } from "../editor/config-util";
 import type { LovelaceCardPath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
-import { rgb2hex } from "../../../common/color/convert-color";
 
 const CARD_SORTABLE_OPTIONS: HaSortableOptions = {
   delay: 100,
@@ -87,9 +86,7 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
       : CARD_SORTABLE_OPTIONS;
 
-    const background = this._config.style?.background_color
-      ? rgb2hex(this._config.style?.background_color as any)
-      : "";
+    const background = this._config.style?.background_color ?? "";
 
     return html`
       <ha-sortable

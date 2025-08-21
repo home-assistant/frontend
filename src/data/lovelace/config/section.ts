@@ -3,7 +3,7 @@ import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface LovelaceSectionStyleConfig {
-  background_color?: number[];
+  background_color?: string;
 }
 
 export interface LovelaceBaseSectionConfig {
