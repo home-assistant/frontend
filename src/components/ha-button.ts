@@ -35,7 +35,7 @@ export type Appearance = "accent" | "filled" | "outlined" | "plain";
  * @attr {boolean} loading - shows a loading indicator instead of the buttons label and disable buttons click.
  * @attr {boolean} disabled - Disables the button and prevents user interaction.
  */
-@customElement("ha-button")
+@customElement("ha-button") // @ts-expect-error Intentionally overriding private methods
 export class HaButton extends Button {
   variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
 
@@ -45,6 +45,42 @@ export class HaButton extends Button {
       value: new StateSet(this, internals.states),
     });
     return internals;
+  }
+
+  // @ts-expect-error handleLabelSlotChange is used in super class
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  private override handleLabelSlotChange() {
+    const nodes = this.labelSlot.assignedNodes({ flatten: true });
+    let hasIconLabel = false;
+    let hasIcon = false;
+    let text = "";
+
+    // If there's only an icon and no text, it's an icon button
+    [...nodes].forEach((node) => {
+      if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        (node as HTMLElement).localName === "ha-svg-icon"
+      ) {
+        hasIcon = true;
+        if (!hasIconLabel)
+          hasIconLabel = (node as HTMLElement).hasAttribute("aria-label");
+      }
+
+      // Concatenate text nodes
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent;
+      }
+    });
+
+    this.isIconButton = text.trim() === "" && hasIcon;
+
+    if (__DEV__ && this.isIconButton && !hasIconLabel) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'Icon buttons must have a label for screen readers. Add <ha-svg-icon aria-label="..."> to remove this warning.',
+        this
+      );
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -180,6 +216,11 @@ export class HaButton extends Button {
             .button:not(.disabled):not(.loading):hover {
             color: var(--wa-color-on-normal);
           }
+        }
+        :host([appearance~="filled"]) .button {
+          color: var(--wa-color-on-normal);
+          background-color: var(--wa-color-fill-normal);
+          border-color: transparent;
         }
         :host([appearance~="filled"])
           .button:not(.disabled):not(.loading):active {

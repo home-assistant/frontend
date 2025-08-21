@@ -30,7 +30,9 @@ import { supportsCoverOpenCloseCardFeature } from "../../card-features/hui-cover
 import { supportsCoverPositionCardFeature } from "../../card-features/hui-cover-position-card-feature";
 import { supportsCoverTiltCardFeature } from "../../card-features/hui-cover-tilt-card-feature";
 import { supportsCoverTiltPositionCardFeature } from "../../card-features/hui-cover-tilt-position-card-feature";
+import { supportsDateSetCardFeature } from "../../card-features/hui-date-set-card-feature";
 import { supportsFanDirectionCardFeature } from "../../card-features/hui-fan-direction-card-feature";
+import { supportsFanOscilatteCardFeature } from "../../card-features/hui-fan-oscillate-card-feature";
 import { supportsFanPresetModesCardFeature } from "../../card-features/hui-fan-preset-modes-card-feature";
 import { supportsFanSpeedCardFeature } from "../../card-features/hui-fan-speed-card-feature";
 import { supportsHumidifierModesCardFeature } from "../../card-features/hui-humidifier-modes-card-feature";
@@ -43,6 +45,7 @@ import { supportsLockOpenDoorCardFeature } from "../../card-features/hui-lock-op
 import { supportsMediaPlayerVolumeSliderCardFeature } from "../../card-features/hui-media-player-volume-slider-card-feature";
 import { supportsNumericInputCardFeature } from "../../card-features/hui-numeric-input-card-feature";
 import { supportsSelectOptionsCardFeature } from "../../card-features/hui-select-options-card-feature";
+import { supportsHistoryChartCardFeature } from "../../card-features/hui-history-chart-card-feature";
 import { supportsTargetHumidityCardFeature } from "../../card-features/hui-target-humidity-card-feature";
 import { supportsTargetTemperatureCardFeature } from "../../card-features/hui-target-temperature-card-feature";
 import { supportsToggleCardFeature } from "../../card-features/hui-toggle-card-feature";
@@ -50,6 +53,7 @@ import { supportsUpdateActionsCardFeature } from "../../card-features/hui-update
 import { supportsVacuumCommandsCardFeature } from "../../card-features/hui-vacuum-commands-card-feature";
 import { supportsValveOpenCloseCardFeature } from "../../card-features/hui-valve-open-close-card-feature";
 import { supportsValvePositionCardFeature } from "../../card-features/hui-valve-position-card-feature";
+import { supportsBarGaugeCardFeature } from "../../card-features/hui-bar-gauge-card-feature";
 import { supportsWaterHeaterOperationModesCardFeature } from "../../card-features/hui-water-heater-operation-modes-card-feature";
 import type {
   LovelaceCardFeatureConfig,
@@ -67,6 +71,7 @@ type SupportsFeature = (
 const UI_FEATURE_TYPES = [
   "alarm-modes",
   "area-controls",
+  "bar-gauge",
   "button",
   "climate-fan-modes",
   "climate-hvac-modes",
@@ -78,7 +83,9 @@ const UI_FEATURE_TYPES = [
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "date-set",
   "fan-direction",
+  "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -91,6 +98,7 @@ const UI_FEATURE_TYPES = [
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "history-chart",
   "target-humidity",
   "target-temperature",
   "toggle",
@@ -129,6 +137,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
 > = {
   "alarm-modes": supportsAlarmModesCardFeature,
   "area-controls": supportsAreaControlsCardFeature,
+  "bar-gauge": supportsBarGaugeCardFeature,
   button: supportsButtonCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
@@ -141,7 +150,9 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "cover-position": supportsCoverPositionCardFeature,
   "cover-tilt-position": supportsCoverTiltPositionCardFeature,
   "cover-tilt": supportsCoverTiltCardFeature,
+  "date-set": supportsDateSetCardFeature,
   "fan-direction": supportsFanDirectionCardFeature,
+  "fan-oscillate": supportsFanOscilatteCardFeature,
   "fan-preset-modes": supportsFanPresetModesCardFeature,
   "fan-speed": supportsFanSpeedCardFeature,
   "humidifier-modes": supportsHumidifierModesCardFeature,
@@ -154,6 +165,7 @@ const SUPPORTS_FEATURE_TYPES: Record<
   "media-player-volume-slider": supportsMediaPlayerVolumeSliderCardFeature,
   "numeric-input": supportsNumericInputCardFeature,
   "select-options": supportsSelectOptionsCardFeature,
+  "history-chart": supportsHistoryChartCardFeature,
   "target-humidity": supportsTargetHumidityCardFeature,
   "target-temperature": supportsTargetTemperatureCardFeature,
   toggle: supportsToggleCardFeature,

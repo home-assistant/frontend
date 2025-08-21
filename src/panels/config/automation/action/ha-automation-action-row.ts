@@ -442,9 +442,9 @@ export default class HaAutomationActionRow extends LitElement {
         (blockType === "condition" &&
           CONDITION_BUILDING_BLOCKS.includes(
             (this.action as Condition).condition
-          ))) &&
-      !this._collapsed
+          )))
         ? html`<ha-automation-action-editor
+            class=${this._collapsed ? "hidden" : ""}
             .hass=${this.hass}
             .action=${this.action}
             .narrow=${this.narrow}

@@ -15,6 +15,16 @@ import { migrateAutomationAction } from "./script";
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
 
+declare global {
+  interface HASSDomEvents {
+    /**
+     * Dispatched to open the automation editor.
+     * Used by custom cards/panels to trigger the editor view.
+     */
+    "show-automation-editor": ShowAutomationEditorParams;
+  }
+}
+
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
     id?: string;
@@ -613,3 +623,7 @@ export type SidebarConfig =
   | ActionSidebarConfig
   | OptionSidebarConfig
   | ScriptFieldSidebarConfig;
+export interface ShowAutomationEditorParams {
+  data?: Partial<AutomationConfig>;
+  expanded?: boolean;
+}

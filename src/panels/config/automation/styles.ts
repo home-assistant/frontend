@@ -43,6 +43,9 @@ export const rowStyles = css`
     border-color: var(--state-inactive-color);
     box-shadow: var(--shadow-default), var(--shadow-focus);
   }
+  .hidden {
+    display: none;
+  }
 `;
 
 export const editorStyles = css`
