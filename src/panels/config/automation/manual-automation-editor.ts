@@ -1,7 +1,7 @@
 import { mdiContentSave, mdiHelpCircle } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -18,11 +18,6 @@ import {
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
-import {
-  extractSearchParam,
-  removeSearchParam,
-} from "../../../common/url/search-params";
 import "../../../components/ha-button";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -31,6 +26,7 @@ import type {
   AutomationConfig,
   Condition,
   ManualAutomationConfig,
+  SidebarConfig,
   Trigger,
 } from "../../../data/automation";
 import {
@@ -43,15 +39,11 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
-import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
-import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
-import type { OpenSidebarConfig } from "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "./styles";
 import "./trigger/ha-automation-trigger";
-import type HaAutomationTrigger from "./trigger/ha-automation-trigger";
 
 const baseConfigStruct = object({
   alias: optional(string()),
@@ -90,7 +82,7 @@ export class HaManualAutomationEditor extends LitElement {
 
   @state() private _pastedConfig?: ManualAutomationConfig;
 
-  @state() private _sidebarConfig?: OpenSidebarConfig;
+  @state() private _sidebarConfig?: SidebarConfig;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -102,31 +94,6 @@ export class HaManualAutomationEditor extends LitElement {
   public disconnectedCallback() {
     window.removeEventListener("paste", this._handlePaste);
     super.disconnectedCallback();
-  }
-
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const expanded = extractSearchParam("expanded");
-    if (expanded === "1") {
-      this._clearParam("expanded");
-      const items = this.shadowRoot!.querySelectorAll<
-        HaAutomationTrigger | HaAutomationCondition | HaAutomationAction
-      >("ha-automation-trigger, ha-automation-condition, ha-automation-action");
-
-      items.forEach((el) => {
-        el.updateComplete.then(() => {
-          el.expandAll();
-        });
-      });
-    }
-  }
-
-  private _clearParam(param: string) {
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam(param))
-    );
   }
 
   private _renderContent() {
@@ -294,9 +261,7 @@ export class HaManualAutomationEditor extends LitElement {
           <ha-fab
             slot="fab"
             class=${this.dirty ? "dirty" : ""}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.editor.save"
-            )}
+            .label=${this.hass.localize("ui.common.save")}
             .disabled=${this.saving}
             extended
             @click=${this._saveAutomation}
@@ -321,13 +286,13 @@ export class HaManualAutomationEditor extends LitElement {
     `;
   }
 
-  private _openSidebar(ev: CustomEvent<OpenSidebarConfig>) {
+  private _openSidebar(ev: CustomEvent<SidebarConfig>) {
     // deselect previous selected row
     this._sidebarConfig?.close?.();
     this._sidebarConfig = ev.detail;
   }
 
-  private _sidebarConfigChanged(ev: CustomEvent<{ value: OpenSidebarConfig }>) {
+  private _sidebarConfigChanged(ev: CustomEvent<{ value: SidebarConfig }>) {
     ev.stopPropagation();
     if (!this._sidebarConfig) {
       return;
@@ -716,7 +681,7 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "open-sidebar": OpenSidebarConfig;
+    "open-sidebar": SidebarConfig;
     "close-sidebar": undefined;
   }
 }

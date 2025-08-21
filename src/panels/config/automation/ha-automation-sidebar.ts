@@ -1,60 +1,32 @@
-import {
-  mdiClose,
-  mdiDelete,
-  mdiDotsVertical,
-  mdiIdentifier,
-  mdiPlayCircleOutline,
-  mdiPlaylistEdit,
-  mdiRenameBox,
-  mdiStopCircleOutline,
-} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { handleStructError } from "../../../common/structs/handle-errors";
-import type { LocalizeKeys } from "../../../common/translations/localize";
-import "../../../components/ha-bottom-sheet";
-import "../../../components/ha-card";
-import "../../../components/ha-dialog-header";
-import "../../../components/ha-icon-button";
-import "../../../components/ha-md-button-menu";
-import "../../../components/ha-md-divider";
-import "../../../components/ha-md-menu-item";
-import { ACTION_BUILDING_BLOCKS } from "../../../data/action";
-import type { Condition, Trigger } from "../../../data/automation";
-import { CONDITION_BUILDING_BLOCKS } from "../../../data/condition";
-import type { Action, RepeatAction } from "../../../data/script";
+import {
+  isCondition,
+  isScriptField,
+  isTrigger,
+  type ActionSidebarConfig,
+  type ConditionSidebarConfig,
+  type ScriptFieldSidebarConfig,
+  type SidebarConfig,
+  type TriggerSidebarConfig,
+} from "../../../data/automation";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
-import "./action/ha-automation-action-editor";
-import { getAutomationActionType } from "./action/ha-automation-action-row";
-import { getRepeatType } from "./action/types/ha-automation-action-repeat";
-import "./condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./condition/ha-automation-condition-editor";
-import "./ha-automation-editor-warning";
-import "./trigger/ha-automation-trigger-editor";
+import "./sidebar/ha-automation-sidebar-action";
+import "./sidebar/ha-automation-sidebar-condition";
+import "./sidebar/ha-automation-sidebar-option";
+import "./sidebar/ha-automation-sidebar-script-field";
+import "./sidebar/ha-automation-sidebar-script-field-selector";
+import "./sidebar/ha-automation-sidebar-trigger";
 import type HaAutomationTriggerEditor from "./trigger/ha-automation-trigger-editor";
-
-export interface OpenSidebarConfig {
-  save: (config: Trigger | Condition | Action) => void;
-  close: () => void;
-  rename: () => void;
-  toggleYamlMode: () => boolean;
-  disable: () => void;
-  delete: () => void;
-  config: Trigger | Condition | Action;
-  type: "trigger" | "condition" | "action" | "option";
-  uiSupported: boolean;
-  yamlMode: boolean;
-}
 
 @customElement("ha-automation-sidebar")
 export default class HaAutomationSidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public config?: OpenSidebarConfig;
+  @property({ attribute: false }) public config?: SidebarConfig;
 
   @property({ type: Boolean, attribute: "wide" }) public isWide = false;
 
@@ -64,277 +36,132 @@ export default class HaAutomationSidebar extends LitElement {
 
   @state() private _yamlMode = false;
 
-  @state() private _requestShowId = false;
-
-  @state() private _warnings?: string[];
-
   @query(".sidebar-editor")
   public editor?: HaAutomationTriggerEditor | HaAutomationConditionEditor;
-
-  protected willUpdate(changedProperties) {
-    if (changedProperties.has("config")) {
-      this._requestShowId = false;
-      this._warnings = undefined;
-      if (this.config) {
-        this._yamlMode = this.config.yamlMode;
-        if (this._yamlMode) {
-          this.editor?.yamlEditor?.setValue(this.config.config);
-        }
-      }
-    }
-  }
-
-  private _renderContent() {
-    const config = this.config!;
-
-    const disabled =
-      this.disabled ||
-      ("enabled" in config.config && config.config.enabled === false);
-    let type = isTriggerList(config.config as Trigger)
-      ? "list"
-      : config.type === "action"
-        ? getAutomationActionType(config.config as Action)
-        : config.config[config.type];
-
-    if (config.type === "action" && type === "repeat") {
-      type = `repeat_${getRepeatType((config.config as RepeatAction).repeat)}`;
-    }
-
-    const isBuildingBlock = [
-      ...CONDITION_BUILDING_BLOCKS,
-      ...ACTION_BUILDING_BLOCKS,
-    ].includes(type);
-
-    const subtitle = this.hass.localize(
-      (config.type === "option"
-        ? "ui.panel.config.automation.editor.actions.type.choose.label"
-        : `ui.panel.config.automation.editor.${config.type}s.${config.type}`) as LocalizeKeys
-    );
-    const title =
-      this.hass.localize(
-        (config.type === "option"
-          ? "ui.panel.config.automation.editor.actions.type.choose.option_label"
-          : `ui.panel.config.automation.editor.${config.type}s.type.${type}.label`) as LocalizeKeys
-      ) || type;
-
-    const description =
-      isBuildingBlock || config.type === "option"
-        ? this.hass.localize(
-            (config.type === "option"
-              ? "ui.panel.config.automation.editor.actions.type.choose.option_description"
-              : `ui.panel.config.automation.editor.${config.type}s.type.${type}.description.picker`) as LocalizeKeys
-          )
-        : "";
-
-    return html`
-      <ha-dialog-header>
-        <ha-icon-button
-          slot="navigationIcon"
-          .label=${this.hass.localize("ui.common.close")}
-          .path=${mdiClose}
-          @click=${this._closeSidebar}
-        ></ha-icon-button>
-        <span slot="title">${title}</span>
-        <span slot="subtitle">${subtitle}</span>
-        <ha-md-button-menu
-          slot="actionItems"
-          @click=${this._openOverflowMenu}
-          @keydown=${stopPropagation}
-          @closed=${stopPropagation}
-          positioning="fixed"
-        >
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <ha-md-menu-item
-            .clickAction=${config.rename}
-            .disabled=${disabled || type === "list"}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.rename"
-            )}
-            <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
-          </ha-md-menu-item>
-
-          ${config.type === "trigger" &&
-          !this._yamlMode &&
-          !("id" in config.config) &&
-          !this._requestShowId
-            ? html`<ha-md-menu-item
-                .clickAction=${this._showTriggerId}
-                .disabled=${disabled || type === "list"}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.triggers.edit_id"
-                )}
-                <ha-svg-icon slot="start" .path=${mdiIdentifier}></ha-svg-icon>
-              </ha-md-menu-item>`
-            : nothing}
-          ${config.type !== "option"
-            ? html`
-                <ha-md-menu-item
-                  .clickAction=${this._toggleYamlMode}
-                  .disabled=${!config.uiSupported || !!this._warnings}
-                >
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
-                  )}
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${mdiPlaylistEdit}
-                  ></ha-svg-icon>
-                </ha-md-menu-item>
-              `
-            : nothing}
-
-          <ha-md-divider role="separator" tabindex="-1"></ha-md-divider>
-
-          ${config.type !== "option"
-            ? html`
-                <ha-md-menu-item
-                  .clickAction=${config.disable}
-                  .disabled=${this.disabled || type === "list"}
-                >
-                  ${disabled
-                    ? this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.enable"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.disable"
-                      )}
-                  <ha-svg-icon
-                    slot="start"
-                    .path=${disabled
-                      ? mdiPlayCircleOutline
-                      : mdiStopCircleOutline}
-                  ></ha-svg-icon>
-                </ha-md-menu-item>
-              `
-            : nothing}
-          <ha-md-menu-item
-            .clickAction=${config.delete}
-            class="warning"
-            .disabled=${this.disabled}
-          >
-            ${this.hass.localize(
-              `ui.panel.config.automation.editor.actions.${config.type !== "option" ? "delete" : "type.choose.remove_option"}`
-            )}
-            <ha-svg-icon
-              class="warning"
-              slot="start"
-              .path=${mdiDelete}
-            ></ha-svg-icon>
-          </ha-md-menu-item>
-        </ha-md-button-menu>
-      </ha-dialog-header>
-      ${this._warnings
-        ? html`<ha-automation-editor-warning
-            .localize=${this.hass.localize}
-            .warnings=${this._warnings}
-          >
-          </ha-automation-editor-warning>`
-        : nothing}
-      <div class="card-content">
-        ${config.type === "trigger"
-          ? html`<ha-automation-trigger-editor
-              class="sidebar-editor"
-              .hass=${this.hass}
-              .trigger=${config.config as Trigger}
-              @value-changed=${this._valueChangedSidebar}
-              .uiSupported=${config.uiSupported}
-              .showId=${this._requestShowId}
-              .yamlMode=${this._yamlMode}
-              .disabled=${this.disabled}
-              @ui-mode-not-available=${this._handleUiModeNotAvailable}
-            ></ha-automation-trigger-editor>`
-          : config.type === "condition" &&
-              (this._yamlMode || !CONDITION_BUILDING_BLOCKS.includes(type))
-            ? html`
-                <ha-automation-condition-editor
-                  class="sidebar-editor"
-                  .hass=${this.hass}
-                  .condition=${config.config as Condition}
-                  .yamlMode=${this._yamlMode}
-                  .uiSupported=${config.uiSupported}
-                  @value-changed=${this._valueChangedSidebar}
-                  .disabled=${this.disabled}
-                  @ui-mode-not-available=${this._handleUiModeNotAvailable}
-                ></ha-automation-condition-editor>
-              `
-            : config.type === "action" &&
-                (this._yamlMode || !ACTION_BUILDING_BLOCKS.includes(type))
-              ? html`
-                  <ha-automation-action-editor
-                    class="sidebar-editor"
-                    .hass=${this.hass}
-                    .action=${config.config as Action}
-                    .yamlMode=${this._yamlMode}
-                    .uiSupported=${config.uiSupported}
-                    @value-changed=${this._valueChangedSidebar}
-                    sidebar
-                    narrow
-                    .disabled=${this.disabled}
-                    @ui-mode-not-available=${this._handleUiModeNotAvailable}
-                  ></ha-automation-action-editor>
-                `
-              : description || nothing}
-      </div>
-    `;
-  }
 
   protected render() {
     if (!this.config) {
       return nothing;
     }
 
-    if (this.narrow) {
-      return html`<ha-bottom-sheet @close-bottom-sheet=${this._closeSidebar}>
-        ${this._renderContent()}
-      </ha-bottom-sheet>`;
+    // get config type
+    const type = this._getType();
+
+    if (type === "trigger") {
+      return html`
+        <ha-automation-sidebar-trigger
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._closeSidebar}
+        ></ha-automation-sidebar-trigger>
+      `;
     }
-    return html`
-      <ha-card
-        outlined
-        class=${classMap({
-          mobile: !this.isWide,
-          yaml: this._yamlMode,
-        })}
-        >${this._renderContent()}</ha-card
-      >
-    `;
+    if (type === "condition") {
+      return html`
+        <ha-automation-sidebar-condition
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._closeSidebar}
+        ></ha-automation-sidebar-condition>
+      `;
+    }
+    if (type === "action") {
+      return html`
+        <ha-automation-sidebar-action
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._closeSidebar}
+        ></ha-automation-sidebar-action>
+      `;
+    }
+    if (type === "option") {
+      return html`
+        <ha-automation-sidebar-option
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .disabled=${this.disabled}
+          @close-sidebar=${this._closeSidebar}
+        ></ha-automation-sidebar-option>
+      `;
+    }
+    if (type === "script-field-selector") {
+      return html`
+        <ha-automation-sidebar-script-field-selector
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._closeSidebar}
+        ></ha-automation-sidebar-script-field-selector>
+      `;
+    }
+    if (type === "script-field") {
+      return html`
+        <ha-automation-sidebar-script-field
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._closeSidebar}
+        ></ha-automation-sidebar-script-field>
+      `;
+    }
+
+    return nothing;
   }
 
-  private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
-    if (!this._yamlMode) {
-      this._yamlMode = true;
+  private _getType() {
+    if (
+      (this.config as TriggerSidebarConfig)?.config &&
+      (isTrigger((this.config as TriggerSidebarConfig)?.config) ||
+        isTriggerList((this.config as TriggerSidebarConfig)?.config))
+    ) {
+      return "trigger";
     }
+    if (isCondition((this.config as ConditionSidebarConfig)?.config)) {
+      return "condition";
+    }
+    if (
+      (this.config as ScriptFieldSidebarConfig)?.config &&
+      isScriptField((this.config as ScriptFieldSidebarConfig)?.config)
+    ) {
+      return (this.config as ScriptFieldSidebarConfig)?.config.selector
+        ? "script-field-selector"
+        : "script-field";
+    }
+
+    // option is always a building block and doesn't have a config
+    if (this.config && !(this.config as any)?.config) {
+      return "option";
+    }
+
+    if ((this.config as ActionSidebarConfig)?.config) {
+      return "action";
+    }
+
+    return undefined;
   }
 
-  private _valueChangedSidebar(ev: CustomEvent) {
+  private _closeSidebar(ev: CustomEvent) {
     ev.stopPropagation();
-
-    this.config?.save(ev.detail.value);
-
-    if (this.config) {
-      fireEvent(this, "value-changed", {
-        value: {
-          ...this.config,
-          config: ev.detail.value,
-        },
-      });
-    }
-  }
-
-  private _closeSidebar() {
     this.config?.close();
-  }
-
-  private _openOverflowMenu(ev: MouseEvent) {
-    ev.stopPropagation();
-    ev.preventDefault();
   }
 
   private _toggleYamlMode = () => {
@@ -347,10 +174,6 @@ export default class HaAutomationSidebar extends LitElement {
     });
   };
 
-  private _showTriggerId = () => {
-    this._requestShowId = true;
-  };
-
   static styles = css`
     :host {
       height: 100%;
@@ -360,49 +183,15 @@ export default class HaAutomationSidebar extends LitElement {
       );
       border-radius: var(--ha-card-border-radius);
     }
-
-    ha-card {
-      height: 100%;
-      width: 100%;
-      border-color: var(--primary-color);
-      border-width: 2px;
-      display: block;
-    }
-    ha-card.mobile {
-      border-bottom-right-radius: var(--ha-border-radius-square);
-      border-bottom-left-radius: var(--ha-border-radius-square);
-    }
-
-    ha-dialog-header {
-      border-radius: var(--ha-card-border-radius);
-    }
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-
-    .card-content {
-      max-height: calc(100% - 80px);
-      overflow: auto;
-    }
-
-    @media (min-width: 450px) and (min-height: 500px) {
-      .card-content {
-        max-height: calc(100% - 130px);
-        padding: 0 16px;
-        overflow: auto;
-      }
-    }
-
-    @media all and (max-width: 870px) {
-      ha-card.mobile .card-content {
-        max-height: calc(100% - 80px);
-      }
-    }
   `;
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     "ha-automation-sidebar": HaAutomationSidebar;
+  }
+
+  interface HASSDomEvents {
+    "toggle-yaml-mode": undefined;
   }
 }

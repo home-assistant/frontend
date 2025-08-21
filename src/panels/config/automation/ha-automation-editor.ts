@@ -535,12 +535,10 @@ export class HaAutomationEditor extends PreventUnsavedMixin(
                   <ha-fab
                     slot="fab"
                     class=${this._dirty ? "dirty" : ""}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.editor.save"
-                    )}
+                    .label=${this.hass.localize("ui.common.save")}
                     .disabled=${this._saving}
                     extended
-                    @click=${this._saveAutomation}
+                    @click=${this._handleSaveAutomation}
                   >
                     <ha-svg-icon
                       slot="icon"

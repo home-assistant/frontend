@@ -7,13 +7,23 @@ import { navigate } from "../common/navigate";
 import { createSearchParam } from "../common/url/search-params";
 import type { Context, HomeAssistant } from "../types";
 import type { BlueprintInput } from "./blueprint";
-import type { DeviceCondition, DeviceTrigger } from "./device_automation";
-import type { Action, MODES } from "./script";
-import { migrateAutomationAction } from "./script";
 import { CONDITION_BUILDING_BLOCKS } from "./condition";
+import type { DeviceCondition, DeviceTrigger } from "./device_automation";
+import type { Action, Field, MODES } from "./script";
+import { migrateAutomationAction } from "./script";
 
 export const AUTOMATION_DEFAULT_MODE: (typeof MODES)[number] = "single";
 export const AUTOMATION_DEFAULT_MAX = 10;
+
+declare global {
+  interface HASSDomEvents {
+    /**
+     * Dispatched to open the automation editor.
+     * Used by custom cards/panels to trigger the editor view.
+     */
+    "show-automation-editor": ShowAutomationEditorParams;
+  }
+}
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -513,6 +523,14 @@ export const isCondition = (config: unknown): boolean => {
   return "condition" in condition && typeof condition.condition === "string";
 };
 
+export const isScriptField = (config: unknown): boolean => {
+  if (!config || typeof config !== "object") {
+    return false;
+  }
+  const field = config as Record<string, unknown>;
+  return "field" in field && typeof field.field === "object";
+};
+
 export const subscribeTrigger = (
   hass: HomeAssistant,
   onChange: (result: {
@@ -545,4 +563,68 @@ export interface AutomationClipboard {
   trigger?: Trigger;
   condition?: Condition;
   action?: Action;
+}
+
+export interface BaseSidebarConfig {
+  toggleYamlMode: () => boolean;
+  delete: () => void;
+}
+
+export interface TriggerSidebarConfig extends BaseSidebarConfig {
+  save: (value: Trigger) => void;
+  close: () => void;
+  rename: () => void;
+  disable: () => void;
+  config: Trigger;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface ConditionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Condition) => void;
+  close: () => void;
+  rename: () => void;
+  disable: () => void;
+  config: Condition;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface ActionSidebarConfig extends BaseSidebarConfig {
+  save: (value: Action) => void;
+  close: () => void;
+  rename: () => void;
+  disable: () => void;
+  config: Action;
+  yamlMode: boolean;
+  uiSupported: boolean;
+}
+
+export interface OptionSidebarConfig extends BaseSidebarConfig {
+  close: () => void;
+  rename: () => void;
+}
+
+export interface ScriptFieldSidebarConfig extends BaseSidebarConfig {
+  save: (value: Field) => void;
+  close: () => void;
+  config: {
+    field: Field;
+    selector: boolean;
+    key: string;
+    excludeKeys: string[];
+  };
+  yamlMode: boolean;
+}
+
+export type SidebarConfig =
+  | TriggerSidebarConfig
+  | ConditionSidebarConfig
+  | ActionSidebarConfig
+  | OptionSidebarConfig
+  | ScriptFieldSidebarConfig;
+
+export interface ShowAutomationEditorParams {
+  data?: Partial<AutomationConfig>;
+  expanded?: boolean;
 }

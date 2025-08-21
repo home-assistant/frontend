@@ -16,6 +16,7 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -23,7 +24,6 @@ import {
 } from "../show-add-automation-element-dialog";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
-import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
@@ -111,7 +111,9 @@ export default class HaAutomationCondition extends LitElement {
         } else if (!this.optionsInSidebar) {
           row.expand();
         }
-        row.scrollIntoView();
+        if (this.narrow) {
+          row.scrollIntoView();
+        }
         row.focus();
       });
     }
