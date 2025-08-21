@@ -8157,16 +8157,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-unused-imports@npm:4.1.4":
-  version: 4.1.4
-  resolution: "eslint-plugin-unused-imports@npm:4.1.4"
+"eslint-plugin-unused-imports@npm:4.2.0":
+  version: 4.2.0
+  resolution: "eslint-plugin-unused-imports@npm:4.2.0"
   peerDependencies:
     "@typescript-eslint/eslint-plugin": ^8.0.0-0 || ^7.0.0 || ^6.0.0 || ^5.0.0
     eslint: ^9.0.0 || ^8.0.0
   peerDependenciesMeta:
     "@typescript-eslint/eslint-plugin":
       optional: true
-  checksum: 10/8e987028ad925ce1e04c01dcae70adbf44c2878a8b15c4327b33a2861e471d7fe00f6fe213fbd2b936f3fcefc8ccabb0d778aa1d6e0e0387a3dc7fe150cd4ed4
+  checksum: 10/99285bd61a46ad5eaacd54525c04564feed3529dc2ae7800c736b7f4f011daa370133adb481677ad840f020681c0f409f3edfe3bc8f9f234c42bf4674bc4b576
   languageName: node
   linkType: hard
 
@@ -9517,7 +9517,7 @@ __metadata:
     eslint-plugin-import: "npm:2.32.0"
     eslint-plugin-lit: "npm:2.1.1"
     eslint-plugin-lit-a11y: "npm:5.1.1"
-    eslint-plugin-unused-imports: "npm:4.1.4"
+    eslint-plugin-unused-imports: "npm:4.2.0"
     eslint-plugin-wc: "npm:3.0.1"
     fancy-log: "npm:2.0.0"
     fs-extra: "npm:11.3.1"
@@ -9549,7 +9549,7 @@ __metadata:
     lodash.template: "npm:4.5.0"
     luxon: "npm:3.7.1"
     map-stream: "npm:0.0.7"
-    marked: "npm:16.1.2"
+    marked: "npm:16.2.0"
     memoize-one: "npm:6.0.0"
     node-vibrant: "npm:4.0.3"
     object-hash: "npm:3.0.0"
@@ -11220,12 +11220,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:16.1.2":
-  version: 16.1.2
-  resolution: "marked@npm:16.1.2"
+"marked@npm:16.2.0":
+  version: 16.2.0
+  resolution: "marked@npm:16.2.0"
   bin:
     marked: bin/marked.js
-  checksum: 10/190d9b206f05d87a7acac3b50ab19505878297971a0c5652a9d4fa2b022407f22d2b79e1aa1e9f23a32c0158b1f5852ad33da2e83cc12100116a8fc0afc2b17e
+  checksum: 10/0a73dcfbe500514d2f1106da99708beed8a31de586e2826e1aa47ca0e0a4850b1e9598569b09d5366d4f4dee2d279a13f32616ed1ee75c832068eb7dd660f66f
   languageName: node
   linkType: hard
 

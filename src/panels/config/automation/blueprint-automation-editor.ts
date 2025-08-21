@@ -6,6 +6,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
+import "../../../components/ha-fab";
 import type { BlueprintAutomationConfig } from "../../../data/automation";
 import { fetchBlueprints } from "../../../data/blueprint";
 import { HaBlueprintGenericEditor } from "../blueprint/blueprint-generic-editor";
@@ -58,7 +59,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
       <ha-fab
         slot="fab"
         class=${this.dirty ? "dirty" : ""}
-        .label=${this.hass.localize("ui.panel.config.automation.editor.save")}
+        .label=${this.hass.localize("ui.common.save")}
         .disabled=${this.saving}
         extended
         @click=${this._saveAutomation}
