@@ -34,6 +34,7 @@ class DialogHomeZoneDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._data = {
+      name: this.hass.config.location_name,
       latitude: this.hass.config.latitude,
       longitude: this.hass.config.longitude,
       radius: this.hass.config.radius,
@@ -63,7 +64,7 @@ class DialogHomeZoneDetail extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this.hass!.localize("ui.panel.config.zone.edit_home")
+          this.hass!.localize("ui.common.edit_item", { name: this._data.name })
         )}
       >
         <div>
