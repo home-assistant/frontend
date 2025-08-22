@@ -86,6 +86,8 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
       ? IMPORT_MODE_CARD_SORTABLE_OPTIONS
       : CARD_SORTABLE_OPTIONS;
 
+    const background = this._config.style?.background_color;
+
     return html`
       <ha-sortable
         .disabled=${!editMode}
@@ -103,7 +105,11 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
           class="container ${classMap({
             "edit-mode": editMode,
             "import-only": this.importOnly,
+            "has-background": Boolean(background),
           })}"
+          style=${styleMap({
+            background: background,
+          })}
         >
           ${repeat(
             cardsConfig,
@@ -249,6 +255,10 @@ export class GridSection extends LitElement implements LovelaceSectionElement {
         .container.import-only {
           border: none;
           padding: 0 !important;
+        }
+        .container.has-background {
+          padding: 8px;
+          border-radius: var(--ha-card-border-radius, 12px);
         }
 
         .card {
