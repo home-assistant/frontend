@@ -4,6 +4,7 @@ import type { LovelaceStrategyConfig } from "./strategy";
 
 export interface LovelaceSectionStyleConfig {
   background_color?: string;
+  background_opacity?: number;
 }
 
 export interface LovelaceBaseSectionConfig {
