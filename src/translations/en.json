@@ -7261,6 +7261,7 @@
               "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
               "styling": "Styling",
               "background_type": "Background type",
+              "background_type_none_option": "None",
               "background_type_color_option": "Color",
               "background_color": "Background color"
             },
