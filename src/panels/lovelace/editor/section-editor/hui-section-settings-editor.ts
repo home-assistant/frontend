@@ -63,7 +63,9 @@ export class HuiDialogEditSection extends LitElement {
                       options: [
                         {
                           value: "none",
-                          label: this.hass.localize("ui.common.none"),
+                          label: this.hass.localize(
+                            "ui.panel.lovelace.editor.edit_section.settings.background_type_none_option"
+                          ),
                         },
                         {
                           value: "color",
