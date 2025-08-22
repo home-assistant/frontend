@@ -18,6 +18,7 @@ interface SettingsData {
   column_span?: number;
   background_type: "none" | "color";
   background_color?: number[];
+  background_opacity?: number;
 }
 
 @customElement("hui-section-settings-editor")
@@ -82,6 +83,19 @@ export class HuiDialogEditSection extends LitElement {
                   },
                   disabled: !enableBackground,
                 },
+                {
+                  name: "background_opacity",
+                  selector: {
+                    number: {
+                      min: 0,
+                      max: 100,
+                      step: 1,
+                      mode: "slider",
+                      unit_of_measurement: "%",
+                    },
+                  },
+                  disabled: !enableBackground,
+                }
               ],
             },
           ],
@@ -106,6 +120,7 @@ export class HuiDialogEditSection extends LitElement {
       background_color: this.config.style?.background_color
         ? hex2rgb(this.config.style?.background_color as any)
         : [],
+      background_opacity: this.config.style?.background_opacity || 100,
     };
 
     const schema = this._schema(
@@ -154,11 +169,13 @@ export class HuiDialogEditSection extends LitElement {
       newConfig.style = {
         ...newConfig.style,
         background_color: rgb2hex(newData.background_color as any),
+        background_opacity: newData.background_opacity,
       };
     } else {
       newConfig.style = {
         ...newConfig.style,
         background_color: undefined,
+        background_opacity: undefined,
       };
     }
 
