@@ -95,7 +95,7 @@ export class HuiDialogEditSection extends LitElement {
                     },
                   },
                   disabled: !enableBackground,
-                }
+                },
               ],
             },
           ],
