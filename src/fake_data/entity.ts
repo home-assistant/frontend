@@ -441,6 +441,35 @@ class WaterHeaterEntity extends Entity {
   }
 }
 
+class FanEntity extends Entity {
+  static CAPABILITY_ATTRIBUTES = new Set([
+    ...CAPABILITY_ATTRIBUTES,
+    "direction",
+    "oscillating",
+    "percentage",
+  ]);
+
+  public async handleService(domain, service, data) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (["turn_on", "turn_off"].includes(service)) {
+      this.update(service === "turn_on" ? "on" : "off");
+    } else if (
+      ["set_direction", "oscillate", "set_percentage"].includes(service)
+    ) {
+      const { entity_id, ...toSet } = data;
+      this.update(this.state, {
+        ...this.attributes,
+        ...toSet,
+      });
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
+}
+
 class GroupEntity extends Entity {
   public async handleService(domain, service, data) {
     if (!["homeassistant", this.domain].includes(domain)) {
@@ -463,6 +492,7 @@ const TYPES = {
   alarm_control_panel: AlarmControlPanelEntity,
   climate: ClimateEntity,
   cover: CoverEntity,
+  fan: FanEntity,
   group: GroupEntity,
   input_boolean: ToggleEntity,
   input_number: InputNumberEntity,

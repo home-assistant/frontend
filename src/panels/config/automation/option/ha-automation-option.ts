@@ -133,7 +133,10 @@ export default class HaAutomationOption extends LitElement {
         if (!this.optionsInSidebar) {
           row.expand();
         }
-        row.scrollIntoView();
+
+        if (this.narrow) {
+          row.scrollIntoView();
+        }
         row.focus();
       });
     }

@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -11,12 +12,54 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "./helpers/overview-home-structure";
+import {
+  findEntities,
+  OVERVIEW_SUMMARIES_FILTERS,
+} from "./helpers/overview-summaries";
 
 export interface OverviewLightsViewStrategyConfig {
   type: "overview-lights";
 }
 
-const UNASSIGNED_FLOOR = "__unassigned__";
+const processAreasForLights = (
+  areaIds: string[],
+  hass: HomeAssistant,
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const cards: LovelaceCardConfig[] = [];
+
+  for (const areaId of areaIds) {
+    const area = hass.areas[areaId];
+    if (!area) continue;
+
+    const areaFilter = generateEntityFilter(hass, {
+      area: area.area_id,
+    });
+    const areaLights = entities.filter(areaFilter);
+
+    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+
+    if (areaLights.length > 0) {
+      cards.push({
+        heading_style: "subtitle",
+        type: "heading",
+        heading: area.name,
+        icon: area.icon || "mdi:home",
+        tap_action: {
+          action: "navigate",
+          navigation_path: `areas-${area.area_id}`,
+        },
+      });
+
+      for (const entityId of areaLights) {
+        cards.push(computeTileCard(entityId));
+      }
+    }
+  }
+
+  return cards;
+};
 
 @customElement("overview-lights-view-strategy")
 export class OverviewLightsViewStrategy extends ReactiveElement {
@@ -25,89 +68,63 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
-
     const floors = getFloors(hass.floors);
+    const home = getHomeStructure(floors, areas);
 
     const sections: LovelaceSectionRawConfig[] = [];
 
     const allEntities = Object.keys(hass.states);
 
-    const lightFilter = generateEntityFilter(hass, {
-      domain: "light",
-      entity_category: "none",
-    });
+    const lightsFilters = OVERVIEW_SUMMARIES_FILTERS.lights.map((filter) =>
+      generateEntityFilter(hass, filter)
+    );
 
-    const lightsEntities = allEntities.filter(lightFilter);
+    const entities = findEntities(allEntities, lightsFilters);
 
-    const allFloors = [
-      ...floors,
-      {
-        floor_id: UNASSIGNED_FLOOR,
-        name: hass.localize("ui.panel.lovelace.strategy.areas.other_areas"),
-        level: null,
-        icon: null,
-      },
-    ];
+    const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    for (const floor of allFloors) {
-      let hasLight = false;
-
-      const areasInFloor = areas.filter(
-        (area) =>
-          area.floor_id === floor.floor_id ||
-          (!area.floor_id && floor.floor_id === UNASSIGNED_FLOOR)
-      );
-
-      const noFloors =
-        floors.length === 0 && floor.floor_id === UNASSIGNED_FLOOR;
-
-      const headingTitle = noFloors
-        ? hass.localize("ui.panel.lovelace.strategy.areas.areas")
-        : floor.name;
+    // Process floors
+    for (const floorStructure of home.floors) {
+      const floorId = floorStructure.id;
+      const areaIds = floorStructure.areas;
+      const floor = hass.floors[floorId];
 
       const section: LovelaceSectionRawConfig = {
         type: "grid",
         cards: [
           {
             type: "heading",
-            heading: headingTitle,
+            heading: floorCount > 1 ? floor.name : "Areas",
             icon: floor.icon || floorDefaultIcon(floor) || "mdi:home-floor",
           },
         ],
       };
 
-      for (const area of areasInFloor) {
-        const areaFilter = generateEntityFilter(hass, {
-          area: area.area_id,
-        });
-        const areaLights = lightsEntities.filter(areaFilter);
+      const areaCards = processAreasForLights(areaIds, hass, entities);
 
-        if (areaLights.length > 0) {
-          hasLight = true;
-          section.cards!.push({
-            heading_style: "subtitle",
-            type: "heading",
-            heading: area.name,
-            icon: area.icon || "mdi:home",
-            tap_action: {
-              action: "navigate",
-              navigation_path: `areas-${area.area_id}`,
-            },
-          });
-
-          const computeTileCard = computeAreaTileCardConfig(
-            hass,
-            area.name,
-            true
-          );
-
-          for (const entityId of areaLights) {
-            section.cards!.push(computeTileCard(entityId));
-          }
-        }
+      if (areaCards.length > 0) {
+        section.cards!.push(...areaCards);
+        sections.push(section);
       }
+    }
 
-      if (hasLight) {
+    // Process unassigned areas
+    if (home.areas.length > 0) {
+      const section: LovelaceSectionRawConfig = {
+        type: "grid",
+        cards: [
+          {
+            type: "heading",
+            heading: floorCount > 1 ? "Other areas" : "Areas",
+            icon: "mdi:home",
+          },
+        ],
+      };
+
+      const areaCards = processAreasForLights(home.areas, hass, entities);
+
+      if (areaCards.length > 0) {
+        section.cards!.push(...areaCards);
         sections.push(section);
       }
     }

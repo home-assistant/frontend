@@ -35,6 +35,7 @@ import "../../../../components/ha-md-menu-item";
 import type {
   AutomationClipboard,
   Condition,
+  ConditionSidebarConfig,
 } from "../../../../data/automation";
 import { testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
@@ -370,9 +371,9 @@ export default class HaAutomationConditionRow extends LitElement {
       </ha-card>
 
       ${this.optionsInSidebar &&
-      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition) &&
-      !this._collapsed
+      CONDITION_BUILDING_BLOCKS.includes(this.condition.condition)
         ? html`<ha-automation-condition-editor
+            class=${this._collapsed ? "hidden" : ""}
             .hass=${this.hass}
             .condition=${this.condition}
             .disabled=${this.disabled}
@@ -621,10 +622,9 @@ export default class HaAutomationConditionRow extends LitElement {
       disable: this._onDisable,
       delete: this._onDelete,
       config: sidebarCondition,
-      type: "condition",
       uiSupported: this._uiSupported(sidebarCondition.condition),
       yamlMode: this._yamlMode,
-    });
+    } satisfies ConditionSidebarConfig);
     this._selected = true;
   }
 

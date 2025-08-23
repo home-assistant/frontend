@@ -23,7 +23,10 @@ import "../../../../components/ha-icon-button";
 import "../../../../components/ha-md-button-menu";
 import "../../../../components/ha-md-menu-item";
 import "../../../../components/ha-svg-icon";
-import type { Condition } from "../../../../data/automation";
+import type {
+  Condition,
+  OptionSidebarConfig,
+} from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity_registry";
@@ -189,6 +192,7 @@ export default class HaAutomationOptionRow extends LitElement {
         "card-content": true,
         indent: this.optionsInSidebar,
         selected: this._selected,
+        hidden: this._collapsed,
       })}
     >
       <h4>
@@ -245,9 +249,7 @@ export default class HaAutomationOptionRow extends LitElement {
             `}
       </ha-card>
 
-      ${this.optionsInSidebar && !this._collapsed
-        ? this._renderContent()
-        : nothing}
+      ${this.optionsInSidebar ? this._renderContent() : nothing}
     `;
   }
 
@@ -346,9 +348,6 @@ export default class HaAutomationOptionRow extends LitElement {
     }
 
     fireEvent(this, "open-sidebar", {
-      save: () => {
-        // nothing to save for an option in the sidebar
-      },
       close: () => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
@@ -357,15 +356,8 @@ export default class HaAutomationOptionRow extends LitElement {
         this._renameOption();
       },
       toggleYamlMode: () => false, // no yaml mode for options
-      disable: () => {
-        // option cannot be disabled
-      },
       delete: this._removeOption,
-      config: {},
-      type: "option",
-      uiSupported: true,
-      yamlMode: false,
-    });
+    } satisfies OptionSidebarConfig);
     this._selected = true;
   }
 

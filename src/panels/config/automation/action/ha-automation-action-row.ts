@@ -41,9 +41,11 @@ import {
   YAML_ONLY_ACTION_TYPES,
 } from "../../../../data/action";
 import type {
+  ActionSidebarConfig,
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
 import {
   floorsContext,
@@ -87,7 +89,6 @@ import "./types/ha-automation-action-set_conversation_response";
 import "./types/ha-automation-action-stop";
 import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
-import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 
 export const getAutomationActionType = memoizeOne(
   (action: Action | undefined) => {
@@ -441,9 +442,9 @@ export default class HaAutomationActionRow extends LitElement {
         (blockType === "condition" &&
           CONDITION_BUILDING_BLOCKS.includes(
             (this.action as Condition).condition
-          ))) &&
-      !this._collapsed
+          )))
         ? html`<ha-automation-action-editor
+            class=${this._collapsed ? "hidden" : ""}
             .hass=${this.hass}
             .action=${this.action}
             .narrow=${this.narrow}
@@ -665,10 +666,9 @@ export default class HaAutomationActionRow extends LitElement {
       disable: this._onDisable,
       delete: this._onDelete,
       config: sidebarAction,
-      type: "action",
       uiSupported: actionType ? this._uiSupported(actionType) : false,
       yamlMode: this._yamlMode,
-    });
+    } satisfies ActionSidebarConfig);
     this._selected = true;
   }
 

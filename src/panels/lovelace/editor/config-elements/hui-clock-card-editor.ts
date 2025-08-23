@@ -36,6 +36,7 @@ const cardConfigStruct = assign(
     time_format: optional(enums(Object.values(TimeFormat))),
     time_zone: optional(enums(Object.keys(timezones))),
     show_seconds: optional(boolean()),
+    no_background: optional(boolean()),
   })
 );
 
@@ -67,6 +68,7 @@ export class HuiClockCardEditor
           },
         },
         { name: "show_seconds", selector: { boolean: {} } },
+        { name: "no_background", selector: { boolean: {} } },
         {
           name: "time_format",
           selector: {
@@ -167,6 +169,10 @@ export class HuiClockCardEditor
       case "show_seconds":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.show_seconds`
+        );
+      case "no_background":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.no_background`
         );
       default:
         return undefined;

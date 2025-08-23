@@ -10,7 +10,9 @@ import "../card-features/hui-cover-open-close-card-feature";
 import "../card-features/hui-cover-position-card-feature";
 import "../card-features/hui-cover-tilt-card-feature";
 import "../card-features/hui-cover-tilt-position-card-feature";
+import "../card-features/hui-date-set-card-feature";
 import "../card-features/hui-fan-direction-card-feature";
+import "../card-features/hui-fan-oscillate-card-feature";
 import "../card-features/hui-fan-preset-modes-card-feature";
 import "../card-features/hui-fan-speed-card-feature";
 import "../card-features/hui-humidifier-modes-card-feature";
@@ -20,6 +22,7 @@ import "../card-features/hui-light-brightness-card-feature";
 import "../card-features/hui-light-color-temp-card-feature";
 import "../card-features/hui-lock-commands-card-feature";
 import "../card-features/hui-lock-open-door-card-feature";
+import "../card-features/hui-media-player-playback-card-feature";
 import "../card-features/hui-media-player-volume-slider-card-feature";
 import "../card-features/hui-numeric-input-card-feature";
 import "../card-features/hui-select-options-card-feature";
@@ -32,6 +35,8 @@ import "../card-features/hui-valve-open-close-card-feature";
 import "../card-features/hui-valve-position-card-feature";
 import "../card-features/hui-water-heater-operation-modes-card-feature";
 import "../card-features/hui-area-controls-card-feature";
+import "../card-features/hui-bar-gauge-card-feature";
+import "../card-features/hui-history-chart-card-feature";
 
 import type { LovelaceCardFeatureConfig } from "../card-features/types";
 import {
@@ -41,8 +46,9 @@ import {
 
 const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "alarm-modes",
-  "button",
   "area-controls",
+  "bar-gauge",
+  "button",
   "climate-fan-modes",
   "climate-swing-modes",
   "climate-swing-horizontal-modes",
@@ -53,7 +59,9 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "cover-position",
   "cover-tilt-position",
   "cover-tilt",
+  "date-set",
   "fan-direction",
+  "fan-oscillate",
   "fan-preset-modes",
   "fan-speed",
   "humidifier-modes",
@@ -63,9 +71,11 @@ const TYPES = new Set<LovelaceCardFeatureConfig["type"]>([
   "light-color-temp",
   "lock-commands",
   "lock-open-door",
+  "media-player-playback",
   "media-player-volume-slider",
   "numeric-input",
   "select-options",
+  "history-chart",
   "target-humidity",
   "target-temperature",
   "toggle",

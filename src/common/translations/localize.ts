@@ -14,6 +14,7 @@ export type LocalizeKeys =
   | `ui.card.weather.attributes.${string}`
   | `ui.card.weather.cardinal_direction.${string}`
   | `ui.card.lawn_mower.actions.${string}`
+  | `ui.common.${string}`
   | `ui.components.calendar.event.rrule.${string}`
   | `ui.components.selectors.file.${string}`
   | `ui.components.logbook.messages.detected_device_classes.${string}`
