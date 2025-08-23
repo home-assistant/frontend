@@ -685,6 +685,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     .editor-button {
+      color: var(--secondary-text-color);
       --mdc-icon-button-size: 28px;
       --mdc-icon-size: 18px;
       /* Ensure button is clickable on iOS */
