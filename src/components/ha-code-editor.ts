@@ -7,7 +7,7 @@ import type {
 } from "@codemirror/autocomplete";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import { mdiArrowExpand, mdiArrowCollapse } from "@mdi/js";
+import { mdiArrowExpand, mdiArrowCollapse, mdiContentCopy } from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, html, render } from "lit";
@@ -16,7 +16,9 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { getEntityContext } from "../common/entity/context/get_entity_context";
+import { copyToClipboard } from "../common/util/copy-clipboard";
 import type { HomeAssistant } from "../types";
+import { showToast } from "../util/toast";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -279,6 +281,14 @@ export class HaCodeEditor extends ReactiveElement {
       this.editorToolbar = document.createElement("ha-icon-button-group");
       this.editorToolbar.classList.add("editor-buttongroup");
       toolbarDiv.appendChild(this.editorToolbar);
+
+      // Add the copy button
+      const button = document.createElement("ha-icon-button");
+      (button as any).path = mdiContentCopy;
+      button.setAttribute("label", "Copy to Clipboard");
+      button.classList.add("editor-button");
+      button.addEventListener("click", this._handleClipboardClick);
+      this.editorToolbar.appendChild(button);
     }
 
     // Create or update the fullscreen button on the editor toolbar.
@@ -331,6 +341,20 @@ export class HaCodeEditor extends ReactiveElement {
       );
     }
   }
+
+  private _handleClipboardClick = async (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    await copyToClipboard(this.codemirror.state.doc.toString());
+    if (this.hass) {
+      showToast(this, {
+        message: this.hass.localize("ui.common.copied_clipboard"),
+      });
+    }
+  };
 
   private _handleFullscreenClick = (e: Event) => {
     e.preventDefault();
@@ -668,19 +692,6 @@ export class HaCodeEditor extends ReactiveElement {
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
-
-    /*
-    .fullscreen-button {
-      z-index: 1;
-      color: var(--secondary-text-color);
-      background-color: var(--secondary-background-color);
-      border-radius: 50%;
-      opacity: 0.9;
-      transition: opacity 0.2s;
-      --mdc-icon-button-size: 32px;
-      --mdc-icon-size: 18px;
-    }
-      */
 
     :host(.fullscreen) {
       position: fixed !important;
