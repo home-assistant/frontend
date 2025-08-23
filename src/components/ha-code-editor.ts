@@ -5,9 +5,15 @@ import type {
   CompletionResult,
   CompletionSource,
 } from "@codemirror/autocomplete";
+import { undo } from "@codemirror/commands";
 import type { Extension, TransactionSpec } from "@codemirror/state";
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import { mdiArrowExpand, mdiArrowCollapse, mdiContentCopy } from "@mdi/js";
+import {
+  mdiArrowExpand,
+  mdiArrowCollapse,
+  mdiContentCopy,
+  mdiUndo,
+} from "@mdi/js";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, ReactiveElement, html, render } from "lit";
@@ -282,17 +288,40 @@ export class HaCodeEditor extends ReactiveElement {
       this.editorToolbar.classList.add("editor-buttongroup");
       toolbarDiv.appendChild(this.editorToolbar);
 
-      // Add the copy button
-      const button = document.createElement("ha-icon-button");
-      (button as any).path = mdiContentCopy;
-      button.setAttribute("label", "Copy to Clipboard");
-      button.classList.add("editor-button");
-      button.addEventListener("click", this._handleClipboardClick);
-      this.editorToolbar.appendChild(button);
+      // Add main buttons:
+      //  - Undo
+      this._createToolbarButton(
+        mdiUndo,
+        this.hass ? this.hass.localize("ui.common.undo") : "Undo",
+        this._handleUndoClick
+      );
+      //  - Copy
+      this._createToolbarButton(
+        mdiContentCopy,
+        this.hass
+          ? this.hass.localize(
+              "ui.panel.config.automation.editor.copy_to_clipboard"
+            )
+          : "Copy to Clipboard",
+        this._handleClipboardClick
+      );
     }
 
     // Create or update the fullscreen button on the editor toolbar.
     this._updateFullscreenButton();
+  }
+
+  private _createToolbarButton(iconPath, label, event) {
+    if (!this.editorToolbar) {
+      return;
+    }
+
+    const button = document.createElement("ha-icon-button");
+    (button as any).path = iconPath;
+    button.setAttribute("label", label);
+    button.classList.add("editor-button");
+    button.addEventListener("click", event);
+    this.editorToolbar.appendChild(button);
   }
 
   private _updateFullscreenButton() {
@@ -354,6 +383,15 @@ export class HaCodeEditor extends ReactiveElement {
         message: this.hass.localize("ui.common.copied_clipboard"),
       });
     }
+  };
+
+  private _handleUndoClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.codemirror) {
+      return;
+    }
+    undo(this.codemirror);
   };
 
   private _handleFullscreenClick = (e: Event) => {
