@@ -631,6 +631,10 @@ export class HaCodeEditor extends ReactiveElement {
       border-color: var(--error-state-color, red);
     }
 
+    :host(.error-state) .cm-content {
+      border-color: var(--error-state-color, red);
+    }
+
     .editor-toolbar {
       height: 40px;
       background-color: var(

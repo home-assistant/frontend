@@ -87,9 +87,14 @@ export const haTheme = EditorView.theme({
 
   ".cm-content": {
     caretColor: "var(--secondary-text-color)",
-    paddingTop: "16px",
     paddingBottom: "16px",
-    paddingRight: "44px",
+    border: "none",
+    borderTop: "1px solid var(--secondary-text-color)",
+    paddingTop: "16px",
+  },
+  "&.cm-focused .cm-content": {
+    borderTop: "2px solid var(--primary-color)",
+    paddingTop: "15px",
   },
 
   ".cm-panels": {
@@ -196,10 +201,12 @@ export const haTheme = EditorView.theme({
     border: "none",
     borderRight: "1px solid var(--secondary-text-color)",
     paddingRight: "1px",
+    paddingTop: "0",
   },
   "&.cm-focused .cm-gutters": {
     borderRight: "2px solid var(--primary-color)",
     paddingRight: "0",
+    paddingTop: "1px",
   },
   ".cm-gutterElement.lineNumber": { color: "inherit" },
 });
