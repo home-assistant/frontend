@@ -1324,7 +1324,8 @@
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
             "addon_dashboard": "Add-on dashboard",
             "addon_store": "Add-on store",
-            "addon_info": "{addon} info"
+            "addon_info": "{addon} info",
+            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]"
           }
         },
         "filter_placeholder": "Search entities",
