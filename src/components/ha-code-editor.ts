@@ -20,6 +20,7 @@ import type { HomeAssistant } from "../types";
 import type { CompletionItem } from "./ha-code-editor-completion-items";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-icon-button-group";
 import "./ha-code-editor-completion-items";
 
 declare global {
@@ -268,11 +269,19 @@ export class HaCodeEditor extends ReactiveElement {
 
   private _createEditorToolbar() {
     if (!this.editorToolbar) {
-      this.editorToolbar = document.createElement("div");
-      this.editorToolbar.classList.add("editor-toolbar");
-      this.renderRoot.appendChild(this.editorToolbar);
+      // Contain the toolbar in a div to set background and force the toolbar to
+      // appear on the right.
+      const toolbarDiv = document.createElement("div");
+      toolbarDiv.classList.add("editor-toolbar");
+      this.renderRoot.appendChild(toolbarDiv);
+
+      // Create a button group to contain our various toolbar buttons
+      this.editorToolbar = document.createElement("ha-icon-button-group");
+      this.editorToolbar.classList.add("editor-buttongroup");
+      toolbarDiv.appendChild(this.editorToolbar);
     }
 
+    // Create or update the fullscreen button on the editor toolbar.
     this._updateFullscreenButton();
   }
 
@@ -306,6 +315,7 @@ export class HaCodeEditor extends ReactiveElement {
         "label",
         this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
       );
+      button.classList.add("editor-button");
       button.classList.add("fullscreen-button");
       // Use bound method to ensure proper this context
       button.addEventListener("click", this._handleFullscreenClick);
@@ -636,17 +646,31 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     .editor-toolbar {
-      height: 40px;
+      display: flex;
+      flex-direction: row-reverse;
       background-color: var(
         --code-editor-gutter-color,
         var(--secondary-background-color, whitesmoke)
       );
     }
 
+    .editor-buttongroup {
+      background-color: transparent;
+      padding-right: 4px;
+      height: 32px;
+    }
+
+    .editor-button {
+      --mdc-icon-button-size: 28px;
+      --mdc-icon-size: 18px;
+      /* Ensure button is clickable on iOS */
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    /*
     .fullscreen-button {
-      position: absolute;
-      top: 4px;
-      right: 8px;
       z-index: 1;
       color: var(--secondary-text-color);
       background-color: var(--secondary-background-color);
@@ -655,22 +679,8 @@ export class HaCodeEditor extends ReactiveElement {
       transition: opacity 0.2s;
       --mdc-icon-button-size: 32px;
       --mdc-icon-size: 18px;
-      /* Ensure button is clickable on iOS */
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
     }
-
-    .fullscreen-button:hover,
-    .fullscreen-button:active {
-      opacity: 1;
-    }
-
-    @media (hover: none) {
-      .fullscreen-button {
-        opacity: 0.8;
-      }
-    }
+      */
 
     :host(.fullscreen) {
       position: fixed !important;
@@ -699,11 +709,6 @@ export class HaCodeEditor extends ReactiveElement {
       height: 100% !important;
       max-height: 100% !important;
       border-radius: 0 !important;
-    }
-
-    :host(.fullscreen) .fullscreen-button {
-      top: calc(var(--safe-area-inset-top, 0px) + 4px);
-      right: calc(var(--safe-area-inset-right, 0px) + 8px);
     }
 
     .completion-info {
