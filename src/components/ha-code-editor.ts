@@ -70,6 +70,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _value = "";
 
+  private editorToolbar?: HTMLElement;
+
   @state() private _isFullscreen = false;
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
@@ -253,6 +255,8 @@ export class HaCodeEditor extends ReactiveElement {
       }
     }
 
+    this._createEditorToolbar();
+
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
@@ -260,12 +264,25 @@ export class HaCodeEditor extends ReactiveElement {
       }),
       parent: this.renderRoot,
     });
+  }
+
+  private _createEditorToolbar() {
+    if (!this.editorToolbar) {
+      this.editorToolbar = document.createElement("div");
+      this.editorToolbar.classList.add("editor-toolbar");
+      this.renderRoot.appendChild(this.editorToolbar);
+    }
 
     this._updateFullscreenButton();
   }
 
   private _updateFullscreenButton() {
-    const existingButton = this.renderRoot.querySelector(".fullscreen-button");
+    if (!this.editorToolbar) {
+      return;
+    }
+
+    const existingButton =
+      this.editorToolbar.querySelector(".fullscreen-button");
 
     if (this.disableFullscreen) {
       // Remove button if it exists and fullscreen is disabled
@@ -292,7 +309,7 @@ export class HaCodeEditor extends ReactiveElement {
       button.classList.add("fullscreen-button");
       // Use bound method to ensure proper this context
       button.addEventListener("click", this._handleFullscreenClick);
-      this.renderRoot.appendChild(button);
+      this.editorToolbar.appendChild(button);
     } else {
       // Update existing button
       (existingButton as any).path = this._isFullscreen
@@ -614,9 +631,17 @@ export class HaCodeEditor extends ReactiveElement {
       border-color: var(--error-state-color, red);
     }
 
+    .editor-toolbar {
+      height: 40px;
+      background-color: var(
+        --code-editor-gutter-color,
+        var(--secondary-background-color, whitesmoke)
+      );
+    }
+
     .fullscreen-button {
       position: absolute;
-      top: 8px;
+      top: 4px;
       right: 8px;
       z-index: 1;
       color: var(--secondary-text-color);
@@ -673,7 +698,7 @@ export class HaCodeEditor extends ReactiveElement {
     }
 
     :host(.fullscreen) .fullscreen-button {
-      top: calc(var(--safe-area-inset-top, 0px) + 8px);
+      top: calc(var(--safe-area-inset-top, 0px) + 4px);
       right: calc(var(--safe-area-inset-right, 0px) + 8px);
     }
 
