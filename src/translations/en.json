@@ -7104,7 +7104,8 @@
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "error_invalid_path": "URL contains invalid/reserved characters. Please enter a simple string only for the path of this view.",
             "error_number": "URL may not be a number.",
-            "move_to_dashboard": "Move to dashboard"
+            "move_to_dashboard": "Move to dashboard",
+            "move_to_view": "Move to view"
           },
           "edit_view_header": {
             "add_title": "Add title",
@@ -7209,6 +7210,13 @@
           "suggest_badge": {
             "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
             "add": "[%key:ui::panel::lovelace::editor::suggest_card::add%]"
+          },
+          "move_section": {
+            "header": "Choose a view to move the section to",
+            "strategy_error_title": "Impossible to move the section",
+            "strategy_error_text_strategy": "Moving a section to an auto-generated view is not supported.",
+            "success": "Section moved successfully",
+            "error": "Error while moving section"
           },
           "move_card": {
             "header": "Choose a view to move the card to",
