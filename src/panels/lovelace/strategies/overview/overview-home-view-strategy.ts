@@ -84,7 +84,7 @@ export class OverviewHomeViewStrategy extends ReactiveElement {
       favoriteSection.cards!.push(
         {
           type: "heading",
-          headiing: "",
+          heading: "",
           heading_style: "subtitle",
         },
         ...favoriteEntities.map(
