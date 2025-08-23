@@ -237,5 +237,5 @@
     "@material/mwc-list@^0.27.0": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
     "@vaadin/vaadin-themable-mixin": "24.8.5"
   },
-  "packageManager": "yarn@4.9.2"
+  "packageManager": "yarn@4.9.3"
 }
