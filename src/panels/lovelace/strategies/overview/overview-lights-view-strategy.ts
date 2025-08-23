@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -11,11 +12,11 @@ import {
   getAreas,
   getFloors,
 } from "../areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "./helpers/overview-home-structure";
 import {
   findEntities,
   OVERVIEW_SUMMARIES_FILTERS,
 } from "./helpers/overview-summaries";
-import { getHomeStructure } from "./helpers/overview-home-structure";
 
 export interface OverviewLightsViewStrategyConfig {
   type: "overview-lights";
@@ -24,10 +25,9 @@ export interface OverviewLightsViewStrategyConfig {
 const processAreasForLights = (
   areaIds: string[],
   hass: HomeAssistant,
-  entities: string[],
-  computeTileCard: (entityId: string) => any
-): any[] => {
-  const cards: any[] = [];
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const cards: LovelaceCardConfig[] = [];
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -37,6 +37,8 @@ const processAreasForLights = (
       area: area.area_id,
     });
     const areaLights = entities.filter(areaFilter);
+
+    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
 
     if (areaLights.length > 0) {
       cards.push({
@@ -81,8 +83,6 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
-
     // Process floors
     for (const floorStructure of home.floors) {
       const floorId = floorStructure.id;
@@ -100,12 +100,7 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLights(
-        areaIds,
-        hass,
-        entities,
-        computeTileCard
-      );
+      const areaCards = processAreasForLights(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -126,12 +121,7 @@ export class OverviewLightsViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForLights(
-        home.areas,
-        hass,
-        entities,
-        computeTileCard
-      );
+      const areaCards = processAreasForLights(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
