@@ -80,7 +80,7 @@
     "@material/mwc-top-app-bar": "0.27.0",
     "@material/mwc-top-app-bar-fixed": "0.27.0",
     "@material/top-app-bar": "=14.0.0-canary.53b3cad2f.0",
-    "@material/web": "2.3.0",
+    "@material/web": "2.4.0",
     "@mdi/js": "7.4.47",
     "@mdi/svg": "7.4.47",
     "@replit/codemirror-indentation-markers": "6.5.3",
