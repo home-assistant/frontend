@@ -745,7 +745,7 @@ export class MoreInfoDialog extends LitElement {
 
         .title button.breadcrumb:focus-visible,
         .title button.breadcrumb:hover {
-          background-color: rgba(var(--rgb-secondary-text-color), 0.08);
+          background-color: rgb(from var(--secondary-text-color) r g b / 0.08);
         }
       `,
     ];

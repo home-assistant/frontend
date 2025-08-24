@@ -18,9 +18,8 @@ export class HaMdMenuItem extends MenuItemEl {
         --md-sys-color-surface: var(--card-background-color);
         --md-sys-color-on-surface: var(--primary-text-color);
         --md-sys-color-on-surface-variant: var(--secondary-text-color);
-        --md-sys-color-secondary-container: rgba(
-          var(--rgb-primary-color),
-          0.15
+        --md-sys-color-secondary-container: rgb(
+          from var(--primary-color) r g b / 0.15
         );
         --md-sys-color-on-secondary-container: var(--text-primary-color);
         --mdc-icon-size: 16px;

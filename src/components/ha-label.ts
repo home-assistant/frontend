@@ -21,9 +21,8 @@ class HaLabel extends LitElement {
         :host {
           --ha-label-text-color: var(--primary-text-color);
           --ha-label-icon-color: var(--primary-text-color);
-          --ha-label-background-color: rgba(
-            var(--rgb-primary-text-color),
-            0.15
+          --ha-label-background-color: rgb(
+            from var(--primary-text-color) r g b / 0.15
           );
           --ha-label-background-opacity: 1;
           border: 1px solid var(--outline-color);

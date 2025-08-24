@@ -722,8 +722,8 @@ export class HatScriptGraph extends LitElement {
         --track-clr: var(--track-color, var(--accent-color));
         --hover-clr: var(--hover-color, var(--primary-color));
         --disabled-clr: var(--disabled-color, var(--disabled-text-color));
-        --disabled-active-clr: rgba(var(--rgb-primary-color), 0.5);
-        --disabled-hover-clr: rgba(var(--rgb-primary-color), 0.7);
+        --disabled-active-clr: rgb(from var(--primary-color) r g b / 0.5);
+        --disabled-hover-clr: rgb(from var(--primary-color) r g b / 0.7);
         --default-trigger-color: 3, 169, 244;
         --rgb-trigger-color: var(--trigger-color, var(--default-trigger-color));
         --background-clr: var(--background-color, white);

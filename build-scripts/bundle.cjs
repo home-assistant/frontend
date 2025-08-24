@@ -119,6 +119,8 @@ module.exports.babelOptions = ({
         ignoreModuleNotFound: true,
       },
     ],
+    // Transform rgb(from ...) syntax for legacy builds
+    [path.join(BABEL_PLUGINS, "rgb-from-plugin.cjs"), { latestBuild }],
     // Minify template literals for production
     isProdBuild && [
       "template-html-minifier",

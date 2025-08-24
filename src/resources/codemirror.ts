@@ -72,15 +72,15 @@ export const haTheme = EditorView.theme({
   },
 
   ".cm-selectionBackground, ::selection": {
-    backgroundColor: "rgba(var(--rgb-primary-color), 0.1)",
+    backgroundColor: "rgb(from var(--primary-color) r g b / 0.1)",
   },
 
   "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground": {
-    backgroundColor: "rgba(var(--rgb-primary-color), 0.2)",
+    backgroundColor: "rgb(from var(--primary-color) r g b / 0.2)",
   },
 
   ".cm-activeLine": {
-    backgroundColor: "rgba(var(--rgb-secondary-text-color), 0.1)",
+    backgroundColor: "rgb(from var(--secondary-text-color) r g b / 0.1)",
   },
 
   ".cm-scroller": { outline: "none" },
@@ -176,15 +176,15 @@ export const haTheme = EditorView.theme({
   },
 
   ".cm-selectionMatch": {
-    backgroundColor: "rgba(var(--rgb-primary-color), 0.1)",
+    backgroundColor: "rgb(from var(--primary-color) r g b / 0.1)",
   },
 
   ".cm-searchMatch": {
-    backgroundColor: "rgba(var(--rgb-accent-color), .2)",
-    outline: "1px solid rgba(var(--rgb-accent-color), .4)",
+    backgroundColor: "rgb(from var(--accent-color) r g b / .2)",
+    outline: "1px solid rgb(from var(--accent-color) r g b / .4)",
   },
   ".cm-searchMatch.selected": {
-    backgroundColor: "rgba(var(--rgb-accent-color), .4)",
+    backgroundColor: "rgb(from var(--accent-color) r g b / .4)",
     outline: "1px solid var(--accent-color)",
   },
 

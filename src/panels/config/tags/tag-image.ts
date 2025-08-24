@@ -66,13 +66,13 @@ export class HaTagImage extends LitElement {
     }
     @keyframes glow {
       0% {
-        box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 0);
+        box-shadow: 0px 0px 24px 0px rgb(from var(--primary-color) r g b / 0);
       }
       10% {
-        box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 1);
+        box-shadow: 0px 0px 24px 0px rgb(from var(--primary-color) r g b / 1);
       }
       100% {
-        box-shadow: 0px 0px 24px 0px rgba(var(--rgb-primary-color), 0);
+        box-shadow: 0px 0px 24px 0px rgb(from var(--primary-color) r g b / 0);
       }
     }
   `;

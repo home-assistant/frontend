@@ -381,7 +381,8 @@ export class HassioBackups extends LitElement {
           justify-content: space-between;
           align-items: center;
           height: 58px;
-          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+          border-bottom: 1px solid
+            rgb(from var(--primary-text-color) r g b / 0.12);
         }
         .header-toolbar {
           display: flex;

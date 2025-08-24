@@ -1055,10 +1055,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           padding: 0;
         }
         .discovered {
-          --md-list-container-color: rgba(var(--rgb-success-color), 0.2);
+          --md-list-container-color: rgb(from var(--success-color) r g b / 0.2);
         }
         .attention {
-          --md-list-container-color: rgba(var(--rgb-warning-color), 0.2);
+          --md-list-container-color: rgb(from var(--warning-color) r g b / 0.2);
         }
         ha-md-list-item {
           --md-list-item-top-space: 4px;

@@ -22,7 +22,7 @@ export class HaIconButtonGroup extends LitElement {
       padding: 0;
     }
     ::slotted(.separator) {
-      background-color: rgba(var(--rgb-primary-text-color), 0.15);
+      background-color: rgb(from var(--primary-text-color) r g b / 0.15);
       width: 1px;
       margin: 0 1px;
       height: 40px;

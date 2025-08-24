@@ -620,7 +620,7 @@ class HaLogbookRenderer extends LitElement {
         }
 
         .entry:hover {
-          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+          background-color: rgb(from var(--primary-text-color) r g b / 0.04);
         }
 
         .narrow:not(.no-icon) .time {

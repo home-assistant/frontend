@@ -1064,7 +1064,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row--selected {
-          background-color: rgba(var(--rgb-primary-color), 0.04);
+          background-color: rgb(from var(--primary-color) r g b / 0.04);
         }
 
         .mdc-data-table__row {
@@ -1087,7 +1087,7 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__row.clickable:not(
             .mdc-data-table__row--selected
           ):hover {
-          background-color: rgba(var(--rgb-primary-text-color), 0.04);
+          background-color: rgb(from var(--primary-text-color) r g b / 0.04);
         }
 
         .mdc-data-table__header-cell {
