@@ -78,7 +78,7 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     return html`
       <ha-control-button-group>
         <ha-control-button
-          .disabled=${["unavailable", "unknown"].includes(this._stateObj.state)}
+          .disabled=${this._stateObj.state === "unavailable"}
           class="press-button"
           @click=${this._pressButton}
         >
