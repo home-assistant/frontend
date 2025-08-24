@@ -62,7 +62,7 @@ export class HuiClockCard extends LitElement implements LovelaceCard {
     }
 
     this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
-      hour: "2-digit",
+      hour: this._config.hour_leading_zero === false ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hourCycle: useAmPm(locale) ? "h12" : "h23",
