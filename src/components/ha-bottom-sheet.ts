@@ -142,6 +142,7 @@ export class HaBottomSheet extends LitElement {
 
     // on drag down and below 20vh
     if (newSize < 20 && deltaY < 0) {
+      this._endDrag();
       this.closeSheet();
       return;
     }
