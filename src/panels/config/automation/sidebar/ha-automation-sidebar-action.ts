@@ -136,7 +136,7 @@ export default class HaAutomationSidebarAction extends LitElement {
         )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
       </ha-md-menu-item>
-      ${description
+      ${description && !this.yamlMode
         ? html`<div class="description">${description}</div>`
         : html`<ha-automation-action-editor
             class="sidebar-editor"
