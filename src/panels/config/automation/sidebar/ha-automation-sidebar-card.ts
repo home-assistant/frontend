@@ -96,10 +96,10 @@ export default class HaAutomationSidebarCard extends LitElement {
   }
 
   @eventOptions({ passive: true })
-  private _onScroll = () => {
+  private _onScroll() {
     const top = this._contentElement?.scrollTop ?? 0;
     this._contentScrolled = top > 0;
-  };
+  }
 
   private _closeSidebar() {
     fireEvent(this, "close-sidebar");
