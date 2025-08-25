@@ -133,19 +133,20 @@ export default class HaAutomationSidebarAction extends LitElement {
         )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
       </ha-md-menu-item>
-      ${description ||
-      html`<ha-automation-action-editor
-        class="sidebar-editor"
-        .hass=${this.hass}
-        .action=${this.config.config}
-        .yamlMode=${this.yamlMode}
-        .uiSupported=${this.config.uiSupported}
-        @value-changed=${this._valueChangedSidebar}
-        sidebar
-        narrow
-        .disabled=${this.disabled}
-        @ui-mode-not-available=${this._handleUiModeNotAvailable}
-      ></ha-automation-action-editor>`}
+      ${description
+        ? html`<div class="description">${description}</div>`
+        : html`<ha-automation-action-editor
+            class="sidebar-editor"
+            .hass=${this.hass}
+            .action=${this.config.config}
+            .yamlMode=${this.yamlMode}
+            .uiSupported=${this.config.uiSupported}
+            @value-changed=${this._valueChangedSidebar}
+            sidebar
+            narrow
+            .disabled=${this.disabled}
+            @ui-mode-not-available=${this._handleUiModeNotAvailable}
+          ></ha-automation-action-editor>`}
     </ha-automation-sidebar-card>`;
   }
 
@@ -178,6 +179,9 @@ export default class HaAutomationSidebarAction extends LitElement {
   static styles = css`
     .sidebar-editor {
       padding-top: 64px;
+    }
+    .description {
+      padding-top: 16px;
     }
   `;
 }

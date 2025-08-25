@@ -66,13 +66,16 @@ export default class HaAutomationSidebarOption extends LitElement {
         )}
         <ha-svg-icon slot="start" .path=${mdiDelete}></ha-svg-icon>
       </ha-md-menu-item>
-      ${description}
+      <div class="description">${description}</div>
     </ha-automation-sidebar-card>`;
   }
 
   static styles = css`
     .sidebar-editor {
       padding-top: 64px;
+    }
+    .description {
+      padding-top: 16px;
     }
   `;
 }
