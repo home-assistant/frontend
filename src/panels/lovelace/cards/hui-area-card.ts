@@ -417,21 +417,16 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return entities.reduce((acc, entity) => acc + Number(entity.state), 0);
   }
 
-  private _computeMedianState(entities: HassEntity[]): number | undefined {
-    if (entities.length === 0) {
-      return undefined;
-    }
-    const sortedStates = states.toSorted((a, b) => Number(a) - Number(b));
+  private _computeMedianState(entities: HassEntity[]): number {
+    const sortedStates = entities
+      .map((entity) => Number(entity.state))
+      .sort((a, b) => a - b);
     if (sortedStates.length % 2 === 0) {
       const medianIndex = sortedStates.length / 2;
-      return (
-        (Number(sortedStates[medianIndex]) +
-          Number(sortedStates[medianIndex - 1])) /
-        2
-      );
+      return (sortedStates[medianIndex] + sortedStates[medianIndex - 1]) / 2;
     }
     const medianIndex = Math.floor(sortedStates.length / 2);
-    return Number(sortedStates[medianIndex]);
+    return sortedStates[medianIndex];
   }
 
   private _featurePosition = memoizeOne((config: AreaCardConfig) => {
