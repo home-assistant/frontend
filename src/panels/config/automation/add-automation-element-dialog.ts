@@ -1,5 +1,4 @@
 import { mdiClose, mdiContentPaste, mdiPlus } from "@mdi/js";
-import type { IFuseOptions } from "fuse.js";
 import Fuse from "fuse.js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -46,6 +45,7 @@ import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import { PASTE_VALUE } from "./show-add-automation-element-dialog";
+import { HaFuse } from "../../../resources/fuse";
 
 const TYPES = {
   trigger: { groups: TRIGGER_GROUPS, icons: TRIGGER_ICONS },
@@ -175,6 +175,40 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
       type: AddAutomationElementDialogParams["type"],
       group: string | undefined,
       filter: string,
+      domains: Set<string> | undefined,
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      manifests?: DomainManifestLookup
+    ): ListItem[] => {
+      const items = this._items(type, group, localize, services, manifests);
+
+      const index = this._fuseIndex(items);
+
+      const fuse = new HaFuse(
+        items,
+        { ignoreLocation: true, includeScore: true },
+        index
+      );
+
+      const results = fuse.multiTermsSearch(filter);
+      if (results) {
+        return results.map((result) => result.item);
+      }
+      return this._getGroupItems(
+        type,
+        group,
+        domains,
+        localize,
+        services,
+        manifests
+      );
+    }
+  );
+
+  private _items = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"],
+      group: string | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       manifests?: DomainManifestLookup
@@ -189,22 +223,15 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         );
 
       const items = flattenGroups(groups).flat();
-
       if (type === "action") {
         items.push(...this._services(localize, services, manifests, group));
       }
-
-      const options: IFuseOptions<ListItem> = {
-        keys: ["key", "name", "description"],
-        isCaseSensitive: false,
-        ignoreLocation: true,
-        minMatchCharLength: Math.min(filter.length, 2),
-        threshold: 0.2,
-        ignoreDiacritics: true,
-      };
-      const fuse = new Fuse(items, options);
-      return fuse.search(filter).map((result) => result.item);
+      return items;
     }
+  );
+
+  private _fuseIndex = memoizeOne((items: ListItem[]) =>
+    Fuse.createIndex(["key", "name", "description"], items)
   );
 
   private _getGroupItems = memoizeOne(
@@ -449,6 +476,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
           this._params.type,
           this._group,
           this._filter,
+          this._domains,
           this.hass.localize,
           this.hass.services,
           this._manifests
@@ -624,6 +652,7 @@ class DialogAddAutomationElement extends LitElement implements HassDialog {
         ha-dialog {
           --dialog-content-padding: 0;
           --mdc-dialog-max-height: 60vh;
+          --mdc-dialog-max-height: 60dvh;
         }
         @media all and (min-width: 550px) {
           ha-dialog {

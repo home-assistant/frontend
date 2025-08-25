@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
@@ -7,6 +6,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
+import "../../../components/ha-button";
 import "../../../components/ha-settings-row";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -126,17 +126,6 @@ export class CloudGooglePref extends LitElement {
                         <ul>
                           <li>
                             <a
-                              href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.cloud.account.google.enable_ha_skill"
-                              )}
-                            </a>
-                          </li>
-                          <li>
-                            <a
                               href="https://www.nabucasa.com/config/google_assistant/"
                               target="_blank"
                               rel="noreferrer"
@@ -237,24 +226,24 @@ export class CloudGooglePref extends LitElement {
         </div>
         ${google_enabled
           ? html`<div class="card-actions">
-              <a
+              <ha-button
+                appearance="plain"
+                size="small"
                 href="/config/voice-assistants/expose?assistants=cloud.google_assistant&historyBack"
               >
-                <mwc-button>
-                  ${manualConfig
-                    ? this.hass!.localize(
-                        "ui.panel.config.cloud.account.google.show_entities"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.cloud.account.google.exposed_entities",
-                        {
-                          number: this.exposedEntities
-                            ? this._exposedEntitiesCount(this.exposedEntities)
-                            : 0,
-                        }
-                      )}
-                </mwc-button>
-              </a>
+                ${manualConfig
+                  ? this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.show_entities"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.cloud.account.google.exposed_entities",
+                      {
+                        number: this.exposedEntities
+                          ? this._exposedEntitiesCount(this.exposedEntities)
+                          : 0,
+                      }
+                    )}
+              </ha-button>
             </div>`
           : nothing}
       </ha-card>

@@ -9,6 +9,7 @@ import { repeat } from "lit/directives/repeat";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { orderCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import "./ha-icon";
@@ -122,22 +123,6 @@ export class HaItemDisplayEditor extends LitElement {
                   ${description
                     ? html`<span slot="supporting-text">${description}</span>`
                     : nothing}
-                  ${isVisible && !disableSorting
-                    ? html`
-                        <ha-svg-icon
-                          tabindex=${ifDefined(
-                            this.showNavigationButton ? "0" : undefined
-                          )}
-                          .idx=${idx}
-                          @keydown=${this.showNavigationButton
-                            ? this._dragHandleKeydown
-                            : undefined}
-                          class="handle"
-                          .path=${mdiDrag}
-                          slot="start"
-                        ></ha-svg-icon>
-                      `
-                    : html`<ha-svg-icon slot="start"></ha-svg-icon>`}
                   ${!showIcon
                     ? nothing
                     : icon
@@ -157,9 +142,17 @@ export class HaItemDisplayEditor extends LitElement {
                             ></ha-svg-icon>
                           `
                         : nothing}
+                  ${this.showNavigationButton
+                    ? html`
+                        <ha-icon-next slot="end"></ha-icon-next>
+                        <div slot="end" class="separator"></div>
+                      `
+                    : nothing}
                   ${this.actionsRenderer
                     ? html`
-                        <span slot="end"> ${this.actionsRenderer(item)} </span>
+                        <div slot="end" @click=${stopPropagation}>
+                          ${this.actionsRenderer(item)}
+                        </div>
                       `
                     : nothing}
                   <ha-icon-button
@@ -174,9 +167,22 @@ export class HaItemDisplayEditor extends LitElement {
                     .value=${value}
                     @click=${this._toggle}
                   ></ha-icon-button>
-                  ${this.showNavigationButton
-                    ? html` <ha-icon-next slot="end"></ha-icon-next> `
-                    : nothing}
+                  ${isVisible && !disableSorting
+                    ? html`
+                        <ha-svg-icon
+                          tabindex=${ifDefined(
+                            this.showNavigationButton ? "0" : undefined
+                          )}
+                          .idx=${idx}
+                          @keydown=${this.showNavigationButton
+                            ? this._dragHandleKeydown
+                            : undefined}
+                          class="handle"
+                          .path=${mdiDrag}
+                          slot="end"
+                        ></ha-svg-icon>
+                      `
+                    : html`<ha-svg-icon slot="end"></ha-svg-icon>`}
                 </ha-md-list-item>
               `;
             }
@@ -368,6 +374,12 @@ export class HaItemDisplayEditor extends LitElement {
       cursor: move;
       padding: 8px;
       margin: -8px;
+    }
+    .separator {
+      width: 1px;
+      background-color: var(--divider-color);
+      height: 21px;
+      margin: 0 -4px;
     }
     ha-md-list {
       padding: 0;

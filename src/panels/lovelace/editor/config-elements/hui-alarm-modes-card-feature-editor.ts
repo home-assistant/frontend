@@ -113,7 +113,7 @@ export class HuiAlarmModesCardFeatureEditor
       : undefined;
 
     if (customize_modes && !config.modes) {
-      config.modes = stateObj ? supportedAlarmModes(stateObj) : [];
+      config.modes = stateObj ? supportedAlarmModes(stateObj).reverse() : [];
     }
     if (!customize_modes && config.modes) {
       delete config.modes;

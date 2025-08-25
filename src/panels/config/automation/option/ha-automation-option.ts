@@ -27,6 +27,9 @@ export default class HaAutomationOption extends LitElement {
 
   @property({ attribute: false }) public options!: Option[];
 
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -87,6 +90,7 @@ export default class HaAutomationOption extends LitElement {
                 @move-up=${this._moveUp}
                 @value-changed=${this._optionChanged}
                 .hass=${this.hass}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -100,14 +104,15 @@ export default class HaAutomationOption extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
+              appearance="filled"
+              size="small"
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.actions.type.choose.add_option"
-              )}
               @click=${this._addOption}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.add_option"
+              )}
             </ha-button>
           </div>
         </div>
@@ -125,8 +130,13 @@ export default class HaAutomationOption extends LitElement {
         "ha-automation-option-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
-        row.scrollIntoView();
+        if (!this.optionsInSidebar) {
+          row.expand();
+        }
+
+        if (this.narrow) {
+          row.scrollIntoView();
+        }
         row.focus();
       });
     }
@@ -238,7 +248,7 @@ export default class HaAutomationOption extends LitElement {
 
   static styles = css`
     .options {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;
@@ -246,7 +256,7 @@ export default class HaAutomationOption extends LitElement {
     }
     .sortable-ghost {
       background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sortable-drag {
       background: none;
@@ -254,9 +264,6 @@ export default class HaAutomationOption extends LitElement {
     ha-automation-option-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

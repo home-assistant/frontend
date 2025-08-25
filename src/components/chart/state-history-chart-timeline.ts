@@ -66,6 +66,7 @@ export class StateHistoryChartTimeline extends LitElement {
         .options=${this._chartOptions}
         .height=${`${this.data.length * 30 + 30}px`}
         .data=${this._chartData as ECOption["series"]}
+        small-controls
         @chart-click=${this._handleChartClick}
       ></ha-chart-base>
     `;
@@ -100,7 +101,7 @@ export class StateHistoryChartTimeline extends LitElement {
         fill: api.value(4) as string,
       },
     };
-    const text = api.value(3) as string;
+    const text = (api.value(3) as string).replaceAll("\n", " ");
     const textWidth = measureTextWidth(text, 12);
     const LABEL_PADDING = 4;
     if (textWidth < rectShape.width - LABEL_PADDING * 2) {

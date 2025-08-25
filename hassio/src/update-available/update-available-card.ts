@@ -208,14 +208,16 @@ class UpdateAvailableCard extends LitElement {
               <div class="card-actions">
                 ${changelog
                   ? html`
-                      <a href=${changelog} target="_blank" rel="noreferrer">
-                        <ha-button
-                          .label=${this.supervisor.localize(
-                            "update_available.open_release_notes"
-                          )}
-                        >
-                        </ha-button>
-                      </a>
+                      <ha-button
+                        href=${changelog}
+                        target="_blank"
+                        rel="noreferrer"
+                        appearance="plain"
+                      >
+                        ${this.supervisor.localize(
+                          "update_available.open_release_notes"
+                        )}
+                      </ha-button>
                     `
                   : nothing}
                 <span></span>

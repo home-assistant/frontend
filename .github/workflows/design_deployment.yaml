@@ -16,7 +16,7 @@ jobs:
       url: ${{ steps.deploy.outputs.NETLIFY_LIVE_URL || steps.deploy.outputs.NETLIFY_URL }}
     steps:
       - name: Check out files from GitHub
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
 
       - name: Setup Node
         uses: actions/setup-node@v4.4.0

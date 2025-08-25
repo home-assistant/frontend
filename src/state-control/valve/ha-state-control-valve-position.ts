@@ -48,7 +48,7 @@ export class HaStateControlValvePosition extends LitElement {
         max="100"
         show-handle
         @value-changed=${this._valueChanged}
-        .ariaLabel=${computeAttributeNameDisplay(
+        .label=${computeAttributeNameDisplay(
           this.hass.localize,
           this.stateObj,
           this.hass.entities,

@@ -9,7 +9,10 @@ import type {
   ThemeMode,
   TranslationDict,
 } from "../../../types";
-import type { LovelaceCardFeatureConfig } from "../card-features/types";
+import type {
+  LovelaceCardFeatureConfig,
+  LovelaceCardFeaturePosition,
+} from "../card-features/types";
 import type { LegacyStateFilter } from "../common/evaluate-filter";
 import type { Condition, LegacyCondition } from "../common/validate-condition";
 import type { HuiImage } from "../components/hui-image";
@@ -70,6 +73,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-triggered"
     | "last-updated"
     | "position"
+    | "state"
     | "tilt-position"
     | "brightness";
   action_name?: string;
@@ -100,12 +104,22 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
 export interface AreaCardConfig extends LovelaceCardConfig {
-  area: string;
+  area?: string;
+  name?: string;
+  color?: string;
   navigation_path?: string;
+  display_type?: AreaCardDisplayType;
+  /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];
   aspect_ratio?: string;
+  sensor_classes?: string[];
+  alert_classes?: string[];
+  features?: LovelaceCardFeatureConfig[];
+  features_position?: LovelaceCardFeaturePosition;
+  exclude_entities?: string[];
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {
@@ -200,7 +214,7 @@ export interface EnergyCarbonGaugeCardConfig extends EnergyCardBaseConfig {
 export interface EnergySankeyCardConfig extends EnergyCardBaseConfig {
   type: "energy-sankey";
   title?: string;
-  layout?: "vertical" | "horizontal";
+  layout?: "vertical" | "horizontal" | "auto";
   group_by_floor?: boolean;
   group_by_area?: boolean;
 }
@@ -216,6 +230,7 @@ export interface EntityFilterCardConfig extends LovelaceCardConfig {
 
 export interface ErrorCardConfig extends LovelaceCardConfig {
   error?: string;
+  message?: string;
   origConfig?: LovelaceCardConfig;
   severity?: "warning" | "error";
 }
@@ -323,6 +338,7 @@ interface GeoLocationSourceConfig {
   source: string;
   label_mode?: "name" | "state" | "attribute" | "icon";
   attribute?: string;
+  unit?: string;
   focus?: boolean;
 }
 
@@ -359,6 +375,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   show_seconds?: boolean | undefined;
   time_format?: TimeFormat;
   time_zone?: string;
+  no_background?: boolean;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -555,7 +572,7 @@ export interface TileCardConfig extends LovelaceCardConfig {
   icon_hold_action?: ActionConfig;
   icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
-  features_position?: "bottom" | "inline";
+  features_position?: LovelaceCardFeaturePosition;
 }
 
 export interface HeadingCardConfig extends LovelaceCardConfig {

@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -23,7 +24,6 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
-import { PROTOCOL_INTEGRATIONS } from "../../../common/integrations/protocolIntegrationPicked";
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -112,7 +112,8 @@ export class HaIntegrationCard extends LitElement {
     return html`
       <div class="card-actions">
         ${devices.length > 0
-          ? html`<a
+          ? html`<ha-button
+              appearance="plain"
               href=${devices.length === 1 &&
               // Always link to device page for protocol integrations to show Add Device button
               // @ts-expect-error
@@ -120,40 +121,36 @@ export class HaIntegrationCard extends LitElement {
                 ? `/config/devices/device/${devices[0].id}`
                 : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`}
             >
-              <ha-button>
-                ${this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.${
-                    services ? "services" : "devices"
-                  }`,
-                  { count: devices.length }
-                )}
-              </ha-button>
-            </a>`
+              ${this.hass.localize(
+                `ui.panel.config.integrations.config_entry.${
+                  services ? "services" : "devices"
+                }`,
+                { count: devices.length }
+              )}
+            </ha-button>`
           : entitiesCount > 0
-            ? html`<a
+            ? html`<ha-button
+                appearance="plain"
                 href=${`/config/entities?historyBack=1&domain=${this.domain}`}
               >
-                <ha-button>
-                  ${this.hass.localize(
-                    `ui.panel.config.integrations.config_entry.entities`,
-                    { count: entitiesCount }
-                  )}
-                </ha-button>
-              </a>`
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.entities`,
+                  { count: entitiesCount }
+                )}
+              </ha-button>`
             : this.items.find((itm) => itm.source !== "yaml")
-              ? html`<a
+              ? html`<ha-button
+                  appearance="plain"
                   href=${`/config/integrations/integration/${this.domain}`}
                 >
-                  <ha-button>
-                    ${this.hass.localize(
-                      `ui.panel.config.integrations.config_entry.entries`,
-                      {
-                        count: this.items.filter((itm) => itm.source !== "yaml")
-                          .length,
-                      }
-                    )}
-                  </ha-button>
-                </a>`
+                  ${this.hass.localize(
+                    `ui.panel.config.integrations.config_entry.entries`,
+                    {
+                      count: this.items.filter((itm) => itm.source !== "yaml")
+                        .length,
+                    }
+                  )}
+                </ha-button>`
               : html`<div class="spacer"></div>`}
         <div class="icons">
           ${this.manifest && !this.manifest.is_built_in
@@ -163,6 +160,7 @@ export class HaIntegrationCard extends LitElement {
                   : "custom"}"
               >
                 <ha-tooltip
+                  hoist
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
                   .content=${this.hass.localize(
                     this.manifest.overwrites_built_in
@@ -177,6 +175,7 @@ export class HaIntegrationCard extends LitElement {
           ${this.manifest && this.manifest.iot_class?.startsWith("cloud_")
             ? html`<div class="icon cloud">
                 <ha-tooltip
+                  hoist
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
                   .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -191,6 +190,7 @@ export class HaIntegrationCard extends LitElement {
           !this.items.every((itm) => itm.source === "system")
             ? html`<div class="icon yaml">
                 <ha-tooltip
+                  hoist
                   .placement=${computeRTL(this.hass) ? "right" : "left"}
                   .content=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_config_flow"

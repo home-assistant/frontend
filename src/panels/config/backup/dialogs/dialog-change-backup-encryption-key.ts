@@ -128,7 +128,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
                   <ha-button
                     @click=${this._submit}
                     .disabled=${!this._newEncryptionKey}
-                    class="danger"
+                    variant="danger"
                   >
                     ${this.hass.localize(
                       "ui.panel.config.backup.dialogs.change_encryption_key.actions.change"
@@ -176,7 +176,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
                 )}
               </span>
               <ha-button slot="end" @click=${this._downloadOld}>
-                <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.backup.encryption_key.download_old_emergency_kit_action"
                 )}
@@ -211,7 +211,7 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
                 )}
               </span>
               <ha-button slot="end" @click=${this._downloadNew}>
-                <ha-svg-icon .path=${mdiDownload} slot="icon"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiDownload} slot="start"></ha-svg-icon>
                 ${this.hass.localize(
                   "ui.panel.config.backup.encryption_key.download_emergency_kit_action"
                 )}
@@ -296,9 +296,6 @@ class DialogChangeBackupEncryptionKey extends LitElement implements HassDialog {
           background: none;
           --md-list-item-leading-space: 0;
           --md-list-item-trailing-space: 0;
-        }
-        ha-button.danger {
-          --mdc-theme-primary: var(--error-color);
         }
         .encryption-key {
           border: 1px solid var(--divider-color);

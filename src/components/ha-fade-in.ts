@@ -1,8 +1,8 @@
-import SlAnimation from "@shoelace-style/shoelace/dist/components/animation/animation.component";
+import WaAnimation from "@awesome.me/webawesome/dist/components/animation/animation";
 import { customElement, property } from "lit/decorators";
 
 @customElement("ha-fade-in")
-export class HaFadeIn extends SlAnimation {
+export class HaFadeIn extends WaAnimation {
   @property() public name = "fadeIn";
 
   @property() public fill: FillMode = "both";

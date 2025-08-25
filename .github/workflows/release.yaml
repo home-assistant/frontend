@@ -23,7 +23,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
@@ -55,7 +55,7 @@ jobs:
           script/release
 
       - name: Upload release assets
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: |
             dist/*.whl
@@ -74,7 +74,7 @@ jobs:
           echo "home-assistant-frontend==$version" > ./requirements.txt
 
       - name: Build wheels
-        uses: home-assistant/wheels@2025.03.0
+        uses: home-assistant/wheels@2025.07.0
         with:
           abi: cp313
           tag: musllinux_1_2
@@ -90,7 +90,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
       - name: Setup Node
         uses: actions/setup-node@v4.4.0
         with:
@@ -107,7 +107,7 @@ jobs:
       - name: Tar folder
         run: tar -czf landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz -C landing-page/dist .
       - name: Upload release asset
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: landing-page/home_assistant_frontend_landingpage-${{ github.event.release.tag_name }}.tar.gz
 
@@ -119,7 +119,7 @@ jobs:
       contents: write # Required to upload release assets
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
       - name: Setup Node
         uses: actions/setup-node@v4.4.0
         with:
@@ -136,6 +136,6 @@ jobs:
       - name: Tar folder
         run: tar -czf hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz -C hassio/build .
       - name: Upload release asset
-        uses: softprops/action-gh-release@v2.2.2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           files: hassio/home_assistant_frontend_supervisor-${{ github.event.release.tag_name }}.tar.gz

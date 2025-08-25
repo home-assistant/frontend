@@ -1,23 +1,25 @@
-import { ContextProvider, consume } from "@lit/context";
+import { consume, ContextProvider } from "@lit/context";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fullEntitiesContext } from "../../data/context";
-import type { Action } from "../../data/script";
-import { migrateAutomationAction } from "../../data/script";
-import type { ActionSelector } from "../../data/selector";
-import "../../panels/config/automation/action/ha-automation-action";
-import type { HomeAssistant } from "../../types";
 import {
   subscribeEntityRegistry,
   type EntityRegistryEntry,
 } from "../../data/entity_registry";
+import type { Action } from "../../data/script";
+import { migrateAutomationAction } from "../../data/script";
+import type { ActionSelector } from "../../data/selector";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import "../../panels/config/automation/action/ha-automation-action";
+import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-action")
 export class HaActionSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public selector!: ActionSelector;
 
@@ -66,6 +68,8 @@ export class HaActionSelector extends SubscribeMixin(LitElement) {
         .disabled=${this.disabled}
         .actions=${this._actions(this.value)}
         .hass=${this.hass}
+        .narrow=${this.narrow}
+        .optionsInSidebar=${!!this.selector.action?.optionsInSidebar}
       ></ha-automation-action>
     `;
   }

@@ -1,6 +1,5 @@
 import type { LitVirtualizer } from "@lit-labs/virtualizer";
 import { grid } from "@lit-labs/virtualizer/layouts/grid";
-import "@material/mwc-button/mwc-button";
 
 import { mdiArrowUpRight, mdiPlay, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -19,9 +18,9 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
 import { isUnavailableState } from "../../data/entity";
 import type {
-  MediaPlayerItem,
   MediaPickedEvent,
   MediaPlayerBrowseAction,
+  MediaPlayerItem,
   MediaPlayerLayoutType,
 } from "../../data/media-player";
 import {
@@ -33,6 +32,7 @@ import { browseLocalMediaPlayer } from "../../data/media_source";
 import { isTTSMediaSource } from "../../data/tts";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../resources/styles";
+import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
 import {
   brandsUrl,
@@ -42,18 +42,18 @@ import {
 import { documentationUrl } from "../../util/documentation-url";
 import "../entity/ha-entity-picker";
 import "../ha-alert";
+import "../ha-button";
 import "../ha-button-menu";
 import "../ha-card";
-import "../ha-spinner";
 import "../ha-fab";
 import "../ha-icon-button";
-import "../ha-svg-icon";
-import "../ha-tooltip";
 import "../ha-list";
 import "../ha-list-item";
+import "../ha-spinner";
+import "../ha-svg-icon";
+import "../ha-tooltip";
 import "./ha-browse-media-tts";
 import type { TtsMediaPickedEvent } from "./ha-browse-media-tts";
-import { loadVirtualizer } from "../../resources/virtualizer";
 
 declare global {
   interface HASSDomEvents {
@@ -78,7 +78,7 @@ export interface MediaPlayerItemId {
 export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public entityId!: string;
+  @property({ attribute: false }) public entityId?: string;
 
   @property() public action: MediaPlayerBrowseAction = "play";
 
@@ -88,6 +88,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ type: Boolean }) public dialog = false;
 
   @property({ attribute: false }) public navigateIds: MediaPlayerItemId[] = [];
+
+  @property({ attribute: false }) public accept?: string[];
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -250,6 +252,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           });
         } else if (
           err.code === "entity_not_found" &&
+          this.entityId &&
           isUnavailableState(this.hass.states[this.entityId]?.state)
         ) {
           this._setError({
@@ -334,7 +337,37 @@ export class HaMediaPlayerBrowse extends LitElement {
     const subtitle = this.hass.localize(
       `ui.components.media-browser.class.${currentItem.media_class}`
     );
-    const children = currentItem.children || [];
+    let children = currentItem.children || [];
+    const canPlayChildren = new Set<string>();
+
+    // Filter children based on accept property if provided
+    if (this.accept && children.length > 0) {
+      let checks: ((t: string) => boolean)[] = [];
+
+      for (const type of this.accept) {
+        if (type.endsWith("/*")) {
+          const baseType = type.slice(0, -1);
+          checks.push((t) => t.startsWith(baseType));
+        } else if (type === "*") {
+          checks = [() => true];
+          break;
+        } else {
+          checks.push((t) => t === type);
+        }
+      }
+
+      children = children.filter((child) => {
+        const contentType = child.media_content_type.toLowerCase();
+        const canPlay =
+          child.media_content_type &&
+          checks.some((check) => check(contentType));
+        if (canPlay) {
+          canPlayChildren.add(child.media_content_id);
+        }
+        return !child.media_content_type || child.can_expand || canPlay;
+      });
+    }
+
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -367,7 +400,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     ""
                                   )}"
                                 >
-                                  ${this.narrow && currentItem?.can_play
+                                  ${this.narrow &&
+                                  currentItem?.can_play &&
+                                  (!this.accept ||
+                                    canPlayChildren.has(
+                                      currentItem.media_content_id
+                                    ))
                                     ? html`
                                         <ha-fab
                                           mini
@@ -402,8 +440,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             ${currentItem.can_play &&
                             (!currentItem.thumbnail || !this.narrow)
                               ? html`
-                                  <mwc-button
-                                    raised
+                                  <ha-button
                                     .item=${currentItem}
                                     @click=${this._actionClicked}
                                   >
@@ -414,11 +451,12 @@ export class HaMediaPlayerBrowse extends LitElement {
                                       .path=${this.action === "play"
                                         ? mdiPlay
                                         : mdiPlus}
+                                      slot="start"
                                     ></ha-svg-icon>
                                     ${this.hass.localize(
                                       `ui.components.media-browser.${this.action}`
                                     )}
-                                  </mwc-button>
+                                  </ha-button>
                                 `
                               : ""}
                           </div>
@@ -748,11 +786,11 @@ export class HaMediaPlayerBrowse extends LitElement {
   };
 
   private async _fetchData(
-    entityId: string,
+    entityId: string | undefined,
     mediaContentId?: string,
     mediaContentType?: string
   ): Promise<MediaPlayerItem> {
-    return entityId !== BROWSER_PLAYER
+    return entityId && entityId !== BROWSER_PLAYER
       ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
       : browseLocalMediaPlayer(this.hass, mediaContentId);
   }
@@ -952,9 +990,8 @@ export class HaMediaPlayerBrowse extends LitElement {
           min-width: 0;
           flex: 1;
         }
-        .header-info mwc-button {
+        .header-info ha-button {
           display: block;
-          --mdc-theme-primary: var(--primary-color);
           padding-bottom: 16px;
         }
         .breadcrumb {
@@ -1246,7 +1283,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           bottom: -20px;
           right: 20px;
         }
-        :host([narrow]) .header-info mwc-button {
+        :host([narrow]) .header-info ha-button {
           margin-top: 16px;
           margin-bottom: 8px;
         }
@@ -1265,17 +1302,17 @@ export class HaMediaPlayerBrowse extends LitElement {
         :host(:not([narrow])[scrolled]) .header:not(.no-img) ha-icon-button {
           align-self: center;
         }
-        :host([scrolled]) .header-info mwc-button,
-        .no-img .header-info mwc-button {
+        :host([scrolled]) .header-info ha-button,
+        .no-img .header-info ha-button {
           padding-right: 4px;
         }
-        :host([scrolled][narrow]) .no-img .header-info mwc-button {
+        :host([scrolled][narrow]) .no-img .header-info ha-button {
           padding-right: 16px;
         }
         :host([scrolled]) .header-info {
           flex-direction: row;
         }
-        :host([scrolled]) .header-info mwc-button {
+        :host([scrolled]) .header-info ha-button {
           align-self: center;
           margin-top: 0;
           margin-bottom: 0;

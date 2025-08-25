@@ -1,5 +1,3 @@
-import "@material/mwc-button";
-import { formatInTimeZone, toDate } from "date-fns-tz";
 import {
   addDays,
   addHours,
@@ -7,6 +5,7 @@ import {
   differenceInMilliseconds,
   startOfHour,
 } from "date-fns";
+import { formatInTimeZone, toDate } from "date-fns-tz";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -19,6 +18,7 @@ import { supportsFeature } from "../../common/entity/supports-feature";
 import { isDate } from "../../common/string/is_date";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
 import "../../components/ha-formfield";
@@ -262,34 +262,35 @@ class DialogCalendarEventEditor extends LitElement {
         </div>
         ${isCreate
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._createEvent}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.calendar.event.add")}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._saveEvent}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.calendar.event.save")}
-              </mwc-button>
+              </ha-button>
               ${this._params.canDelete
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      appearance="plain"
+                      variant="danger"
                       @click=${this._deleteEvent}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize(
                         "ui.components.calendar.event.delete"
                       )}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
             `}

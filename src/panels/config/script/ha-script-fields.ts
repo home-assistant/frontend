@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -22,6 +21,8 @@ export default class HaScriptFields extends LitElement {
 
   @property({ attribute: false }) public highlightedFields?: Fields;
 
+  @property({ type: Boolean }) public narrow = false;
+
   private _focusLastActionOnChange = false;
 
   protected render() {
@@ -40,6 +41,7 @@ export default class HaScriptFields extends LitElement {
                   @value-changed=${this._fieldChanged}
                   .hass=${this.hass}
                   ?highlight=${this.highlightedFields?.[key] !== undefined}
+                  .narrow=${this.narrow}
                 >
                 </ha-script-field-row>
               `
@@ -47,14 +49,13 @@ export default class HaScriptFields extends LitElement {
           </div> `
         : nothing}
       <ha-button
-        outlined
+        appearance="filled"
+        size="small"
         @click=${this._addField}
         .disabled=${this.disabled}
-        .label=${this.hass.localize(
-          "ui.panel.config.script.editor.field.add_field"
-        )}
       >
-        <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+        <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+        ${this.hass.localize("ui.panel.config.script.editor.field.add_field")}
       </ha-button>
     `;
   }
@@ -73,8 +74,11 @@ export default class HaScriptFields extends LitElement {
       "ha-script-field-row:last-of-type"
     )!;
     row.updateComplete.then(() => {
-      row.expand();
-      row.scrollIntoView();
+      row.openSidebar();
+
+      if (this.narrow) {
+        row.scrollIntoView();
+      }
       row.focus();
     });
   }

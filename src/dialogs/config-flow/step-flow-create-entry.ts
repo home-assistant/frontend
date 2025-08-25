@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,6 +10,7 @@ import {
 import { computeDomain } from "../../common/entity/compute_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-area-picker";
+import "../../components/ha-button";
 import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { DeviceRegistryEntry } from "../../data/device_registry";
@@ -171,10 +171,10 @@ class StepFlowCreateEntry extends LitElement {
               `}
       </div>
       <div class="buttons">
-        <mwc-button @click=${this._flowDone}
+        <ha-button @click=${this._flowDone}
           >${localize(
             `ui.panel.config.integrations.config_flow.${!this.devices.length || Object.keys(this._deviceUpdate).length ? "finish" : "finish_skip"}`
-          )}</mwc-button
+          )}</ha-button
         >
       </div>
     `;
@@ -212,7 +212,10 @@ class StepFlowCreateEntry extends LitElement {
         entityIds.push(...entities.map((entity) => entity.entity_id));
       });
 
-      const entityIdsMapping = getAutomaticEntityIds(this.hass, entityIds);
+      const entityIdsMapping = await getAutomaticEntityIds(
+        this.hass,
+        entityIds
+      );
 
       Object.entries(entityIdsMapping).forEach(([oldEntityId, newEntityId]) => {
         if (newEntityId) {
@@ -235,9 +238,13 @@ class StepFlowCreateEntry extends LitElement {
 
     fireEvent(this, "flow-update", { step: undefined });
     if (this.step.result && this.navigateToResult) {
-      navigate(
-        `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-      );
+      if (this.devices.length === 1) {
+        navigate(`/config/devices/device/${this.devices[0].id}`);
+      } else {
+        navigate(
+          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
+        );
+      }
     }
   }
 

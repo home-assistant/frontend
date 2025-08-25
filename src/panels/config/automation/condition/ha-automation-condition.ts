@@ -16,6 +16,7 @@ import type {
   AutomationClipboard,
   Condition,
 } from "../../../../data/automation";
+import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import type { HomeAssistant } from "../../../../types";
 import {
   PASTE_VALUE,
@@ -33,6 +34,13 @@ export default class HaAutomationCondition extends LitElement {
   @property({ attribute: false }) public highlightedConditions?: Condition[];
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean }) public root = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
 
   @state() private _showReorder = false;
 
@@ -94,8 +102,18 @@ export default class HaAutomationCondition extends LitElement {
         "ha-automation-condition-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
-        row.scrollIntoView();
+        // on new condition open the settings in the sidebar, except for building blocks
+        if (
+          this.optionsInSidebar &&
+          !CONDITION_BUILDING_BLOCKS.includes(row.condition.condition)
+        ) {
+          row.openSidebar();
+        } else if (!this.optionsInSidebar) {
+          row.expand();
+        }
+        if (this.narrow) {
+          row.scrollIntoView();
+        }
         row.focus();
       });
     }
@@ -138,12 +156,14 @@ export default class HaAutomationCondition extends LitElement {
                 .totalConditions=${this.conditions.length}
                 .condition=${cond}
                 .disabled=${this.disabled}
+                .narrow=${this.narrow}
                 @duplicate=${this._duplicateCondition}
                 @move-down=${this._moveDown}
                 @move-up=${this._moveUp}
                 @value-changed=${this._conditionChanged}
                 .hass=${this.hass}
                 ?highlight=${this.highlightedConditions?.includes(cond)}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -157,23 +177,26 @@ export default class HaAutomationCondition extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
+              @click=${this._addConditionDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
+            >
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
                 "ui.panel.config.automation.editor.conditions.add"
               )}
-              @click=${this._addConditionDialog}
-            >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
             </ha-button>
             <ha-button
               .disabled=${this.disabled}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.conditions.add_building_block"
-              )}
+              appearance="plain"
+              .size=${this.root ? "medium" : "small"}
               @click=${this._addConditionBuildingBlockDialog}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.conditions.add_building_block"
+              )}
             </ha-button>
           </div>
         </div>
@@ -258,7 +281,7 @@ export default class HaAutomationCondition extends LitElement {
   private async _conditionAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const conditions = [
+    let conditions = [
       ...this.conditions.slice(0, index),
       data,
       ...this.conditions.slice(index),
@@ -266,7 +289,15 @@ export default class HaAutomationCondition extends LitElement {
     // Add condition locally to avoid UI jump
     this.conditions = conditions;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.conditions });
+    if (this.conditions !== conditions) {
+      // Ensure condition is added even after update
+      conditions = [
+        ...this.conditions.slice(0, index),
+        data,
+        ...this.conditions.slice(index),
+      ];
+    }
+    fireEvent(this, "value-changed", { value: conditions });
   }
 
   private async _conditionRemoved(ev: CustomEvent): Promise<void> {
@@ -279,6 +310,7 @@ export default class HaAutomationCondition extends LitElement {
     // Ensure condition is removed even after update
     const conditions = this.conditions.filter((c) => c !== condition);
     fireEvent(this, "value-changed", { value: conditions });
+    fireEvent(this, "close-sidebar");
   }
 
   private _conditionChanged(ev: CustomEvent) {
@@ -312,15 +344,18 @@ export default class HaAutomationCondition extends LitElement {
 
   static styles = css`
     .conditions {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
+    :host([root]) .conditions {
+      padding-right: 8px;
+    }
     .sortable-ghost {
       background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sortable-drag {
       background: none;
@@ -328,12 +363,6 @@ export default class HaAutomationCondition extends LitElement {
     ha-automation-condition-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    .buttons {
-      order: 1;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;
@@ -348,6 +377,7 @@ export default class HaAutomationCondition extends LitElement {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      order: 1;
     }
   `;
 }

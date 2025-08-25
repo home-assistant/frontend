@@ -191,12 +191,6 @@ export class AreaViewStrategy extends ReactiveElement {
       type: "sections",
       header: {
         badges_position: "bottom",
-        layout: "responsive",
-        card: {
-          type: "markdown",
-          text_only: true,
-          content: `## ${area.name}`,
-        },
       },
       max_columns: maxColumns,
       sections: sections,

@@ -18,6 +18,10 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PictureCardConfig } from "./types";
 import type { PersonEntity } from "../../../data/person";
+import {
+  isMediaSourceContentId,
+  resolveMediaSource,
+} from "../../../data/media_source";
 
 @customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
@@ -37,6 +41,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: PictureCardConfig;
 
+  @state() private _resolvedImage?: string;
+
   public getCardSize(): number {
     return 5;
   }
@@ -53,7 +59,11 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (!this._config || hasConfigChanged(this, changedProps)) {
+    if (
+      !this._config ||
+      hasConfigChanged(this, changedProps) ||
+      changedProps.has("_resolvedImage")
+    ) {
       return true;
     }
     if (this._config.image_entity && changedProps.has("hass")) {
@@ -68,6 +78,33 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     }
 
     return false;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const firstHass =
+      changedProps.has("hass") && changedProps.get("hass") === undefined;
+    const imageChanged =
+      changedProps.has("_config") &&
+      changedProps.get("_config")?.image !== this._config?.image;
+
+    if (
+      (firstHass || imageChanged) &&
+      typeof this._config?.image === "string" &&
+      isMediaSourceContentId(this._config.image)
+    ) {
+      this._resolvedImage = undefined;
+      resolveMediaSource(this.hass, this._config?.image).then((result) => {
+        this._resolvedImage = result.url;
+      });
+    } else if (imageChanged) {
+      this._resolvedImage = this._config?.image;
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -106,7 +143,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
       }
     }
 
-    let image: string | undefined = this._config.image;
+    let image: string | undefined = this._resolvedImage;
     if (this._config.image_entity) {
       const domain: string = computeDomain(this._config.image_entity);
       switch (domain) {
@@ -119,6 +156,11 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           }
           break;
       }
+    }
+
+    if (image === undefined) {
+      // Bail if we're waiting for our image to be resolved from the media-source.
+      return nothing;
     }
 
     return html`

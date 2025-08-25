@@ -1,22 +1,20 @@
 import { css } from "lit";
-import {
-  extractDerivedVars,
-  extractVar,
-  extractVars,
-} from "../../common/style/derived-css-vars";
+import { extractVar } from "../../../common/style/derived-css-vars";
+import { coreColorVariables } from "./core.globals";
 
 export const colorStyles = css`
   html {
     /* text */
-    --primary-text-color: #212121;
-    --secondary-text-color: #727272;
+    --primary-text-color: var(--ha-color-text-primary);
+    --secondary-text-color: var(--ha-color-text-secondary);
     --text-primary-color: #ffffff;
     --text-light-primary-color: #212121;
     --disabled-text-color: #bdbdbd;
 
     /* main interface colors */
-    --primary-color: #03a9f4;
+    --primary-color: var(--ha-color-primary-40);
     --dark-primary-color: #0288d1;
+    --darker-primary-color: #016194;
     --light-primary-color: #b3e5fc;
     --accent-color: #ff9800;
     --divider-color: rgba(0, 0, 0, 0.12);
@@ -24,12 +22,17 @@ export const colorStyles = css`
     --outline-hover-color: rgba(0, 0, 0, 0.24);
 
     /* rgb */
-    --rgb-primary-color: 3, 169, 244;
+    --rgb-primary-color: 0, 154, 199;
     --rgb-accent-color: 255, 152, 0;
     --rgb-primary-text-color: 33, 33, 33;
     --rgb-secondary-text-color: 114, 114, 114;
     --rgb-text-primary-color: 255, 255, 255;
     --rgb-card-background-color: 255, 255, 255;
+
+    --rgb-warning-color: 255, 166, 0;
+    --rgb-error-color: 219, 68, 55;
+    --rgb-success-color: 67, 160, 71;
+    --rgb-info-color: 3, 155, 229;
 
     --scrollbar-thumb-color: rgb(194, 194, 194);
 
@@ -298,7 +301,7 @@ export const colorStyles = css`
   }
 `;
 
-const darkColorStyles = css`
+export const darkColorStyles = css`
   html {
     --primary-background-color: #111111;
     --card-background-color: #1c1c1c;
@@ -352,11 +355,17 @@ const darkColorStyles = css`
     --map-filter: invert(0.9) hue-rotate(170deg) brightness(1.5) contrast(1.2)
       saturate(0.3);
     --disabled-color: #464646;
+
+    --ha-button-primary-light-color: #4082a040;
+    --ha-button-warning-light-color: #917b54c1;
+    --ha-button-neutral-color: #d9dae0;
+    --ha-button-neutral-light-color: #6a7081;
   }
 `;
-export const colorDerivedVariables = extractDerivedVars(colorStyles);
-export const colorVariables = extractVars(colorStyles);
-export const darkColorVariables = extractVars(darkColorStyles);
 
-export const DefaultPrimaryColor = extractVar(colorStyles, "primary-color");
+export const DefaultPrimaryColor = extractVar(
+  colorStyles,
+  "primary-color",
+  coreColorVariables
+);
 export const DefaultAccentColor = extractVar(colorStyles, "accent-color");

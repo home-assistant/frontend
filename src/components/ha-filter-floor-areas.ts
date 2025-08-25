@@ -20,6 +20,7 @@ import "./ha-icon-button";
 import "./ha-list";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
+import { deepEqual } from "../common/util/deep-equal";
 
 @customElement("ha-filter-floor-areas")
 export class HaFilterFloorAreas extends LitElement {
@@ -41,10 +42,11 @@ export class HaFilterFloorAreas extends LitElement {
   public willUpdate(properties: PropertyValues) {
     super.willUpdate(properties);
 
-    if (!this.hasUpdated) {
-      if (this.value?.floors?.length || this.value?.areas?.length) {
-        this._findRelated();
-      }
+    if (
+      properties.has("value") &&
+      !deepEqual(this.value, properties.get("value"))
+    ) {
+      this._findRelated();
     }
   }
 
@@ -174,8 +176,6 @@ export class HaFilterFloorAreas extends LitElement {
     }
 
     listItem.selected = this.value[type]?.includes(value);
-
-    this._findRelated();
   }
 
   protected updated(changed) {
@@ -186,10 +186,6 @@ export class HaFilterFloorAreas extends LitElement {
           `${this.clientHeight - 49}px`;
       }, 300);
     }
-  }
-
-  protected firstUpdated() {
-    this._findRelated();
   }
 
   private _expandedWillChange(ev) {
@@ -226,6 +222,7 @@ export class HaFilterFloorAreas extends LitElement {
       !this.value ||
       (!this.value.areas?.length && !this.value.floors?.length)
     ) {
+      this.value = {};
       fireEvent(this, "data-table-filter-changed", {
         value: {},
         items: undefined,
@@ -332,9 +329,8 @@ export class HaFilterFloorAreas extends LitElement {
         }
         .subdir {
           margin-inline-end: 8px;
-          opacity: .6;
+          opacity: 0.6;
         }
-        .
       `,
     ];
   }

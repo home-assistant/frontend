@@ -5,6 +5,7 @@ import "./hui-card-feature";
 import type {
   LovelaceCardFeatureConfig,
   LovelaceCardFeatureContext,
+  LovelaceCardFeaturePosition,
 } from "./types";
 
 @customElement("hui-card-features")
@@ -16,6 +17,9 @@ export class HuiCardFeatures extends LitElement {
   @property({ attribute: false }) public features?: LovelaceCardFeatureConfig[];
 
   @property({ attribute: false }) public color?: string;
+
+  @property({ attribute: false })
+  public position?: LovelaceCardFeaturePosition;
 
   protected render() {
     if (!this.features) {
@@ -29,6 +33,7 @@ export class HuiCardFeatures extends LitElement {
             .context=${this.context}
             .color=${this.color}
             .feature=${feature}
+            .position=${this.position}
           ></hui-card-feature>
         `
       )}
@@ -41,6 +46,7 @@ export class HuiCardFeatures extends LitElement {
       --feature-height: 42px;
       --feature-border-radius: 12px;
       --feature-button-spacing: 12px;
+      pointer-events: none;
       position: relative;
       width: 100%;
       display: flex;

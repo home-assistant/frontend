@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { mdiPencil, mdiDownload } from "@mdi/js";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
+import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-list-item";
 import "../../components/ha-top-app-bar-fixed";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
@@ -24,8 +25,6 @@ import type {
 import {
   computeConsumptionData,
   getEnergyDataCollection,
-  getEnergyGasUnit,
-  getEnergyWaterUnit,
   getSummedData,
 } from "../../data/energy";
 import { fileDownload } from "../../util/file_download";
@@ -51,6 +50,8 @@ class PanelEnergy extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this.hass.loadFragmentTranslation("lovelace");
@@ -67,15 +68,29 @@ class PanelEnergy extends LitElement {
     }
   }
 
+  private _back(ev) {
+    ev.stopPropagation();
+    history.back();
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="header">
         <div class="toolbar">
-          <ha-menu-button
-            slot="navigationIcon"
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-          ></ha-menu-button>
+          ${this._searchParms.has("historyBack")
+            ? html`
+                <ha-icon-button-arrow-prev
+                  @click=${this._back}
+                  slot="navigationIcon"
+                ></ha-icon-button-arrow-prev>
+              `
+            : html`
+                <ha-menu-button
+                  slot="navigationIcon"
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></ha-menu-button>
+              `}
           ${!this.narrow
             ? html`<div class="main-title">
                 ${this.hass.localize("panel.energy")}
@@ -153,12 +168,7 @@ class PanelEnergy extends LitElement {
       return;
     }
 
-    const gasUnit = getEnergyGasUnit(
-      this.hass,
-      energyData.prefs,
-      energyData.state.statsMetadata
-    );
-    const waterUnit = getEnergyWaterUnit(this.hass);
+    const gasUnit = energyData.state.gasUnit;
     const electricUnit = "kWh";
 
     const energy_sources = energyData.prefs.energy_sources;
@@ -335,7 +345,7 @@ class PanelEnergy extends LitElement {
     printCategory(
       "water_consumption",
       water_consumptions,
-      waterUnit,
+      energyData.state.waterUnit,
       "water_consumption_cost",
       water_consumptions_cost
     );

@@ -12,6 +12,7 @@ import "./ha-picker-combo-box";
 import type {
   HaPickerComboBox,
   PickerComboBoxItem,
+  PickerComboBoxSearchFn,
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
 import type { HaPickerField, PickerValueRenderer } from "./ha-picker-field";
@@ -57,6 +58,9 @@ export class HaGenericPicker extends LitElement {
   @property({ attribute: false })
   public valueRenderer?: PickerValueRenderer;
 
+  @property({ attribute: false })
+  public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
+
   @property({ attribute: "not-found-label", type: String })
   public notFoundLabel?: string;
 
@@ -68,7 +72,9 @@ export class HaGenericPicker extends LitElement {
 
   protected render() {
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      ${this.label
+        ? html`<label ?disabled=${this.disabled}>${this.label}</label>`
+        : nothing}
       <div class="container">
         ${!this._opened
           ? html`
@@ -102,16 +108,19 @@ export class HaGenericPicker extends LitElement {
                 .notFoundLabel=${this.notFoundLabel}
                 .getItems=${this.getItems}
                 .getAdditionalItems=${this.getAdditionalItems}
+                .searchFn=${this.searchFn}
               ></ha-picker-combo-box>
             `}
-        ${this._renderHelper()}
       </div>
+      ${this._renderHelper()}
     `;
   }
 
   private _renderHelper() {
     return this.helper
-      ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+      ? html`<ha-input-helper-text .disabled=${this.disabled}
+          >${this.helper}</ha-input-helper-text
+        >`
       : nothing;
   }
 
@@ -160,9 +169,16 @@ export class HaGenericPicker extends LitElement {
           position: relative;
           display: block;
         }
+        label[disabled] {
+          color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
+        }
         label {
           display: block;
           margin: 0 0 8px;
+        }
+        ha-input-helper-text {
+          display: block;
+          margin: 8px 0 0;
         }
       `,
     ];

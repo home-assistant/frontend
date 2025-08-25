@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { mdiDeleteForever, mdiDotsVertical, mdiDownload } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,6 +5,7 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-list-item";
@@ -148,22 +148,25 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
               </div>
 
               <div class="card-actions">
-                <a
+                <ha-button
+                  appearance="filled"
                   href="https://account.nabucasa.com"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.cloud.account.manage_account"
-                    )}
-                  </mwc-button>
-                </a>
-                <mwc-button @click=${this._signOut} class="warning">
+                  ${this.hass.localize(
+                    "ui.panel.config.cloud.account.manage_account"
+                  )}
+                </ha-button>
+                <ha-button
+                  @click=${this._signOut}
+                  variant="danger"
+                  appearance="plain"
+                >
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.sign_out"
                   )}
-                </mwc-button>
+                </ha-button>
               </div>
             </ha-card>
           </ha-config-section>
@@ -204,6 +207,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
 
             <cloud-tts-pref
               .hass=${this.hass}
+              .narrow=${this.narrow}
               .cloudStatus=${this.cloudStatus}
             ></cloud-tts-pref>
 
@@ -359,7 +363,7 @@ export class CloudAccount extends SubscribeMixin(LitElement) {
           flex-direction: row-reverse;
           justify-content: space-between;
         }
-        mwc-button {
+        ha-button {
           align-self: center;
         }
         .wrap {

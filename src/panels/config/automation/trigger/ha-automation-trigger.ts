@@ -36,6 +36,13 @@ export default class HaAutomationTrigger extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
+    false;
+
+  @property({ type: Boolean }) public root = false;
+
   @state() private _showReorder = false;
 
   @state()
@@ -95,7 +102,9 @@ export default class HaAutomationTrigger extends LitElement {
                 @value-changed=${this._triggerChanged}
                 .hass=${this.hass}
                 .disabled=${this.disabled}
+                .narrow=${this.narrow}
                 ?highlight=${this.highlightedTriggers?.includes(trg)}
+                .optionsInSidebar=${this.optionsInSidebar}
               >
                 ${this._showReorder && !this.disabled
                   ? html`
@@ -109,14 +118,15 @@ export default class HaAutomationTrigger extends LitElement {
           )}
           <div class="buttons">
             <ha-button
-              outlined
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.add"
-              )}
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
+              .appearance=${this.root ? "accent" : "filled"}
+              .size=${this.root ? "medium" : "small"}
             >
-              <ha-svg-icon .path=${mdiPlus} slot="icon"></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.triggers.add"
+              )}
+              <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
             </ha-button>
           </div>
         </div>
@@ -165,8 +175,14 @@ export default class HaAutomationTrigger extends LitElement {
         "ha-automation-trigger-row:last-of-type"
       )!;
       row.updateComplete.then(() => {
-        row.expand();
-        row.scrollIntoView();
+        if (this.optionsInSidebar) {
+          row.openSidebar();
+        } else {
+          row.expand();
+        }
+        if (this.narrow) {
+          row.scrollIntoView();
+        }
         row.focus();
       });
     }
@@ -220,7 +236,7 @@ export default class HaAutomationTrigger extends LitElement {
   private async _triggerAdded(ev: CustomEvent): Promise<void> {
     ev.stopPropagation();
     const { index, data } = ev.detail;
-    const triggers = [
+    let triggers = [
       ...this.triggers.slice(0, index),
       data,
       ...this.triggers.slice(index),
@@ -228,7 +244,15 @@ export default class HaAutomationTrigger extends LitElement {
     // Add trigger locally to avoid UI jump
     this.triggers = triggers;
     await nextRender();
-    fireEvent(this, "value-changed", { value: this.triggers });
+    if (this.triggers !== triggers) {
+      // Ensure trigger is added even after update
+      triggers = [
+        ...this.triggers.slice(0, index),
+        data,
+        ...this.triggers.slice(index),
+      ];
+    }
+    fireEvent(this, "value-changed", { value: triggers });
   }
 
   private async _triggerRemoved(ev: CustomEvent): Promise<void> {
@@ -272,15 +296,18 @@ export default class HaAutomationTrigger extends LitElement {
 
   static styles = css`
     .triggers {
-      padding: 16px;
+      padding: 16px 0 16px 16px;
       margin: -16px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
+    :host([root]) .triggers {
+      padding-right: 8px;
+    }
     .sortable-ghost {
       background: none;
-      border-radius: var(--ha-card-border-radius, 12px);
+      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
     }
     .sortable-drag {
       background: none;
@@ -288,9 +315,6 @@ export default class HaAutomationTrigger extends LitElement {
     ha-automation-trigger-row {
       display: block;
       scroll-margin-top: 48px;
-    }
-    ha-svg-icon {
-      height: 20px;
     }
     .handle {
       padding: 12px;

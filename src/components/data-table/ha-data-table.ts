@@ -72,6 +72,7 @@ export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
   label?: TemplateResult | string;
   type?:
     | "numeric"
+    | "ip"
     | "icon"
     | "icon-button"
     | "overflow"
@@ -506,7 +507,9 @@ export class HaDataTable extends LitElement {
                     this.hasFab,
                     this.groupColumn,
                     this.groupOrder,
-                    this._collapsedGroups
+                    this._collapsedGroups,
+                    this.sortColumn,
+                    this.sortDirection
                   )}
                   .keyFunction=${this._keyFunction}
                   .renderItem=${renderRow}
@@ -701,22 +704,37 @@ export class HaDataTable extends LitElement {
       hasFab: boolean,
       groupColumn: string | undefined,
       groupOrder: string[] | undefined,
-      collapsedGroups: string[]
+      collapsedGroups: string[],
+      sortColumn: string | undefined,
+      sortDirection: SortingDirection
     ) => {
       if (appendRow || hasFab || groupColumn) {
         let items = [...data];
 
         if (groupColumn) {
+          const isGroupSortColumn = sortColumn === groupColumn;
           const grouped = groupBy(items, (item) => item[groupColumn]);
           if (grouped.undefined) {
             // make sure ungrouped items are at the bottom
             grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
             delete grouped.undefined;
           }
-          const sorted: Record<string, DataTableRowData[]> = Object.keys(
+          const sortedEntries: [string, DataTableRowData[]][] = Object.keys(
             grouped
           )
             .sort((a, b) => {
+              if (!groupOrder && isGroupSortColumn) {
+                const comparison = stringCompare(
+                  a,
+                  b,
+                  this.hass.locale.language
+                );
+                if (sortDirection === "asc") {
+                  return comparison;
+                }
+                return comparison * -1;
+              }
+
               const orderA = groupOrder?.indexOf(a) ?? -1;
               const orderB = groupOrder?.indexOf(b) ?? -1;
               if (orderA !== orderB) {
@@ -734,12 +752,19 @@ export class HaDataTable extends LitElement {
                 this.hass.locale.language
               );
             })
-            .reduce((obj, key) => {
-              obj[key] = grouped[key];
-              return obj;
-            }, {});
+            .reduce(
+              (entries, key) => {
+                const entry: [string, DataTableRowData[]] = [key, grouped[key]];
+
+                entries.push(entry);
+                return entries;
+              },
+              [] as [string, DataTableRowData[]][]
+            );
+
           const groupedItems: DataTableRowData[] = [];
-          Object.entries(sorted).forEach(([groupName, rows]) => {
+          sortedEntries.forEach(([groupName, rows]) => {
+            const collapsed = collapsedGroups.includes(groupName);
             groupedItems.push({
               append: true,
               selectable: false,
@@ -751,9 +776,10 @@ export class HaDataTable extends LitElement {
               >
                 <ha-icon-button
                   .path=${mdiChevronUp}
-                  class=${collapsedGroups.includes(groupName)
-                    ? "collapsed"
-                    : ""}
+                  .label=${this.hass.localize(
+                    `ui.components.data-table.${collapsed ? "expand" : "collapse"}`
+                  )}
+                  class=${collapsed ? "collapsed" : ""}
                 >
                 </ha-icon-button>
                 ${groupName === UNDEFINED_GROUP_KEY
@@ -833,7 +859,9 @@ export class HaDataTable extends LitElement {
       this.hasFab,
       this.groupColumn,
       this.groupOrder,
-      this._collapsedGroups
+      this._collapsedGroups,
+      this.sortColumn,
+      this.sortDirection
     );
 
     if (
@@ -904,7 +932,7 @@ export class HaDataTable extends LitElement {
         .find((el) =>
           [
             "ha-checkbox",
-            "mwc-button",
+            "ha-button",
             "ha-button",
             "ha-icon-button",
             "ha-assist-chip",

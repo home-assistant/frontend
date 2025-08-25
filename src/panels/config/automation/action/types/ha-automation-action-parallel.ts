@@ -15,7 +15,11 @@ export class HaParallelAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ attribute: false }) public action!: ParallelAction;
+
+  @property({ type: Boolean }) public indent = false;
 
   public static get defaultConfig(): ParallelAction {
     return {
@@ -29,9 +33,11 @@ export class HaParallelAction extends LitElement implements ActionElement {
     return html`
       <ha-automation-action
         .actions=${action.parallel}
+        .narrow=${this.narrow}
         .disabled=${this.disabled}
         @value-changed=${this._actionsChanged}
         .hass=${this.hass}
+        .optionsInSidebar=${this.indent}
       ></ha-automation-action>
     `;
   }

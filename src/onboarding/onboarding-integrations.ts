@@ -18,6 +18,7 @@ import "./integration-badge";
 import { onBoardingStyles } from "./styles";
 
 const HIDDEN_DOMAINS = new Set([
+  "backup",
   "google_translate",
   "hassio",
   "met",
@@ -134,7 +135,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           )}
         </p>
         <div class="footer">
-          <ha-button unelevated @click=${this._finish}>
+          <ha-button @click=${this._finish}>
             ${this.onboardingLocalize(
               "ui.panel.page-onboarding.integration.finish"
             )}
@@ -175,7 +176,7 @@ class OnboardingIntegrations extends SubscribeMixin(LitElement) {
           : nothing}
       </div>
       <div class="footer">
-        <ha-button unelevated @click=${this._finish}>
+        <ha-button @click=${this._finish}>
           ${this.onboardingLocalize(
             "ui.panel.page-onboarding.integration.finish"
           )}

@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -413,6 +412,34 @@ const SCHEMAS: {
             mode: "list",
             multiple: true,
             options: ["Option 1", "Option 2", "Option 3", "Option 4"],
+          },
+        },
+      },
+      items: {
+        name: "Items",
+        selector: {
+          object: {
+            label_field: "name",
+            description_field: "value",
+            multiple: true,
+            fields: {
+              name: {
+                label: "Name",
+                selector: { text: {} },
+                required: true,
+              },
+              value: {
+                label: "Value",
+                selector: {
+                  number: {
+                    mode: "slider",
+                    min: 0,
+                    max: 100,
+                    unit_of_measurement: "%",
+                  },
+                },
+              },
+            },
           },
         },
       },

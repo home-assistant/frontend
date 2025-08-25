@@ -23,7 +23,10 @@ import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
-import type { PickerComboBoxItem } from "../ha-picker-combo-box";
+import type {
+  PickerComboBoxItem,
+  PickerComboBoxSearchFn,
+} from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
 import "./state-badge";
@@ -50,6 +53,9 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
+
+  @property({ type: Boolean, attribute: "show-entity-id" })
+  public showEntityId = false;
 
   @property() public label?: string;
 
@@ -166,11 +172,15 @@ export class HaEntityPicker extends LitElement {
     `;
   };
 
+  private get _showEntityId() {
+    return this.showEntityId || this.hass.userData?.showEntityIdPicker;
+  }
+
   private _rowRenderer: ComboBoxLitRenderer<EntityComboBoxItem> = (
     item,
     { index }
   ) => {
-    const showEntityId = this.hass.userData?.showEntityIdPicker;
+    const showEntityId = this._showEntityId;
 
     return html`
       <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
@@ -390,6 +400,7 @@ export class HaEntityPicker extends LitElement {
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .label=${this.label}
+        .helper=${this.helper}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${notFoundLabel}
         .placeholder=${placeholder}
@@ -398,12 +409,30 @@ export class HaEntityPicker extends LitElement {
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
         .hideClearIcon=${this.hideClearIcon}
+        .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;
   }
+
+  private _searchFn: PickerComboBoxSearchFn<EntityComboBoxItem> = (
+    search,
+    filteredItems
+  ) => {
+    // If there is exact match for entity id, put it first
+    const index = filteredItems.findIndex(
+      (item) => item.stateObj?.entity_id === search
+    );
+    if (index === -1) {
+      return filteredItems;
+    }
+
+    const [exactMatch] = filteredItems.splice(index, 1);
+    filteredItems.unshift(exactMatch);
+    return filteredItems;
+  };
 
   public async open() {
     await this.updateComplete;

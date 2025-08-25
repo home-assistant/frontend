@@ -1,4 +1,3 @@
-import "@material/mwc-button";
 import { formatInTimeZone, toDate } from "date-fns-tz";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -8,6 +7,7 @@ import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import "../../components/ha-alert";
+import "../../components/ha-button";
 import "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import { createCloseHeading } from "../../components/ha-dialog";
@@ -188,34 +188,35 @@ class DialogTodoItemEditor extends LitElement {
         </div>
         ${isCreate
           ? html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._createItem}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.add")}
-              </mwc-button>
+              </ha-button>
             `
           : html`
-              <mwc-button
+              <ha-button
                 slot="primaryAction"
                 @click=${this._saveItem}
                 .disabled=${!canUpdate || this._submitting}
               >
                 ${this.hass.localize("ui.components.todo.item.save")}
-              </mwc-button>
+              </ha-button>
               ${this._todoListSupportsFeature(
                 TodoListEntityFeature.DELETE_TODO_ITEM
               )
                 ? html`
-                    <mwc-button
+                    <ha-button
                       slot="secondaryAction"
-                      class="warning"
+                      variant="danger"
+                      appearance="plain"
                       @click=${this._deleteItem}
                       .disabled=${this._submitting}
                     >
                       ${this.hass.localize("ui.components.todo.item.delete")}
-                    </mwc-button>
+                    </ha-button>
                   `
                 : ""}
             `}
