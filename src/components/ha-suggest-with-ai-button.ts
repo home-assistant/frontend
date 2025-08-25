@@ -173,22 +173,22 @@ export class HaSuggestWithAIButton extends LitElement {
     }
 
     ha-assist-chip.error {
-      box-shadow: 0 0 12px 4px rgba(var(--rgb-error-color), 0.8);
+      box-shadow: 0 0 12px 4px rgb(from var(--error-color) r g b / 0.8);
     }
 
     ha-assist-chip.done {
-      box-shadow: 0 0 12px 4px rgba(var(--rgb-primary-color), 0.8);
+      box-shadow: 0 0 12px 4px rgb(from var(--primary-color) r g b / 0.8);
     }
 
     @keyframes pulse-glow {
       0% {
-        box-shadow: 0 0 0 0 rgba(var(--rgb-primary-color), 0);
+        box-shadow: 0 0 0 0 rgb(from var(--primary-color) r g b / 0);
       }
       50% {
-        box-shadow: 0 0 8px 2px rgba(var(--rgb-primary-color), 0.6);
+        box-shadow: 0 0 8px 2px rgb(from var(--primary-color) r g b / 0.6);
       }
       100% {
-        box-shadow: 0 0 0 0 rgba(var(--rgb-primary-color), 0);
+        box-shadow: 0 0 0 0 rgb(from var(--primary-color) r g b / 0);
       }
     }
   `;

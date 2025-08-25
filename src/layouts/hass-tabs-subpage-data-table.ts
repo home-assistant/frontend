@@ -825,7 +825,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .selection-bar {
-      background: rgba(var(--rgb-primary-color), 0.1);
+      background: rgb(from var(--primary-color) r g b / 0.1);
       width: 100%;
       height: 100%;
       display: flex;

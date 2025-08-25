@@ -110,7 +110,7 @@ export class HaSortable extends LitElement {
 
         .sortable-ghost {
           box-shadow: 0 0 0 2px var(--primary-color);
-          background: rgba(var(--rgb-primary-color), 0.25);
+          background: rgb(from var(--primary-color) r g b / 0.25);
           border-radius: 4px;
           opacity: 0.4;
         }

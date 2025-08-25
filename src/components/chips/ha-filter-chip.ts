@@ -26,9 +26,8 @@ export class HaFilterChip extends FilterChip {
         --md-sys-color-on-secondary-container: var(--primary-text-color);
         --md-filter-chip-container-shape: 16px;
         --md-filter-chip-outline-color: var(--outline-color);
-        --md-filter-chip-selected-container-color: rgba(
-          var(--rgb-primary-text-color),
-          0.15
+        --md-filter-chip-selected-container-color: rgb(
+          from var(--primary-text-color) r g b / 0.15
         );
       }
     `,

@@ -21,9 +21,8 @@ export class HaInputChip extends InputChip {
         --md-sys-color-on-secondary-container: var(--primary-text-color);
         --md-input-chip-container-shape: 16px;
         --md-input-chip-outline-color: var(--outline-color);
-        --md-input-chip-selected-container-color: rgba(
-          var(--rgb-primary-text-color),
-          0.15
+        --md-input-chip-selected-container-color: rgb(
+          from var(--primary-text-color) r g b / 0.15
         );
         --ha-input-chip-selected-container-opacity: 1;
         --md-input-chip-label-text-font: Roboto, sans-serif;

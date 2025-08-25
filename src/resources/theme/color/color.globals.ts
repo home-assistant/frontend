@@ -196,7 +196,7 @@ export const colorStyles = css`
     --sidebar-background-color: var(--card-background-color);
     --sidebar-selected-text-color: var(--primary-color);
     --sidebar-selected-icon-color: var(--primary-color);
-    --sidebar-icon-color: rgba(var(--rgb-primary-text-color), 0.6);
+    --sidebar-icon-color: rgb(from var(--primary-text-color) r g b / 0.6);
     --switch-checked-color: var(--primary-color);
     --switch-checked-button-color: var(
       --switch-checked-color,
@@ -212,7 +212,7 @@ export const colorStyles = css`
     --slider-secondary-color: var(--light-primary-color);
     --slider-track-color: var(--scrollbar-thumb-color);
     --label-badge-background-color: var(--card-background-color);
-    --label-badge-text-color: rgba(var(--rgb-primary-text-color), 0.8);
+    --label-badge-text-color: rgb(from var(--primary-text-color) r g b / 0.8);
     --table-header-background-color: var(--input-fill-color);
     --table-row-background-color: var(--primary-background-color);
     --table-row-alternative-background-color: var(--secondary-background-color);
@@ -236,9 +236,13 @@ export const colorStyles = css`
     --app-header-text-color: var(--text-primary-color);
     --app-header-background-color: var(--primary-color);
     --app-theme-color: var(--app-header-background-color);
-    --mdc-checkbox-unchecked-color: rgba(var(--rgb-primary-text-color), 0.54);
+    --mdc-checkbox-unchecked-color: rgb(
+      from var(--primary-text-color) r g b / 0.54
+    );
     --mdc-checkbox-disabled-color: var(--disabled-text-color);
-    --mdc-radio-unchecked-color: rgba(var(--rgb-primary-text-color), 0.54);
+    --mdc-radio-unchecked-color: rgb(
+      from var(--primary-text-color) r g b / 0.54
+    );
     --mdc-radio-disabled-color: var(--disabled-text-color);
     --mdc-tab-text-label-color-default: var(--primary-text-color);
     --mdc-button-disabled-ink-color: var(--disabled-text-color);
@@ -283,15 +287,13 @@ export const colorStyles = css`
     --mdc-select-disabled-ink-color: var(--input-disabled-ink-color);
     --mdc-select-dropdown-icon-color: var(--input-dropdown-icon-color);
     --mdc-select-disabled-dropdown-icon-color: var(--input-disabled-ink-color);
-    --ha-assist-chip-filled-container-color: rgba(
-      var(--rgb-primary-text-color),
-      0.15
+    --ha-assist-chip-filled-container-color: rgb(
+      from var(--primary-text-color) r g b / 0.15
     );
-    --ha-assist-chip-active-container-color: rgba(
-      var(--rgb-primary-color),
-      0.15
+    --ha-assist-chip-active-container-color: rgb(
+      from var(--primary-color) r g b / 0.15
     );
-    --chip-background-color: rgba(var(--rgb-primary-text-color), 0.15);
+    --chip-background-color: rgb(from var(--primary-text-color) r g b / 0.15);
 
     /* Vaadin */
     --material-body-text-color: var(--primary-text-color);

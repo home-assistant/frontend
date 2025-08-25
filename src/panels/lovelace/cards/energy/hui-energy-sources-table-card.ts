@@ -1166,7 +1166,7 @@ export class HuiEnergySourcesTableCard
         text-align: var(--float-start);
       }
       .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
-        background-color: rgba(var(--rgb-primary-text-color), 0.04);
+        background-color: rgb(from var(--primary-text-color) r g b / 0.04);
       }
       .clickable {
         cursor: pointer;

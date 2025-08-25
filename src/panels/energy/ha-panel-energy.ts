@@ -476,7 +476,9 @@ class PanelEnergy extends LitElement {
           padding-left: 32px;
           padding-inline-start: 32px;
           padding-inline-end: initial;
-          --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
+          --disabled-text-color: rgb(
+            from var(--text-primary-color) r g b / 0.5
+          );
           direction: var(--direction);
           --date-range-picker-max-height: calc(100vh - 80px);
         }
