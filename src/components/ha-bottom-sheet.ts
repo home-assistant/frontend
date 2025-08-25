@@ -196,7 +196,7 @@ export class HaBottomSheet extends LitElement {
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 20;
+      z-index: 7;
     }
     .handle-wrapper .handle::after {
       content: "";
