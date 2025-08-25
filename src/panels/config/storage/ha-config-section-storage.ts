@@ -22,8 +22,11 @@ import "../../../components/ha-metric";
 import "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
-import type { HassioHostInfo } from "../../../data/hassio/host";
-import { fetchHassioHostInfo } from "../../../data/hassio/host";
+import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
+import {
+  fetchHassioHostInfo,
+  fetchHostDisksUsage,
+} from "../../../data/hassio/host";
 import type {
   SupervisorMount,
   SupervisorMounts,
@@ -42,10 +45,6 @@ import { roundWithOneDecimal } from "../../../util/calculate";
 import "../core/ha-config-analytics";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
-import {
-  fetchSupervisorStorageInfo,
-  type SupervisorStorageInfo,
-} from "../../../data/supervisor/storage";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 
@@ -61,7 +60,7 @@ class HaConfigSectionStorage extends LitElement {
 
   @state() private _hostInfo?: HassioHostInfo;
 
-  @state() private _storageInfo?: SupervisorStorageInfo;
+  @state() private _storageInfo?: HostDisksUsage | null;
 
   @state() private _mountsInfo?: SupervisorMounts | null;
 
@@ -239,8 +238,8 @@ class HaConfigSectionStorage extends LitElement {
   }
 
   private _renderStorageMetrics = memoizeOne(
-    (hostInfo?: HassioHostInfo, storageInfo?: SupervisorStorageInfo) => {
-      if (!hostInfo || !storageInfo) {
+    (hostInfo?: HassioHostInfo, storageInfo?: HostDisksUsage) => {
+      if (!hostInfo) {
         return nothing;
       }
       const computedStyles = getComputedStyle(this);
@@ -252,15 +251,14 @@ class HaConfigSectionStorage extends LitElement {
       const segments: Segment[] = [];
       if (storageInfo) {
         const totalSpace =
-          storageInfo.total_bytes ?? hostInfo.disk_total * 1024 * 1024 * 1024;
-        totalSpaceGB = totalSpace / 1024 / 1024 / 1024;
-        usedSpaceGB = storageInfo.used_bytes / 1024 / 1024 / 1024;
-        freeSpaceGB =
-          (totalSpace - storageInfo.used_bytes) / 1024 / 1024 / 1024;
+          storageInfo.total_bytes ?? this._gbToBytes(hostInfo.disk_total);
+        totalSpaceGB = this._bytesToGB(totalSpace);
+        usedSpaceGB = this._bytesToGB(storageInfo.used_bytes);
+        freeSpaceGB = this._bytesToGB(totalSpace - storageInfo.used_bytes);
         storageInfo.children?.forEach((child, index) => {
           if (child.used_bytes) {
             if (child.used_bytes > 0) {
-              const space = child.used_bytes / 1024 / 1024 / 1024;
+              const space = this._bytesToGB(child.used_bytes);
               segments.push({
                 value: space,
                 color: getGraphColorByIndex(index, computedStyles),
@@ -299,7 +297,7 @@ class HaConfigSectionStorage extends LitElement {
             >${roundWithOneDecimal(freeSpaceGB)} GB</span
           >`,
       });
-      return html`
+      const chart = html`
         <ha-segmented-bar
           .heading=${this.hass.localize("ui.panel.config.storage.used_space")}
           .description=${this.hass.localize(
@@ -312,13 +310,31 @@ class HaConfigSectionStorage extends LitElement {
           .segments=${segments}
         ></ha-segmented-bar>
       `;
+      return storageInfo
+        ? chart
+        : html`
+            <div class="loading-container">
+              ${chart}
+              <div class="loading-overlay">
+                <ha-spinner></ha-spinner>
+              </div>
+            </div>
+          `;
     }
   );
 
+  private _bytesToGB(bytes: number) {
+    return bytes / 1024 / 1024 / 1024;
+  }
+
+  private _gbToBytes(GB: number) {
+    return GB * 1024 * 1024 * 1024;
+  }
+
   private async _load() {
+    this._loadStorageInfo();
     try {
       this._hostInfo = await fetchHassioHostInfo(this.hass);
-      this._storageInfo = await fetchSupervisorStorageInfo(this.hass);
     } catch (err: any) {
       this._error = err.message || err;
     }
@@ -326,6 +342,15 @@ class HaConfigSectionStorage extends LitElement {
       await this._reloadMounts();
     } else {
       this._mountsInfo = null;
+    }
+  }
+
+  private async _loadStorageInfo() {
+    try {
+      this._storageInfo = await fetchHostDisksUsage(this.hass);
+    } catch (err: any) {
+      this._error = err.message || err;
+      this._storageInfo = null;
     }
   }
 
@@ -403,10 +428,22 @@ class HaConfigSectionStorage extends LitElement {
       flex-direction: column;
     }
 
-    .detailed-storage-info {
-      font-size: var(--ha-font-size-s);
-      color: var(--secondary-text-color);
+    .loading-container {
+      position: relative;
     }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(var(--rgb-card-background-color), 0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .mount-state-failed {
       color: var(--error-color);
     }
