@@ -30,6 +30,8 @@ import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-button-group";
 import "./ha-code-editor-completion-items";
+import "./ha-code-editor-toolbar";
+import type { HaCodeEditorToolbar } from "./ha-code-editor-toolbar";
 
 declare global {
   interface HASSDomEvents {
@@ -79,12 +81,12 @@ export class HaCodeEditor extends ReactiveElement {
 
   @state() private _value = "";
 
-  private editorToolbar?: HTMLElement;
-
   @state() private _isFullscreen = false;
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
+
+  private _editorToolbar?: HaCodeEditorToolbar;
 
   private _iconList?: Completion[];
 
@@ -276,98 +278,67 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private _createEditorToolbar() {
-    if (!this.editorToolbar) {
-      // Contain the toolbar in a div to set background and force the toolbar to
-      // appear on the right.
-      const toolbarDiv = document.createElement("div");
-      toolbarDiv.classList.add("editor-toolbar");
-      this.renderRoot.appendChild(toolbarDiv);
-
-      // Create a button group to contain our various toolbar buttons
-      this.editorToolbar = document.createElement("ha-icon-button-group");
-      this.editorToolbar.classList.add("editor-buttongroup");
-      toolbarDiv.appendChild(this.editorToolbar);
-
-      // Add main buttons:
-      //  - Undo
-      this._createToolbarButton(
-        mdiUndo,
-        this.hass ? this.hass.localize("ui.common.undo") : "Undo",
-        this._handleUndoClick
-      );
-      //  - Copy
-      this._createToolbarButton(
-        mdiContentCopy,
-        this.hass
-          ? this.hass.localize(
-              "ui.panel.config.automation.editor.copy_to_clipboard"
-            )
-          : "Copy to Clipboard",
-        this._handleClipboardClick
-      );
+    if (!this._editorToolbar) {
+      this._editorToolbar = document.createElement("ha-code-editor-toolbar");
+      this._editorToolbar.items = [
+        //  - Undo
+        {
+          label: this.hass ? this.hass.localize("ui.common.undo") : "Undo",
+          path: mdiUndo,
+          action: (e: Event) => this._handleUndoClick(e),
+        },
+        //  - Copy
+        {
+          label: this.hass
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.copy_to_clipboard"
+              )
+            : "Copy to Clipboard",
+          path: mdiContentCopy,
+          action: (e: Event) => this._handleClipboardClick(e),
+        },
+        //  - Fullscreen
+        {
+          class: "fullscreen-button",
+          disabled: this.disableFullscreen,
+          label: this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen",
+          path: this.disableFullscreen
+            ? ""
+            : this._isFullscreen
+              ? mdiArrowCollapse
+              : mdiArrowExpand,
+          action: (e: Event) => this._handleFullscreenClick(e),
+        },
+      ];
+      this.renderRoot.appendChild(this._editorToolbar);
     }
-
-    // Create or update the fullscreen button on the editor toolbar.
-    this._updateFullscreenButton();
-  }
-
-  private _createToolbarButton(iconPath, label, event) {
-    if (!this.editorToolbar) {
-      return;
-    }
-
-    const button = document.createElement("ha-icon-button");
-    (button as any).path = iconPath;
-    button.setAttribute("label", label);
-    button.classList.add("editor-button");
-    button.addEventListener("click", event);
-    this.editorToolbar.appendChild(button);
   }
 
   private _updateFullscreenButton() {
-    if (!this.editorToolbar) {
-      return;
+    // Check if we have an existing fullscreen button
+    let fsButton;
+    if (this._editorToolbar) {
+      const toolbarRoot = this._editorToolbar.shadowRoot;
+      if (toolbarRoot) {
+        fsButton = toolbarRoot.querySelector(".fullscreen-button");
+      }
     }
-
-    const existingButton =
-      this.editorToolbar.querySelector(".fullscreen-button");
-
+    // Configure full-screen button parameters based on our current state
+    if (fsButton) {
+      fsButton.disabled = this.disableFullscreen;
+      fsButton.path = this.disableFullscreen
+        ? ""
+        : this._isFullscreen
+          ? mdiArrowCollapse
+          : mdiArrowExpand;
+      fsButton.setAttribute(
+        "label",
+        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
+      );
+    }
+    // Not in fullscreen mode if currently disabled
     if (this.disableFullscreen) {
-      // Remove button if it exists and fullscreen is disabled
-      if (existingButton) {
-        existingButton.remove();
-      }
-      // Exit fullscreen if currently in fullscreen mode
-      if (this._isFullscreen) {
-        this._isFullscreen = false;
-      }
-      return;
-    }
-
-    // Create button if it doesn't exist
-    if (!existingButton) {
-      const button = document.createElement("ha-icon-button");
-      (button as any).path = this._isFullscreen
-        ? mdiArrowCollapse
-        : mdiArrowExpand;
-      button.setAttribute(
-        "label",
-        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
-      );
-      button.classList.add("editor-button");
-      button.classList.add("fullscreen-button");
-      // Use bound method to ensure proper this context
-      button.addEventListener("click", this._handleFullscreenClick);
-      this.editorToolbar.appendChild(button);
-    } else {
-      // Update existing button
-      (existingButton as any).path = this._isFullscreen
-        ? mdiArrowCollapse
-        : mdiArrowExpand;
-      existingButton.setAttribute(
-        "label",
-        this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
-      );
+      this._isFullscreen = false;
     }
   }
 
@@ -705,31 +676,6 @@ export class HaCodeEditor extends ReactiveElement {
 
     :host(.error-state) .cm-content {
       border-color: var(--error-state-color, red);
-    }
-
-    .editor-toolbar {
-      display: flex;
-      flex-direction: row-reverse;
-      background-color: var(
-        --code-editor-gutter-color,
-        var(--secondary-background-color, whitesmoke)
-      );
-    }
-
-    .editor-buttongroup {
-      background-color: transparent;
-      padding-right: 4px;
-      height: 32px;
-    }
-
-    .editor-button {
-      color: var(--secondary-text-color);
-      --mdc-icon-button-size: 28px;
-      --mdc-icon-size: 18px;
-      /* Ensure button is clickable on iOS */
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
     }
 
     :host(.fullscreen) {
