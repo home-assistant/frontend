@@ -1324,7 +1324,8 @@
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
             "addon_dashboard": "Add-on dashboard",
             "addon_store": "Add-on store",
-            "addon_info": "{addon} info"
+            "addon_info": "{addon} info",
+            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -6660,8 +6661,20 @@
         "storage": {
           "caption": "Storage",
           "description": "{percent_used} used - {free_space} free",
-          "used_space": "Used space",
-          "detailed_description": "{used} used of {total} total, {free_space} remaining",
+          "used_space": "Storage",
+          "detailed_description": "{used} of {total} used",
+          "segments": {
+            "used": "Used space",
+            "free": "Free space",
+            "system": "System",
+            "addons_data": "Add-on data",
+            "addons_config": "Add-on configuration",
+            "media": "Media",
+            "share": "Share",
+            "backup": "Backups",
+            "homeassistant": "Home Assistant",
+            "ssl": "SSL"
+          },
           "lifetime_used": "Lifetime used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
@@ -6977,7 +6990,7 @@
           "add_area_action": "View area",
           "add_person_success": "Person added",
           "add_person_action": "View persons",
-          "invite_person": "Invite person"
+          "add_person": "Add person"
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",

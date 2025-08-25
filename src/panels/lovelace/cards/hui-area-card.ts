@@ -54,6 +54,19 @@ export const DEVICE_CLASSES = {
   binary_sensor: ["motion", "moisture"],
 };
 
+const SUM_DEVICE_CLASSES = [
+  "power",
+  "apparent_power",
+  "reactive_power",
+  "energy",
+  "reactive_energy",
+  "current",
+  "gas",
+  "monetary",
+  "volume",
+  "water",
+];
+
 export interface AreaCardFeatureContext extends LovelaceCardFeatureContext {
   exclude_entities?: string[];
 }
@@ -386,9 +399,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           return undefined;
         }
 
-        const value =
-          validEntities.reduce((acc, entity) => acc + Number(entity.state), 0) /
-          validEntities.length;
+        const value = SUM_DEVICE_CLASSES.includes(sensorClass)
+          ? this._computeSumState(validEntities)
+          : this._computeMedianState(validEntities);
 
         const formattedAverage = formatNumber(value, this.hass!.locale, {
           maximumFractionDigits: 1,
@@ -403,6 +416,22 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       .join(" · ");
 
     return sensorStates;
+  }
+
+  private _computeSumState(entities: HassEntity[]): number {
+    return entities.reduce((acc, entity) => acc + Number(entity.state), 0);
+  }
+
+  private _computeMedianState(entities: HassEntity[]): number {
+    const sortedStates = entities
+      .map((entity) => Number(entity.state))
+      .sort((a, b) => a - b);
+    if (sortedStates.length % 2 === 0) {
+      const medianIndex = sortedStates.length / 2;
+      return (sortedStates[medianIndex] + sortedStates[medianIndex - 1]) / 2;
+    }
+    const medianIndex = Math.floor(sortedStates.length / 2);
+    return sortedStates[medianIndex];
   }
 
   private _featurePosition = memoizeOne((config: AreaCardConfig) => {

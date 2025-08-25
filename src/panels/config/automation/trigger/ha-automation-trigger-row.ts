@@ -469,9 +469,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   public openSidebar(trigger?: Trigger): void {
-    if (this.narrow) {
-      this.scrollIntoView();
-    }
     fireEvent(this, "open-sidebar", {
       save: (value) => {
         fireEvent(this, "value-changed", { value });
@@ -494,6 +491,13 @@ export default class HaAutomationTriggerRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies TriggerSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   private _setClipboard() {

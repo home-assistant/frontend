@@ -599,10 +599,6 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   public openSidebar(condition?: Condition): void {
-    if (this.narrow) {
-      this.scrollIntoView();
-    }
-
     const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
@@ -626,6 +622,13 @@ export default class HaAutomationConditionRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies ConditionSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   private _uiSupported = memoizeOne(
@@ -655,8 +658,13 @@ export default class HaAutomationConditionRow extends LitElement {
           overflow: hidden;
           transition: max-height 0.3s;
           text-align: center;
-          border-top-right-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-          border-top-left-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
+          border-top-right-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
+          border-top-left-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
           );
         }
         .testing.active {

@@ -20,6 +20,8 @@ export default class HaAutomationSidebarScriptField extends LitElement {
 
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @state() private _warnings?: string[];
 
   @query(".sidebar-editor")
@@ -47,6 +49,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
       .isWide=${this.isWide}
       .yamlMode=${this.yamlMode}
       .warnings=${this._warnings}
+      .narrow=${this.narrow}
     >
       <span slot="title">${title}</span>
       <ha-md-menu-item

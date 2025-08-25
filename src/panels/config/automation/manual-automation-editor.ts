@@ -3,7 +3,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -83,6 +83,9 @@ export class HaManualAutomationEditor extends LitElement {
   @state() private _pastedConfig?: ManualAutomationConfig;
 
   @state() private _sidebarConfig?: SidebarConfig;
+
+  @query(".content")
+  private _contentElement?: HTMLDivElement;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -273,10 +276,11 @@ export class HaManualAutomationEditor extends LitElement {
           class=${classMap({
             sidebar: true,
             hidden: !this._sidebarConfig,
-            overlay: !this.isWide,
+            overlay: !this.isWide && !this.narrow,
           })}
           .isWide=${this.isWide}
           .hass=${this.hass}
+          .narrow=${this.narrow}
           .config=${this._sidebarConfig}
           @value-changed=${this._sidebarConfigChanged}
           .disabled=${this.disabled}
@@ -313,6 +317,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _handleCloseSidebar() {
     this._sidebarConfig = undefined;
+    // fix content shift when bottom rows are scrolled into view
+    this._contentElement?.scrollIntoView();
   }
 
   private _triggerChanged(ev: CustomEvent): void {
@@ -612,26 +618,23 @@ export class HaManualAutomationEditor extends LitElement {
 
         .sidebar.overlay {
           position: fixed;
-          bottom: 0;
-          right: 0;
-          height: calc(100% - 64px);
+          bottom: 8px;
+          right: 8px;
+          height: calc(100% - 70px);
           padding: 0;
           z-index: 5;
+          box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
         }
 
         @media all and (max-width: 870px) {
-          .sidebar.overlay {
-            max-height: 70vh;
-            max-height: 70dvh;
-            height: auto;
-            width: 100%;
-            box-shadow: 0px -8px 16px rgba(0, 0, 0, 0.2);
+          .split-view {
+            gap: 0;
+            margin-right: -8px;
           }
-        }
-
-        @media all and (max-width: 870px) {
-          .sidebar.overlay.hidden {
+          .sidebar {
             height: 0;
+            width: 0;
+            flex: 0;
           }
         }
 

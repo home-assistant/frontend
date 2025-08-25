@@ -80,7 +80,7 @@
     "@material/mwc-top-app-bar": "0.27.0",
     "@material/mwc-top-app-bar-fixed": "0.27.0",
     "@material/top-app-bar": "=14.0.0-canary.53b3cad2f.0",
-    "@material/web": "2.3.0",
+    "@material/web": "2.4.0",
     "@mdi/js": "7.4.47",
     "@mdi/svg": "7.4.47",
     "@replit/codemirror-indentation-markers": "6.5.3",
@@ -99,7 +99,7 @@
     "barcode-detector": "3.0.5",
     "color-name": "2.0.0",
     "comlink": "4.4.2",
-    "core-js": "3.45.0",
+    "core-js": "3.45.1",
     "cropperjs": "1.6.2",
     "culori": "4.0.2",
     "date-fns": "4.1.0",
@@ -159,8 +159,8 @@
     "@octokit/plugin-retry": "8.0.1",
     "@octokit/rest": "22.0.0",
     "@rsdoctor/rspack-plugin": "1.2.3",
-    "@rspack/cli": "1.4.11",
     "@rspack/core": "1.4.11",
+    "@rspack/dev-server": "1.1.4",
     "@types/babel__plugin-transform-runtime": "7.9.5",
     "@types/chromecast-caf-receiver": "6.0.22",
     "@types/chromecast-caf-sender": "1.0.11",
@@ -237,5 +237,5 @@
     "@material/mwc-list@^0.27.0": "patch:@material/mwc-list@npm%3A0.27.0#~/.yarn/patches/@material-mwc-list-npm-0.27.0-5344fc9de4.patch",
     "@vaadin/vaadin-themable-mixin": "24.8.5"
   },
-  "packageManager": "yarn@4.9.2"
+  "packageManager": "yarn@4.9.3"
 }
