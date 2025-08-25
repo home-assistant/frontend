@@ -2,7 +2,16 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, literal, object, optional, string } from "superstruct";
+import {
+  assert,
+  literal,
+  object,
+  optional,
+  string,
+  number,
+  union,
+} from "superstruct";
+import { forDictStruct } from "../../../../config/automation/structs";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
@@ -12,12 +21,14 @@ import type {
 } from "../../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../../types";
 import type { StateCondition } from "../../../common/validate-condition";
+import type { HaDurationData } from "../../../../../components/ha-duration-input";
 
 const stateConditionStruct = object({
   condition: literal("state"),
   entity: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
+  for: optional(union([number(), string(), forDictStruct])),
 });
 
 interface StateConditionData {
@@ -25,6 +36,7 @@ interface StateConditionData {
   entity?: string;
   invert: "true" | "false";
   state?: string | string[];
+  for?: number | string | HaDurationData;
 }
 
 @customElement("ha-card-condition-state")
@@ -94,6 +106,12 @@ export class HaCardConditionState extends LitElement {
                 filter_entity: "entity",
               },
             },
+            {
+              name: "for",
+              selector: {
+                duration: {},
+              },
+            },
           ],
         },
       ] as const satisfies readonly HaFormSchema[]
@@ -146,6 +164,10 @@ export class HaCardConditionState extends LitElement {
       case "state":
         return this.hass.localize(
           "ui.components.entity.entity-state-picker.state"
+        );
+      case "for":
+        return this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.condition.state.for"
         );
       default:
         return "";
