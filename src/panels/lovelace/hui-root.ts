@@ -508,7 +508,7 @@ class HUIRoot extends LitElement {
                       ? tabs
                       : html`
                           <div class="main-title">
-                            ${curViewConfig?.title ?? dashboardTitle}
+                            ${curViewConfig?.title || dashboardTitle}
                           </div>
                         `}
                   <div class="action-items">${this._renderActionItems()}</div>
@@ -1309,14 +1309,15 @@ class HUIRoot extends LitElement {
           padding-bottom: calc((var(--sl-tab-height) - 20px) / 2 - 2px);
         }
         sl-tab.icon::part(base) {
-          padding-top: calc((var(--sl-tab-height) - 24px) / 2 - 2px);
-          padding-bottom: calc((var(--sl-tab-height) - 24px) / 2 - 4px);
+          padding-top: calc((var(--sl-tab-height) - 20px) / 2 - 2px);
+          padding-bottom: calc((var(--sl-tab-height) - 20px) / 2 - 4px);
         }
         .tab-bar sl-tab {
-          --sl-tab-height: var(--tab-bar-height, 48px);
+          --sl-tab-height: var(--tab-bar-height, 56px);
         }
         .edit-mode sl-tab[aria-selected="true"]::part(base) {
-          padding: 4px 0 2px 0;
+          padding: 0;
+          margin-top: calc((var(--tab-bar-height, 56px) - 48px) / 2);
         }
         .edit-icon {
           color: var(--accent-color);
@@ -1365,7 +1366,7 @@ class HUIRoot extends LitElement {
         hui-view-container.has-tab-bar {
           padding-top: calc(
             var(--header-height, 56px) +
-              calc(var(--tab-bar-height, 48px) - 2px) +
+              calc(var(--tab-bar-height, 56px) - 2px) +
               var(--safe-area-inset-top)
           );
         }
