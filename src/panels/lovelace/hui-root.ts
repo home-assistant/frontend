@@ -458,7 +458,8 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
-    const showTabBar = this._editMode || (!isSubview && hasTabViews);
+    const showTabBar =
+      this._editMode || (!isSubview && hasTabViews && this.narrow);
 
     return html`
       <div
