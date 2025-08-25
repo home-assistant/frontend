@@ -108,11 +108,14 @@ export default class HaAutomationCondition extends LitElement {
           !CONDITION_BUILDING_BLOCKS.includes(row.condition.condition)
         ) {
           row.openSidebar();
+          if (this.narrow) {
+            row.scrollIntoView({
+              block: "start",
+              behavior: "smooth",
+            });
+          }
         } else if (!this.optionsInSidebar) {
           row.expand();
-        }
-        if (this.narrow) {
-          row.scrollIntoView();
         }
         row.focus();
       });
@@ -205,6 +208,9 @@ export default class HaAutomationCondition extends LitElement {
   }
 
   private _addConditionDialog() {
+    if (this.narrow) {
+      fireEvent(this, "close-sidebar");
+    }
     showAddAutomationElementDialog(this, {
       type: "condition",
       add: this._addCondition,

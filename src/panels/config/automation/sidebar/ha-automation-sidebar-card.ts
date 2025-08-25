@@ -1,6 +1,12 @@
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -33,6 +39,12 @@ export default class HaAutomationSidebarCard extends LitElement {
 
   @property({ attribute: false }) public warnings?: string[];
 
+  @property({ type: Boolean }) public narrow = false;
+
+  @state() private _contentScrolled = false;
+
+  @query(".card-content") private _contentElement?: HTMLDivElement;
+
   protected render() {
     return html`
       <ha-card
@@ -42,7 +54,9 @@ export default class HaAutomationSidebarCard extends LitElement {
           yaml: this.yamlMode,
         })}
       >
-        <ha-dialog-header>
+        <ha-dialog-header
+          class=${classMap({ scrolled: this._contentScrolled })}
+        >
           <ha-icon-button
             slot="navigationIcon"
             .label=${this.hass.localize("ui.common.close")}
@@ -56,7 +70,7 @@ export default class HaAutomationSidebarCard extends LitElement {
               @click=${this._openOverflowMenu}
               @keydown=${stopPropagation}
               @closed=${stopPropagation}
-              positioning="fixed"
+              .positioning=${this.narrow ? "absolute" : "fixed"}
             >
               <ha-icon-button
                 slot="trigger"
@@ -74,11 +88,17 @@ export default class HaAutomationSidebarCard extends LitElement {
             >
             </ha-automation-editor-warning>`
           : nothing}
-        <div class="card-content">
+        <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
         </div>
       </ha-card>
     `;
+  }
+
+  @eventOptions({ passive: true })
+  private _onScroll() {
+    const top = this._contentElement?.scrollTop ?? 0;
+    this._contentScrolled = top > 0;
   }
 
   private _closeSidebar() {
@@ -98,25 +118,33 @@ export default class HaAutomationSidebarCard extends LitElement {
       border-width: 2px;
       display: block;
     }
-    ha-card.mobile {
-      border-bottom-right-radius: var(--ha-border-radius-square);
-      border-bottom-left-radius: var(--ha-border-radius-square);
-    }
 
     @media all and (max-width: 870px) {
       ha-card.mobile {
-        max-height: 70vh;
-        max-height: 70dvh;
-        border-width: 2px 2px 0;
+        border: none;
       }
-      ha-card.mobile.yaml {
-        height: 70vh;
-        height: 70dvh;
+      ha-card.mobile {
+        border-bottom-right-radius: var(--ha-border-radius-square);
+        border-bottom-left-radius: var(--ha-border-radius-square);
       }
     }
 
     ha-dialog-header {
       border-radius: var(--ha-card-border-radius);
+      box-shadow: none;
+      transition: box-shadow 180ms ease-in-out;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      z-index: 6;
+      position: relative;
+      background-color: var(
+        --ha-dialog-surface-background,
+        var(--mdc-theme-surface, #fff)
+      );
+    }
+
+    ha-dialog-header.scrolled {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
     .card-content {
@@ -128,17 +156,6 @@ export default class HaAutomationSidebarCard extends LitElement {
       .card-content {
         max-height: calc(100% - 104px);
         overflow: auto;
-      }
-    }
-
-    @media all and (max-width: 870px) {
-      ha-card.mobile .card-content {
-        max-height: calc(
-          70vh - 88px - max(var(--safe-area-inset-bottom), 16px)
-        );
-        max-height: calc(
-          70dvh - 88px - max(var(--safe-area-inset-bottom), 16px)
-        );
       }
     }
   `;

@@ -642,9 +642,6 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   public openSidebar(action?: Action): void {
-    if (this.narrow) {
-      this.scrollIntoView();
-    }
     const sidebarAction = action ?? this.action;
     const actionType = getAutomationActionType(sidebarAction);
 
@@ -670,6 +667,13 @@ export default class HaAutomationActionRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies ActionSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   public expand() {
