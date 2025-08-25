@@ -58,8 +58,13 @@ const SUM_DEVICE_CLASSES = [
   "power",
   "apparent_power",
   "reactive_power",
+  "energy",
+  "reactive_energy",
   "current",
   "gas",
+  "monetary",
+  "volume",
+  "water",
 ];
 
 export interface AreaCardFeatureContext extends LovelaceCardFeatureContext {
