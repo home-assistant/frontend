@@ -230,7 +230,7 @@ class HUIRoot extends LitElement {
           },
           {
             icon: mdiAccount,
-            key: "ui.panel.lovelace.menu.invite_person",
+            key: "ui.panel.lovelace.menu.add_person",
             visible: true,
             action: this._handleInvitePerson,
           },
