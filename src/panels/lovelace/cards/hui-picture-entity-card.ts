@@ -1,6 +1,7 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -161,25 +162,23 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       this.layout === "grid" &&
       typeof this._config.grid_options?.rows === "number";
 
+    const hasTapAction =
+      hasAction(this._config.tap_action) ||
+      Boolean(!this._config.tap_action && this._config.entity);
+
     return html`
       <ha-card>
         <div
-          class="image-container"
+          class="image-container ${classMap({
+            clickable: hasTapAction,
+          })}"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
-          tabindex=${ifDefined(
-            hasAction(this._config.tap_action) || this._config.entity
-              ? "0"
-              : undefined
-          )}
-          role=${ifDefined(
-            hasAction(this._config.tap_action) || this._config.entity
-              ? "0"
-              : undefined
-          )}
+          tabindex=${ifDefined(hasTapAction ? "0" : undefined)}
+          role=${ifDefined(hasTapAction ? "0" : undefined)}
         >
           <hui-image
             .hass=${this.hass}
@@ -213,6 +212,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     .image-container {
       height: 100%;
+    }
+    .image-container.clickable {
       cursor: pointer;
     }
 
