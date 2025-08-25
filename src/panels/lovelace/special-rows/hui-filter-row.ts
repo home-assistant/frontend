@@ -1,24 +1,21 @@
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../../../types";
 import { createRowElement } from "../create-element/create-row-element";
 import type { FilterRowConfig, LovelaceRow } from "../entity-rows/types";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { ensureArray } from "../../../common/array/ensure-array";
 
 @customElement("hui-filter-row")
-class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
+class HuiFilterRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: FilterRowConfig;
 
-  @state() private _entities?: EntityRegistryEntry[];
+  private _entities?: Record<string, EntityRegistryDisplayEntry>;
 
   private _elements: Record<string, LovelaceRow> = {};
 
@@ -39,7 +36,11 @@ class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
       return;
     }
 
-    if (changedProps.has("_entities") || changedProps.has("_config")) {
+    if (
+      (changedProps.has("hass") && this.hass.entities !== this._entities) ||
+      changedProps.has("_config")
+    ) {
+      this._entities = this.hass.entities;
       let changed = false;
       if (changedProps.has("_config")) {
         this._elements = {};
@@ -52,16 +53,18 @@ class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
 
       const configLabels = ensureArray(this._config!.filter.label);
 
-      this._entities?.forEach((entityReg) => {
+      Object.values(this.hass.entities).forEach((entityReg) => {
         const id = entityReg.entity_id;
 
         if (configLabels.some((l) => entityReg.labels.includes(l))) {
           if (!(id in this._elements)) {
             changed = true;
-            this._elements[id] = createRowElement({
+            const element = createRowElement({
               entity: id,
               ...configExtra,
             });
+            element.hass = this.hass;
+            this._elements[id] = element;
           }
         } else if (id in this._elements) {
           changed = true;
@@ -84,14 +87,12 @@ class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
         );
       }
     }
-  }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      subscribeEntityRegistry(this.hass!.connection, (entries) => {
-        this._entities = entries;
-      }),
-    ];
+    if (changedProps.has("hass")) {
+      this._elementsSorted.forEach((e) => {
+        e.hass = this.hass;
+      });
+    }
   }
 
   protected render() {
@@ -99,9 +100,6 @@ class HuiFilterRow extends SubscribeMixin(LitElement) implements LovelaceRow {
       return nothing;
     }
 
-    Object.values(this._elementsSorted).forEach((e) => {
-      e.hass = this.hass;
-    });
     return Object.values(this._elementsSorted).map(
       (e) => html`<div>${e}</div>`
     );
