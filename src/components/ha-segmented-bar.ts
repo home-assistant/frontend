@@ -87,10 +87,10 @@ class HaSegmentedBar extends LitElement {
         var(--secondary-background-color)
       );
     }
-    .bar > div {
+    .bar div {
       height: 100%;
     }
-    .bar > div:hover {
+    .bar div:hover {
       opacity: 0.8;
     }
     .legend {
