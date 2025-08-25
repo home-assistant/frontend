@@ -1,6 +1,12 @@
 import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import {
+  customElement,
+  eventOptions,
+  property,
+  query,
+  state,
+} from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -89,6 +95,7 @@ export default class HaAutomationSidebarCard extends LitElement {
     `;
   }
 
+  @eventOptions({ passive: true })
   private _onScroll = () => {
     const top = this._contentElement?.scrollTop ?? 0;
     this._contentScrolled = top > 0;
