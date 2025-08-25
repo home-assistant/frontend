@@ -42,87 +42,96 @@ export default class HaAutomationSidebar extends LitElement {
     // get config type
     const type = this._getType();
 
-    return html`
-      <div class="sidebar-content">
-        ${type === "trigger"
-          ? html`
-              <ha-automation-sidebar-trigger
-                .hass=${this.hass}
-                .config=${this.config}
-                .isWide=${this.isWide}
-                .narrow=${this.narrow}
-                .disabled=${this.disabled}
-                .yamlMode=${this._yamlMode}
-                @toggle-yaml-mode=${this._toggleYamlMode}
-                @close-sidebar=${this._handleCloseSidebar}
-              ></ha-automation-sidebar-trigger>
-            `
-          : type === "condition"
-            ? html`
-                <ha-automation-sidebar-condition
-                  .hass=${this.hass}
-                  .config=${this.config}
-                  .isWide=${this.isWide}
-                  .narrow=${this.narrow}
-                  .disabled=${this.disabled}
-                  .yamlMode=${this._yamlMode}
-                  @toggle-yaml-mode=${this._toggleYamlMode}
-                  @close-sidebar=${this._handleCloseSidebar}
-                ></ha-automation-sidebar-condition>
-              `
-            : type === "action"
-              ? html`
-                  <ha-automation-sidebar-action
-                    .hass=${this.hass}
-                    .config=${this.config}
-                    .isWide=${this.isWide}
-                    .narrow=${this.narrow}
-                    .disabled=${this.disabled}
-                    .yamlMode=${this._yamlMode}
-                    @toggle-yaml-mode=${this._toggleYamlMode}
-                    @close-sidebar=${this._handleCloseSidebar}
-                  ></ha-automation-sidebar-action>
-                `
-              : type === "option"
-                ? html`
-                    <ha-automation-sidebar-option
-                      .hass=${this.hass}
-                      .config=${this.config}
-                      .isWide=${this.isWide}
-                      .narrow=${this.narrow}
-                      .disabled=${this.disabled}
-                      @close-sidebar=${this._handleCloseSidebar}
-                    ></ha-automation-sidebar-option>
-                  `
-                : type === "script-field-selector"
-                  ? html`
-                      <ha-automation-sidebar-script-field-selector
-                        .hass=${this.hass}
-                        .config=${this.config}
-                        .isWide=${this.isWide}
-                        .narrow=${this.narrow}
-                        .disabled=${this.disabled}
-                        .yamlMode=${this._yamlMode}
-                        @toggle-yaml-mode=${this._toggleYamlMode}
-                        @close-sidebar=${this._handleCloseSidebar}
-                      ></ha-automation-sidebar-script-field-selector>
-                    `
-                  : type === "script-field"
-                    ? html`
-                        <ha-automation-sidebar-script-field
-                          .hass=${this.hass}
-                          .config=${this.config}
-                          .isWide=${this.isWide}
-                          .narrow=${this.narrow}
-                          .disabled=${this.disabled}
-                          .yamlMode=${this._yamlMode}
-                          @toggle-yaml-mode=${this._toggleYamlMode}
-                          @close-sidebar=${this._handleCloseSidebar}
-                        ></ha-automation-sidebar-script-field>
-                      `
-                    : nothing}
-      </div>
-    `;
+    if (type === "trigger") {
+      return html`
+        <ha-automation-sidebar-trigger
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._handleCloseSidebar}
+        ></ha-automation-sidebar-trigger>
+      `;
+    }
+    if (type === "condition") {
+      return html`
+        <ha-automation-sidebar-condition
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._handleCloseSidebar}
+        ></ha-automation-sidebar-condition>
+      `;
+    }
+    if (type === "action") {
+      return html`
+        <ha-automation-sidebar-action
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._handleCloseSidebar}
+        ></ha-automation-sidebar-action>
+      `;
+    }
+    if (type === "option") {
+      return html`
+        <ha-automation-sidebar-option
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .disabled=${this.disabled}
+          @close-sidebar=${this._handleCloseSidebar}
+        ></ha-automation-sidebar-option>
+      `;
+    }
+    if (type === "script-field-selector") {
+      return html`
+        <ha-automation-sidebar-script-field-selector
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._handleCloseSidebar}
+        ></ha-automation-sidebar-script-field-selector>
+      `;
+    }
+    if (type === "script-field") {
+      return html`
+        <ha-automation-sidebar-script-field
+          class="sidebar-content"
+          .hass=${this.hass}
+          .config=${this.config}
+          .isWide=${this.isWide}
+          .narrow=${this.narrow}
+          .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          @toggle-yaml-mode=${this._toggleYamlMode}
+          @close-sidebar=${this._handleCloseSidebar}
+        ></ha-automation-sidebar-script-field>
+      `;
+    }
+
+    return nothing;
   }
 
   protected render() {
