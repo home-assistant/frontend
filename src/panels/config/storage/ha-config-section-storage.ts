@@ -238,7 +238,7 @@ class HaConfigSectionStorage extends LitElement {
   }
 
   private _renderStorageMetrics = memoizeOne(
-    (hostInfo?: HassioHostInfo, storageInfo?: HostDisksUsage) => {
+    (hostInfo?: HassioHostInfo, storageInfo?: HostDisksUsage | null) => {
       if (!hostInfo) {
         return nothing;
       }
@@ -310,7 +310,7 @@ class HaConfigSectionStorage extends LitElement {
           .segments=${segments}
         ></ha-segmented-bar>
       `;
-      return storageInfo
+      return storageInfo || storageInfo === null
         ? chart
         : html`
             <div class="loading-container">

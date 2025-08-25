@@ -6669,7 +6669,6 @@
             "homeassistant": "Home Assistant",
             "ssl": "SSL"
           },
-          "emmc_lifetime_used": "eMMC lifetime used",
           "lifetime_used": "Lifetime used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
