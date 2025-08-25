@@ -135,6 +135,9 @@ export default class HaAutomationTrigger extends LitElement {
   }
 
   private _addTriggerDialog() {
+    if (this.narrow) {
+      fireEvent(this, "close-sidebar");
+    }
     showAddAutomationElementDialog(this, {
       type: "trigger",
       add: this._addTrigger,
@@ -177,6 +180,12 @@ export default class HaAutomationTrigger extends LitElement {
       row.updateComplete.then(() => {
         if (this.optionsInSidebar) {
           row.openSidebar();
+          if (this.narrow) {
+            row.scrollIntoView({
+              block: "start",
+              behavior: "smooth",
+            });
+          }
         } else {
           row.expand();
         }

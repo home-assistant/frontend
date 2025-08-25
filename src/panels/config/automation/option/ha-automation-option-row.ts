@@ -342,13 +342,6 @@ export default class HaAutomationOptionRow extends LitElement {
     this.openSidebar();
   }
 
-  private _scrollIntoView = () => {
-    this.scrollIntoView({
-      block: "start",
-      behavior: "smooth",
-    });
-  };
-
   public openSidebar(): void {
     fireEvent(this, "open-sidebar", {
       close: () => {
@@ -360,9 +353,15 @@ export default class HaAutomationOptionRow extends LitElement {
       },
       toggleYamlMode: () => false, // no yaml mode for options
       delete: this._removeOption,
-      scrollIntoView: this._scrollIntoView,
     } satisfies OptionSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   public expand() {

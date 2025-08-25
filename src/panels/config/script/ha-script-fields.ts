@@ -76,6 +76,13 @@ export default class HaScriptFields extends LitElement {
     row.updateComplete.then(() => {
       row.openSidebar();
       row.focus();
+
+      if (this.narrow) {
+        row.scrollIntoView({
+          block: "start",
+          behavior: "smooth",
+        });
+      }
     });
   }
 

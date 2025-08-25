@@ -164,6 +164,12 @@ export default class HaAutomationAction extends LitElement {
           !ACTION_BUILDING_BLOCKS.includes(type)
         ) {
           row.openSidebar();
+          if (this.narrow) {
+            row.scrollIntoView({
+              block: "start",
+              behavior: "smooth",
+            });
+          }
         } else if (!this.optionsInSidebar) {
           row.expand();
         }
@@ -182,6 +188,10 @@ export default class HaAutomationAction extends LitElement {
   }
 
   private _addActionDialog() {
+    if (this.narrow) {
+      fireEvent(this, "close-sidebar");
+    }
+
     showAddAutomationElementDialog(this, {
       type: "action",
       add: this._addAction,

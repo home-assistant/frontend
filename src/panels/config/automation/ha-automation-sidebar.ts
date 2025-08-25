@@ -135,11 +135,7 @@ export default class HaAutomationSidebar extends LitElement {
 
     if (this.narrow) {
       return html`
-        <ha-bottom-sheet
-          .contentHash=${JSON.stringify(this.config)}
-          @bottom-sheet-closed=${this._closeSidebar}
-          @bottom-sheet-opened=${this._scrollRowIntoView}
-        >
+        <ha-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
           ${this._renderContent()}
         </ha-bottom-sheet>
       `;
@@ -202,10 +198,6 @@ export default class HaAutomationSidebar extends LitElement {
         yamlMode: this._yamlMode,
       },
     });
-  };
-
-  private _scrollRowIntoView = () => {
-    this.config?.scrollIntoView();
   };
 
   static styles = css`

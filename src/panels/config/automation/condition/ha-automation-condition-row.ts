@@ -598,13 +598,6 @@ export default class HaAutomationConditionRow extends LitElement {
     this.openSidebar();
   }
 
-  private _scrollIntoView = () => {
-    this.scrollIntoView({
-      block: "start",
-      behavior: "smooth",
-    });
-  };
-
   public openSidebar(condition?: Condition): void {
     const sidebarCondition = condition || this.condition;
     fireEvent(this, "open-sidebar", {
@@ -627,9 +620,15 @@ export default class HaAutomationConditionRow extends LitElement {
       config: sidebarCondition,
       uiSupported: this._uiSupported(sidebarCondition.condition),
       yamlMode: this._yamlMode,
-      scrollIntoView: this._scrollIntoView,
     } satisfies ConditionSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   private _uiSupported = memoizeOne(

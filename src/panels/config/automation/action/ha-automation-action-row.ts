@@ -641,13 +641,6 @@ export default class HaAutomationActionRow extends LitElement {
     this.openSidebar();
   }
 
-  private _scrollIntoView = () => {
-    this.scrollIntoView({
-      block: "start",
-      behavior: "smooth",
-    });
-  };
-
   public openSidebar(action?: Action): void {
     const sidebarAction = action ?? this.action;
     const actionType = getAutomationActionType(sidebarAction);
@@ -672,9 +665,15 @@ export default class HaAutomationActionRow extends LitElement {
       config: sidebarAction,
       uiSupported: actionType ? this._uiSupported(actionType) : false,
       yamlMode: this._yamlMode,
-      scrollIntoView: this._scrollIntoView,
     } satisfies ActionSidebarConfig);
     this._selected = true;
+
+    if (this.narrow) {
+      this.scrollIntoView({
+        block: "start",
+        behavior: "smooth",
+      });
+    }
   }
 
   public expand() {

@@ -3,7 +3,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { load } from "js-yaml";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import {
   any,
@@ -83,6 +83,9 @@ export class HaManualAutomationEditor extends LitElement {
   @state() private _pastedConfig?: ManualAutomationConfig;
 
   @state() private _sidebarConfig?: SidebarConfig;
+
+  @query(".content")
+  private _contentElement?: HTMLDivElement;
 
   private _previousConfig?: ManualAutomationConfig;
 
@@ -314,6 +317,8 @@ export class HaManualAutomationEditor extends LitElement {
 
   private _handleCloseSidebar() {
     this._sidebarConfig = undefined;
+    // fix content shift when bottom rows are scrolled into view
+    this._contentElement?.scrollIntoView();
   }
 
   private _triggerChanged(ev: CustomEvent): void {

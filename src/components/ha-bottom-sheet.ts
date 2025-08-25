@@ -1,5 +1,5 @@
-import { css, html, LitElement, type PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { css, html, LitElement } from "lit";
+import { customElement, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 
 const ANIMATION_DURATION_MS = 300;
@@ -8,15 +8,11 @@ const ANIMATION_DURATION_MS = 300;
 export class HaBottomSheet extends LitElement {
   @query("dialog") private _dialog!: HTMLDialogElement;
 
-  @property({ attribute: false }) public contentHash?: string;
-
   private _dragging = false;
 
   private _dragStartY = 0;
 
   private _initialSize = 0;
-
-  private _open = false;
 
   render() {
     return html`<dialog open>
@@ -36,12 +32,6 @@ export class HaBottomSheet extends LitElement {
     this._openSheet();
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
-    if (changedProperties.has("contentHash") && this._open) {
-      fireEvent(this, "bottom-sheet-opened");
-    }
-  }
-
   private _openSheet() {
     requestAnimationFrame(async () => {
       this._dialog.classList.add("show");
@@ -52,8 +42,6 @@ export class HaBottomSheet extends LitElement {
           `${(this._dialog.offsetHeight / window.innerHeight) * 100}vh`
         );
         this._dialog.style.setProperty("max-height", "90vh");
-        this._open = true;
-        fireEvent(this, "bottom-sheet-opened");
       }, ANIMATION_DURATION_MS);
     });
   }
@@ -72,8 +60,6 @@ export class HaBottomSheet extends LitElement {
     super.connectedCallback();
     document.addEventListener("mousemove", this._handleMouseMove);
     document.addEventListener("mouseup", this._handleMouseUp);
-    // Use non-passive listeners so we can call preventDefault to block
-    // browser pull-to-refresh and page scrolling while dragging.
     document.addEventListener("touchmove", this._handleTouchMove, {
       passive: false,
     });
@@ -195,10 +181,8 @@ export class HaBottomSheet extends LitElement {
       position: fixed;
       width: calc(100% - 4px);
       max-width: 100%;
-      overflow: hidden;
       border: none;
       box-shadow: var(--wa-shadow-l);
-      overflow: auto;
       padding: 0;
       margin: 0;
 
@@ -238,6 +222,5 @@ declare global {
 
   interface HASSDomEvents {
     "bottom-sheet-closed": undefined;
-    "bottom-sheet-opened": undefined;
   }
 }
