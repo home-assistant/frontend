@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import type { HomeAssistant } from "../../../types";
 import { createRowElement } from "../create-element/create-row-element";
 import type { FilterRowConfig, LovelaceRow } from "../entity-rows/types";
-import type { EntityRegistryDisplayEntry } from "../../../data/entity_registry";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
 import { ensureArray } from "../../../common/array/ensure-array";
@@ -14,8 +13,6 @@ class HuiFilterRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: FilterRowConfig;
-
-  private _entities?: Record<string, EntityRegistryDisplayEntry>;
 
   private _elements: Record<string, LovelaceRow> = {};
 
@@ -37,10 +34,10 @@ class HuiFilterRow extends LitElement implements LovelaceRow {
     }
 
     if (
-      (changedProps.has("hass") && this.hass.entities !== this._entities) ||
+      (changedProps.has("hass") &&
+        this.hass.entities !== changedProps.get("hass")?.entities) ||
       changedProps.has("_config")
     ) {
-      this._entities = this.hass.entities;
       let changed = false;
       if (changedProps.has("_config")) {
         this._elements = {};
