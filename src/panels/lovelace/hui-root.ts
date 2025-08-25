@@ -508,7 +508,7 @@ class HUIRoot extends LitElement {
                       ? tabs
                       : html`
                           <div class="main-title">
-                            ${curViewConfig?.title || dashboardTitle}
+                            ${curViewConfig?.title ?? dashboardTitle}
                           </div>
                         `}
                   <div class="action-items">${this._renderActionItems()}</div>
