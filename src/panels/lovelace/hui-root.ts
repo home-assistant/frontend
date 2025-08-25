@@ -230,7 +230,7 @@ class HUIRoot extends LitElement {
           },
           {
             icon: mdiAccount,
-            key: "ui.panel.lovelace.menu.invite_person",
+            key: "ui.panel.lovelace.menu.add_person",
             visible: true,
             action: this._handleInvitePerson,
           },
@@ -458,7 +458,8 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
-    const showTabBar = this._editMode || (!isSubview && hasTabViews);
+    const showTabBar =
+      this._editMode || (!isSubview && hasTabViews && this.narrow);
 
     return html`
       <div
@@ -514,7 +515,7 @@ class HUIRoot extends LitElement {
                 `}
           </div>
           ${showTabBar
-            ? html`<div class="edit-tab-bar">
+            ? html`<div class="tab-bar">
                 ${tabs}
                 ${this._editMode
                   ? html`<ha-icon-button
@@ -1277,7 +1278,7 @@ class HUIRoot extends LitElement {
         .edit-mode div[main-title] {
           pointer-events: auto;
         }
-        .edit-tab-bar {
+        .tab-bar {
           display: flex;
         }
         .edit-mode sl-tab-group {
@@ -1287,7 +1288,8 @@ class HUIRoot extends LitElement {
           --ha-tab-indicator-color: var(--app-header-edit-text-color, #fff);
         }
         sl-tab {
-          height: calc(var(--header-height, 56px) - 2px);
+          --sl-tab-height: var(--header-height, 56px);
+          height: calc(var(--sl-tab-height) - 2px);
         }
         sl-tab[aria-selected="true"] .edit-icon {
           display: inline-flex;
@@ -1303,15 +1305,19 @@ class HUIRoot extends LitElement {
           );
         }
         sl-tab::part(base) {
-          padding-top: calc((var(--header-height) - 20px) / 2);
-          padding-bottom: calc((var(--header-height) - 20px) / 2 - 2px);
+          padding-top: calc((var(--sl-tab-height) - 20px) / 2);
+          padding-bottom: calc((var(--sl-tab-height) - 20px) / 2 - 2px);
         }
         sl-tab.icon::part(base) {
-          padding-top: calc((var(--header-height) - 20px) / 2 - 2px);
-          padding-bottom: calc((var(--header-height) - 20px) / 2 - 4px);
+          padding-top: calc((var(--sl-tab-height) - 20px) / 2 - 2px);
+          padding-bottom: calc((var(--sl-tab-height) - 20px) / 2 - 4px);
+        }
+        .tab-bar sl-tab {
+          --sl-tab-height: var(--tab-bar-height, 56px);
         }
         .edit-mode sl-tab[aria-selected="true"]::part(base) {
-          padding: 4px 0 2px 0;
+          padding: 0;
+          margin-top: calc((var(--tab-bar-height, 56px) - 48px) / 2);
         }
         .edit-icon {
           color: var(--accent-color);
@@ -1359,7 +1365,8 @@ class HUIRoot extends LitElement {
          */
         hui-view-container.has-tab-bar {
           padding-top: calc(
-            var(--header-height) + calc(var(--header-height, 56px) - 2px) +
+            var(--header-height, 56px) +
+              calc(var(--tab-bar-height, 56px) - 2px) +
               var(--safe-area-inset-top)
           );
         }
