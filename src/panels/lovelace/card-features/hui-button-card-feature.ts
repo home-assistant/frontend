@@ -21,7 +21,7 @@ export const supportsButtonCardFeature = (
     : undefined;
   if (!stateObj) return false;
   const domain = computeDomain(stateObj.entity_id);
-  return ["button", "input_button", "script"].includes(domain);
+  return ["button", "input_button", "scene", "script"].includes(domain);
 };
 
 @customElement("hui-button-card-feature")
