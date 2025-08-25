@@ -256,22 +256,20 @@ class HaConfigSectionStorage extends LitElement {
         usedSpaceGB = this._bytesToGB(storageInfo.used_bytes);
         freeSpaceGB = this._bytesToGB(totalSpace - storageInfo.used_bytes);
         storageInfo.children?.forEach((child, index) => {
-          if (child.used_bytes) {
-            if (child.used_bytes > 0) {
-              const space = this._bytesToGB(child.used_bytes);
-              segments.push({
-                value: space,
-                color: getGraphColorByIndex(index, computedStyles),
-                label: html`${this.hass.localize(
-                    `ui.panel.config.storage.segments.${child.id}`
-                  ) ||
-                  child.label ||
-                  child.id}
-                  <span style="color: var(--secondary-text-color)"
-                    >${roundWithOneDecimal(space)} GB</span
-                  >`,
-              });
-            }
+          if (child.used_bytes > 0) {
+            const space = this._bytesToGB(child.used_bytes);
+            segments.push({
+              value: space,
+              color: getGraphColorByIndex(index, computedStyles),
+              label: html`${this.hass.localize(
+                  `ui.panel.config.storage.segments.${child.id}`
+                ) ||
+                child.label ||
+                child.id}
+                <span style="color: var(--secondary-text-color)"
+                  >${roundWithOneDecimal(space)} GB</span
+                >`,
+            });
           }
         });
       } else {
