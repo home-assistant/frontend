@@ -7,10 +7,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import type { ECElementEvent } from "echarts/types/dist/shared";
 import { getGraphColorByIndex } from "../../../../common/color/colors";
-import {
-  formatNumber,
-  getNumberFormatOptions,
-} from "../../../../common/number/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import type { EnergyData } from "../../../../data/energy";
 import { getEnergyDataCollection } from "../../../../data/energy";
@@ -105,7 +102,7 @@ export class HuiEnergyDevicesGraphCard
     const value = `${formatNumber(
       params.value[0] as number,
       this.hass.locale,
-      getNumberFormatOptions(undefined, this.hass.entities[params.value[1]])
+      params.value[0] < 0.1 ? { maximumFractionDigits: 3 } : undefined
     )} kWh`;
     return `${title}${params.marker} ${params.seriesName}: ${value}`;
   }
