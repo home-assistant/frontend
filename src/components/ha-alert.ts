@@ -98,7 +98,7 @@ class HaAlert extends LitElement {
       border-radius: 4px;
     }
     .icon {
-      z-index: 1;
+      z-index: 0;
     }
     .icon.no-title {
       align-self: center;
