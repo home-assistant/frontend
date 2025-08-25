@@ -82,25 +82,11 @@ export default class HaAutomationSidebarCard extends LitElement {
             >
             </ha-automation-editor-warning>`
           : nothing}
-        <div class="card-content">
+        <div class="card-content" @scroll=${this._onScroll}>
           <slot></slot>
         </div>
       </ha-card>
     `;
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this._contentElement?.addEventListener("scroll", this._onScroll, {
-      passive: true,
-    });
-
-    this._onScroll();
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._contentElement?.removeEventListener("scroll", this._onScroll);
   }
 
   private _onScroll = () => {

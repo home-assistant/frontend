@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
-import { customElement, query } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 
 const ANIMATION_DURATION_MS = 300;
@@ -27,8 +28,21 @@ export class HaBottomSheet extends LitElement {
 
   private _initialSize = 0;
 
+  @state() private _dialogMaxViewpointHeight = 70;
+
+  @state() private _dialogViewportHeight?: number;
+
   render() {
-    return html`<dialog open>
+    return html`<dialog
+      open
+      @transitionend=${this._handleTransitionEnd}
+      style=${styleMap({
+        height: this._dialogViewportHeight
+          ? `${this._dialogViewportHeight}vh`
+          : "auto",
+        maxHeight: `${this._dialogMaxViewpointHeight}vh`,
+      })}
+    >
       <div class="handle-wrapper">
         <div
           @mousedown=${this._handleMouseDown}
@@ -46,33 +60,31 @@ export class HaBottomSheet extends LitElement {
   }
 
   private _openSheet() {
-    requestAnimationFrame(async () => {
+    requestAnimationFrame(() => {
       // trigger opening animation
       this._dialog.classList.add("show");
-
-      // after animation is done
-      // - set the height to the natural height, to prevent content shift when switch content
-      // - set max height to 90vh, so it opens at max 70vh but can be resized to 90vh
-      setTimeout(() => {
-        this._dialog.style.setProperty(
-          "height",
-          `${(this._dialog.offsetHeight / window.innerHeight) * 100}vh`
-        );
-        this._dialog.style.setProperty("max-height", "90vh");
-      }, ANIMATION_DURATION_MS);
     });
   }
 
   public closeSheet() {
     requestAnimationFrame(() => {
       this._dialog.classList.remove("show");
-
-      // after animation is done close dialog element and fire closed event
-      setTimeout(() => {
-        this._dialog.close();
-        fireEvent(this, "bottom-sheet-closed");
-      }, ANIMATION_DURATION_MS);
     });
+  }
+
+  private _handleTransitionEnd() {
+    if (this._dialog.classList.contains("show")) {
+      // after show animation is done
+      // - set the height to the natural height, to prevent content shift when switch content
+      // - set max height to 90vh, so it opens at max 70vh but can be resized to 90vh
+      this._dialogViewportHeight =
+        (this._dialog.offsetHeight / window.innerHeight) * 100;
+      this._dialogMaxViewpointHeight = 90;
+    } else {
+      // after close animation is done close dialog element and fire closed event
+      this._dialog.close();
+      fireEvent(this, "bottom-sheet-closed");
+    }
   }
 
   connectedCallback() {
@@ -113,7 +125,7 @@ export class HaBottomSheet extends LitElement {
     this._dragging = true;
     this._dragStartY = clientY;
     this._initialSize = (this._dialog.offsetHeight / window.innerHeight) * 100;
-    document.body.style.cursor = "grabbing";
+    document.body.style.setProperty("cursor", "grabbing");
   }
 
   private _handleMouseMove = (ev: MouseEvent) => {
@@ -147,7 +159,7 @@ export class HaBottomSheet extends LitElement {
       return;
     }
 
-    this._dialog.style.setProperty("height", `${newSize}vh`);
+    this._dialogViewportHeight = newSize;
   }
 
   private _handleMouseUp = () => {
@@ -163,7 +175,7 @@ export class HaBottomSheet extends LitElement {
       return;
     }
     this._dragging = false;
-    document.body.style.cursor = "";
+    document.body.style.removeProperty("cursor");
   }
 
   static styles = css`
