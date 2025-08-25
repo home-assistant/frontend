@@ -1,6 +1,8 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
+import "./ha-tooltip";
 
 export interface Segment {
   value: number;
@@ -30,10 +32,15 @@ class HaSegmentedBar extends LitElement {
         <div class="bar">
           ${this.segments.map(
             (segment) => html`
-              <div
-                style="width: ${(segment.value / totalValue) *
-                100}%; background-color: ${segment.color};"
-              ></div>
+              <ha-tooltip>
+                <span slot="content">${segment.label}</span>
+                <div
+                  style=${styleMap({
+                    width: `${(segment.value / totalValue) * 100}%`,
+                    backgroundColor: segment.color,
+                  })}
+                ></div>
+              </ha-tooltip>
             `
           )}
         </div>
@@ -43,7 +50,9 @@ class HaSegmentedBar extends LitElement {
               <li>
                 <div
                   class="bullet"
-                  style="background-color: ${segment.color};"
+                  style=${styleMap({
+                    backgroundColor: segment.color,
+                  })}
                 ></div>
                 <span class="label">${segment.label}</span>
               </li>
