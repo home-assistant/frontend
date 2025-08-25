@@ -152,9 +152,6 @@ export class HaCodeEditor extends ReactiveElement {
 
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
-    if (!this._editorToolbar || changedProps.has("hasToolbar")) {
-      this._updateToolbar();
-    }
     if (!this.codemirror) {
       this._createCodeMirror();
       return;
@@ -195,6 +192,9 @@ export class HaCodeEditor extends ReactiveElement {
     }
     if (transactions.length > 0) {
       this.codemirror.dispatch(...transactions);
+    }
+    if (changedProps.has("hasToolbar")) {
+      this._updateToolbar();
     }
     if (changedProps.has("error")) {
       this.classList.toggle("error-state", this.error);
@@ -272,17 +272,30 @@ export class HaCodeEditor extends ReactiveElement {
       }
     }
 
+    // Create flex root element. This is necessary to ensure
+    // that code mirror plays nice with the toolbar. The div
+    // places the toolbar at the top then forces the cm-editor
+    // to fill the rest of the space.
+    const editorRoot = document.createElement("div");
+    editorRoot.classList.add("code-editor");
+    this.renderRoot.appendChild(editorRoot);
+
+    // Create the toolbar
+    this._createEditorToolbar(editorRoot);
+
+    // Create the code editor
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
         extensions,
       }),
-      parent: this.renderRoot,
+      parent: editorRoot,
     });
   }
 
-  private _createEditorToolbar() {
+  private _createEditorToolbar(renderRoot: HTMLElement) {
     this._editorToolbar = document.createElement("ha-code-editor-toolbar");
+    this._editorToolbar.classList.add("code-editor-toolbar");
     this._editorToolbar.items = [
       //  - Undo
       {
@@ -309,14 +322,12 @@ export class HaCodeEditor extends ReactiveElement {
         action: (e: Event) => this._handleFullscreenClick(e),
       },
     ];
-    this.renderRoot.appendChild(this._editorToolbar);
+    renderRoot.appendChild(this._editorToolbar);
+
+    this._updateToolbar();
   }
 
   private _updateToolbar() {
-    // If we don't yet have a toolbar, create it.
-    if (!this._editorToolbar) {
-      this._createEditorToolbar();
-    }
     // Show/Hide the toolbar if we have one.
     if (this._editorToolbar) {
       this._editorToolbar.setAttribute(
@@ -688,8 +699,26 @@ export class HaCodeEditor extends ReactiveElement {
       border-color: var(--error-state-color, red) !important;
     }
 
+    :host(.hasToolbar) .cm-gutters {
+      padding-top: 0;
+    }
+
+    :host(.hasToolbar) .cm-focused .cm-gutters {
+      padding-top: 1px;
+    }
+
     :host(.error-state) .cm-content {
       border-color: var(--error-state-color, red) !important;
+    }
+
+    :host(.hasToolbar) .cm-content {
+      border: "none";
+      border-top: 1px solid var(--secondary-text-color);
+    }
+
+    :host(.hasToolbar) .cm-focused .cm-content {
+      border-top: 2px solid var(--primary-color);
+      padding-top: 15px;
     }
 
     :host(.fullscreen) {
@@ -715,27 +744,20 @@ export class HaCodeEditor extends ReactiveElement {
       display: block !important;
     }
 
+    .code-editor {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .cm-editor {
+      flex: 1 1 100%;
+    }
+
     :host(.fullscreen) .cm-editor {
       height: 100% !important;
       max-height: 100% !important;
       border-radius: 0 !important;
-    }
-
-    :host(.hasToolbar) .cm-content {
-      border-top: 1px solid var(--secondary-text-color);
-    }
-
-    :host(.hasToolbar) .cm-focused .cm-content {
-      border-top: 2px solid var(--primary-color);
-      padding-top: 15px;
-    }
-
-    :host(.hasToolbar) .cm-gutters {
-      padding-top: 0;
-    }
-
-    :host(.hasToolbar) .cm-focused .cm-gutters {
-      padding-top: 1px;
     }
 
     .completion-info {
