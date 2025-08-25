@@ -38,11 +38,14 @@ class HuiButtonCardFeature extends LitElement implements LovelaceCardFeature {
     }
     return this.hass.states[this.context.entity_id!] as HassEntity | undefined;
   }
+
   private _pressButton() {
     if (!this.hass || !this._stateObj) return;
+
     const domain = computeDomain(this._stateObj.entity_id);
     const service =
       domain === "button" || domain === "input_button" ? "press" : "turn_on";
+
     this.hass.callService(domain, service, {
       entity_id: this._stateObj.entity_id,
     });
