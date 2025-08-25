@@ -6661,8 +6661,20 @@
         "storage": {
           "caption": "Storage",
           "description": "{percent_used} used - {free_space} free",
-          "used_space": "Used space",
-          "detailed_description": "{used} used of {total} total, {free_space} remaining",
+          "used_space": "Storage",
+          "detailed_description": "{used} of {total} used",
+          "segments": {
+            "used": "Used space",
+            "free": "Free space",
+            "system": "System",
+            "addons_data": "Add-on data",
+            "addons_config": "Add-on configuration",
+            "media": "Media",
+            "share": "Share",
+            "backup": "Backups",
+            "homeassistant": "Home Assistant",
+            "ssl": "SSL"
+          },
           "lifetime_used": "Lifetime used",
           "lifetime_used_description": "The drive’s wear level is shown as a percentage, based on endurance indicators reported by the device via NVMe SMART or eMMC lifetime estimate fields.",
           "disk_metrics": "Disk metrics",
