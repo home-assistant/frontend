@@ -7375,6 +7375,9 @@
               },
               "and": {
                 "label": "And"
+              },
+              "boolean": {
+                "label": "Boolean"
               }
             }
           },
