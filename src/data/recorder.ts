@@ -108,7 +108,7 @@ export interface StatisticsValidationResultMeanTypeChanged {
   };
 }
 
-export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF"] as const;
+export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
 export interface StatisticsUnitConfiguration {
   energy?: "Wh" | "kWh" | "MWh" | "GJ";
