@@ -4,6 +4,19 @@ import { fireEvent } from "../common/dom/fire_event";
 
 const ANIMATION_DURATION_MS = 300;
 
+/**
+ * A bottom sheet component that slides up from the bottom of the screen.
+ *
+ * The bottom sheet provides a draggable interface that allows users to resize
+ * the sheet by dragging the handle at the top. It supports both mouse and touch
+ * interactions and automatically closes when dragged below a 20% of screen height.
+ *
+ * @fires bottom-sheet-closed - Fired when the bottom sheet is closed
+ *
+ * @cssprop --ha-bottom-sheet-border-width - Border width for the sheet
+ * @cssprop --ha-bottom-sheet-border-style - Border style for the sheet
+ * @cssprop --ha-bottom-sheet-border-color - Border color for the sheet
+ */
 @customElement("ha-bottom-sheet")
 export class HaBottomSheet extends LitElement {
   @query("dialog") private _dialog!: HTMLDialogElement;
@@ -34,8 +47,12 @@ export class HaBottomSheet extends LitElement {
 
   private _openSheet() {
     requestAnimationFrame(async () => {
+      // trigger opening animation
       this._dialog.classList.add("show");
 
+      // after animation is done
+      // - set the height to the natural height, to prevent content shift when switch content
+      // - set max height to 90vh, so it opens at max 70vh but can be resized to 90vh
       setTimeout(() => {
         this._dialog.style.setProperty(
           "height",
@@ -49,6 +66,8 @@ export class HaBottomSheet extends LitElement {
   public closeSheet() {
     requestAnimationFrame(() => {
       this._dialog.classList.remove("show");
+
+      // after animation is done close dialog element and fire closed event
       setTimeout(() => {
         this._dialog.close();
         fireEvent(this, "bottom-sheet-closed");
@@ -58,6 +77,8 @@ export class HaBottomSheet extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    // register event listeners for drag handling
     document.addEventListener("mousemove", this._handleMouseMove);
     document.addEventListener("mouseup", this._handleMouseUp);
     document.addEventListener("touchmove", this._handleTouchMove, {
@@ -69,6 +90,8 @@ export class HaBottomSheet extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
+
+    // unregister event listeners for drag handling
     document.removeEventListener("mousemove", this._handleMouseMove);
     document.removeEventListener("mouseup", this._handleMouseUp);
     document.removeEventListener("touchmove", this._handleTouchMove);
@@ -94,12 +117,16 @@ export class HaBottomSheet extends LitElement {
   }
 
   private _handleMouseMove = (ev: MouseEvent) => {
-    if (!this._dragging) return;
+    if (!this._dragging) {
+      return;
+    }
     this._updateSize(ev.clientY);
   };
 
   private _handleTouchMove = (ev: TouchEvent) => {
-    if (!this._dragging) return;
+    if (!this._dragging) {
+      return;
+    }
     ev.preventDefault(); // Prevent scrolling
     this._updateSize(ev.touches[0].clientY);
   };
@@ -131,7 +158,9 @@ export class HaBottomSheet extends LitElement {
   };
 
   private _endDrag() {
-    if (!this._dragging) return;
+    if (!this._dragging) {
+      return;
+    }
     this._dragging = false;
     document.body.style.cursor = "";
   }
