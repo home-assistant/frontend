@@ -2,7 +2,13 @@ import {
   extractDerivedVars,
   extractVars,
 } from "../../../common/style/derived-css-vars";
-import { colorStyles, darkColorStyles } from "./color.globals";
+import {
+  colorStyles,
+  darkColorStyles,
+  DefaultPrimaryColor,
+  DefaultAccentColor,
+  DefaultThemeColor,
+} from "./color.globals";
 import { coreColorStyles } from "./core.globals";
 import {
   darkSemanticColorStyles,
@@ -27,3 +33,6 @@ export const colorStylesCollection = [
   colorStyles.toString(),
   waColorStyles.toString(),
 ];
+
+// Export color constants for use by Home Assistant Core
+export { DefaultPrimaryColor, DefaultAccentColor, DefaultThemeColor };

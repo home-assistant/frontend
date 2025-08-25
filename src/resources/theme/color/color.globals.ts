@@ -369,3 +369,8 @@ export const DefaultPrimaryColor = extractVar(
   coreColorVariables
 );
 export const DefaultAccentColor = extractVar(colorStyles, "accent-color");
+export const DefaultThemeColor = extractVar(
+  colorStyles,
+  "app-theme-color",
+  coreColorVariables
+);
