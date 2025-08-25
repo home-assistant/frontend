@@ -413,6 +413,7 @@
       "add": "Add",
       "create": "Create",
       "edit": "Edit",
+      "edit_item": "Edit {name}",
       "submit": "Submit",
       "rename": "Rename",
       "search": "[%key:ui::components::data-table::search%]",
@@ -439,7 +440,8 @@
       "replace": "Replace",
       "append": "Append",
       "supports_markdown": "Supports {markdown_help_link}",
-      "markdown": "Markdown"
+      "markdown": "Markdown",
+      "none": "None"
     },
     "components": {
       "selectors": {
@@ -1322,7 +1324,8 @@
             "system": "[%key:ui::panel::config::dashboard::system::main%]",
             "addon_dashboard": "Add-on dashboard",
             "addon_store": "Add-on store",
-            "addon_info": "{addon} info"
+            "addon_info": "{addon} info",
+            "shortcuts": "[%key:ui::panel::config::info::shortcuts%]"
           }
         },
         "filter_placeholder": "Search entities",
@@ -5337,8 +5340,6 @@
           "introduction": "Zones allow you to specify certain regions on Earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create zone",
-          "edit_zone": "Edit zone",
-          "edit_home": "Edit home",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "can_not_edit": "Unable to edit zone",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
@@ -6968,7 +6969,16 @@
           "assist_tooltip": "Assist",
           "reload_resources": "Reload resources",
           "exit_edit_mode": "Done",
-          "close": "Close"
+          "close": "Close",
+          "add": "Add to Home Assistant",
+          "add_device": "Add device",
+          "create_automation": "Create automation",
+          "add_area": "Add area",
+          "add_area_success": "Area added",
+          "add_area_action": "View area",
+          "add_person_success": "Person added",
+          "add_person_action": "View persons",
+          "invite_person": "Invite person"
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",
@@ -7095,7 +7105,8 @@
             "error_same_url": "You cannot save a view with the same URL as a different existing view.",
             "error_invalid_path": "URL contains invalid/reserved characters. Please enter a simple string only for the path of this view.",
             "error_number": "URL may not be a number.",
-            "move_to_dashboard": "Move to dashboard"
+            "move_to_dashboard": "Move to dashboard",
+            "move_to_view": "Move to view"
           },
           "edit_view_header": {
             "add_title": "Add title",
@@ -7201,6 +7212,13 @@
             "header": "[%key:ui::panel::lovelace::editor::suggest_card::header%]",
             "add": "[%key:ui::panel::lovelace::editor::suggest_card::add%]"
           },
+          "move_section": {
+            "header": "Choose a view to move the section to",
+            "strategy_error_title": "Impossible to move the section",
+            "strategy_error_text_strategy": "Moving a section to an auto-generated view is not supported.",
+            "success": "Section moved successfully",
+            "error": "Error while moving section"
+          },
           "move_card": {
             "header": "Choose a view to move the card to",
             "strategy_error_title": "Impossible to move the card",
@@ -7249,7 +7267,13 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)"
+              "column_span_helper": "Larger sections will be made smaller to fit the display. (e.g. on mobile devices)",
+              "styling": "Styling",
+              "background_type": "Background type",
+              "background_type_none_option": "None",
+              "background_type_color_option": "Color",
+              "background_color": "Background color",
+              "background_opacity": "Background opacity"
             },
             "visibility": {
               "explanation": "The section will be shown when ALL conditions below are fulfilled. If no conditions are set, the section will always be shown."
@@ -7363,6 +7387,11 @@
               "sensor_classes": "Sensor classes",
               "description": "The Area card automatically displays entities of a specific area.",
               "display_type": "Display type",
+              "content_layout": "[%key:ui::panel::lovelace::editor::card::tile::content_layout%]",
+              "content_layout_options": {
+                "horizontal": "[%key:ui::panel::lovelace::editor::card::tile::content_layout_options::horizontal%]",
+                "vertical": "[%key:ui::panel::lovelace::editor::card::tile::content_layout_options::vertical%]"
+              },
               "display_type_options": {
                 "compact": "Compact",
                 "icon": "Area icon",
@@ -7904,6 +7933,9 @@
               },
               "lock-open-door": {
                 "label": "Lock open door"
+              },
+              "media-player-playback": {
+                "label": "Media player playback controls"
               },
               "media-player-volume-slider": {
                 "label": "Media player volume slider"

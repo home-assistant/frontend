@@ -104,12 +104,13 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export type AreaCardDisplayType = "compact" | "icon" | "picture" | "camera";
 export interface AreaCardConfig extends LovelaceCardConfig {
   area?: string;
   name?: string;
   color?: string;
   navigation_path?: string;
-  display_type?: "compact" | "icon" | "picture" | "camera";
+  display_type?: AreaCardDisplayType;
   /** @deprecated Use `display_type` instead */
   show_camera?: boolean;
   camera_view?: HuiImage["cameraView"];

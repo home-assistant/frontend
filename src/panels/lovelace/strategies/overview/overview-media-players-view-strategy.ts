@@ -3,16 +3,17 @@ import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
 import type { MediaControlCardConfig } from "../../cards/types";
 import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
+import { getHomeStructure } from "./helpers/overview-home-structure";
 import {
   findEntities,
   OVERVIEW_SUMMARIES_FILTERS,
 } from "./helpers/overview-summaries";
-import { getHomeStructure } from "./helpers/overview-home-structure";
 
 export interface OvervieMediaPlayersViewStrategyConfig {
   type: "overview-media-players";
@@ -22,8 +23,8 @@ const processAreasForMediaPlayers = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
-): any[] => {
-  const cards: any[] = [];
+): LovelaceCardConfig[] => {
+  const cards: LovelaceCardConfig[] = [];
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];

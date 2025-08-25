@@ -379,6 +379,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     const index = ev.currentTarget.index;
 
     showEditSectionDialog(this, {
+      lovelace: this.lovelace!,
       lovelaceConfig: this.lovelace!.config,
       saveConfig: (newConfig) => {
         this.lovelace!.saveConfig(newConfig);

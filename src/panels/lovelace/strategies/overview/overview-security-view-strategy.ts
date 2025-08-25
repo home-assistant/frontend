@@ -16,6 +16,7 @@ import {
   OVERVIEW_SUMMARIES_FILTERS,
 } from "./helpers/overview-summaries";
 import { getHomeStructure } from "./helpers/overview-home-structure";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
 export interface OverviewSecurityViewStrategyConfig {
   type: "overview-security";
@@ -24,10 +25,9 @@ export interface OverviewSecurityViewStrategyConfig {
 const processAreasForSecurity = (
   areaIds: string[],
   hass: HomeAssistant,
-  entities: string[],
-  computeTileCard: (entityId: string) => any
-): any[] => {
-  const cards: any[] = [];
+  entities: string[]
+): LovelaceCardConfig[] => {
+  const cards: LovelaceCardConfig[] = [];
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
@@ -37,6 +37,8 @@ const processAreasForSecurity = (
       area: area.area_id,
     });
     const areaEntities = entities.filter(areaFilter);
+
+    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
 
     if (areaEntities.length > 0) {
       cards.push({
@@ -81,8 +83,6 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
 
     const floorCount = home.floors.length + (home.areas.length ? 1 : 0);
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
-
     // Process floors
     for (const floorStructure of home.floors) {
       const floorId = floorStructure.id;
@@ -100,12 +100,7 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(
-        areaIds,
-        hass,
-        entities,
-        computeTileCard
-      );
+      const areaCards = processAreasForSecurity(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -126,12 +121,7 @@ export class OverviewSecurityViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForSecurity(
-        home.areas,
-        hass,
-        entities,
-        computeTileCard
-      );
+      const areaCards = processAreasForSecurity(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
