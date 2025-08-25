@@ -7719,7 +7719,8 @@
               "time_zones": {
                 "auto": "Use user settings"
               },
-              "no_background": "No background"
+              "no_background": "No background",
+              "hour_leading_zero": "Show leading zero for hour"
             },
             "media-control": {
               "name": "Media control",
