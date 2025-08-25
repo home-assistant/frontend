@@ -13,6 +13,7 @@ import { hexBlend } from "../color/hex";
 import { labBrighten, labDarken } from "../color/lab";
 import { generateColorPalette } from "../color/palette";
 import { rgbContrast } from "../color/rgb";
+import { DefaultAccentColor } from "../../resources/theme/color/color.globals";
 
 interface ProcessedTheme {
   keys: Record<string, "">;
@@ -97,10 +98,10 @@ export const applyThemesOnElement = (
     if (accentColor) {
       cacheKey = `${cacheKey}__accent_${accentColor}`;
       themeRules["accent-color"] = accentColor;
-      const rgbAccentColor = hex2rgb(accentColor);
-      themeRules["text-accent-color"] =
-        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
     }
+    const rgbAccentColor = hex2rgb(accentColor || DefaultAccentColor);
+    themeRules["text-accent-color"] =
+      rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
 
     // Nothing was changed
     if (element.__themes?.cacheKey === cacheKey) {
