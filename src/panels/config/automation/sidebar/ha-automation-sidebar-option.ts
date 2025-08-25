@@ -16,6 +16,8 @@ export default class HaAutomationSidebarOption extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
 
@@ -37,6 +39,7 @@ export default class HaAutomationSidebarOption extends LitElement {
     return html`<ha-automation-sidebar-card
       .hass=${this.hass}
       .isWide=${this.isWide}
+      .narrow=${this.narrow}
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>

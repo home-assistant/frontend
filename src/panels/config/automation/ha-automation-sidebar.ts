@@ -49,6 +49,7 @@ export default class HaAutomationSidebar extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
+          .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
@@ -63,6 +64,7 @@ export default class HaAutomationSidebar extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
+          .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
@@ -77,6 +79,7 @@ export default class HaAutomationSidebar extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
+          .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
@@ -91,6 +94,7 @@ export default class HaAutomationSidebar extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
+          .narrow=${this.narrow}
           .disabled=${this.disabled}
           @close-sidebar=${this._handleCloseSidebar}
         ></ha-automation-sidebar-option>
@@ -103,6 +107,7 @@ export default class HaAutomationSidebar extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
+          .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
@@ -117,6 +122,7 @@ export default class HaAutomationSidebar extends LitElement {
           .hass=${this.hass}
           .config=${this.config}
           .isWide=${this.isWide}
+          .narrow=${this.narrow}
           .disabled=${this.disabled}
           .yamlMode=${this._yamlMode}
           @toggle-yaml-mode=${this._toggleYamlMode}
