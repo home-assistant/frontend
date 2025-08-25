@@ -371,11 +371,16 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 export interface ClockCardConfig extends LovelaceCardConfig {
   type: "clock";
   title?: string;
+  clock_style?: "digital" | "analog";
   clock_size?: "small" | "medium" | "large";
   show_seconds?: boolean | undefined;
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
+  analog_options?: {
+    border?: boolean;
+    ticks?: "none" | "quarter" | "hour" | "minute";
+  };
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
