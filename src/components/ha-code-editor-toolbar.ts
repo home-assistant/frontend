@@ -59,13 +59,15 @@ export class HaCodeEditorToolbar extends LitElement {
     .editor-buttongroup {
       background-color: transparent;
       padding-right: 4px;
-      height: 32px;
+      height: var(--code-editor-toolbar-height, 32px);
     }
 
     .editor-button {
       color: var(--secondary-text-color);
-      --mdc-icon-button-size: 28px;
-      --mdc-icon-size: 18px;
+      --mdc-icon-button-size: calc(
+        var(--code-editor-toolbar-height, 32px) - 4px
+      );
+      --mdc-icon-size: calc(var(--code-editor-toolbar-height, 32px) - 14px);
       /* Ensure button is clickable on iOS */
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
