@@ -42,6 +42,7 @@ export type CustomLegendOption = ECOption["legend"] & {
     secondaryIds?: string[]; // Other dataset IDs that should be controlled by this legend item.
     name: string;
     itemStyle?: Record<string, any>;
+    zoomStatus?: { start: number; end: number };
   }[];
 };
 
@@ -158,8 +159,10 @@ export class HaChartBase extends LitElement {
           });
         }
       };
+
       window.addEventListener("keydown", handleKeyDown);
       window.addEventListener("keyup", handleKeyUp);
+
       this._listeners.push(
         () => window.removeEventListener("keydown", handleKeyDown),
         () => window.removeEventListener("keyup", handleKeyUp)
@@ -177,6 +180,7 @@ export class HaChartBase extends LitElement {
     if (!this.chart) {
       return;
     }
+
     if (changedProps.has("_themes") && this.hasUpdated) {
       this._setupChart();
       return;
@@ -186,8 +190,18 @@ export class HaChartBase extends LitElement {
       // Separate 'if' from below since this must updated before _getSeries()
       this._updateHiddenStatsFromOptions(this.options);
     }
+
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
+
+      // apply zoom changes:
+      this._syncingZoom = true;
+      this.chart?.dispatchAction({
+        type: "dataZoom",
+        start: this.zoomStatus.start,
+        end: this.zoomStatus.end,
+      });
+      this._syncingZoom = false;
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
@@ -334,6 +348,14 @@ export class HaChartBase extends LitElement {
       this._minutesDifference * this._zoomRatio
     );
 
+  /**
+   * When the chart zoom changes (via dataZoom), emit a zoom-status-changed event
+   * with the current zoom start and end percentages.
+   */
+  private _emitZoomStatusChanged(start: number, end: number) {
+    fireEvent(this, "zoom-status-changed", { start, end });
+  }
+
   private async _setupChart() {
     if (this._loading) return;
     const container = this.renderRoot.querySelector(".chart") as HTMLDivElement;
@@ -354,15 +376,7 @@ export class HaChartBase extends LitElement {
       this.chart = echarts.init(container, "custom");
       this.chart.on("datazoom", (e: any) => {
         const { start, end } = e.batch?.[0] ?? e;
-        this._isZoomed = start !== 0 || end !== 100;
-        this._zoomRatio = (end - start) / 100;
-        if (this._isTouchDevice) {
-          // zooming changes the axis pointer so we need to hide it
-          this.chart?.dispatchAction({
-            type: "hideTip",
-            from: "datazoom",
-          });
-        }
+        this._emitZoomStatusChanged(start, end);
       });
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);

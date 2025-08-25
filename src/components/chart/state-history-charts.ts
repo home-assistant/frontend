@@ -84,6 +84,8 @@ export class StateHistoryCharts extends LitElement {
 
   @state() private _chartCount = 0;
 
+  @state() private _zoomStatus?: { start: number; end: number };
+
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
@@ -125,9 +127,11 @@ export class StateHistoryCharts extends LitElement {
           >
           </lit-virtualizer>
         </div>`
-      : html`${combinedItems.map((item, index) =>
-          this._renderHistoryItem(item, index)
-        )}`;
+      : html`
+          ${combinedItems.map((item, index) =>
+            this._renderHistoryItem(item, index)
+          )}
+        `;
   }
 
   private _renderHistoryItem: RenderItemFunction<
@@ -138,28 +142,32 @@ export class StateHistoryCharts extends LitElement {
       return html``;
     }
     if (!Array.isArray(item)) {
-      return html`<div class="entry-container line">
-        <state-history-chart-line
-          .hass=${this.hass}
-          .unit=${item.unit}
-          .data=${item.data}
-          .identifier=${item.identifier}
-          .showNames=${this.showNames}
-          .startTime=${this._computedStartTime}
-          .endTime=${this._computedEndTime}
-          .paddingYAxis=${this._maxYWidth}
-          .names=${this.names}
-          .chartIndex=${index}
-          .clickForMoreInfo=${this.clickForMoreInfo}
-          .logarithmicScale=${this.logarithmicScale}
-          .minYAxis=${this.minYAxis}
-          .maxYAxis=${this.maxYAxis}
-          .fitYData=${this.fitYData}
-          @y-width-changed=${this._yWidthChanged}
-          .height=${this.virtualize ? undefined : this.height}
-          .expandLegend=${this.expandLegend}
-        ></state-history-chart-line>
-      </div> `;
+      return html`
+        <div class="entry-container line">
+          <state-history-chart-line
+            .hass=${this.hass}
+            .unit=${item.unit}
+            .data=${item.data}
+            .identifier=${item.identifier}
+            .showNames=${this.showNames}
+            .startTime=${this._computedStartTime}
+            .endTime=${this._computedEndTime}
+            .paddingYAxis=${this._maxYWidth}
+            .names=${this.names}
+            .chartIndex=${index}
+            .clickForMoreInfo=${this.clickForMoreInfo}
+            .logarithmicScale=${this.logarithmicScale}
+            .minYAxis=${this.minYAxis}
+            .maxYAxis=${this.maxYAxis}
+            .fitYData=${this.fitYData}
+            @y-width-changed=${this._yWidthChanged}
+            .height=${this.virtualize ? undefined : this.height}
+            .expandLegend=${this.expandLegend}
+            .zoomStatus=${this._zoomStatus}
+            @zoom-status-changed=${this._onZoomStatusChanged}
+          ></state-history-chart-line>
+        </div>
+      `;
     }
     return html`<div class="entry-container timeline">
       <state-history-chart-timeline
@@ -175,9 +183,24 @@ export class StateHistoryCharts extends LitElement {
         .chartIndex=${index}
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
+        .zoomStatus=${this._zoomStatus}
+        @zoom-status-changed=${this._onZoomStatusChanged}
       ></state-history-chart-timeline>
     </div> `;
   };
+
+  private _onZoomStatusChanged(
+    ev: CustomEvent<{ start: number; end: number }>
+  ) {
+    // Only update if changed, to avoid infinite loop
+    if (
+      !this._zoomStatus ||
+      this._zoomStatus.start !== ev.detail.start ||
+      this._zoomStatus.end !== ev.detail.end
+    ) {
+      this._zoomStatus = ev.detail;
+    }
+  }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.size === 1 && changedProps.has("hass")) {

@@ -51,6 +51,13 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false, type: Number }) public chartIndex?;
 
+  @property({ attribute: false }) public zoomStatus?: {
+    start: number;
+    end: number;
+  };
+
+  private _lastZoomStatus?: { start: number; end: number };
+
   @state() private _chartData: CustomSeriesOption[] = [];
 
   @state() private _chartOptions?: ECOption;
@@ -68,9 +75,22 @@ export class StateHistoryChartTimeline extends LitElement {
         .data=${this._chartData as ECOption["series"]}
         small-controls
         @chart-click=${this._handleChartClick}
+        @zoom-status-changed=${this._zoomStatusChanged}
+        .zoomStatus=${this.zoomStatus}
       ></ha-chart-base>
     `;
   }
+
+  private _zoomStatusChanged = (ev: CustomEvent) => {
+    // Only propagate if changed
+    if (
+      ev.detail.start !== this._lastZoomStatus?.start ||
+      ev.detail.end !== this._lastZoomStatus?.end
+    ) {
+      this._lastZoomStatus = ev.detail;
+      fireEvent(this, "zoom-status-changed", ev.detail);
+    }
+  };
 
   private _renderItem: CustomSeriesRenderItem = (params, api) => {
     const categoryIndex = api.value(0);
@@ -182,6 +202,22 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("_yWidth")
     ) {
       this._createOptions();
+    }
+
+    if (changedProps.has("zoomStatus") && this.zoomStatus && this.chart) {
+      // Prevent feedback loop: only update if different from last applied
+      if (
+        !this._lastZoomStatus ||
+        this._lastZoomStatus.start !== this.zoomStatus.start ||
+        this._lastZoomStatus.end !== this.zoomStatus.end
+      ) {
+        this.chart.dispatchAction({
+          type: "dataZoom",
+          start: this.zoomStatus.start,
+          end: this.zoomStatus.end,
+        });
+        this._lastZoomStatus = { ...this.zoomStatus };
+      }
     }
   }
 

@@ -84,6 +84,13 @@ export class StateHistoryChartLine extends LitElement {
 
   private _previousYAxisLabelValue = 0;
 
+  @property({ attribute: false }) public zoomStatus?: {
+    start: number;
+    end: number;
+  };
+
+  private _lastZoomStatus?: { start: number; end: number };
+
   protected render() {
     return html`
       <ha-chart-base
@@ -95,9 +102,22 @@ export class StateHistoryChartLine extends LitElement {
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
         .expandLegend=${this.expandLegend}
+        @zoom-status-changed=${this._zoomStatusChanged}
+        .zoomStatus=${this.zoomStatus}
       ></ha-chart-base>
     `;
   }
+
+  private _zoomStatusChanged = (ev: CustomEvent) => {
+    // Only propagate if changed
+    if (
+      ev.detail.start !== this._lastZoomStatus?.start ||
+      ev.detail.end !== this._lastZoomStatus?.end
+    ) {
+      this._lastZoomStatus = ev.detail;
+      fireEvent(this, "zoom-status-changed", ev.detail);
+    }
+  };
 
   private _renderTooltip = (params: any) => {
     const time = params[0].axisValue;
@@ -288,6 +308,22 @@ export class StateHistoryChartLine extends LitElement {
           formatter: this._renderTooltip,
         },
       };
+    }
+
+    if (changedProps.has("zoomStatus") && this.zoomStatus && this.chart) {
+      // Prevent feedback loop: only update if different from last applied
+      if (
+        !this._lastZoomStatus ||
+        this._lastZoomStatus.start !== this.zoomStatus.start ||
+        this._lastZoomStatus.end !== this.zoomStatus.end
+      ) {
+        this.chart.dispatchAction({
+          type: "dataZoom",
+          start: this.zoomStatus.start,
+          end: this.zoomStatus.end,
+        });
+        this._lastZoomStatus = { ...this.zoomStatus };
+      }
     }
   }
 
