@@ -417,9 +417,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return entities.reduce((acc, entity) => acc + Number(entity.state), 0);
   }
 
-  private _computeMedianState(entities: HassEntity[]): number {
+  private _computeMedianState(entities: HassEntity[]): number | undefined {
     if (entities.length === 0) {
-      return 0;
+      return undefined;
     }
     const states = entities.map((entity) => entity.state);
     const sortedStates = states.sort((a, b) => Number(a) - Number(b));
