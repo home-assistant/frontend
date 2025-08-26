@@ -135,12 +135,10 @@ export class HaEntityNameSelector extends LitElement {
   private _rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (
     item: EntityNameOption
   ) => html`
-    <div>
-      <div>${item.label}</div>
-      <div style="font-size: 0.8em; color: var(--secondary-text-color);">
-        ${item.description}
-      </div>
-    </div>
+    <ha-combo-box-item>
+      <span slot="headline">${item.label}</span>
+      <span slot="supporting-text">${item.description}</span>
+    </ha-combo-box-item>
   `;
 
   protected render() {
