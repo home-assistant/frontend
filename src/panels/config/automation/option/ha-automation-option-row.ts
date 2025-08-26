@@ -355,6 +355,7 @@ export default class HaAutomationOptionRow extends LitElement {
       delete: this._removeOption,
     } satisfies OptionSidebarConfig);
     this._selected = true;
+    this._collapsed = false;
 
     if (this.narrow) {
       this.scrollIntoView({

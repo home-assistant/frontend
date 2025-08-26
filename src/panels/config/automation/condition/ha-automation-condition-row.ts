@@ -631,6 +631,7 @@ export default class HaAutomationConditionRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies ConditionSidebarConfig);
     this._selected = true;
+    this._collapsed = false;
 
     if (this.narrow) {
       this.scrollIntoView({

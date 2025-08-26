@@ -171,6 +171,7 @@ export default class HaScriptFieldRow extends LitElement {
     }
 
     this._selected = true;
+    this._collapsed = false;
     this.openSidebar();
   }
 
@@ -184,6 +185,7 @@ export default class HaScriptFieldRow extends LitElement {
     }
 
     this._selectorRowSelected = true;
+    this._selectorRowCollapsed = false;
     this.openSidebar(true);
   }
 

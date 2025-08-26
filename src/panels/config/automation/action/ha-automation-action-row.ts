@@ -667,6 +667,7 @@ export default class HaAutomationActionRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies ActionSidebarConfig);
     this._selected = true;
+    this._collapsed = false;
 
     if (this.narrow) {
       this.scrollIntoView({
