@@ -40,7 +40,7 @@ import "../action/ha-automation-action";
 import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
 import type HaAutomationCondition from "../condition/ha-automation-condition";
-import { editorStyles, rowStyles } from "../styles";
+import { editorStyles, indentStyle, rowStyles } from "../styles";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -413,6 +413,7 @@ export default class HaAutomationOptionRow extends LitElement {
     return [
       rowStyles,
       editorStyles,
+      indentStyle,
       css`
         li[role="separator"] {
           border-bottom-color: var(--divider-color);

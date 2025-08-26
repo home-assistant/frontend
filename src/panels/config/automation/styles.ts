@@ -62,18 +62,31 @@ export const editorStyles = css`
     border-top: 1px solid var(--divider-color);
     border-bottom: 1px solid var(--divider-color);
   }
-  .card-content.indent {
+`;
+
+export const indentStyle = css`
+  .card-content.indent,
+  .selector-row,
+  :host([indent]) ha-form {
     margin-left: 12px;
-    margin-right: -4px;
     padding: 12px 24px 16px 16px;
     border-left: 2px solid var(--ha-color-border-neutral-quiet);
+    border-bottom: 2px solid var(--ha-color-border-neutral-quiet);
+    border-radius: 0;
+    border-bottom-left-radius: var(--ha-border-radius-lg);
   }
   .card-content.indent.selected,
-  :host([selected]) .card-content.indent {
+  :host([selected]) .card-content.indent,
+  .selector-row.parent-selected,
+  :host([selected]) ha-form {
     border-color: var(--primary-color);
-    background-color: var(--ha-color-fill-primary-quiet-resting);
-    border-top-right-radius: var(--ha-border-radius-xl);
-    border-bottom-right-radius: var(--ha-border-radius-xl);
+    background: var(--ha-color-fill-primary-quiet-resting);
+    background: linear-gradient(
+      to right,
+      var(--ha-color-fill-primary-quiet-resting) 0%,
+      var(--ha-color-fill-primary-quiet-resting) 80%,
+      rgba(var(--rgb-primary-color), 0) 100%
+    );
   }
 `;
 
