@@ -27,10 +27,9 @@ export class HaIconButtonToolbar extends LitElement {
   // Returns all toolbar buttons, or undefined if there are none.
   // Optionally returns only those with matching selector.
   public findToolbarButtons(selector = ""): HaIconButton[] | undefined {
-    const toolbarRoot = this.shadowRoot;
-    if (!toolbarRoot) return undefined;
     // Search for all toolbar buttons
-    const allButtonNodes = toolbarRoot.querySelectorAll("ha-icon-button");
+    const allButtonNodes = this.shadowRoot?.querySelectorAll("ha-icon-button");
+    if (!allButtonNodes) return undefined;
     const allButtons = [...allButtonNodes];
     const toolbarButtons = Array.prototype.filter.call(allButtons, (button) =>
       button.classList.contains("icon-toolbar-button")
@@ -47,10 +46,8 @@ export class HaIconButtonToolbar extends LitElement {
   // Returns a toolbar button based on the provided id.
   // Will return undefined if not found.
   public findToolbarButtonById(id = ""): HaIconButton | undefined {
-    const toolbarRoot = this.shadowRoot;
-    if (!toolbarRoot) return undefined;
     // Find the specified id
-    const element = toolbarRoot.getElementById(id);
+    const element = this.shadowRoot?.getElementById(id);
     if (!element || element.localName !== "ha-icon-button") return undefined;
     return element as HaIconButton;
   }
