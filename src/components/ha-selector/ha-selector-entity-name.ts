@@ -83,54 +83,157 @@ export class HaEntityNameSelector extends LitElement {
       ? this.hass.floors?.[areaReg.floor_id]
       : undefined;
 
-    if (entity.attributes.friendly_name) {
+    // Collect available names in priority order
+    const entityName = entity.attributes.friendly_name || null;
+    const deviceName = deviceReg?.name_by_user || deviceReg?.name || null;
+
+    const names = {
+      entity: entityName,
+      device:
+        deviceName && entityName && deviceName === entityName
+          ? null
+          : deviceName,
+      area: areaReg?.name || null,
+      floor: floorReg?.name || null,
+    };
+
+    // Add individual options first
+    if (names.entity) {
       options.push({
-        value: entity.attributes.friendly_name,
-        label: entity.attributes.friendly_name,
+        value: names.entity,
+        label: names.entity,
         description: this.hass.localize(
           "ui.components.entity.entity-name-picker.entity_name"
         ),
       });
     }
 
-    if (deviceReg?.name_by_user || deviceReg?.name) {
-      const deviceName = deviceReg.name_by_user || deviceReg.name;
-      if (deviceName && !options.find((opt) => opt.value === deviceName)) {
-        options.push({
-          value: deviceName,
-          label: deviceName,
-          description: this.hass.localize(
-            "ui.components.entity.entity-name-picker.device_name"
-          ),
-        });
-      }
+    if (names.device && !options.find((opt) => opt.value === names.device)) {
+      options.push({
+        value: names.device,
+        label: names.device,
+        description: this.hass.localize(
+          "ui.components.entity.entity-name-picker.device_name"
+        ),
+      });
     }
 
-    if (areaReg?.name) {
-      if (!options.find((opt) => opt.value === areaReg.name)) {
-        options.push({
-          value: areaReg.name!,
-          label: areaReg.name!,
-          description: this.hass.localize(
-            "ui.components.entity.entity-name-picker.area_name"
-          ),
-        });
-      }
+    if (names.area && !options.find((opt) => opt.value === names.area)) {
+      options.push({
+        value: names.area,
+        label: names.area,
+        description: this.hass.localize(
+          "ui.components.entity.entity-name-picker.area_name"
+        ),
+      });
     }
 
-    if (floorReg?.name) {
-      if (!options.find((opt) => opt.value === floorReg.name)) {
-        options.push({
-          value: floorReg.name!,
-          label: floorReg.name!,
-          description: this.hass.localize(
-            "ui.components.entity.entity-name-picker.floor_name"
-          ),
-        });
-      }
+    if (names.floor && !options.find((opt) => opt.value === names.floor)) {
+      options.push({
+        value: names.floor,
+        label: names.floor,
+        description: this.hass.localize(
+          "ui.components.entity.entity-name-picker.floor_name"
+        ),
+      });
     }
+
+    // Generate combinations with priority ordering
+    this._addCombinationOptions(options, names);
 
     this._options = options;
+  }
+
+  private _addCombinationOptions(
+    options: EntityNameOption[],
+    names: {
+      entity: string | null;
+      device: string | null;
+      area: string | null;
+      floor: string | null;
+    }
+  ): void {
+    const availableNames = Object.entries(names)
+      .filter(([, name]) => name !== null)
+      .map(([key, name]) => ({ key, name: name! }));
+
+    // Generate all possible combinations (2-4 items)
+    for (
+      let combinationSize = 2;
+      combinationSize <= availableNames.length;
+      combinationSize++
+    ) {
+      this._generateCombinations(availableNames, combinationSize, options);
+    }
+  }
+
+  private _generateCombinations(
+    availableNames: { key: string; name: string }[],
+    size: number,
+    options: EntityNameOption[]
+  ): void {
+    const combinations: { key: string; name: string }[][] = [];
+    this._getCombinations(availableNames, size, 0, [], combinations);
+
+    for (const combination of combinations) {
+      // Sort combination by priority (floor > area > device > entity)
+      const priorityOrder = { floor: 0, area: 1, device: 2, entity: 3 };
+      combination.sort((a, b) => priorityOrder[a.key] - priorityOrder[b.key]);
+
+      const combinedName = combination.map((item) => item.name).join(" - ");
+      const combinedDescription = combination
+        .map((item) => {
+          switch (item.key) {
+            case "entity":
+              return this.hass.localize(
+                "ui.components.entity.entity-name-picker.entity_name"
+              );
+            case "device":
+              return this.hass.localize(
+                "ui.components.entity.entity-name-picker.device_name"
+              );
+            case "area":
+              return this.hass.localize(
+                "ui.components.entity.entity-name-picker.area_name"
+              );
+            case "floor":
+              return this.hass.localize(
+                "ui.components.entity.entity-name-picker.floor_name"
+              );
+            default:
+              return "";
+          }
+        })
+        .join(" + ");
+
+      // Only add if not already present
+      if (!options.find((opt) => opt.value === combinedName)) {
+        options.push({
+          value: combinedName,
+          label: combinedName,
+          description: combinedDescription,
+        });
+      }
+    }
+  }
+
+  private _getCombinations<T>(
+    items: T[],
+    size: number,
+    start: number,
+    current: T[],
+    result: T[][]
+  ): void {
+    if (current.length === size) {
+      result.push([...current]);
+      return;
+    }
+
+    for (let i = start; i < items.length; i++) {
+      current.push(items[i]);
+      this._getCombinations(items, size, i + 1, current, result);
+      current.pop();
+    }
   }
 
   private _rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (
