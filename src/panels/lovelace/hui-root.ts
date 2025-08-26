@@ -46,6 +46,7 @@ import "../../components/ha-list-item";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
 import "../../components/sl-tab-group";
+import { createAreaRegistryEntry } from "../../data/area_registry";
 import type { LovelacePanelConfig } from "../../data/lovelace";
 import type { LovelaceConfig } from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
@@ -57,6 +58,7 @@ import {
 } from "../../data/lovelace/dashboard";
 import { getPanelTitle } from "../../data/panel";
 import { createPerson } from "../../data/person";
+import { showListItemsDialog } from "../../dialogs/dialog-list-items/show-list-items-dialog";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -71,6 +73,8 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
+import { showToast } from "../../util/toast";
+import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../config/automation/show-dialog-new-automation";
 import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
@@ -86,9 +90,6 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
-import { createAreaRegistryEntry } from "../../data/area_registry";
-import { showToast } from "../../util/toast";
 
 interface ActionItem {
   icon: string;
@@ -105,6 +106,7 @@ interface ActionItem {
 interface SubActionItem {
   icon: string;
   key: LocalizeKeys;
+  overflowAction?: any;
   action?: any;
   visible: boolean | undefined;
 }
@@ -208,31 +210,35 @@ class HUIRoot extends LitElement {
         icon: mdiPlus,
         key: "ui.panel.lovelace.menu.add",
         visible: !this._editMode && this.hass.user?.is_admin,
-        overflow: false,
+        overflow: this.narrow,
         subItems: [
           {
             icon: mdiDevices,
             key: "ui.panel.lovelace.menu.add_device",
             visible: true,
-            action: this._handleAddDevice,
+            action: this._addDevice,
+            overflowAction: this._handleAddDevice,
           },
           {
             icon: mdiRobot,
             key: "ui.panel.lovelace.menu.create_automation",
             visible: true,
-            action: this._handleACreateAutomation,
+            action: this._createAutomation,
+            overflowAction: this._handleCreateAutomation,
           },
           {
             icon: mdiSofa,
             key: "ui.panel.lovelace.menu.add_area",
             visible: true,
-            action: this._handleAddArea,
+            action: this._addArea,
+            overflowAction: this._handleAddArea,
           },
           {
             icon: mdiAccount,
             key: "ui.panel.lovelace.menu.add_person",
             visible: true,
-            action: this._handleInvitePerson,
+            action: this._addPerson,
+            overflowAction: this._handleAddPerson,
           },
         ],
       },
@@ -242,7 +248,7 @@ class HUIRoot extends LitElement {
         buttonAction: this._showQuickBar,
         overflowAction: this._handleShowQuickBar,
         visible: !this._editMode,
-        overflow: false,
+        overflow: this.narrow,
         suffix: this.hass.enableShortcuts ? "(E)" : undefined,
       },
       {
@@ -252,7 +258,7 @@ class HUIRoot extends LitElement {
         overflowAction: this._handleShowVoiceCommandDialog,
         visible:
           !this._editMode && this._conversation(this.hass.config.components),
-        overflow: false,
+        overflow: this.narrow,
         suffix: this.hass.enableShortcuts ? "(A)" : undefined,
       },
       {
@@ -321,7 +327,7 @@ class HUIRoot extends LitElement {
                     <ha-list-item
                       graphic="icon"
                       .key=${subItem.key}
-                      @request-selected=${subItem.action}
+                      @request-selected=${subItem.overflowAction}
                     >
                       ${this.hass!.localize(subItem.key)}
                       <ha-svg-icon
@@ -347,26 +353,37 @@ class HUIRoot extends LitElement {
     if (overflowItems.length && !overflowCanPromote) {
       const listItems: TemplateResult[] = [];
       overflowItems.forEach((i) => {
+        const title = [this.hass!.localize(i.key), i.suffix].join(" ");
+        const action = i.subItems
+          ? () => {
+              showListItemsDialog(this, {
+                title: title,
+                items: i.subItems!.map((si) => ({
+                  iconPath: si.icon,
+                  label: this.hass!.localize(si.key),
+                  action: si.action,
+                })),
+              });
+            }
+          : i.overflowAction;
+
         listItems.push(
-          html`<ha-list-item
-            graphic="icon"
-            @request-selected=${i.overflowAction}
-          >
-            ${[this.hass!.localize(i.key), i.suffix].join(" ")}
+          html`<ha-list-item graphic="icon" @request-selected=${action}>
+            ${title}
             <ha-svg-icon slot="graphic" .path=${i.icon}></ha-svg-icon>
           </ha-list-item>`
         );
       });
-      result.push(
-        html`<ha-button-menu slot="actionItems">
+      result.push(html`
+        <ha-button-menu slot="actionItems">
           <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize("ui.panel.lovelace.editor.menu.open")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
           ${listItems}
-        </ha-button-menu>`
-      );
+        </ha-button-menu>
+      `);
     }
     return html`${result}`;
   }
@@ -458,8 +475,6 @@ class HUIRoot extends LitElement {
 
     const isSubview = curViewConfig?.subview;
     const hasTabViews = views.filter((view) => !view.subview).length > 1;
-    const showTabBar =
-      this._editMode || (!isSubview && hasTabViews && this.narrow);
 
     return html`
       <div
@@ -504,35 +519,35 @@ class HUIRoot extends LitElement {
                       `}
                   ${isSubview
                     ? html`<div class="main-title">${curViewConfig.title}</div>`
-                    : hasTabViews && !showTabBar
+                    : hasTabViews
                       ? tabs
                       : html`
                           <div class="main-title">
-                            ${curViewConfig?.title ?? dashboardTitle}
+                            ${views[0]?.title ?? dashboardTitle}
                           </div>
                         `}
                   <div class="action-items">${this._renderActionItems()}</div>
                 `}
           </div>
-          ${showTabBar
-            ? html`<div class="tab-bar">
-                ${tabs}
-                ${this._editMode
-                  ? html`<ha-icon-button
-                      slot="nav"
-                      id="add-view"
-                      @click=${this._addView}
-                      .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.add"
-                      )}
-                      .path=${mdiPlus}
-                    ></ha-icon-button>`
-                  : nothing}
-              </div>`
+          ${this._editMode
+            ? html`
+                <div class="tab-bar">
+                  ${tabs}
+                  <ha-icon-button
+                    slot="nav"
+                    id="add-view"
+                    @click=${this._addView}
+                    .label=${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.add"
+                    )}
+                    .path=${mdiPlus}
+                  ></ha-icon-button>
+                </div>
+              `
             : nothing}
         </div>
         <hui-view-container
-          class=${showTabBar ? "has-tab-bar" : ""}
+          class=${this._editMode ? "has-tab-bar" : ""}
           .hass=${this.hass}
           .theme=${curViewConfig?.theme}
           id="view"
@@ -788,32 +803,40 @@ class HUIRoot extends LitElement {
     }
   }
 
-  private async _handleAddDevice(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
+  private _handleAddDevice(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
+    this._addDevice();
+  }
+
+  private _addDevice = async () => {
     await this.hass.loadFragmentTranslation("config");
     showAddIntegrationDialog(this);
-  }
+  };
 
-  private async _handleACreateAutomation(
+  private _handleCreateAutomation(
     ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
+  ): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
+    this._createAutomation();
+  }
+
+  private _createAutomation = async () => {
     await this.hass.loadFragmentTranslation("config");
     showNewAutomationDialog(this, { mode: "automation" });
-  }
+  };
 
-  private async _handleAddArea(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
+  private _handleAddArea(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
+    this._addArea();
+  }
+
+  private _addArea = async () => {
     await this.hass.loadFragmentTranslation("config");
     showAreaRegistryDetailDialog(this, {
       createEntry: async (values) => {
@@ -831,14 +854,16 @@ class HUIRoot extends LitElement {
         });
       },
     });
-  }
+  };
 
-  private async _handleInvitePerson(
-    ev: CustomEvent<RequestSelectedDetail>
-  ): Promise<void> {
+  private _handleAddPerson(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
+    this._addPerson();
+  }
+
+  private _addPerson = async () => {
     await this.hass.loadFragmentTranslation("config");
     showPersonDetailDialog(this, {
       users: [],
@@ -859,7 +884,7 @@ class HUIRoot extends LitElement {
         });
       },
     });
-  }
+  };
 
   private _handleRawEditor(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
