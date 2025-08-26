@@ -4016,7 +4016,8 @@
                   "label": "Tag",
                   "description": {
                     "picker": "When a tag is scanned (tags are usually created from the Companion app).",
-                    "full": "When a tag is scanned"
+                    "full": "When a tag is scanned",
+                    "known_tag": "When scanning tag {tag_name}"
                   }
                 },
                 "template": {
