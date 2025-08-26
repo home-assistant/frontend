@@ -165,20 +165,6 @@ export class HomeMainViewStrategy extends ReactiveElement {
             navigation_path: "media-players",
           },
         } satisfies ButtonCardConfig,
-        {
-          type: "button",
-          icon: "mdi:lightning-bolt",
-          name: "Energy",
-          icon_height: "30px",
-          grid_options: {
-            rows: 2,
-            columns: 4,
-          },
-          tap_action: {
-            action: "navigate",
-            navigation_path: "/energy?historyBack=1",
-          },
-        } satisfies ButtonCardConfig,
       ],
     };
 
