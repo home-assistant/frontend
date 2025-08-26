@@ -1,6 +1,9 @@
 import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import type { AreaRegistryEntry } from "../../../../data/area_registry";
+import { getEnergyPreferences } from "../../../../data/energy";
 import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
@@ -13,9 +16,6 @@ import type {
 } from "../../cards/types";
 import { getAreas } from "../areas/helpers/areas-strategy-helper";
 import { HOME_SUMMARIES_ICONS } from "./helpers/home-summaries";
-import { generateEntityFilter } from "../../../../common/entity/entity_filter";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import { getEnergyPreferences } from "../../../../data/energy";
 
 export interface HomeMainViewStrategyConfig {
   type: "home-main";
