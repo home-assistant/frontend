@@ -18,6 +18,7 @@ import {
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-button";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
@@ -277,6 +278,7 @@ export class HaManualAutomationEditor extends LitElement {
             sidebar: true,
             hidden: !this._sidebarConfig,
             overlay: !this.isWide && !this.narrow,
+            rtl: computeRTL(this.hass),
           })}
           .isWide=${this.isWide}
           .hass=${this.hass}
@@ -624,6 +626,11 @@ export class HaManualAutomationEditor extends LitElement {
           padding: 0;
           z-index: 5;
           box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar.overlay.rtl {
+          right: unset;
+          left: 8px;
         }
 
         @media all and (max-width: 870px) {
