@@ -195,7 +195,7 @@ export default class HaAutomationOptionRow extends LitElement {
         hidden: this._collapsed,
       })}
     >
-      <h4>
+      <h4 class="conditions">
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.conditions"
         )}:
@@ -208,7 +208,7 @@ export default class HaAutomationOptionRow extends LitElement {
         @value-changed=${this._conditionChanged}
         .optionsInSidebar=${this.optionsInSidebar}
       ></ha-automation-condition>
-      <h4>
+      <h4 class="actions">
         ${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.choose.sequence"
         )}:
@@ -381,6 +381,13 @@ export default class HaAutomationOptionRow extends LitElement {
       css`
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
+        }
+        h4.conditions {
+          margin-top: 0;
+          margin-bottom: 8px;
+        }
+        h4.actions {
+          margin-bottom: 8px;
         }
       `,
     ];

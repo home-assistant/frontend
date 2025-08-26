@@ -45,11 +45,11 @@ export class HaChooseAction extends LitElement implements ActionElement {
 
       ${this._showDefault || action.default
         ? html`
-            <h2>
+            <h4>
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.default"
               )}:
-            </h2>
+            </h4>
             <ha-automation-action
               .actions=${ensureArray(action.default) || []}
               .disabled=${this.disabled}
