@@ -118,9 +118,9 @@ export default class HaAutomationTrigger extends LitElement {
           )}
           <div class="buttons">
             <ha-button
+              appearance="filled"
               .disabled=${this.disabled}
               @click=${this._addTriggerDialog}
-              .appearance=${this.root ? "accent" : "filled"}
               .size=${this.root ? "medium" : "small"}
             >
               ${this.hass.localize(

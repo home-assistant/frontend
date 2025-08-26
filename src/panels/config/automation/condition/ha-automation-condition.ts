@@ -180,9 +180,9 @@ export default class HaAutomationCondition extends LitElement {
           )}
           <div class="buttons">
             <ha-button
+              appearance="filled"
               .disabled=${this.disabled}
               @click=${this._addConditionDialog}
-              .appearance=${this.root ? "accent" : "filled"}
               .size=${this.root ? "medium" : "small"}
             >
               <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
