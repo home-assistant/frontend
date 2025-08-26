@@ -31,8 +31,8 @@ import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-icon-button-group";
 import "./ha-code-editor-completion-items";
-import "./ha-code-editor-toolbar";
-import type { HaCodeEditorToolbar } from "./ha-code-editor-toolbar";
+import "./ha-icon-button-toolbar";
+import type { HaIconButtonToolbar } from "./ha-icon-button-toolbar";
 
 declare global {
   interface HASSDomEvents {
@@ -90,7 +90,7 @@ export class HaCodeEditor extends ReactiveElement {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
-  private _editorToolbar?: HaCodeEditorToolbar;
+  private _editorToolbar?: HaIconButtonToolbar;
 
   private _iconList?: Completion[];
 
@@ -289,7 +289,7 @@ export class HaCodeEditor extends ReactiveElement {
   }
 
   private _createEditorToolbar(renderRoot: HTMLElement) {
-    this._editorToolbar = document.createElement("ha-code-editor-toolbar");
+    this._editorToolbar = document.createElement("ha-icon-button-toolbar");
     this._editorToolbar.classList.add("code-editor-toolbar");
     this._editorToolbar.items = [
       //  - Undo
@@ -795,6 +795,14 @@ export class HaCodeEditor extends ReactiveElement {
       height: 100% !important;
       max-height: 100% !important;
       border-radius: 0 !important;
+    }
+
+    .code-editor-toolbar {
+      --icon-button-toolbar-height: var(--code-editor-toolbar-height);
+      --icon-button-toolbar-color: var(
+        --code-editor-gutter-color,
+        var(--secondary-background-color, whitesmoke)
+      );
     }
 
     .completion-info {

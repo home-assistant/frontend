@@ -8,7 +8,7 @@ import "./ha-icon-button-group";
 import "./ha-tooltip";
 import "./ha-md-divider";
 
-export interface HACodeEditorToolbarItem {
+export interface HaIconButtonToolbarItem {
   [key: string]: any;
   path: string;
   label: string;
@@ -20,25 +20,25 @@ export interface HACodeEditorToolbarItem {
   divider?: boolean;
 }
 
-@customElement("ha-code-editor-toolbar")
-export class HaCodeEditorToolbar extends LitElement {
-  @property({ type: Array }) public items: HACodeEditorToolbarItem[] = [];
+@customElement("ha-icon-button-toolbar")
+export class HaIconButtonToolbar extends LitElement {
+  @property({ type: Array }) public items: HaIconButtonToolbarItem[] = [];
 
   // Returns all toolbar buttons, or undefined if there are none.
   // Optionally returns only those with matching selector.
   public findToolbarButtons(selector = ""): HaIconButton[] | undefined {
     const toolbarRoot = this.shadowRoot;
     if (!toolbarRoot) return undefined;
-    // Search for all editor buttons
+    // Search for all toolbar buttons
     const allButtonNodes = toolbarRoot.querySelectorAll("ha-icon-button");
     const allButtons = [...allButtonNodes];
-    const editorButtons = Array.prototype.filter.call(allButtons, (button) =>
-      button.classList.contains("editor-button")
+    const toolbarButtons = Array.prototype.filter.call(allButtons, (button) =>
+      button.classList.contains("icon-toolbar-button")
     );
-    if (!editorButtons.length) return undefined;
-    if (!selector.length) return editorButtons;
+    if (!toolbarButtons.length) return undefined;
+    if (!selector.length) return toolbarButtons;
     // Filter by user class if provided
-    const classButtons = Array.prototype.filter.call(editorButtons, (button) =>
+    const classButtons = Array.prototype.filter.call(toolbarButtons, (button) =>
       button.querySelector(selector)
     );
     return classButtons.length ? classButtons : undefined;
@@ -57,7 +57,7 @@ export class HaCodeEditorToolbar extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-icon-button-group class="editor-buttongroup">
+      <ha-icon-button-group class="icon-toolbar-buttongroup">
         ${this.items.map((item) =>
           item.divider
             ? html`<div role="separator"></div>`
@@ -67,7 +67,7 @@ export class HaCodeEditorToolbar extends LitElement {
               >
                 <ha-icon-button
                   id=${item.id ?? ""}
-                  class="editor-button ${item.class}"
+                  class="icon-toolbar-button ${item.class}"
                   @click=${item.action}
                   .label=${item.label}
                   .path=${item.path}
@@ -87,23 +87,23 @@ export class HaCodeEditorToolbar extends LitElement {
       display: flex;
       flex-direction: row-reverse;
       background-color: var(
-        --code-editor-gutter-color,
+        --icon-button-toolbar-color,
         var(--secondary-background-color, whitesmoke)
       );
     }
 
-    .editor-buttongroup {
+    .icon-toolbar-buttongroup {
       background-color: transparent;
       padding-right: 4px;
-      height: var(--code-editor-toolbar-height, 32px);
+      height: var(--icon-button-toolbar-height, 32px);
     }
 
-    .editor-button {
+    .icon-toolbar-button {
       color: var(--secondary-text-color);
       --mdc-icon-button-size: calc(
-        var(--code-editor-toolbar-height, 32px) - 4px
+        var(--icon-button-toolbar-height, 32px) - 4px
       );
-      --mdc-icon-size: calc(var(--code-editor-toolbar-height, 32px) - 14px);
+      --mdc-icon-size: calc(var(--icon-button-toolbar-height, 32px) - 14px);
       /* Ensure button is clickable on iOS */
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
@@ -114,6 +114,6 @@ export class HaCodeEditorToolbar extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-code-editor-toolbar": HaCodeEditorToolbar;
+    "ha-icon-button-toolbar": HaIconButtonToolbar;
   }
 }
