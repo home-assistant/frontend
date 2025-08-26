@@ -273,11 +273,11 @@ export class HuiClockCardEditor
         );
       case "border":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.border.label`
+          `ui.panel.lovelace.editor.card.clock.border.label`
         );
       case "ticks":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.label`
+          `ui.panel.lovelace.editor.card.clock.ticks.label`
         );
       default:
         return undefined;
@@ -290,11 +290,11 @@ export class HuiClockCardEditor
     switch (schema.name) {
       case "border":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
+          `ui.panel.lovelace.editor.card.clock.border.description`
         );
       case "ticks":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
+          `ui.panel.lovelace.editor.card.clock.ticks.description`
         );
       case "border":
         return this.hass!.localize(
