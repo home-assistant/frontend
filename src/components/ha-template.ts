@@ -1,22 +1,25 @@
 import type { PropertyValues } from "lit";
 import { LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import nunjucks from "nunjucks";
+import nunjucks, { type Template as NunjucksTemplate } from "nunjucks";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-template")
 export class HaTemplate extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property({ attribute: false }) public content?: string;
+  @property({ attribute: false }) public content!: string;
 
-  protected _accessedEntityIds: string[] = [];
+  private _template: NunjucksTemplate | undefined;
+
+  private _accessedEntityIds: string[] = [];
 
   protected shouldUpdate(changedProperties: PropertyValues): boolean {
     return (
       super.shouldUpdate(changedProperties) &&
       changedProperties.has("hass") &&
       (!this._accessedEntityIds.length ||
+        changedProperties.has("content") ||
         this._accessedEntityIds.some(
           (id) =>
             this.hass?.states[id].state !==
@@ -25,14 +28,16 @@ export class HaTemplate extends LitElement {
     );
   }
 
-  protected render() {
-    return this._renderTemplate(this.content || "", {});
+  protected willUpdate(changedProperties: PropertyValues): void {
+    this._accessedEntityIds = [];
+    if (changedProperties.has("content")) {
+      this._template = nunjucks.compile(this.content);
+    }
   }
 
-  protected _renderTemplate(template: string, context: Record<string, any>) {
-    this._accessedEntityIds = [];
+  protected render() {
     try {
-      return nunjucks.renderString(template, {
+      return this._template!.render({
         hass: this.hass,
         states: (id: string) => {
           this._accessedEntityIds.push(id);
@@ -42,12 +47,11 @@ export class HaTemplate extends LitElement {
           this._accessedEntityIds.push(id);
           return this.hass?.states[id]?.state === value;
         },
-        ...context,
       });
     } catch (error) {
       // eslint-disable-next-line no-console
       console.debug(`Error rendering template: ${error}`);
-      return template;
+      return this.content;
     }
   }
 }
