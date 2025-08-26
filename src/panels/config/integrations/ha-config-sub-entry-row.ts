@@ -224,9 +224,7 @@ class HaConfigSubEntryRow extends LitElement {
 
   private async _handleRenameSub(): Promise<void> {
     const newName = await showPromptDialog(this, {
-      title: this.hass.localize(
-        "ui.common.rename"
-      ),
+      title: this.hass.localize("ui.common.rename"),
       defaultValue: this.subEntry.title,
       inputLabel: this.hass.localize(
         "ui.panel.config.integrations.rename_input_label"
