@@ -48,7 +48,7 @@ export class ListItemsDialog
         hideActions
       >
         <div class="container">
-          <ha-md-list @click=${this._dialogClosed}>
+          <ha-md-list>
             ${this._params.items.map(
               (item) => html`
                 <ha-md-list-item
