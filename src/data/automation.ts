@@ -585,7 +585,9 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
   close: () => void;
   rename: () => void;
   disable: () => void;
-  config: Action;
+  config: {
+    action: Action;
+  };
   yamlMode: boolean;
   uiSupported: boolean;
 }

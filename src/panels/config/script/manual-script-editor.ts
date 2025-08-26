@@ -17,6 +17,7 @@ import {
 import { ensureArray } from "../../../common/array/ensure-array";
 import { canOverrideAlphanumericInput } from "../../../common/dom/can-override-input";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
 import type { SidebarConfig } from "../../../data/automation";
@@ -206,6 +207,7 @@ export class HaManualScriptEditor extends LitElement {
             sidebar: true,
             hidden: !this._sidebarConfig,
             overlay: !this.isWide,
+            rtl: computeRTL(this.hass),
           })}
           .narrow=${this.narrow}
           .isWide=${this.isWide}
@@ -509,6 +511,11 @@ export class HaManualScriptEditor extends LitElement {
           height: calc(100% - 64px);
           padding: 0;
           z-index: 5;
+        }
+
+        .sidebar.overlay.rtl {
+          right: unset;
+          left: 8px;
         }
 
         @media all and (max-width: 870px) {

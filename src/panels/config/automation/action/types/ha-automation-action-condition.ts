@@ -14,7 +14,6 @@ import {
 } from "../../../../../data/condition";
 import type { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
-import type { ActionElement } from "../ha-automation-action-row";
 import "../../condition/types/ha-automation-condition-and";
 import "../../condition/types/ha-automation-condition-device";
 import "../../condition/types/ha-automation-condition-not";
@@ -26,6 +25,7 @@ import "../../condition/types/ha-automation-condition-template";
 import "../../condition/types/ha-automation-condition-time";
 import "../../condition/types/ha-automation-condition-trigger";
 import "../../condition/types/ha-automation-condition-zone";
+import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-condition")
 export class HaConditionAction extends LitElement implements ActionElement {
