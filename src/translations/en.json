@@ -7729,7 +7729,7 @@
                 "label": "Analog options",
                 "border": {
                   "label": "Border",
-                  "description": "Show a border around the clock"
+                  "description": "Whether to show a border around the clock"
                 },
                 "ticks": {
                   "label": "Ticks",
