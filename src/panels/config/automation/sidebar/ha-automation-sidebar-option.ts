@@ -1,4 +1,4 @@
-import { mdiDelete, mdiRenameBox } from "@mdi/js";
+import { mdiContentDuplicate, mdiDelete, mdiRenameBox } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
@@ -52,6 +52,17 @@ export default class HaAutomationSidebarOption extends LitElement {
           "ui.panel.config.automation.editor.triggers.rename"
         )}
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+
+      <ha-md-menu-item
+        slot="menu-items"
+        @click=${this.config.duplicate}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.duplicate"
+        )}
+        <ha-svg-icon slot="graphic" .path=${mdiContentDuplicate}></ha-svg-icon>
       </ha-md-menu-item>
       <ha-md-divider
         slot="menu-items"
