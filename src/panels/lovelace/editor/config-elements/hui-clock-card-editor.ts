@@ -117,8 +117,7 @@ export class HuiClockCardEditor
                 },
               },
             ] as const satisfies readonly HaFormSchema[])
-          : []),
-        ...(clockStyle === "analog"
+          : clockStyle === "analog"
           ? ([
               {
                 name: "border",
