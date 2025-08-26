@@ -14,7 +14,6 @@ import {
   string,
   union,
 } from "superstruct";
-import { mdiClockOutline } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -179,54 +178,6 @@ export class HuiClockCardEditor
             },
           },
         },
-        ...(clockStyle === "analog"
-          ? ([
-              {
-                name: "analog_options",
-                type: "expandable",
-                iconPath: mdiClockOutline,
-                schema: [
-                  {
-                    name: "border",
-                    description: {
-                      suffix: localize(
-                        `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
-                      ),
-                    },
-                    default: false,
-                    selector: {
-                      boolean: {},
-                    },
-                  },
-                  {
-                    name: "ticks",
-                    description: {
-                      suffix: localize(
-                        `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
-                      ),
-                    },
-                    default: "hour",
-                    selector: {
-                      select: {
-                        mode: "dropdown",
-                        options: ["none", "quarter", "hour", "minute"].map(
-                          (value) => ({
-                            value,
-                            label: localize(
-                              `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.label`
-                            ),
-                            description: localize(
-                              `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.description`
-                            ),
-                          })
-                        ),
-                      },
-                    },
-                  },
-                ],
-              },
-            ] as const satisfies readonly HaFormSchema[])
-          : []),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -319,10 +270,6 @@ export class HuiClockCardEditor
       case "no_background":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.no_background`
-        );
-      case "analog_options":
-        return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.label`
         );
       case "border":
         return this.hass!.localize(
