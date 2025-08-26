@@ -142,21 +142,21 @@ export default class HaAutomationOptionRow extends LitElement {
                 )}
                 <ha-svg-icon slot="graphic" .path=${mdiRenameBox}></ha-svg-icon>
               </ha-md-menu-item>
+
+              <ha-md-menu-item
+                @click=${this._duplicateOption}
+                .disabled=${this.disabled}
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.duplicate"
+                )}
+                <ha-svg-icon
+                  slot="graphic"
+                  .path=${mdiContentDuplicate}
+                ></ha-svg-icon>
+              </ha-md-menu-item>
             `
           : nothing}
-
-        <ha-md-menu-item
-          @click=${this._duplicateOption}
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.duplicate"
-          )}
-          <ha-svg-icon
-            slot="graphic"
-            .path=${mdiContentDuplicate}
-          ></ha-svg-icon>
-        </ha-md-menu-item>
 
         <ha-md-menu-item
           @click=${this._moveUp}
@@ -174,20 +174,22 @@ export default class HaAutomationOptionRow extends LitElement {
           <ha-svg-icon slot="graphic" .path=${mdiArrowDown}></ha-svg-icon>
         </ha-md-menu-item>
 
-        <ha-md-menu-item
-          @click=${this._removeOption}
-          class="warning"
-          .disabled=${this.disabled}
-        >
-          ${this.hass.localize(
-            "ui.panel.config.automation.editor.actions.type.choose.remove_option"
-          )}
-          <ha-svg-icon
-            class="warning"
-            slot="graphic"
-            .path=${mdiDelete}
-          ></ha-svg-icon>
-        </ha-md-menu-item>
+        ${!this.optionsInSidebar
+          ? html`<ha-md-menu-item
+              @click=${this._removeOption}
+              class="warning"
+              .disabled=${this.disabled}
+            >
+              ${this.hass.localize(
+                "ui.panel.config.automation.editor.actions.type.choose.remove_option"
+              )}
+              <ha-svg-icon
+                class="warning"
+                slot="graphic"
+                .path=${mdiDelete}
+              ></ha-svg-icon>
+            </ha-md-menu-item>`
+          : nothing}
       </ha-md-button-menu>
 
       ${!this.optionsInSidebar ? this._renderContent() : nothing}
@@ -261,9 +263,9 @@ export default class HaAutomationOptionRow extends LitElement {
     `;
   }
 
-  private _duplicateOption() {
+  private _duplicateOption = () => {
     fireEvent(this, "duplicate");
-  }
+  };
 
   private _moveUp() {
     fireEvent(this, "move-up");
@@ -361,6 +363,7 @@ export default class HaAutomationOptionRow extends LitElement {
       },
       toggleYamlMode: () => false, // no yaml mode for options
       delete: this._removeOption,
+      duplicate: this._duplicateOption,
     } satisfies OptionSidebarConfig);
     this._selected = true;
     this._collapsed = false;

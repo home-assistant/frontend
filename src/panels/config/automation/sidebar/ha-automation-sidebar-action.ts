@@ -1,5 +1,9 @@
 import {
+  mdiContentCopy,
+  mdiContentCut,
+  mdiContentDuplicate,
   mdiDelete,
+  mdiPlay,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiRenameBox,
@@ -94,6 +98,11 @@ export default class HaAutomationSidebarAction extends LitElement {
     >
       <span slot="title">${title}</span>
       <span slot="subtitle">${subtitle}</span>
+
+      <ha-md-menu-item slot="menu-items" .clickAction=${this.config.run}>
+        ${this.hass.localize("ui.panel.config.automation.editor.actions.run")}
+        <ha-svg-icon slot="start" .path=${mdiPlay}></ha-svg-icon>
+      </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
         .clickAction=${this.config.rename}
@@ -103,6 +112,37 @@ export default class HaAutomationSidebarAction extends LitElement {
           "ui.panel.config.automation.editor.triggers.rename"
         )}
         <ha-svg-icon slot="start" .path=${mdiRenameBox}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-divider
+        slot="menu-items"
+        role="separator"
+        tabindex="-1"
+      ></ha-md-divider>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.duplicate}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.duplicate"
+        )}
+        <ha-svg-icon slot="start" .path=${mdiContentDuplicate}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.copy}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.triggers.copy")}
+        <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
+      </ha-md-menu-item>
+      <ha-md-menu-item
+        slot="menu-items"
+        .clickAction=${this.config.cut}
+        .disabled=${this.disabled}
+      >
+        ${this.hass.localize("ui.panel.config.automation.editor.triggers.cut")}
+        <ha-svg-icon slot="start" .path=${mdiContentCut}></ha-svg-icon>
       </ha-md-menu-item>
       <ha-md-menu-item
         slot="menu-items"
