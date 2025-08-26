@@ -89,9 +89,7 @@ export class HuiClockCardAnalog extends LitElement {
     const minute = minuteStr ? parseInt(minuteStr, 10) : 0;
     const second = secondStr ? parseInt(secondStr, 10) : 0;
 
-    // Analog face: 12-hour based rotation
-    const hourOn12 = hour % 12;
-    this._hourDeg = hourOn12 * 30 + minute * 0.5; // 30deg per hour + 0.5deg per minute
+    this._hourDeg = hour * 30 + minute * 0.5; // 30deg per hour + 0.5deg per minute
     this._minuteDeg = minute * 6 + second * 0.1; // 6deg per minute + 0.1deg per second
     this._secondDeg = this.config?.show_seconds ? second * 6 : undefined; // 6deg per second
   }
