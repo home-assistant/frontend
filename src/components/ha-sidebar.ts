@@ -854,7 +854,7 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           line-height: normal;
           background-color: var(--accent-color);
           padding: 2px 6px;
-          color: var(--text-accent-color, var(--text-primary-color));
+          color: var(--text-accent-color);
         }
 
         ha-svg-icon + .badge {

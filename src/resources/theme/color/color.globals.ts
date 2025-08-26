@@ -17,6 +17,7 @@ export const colorStyles = css`
     --darker-primary-color: #016194;
     --light-primary-color: #b3e5fc;
     --accent-color: #ff9800;
+    --text-accent-color: #212121;
     --divider-color: rgba(0, 0, 0, 0.12);
     --outline-color: rgba(0, 0, 0, 0.12);
     --outline-hover-color: rgba(0, 0, 0, 0.24);

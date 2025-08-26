@@ -303,7 +303,7 @@ class MoreInfoMediaPlayer extends LitElement {
       font-size: var(--ha-font-size-xs);
       background-color: var(--accent-color);
       padding: 0 4px;
-      color: var(--text-accent-color, var(--text-primary-color));
+      color: var(--text-accent-color);
     }
   `;
 

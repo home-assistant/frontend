@@ -691,7 +691,7 @@ export default class HaAutomationTriggerRow extends LitElement {
         }
         .triggered.accent {
           background-color: var(--accent-color);
-          color: var(--text-accent-color, var(--text-primary-color));
+          color: var(--text-accent-color);
         }
       `,
     ];
