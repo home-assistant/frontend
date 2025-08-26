@@ -14,7 +14,7 @@ interface EntityNameOption {
   description: string;
 }
 
-@customElement("ha-selector-entity-name")
+@customElement("ha-selector-entity_name")
 export class HaEntityNameSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -58,6 +58,7 @@ export class HaEntityNameSelector extends LitElement {
     }
 
     const entityId = this.context?.entity || this.selector?.entity_name?.entity;
+
     if (!entityId) {
       this._options = [];
       return;
@@ -196,6 +197,6 @@ export class HaEntityNameSelector extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-selector-entity-name": HaEntityNameSelector;
+    "ha-selector-entity_name": HaEntityNameSelector;
   }
 }
