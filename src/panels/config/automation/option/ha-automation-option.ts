@@ -14,6 +14,8 @@ import "../../../../components/ha-svg-icon";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Option } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
+import type HaAutomationAction from "../action/ha-automation-action";
+import type HaAutomationCondition from "../condition/ha-automation-condition";
 import "./ha-automation-option-row";
 import type HaAutomationOptionRow from "./ha-automation-option-row";
 
@@ -143,12 +145,39 @@ export default class HaAutomationOption extends LitElement {
     }
   }
 
-  public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationOptionRow>(
+  private _getRowElements() {
+    return this.shadowRoot!.querySelectorAll<HaAutomationOptionRow>(
       "ha-automation-option-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
+    );
+  }
+
+  public expandAll() {
+    this._getRowElements().forEach((row) => {
+      row.expand?.();
+
+      const childElements = row.shadowRoot?.querySelectorAll<
+        HaAutomationAction | HaAutomationCondition
+      >("ha-automation-action, ha-automation-condition");
+      if (childElements) {
+        childElements.forEach((element) => {
+          element.expandAll?.();
+        });
+      }
+    });
+  }
+
+  public collapseAll() {
+    this._getRowElements().forEach((row) => {
+      row.collapse();
+
+      const childElements = row.shadowRoot?.querySelectorAll<
+        HaAutomationAction | HaAutomationCondition
+      >("ha-automation-action, ha-automation-condition");
+      if (childElements) {
+        childElements.forEach((element) => {
+          element.collapseAll?.();
+        });
+      }
     });
   }
 

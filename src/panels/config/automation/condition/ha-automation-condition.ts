@@ -22,6 +22,7 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
@@ -122,12 +123,56 @@ export default class HaAutomationCondition extends LitElement {
     }
   }
 
-  public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
+  private _getRowElements() {
+    return this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
       "ha-automation-condition-row"
-    )!;
-    rows.forEach((row) => {
+    );
+  }
+
+  private _getChildCollapsableElements(
+    row: HaAutomationConditionRow
+  ): NodeListOf<HaAutomationCondition> | undefined {
+    const editor = row.shadowRoot!.querySelector<HaAutomationConditionEditor>(
+      "ha-automation-condition-editor"
+    );
+    if (editor) {
+      const buildingBlock = editor.shadowRoot?.querySelector(
+        CONDITION_BUILDING_BLOCKS.map(
+          (block) => `ha-automation-condition-${block}`
+        ).join(", ")
+      );
+      if (buildingBlock) {
+        return buildingBlock.shadowRoot?.querySelectorAll<HaAutomationCondition>(
+          "ha-automation-condition"
+        );
+      }
+    }
+    return undefined;
+  }
+
+  public expandAll() {
+    this._getRowElements().forEach((row) => {
       row.expand();
+
+      const childElements = this._getChildCollapsableElements(row);
+      if (childElements) {
+        childElements.forEach((element) => {
+          element.expandAll?.();
+        });
+      }
+    });
+  }
+
+  public collapseAll() {
+    this._getRowElements().forEach((row) => {
+      row.collapse();
+
+      const childElements = this._getChildCollapsableElements(row);
+      if (childElements) {
+        childElements.forEach((element) => {
+          element.collapseAll?.();
+        });
+      }
     });
   }
 

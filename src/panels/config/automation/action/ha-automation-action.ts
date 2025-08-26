@@ -13,17 +13,21 @@ import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
+  ACTION_COMBINED_BLOCKS,
   getService,
   isService,
 } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
+import type HaAutomationCondition from "../condition/ha-automation-condition";
+import type HaAutomationOption from "../option/ha-automation-option";
 import {
   PASTE_VALUE,
   VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import type HaAutomationActionEditor from "./ha-automation-action-editor";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
@@ -178,12 +182,62 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
-  public expandAll() {
-    const rows = this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
+  private _getRowElements() {
+    return this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
       "ha-automation-action-row"
-    )!;
-    rows.forEach((row) => {
-      row.expand();
+    );
+  }
+
+  private _getChildCollapsableElements(
+    row: HaAutomationActionRow
+  ):
+    | NodeListOf<
+        HaAutomationAction | HaAutomationCondition | HaAutomationOption
+      >
+    | undefined {
+    const editor = row.shadowRoot!.querySelector<HaAutomationActionEditor>(
+      "ha-automation-action-editor"
+    );
+    if (editor) {
+      const buildingBlock = editor.shadowRoot?.querySelector(
+        [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS]
+          .map((block) => `ha-automation-action-${block}`)
+          .join(", ")
+      );
+      if (buildingBlock) {
+        return buildingBlock.shadowRoot?.querySelectorAll<
+          HaAutomationAction | HaAutomationCondition | HaAutomationOption
+        >(
+          "ha-automation-action, ha-automation-condition, ha-automation-option"
+        );
+      }
+    }
+    return undefined;
+  }
+
+  public expandAll() {
+    this._getRowElements().forEach((row) => {
+      row.expand?.();
+
+      const childElements = this._getChildCollapsableElements(row);
+      if (childElements) {
+        childElements.forEach((element) => {
+          element.expandAll?.();
+        });
+      }
+    });
+  }
+
+  public collapseAll() {
+    this._getRowElements().forEach((row) => {
+      row.collapse();
+
+      const childElements = this._getChildCollapsableElements(row);
+      if (childElements) {
+        childElements.forEach((element) => {
+          element.collapseAll?.();
+        });
+      }
     });
   }
 

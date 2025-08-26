@@ -575,9 +575,18 @@ export default class HaAutomationConditionRow extends LitElement {
   };
 
   public expand() {
+    if (this.optionsInSidebar) {
+      this._collapsed = false;
+      return;
+    }
+
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
+  }
+
+  public collapse() {
+    this._collapsed = true;
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {

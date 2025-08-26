@@ -39,7 +39,9 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "./action/ha-automation-action";
+import type HaAutomationAction from "./action/ha-automation-action";
 import "./condition/ha-automation-condition";
+import type HaAutomationCondition from "./condition/ha-automation-condition";
 import "./ha-automation-sidebar";
 import { showPasteReplaceDialog } from "./paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "./styles";
@@ -569,6 +571,24 @@ export class HaManualAutomationEditor extends LitElement {
     showToast(this, {
       message: "",
       duration: 0,
+    });
+  }
+
+  private _getCollapsableElements() {
+    return this.shadowRoot!.querySelectorAll<
+      HaAutomationAction | HaAutomationCondition
+    >("ha-automation-action, ha-automation-condition");
+  }
+
+  public expandAll() {
+    this._getCollapsableElements().forEach((element) => {
+      element.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._getCollapsableElements().forEach((element) => {
+      element.collapseAll();
     });
   }
 
