@@ -7725,31 +7725,28 @@
                 "auto": "Use user settings"
               },
               "no_background": "No background",
-              "analog_options": {
-                "label": "Analog options",
-                "border": {
-                  "label": "Border",
-                  "description": "Whether to show a border around the clock"
+              "border": {
+                "label": "Border",
+                "description": "Whether to show a border around the clock"
+              },
+              "ticks": {
+                "label": "Ticks",
+                "description": "Whether to show ticks (indices) on the outside of the clock",
+                "none": {
+                  "label": "None",
+                  "description": "No ticks (Hands only)"
                 },
-                "ticks": {
-                  "label": "Ticks",
-                  "description": "Whether to show ticks (indices) on the outside of the clock",
-                  "none": {
-                    "label": "None",
-                    "description": "No ticks (Hands only)"
-                  },
-                  "quarter": {
-                    "label": "Quarter",
-                    "description": "4 ticks (Every 15 minutes)"
-                  },
-                  "hour": {
-                    "label": "Hour",
-                    "description": "12 ticks (Every hour)"
-                  },
-                  "minute": {
-                    "label": "Minute",
-                    "description": "60 ticks (Every minute)"
-                  }
+                "quarter": {
+                  "label": "Quarter",
+                  "description": "4 ticks (Every 15 minutes)"
+                },
+                "hour": {
+                  "label": "Hour",
+                  "description": "12 ticks (Every hour)"
+                },
+                "minute": {
+                  "label": "Minute",
+                  "description": "60 ticks (Every minute)"
                 }
               }
             },

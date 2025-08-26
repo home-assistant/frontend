@@ -124,7 +124,7 @@ export class HuiClockCardEditor
                 name: "border",
                 description: {
                   suffix: localize(
-                    `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
+                    `ui.panel.lovelace.editor.card.clock.border.description`
                   ),
                 },
                 default: false,
@@ -136,7 +136,7 @@ export class HuiClockCardEditor
                 name: "ticks",
                 description: {
                   suffix: localize(
-                    `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
+                    `ui.panel.lovelace.editor.card.clock.ticks.description`
                   ),
                 },
                 default: "hour",
@@ -147,10 +147,10 @@ export class HuiClockCardEditor
                       (value) => ({
                         value,
                         label: localize(
-                          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.label`
+                          `ui.panel.lovelace.editor.card.clock.ticks.${value}.label`
                         ),
                         description: localize(
-                          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.${value}.description`
+                          `ui.panel.lovelace.editor.card.clock.ticks.${value}.description`
                         ),
                       })
                     ),
@@ -274,11 +274,11 @@ export class HuiClockCardEditor
         );
       case "border":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.border.label`
+          `ui.panel.lovelace.editor.card.clock.border.label`
         );
       case "ticks":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.label`
+          `ui.panel.lovelace.editor.card.clock.ticks.label`
         );
       default:
         return undefined;
@@ -291,11 +291,11 @@ export class HuiClockCardEditor
     switch (schema.name) {
       case "border":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.border.description`
+          `ui.panel.lovelace.editor.card.clock.border.description`
         );
       case "ticks":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.clock.analog_options.ticks.description`
+          `ui.panel.lovelace.editor.card.clock.ticks.description`
         );
       default:
         return undefined;

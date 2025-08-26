@@ -113,10 +113,10 @@ export class HuiClockCardAnalog extends LitElement {
         <div
           class=${classMap({
             dial: true,
-            "dial-border": this.config.analog_options?.border ?? false,
+            "dial-border": this.config.border ?? false,
           })}
         >
-          ${this.config.analog_options?.ticks === "quarter"
+          ${this.config.ticks === "quarter"
             ? Array.from({ length: 4 }, (_, i) => i).map(
                 (i) =>
                   // 4 ticks
@@ -130,8 +130,8 @@ export class HuiClockCardAnalog extends LitElement {
                     </div>
                   `
               )
-            : !this.config.analog_options?.ticks || // Default to hour ticks
-                this.config.analog_options?.ticks === "hour"
+            : !this.config.ticks || // Default to hour ticks
+                this.config.ticks === "hour"
               ? Array.from({ length: 12 }, (_, i) => i).map(
                   (i) =>
                     // 12 ticks
@@ -145,7 +145,7 @@ export class HuiClockCardAnalog extends LitElement {
                       </div>
                     `
                 )
-              : this.config.analog_options?.ticks === "minute"
+              : this.config.ticks === "minute"
                 ? Array.from({ length: 60 }, (_, i) => i).map(
                     (i) =>
                       // 60 ticks
