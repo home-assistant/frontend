@@ -98,7 +98,13 @@ export class HuiTileCardEditor
               name: "",
               type: "grid",
               schema: [
-                { name: "name", selector: { text: {} } },
+                {
+                  name: "name",
+                  selector: {
+                    entity_name: {},
+                  },
+                  context: { entity: "entity" },
+                },
                 {
                   name: "icon",
                   selector: {

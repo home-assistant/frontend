@@ -645,6 +645,13 @@
           "attribute": "Attribute",
           "show_attributes": "Show attributes"
         },
+        "entity-name-picker": {
+          "label": "Name",
+          "entity_name": "Entity name",
+          "device_name": "Device name",
+          "area_name": "Area name",
+          "floor_name": "Floor name"
+        },
         "entity-state-picker": {
           "state": "State"
         }
