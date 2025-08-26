@@ -414,6 +414,9 @@ export default class HaAutomationOptionRow extends LitElement {
         li[role="separator"] {
           border-bottom-color: var(--divider-color);
         }
+        h4 {
+          color: var(--ha-color-text-secondary);
+        }
         h4.conditions {
           margin-top: 0;
           margin-bottom: 8px;

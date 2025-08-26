@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, LitElement, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -24,6 +24,7 @@ import {
   VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import { rows } from "../styles";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
@@ -89,7 +90,7 @@ export default class HaAutomationAction extends LitElement {
         @item-added=${this._actionAdded}
         @item-removed=${this._actionRemoved}
       >
-        <div class="actions">
+        <div class="rows">
           ${repeat(
             this.actions,
             (action) => this._getKey(action),
@@ -335,44 +336,14 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  static styles = css`
-    .actions {
-      padding: 16px 0 16px 16px;
-      margin: -16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    :host([root]) .actions {
-      padding-right: 8px;
-    }
-    .sortable-ghost {
-      background: none;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-    }
-    .sortable-drag {
-      background: none;
-    }
-    ha-automation-action-row {
-      display: block;
-      scroll-margin-top: 48px;
-    }
-    .handle {
-      padding: 12px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
-    }
-    .handle ha-svg-icon {
-      pointer-events: none;
-      height: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      order: 1;
-    }
-  `;
+  static styles = [
+    rows,
+    css`
+      :host([root]) .rows {
+        padding-right: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import { type CSSResultGroup, LitElement, css, html } from "lit";
+import { type CSSResultGroup, LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -47,11 +47,13 @@ export class HaChooseAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .optionsInSidebar=${this.indent}
+        .showDefaultActions=${this._showDefault || !!action.default}
+        @show-default-actions=${this._addDefault}
       ></ha-automation-option>
 
       ${this._showDefault || action.default
         ? html`
-            <h4>
+            <h4 class="default-actions">
               ${this.hass.localize(
                 "ui.panel.config.automation.editor.actions.type.choose.default"
               )}:
@@ -65,19 +67,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
               .optionsInSidebar=${this.indent}
             ></ha-automation-action>
           `
-        : html`
-            <div class="link-button-row">
-              <button
-                class="link"
-                @click=${this._addDefault}
-                .disabled=${this.disabled}
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.automation.editor.actions.type.choose.add_default"
-                )}
-              </button>
-            </div>
-          `}
+        : nothing}
     `;
   }
 
@@ -126,6 +116,10 @@ export class HaChooseAction extends LitElement implements ActionElement {
       css`
         .link-button-row {
           padding: 14px 14px 0 14px;
+        }
+        h4.default-actions {
+          color: var(--secondary-text-color);
+          margin-bottom: 8px;
         }
       `,
     ];

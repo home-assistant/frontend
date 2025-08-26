@@ -53,6 +53,7 @@ export class HaConditionSelector extends LitElement {
       display: block;
       margin-bottom: 4px;
       font-weight: var(--ha-font-weight-medium);
+      color: var(--secondary-text-color);
     }
   `;
 }

@@ -1,7 +1,7 @@
 import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
@@ -22,6 +22,7 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
+import { rows } from "../styles";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
@@ -152,7 +153,7 @@ export default class HaAutomationCondition extends LitElement {
         @item-added=${this._conditionAdded}
         @item-removed=${this._conditionRemoved}
       >
-        <div class="conditions">
+        <div class="rows">
           ${repeat(
             this.conditions.filter((c) => typeof c === "object"),
             (condition) => this._getKey(condition),
@@ -354,44 +355,14 @@ export default class HaAutomationCondition extends LitElement {
     });
   }
 
-  static styles = css`
-    .conditions {
-      padding: 16px 0 16px 16px;
-      margin: -16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    :host([root]) .conditions {
-      padding-right: 8px;
-    }
-    .sortable-ghost {
-      background: none;
-      border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-    }
-    .sortable-drag {
-      background: none;
-    }
-    ha-automation-condition-row {
-      display: block;
-      scroll-margin-top: 48px;
-    }
-    .handle {
-      padding: 12px;
-      cursor: move; /* fallback if grab cursor is unsupported */
-      cursor: grab;
-    }
-    .handle ha-svg-icon {
-      pointer-events: none;
-      height: 24px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      order: 1;
-    }
-  `;
+  static styles = [
+    rows,
+    css`
+      :host([root]) .rows {
+        padding-right: 8px;
+      }
+    `,
+  ];
 }
 
 declare global {
