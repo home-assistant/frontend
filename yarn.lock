@@ -4802,6 +4802,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nunjucks@npm:^3":
+  version: 3.2.6
+  resolution: "@types/nunjucks@npm:3.2.6"
+  checksum: 10/6b77fd2e5e3a63f82149779ae83e6ade7f70779c63b9bdab9fdd52c388db4b442c8b5993f62917a9564fc5e5690784ea5558513c629bee5b8cf6b8e6d8eeac38
+  languageName: node
+  linkType: hard
+
 "@types/offscreencanvas@npm:^2019.6.4":
   version: 2019.7.3
   resolution: "@types/offscreencanvas@npm:2019.7.3"
@@ -5554,6 +5561,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"a-sync-waterfall@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "a-sync-waterfall@npm:1.0.1"
+  checksum: 10/6069080aff936c88fc32f798cc172a8b541e35b993dc5d2e43b74b6f37c522744eec107e1d475d2c624825c6cb7d2ec9ec020dbe4520578afcae74f11902daa2
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:^3.0.0":
   version: 3.0.1
   resolution: "abbrev@npm:3.0.1"
@@ -5965,6 +5979,13 @@ __metadata:
     get-intrinsic: "npm:^1.2.6"
     is-array-buffer: "npm:^3.0.4"
   checksum: 10/4821ebdfe7d699f910c7f09bc9fa996f09b96b80bccb4f5dd4b59deae582f6ad6e505ecef6376f8beac1eda06df2dbc89b70e82835d104d6fcabd33c1aed1ae9
+  languageName: node
+  linkType: hard
+
+"asap@npm:^2.0.3":
+  version: 2.0.6
+  resolution: "asap@npm:2.0.6"
+  checksum: 10/b244c0458c571945e4b3be0b14eb001bea5596f9868cc50cc711dc03d58a7e953517d3f0dad81ccde3ff37d1f074701fa76a6f07d41aaa992d7204a37b915dda
   languageName: node
   linkType: hard
 
@@ -6815,6 +6836,13 @@ __metadata:
   version: 4.1.1
   resolution: "commander@npm:4.1.1"
   checksum: 10/3b2dc4125f387dab73b3294dbcb0ab2a862f9c0ad748ee2b27e3544d25325b7a8cdfbcc228d103a98a716960b14478114a5206b5415bd48cdafa38797891562c
+  languageName: node
+  linkType: hard
+
+"commander@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "commander@npm:5.1.0"
+  checksum: 10/3e2ef5c003c5179250161e42ce6d48e0e69a54af970c65b7f985c70095240c260fd647453efd4c2c5a31b30ce468f373dc70f769c2f54a2c014abc4792aaca28
   languageName: node
   linkType: hard
 
@@ -9397,6 +9425,7 @@ __metadata:
     "@types/lodash.merge": "npm:4.6.9"
     "@types/luxon": "npm:3.7.1"
     "@types/mocha": "npm:10.0.10"
+    "@types/nunjucks": "npm:^3"
     "@types/qrcode": "npm:1.5.5"
     "@types/sortablejs": "npm:1.15.8"
     "@types/tar": "npm:6.1.13"
@@ -9469,6 +9498,7 @@ __metadata:
     marked: "npm:16.2.0"
     memoize-one: "npm:6.0.0"
     node-vibrant: "npm:4.0.3"
+    nunjucks: "npm:3.2.4"
     object-hash: "npm:3.0.0"
     pinst: "npm:3.0.0"
     prettier: "npm:3.6.2"
@@ -11650,6 +11680,24 @@ __metadata:
   dependencies:
     path-key: "npm:^3.0.0"
   checksum: 10/5374c0cea4b0bbfdfae62da7bbdf1e1558d338335f4cacf2515c282ff358ff27b2ecb91ffa5330a8b14390ac66a1e146e10700440c1ab868208430f56b5f4d23
+  languageName: node
+  linkType: hard
+
+"nunjucks@npm:3.2.4":
+  version: 3.2.4
+  resolution: "nunjucks@npm:3.2.4"
+  dependencies:
+    a-sync-waterfall: "npm:^1.0.0"
+    asap: "npm:^2.0.3"
+    commander: "npm:^5.1.0"
+  peerDependencies:
+    chokidar: ^3.3.0
+  peerDependenciesMeta:
+    chokidar:
+      optional: true
+  bin:
+    nunjucks-precompile: bin/precompile
+  checksum: 10/8decb8bb762501aa1a44366acff50ab9d4ff9e57034455e62056b4ac117da40140e1f34f2270c38884f1a5b84b7d97c4afcb2e8c789ddd09f4dcfe71ce7b56bf
   languageName: node
   linkType: hard
 
