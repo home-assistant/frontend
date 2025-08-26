@@ -660,7 +660,7 @@ export class HaManualAutomationEditor extends LitElement {
         .header .name {
           font-weight: var(--ha-font-weight-normal);
           flex: 1;
-          margin-bottom: 16px;
+          margin-bottom: 8px;
         }
         .header a {
           color: var(--secondary-text-color);
