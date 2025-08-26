@@ -1,4 +1,4 @@
-import { comboBoxRenderer } from "@vaadin/combo-box/lit";
+import type { ComboBoxLitRenderer } from "@vaadin/combo-box/lit";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -37,17 +37,6 @@ export class HaEntityNameSelector extends LitElement {
   @state() private _opened = false;
 
   @state() private _options: EntityNameOption[] = [];
-
-  private _renderer = comboBoxRenderer(
-    (item: EntityNameOption) => html`
-      <div>
-        <div>${item.label}</div>
-        <div style="font-size: 0.8em; color: var(--secondary-text-color);">
-          ${item.description}
-        </div>
-      </div>
-    `
-  );
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(!changedProps.has("_opened") && this._opened);
@@ -143,6 +132,17 @@ export class HaEntityNameSelector extends LitElement {
     this._options = options;
   }
 
+  private _rowRenderer: ComboBoxLitRenderer<EntityNameOption> = (
+    item: EntityNameOption
+  ) => html`
+    <div>
+      <div>${item.label}</div>
+      <div style="font-size: 0.8em; color: var(--secondary-text-color);">
+        ${item.description}
+      </div>
+    </div>
+  `;
+
   protected render() {
     if (!this.hass) {
       return nothing;
@@ -158,7 +158,7 @@ export class HaEntityNameSelector extends LitElement {
         .required=${this.required}
         .allowCustomValue=${true}
         .items=${this._options}
-        .renderer=${this._renderer}
+        .renderer=${this._rowRenderer}
         item-id-path="value"
         item-value-path="value"
         item-label-path="value"
