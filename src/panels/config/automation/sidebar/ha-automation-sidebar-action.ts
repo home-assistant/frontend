@@ -5,7 +5,7 @@ import {
   mdiRenameBox,
   mdiStopCircleOutline,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
@@ -19,6 +19,7 @@ import type { HomeAssistant } from "../../../../types";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { getAutomationActionType } from "../action/ha-automation-action-row";
 import { getRepeatType } from "../action/types/ha-automation-action-repeat";
+import { sidebarEditor } from "../styles";
 import "../trigger/ha-automation-trigger-editor";
 import "./ha-automation-sidebar-card";
 
@@ -183,14 +184,7 @@ export default class HaAutomationSidebarAction extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-    .description {
-      padding-top: 16px;
-    }
-  `;
+  static styles = sidebarEditor;
 }
 
 declare global {

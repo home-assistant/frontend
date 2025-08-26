@@ -1,11 +1,12 @@
 import { mdiDelete, mdiPlaylistEdit } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "../../script/ha-script-field-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import { sidebarEditor } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-script-field")
@@ -113,11 +114,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
     fireEvent(this, "toggle-yaml-mode");
   };
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-  `;
+  static styles = sidebarEditor;
 }
 
 declare global {

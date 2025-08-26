@@ -211,3 +211,13 @@ export const rows = css`
     order: 1;
   }
 `;
+
+export const sidebarEditor = css`
+  .sidebar-editor {
+    display: block;
+    padding-top: 16px;
+  }
+  .description {
+    padding-top: 16px;
+  }
+`;

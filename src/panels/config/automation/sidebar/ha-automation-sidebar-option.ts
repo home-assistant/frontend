@@ -1,9 +1,10 @@
 import { mdiDelete, mdiRenameBox } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import type { OptionSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
+import { sidebarEditor } from "../styles";
 import "./ha-automation-sidebar-card";
 
 @customElement("ha-automation-sidebar-option")
@@ -73,14 +74,7 @@ export default class HaAutomationSidebarOption extends LitElement {
     </ha-automation-sidebar-card>`;
   }
 
-  static styles = css`
-    .sidebar-editor {
-      padding-top: 64px;
-    }
-    .description {
-      padding-top: 16px;
-    }
-  `;
+  static styles = sidebarEditor;
 }
 
 declare global {
