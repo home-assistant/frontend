@@ -18,6 +18,7 @@ import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/select
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { indentStyle } from "../automation/styles";
 import "./ha-script-field-selector-editor";
 import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
 
@@ -285,6 +286,7 @@ export default class HaScriptFieldRow extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      indentStyle,
       css`
         ha-button-menu,
         ha-icon-button {
@@ -352,18 +354,6 @@ export default class HaScriptFieldRow extends LitElement {
           --shadow-focus: 0 0 0 1px var(--state-inactive-color);
           border-color: var(--state-inactive-color);
           box-shadow: var(--shadow-default), var(--shadow-focus);
-        }
-        .selector-row {
-          margin-left: 12px;
-          padding: 12px 4px 16px 16px;
-          margin-right: -4px;
-          border-left: 2px solid var(--ha-color-border-neutral-quiet);
-        }
-        .selector-row.parent-selected {
-          border-color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          border-top-right-radius: var(--ha-border-radius-xl);
-          border-bottom-right-radius: var(--ha-border-radius-xl);
         }
       `,
     ];

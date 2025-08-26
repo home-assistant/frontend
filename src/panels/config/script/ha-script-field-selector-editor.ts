@@ -16,6 +16,7 @@ import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { indentStyle } from "../automation/styles";
 
 @customElement("ha-script-field-selector-editor")
 export default class HaScriptFieldSelectorEditor extends LitElement {
@@ -183,19 +184,13 @@ export default class HaScriptFieldSelectorEditor extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      indentStyle,
       css`
         :host([indent]) ha-form {
           display: block;
           margin-left: 12px;
           padding: 12px 20px 16px 16px;
           margin-right: -4px;
-          border-left: 2px solid var(--ha-color-border-neutral-quiet);
-        }
-        :host([selected]) ha-form {
-          border-color: var(--primary-color);
-          background-color: var(--ha-color-fill-primary-quiet-resting);
-          border-top-right-radius: var(--ha-border-radius-xl);
-          border-bottom-right-radius: var(--ha-border-radius-xl);
         }
       `,
     ];
