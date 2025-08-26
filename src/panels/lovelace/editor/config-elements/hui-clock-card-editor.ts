@@ -52,6 +52,18 @@ const cardConfigStruct = assign(
         literal("hour")
       )
     ),
+    face_style: optional(
+      defaulted(
+        union([
+          literal("markers"),
+          literal("numbers"),
+          literal("numbers_upright"),
+          literal("roman"),
+          literal("roman_upright"),
+        ]),
+        literal("markers")
+      )
+    ),
   })
 );
 
@@ -65,7 +77,11 @@ export class HuiClockCardEditor
   @state() private _config?: ClockCardConfig;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, clockStyle: "digital" | "analog") =>
+    (
+      localize: LocalizeFunc,
+      clockStyle: ClockCardConfig["clock_style"],
+      ticks: ClockCardConfig["ticks"]
+    ) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -156,6 +172,39 @@ export class HuiClockCardEditor
                     },
                   },
                 },
+                ...(ticks !== "none"
+                  ? ([
+                      {
+                        name: "face_style",
+                        description: {
+                          suffix: localize(
+                            `ui.panel.lovelace.editor.card.clock.face_style.description`
+                          ),
+                        },
+                        default: "markers",
+                        selector: {
+                          select: {
+                            mode: "dropdown",
+                            options: [
+                              "markers",
+                              "numbers",
+                              "numbers_upright",
+                              "roman",
+                              "roman_upright",
+                            ].map((value) => ({
+                              value,
+                              label: localize(
+                                `ui.panel.lovelace.editor.card.clock.face_style.${value}.label`
+                              ),
+                              description: localize(
+                                `ui.panel.lovelace.editor.card.clock.face_style.${value}.description`
+                              ),
+                            })),
+                          },
+                        },
+                      },
+                    ] as const satisfies readonly HaFormSchema[])
+                  : []),
               ] as const satisfies readonly HaFormSchema[])
             : []),
         {
@@ -191,6 +240,7 @@ export class HuiClockCardEditor
     // Analog clock options
     border: false,
     ticks: "hour",
+    face_style: "markers",
     ...config,
   }));
 
@@ -210,8 +260,8 @@ export class HuiClockCardEditor
         .data=${this._data(this._config)}
         .schema=${this._schema(
           this.hass.localize,
-          (this._data(this._config).clock_style as "digital" | "analog") ??
-            "digital"
+          this._data(this._config).clock_style,
+          this._data(this._config).ticks
         )}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -231,9 +281,17 @@ export class HuiClockCardEditor
     if (ev.detail.value.clock_style === "analog") {
       ev.detail.value.border = ev.detail.value.border ?? false;
       ev.detail.value.ticks = ev.detail.value.ticks ?? "hour";
+      ev.detail.value.face_style = ev.detail.value.face_style ?? "markers";
     } else {
       delete ev.detail.value.border;
       delete ev.detail.value.ticks;
+      delete ev.detail.value.face_style;
+    }
+
+    if (ev.detail.value.ticks !== "none") {
+      ev.detail.value.face_style = ev.detail.value.face_style ?? "markers";
+    } else {
+      delete ev.detail.value.face_style;
     }
 
     fireEvent(this, "config-changed", { config: ev.detail.value });
@@ -278,6 +336,10 @@ export class HuiClockCardEditor
       case "ticks":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.clock.ticks.label`
+        );
+      case "face_style":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.clock.face_style`
         );
       default:
         return undefined;

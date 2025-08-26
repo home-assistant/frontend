@@ -7756,6 +7756,30 @@
                   "label": "Minute",
                   "description": "60 ticks (Every minute)"
                 }
+              },
+              "face_style": {
+                "label": "Clock face style",
+                "description": "Which style to use for the clock face",
+                "markers": {
+                  "label": "Markers",
+                  "description": "Show simple markers around the clock face (default)"
+                },
+                "numbers": {
+                  "label": "Numbers",
+                  "description": "Show numbers (1-12) around the clock face"
+                },
+                "numbers_upright": {
+                  "label": "Numbers (upright)",
+                  "description": "Show numbers that stay upright around the clock face"
+                },
+                "roman": {
+                  "label": "Roman numerals",
+                  "description": "Show roman numerals (I-XII) around the clock face"
+                },
+                "roman_upright": {
+                  "label": "Roman numerals (upright)",
+                  "description": "Show roman numerals that stay upright around the clock face"
+                }
               }
             },
             "media-control": {

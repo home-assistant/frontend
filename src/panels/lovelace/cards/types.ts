@@ -380,6 +380,12 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
+  face_style?:
+    | "markers"
+    | "numbers"
+    | "numbers_upright"
+    | "roman"
+    | "roman_upright";
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
