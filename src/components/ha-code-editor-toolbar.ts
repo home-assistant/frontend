@@ -12,6 +12,7 @@ export interface HACodeEditorToolbarItem {
   [key: string]: any;
   path: string;
   label: string;
+  id: string;
   class?: string;
   disabled?: boolean;
   tooltip?: string;
@@ -24,8 +25,8 @@ export class HaCodeEditorToolbar extends LitElement {
   @property({ type: Array }) public items: HACodeEditorToolbarItem[] = [];
 
   // Returns all toolbar buttons, or undefined if there are none.
-  // Optionally returns only those with matching user class.
-  public findToolbarButtons(buttonClass = ""): HaIconButton[] | undefined {
+  // Optionally returns only those with matching selector.
+  public findToolbarButtons(selector = ""): HaIconButton[] | undefined {
     const toolbarRoot = this.shadowRoot;
     if (!toolbarRoot) return undefined;
     // Search for all editor buttons
@@ -35,13 +36,23 @@ export class HaCodeEditorToolbar extends LitElement {
       button.classList.contains("editor-button")
     );
     if (!editorButtons.length) return undefined;
-    if (!buttonClass.length) return editorButtons;
+    if (!selector.length) return editorButtons;
     // Filter by user class if provided
     const classButtons = Array.prototype.filter.call(editorButtons, (button) =>
-      button.classList.contains(buttonClass)
+      button.querySelector(selector)
     );
-    if (!classButtons.length) return undefined;
-    return classButtons;
+    return classButtons.length ? classButtons : undefined;
+  }
+
+  // Returns a toolbar button based on the provided id.
+  // Will return undefined if not found.
+  public findToolbarButtonById(id = ""): HaIconButton | undefined {
+    const toolbarRoot = this.shadowRoot;
+    if (!toolbarRoot) return undefined;
+    // Find the specified id
+    const element = toolbarRoot.getElementById(id);
+    if (!element || element.localName !== "ha-icon-button") return undefined;
+    return element as HaIconButton;
   }
 
   protected render(): TemplateResult {
@@ -55,6 +66,7 @@ export class HaCodeEditorToolbar extends LitElement {
                 .content=${item.tooltip ?? ""}
               >
                 <ha-icon-button
+                  id=${item.id ?? ""}
                   class="editor-button ${item.class}"
                   @click=${item.action}
                   .label=${item.label}

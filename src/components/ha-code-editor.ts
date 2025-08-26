@@ -294,7 +294,7 @@ export class HaCodeEditor extends ReactiveElement {
     this._editorToolbar.items = [
       //  - Undo
       {
-        class: "undo-button",
+        id: "undo",
         disabled: true,
         label: this.hass ? this.hass.localize("ui.common.undo") : "Undo",
         path: mdiUndo,
@@ -302,7 +302,7 @@ export class HaCodeEditor extends ReactiveElement {
       },
       //  - Redo
       {
-        class: "redo-button",
+        id: "redo",
         disabled: true,
         label: this.hass ? this.hass.localize("ui.common.redo") : "Redo",
         path: mdiRedo,
@@ -310,6 +310,7 @@ export class HaCodeEditor extends ReactiveElement {
       },
       //  - Copy
       {
+        id: "copy",
         label: this.hass
           ? this.hass.localize(
               "ui.panel.config.automation.editor.copy_to_clipboard"
@@ -320,7 +321,7 @@ export class HaCodeEditor extends ReactiveElement {
       },
       //  - Fullscreen
       {
-        class: "fullscreen-button",
+        id: "fullscreen",
         disabled: this.disableFullscreen,
         label: this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen",
         path: this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand,
@@ -359,29 +360,29 @@ export class HaCodeEditor extends ReactiveElement {
   private _updateUndoButton() {
     // Update the undo button
     const undoButton = this._editorToolbar
-      ? this._editorToolbar.findToolbarButtons("undo-button")
+      ? this._editorToolbar.findToolbarButtonById("undo")
       : undefined;
     if (!undoButton) return;
     // Mark buttons as disabled if we are read-only or there is nothing to undo.
-    undoButton[0].disabled =
+    undoButton.disabled =
       this.readOnly || !(this.codemirror && undoDepth(this.codemirror.state));
   }
 
   private _updateRedoButton() {
     // Update the redo button
     const redoButton = this._editorToolbar
-      ? this._editorToolbar.findToolbarButtons("redo-button")
+      ? this._editorToolbar.findToolbarButtonById("redo")
       : undefined;
     if (!redoButton) return;
     // Mark buttons as disabled if we are read-only or there is nothing to undo.
-    redoButton[0].disabled =
+    redoButton.disabled =
       this.readOnly || !(this.codemirror && redoDepth(this.codemirror.state));
   }
 
   private _updateFullscreenButton() {
     // Check if we have an existing fullscreen button
     const fsButton = this._editorToolbar
-      ? this._editorToolbar.findToolbarButtons("fullscreen-button")
+      ? this._editorToolbar.findToolbarButtonById("fullscreen")
       : undefined;
     // Ensure we are not in fullscreen mode if currently disabled
     if (this.disableFullscreen) {
@@ -389,9 +390,9 @@ export class HaCodeEditor extends ReactiveElement {
     }
     // Configure full-screen button parameters based on our current state
     if (fsButton) {
-      fsButton[0].disabled = this.disableFullscreen;
-      fsButton[0].path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
-      fsButton[0].setAttribute(
+      fsButton.disabled = this.disableFullscreen;
+      fsButton.path = this._isFullscreen ? mdiArrowCollapse : mdiArrowExpand;
+      fsButton.setAttribute(
         "label",
         this._isFullscreen ? "Exit fullscreen" : "Enter fullscreen"
       );
