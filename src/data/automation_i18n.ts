@@ -378,7 +378,17 @@ const tryDescribeTrigger = (
 
   // Tag Trigger
   if (trigger.trigger === "tag") {
-    return hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
+    const entity = Object.values(hass.states).find(
+      (state) =>
+        state.entity_id.startsWith("tag.") &&
+        state.attributes.tag_id === trigger.tag_id
+    );
+    return entity
+      ? hass.localize(
+          `${triggerTranslationBaseKey}.tag.description.known_tag`,
+          { tag_name: computeStateName(entity) }
+        )
+      : hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
 
   // Time Trigger

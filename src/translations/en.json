@@ -4018,7 +4018,8 @@
                   "label": "Tag",
                   "description": {
                     "picker": "When a tag is scanned (tags are usually created from the Companion app).",
-                    "full": "When a tag is scanned"
+                    "full": "When a tag is scanned",
+                    "known_tag": "When scanning tag {tag_name}"
                   }
                 },
                 "template": {
@@ -6992,7 +6993,7 @@
           "add_area_action": "View area",
           "add_person_success": "Person added",
           "add_person_action": "View persons",
-          "invite_person": "Invite person"
+          "add_person": "Add person"
         },
         "reload_resources": {
           "refresh_header": "Do you want to refresh?",
