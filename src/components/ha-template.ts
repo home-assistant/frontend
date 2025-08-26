@@ -35,24 +35,32 @@ export class HaTemplate extends LitElement {
     }
   }
 
-  protected render() {
+  public render() {
     try {
-      return this._template!.render({
-        hass: this.hass,
-        states: (id: string) => {
-          this._accessedEntityIds.push(id);
-          return this.hass?.states[id]?.state;
-        },
-        is_state: (id: string, value: string) => {
-          this._accessedEntityIds.push(id);
-          return this.hass?.states[id]?.state === value;
-        },
-      });
+      return this._template!.render(this._getContext());
     } catch (error) {
       // eslint-disable-next-line no-console
       console.debug(`Error rendering template: ${error}`);
       return this.content;
     }
+  }
+
+  private _getContext() {
+    return {
+      hass: this.hass,
+      states: (id: string) => {
+        this._accessedEntityIds.push(id);
+        return this.hass?.states[id]?.state;
+      },
+      state_attr: (id: string, attr: string) => {
+        this._accessedEntityIds.push(id);
+        return this.hass?.states[id]?.attributes[attr];
+      },
+      is_state: (id: string, value: string) => {
+        this._accessedEntityIds.push(id);
+        return this.hass?.states[id]?.state === value;
+      },
+    };
   }
 }
 
