@@ -3489,7 +3489,7 @@
                 "steps": {
                   "config": {
                     "title": "Configuration",
-                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region specific variants below."
+                    "description": "Give your assistant a name and select your language. Depending on this language, you may be able to choose region-specific variants below."
                   },
                   "conversation": {
                     "title": "Conversation agent",
@@ -6126,7 +6126,7 @@
           },
           "node_config": {
             "header": "Z-Wave device configuration",
-            "introduction": "Manage and adjust device specific configuration parameters for the selected device",
+            "introduction": "Manage and adjust device-specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
             "endpoint": "Endpoint {endpoint}",
             "zwave_js_device_database": "Z-Wave JS device database",
