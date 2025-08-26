@@ -1,7 +1,7 @@
 import { mdiDelete, mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../common/dom/prevent_default_stop_propagation";
@@ -19,6 +19,7 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./ha-script-field-selector-editor";
+import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
 
 @customElement("ha-script-field-row")
 export default class HaScriptFieldRow extends LitElement {
@@ -44,6 +45,9 @@ export default class HaScriptFieldRow extends LitElement {
   @state() private _selectorRowSelected = false;
 
   @state() private _selectorRowCollapsed = false;
+
+  @query("ha-script-field-selector-editor")
+  private _selectorEditor?: HaScriptFieldSelectorEditor;
 
   protected render() {
     return html`
@@ -141,8 +145,38 @@ export default class HaScriptFieldRow extends LitElement {
     this._collapsed = !this._collapsed;
   }
 
+  public expand() {
+    this._collapsed = false;
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandSelectorRow() {
+    this._selectorRowCollapsed = false;
+  }
+
+  public collapseSelectorRow() {
+    this._selectorRowCollapsed = true;
+  }
+
   private _toggleSelectorRowCollapse() {
     this._selectorRowCollapsed = !this._selectorRowCollapsed;
+  }
+
+  public expandAll() {
+    this.expand();
+    this.expandSelectorRow();
+
+    this._selectorEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+    this.collapseSelectorRow();
+
+    this._selectorEditor?.collapseAll();
   }
 
   private _toggleSidebar(ev: Event) {
@@ -155,6 +189,7 @@ export default class HaScriptFieldRow extends LitElement {
     }
 
     this._selected = true;
+    this._collapsed = false;
     this.openSidebar();
   }
 
@@ -168,6 +203,7 @@ export default class HaScriptFieldRow extends LitElement {
     }
 
     this._selectorRowSelected = true;
+    this._selectorRowCollapsed = false;
     this.openSidebar(true);
   }
 

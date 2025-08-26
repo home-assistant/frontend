@@ -3792,6 +3792,8 @@
             "automation_settings": "Automation settings",
             "move_up": "Move up",
             "move_down": "Move down",
+            "collapse_all": "Collapse all",
+            "expand_all": "Expand all",
             "description": {
               "label": "Description",
               "placeholder": "Optional description",

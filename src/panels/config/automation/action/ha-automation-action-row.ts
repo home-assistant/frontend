@@ -109,6 +109,8 @@ export const getAutomationActionType = memoizeOne(
 
 export interface ActionElement extends LitElement {
   action: Action;
+  expandAll?: () => void;
+  collapseAll?: () => void;
 }
 
 export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
@@ -181,7 +183,7 @@ export default class HaAutomationActionRow extends LitElement {
   @state() private _warnings?: string[];
 
   @query("ha-automation-action-editor")
-  private actionEditor?: HaAutomationActionEditor;
+  private _actionEditor?: HaAutomationActionEditor;
 
   protected willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("yamlMode")) {
@@ -479,7 +481,7 @@ export default class HaAutomationActionRow extends LitElement {
     this.openSidebar(value); // refresh sidebar
 
     if (this._yamlMode && !this.optionsInSidebar) {
-      this.actionEditor?.yamlEditor?.setValue(value);
+      this._actionEditor?.yamlEditor?.setValue(value);
     }
   };
 
@@ -582,7 +584,7 @@ export default class HaAutomationActionRow extends LitElement {
       if (this._selected && this.optionsInSidebar) {
         this.openSidebar(value); // refresh sidebar
       } else if (this._yamlMode) {
-        this.actionEditor?.yamlEditor?.setValue(value);
+        this._actionEditor?.yamlEditor?.setValue(value);
       }
     }
   };
@@ -669,6 +671,7 @@ export default class HaAutomationActionRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies ActionSidebarConfig);
     this._selected = true;
+    this._collapsed = false;
 
     if (this.narrow) {
       this.scrollIntoView({
@@ -679,9 +682,37 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   public expand() {
+    if (this.optionsInSidebar) {
+      this._collapsed = false;
+      return;
+    }
+
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
+  }
+
+  public collapse() {
+    if (this.optionsInSidebar) {
+      this._collapsed = true;
+      return;
+    }
+
+    this.updateComplete.then(() => {
+      this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = false;
+    });
+  }
+
+  public expandAll() {
+    this.expand();
+
+    this._actionEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+
+    this._actionEditor?.collapseAll();
   }
 
   private _uiSupported = memoizeOne(

@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
@@ -14,6 +14,7 @@ import {
 } from "../../../../../data/condition";
 import type { Entries, HomeAssistant } from "../../../../../types";
 import "../../condition/ha-automation-condition-editor";
+import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
 import "../../condition/types/ha-automation-condition-and";
 import "../../condition/types/ha-automation-condition-device";
 import "../../condition/types/ha-automation-condition-not";
@@ -40,6 +41,9 @@ export class HaConditionAction extends LitElement implements ActionElement {
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
+  @query("ha-automation-condition-editor")
+  private _conditionEditor?: HaAutomationConditionEditor;
 
   public static get defaultConfig(): Omit<Condition, "state" | "entity_id"> {
     return { condition: "state" };
@@ -145,6 +149,14 @@ export class HaConditionAction extends LitElement implements ActionElement {
     (type: string) =>
       customElements.get(`ha-automation-condition-${type}`) !== undefined
   );
+
+  public expandAll() {
+    this._conditionEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this._conditionEditor?.collapseAll();
+  }
 
   static styles = css`
     ha-select {

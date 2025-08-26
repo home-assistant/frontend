@@ -70,6 +70,8 @@ import "./types/ha-automation-condition-zone";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
+  expandAll?: () => void;
+  collapseAll?: () => void;
 }
 
 export const handleChangeEvent = (
@@ -575,9 +577,30 @@ export default class HaAutomationConditionRow extends LitElement {
   };
 
   public expand() {
+    if (this.optionsInSidebar) {
+      this._collapsed = false;
+      return;
+    }
+
     this.updateComplete.then(() => {
       this.shadowRoot!.querySelector("ha-expansion-panel")!.expanded = true;
     });
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandAll() {
+    this.expand();
+
+    this.conditionEditor?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+
+    this.conditionEditor?.collapseAll();
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
@@ -622,6 +645,7 @@ export default class HaAutomationConditionRow extends LitElement {
       yamlMode: this._yamlMode,
     } satisfies ConditionSidebarConfig);
     this._selected = true;
+    this._collapsed = false;
 
     if (this.narrow) {
       this.scrollIntoView({

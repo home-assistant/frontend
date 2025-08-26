@@ -1,13 +1,21 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import {
+  customElement,
+  property,
+  query,
+  queryAll,
+  state,
+} from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-textfield";
 import type { Action, IfAction } from "../../../../../data/script";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import type { Condition } from "../../../../lovelace/common/validate-condition";
+import type HaAutomationCondition from "../../condition/ha-automation-condition";
 import "../ha-automation-action";
+import type HaAutomationAction from "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-if")
@@ -23,6 +31,12 @@ export class HaIfAction extends LitElement implements ActionElement {
   @property({ type: Boolean }) public indent = false;
 
   @state() private _showElse = false;
+
+  @query("ha-automation-condition")
+  private _conditionElement?: HaAutomationCondition;
+
+  @queryAll("ha-automation-action")
+  private _actionElements?: HaAutomationAction[];
 
   public static get defaultConfig(): IfAction {
     return {
@@ -130,6 +144,16 @@ export class HaIfAction extends LitElement implements ActionElement {
       delete newValue.else;
     }
     fireEvent(this, "value-changed", { value: newValue });
+  }
+
+  public expandAll() {
+    this._conditionElement?.expandAll();
+    this._actionElements?.forEach((element) => element.expandAll?.());
+  }
+
+  public collapseAll() {
+    this._conditionElement?.collapseAll();
+    this._actionElements?.forEach((element) => element.collapseAll?.());
   }
 
   static get styles(): CSSResultGroup {
