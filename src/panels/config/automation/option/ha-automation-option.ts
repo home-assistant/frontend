@@ -153,14 +153,14 @@ export default class HaAutomationOption extends LitElement {
 
   public expandAll() {
     this._getRowElements().forEach((row) => {
-      row.expand?.();
+      row.expand();
 
       const childElements = row.shadowRoot?.querySelectorAll<
         HaAutomationAction | HaAutomationCondition
       >("ha-automation-action, ha-automation-condition");
       if (childElements) {
         childElements.forEach((element) => {
-          element.expandAll?.();
+          element.expandAll();
         });
       }
     });
@@ -175,7 +175,7 @@ export default class HaAutomationOption extends LitElement {
       >("ha-automation-action, ha-automation-condition");
       if (childElements) {
         childElements.forEach((element) => {
-          element.collapseAll?.();
+          element.collapseAll();
         });
       }
     });

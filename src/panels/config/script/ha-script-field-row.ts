@@ -141,6 +141,22 @@ export default class HaScriptFieldRow extends LitElement {
     this._collapsed = !this._collapsed;
   }
 
+  public expand() {
+    this._collapsed = false;
+  }
+
+  public collapse() {
+    this._collapsed = true;
+  }
+
+  public expandSelectorRow() {
+    this._selectorRowCollapsed = false;
+  }
+
+  public collapseSelectorRow() {
+    this._selectorRowCollapsed = true;
+  }
+
   private _toggleSelectorRowCollapse() {
     this._selectorRowCollapsed = !this._selectorRowCollapsed;
   }

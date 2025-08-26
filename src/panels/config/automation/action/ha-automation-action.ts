@@ -9,6 +9,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
+import type { HaActionSelector } from "../../../../components/ha-selector/ha-selector-action";
+import type { HaConditionSelector } from "../../../../components/ha-selector/ha-selector-condition";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
@@ -191,25 +193,43 @@ export default class HaAutomationAction extends LitElement {
   private _getChildCollapsableElements(
     row: HaAutomationActionRow
   ):
-    | NodeListOf<
-        HaAutomationAction | HaAutomationCondition | HaAutomationOption
-      >
+    | (HaAutomationAction | HaAutomationCondition | HaAutomationOption)[]
     | undefined {
     const editor = row.shadowRoot!.querySelector<HaAutomationActionEditor>(
       "ha-automation-action-editor"
     );
     if (editor) {
       const buildingBlock = editor.shadowRoot?.querySelector(
-        [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS]
+        [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS, "repeat"]
           .map((block) => `ha-automation-action-${block}`)
           .join(", ")
       );
       if (buildingBlock) {
-        return buildingBlock.shadowRoot?.querySelectorAll<
-          HaAutomationAction | HaAutomationCondition | HaAutomationOption
-        >(
-          "ha-automation-action, ha-automation-condition, ha-automation-option"
+        const buildingBlockContent = Array.from(
+          buildingBlock.shadowRoot?.querySelectorAll<
+            HaAutomationAction | HaAutomationCondition | HaAutomationOption
+          >(
+            "ha-automation-action, ha-automation-condition, ha-automation-option"
+          ) || []
         );
+        const form = buildingBlock.shadowRoot?.querySelector("ha-form");
+        if (form) {
+          const selectors = form.shadowRoot?.querySelectorAll("ha-selector");
+          selectors?.forEach((selector) => {
+            const options = selector.shadowRoot?.querySelector<
+              HaConditionSelector | HaActionSelector
+            >("ha-selector-condition, ha-selector-action");
+            if (options) {
+              const found = options.shadowRoot?.querySelector<
+                HaAutomationAction | HaAutomationCondition | HaAutomationOption
+              >("ha-automation-action, ha-automation-condition");
+              if (found) {
+                buildingBlockContent.push(found);
+              }
+            }
+          });
+        }
+        return buildingBlockContent.length ? buildingBlockContent : undefined;
       }
     }
     return undefined;
@@ -217,12 +237,12 @@ export default class HaAutomationAction extends LitElement {
 
   public expandAll() {
     this._getRowElements().forEach((row) => {
-      row.expand?.();
+      row.expand();
 
       const childElements = this._getChildCollapsableElements(row);
       if (childElements) {
         childElements.forEach((element) => {
-          element.expandAll?.();
+          element.expandAll();
         });
       }
     });
@@ -235,7 +255,7 @@ export default class HaAutomationAction extends LitElement {
       const childElements = this._getChildCollapsableElements(row);
       if (childElements) {
         childElements.forEach((element) => {
-          element.collapseAll?.();
+          element.collapseAll();
         });
       }
     });

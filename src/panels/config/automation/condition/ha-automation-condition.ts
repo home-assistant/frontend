@@ -157,7 +157,7 @@ export default class HaAutomationCondition extends LitElement {
       const childElements = this._getChildCollapsableElements(row);
       if (childElements) {
         childElements.forEach((element) => {
-          element.expandAll?.();
+          element.expandAll();
         });
       }
     });
@@ -170,7 +170,7 @@ export default class HaAutomationCondition extends LitElement {
       const childElements = this._getChildCollapsableElements(row);
       if (childElements) {
         childElements.forEach((element) => {
-          element.collapseAll?.();
+          element.collapseAll();
         });
       }
     });

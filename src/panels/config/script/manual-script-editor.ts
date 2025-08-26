@@ -30,6 +30,7 @@ import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import "../automation/action/ha-automation-action";
+import type HaAutomationAction from "../automation/action/ha-automation-action";
 import "../automation/ha-automation-sidebar";
 import { showPasteReplaceDialog } from "../automation/paste-replace-dialog/show-dialog-paste-replace";
 import { saveFabStyles } from "../automation/styles";
@@ -456,6 +457,24 @@ export class HaManualScriptEditor extends LitElement {
   private _saveScript() {
     this._closeSidebar();
     fireEvent(this, "save-script");
+  }
+
+  private _getCollapsableElements() {
+    return this.shadowRoot!.querySelectorAll<
+      HaAutomationAction | HaScriptFields
+    >("ha-automation-action, ha-script-fields");
+  }
+
+  public expandAll() {
+    this._getCollapsableElements().forEach((element) => {
+      element.expandAll();
+    });
+  }
+
+  public collapseAll() {
+    this._getCollapsableElements().forEach((element) => {
+      element.collapseAll();
+    });
   }
 
   static get styles(): CSSResultGroup {
