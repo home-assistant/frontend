@@ -1,8 +1,9 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import type { Condition } from "../../data/automation";
 import type { ConditionSelector } from "../../data/selector";
 import "../../panels/config/automation/condition/ha-automation-condition";
+import type HaAutomationCondition from "../../panels/config/automation/condition/ha-automation-condition";
 import type { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-condition")
@@ -19,6 +20,9 @@ export class HaConditionSelector extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @query("ha-automation-condition")
+  private _conditionElement?: HaAutomationCondition;
+
   protected render() {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
@@ -30,6 +34,14 @@ export class HaConditionSelector extends LitElement {
         .optionsInSidebar=${!!this.selector.condition?.optionsInSidebar}
       ></ha-automation-condition>
     `;
+  }
+
+  public expandAll() {
+    this._conditionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this._conditionElement?.collapseAll();
   }
 
   static styles = css`

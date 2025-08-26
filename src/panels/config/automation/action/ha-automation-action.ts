@@ -2,34 +2,28 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { nextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
-import type { HaActionSelector } from "../../../../components/ha-selector/ha-selector-action";
-import type { HaConditionSelector } from "../../../../components/ha-selector/ha-selector-condition";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
-  ACTION_COMBINED_BLOCKS,
   getService,
   isService,
 } from "../../../../data/action";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
-import type HaAutomationCondition from "../condition/ha-automation-condition";
-import type HaAutomationOption from "../option/ha-automation-option";
 import {
   PASTE_VALUE,
   VIRTUAL_ACTIONS,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import type HaAutomationActionEditor from "./ha-automation-action-editor";
 import type HaAutomationActionRow from "./ha-automation-action-row";
 import { getAutomationActionType } from "./ha-automation-action-row";
 
@@ -60,6 +54,9 @@ export default class HaAutomationAction extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-action-row")
+  private _actionRowElements?: HaAutomationActionRow[];
 
   private _focusLastActionOnChange = false;
 
@@ -184,80 +181,15 @@ export default class HaAutomationAction extends LitElement {
     }
   }
 
-  private _getRowElements() {
-    return this.shadowRoot!.querySelectorAll<HaAutomationActionRow>(
-      "ha-automation-action-row"
-    );
-  }
-
-  private _getChildCollapsableElements(
-    row: HaAutomationActionRow
-  ):
-    | (HaAutomationAction | HaAutomationCondition | HaAutomationOption)[]
-    | undefined {
-    const editor = row.shadowRoot!.querySelector<HaAutomationActionEditor>(
-      "ha-automation-action-editor"
-    );
-    if (editor) {
-      const buildingBlock = editor.shadowRoot?.querySelector(
-        [...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS, "repeat"]
-          .map((block) => `ha-automation-action-${block}`)
-          .join(", ")
-      );
-      if (buildingBlock) {
-        const buildingBlockContent = Array.from(
-          buildingBlock.shadowRoot?.querySelectorAll<
-            HaAutomationAction | HaAutomationCondition | HaAutomationOption
-          >(
-            "ha-automation-action, ha-automation-condition, ha-automation-option"
-          ) || []
-        );
-        const form = buildingBlock.shadowRoot?.querySelector("ha-form");
-        if (form) {
-          const selectors = form.shadowRoot?.querySelectorAll("ha-selector");
-          selectors?.forEach((selector) => {
-            const options = selector.shadowRoot?.querySelector<
-              HaConditionSelector | HaActionSelector
-            >("ha-selector-condition, ha-selector-action");
-            if (options) {
-              const found = options.shadowRoot?.querySelector<
-                HaAutomationAction | HaAutomationCondition | HaAutomationOption
-              >("ha-automation-action, ha-automation-condition");
-              if (found) {
-                buildingBlockContent.push(found);
-              }
-            }
-          });
-        }
-        return buildingBlockContent.length ? buildingBlockContent : undefined;
-      }
-    }
-    return undefined;
-  }
-
   public expandAll() {
-    this._getRowElements().forEach((row) => {
-      row.expand();
-
-      const childElements = this._getChildCollapsableElements(row);
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.expandAll();
-        });
-      }
+    this._actionRowElements?.forEach((row) => {
+      row.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getRowElements().forEach((row) => {
-      row.collapse();
-
-      const childElements = this._getChildCollapsableElements(row);
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.collapseAll();
-        });
-      }
+    this._actionRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 

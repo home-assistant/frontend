@@ -1,19 +1,15 @@
 import { mdiPlus } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-button-menu";
-import type { HaForm } from "../../../components/ha-form/ha-form";
 import "../../../components/ha-svg-icon";
 import type { Fields } from "../../../data/script";
 import type { HomeAssistant } from "../../../types";
-import type HaAutomationAction from "../automation/action/ha-automation-action";
-import type HaAutomationCondition from "../automation/condition/ha-automation-condition";
 import "./ha-script-field-row";
 import type HaScriptFieldRow from "./ha-script-field-row";
-import type HaScriptFieldSelectorEditor from "./ha-script-field-selector-editor";
 
 @customElement("ha-script-fields")
 export default class HaScriptFields extends LitElement {
@@ -26,6 +22,9 @@ export default class HaScriptFields extends LitElement {
   @property({ attribute: false }) public highlightedFields?: Fields;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @queryAll("ha-script-field-row")
+  private _fieldRowElements?: HaScriptFieldRow[];
 
   private _focusLastActionOnChange = false;
 
@@ -143,62 +142,15 @@ export default class HaScriptFields extends LitElement {
     return key;
   }
 
-  private _getRowElements() {
-    return this.shadowRoot!.querySelectorAll<HaScriptFieldRow>(
-      "ha-script-field-row"
-    );
-  }
-
-  private _getChildCollapsableElements(
-    row: HaScriptFieldRow
-  ): NodeListOf<HaAutomationAction | HaAutomationCondition> | undefined {
-    const editor = row.shadowRoot!.querySelector<HaScriptFieldSelectorEditor>(
-      "ha-script-field-selector-editor"
-    );
-    if (editor) {
-      const form = editor.shadowRoot?.querySelector<HaForm>("ha-form");
-      if (form) {
-        const selector = form.shadowRoot?.querySelector("ha-selector");
-        if (selector) {
-          const buildingBlockSelector = selector.shadowRoot?.querySelector(
-            "ha-selector-condition, ha-selector-action"
-          );
-          if (buildingBlockSelector) {
-            return buildingBlockSelector.shadowRoot?.querySelectorAll<
-              HaAutomationAction | HaAutomationCondition
-            >("ha-automation-action, ha-automation-condition");
-          }
-        }
-      }
-    }
-    return undefined;
-  }
-
   public expandAll() {
-    this._getRowElements().forEach((row) => {
-      row.expand();
-      row.expandSelectorRow();
-
-      const childElements = this._getChildCollapsableElements(row);
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.expandAll();
-        });
-      }
+    this._fieldRowElements?.forEach((row) => {
+      row.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getRowElements().forEach((row) => {
-      row.collapse();
-      row.collapseSelectorRow();
-
-      const childElements = this._getChildCollapsableElements(row);
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.collapseAll();
-        });
-      }
+    this._fieldRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 

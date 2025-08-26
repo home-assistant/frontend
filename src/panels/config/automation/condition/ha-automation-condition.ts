@@ -2,7 +2,7 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -22,7 +22,6 @@ import {
   PASTE_VALUE,
   showAddAutomationElementDialog,
 } from "../show-add-automation-element-dialog";
-import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
 import "./ha-automation-condition-row";
 import type HaAutomationConditionRow from "./ha-automation-condition-row";
 
@@ -53,6 +52,9 @@ export default class HaAutomationCondition extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-condition-row")
+  private _conditionRowElements?: HaAutomationConditionRow[];
 
   private _focusLastConditionOnChange = false;
 
@@ -123,56 +125,15 @@ export default class HaAutomationCondition extends LitElement {
     }
   }
 
-  private _getRowElements() {
-    return this.shadowRoot!.querySelectorAll<HaAutomationConditionRow>(
-      "ha-automation-condition-row"
-    );
-  }
-
-  private _getChildCollapsableElements(
-    row: HaAutomationConditionRow
-  ): NodeListOf<HaAutomationCondition> | undefined {
-    const editor = row.shadowRoot!.querySelector<HaAutomationConditionEditor>(
-      "ha-automation-condition-editor"
-    );
-    if (editor) {
-      const buildingBlock = editor.shadowRoot?.querySelector(
-        CONDITION_BUILDING_BLOCKS.map(
-          (block) => `ha-automation-condition-${block}`
-        ).join(", ")
-      );
-      if (buildingBlock) {
-        return buildingBlock.shadowRoot?.querySelectorAll<HaAutomationCondition>(
-          "ha-automation-condition"
-        );
-      }
-    }
-    return undefined;
-  }
-
   public expandAll() {
-    this._getRowElements().forEach((row) => {
-      row.expand();
-
-      const childElements = this._getChildCollapsableElements(row);
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.expandAll();
-        });
-      }
+    this._conditionRowElements?.forEach((row) => {
+      row.expandAll();
     });
   }
 
   public collapseAll() {
-    this._getRowElements().forEach((row) => {
-      row.collapse();
-
-      const childElements = this._getChildCollapsableElements(row);
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.collapseAll();
-        });
-      }
+    this._conditionRowElements?.forEach((row) => {
+      row.collapseAll();
     });
   }
 

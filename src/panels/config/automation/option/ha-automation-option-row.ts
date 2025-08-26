@@ -9,7 +9,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -37,7 +37,9 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import "../action/ha-automation-action";
+import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
+import type HaAutomationCondition from "../condition/ha-automation-condition";
 import { editorStyles, rowStyles } from "../styles";
 
 @customElement("ha-automation-option-row")
@@ -68,6 +70,12 @@ export default class HaAutomationOptionRow extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg!: EntityRegistryEntry[];
+
+  @query("ha-automation-condition")
+  private _conditionElement?: HaAutomationCondition;
+
+  @query("ha-automation-action")
+  private _actionElement?: HaAutomationAction;
 
   private _expandedChanged(ev) {
     if (ev.currentTarget.id !== "option") {
@@ -378,6 +386,20 @@ export default class HaAutomationOptionRow extends LitElement {
 
   public collapse() {
     this._collapsed = true;
+  }
+
+  public expandAll() {
+    this.expand();
+
+    this._conditionElement?.expandAll();
+    this._actionElement?.expandAll();
+  }
+
+  public collapseAll() {
+    this.collapse();
+
+    this._conditionElement?.collapseAll();
+    this._actionElement?.collapseAll();
   }
 
   private _toggleCollapse() {

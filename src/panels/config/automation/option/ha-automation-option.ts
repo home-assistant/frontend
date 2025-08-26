@@ -2,7 +2,7 @@ import { mdiDrag, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -14,8 +14,6 @@ import "../../../../components/ha-svg-icon";
 import type { AutomationClipboard } from "../../../../data/automation";
 import type { Option } from "../../../../data/script";
 import type { HomeAssistant } from "../../../../types";
-import type HaAutomationAction from "../action/ha-automation-action";
-import type HaAutomationCondition from "../condition/ha-automation-condition";
 import "./ha-automation-option-row";
 import type HaAutomationOptionRow from "./ha-automation-option-row";
 
@@ -42,6 +40,9 @@ export default class HaAutomationOption extends LitElement {
     storage: "sessionStorage",
   })
   public _clipboard?: AutomationClipboard;
+
+  @queryAll("ha-automation-option-row")
+  private _optionRowElements?: HaAutomationOptionRow[];
 
   private _focusLastOptionOnChange = false;
 
@@ -145,40 +146,12 @@ export default class HaAutomationOption extends LitElement {
     }
   }
 
-  private _getRowElements() {
-    return this.shadowRoot!.querySelectorAll<HaAutomationOptionRow>(
-      "ha-automation-option-row"
-    );
-  }
-
   public expandAll() {
-    this._getRowElements().forEach((row) => {
-      row.expand();
-
-      const childElements = row.shadowRoot?.querySelectorAll<
-        HaAutomationAction | HaAutomationCondition
-      >("ha-automation-action, ha-automation-condition");
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.expandAll();
-        });
-      }
-    });
+    this._optionRowElements?.forEach((row) => row.expandAll());
   }
 
   public collapseAll() {
-    this._getRowElements().forEach((row) => {
-      row.collapse();
-
-      const childElements = row.shadowRoot?.querySelectorAll<
-        HaAutomationAction | HaAutomationCondition
-      >("ha-automation-action, ha-automation-condition");
-      if (childElements) {
-        childElements.forEach((element) => {
-          element.collapseAll();
-        });
-      }
-    });
+    this._optionRowElements?.forEach((row) => row.collapseAll());
   }
 
   private _addOption = () => {
