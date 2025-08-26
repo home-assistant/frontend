@@ -3,23 +3,23 @@ import { customElement } from "lit/decorators";
 import { generateEntityFilter } from "../../../../common/entity/entity_filter";
 import { clamp } from "../../../../common/number/clamp";
 import { floorDefaultIcon } from "../../../../components/ha-floor-icon";
-import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type { LovelaceSectionRawConfig } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../../types";
-import type { MediaControlCardConfig } from "../../cards/types";
-import { getAreas, getFloors } from "../areas/helpers/areas-strategy-helper";
-import { getHomeStructure } from "./helpers/overview-home-structure";
 import {
-  findEntities,
-  OVERVIEW_SUMMARIES_FILTERS,
-} from "./helpers/overview-summaries";
+  computeAreaTileCardConfig,
+  getAreas,
+  getFloors,
+} from "../areas/helpers/areas-strategy-helper";
+import { findEntities, HOME_SUMMARIES_FILTERS } from "./helpers/home-summaries";
+import { getHomeStructure } from "./helpers/home-structure";
+import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 
-export interface OvervieMediaPlayersViewStrategyConfig {
-  type: "overview-media-players";
+export interface HomeSecurityViewStrategyConfig {
+  type: "home-security";
 }
 
-const processAreasForMediaPlayers = (
+const processAreasForSecurity = (
   areaIds: string[],
   hass: HomeAssistant,
   entities: string[]
@@ -35,6 +35,8 @@ const processAreasForMediaPlayers = (
     });
     const areaEntities = entities.filter(areaFilter);
 
+    const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+
     if (areaEntities.length > 0) {
       cards.push({
         heading_style: "subtitle",
@@ -48,10 +50,7 @@ const processAreasForMediaPlayers = (
       });
 
       for (const entityId of areaEntities) {
-        cards.push({
-          type: "media-control",
-          entity: entityId,
-        } satisfies MediaControlCardConfig);
+        cards.push(computeTileCard(entityId));
       }
     }
   }
@@ -59,10 +58,10 @@ const processAreasForMediaPlayers = (
   return cards;
 };
 
-@customElement("overview-media-players-view-strategy")
-export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
+@customElement("home-security-view-strategy")
+export class HomeSecurityViewStrategy extends ReactiveElement {
   static async generate(
-    _config: OvervieMediaPlayersViewStrategyConfig,
+    _config: HomeSecurityViewStrategyConfig,
     hass: HomeAssistant
   ): Promise<LovelaceViewConfig> {
     const areas = getAreas(hass.areas);
@@ -73,8 +72,8 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
 
     const allEntities = Object.keys(hass.states);
 
-    const filterFunctions = OVERVIEW_SUMMARIES_FILTERS.media_players.map(
-      (filter) => generateEntityFilter(hass, filter)
+    const filterFunctions = HOME_SUMMARIES_FILTERS.security.map((filter) =>
+      generateEntityFilter(hass, filter)
     );
 
     const entities = findEntities(allEntities, filterFunctions);
@@ -98,7 +97,7 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForMediaPlayers(areaIds, hass, entities);
+      const areaCards = processAreasForSecurity(areaIds, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -119,7 +118,7 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
         ],
       };
 
-      const areaCards = processAreasForMediaPlayers(home.areas, hass, entities);
+      const areaCards = processAreasForSecurity(home.areas, hass, entities);
 
       if (areaCards.length > 0) {
         section.cards!.push(...areaCards);
@@ -145,6 +144,6 @@ export class OverviewMediaPlayersViewStrategy extends ReactiveElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "overview-media-players-view-strategy": OverviewMediaPlayersViewStrategy;
+    "home-security-view-strategy": HomeSecurityViewStrategy;
   }
 }

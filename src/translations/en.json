@@ -3361,7 +3361,11 @@
                   "description": "Display your devices grouped by area"
                 },
                 "overview": {
-                  "title": "Overview (experimental)",
+                  "title": "Overview",
+                  "description": "Gives an overview of all your entities and areas they are in"
+                },
+                "home": {
+                  "title": "Home (experimental)",
                   "description": "Global overview of your home"
                 }
               },
