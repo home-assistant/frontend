@@ -12,15 +12,15 @@ export class HaTemplate extends LitElement {
 
   private _template: NunjucksTemplate | undefined;
 
-  private _accessedEntityIds: string[] = [];
+  private _accessedEntityIds = new Set<string>();
 
   protected shouldUpdate(changedProperties: PropertyValues): boolean {
     return (
       super.shouldUpdate(changedProperties) &&
       changedProperties.has("hass") &&
-      (!this._accessedEntityIds.length ||
+      (!this._accessedEntityIds.size ||
         changedProperties.has("content") ||
-        this._accessedEntityIds.some(
+        Array.from(this._accessedEntityIds).some(
           (id) =>
             this.hass?.states[id].state !==
             changedProperties.get("hass")?.states[id].state
@@ -29,7 +29,7 @@ export class HaTemplate extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues): void {
-    this._accessedEntityIds = [];
+    this._accessedEntityIds.clear();
     if (changedProperties.has("content")) {
       this._template = nunjucks.compile(this.content);
     }
@@ -49,15 +49,15 @@ export class HaTemplate extends LitElement {
     return {
       hass: this.hass,
       states: (id: string) => {
-        this._accessedEntityIds.push(id);
+        this._accessedEntityIds.add(id);
         return this.hass?.states[id]?.state;
       },
       state_attr: (id: string, attr: string) => {
-        this._accessedEntityIds.push(id);
+        this._accessedEntityIds.add(id);
         return this.hass?.states[id]?.attributes[attr];
       },
       is_state: (id: string, value: string) => {
-        this._accessedEntityIds.push(id);
+        this._accessedEntityIds.add(id);
         return this.hass?.states[id]?.state === value;
       },
     };
